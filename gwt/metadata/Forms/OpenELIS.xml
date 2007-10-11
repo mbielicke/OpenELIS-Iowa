@@ -1,0 +1,21 @@
+<screen id="main" serviceUrl="OpenELISService"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd">
+  <display>
+    <panel xsi:type="Panel" layout="vertical" width="100%" height="100%" style="AppBackground">
+      <panel xsi:type="Panel" layout="vertical" width="100%" height="10px"></panel>
+      <panel xsi:type="Panel" layout="horizontal" widith="100%" height="100%">
+        <panel xsi:type="Panel" layout="vertical" width="150px">
+          <widget halign="center">
+            <menupanel key="menu" vertical="true"></menupanel>
+          </widget>
+        </panel>
+        <widget>
+          <winbrowser sizeToWindow="true" key="browser" winLimit="10"/>
+        </widget>
+      </panel>
+    </panel>
+  </display>
+  <rpc>
+  </rpc>
+</screen>

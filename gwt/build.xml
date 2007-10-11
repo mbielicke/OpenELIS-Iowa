@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<!--
+
+Builds the a servlet warfile.
+
+-->
+
+<project name="openelis-web" default="all" basedir=".">
+
+   <!-- Initialization needed for any target -->
+
+   <target name="init">
+      <property name="name"           value="openelis-web" />
+      <property name="src.dir"        value="src" />
+      <property name="meta.dir"       value="metadata" />
+      <property name="bin.dir"        value="bin" />
+      <property name="build.dir"      value="build" />
+      <property name="build.compiler" value="modern" />
+   	  <property name="openelis.dir"   value="www/org.openelis.OpenELIS"  />
+   	  <property name="webapp.dir"     value="/usr/pub/http/Application" />
+   </target>
+
+   <target name="all" depends="init" />
+
+   <!-- Build the various report warfiles -->
+       <exec executable="./OpenELIS-compile"/>
+	  
+
+	   <target name="openelis-web" depends="init">
+	   	  <delete file="${build.dir}/openelis.war" />
+	      <war destfile="${build.dir}/openelis.war"
+	           webxml="${meta.dir}/openelis-web.xml">
+	      	  <webinf dir="${meta.dir}"
+	      	          includes="stylesheet/**/*"/>
+	      	  <metainf dir="${meta.dir}"
+	      	           includes="context.xml, ehcache.xml"/>
+	      	  <fileset dir="${meta.dir}"
+	      	           excludes="stylesheet/**/**, openelis-web.xml, context.xml, ehcache.xml"/> 
+	      	  <fileset dir="${openelis.dir}"/>
+	          <classes dir="${bin.dir}"
+	      	           includes="org/openelis/**/*" />
+	          <lib dir="lib"/>
+	      	  <lib dir="../lib-svn/compile"
+	      	  	       includes="gwt-servlet.jar"/>
+	      	  <lib dir="../lib-svn"
+	      	           includes="openelis-lib.jar"/>
+	      </war>
+	   </target>
+
+   <!-- ***************************************************************** -->
+   <!-- THE DEPLOY THE SERVLET WARFILES                                   -->
+   <!-- ***************************************************************** -->
+
+   <!-- Build the various report warfiles -->
+
+	   <target name="deploy-openelis" depends="openelis-web">
+	       <copy file="${build.dir}/openelis.war" todir="${webapp.dir}" />
+	   </target>
+
+   <!-- Removes all generated files and directories -->
+
+   <target name="clean" depends="init">
+       <delete includeemptydirs="true">
+           <fileset dir="${build.dir}" includes="**/*" />
+       </delete>
+   </target>
+
+</project>

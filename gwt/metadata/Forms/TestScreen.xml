@@ -1,0 +1,13 @@
+<screen id="main" serviceUrl="OpenELISService"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd">
+  <display>
+	<panel xsi:type="Panel" layout="vertical">
+	  <widget>
+	    <text>This is a blank example screen for testing.</text>
+	  </widget>
+	</panel>
+  </display>
+  <rpc>
+  </rpc>
+</screen>
