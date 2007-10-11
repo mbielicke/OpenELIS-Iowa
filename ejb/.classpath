@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jboss-4.2-libs"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/lib-svn"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
