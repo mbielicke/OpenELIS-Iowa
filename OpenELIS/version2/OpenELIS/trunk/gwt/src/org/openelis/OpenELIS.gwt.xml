@@ -9,9 +9,9 @@
     <inherits name="org.openelis.gwt.Screen"/>
 
 	<!-- Specify the app entry point class.                   -->
-	<entry-point class='org.openelis.client.OpenELIS'/>
+	<entry-point class='org.openelis.client.main.OpenELIS'/>
   
-    <source path="client"/>
+    <source path="client/main"/>
     <source path="common"/>
     
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  

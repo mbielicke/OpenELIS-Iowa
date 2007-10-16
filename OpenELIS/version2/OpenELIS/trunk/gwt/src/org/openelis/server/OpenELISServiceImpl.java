@@ -4,7 +4,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
-import org.openelis.client.service.OpenELISServiceInt;
+import org.openelis.client.main.service.OpenELISServiceInt;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package org.openelis.client.screen;
+package org.openelis.client.main.screen;
 
 import org.openelis.gwt.client.screen.ScreenForm;
 

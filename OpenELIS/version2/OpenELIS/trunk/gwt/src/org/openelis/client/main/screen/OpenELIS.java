@@ -1,6 +1,6 @@
-package org.openelis.client.screen;
+package org.openelis.client.main.screen;
 
-import org.openelis.client.service.OpenELISService;
+import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
 import org.openelis.gwt.client.widget.WindowBrowser;
