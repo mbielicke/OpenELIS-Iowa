@@ -1,6 +1,6 @@
-package org.openelis.client;
+package org.openelis.client.main;
 
-import org.openelis.client.service.OpenELISService;
+import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
 import org.openelis.gwt.client.screen.ScreenButton;
@@ -88,7 +88,7 @@ public class OpenELIS implements EntryPoint {
         }
     });
     Window.enableScrolling(false);
-	RootPanel.get("main").add(new org.openelis.client.screen.OpenELIS());
+	RootPanel.get("main").add(new org.openelis.client.main.screen.OpenELIS());
   }
   
   private void setWidgetMap() {

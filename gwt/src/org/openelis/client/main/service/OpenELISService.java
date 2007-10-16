@@ -1,4 +1,4 @@
-package org.openelis.client.service;
+package org.openelis.client.main.service;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
