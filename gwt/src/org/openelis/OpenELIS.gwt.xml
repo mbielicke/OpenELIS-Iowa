@@ -7,12 +7,11 @@
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
-
+    <inherits name="org.openelis.client.main.Main"/>
+    <inherits name="org.openelis.client.utilities.Utilities"/>
+    
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.client.main.OpenELIS'/>
-  
-    <source path="client/main"/>
-    <source path="common"/>
-    
+      
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
 </module>
