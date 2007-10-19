@@ -1,5 +1,6 @@
 package org.openelis.client.main;
 
+import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
@@ -7,6 +8,7 @@ import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
 import org.openelis.gwt.client.screen.ScreenCalendar;
 import org.openelis.gwt.client.screen.ScreenCheck;
+import org.openelis.gwt.client.screen.ScreenConstant;
 import org.openelis.gwt.client.screen.ScreenDeck;
 import org.openelis.gwt.client.screen.ScreenDragList;
 import org.openelis.gwt.client.screen.ScreenDragSelect;
@@ -54,6 +56,7 @@ import org.openelis.gwt.common.StringField;
 import org.openelis.gwt.common.TableField;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -102,6 +105,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.BUTTON_PANEL, new ScreenButtonPanel());
       map.addWidget(WidgetMap.CALENDAR, new ScreenCalendar());
       map.addWidget(WidgetMap.CHECKBOX, new ScreenCheck());
+      map.addWidget(WidgetMap.CONTSTANT, new ScreenConstant());
       map.addWidget(WidgetMap.DRAG_SELECT, new ScreenDragSelect());
       map.addWidget(WidgetMap.ERROR, new ScreenError());
       map.addWidget(WidgetMap.IMAGE, new ScreenImage());
@@ -142,6 +146,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.HTML, new ScreenHTML());
       map.addWidget("ProxyListener", new ProxyListener());
       map.addWidget("HoverListener", new HoverListener());
+      map.addWidget("OpenELISConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
 	  Screen.setWidgetMap(map);
   }
 }

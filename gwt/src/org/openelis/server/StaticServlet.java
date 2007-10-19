@@ -79,7 +79,10 @@ public class StaticServlet extends HttpServlet {
                 return;
             }
         }
-        response.sendRedirect("OpenELIS.html");
+        if(req.getParameter("locale") != null)
+            response.sendRedirect("OpenELIS.html?locale="+req.getParameter("locale"));
+        else
+            response.sendRedirect("OpenELIS.html");
         /*
         try {
             AbstractAction ea;
