@@ -3,6 +3,7 @@ package org.openelis.client.main;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.Screen;
+import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
 import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
@@ -13,16 +14,19 @@ import org.openelis.gwt.client.screen.ScreenDeck;
 import org.openelis.gwt.client.screen.ScreenDragList;
 import org.openelis.gwt.client.screen.ScreenDragSelect;
 import org.openelis.gwt.client.screen.ScreenError;
-import org.openelis.gwt.client.screen.ScreenHorizontal;
 import org.openelis.gwt.client.screen.ScreenHTML;
+import org.openelis.gwt.client.screen.ScreenHorizontal;
+import org.openelis.gwt.client.screen.ScreenHorizontalSplit;
 import org.openelis.gwt.client.screen.ScreenImage;
 import org.openelis.gwt.client.screen.ScreenLabel;
 import org.openelis.gwt.client.screen.ScreenMaskedBox;
+import org.openelis.gwt.client.screen.ScreenMenuBar;
 import org.openelis.gwt.client.screen.ScreenMenuLabel;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
+import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
 import org.openelis.gwt.client.screen.ScreenOption;
 import org.openelis.gwt.client.screen.ScreenRadio;
-import org.openelis.gwt.client.screen.ScreenHorizontalSplit;
+import org.openelis.gwt.client.screen.ScreenStack;
 import org.openelis.gwt.client.screen.ScreenTab;
 import org.openelis.gwt.client.screen.ScreenTabBrowser;
 import org.openelis.gwt.client.screen.ScreenTable;
@@ -30,6 +34,7 @@ import org.openelis.gwt.client.screen.ScreenTablePanel;
 import org.openelis.gwt.client.screen.ScreenText;
 import org.openelis.gwt.client.screen.ScreenTextArea;
 import org.openelis.gwt.client.screen.ScreenTextBox;
+import org.openelis.gwt.client.screen.ScreenTitledPanel;
 import org.openelis.gwt.client.screen.ScreenTree;
 import org.openelis.gwt.client.screen.ScreenVertical;
 import org.openelis.gwt.client.screen.ScreenWindowBrowser;
@@ -90,7 +95,7 @@ public class OpenELIS implements EntryPoint {
                 
         }
     });
-    Window.enableScrolling(false);
+    Window.enableScrolling(true);
 	RootPanel.get("main").add(new org.openelis.client.main.screen.OpenELIS());
   }
   
@@ -105,7 +110,6 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.BUTTON_PANEL, new ScreenButtonPanel());
       map.addWidget(WidgetMap.CALENDAR, new ScreenCalendar());
       map.addWidget(WidgetMap.CHECKBOX, new ScreenCheck());
-      map.addWidget(WidgetMap.CONTSTANT, new ScreenConstant());
       map.addWidget(WidgetMap.DRAG_SELECT, new ScreenDragSelect());
       map.addWidget(WidgetMap.ERROR, new ScreenError());
       map.addWidget(WidgetMap.IMAGE, new ScreenImage());
@@ -126,8 +130,13 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.TABLE_TEXTBOX, new TableTextBox());
       map.addWidget(WidgetMap.DRAGLIST, new ScreenDragList());
       map.addWidget(WidgetMap.LABEL, new ScreenLabel());
+     // map.addWidget("menuList", new ScreenMenuPanel());
       map.addWidget(WidgetMap.MENU_PANEL, new ScreenMenuPanel());
       map.addWidget(WidgetMap.MENU_LABEL, new ScreenMenuLabel());
+      map.addWidget(WidgetMap.MENU_BAR, new ScreenMenuBar());
+     // map.addWidget("OrganizationTable", new OrganizationTable());
+     // map.addWidget("ContactTable", new ContactTable());
+      //map.addWidget("ContactReportingTable", new ContactReportingTable());
       map.addWidget(WidgetMap.RPC_CHECKBOX, new CheckField());
       map.addWidget(WidgetMap.RPC_DATE, new DateField());
       map.addWidget(WidgetMap.RPC_NUMBER, new NumberField());
@@ -141,11 +150,16 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.RPC_QUERY_STRING, new QueryStringField());
       map.addWidget(WidgetMap.TABLE_CHECKBOX, new TableCheck());
       map.addWidget(WidgetMap.PANEL_TAB, new ScreenTab());
+      map.addWidget(WidgetMap.PANEL_STACK, new ScreenStack());
       map.addWidget(WidgetMap.WINBROWSER, new ScreenWindowBrowser());
       map.addWidget(WidgetMap.APP_MESSAGE,new ScreenAppMessage());
       map.addWidget(WidgetMap.HTML, new ScreenHTML());
       map.addWidget("ProxyListener", new ProxyListener());
       map.addWidget("HoverListener", new HoverListener());
+      map.addWidget(WidgetMap.LEFT_MENU_PANEL, new ScreenAToZPanel());
+      map.addWidget("titledPanel", new ScreenTitledPanel());
+      map.addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
+      map.addWidget(WidgetMap.CONTSTANT, new ScreenConstant());
       map.addWidget("OpenELISConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
 	  Screen.setWidgetMap(map);
   }

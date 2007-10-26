@@ -9,9 +9,13 @@
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="org.openelis.client.main.Main"/>
     <inherits name="org.openelis.client.utilities.Utilities"/>
+        <inherits name="org.openelis.client.dataEntry.DataEntry"/>
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.client.main.OpenELIS'/>
       
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
+    <extend-property name="locale" values="cn"/>
+    <extend-property name="locale" values="fa"/>
+    <extend-property name="locale" values="sp"/>
 </module>
