@@ -3,10 +3,7 @@
   xsi:noNamespaceSchemaLocation="file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd">
   <display constants="OpenELISConstants">
 	<panel xsi:type="Panel" layout="vertical">
-      
-      
-      
-      <widget>
+	<widget>
 	    <const>greeting</const>
 	  </widget> 
 	  <widget>
