@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +29,18 @@ public class XSLTServlet extends HttpServlet {
      */
     private static final long serialVersionUID = -7471211263251691905L;
     private static Logger log = Logger.getLogger(StaticServlet.class.getName());
-
+    private boolean hosted;
+    private String approot;
+    
+    public void init() throws ServletException {
+        log.debug("Initializing the Applistyleion.");
+        System.out.println("in Static "+getServletConfig().getInitParameter("hosted"));
+        if(getServletConfig().getInitParameter("hosted") != null)
+            hosted = true;
+        if(getServletConfig().getInitParameter("AppRoot") != null)
+            approot = getServletConfig().getInitParameter("AppRoot");
+        log.debug("getting out");
+    }
     /**
      * Process POST request.
      */
@@ -60,8 +72,8 @@ public class XSLTServlet extends HttpServlet {
             String loc = "en";
             if(req.getSession().getAttribute("locale") != null)
                 loc = (String)req.getSession().getAttribute("locale");
-            byte[] outBytes = (byte[])CachingManager.getElement("screens", req.getParameter("name")+loc);
-            if(outBytes == null){
+            //byte[] outBytes = (byte[])CachingManager.getElement("screens", req.getParameter("name")+loc);
+            //if(outBytes == null){
                 Document doc = XMLUtil.createNew("doc");
                 Element root = doc.getDocumentElement();
                 Element locale = doc.createElement("locale");
@@ -70,11 +82,16 @@ public class XSLTServlet extends HttpServlet {
                 //  locale = doc.createElement("locale_country");
                 //  locale.appendChild(doc.createTextNode(req.getLocale().getCountry()));
                 //root.appendChild(locale);
-                ByteArrayOutputStream transDoc = new ByteArrayOutputStream();
-                XMLUtil.transformXML(doc, new File(Constants.APP_ROOT+"/Forms/"+req.getParameter("name")+".xsl"), new StreamResult(transDoc));
-                CachingManager.putElement("screens",req.getParameter("name")+loc,transDoc.toByteArray());
-            }
-            response.getOutputStream().write(outBytes);
+                String url = Constants.APP_ROOT+"/Forms/"+req.getParameter("name")+".xsl";
+                if(hosted)
+                    url = approot+"/Forms/"+req.getParameter("name")+".xsl";
+                    
+                XMLUtil.transformXML(doc, new File(url), new StreamResult(response.getOutputStream()));
+                //CachingManager.putElement("screens",req.getParameter("name")+loc,transDoc.toByteArray());
+            //}
+            //response.setCharacterEncoding("utf-8");
+            //response.s
+            //response.getOutputStream().write(outBytes);
         }catch(Exception e){
             e.printStackTrace();
         }

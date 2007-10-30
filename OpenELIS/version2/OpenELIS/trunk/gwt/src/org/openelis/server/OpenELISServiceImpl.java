@@ -1,13 +1,18 @@
 package org.openelis.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.openelis.client.main.service.OpenELISServiceInt;
+import org.openelis.gwt.client.services.AppServiceInt;
 import org.openelis.gwt.client.services.ScreenServiceInt;
 import org.openelis.gwt.client.services.TableServiceInt;
 import org.openelis.gwt.common.AbstractField;
@@ -25,11 +30,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.gwt.user.server.rpc.SerializationPolicy;
 
 public class OpenELISServiceImpl extends RemoteServiceServlet implements
                                                          OpenELISServiceInt,
                                                          TableServiceInt,
-                                                         ScreenServiceInt {
+                                                         ScreenServiceInt,
+                                                         AppServiceInt {
 
     private static final long serialVersionUID = 839548243948328704L;
 
@@ -37,13 +44,30 @@ public class OpenELISServiceImpl extends RemoteServiceServlet implements
 
     private String appRoot;
 
+    /*
+     * (non-Javadoc)
+     * @see com.google.gwt.user.server.rpc.RemoteServiceServlet#doGetSerializationPolicy(javax.servlet.http.HttpServletRequest, java.lang.String, java.lang.String)
+     * 
+     *  This method was overridden so that data could be returned to a CASified Hosted Browser.
+     */
+    protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL, String strongName) {
+        // TODO Auto-generated method stub
+        if(moduleBaseURL.indexOf("/shell") > -1) {
+            String temp = moduleBaseURL.substring(0, moduleBaseURL.indexOf("/shell"));
+            moduleBaseURL = temp + moduleBaseURL.substring(moduleBaseURL.indexOf("/shell")+6);
+        }
+        return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
+    }
+    
     private void initParameters(ServletConfig config) throws ServletException {
         log.debug("in InitParameters");
         SessionManager.init("OpenELIS"); 
-        CachingManager.init(Constants.APP_ROOT);
         if (config != null) {
             appRoot = config.getInitParameter("app.root");
-            Constants.APP_ROOT = appRoot;
+            if(appRoot != null){
+                Constants.APP_ROOT = appRoot;
+                CachingManager.init(Constants.APP_ROOT);
+            }
         } else {
             log.error("ServletConfig is NULL",
                       new ServletException("ServletConfig is NULL"));
@@ -723,4 +747,24 @@ public class OpenELISServiceImpl extends RemoteServiceServlet implements
 	public String getLanguage(){
 		return getThreadLocalRequest().getLocale().getLanguage();
 	}
+
+    public String getScreen(String name) {
+        try{
+            String loc = "en";
+            if(SessionManager.getSession().getAttribute("locale") != null)
+                loc = (String)SessionManager.getSession().getAttribute("locale");
+            Document doc = XMLUtil.createNew("doc");
+            Element root = doc.getDocumentElement();
+            Element locale = doc.createElement("locale");
+            locale.appendChild(doc.createTextNode(loc));
+            root.appendChild(locale);
+            String url = Constants.APP_ROOT+"/Forms/"+name+".xsl";
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            XMLUtil.transformXML(doc, new File(url), new StreamResult(bytes));
+            return bytes.toString();
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
