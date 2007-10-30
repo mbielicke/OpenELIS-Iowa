@@ -36,6 +36,8 @@ public class StaticServlet extends HttpServlet {
         System.out.println("in Static "+getServletConfig().getInitParameter("hosted"));
         if(getServletConfig().getInitParameter("hosted") != null)
             hosted = true;
+        if(getServletConfig().getInitParameter("AppRoot") != null)
+            Constants.APP_ROOT = getServletConfig().getInitParameter("AppRoot");
         log.debug("getting out");
     }
     /**
