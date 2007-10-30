@@ -9,7 +9,7 @@
          user.home - User's home directory
          user.dir - User's current working directory
          java.io.tmpdir - Default temp file path -->
-    <diskStore path="/usr/local/java/tomcat/temp/inmsp-web"/>
+    <diskStore path="/usr/local/java/tomcat/temp/openelis-web"/>
 
 
     <!--Default Cache configuration. These will applied to caches programmatically created through
@@ -90,7 +90,7 @@
         disk cache, which in this configuration will go to wherever java.io.tmp is
         defined on your system. On a standard Linux system this will be /tmp"
         -->
-     <cache name="contact"
+     <cache name="screens"
         maxElementsInMemory="10000"
         eternal="false"
         timeToIdleSeconds="300"
@@ -98,35 +98,4 @@
         overflowToDisk="true"
         />
 
-     <cache name="facility"
-        maxElementsInMemory="10000"
-        eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
-        overflowToDisk="true"
-        />        
-        
-     <cache name="test"
-        maxElementsInMemory="10000"
-        eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
-        overflowToDisk="true"
-        />        
-        
-     <cache name="result"
-        maxElementsInMemory="10000"
-        eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
-        overflowToDisk="true"
-        />        
-        
-     <cache name="stylesheet"
-        maxElementsInMemory="10000"
-        eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
-        overflowToDisk="true"
-        />        
 </ehcache>

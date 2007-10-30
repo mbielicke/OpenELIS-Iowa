@@ -30,7 +30,7 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   
-<!--  <filter>
+  <!--<filter>
         <filter-name>TimeTracker XSLT Filter</filter-name>
         <filter-class>edu.uiowa.uhl.tt.server.filters.XSLTFilter</filter-class>
          <init-param>
@@ -47,7 +47,7 @@
       <filter-name>TimeTracker XSLT Filter</filter-name>
       <url-pattern>/TimeTracker</url-pattern>
     </filter-mapping>
--->    
+  -->  
   <!-- TimeTracker Servlets -->
 
   <servlet>
@@ -70,9 +70,9 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
   
-  <servlet>
-    <servlet-name>Logout</servlet-name>
-    <servlet-class>org.openelis.server.LogoutServlet</servlet-class>
+   <servlet>
+    <servlet-name>XSLTServlet</servlet-name>
+    <servlet-class>org.openelis.server.XSLTServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
   
@@ -88,9 +88,9 @@
     <url-pattern>/OpenELIS</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>Logout</servlet-name>
-    <url-pattern>/Logout</url-pattern>
+    <servlet-mapping>
+    <servlet-name>XSLTServlet</servlet-name>
+    <url-pattern>/Forms</url-pattern>
   </servlet-mapping>
     
 <session-config>
