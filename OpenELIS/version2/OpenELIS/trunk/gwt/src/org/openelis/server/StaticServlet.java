@@ -3,6 +3,8 @@ package org.openelis.server;
 import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import org.apache.log4j.*;
@@ -27,7 +29,15 @@ public class StaticServlet extends HttpServlet {
      */
     private static final long serialVersionUID = -7471211263251691905L;
     private static Logger log = Logger.getLogger(StaticServlet.class.getName());
-
+    private boolean hosted;
+    
+    public void init() throws ServletException {
+        log.debug("Initializing the Applistyleion.");
+        System.out.println("in Static "+getServletConfig().getInitParameter("hosted"));
+        if(getServletConfig().getInitParameter("hosted") != null)
+            hosted = true;
+        log.debug("getting out");
+    }
     /**
      * Process POST request.
      */
@@ -81,9 +91,15 @@ public class StaticServlet extends HttpServlet {
         }
         if(req.getParameter("locale") != null){
             req.getSession().setAttribute("locale",req.getParameter("locale"));
-            response.sendRedirect("OpenELIS.html?locale="+req.getParameter("locale"));
+            if(hosted)
+                response.sendRedirect("shell/org.openelis.OpenELIS/OpenELIS.html?locale="+req.getParameter("locale"));
+            else
+                response.sendRedirect("OpenELIS.html?locale="+req.getParameter("locale"));  
         }else{
-            response.sendRedirect("OpenELIS.html");
+            if(hosted)
+                response.sendRedirect("shell/org.openelis.OpenELIS/OpenELIS.hrml");
+            else
+                response.sendRedirect("OpenELIS.html");
             req.getSession().removeAttribute("locale");
         }
         /*
