@@ -161,6 +161,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
       map.addWidget(WidgetMap.CONTSTANT, new ScreenConstant());
       map.addWidget("OpenELISConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
+      map.addWidget("OpenELISService",OpenELISService.getAppServInstance());
 	  Screen.setWidgetMap(map);
   }
 }
