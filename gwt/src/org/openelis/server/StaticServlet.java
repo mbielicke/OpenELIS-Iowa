@@ -96,11 +96,12 @@ public class StaticServlet extends HttpServlet {
             else
                 response.sendRedirect("OpenELIS.html?locale="+req.getParameter("locale"));  
         }else{
+            req.getSession().removeAttribute("locale");
             if(hosted)
-                response.sendRedirect("shell/org.openelis.OpenELIS/OpenELIS.hrml");
+                response.sendRedirect("shell/org.openelis.OpenELIS/OpenELIS.html");
             else
                 response.sendRedirect("OpenELIS.html");
-            req.getSession().removeAttribute("locale");
+          
         }
         /*
         try {
