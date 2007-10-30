@@ -17,6 +17,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableModel;
 import org.openelis.interfaces.AbstractAction;
+import org.openelis.persistence.CachingManager;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
@@ -39,6 +40,7 @@ public class OpenELISServiceImpl extends RemoteServiceServlet implements
     private void initParameters(ServletConfig config) throws ServletException {
         log.debug("in InitParameters");
         SessionManager.init("OpenELIS"); 
+        CachingManager.init(Constants.APP_ROOT);
         if (config != null) {
             appRoot = config.getInitParameter("app.root");
             Constants.APP_ROOT = appRoot;
