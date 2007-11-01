@@ -22,7 +22,7 @@ public class OrganizationForm extends ScreenForm {
 	
 	Document xml = null;
 	public OrganizationForm() {
-        super("organization.xml");
+        super("organization");
         rpc.action = "OrganizationForm";
     }
 	

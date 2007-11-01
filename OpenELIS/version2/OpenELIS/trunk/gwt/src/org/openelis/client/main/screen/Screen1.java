@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Screen1 extends Screen {
 
 	public Screen1() {
-        super("screen1.xml");
+        super("screen1");
         rpc.action = "Screen1Form";
         getXML();
     }

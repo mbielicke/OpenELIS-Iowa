@@ -1,8 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<screen id="NoteEntry" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
+                xmlns:locale="xalan://java.util.Locale"
+                extension-element-prefixes="resource"
+                version="1.0">
+                
+  <xalan:component prefix="resource">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
+  </xalan:component>
+  
+  <xalan:component prefix="locale">
+    <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>
+
+  <xsl:template match="doc">
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
+<screen id="aToZButtons" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
-	<panel layout="vertical" spacing="1" valign="middle" xsi:type="Panel">
-					 <widget>
+		 <widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
           </widget>
           <widget>
@@ -80,6 +96,7 @@
           <widget>
             <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
           </widget>
-  </panel>
   </display>
   </screen>
+    </xsl:template>
+</xsl:stylesheet>

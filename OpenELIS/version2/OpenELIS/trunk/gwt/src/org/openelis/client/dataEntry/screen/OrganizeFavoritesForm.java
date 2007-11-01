@@ -9,7 +9,7 @@ public class OrganizeFavoritesForm extends ScreenForm {
 	
 
 	public OrganizeFavoritesForm() {
-        super("organizeFavorites.xml");
+        super("organizeFavorites");
         rpc.action = "organizeFavoritesForm";
     }
 	
