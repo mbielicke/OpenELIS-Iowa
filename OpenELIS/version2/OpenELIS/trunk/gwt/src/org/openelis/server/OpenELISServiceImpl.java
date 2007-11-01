@@ -1,208 +1,20 @@
 package org.openelis.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.log4j.Logger;
 import org.openelis.client.main.service.OpenELISServiceInt;
-import org.openelis.gwt.client.services.AppServiceInt;
-import org.openelis.gwt.client.services.ScreenServiceInt;
-import org.openelis.gwt.client.services.TableServiceInt;
-import org.openelis.gwt.common.AbstractField;
-import org.openelis.gwt.common.Filter;
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableModel;
-import org.openelis.interfaces.AbstractAction;
-import org.openelis.persistence.CachingManager;
-import org.openelis.server.constants.Constants;
+import org.openelis.gwt.server.AppServlet;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.gwt.user.server.rpc.SerializationPolicy;
+import javax.servlet.http.HttpSession;
 
-public class OpenELISServiceImpl extends RemoteServiceServlet implements
-                                                         OpenELISServiceInt,
-                                                         TableServiceInt,
-                                                         ScreenServiceInt,
-                                                         AppServiceInt {
+public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceInt {                  
 
     private static final long serialVersionUID = 839548243948328704L;
 
     private static Logger log = Logger.getLogger(OpenELISServiceImpl.class);
-
-    private String appRoot;
-
-    /*
-     * (non-Javadoc)
-     * @see com.google.gwt.user.server.rpc.RemoteServiceServlet#doGetSerializationPolicy(javax.servlet.http.HttpServletRequest, java.lang.String, java.lang.String)
-     * 
-     *  This method was overridden so that data could be returned to a CASified Hosted Browser.
-     */
-    protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL, String strongName) {
-        // TODO Auto-generated method stub
-        if(moduleBaseURL.indexOf("/shell") > -1) {
-            String temp = moduleBaseURL.substring(0, moduleBaseURL.indexOf("/shell"));
-            moduleBaseURL = temp + moduleBaseURL.substring(moduleBaseURL.indexOf("/shell")+6);
-        }
-        return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
-    }
-    
-    private void initParameters(ServletConfig config) throws ServletException {
-        log.debug("in InitParameters");
-        SessionManager.init("OpenELIS"); 
-        if (config != null) {
-            appRoot = config.getInitParameter("app.root");
-            if(appRoot != null){
-                Constants.APP_ROOT = appRoot;
-                CachingManager.init(Constants.APP_ROOT);
-            }
-        } else {
-            log.error("ServletConfig is NULL",
-                      new ServletException("ServletConfig is NULL"));
-            throw new ServletException("Servlet Config object is NULL.");
-        }
-    }
-
-    public void init() throws ServletException {
-        log.debug("Initializing the Application.");
-        initParameters(getServletConfig());
-        log.debug("getting out");
-    }
-
-    protected void onBeforeRequestDeserialized(String serializedRequest) {
-        // TODO Auto-generated method stub
-        super.onBeforeRequestDeserialized(serializedRequest);
-        HttpSession session = getThreadLocalRequest().getSession();
-        System.out.println("Elis Service Sess "+session.toString());
-        session.setAttribute("IPAddress",
-                             getThreadLocalRequest().getRemoteAddr());
-        SessionManager.setSession(session);
-        try {
-            getPermissions();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private boolean hasPermission(String module) {
-        try {
-            log.debug("set session");
-            boolean result = true;
-            Boolean access = (Boolean)getPermissions().get(module);
-            if (access != null) {
-                return access.booleanValue();
-            } else {
-                // for module that doesn't have access, it means no access is in
-                // force on
-                // this module
-                return result;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public HashMap getPermissions() throws RPCException {
-        // TODO Auto-generated method stub
-        log.debug("in  Get Permissions");
-        try {
-            HttpSession sess = SessionManager.getSession();
-            if (sess == null) {
-                sess = getThreadLocalRequest().getSession();
-                SessionManager.setSession(sess);
-            }
-            HashMap perms = null;
-            if (sess.getAttribute("permissions") != null) {
-                perms = (HashMap)sess.getAttribute("permissions");
-            } else {
-                //SecurityRemote remote = (SecurityRemote)EJBFactory.lookup("SecurityBean/remote");
-                //perms = remote.getModules("elis");
-                sess.setAttribute("permissions", perms);
-            }
-            return perms;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
-        }
-    }
-    
-    public TableModel getPage(int page, int selected) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public TableModel sort(int col, boolean down, int index, int selected) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public TableModel filter(int col, Filter[] filters, int index, int selected) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Filter[] getFilter(int col) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public TableModel getModel(TableModel model) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public TableModel saveModel(TableModel model) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public FormRPC action(FormRPC form) throws RPCException {
-        try {
-            AbstractAction action = (AbstractAction)Class.forName(Constants.TARGET_CLASS_ROOT + "."
-                                                                  + form.action
-                                                                  + ".Action")
-                                                         .newInstance();
-            SessionManager.getSession().setAttribute("action", form.action + " - "+ IForm.opNames[form.operation]);
-            if (action.hasPermission(form))
-                action.execute(form);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
-        }
-        return form;
-    }
-
-    public AbstractField query(FormRPC form) throws RPCException {
-        try {
-            AbstractAction action = (AbstractAction)Class.forName(Constants.TARGET_CLASS_ROOT + "."
-                                                                  + form.action
-                                                                  + ".Action")
-                                                         .newInstance();
-            SessionManager.getSession().setAttribute("action", form.action + " - Query");
-            if (action.hasPermission(form)){
-                return action.query(form);
-            }
-            else
-                throw new RPCException("No Permission for action " + form.action);
-        } catch (Exception e) {
-            throw new RPCException(e.getMessage());
-        }
-    }
 
 	public String getMenuList() {
         log.debug("in Tree xml");
@@ -747,24 +559,4 @@ public class OpenELISServiceImpl extends RemoteServiceServlet implements
 	public String getLanguage(){
 		return getThreadLocalRequest().getLocale().getLanguage();
 	}
-
-    public String getScreen(String name) {
-        try{
-            String loc = "en";
-            if(SessionManager.getSession().getAttribute("locale") != null)
-                loc = (String)SessionManager.getSession().getAttribute("locale");
-            Document doc = XMLUtil.createNew("doc");
-            Element root = doc.getDocumentElement();
-            Element locale = doc.createElement("locale");
-            locale.appendChild(doc.createTextNode(loc));
-            root.appendChild(locale);
-            String url = Constants.APP_ROOT+"/Forms/"+name+".xsl";
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            XMLUtil.transformXML(doc, new File(url), new StreamResult(bytes));
-            return bytes.toString();
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
