@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import org.apache.log4j.*;
 import org.openelis.interfaces.AbstractAction;
 import org.openelis.util.SessionManager;
+import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.server.constants.Constants;
 
@@ -32,12 +33,14 @@ public class StaticServlet extends HttpServlet {
     private boolean hosted;
     
     public void init() throws ServletException {
-        log.debug("Initializing the Applistyleion.");
+        log.debug("Initializing the Application.");
         System.out.println("in Static "+getServletConfig().getInitParameter("hosted"));
         if(getServletConfig().getInitParameter("hosted") != null)
             hosted = true;
         if(getServletConfig().getInitParameter("AppRoot") != null)
             Constants.APP_ROOT = getServletConfig().getInitParameter("AppRoot");
+        SessionManager.init("OpenELIS"); 
+        CachingManager.init(Constants.APP_ROOT);
         log.debug("getting out");
     }
     /**
