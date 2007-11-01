@@ -15,6 +15,7 @@
 	<entry-point class='org.openelis.client.main.OpenELIS'/>
       
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
+    <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
     <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/>

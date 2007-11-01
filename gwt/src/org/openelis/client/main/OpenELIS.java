@@ -9,7 +9,6 @@ import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
 import org.openelis.gwt.client.screen.ScreenCalendar;
 import org.openelis.gwt.client.screen.ScreenCheck;
-import org.openelis.gwt.client.screen.ScreenConstant;
 import org.openelis.gwt.client.screen.ScreenDeck;
 import org.openelis.gwt.client.screen.ScreenDragList;
 import org.openelis.gwt.client.screen.ScreenDragSelect;
@@ -159,9 +158,8 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.LEFT_MENU_PANEL, new ScreenAToZPanel());
       map.addWidget("titledPanel", new ScreenTitledPanel());
       map.addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
-      map.addWidget(WidgetMap.CONTSTANT, new ScreenConstant());
       map.addWidget("OpenELISConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
-      map.addWidget("OpenELISService",OpenELISService.getAppServInstance());
+      map.addWidget("OpenELISService",OpenELISService.getInstance());
 	  Screen.setWidgetMap(map);
   }
 }
