@@ -1,12 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
+                xmlns:locale="xalan://java.util.Locale"
+                extension-element-prefixes="resource"
+                version="1.0">
+                
+  <xalan:component prefix="resource">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
+  </xalan:component>
+  
+  <xalan:component prefix="locale">
+    <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>
+
+  <xsl:template match="doc">
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display  constants="OpenELISConstants">
+	<display>
 		<panel layout="horizontal" spacing="5" xsi:type="Panel">
 			<!--left table goes here -->
 			<!--<widget>
 				-->	
-				<aToZ height="425px" width="auto" key="organizationsTable" constant="true" title="organizations" visible="false" rows="16">
-							<headers constants="true">name</headers>
+				<aToZ height="425px" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}" visible="false" rows="16">
+							<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>150</widths>
 							<editors>
 								<label/>
@@ -16,7 +33,7 @@
 							</fields>
 							<sorts>false</sorts>
 							<filters>false</filters>
-					</aToZ>     
+					</aToZ>    
 					<!--</widget>
 			-->
 			
@@ -134,40 +151,31 @@
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
-						<panel layout="horizontal" width="600px" height="175px" xsi:type="Panel">
+					<panel layout="horizontal" width="600px" height="175px" xsi:type="Panel">
 							<panel layout="vertical" width="600px" xsi:type="Panel">
-								<!-- first vertical panel for org fields -->
-								<panel key="secMod" layout="table" style="FormBorderless" xsi:type="Table">
-									<!--<row>
-										<widget colspan="5">
-											<text style="TitlePanel">Organization Information</text>
-										</widget>
-									</row> -->
-									<row>
-										<widget>
-											<const style="Prompt">name</const>
+									<panel layout="horizontal" xsi:type="Panel" height="10px"/>
+									
+									<panel key="secMod" width="1px" layout="horizontal" style="FormBorderless" xsi:type="Panel">
+								
+										<widget halign="left">
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
 										</widget>
 										<widget>
 										<textbox case="upper" key="orgName" width="290px"/>
 										</widget>
-										</row>
-									<!--
-										
-										
-									</row> -->
-								<!--	 -->
+
 									</panel>
-									<panel layout="horizontal" xsi:type="Panel" height="15px"/>
-									<panel layout="horizontal" xsi:type="Panel" width="600px">
+									<panel layout="horizontal" xsi:type="Panel" height="10px"/>
+									<panel layout="horizontal" xsi:type="Panel" halign="center">
 									<titledPanel style="FieldSet">
 									<legend style="Legend">
 										<panel layout="horizontal" xsi:type="Panel">
 									<widget>
 											<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/house.png&quot;&gt;</html>
 										</widget>
-																			<panel layout="horizontal" xsi:type="Panel" width="2px"/>
+										<panel layout="horizontal" xsi:type="Panel" width="3px"/>
 										<widget>
-											<const>address</const>
+											<text><xsl:value-of select='resource:getString($constants,"address")'/></text>
 										</widget>		
 										</panel>		
 									</legend>
@@ -175,56 +183,52 @@
 									<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
 									<row>
 									<widget>
-											<const style="Prompt">aptSuite</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/></text>
 										</widget>
 										
 										<widget>
-											<textbox case="mixed" key="streetAddress" width="212px"/>
-										</widget>
-										<panel layout="horizontal" width="25px" xsi:type="Panel"/>
-										
+											<textbox case="upper" key="streetAddress" width="212px"/>
+										</widget>								
 									</row>
 									<row>
 										<widget>
-											<const style="Prompt">street</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/></text>
 										</widget>
 										<widget>
-											<textbox case="mixed" key="multUnit" width="212px"/>
-										</widget>
-										<panel layout="horizontal" width="25px" xsi:type="Panel"/>
-										
+											<textbox case="upper" key="multUnit" width="212px"/>
+										</widget>										
 									</row>
 									<row>
 										<widget>
-											<const style="Prompt">city</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/></text>
 										</widget>
 										<widget>
-											<textbox case="mixed" key="city" width="212px"/>
+											<textbox case="upper" key="city" width="212px"/>
 										</widget>
 									</row>
 									<row>
 									<widget>
-										<const style="Prompt">state</const>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/></text>
 												</widget>
-										<panel layout="horizontal" xsi:type="Panel" colspan="2">
+										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
 												
 												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
 												<widget>
 													<option key="state"/>
 												</widget>
-									<panel layout="horizontal" width="17px" xsi:type="Panel"/>
+									<panel layout="horizontal" width="48px" xsi:type="Panel"/>
 											<widget>
-													<const style="Prompt">zipcode</const>
+													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/></text>
 												</widget>
 												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
 												<widget>
-													<textbox key="zipCode" width="60"/>
+													<maskedbox key="zipCode" width="60" mask="99999-9999"/>
 												</widget>
 									</panel>
 									</row>
 									<row>
 									<widget>
-											<const style="Prompt">country</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/></text>
 										</widget>
 										<widget>
 											<option key="country"/>
@@ -233,7 +237,7 @@
 									</panel>
 									</content>
 									</titledPanel>
-									
+								<panel layout="horizontal" width="20px" xsi:type="Panel"/>
 									<titledPanel style="FieldSet">
 									<legend>
 									<panel layout="horizontal" xsi:type="Panel">
@@ -242,7 +246,7 @@
 										</widget>
 										<panel layout="horizontal" xsi:type="Panel" width="2px"/>
 										<widget>
-											<const>phoneEmail</const>
+											<text><xsl:value-of select='resource:getString($constants,"phoneEmail")'/></text>
 										</widget>		
 										</panel>		
 									</legend>
@@ -250,15 +254,15 @@
 							<panel key="secMod" layout="table" style="FormBorderless" width="200px" xsi:type="Table">
 									<row>
 									<widget>
-											<const style="Prompt">workNumber</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"workNumber")'/></text>
 										</widget>
 										<widget>
-											<textbox key="workPhone" width="125px"/>
+											<maskedbox key="workPhone" mask="999-999-999-9999.9999" width="125px"/>
 										</widget>
 									</row>
 									<row>
 									<widget>
-											<const style="Prompt">cellNumber</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"cellNumber")'/></text>
 										</widget>
 										<widget>
 											<textbox key="cellPhone" width="90px"/>
@@ -266,7 +270,7 @@
 									</row>
 									<row>
 									<widget>
-											<const style="Prompt">faxNumber</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"faxNumber")'/></text>
 										</widget>
 										<widget>
 											<textbox key="faxPhone" width="90px"/>
@@ -274,33 +278,24 @@
 									</row>
 									<row>
 										<widget>
-											<const style="Prompt">email</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"email")'/></text>
 										</widget>
 										<widget>
-											<textbox key="email"/>
+											<textbox case="mixed" key="email"/>
 										</widget>
 									</row>
 								</panel>
 								</content>
 								</titledPanel>
 								</panel>
-								<panel layout="horizontal" xsi:type="Panel" height="15px"/>
-								<panel key="secMod" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
-								<row>
+								<panel layout="horizontal" xsi:type="Panel" height="10px"/>
+								<panel layout="horizontal" style="FormBorderless" width="100%" xsi:type="Panel">
+								<panel key="secMod" layout="horizontal" halign="left" width="1px" xsi:type="Panel" padding="0" spacing="0">
 										<widget>
-											<const style="Prompt">active</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/></text>
 										</widget>
 										<widget>
-											<check key="isActive"/>
-										</widget>
-										
-									</row>
-								<row>
-										<widget>
-											<const style="Prompt">parentOrganization</const>
-										</widget>
-										<widget>
-											<textbox case="mixed" key="parentOrg" width="225px"/>
+											<textbox case="upper" key="parentOrg" width="225px"/>
 										
 										</widget>
 										<panel layout="horizontal" width="25px" xsi:type="Panel">
@@ -308,49 +303,38 @@
 											<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/lookupButtonIcon.png&quot;&gt;</html>
 										</widget>
 										</panel>
-									</row>
+									</panel>
+								<panel key="secMod" layout="horizontal" halign="right" style="FormBorderless" width="1px" xsi:type="Panel" padding="0" spacing="0">
+										<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/></text>
+										</widget>
+										<widget>
+											<check key="isActive"/>
+										</widget>
 								</panel>
+								</panel>
+								<panel layout="vertical" height="10px" xsi:type="Panel" />
 							</panel>
 							
-						<!--	<panel layout="vertical" width="15px" xsi:type="Panel"/>
-							<panel layout="vertical" width="225px" xsi:type="Panel">
-							<panel layout="horizontal" height="30px" xsi:type="Panel"/>
-								<panel key="secMod" layout="table" style="Form" width="225px" xsi:type="Table">
-										<row>
-										
-									</row>
-									
-									<row>
-										
-									</row>
-									<row>
-										
-									</row>
-									<row>
-										
-									</row>
-									<row>
-										
-									</row>
-									<row>
-										
-									</row>
-									
-								</panel>
-							</panel> -->
-							</panel> 
-					</deck>
+					
+							</panel>
+					</deck> 
 				</panel>
 				<!-- tabbed panel needs to go here -->
 				<panel height="200px" key="tab333" halign="center" layout="tab" width="600px" xsi:type="Tab">
 					<!-- TAB 1 -->
-					<tab key="tab1" constant="true" text="contact">
+					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="5" xsi:type="Panel">
 							<!--<panel layout="vertical" width="590px" xsi:type="Panel"> -->
 							<!-- <panel key="scrollablePanel" layout="horizontal" width="600px" height="175px" xsi:type="Panel"> -->
 							<widget halign="center">
-								<table width="575px" height="135px" key="contactsTable" constant="true" rows="10" title="contactsForThisOrganization">
-										<headers constants="true">contactName,aptSuite,address,city,state,zipcode,workNumber,homeNumber,cellNumber,faxNumber,email,country</headers>
+								<table width="575px" height="135px" key="contactsTable" rows="10" title="">
+										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
+										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
+										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>215,215,215,215,25,65,110,90,90,90,430,145</widths>
 										<editors>
 											<textbox case="mixed"/>
@@ -394,7 +378,7 @@
 							<!--	</panel> -->
 								<!--</panel>		 -->
 								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
-								<button halign="center" key="removeContactButton" style="ScreenButtonPanel" constant="true" text="removeContact" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; "/>
+								<button halign="center" key="removeContactButton" style="ScreenButtonPanel" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeContact')}"/>
 							<!--	<panel layout="horizontal" xsi:type="Panel" height="20px"/>
 								<panel layout="horizontal" xsi:type="Panel" halign="left">
 								<panel layout="horizontal" xsi:type="Panel" width="180px">
@@ -431,45 +415,72 @@
 						<!-- END TAB 1 -->
 					</tab>			
 					<!-- start TAB 2 -->
-					<tab key="noteTab" constant="true" text="note">
+					<tab key="noteTab" text="{resource:getString($constants,'note')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="200px" spacing="0" padding="0" xsi:type="Panel">
-						<widget halign="right" valign="top">
-							<button html="&lt;img src=&quot;Images/addButtonIcon.png&quot;&gt; " key="addButton" style="ScreenButtonPanel" constant="true" text="addNewNote"/>
-						</widget>
-						<!--	<panel key="noteFormPanel" layout="table" style="Form" width="160px" xsi:type="Table" visible="false">
+						<titledPanel style="FieldSet">
+									<legend style="Legend">
+										<panel layout="horizontal" xsi:type="Panel">
+										<widget>
+											<text><xsl:value-of select='resource:getString($constants,"newNote")'/></text>
+										</widget>		
+										</panel>		
+									</legend>
+									<content>
+							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
-												<const style="Prompt">subject</const>
+												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="400px"/>
+										<textbox case="mixed" key="usersSubject" width="510px"/>
 										</widget>
 										</row>
 										<row>
 										<widget>
-											<const style="Prompt">note</const>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget>
-										<textarea width="400px" height="25px" case="mixed" key="usersNote"/>
+										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
 										</widget>
 										</row>
-								</panel> -->
+								</panel> 
+							</content>
+							</titledPanel>
+							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
+							 <panel layout="horizontal" xsi:type="Panel" width="100%" height="115px" overflow="auto" spacing="0" padding="0">
 							 <widget valign="top">
 								<tree height="100%" key="noteTree">
-									<label text="Sept 12, 2007 3:26 PM / This organization doesn't work well with others" value="1">
-										<label text="Author: tbrady" value="1"/>
-										<label text="I called this company on sept 11 and they wouldn't work with us.  This will not work in the future." value="1"/>
+									<label wordwrap="true" text="2007-09-23 15:26 / This organization doesn't work well with others" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="I called this company on sept 11 and they wouldn't work with us.  This will not work in the future. really long string really long string realy long string" value="1"/>
 									</label>
-									<label text="Sept 18, 2007 8:25 AM / Problem resolved" value="1">
-										<label text="Author: tbrady" value="1"/>
-										<label text="There were no problems when I called today." value="1"/>
+									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
 									</label>
-									<label text="Sept 20, 2007 11:12 AM / New Contact" value="1">
-										<label text="Author: tbrady" value="1"/>
-										<label text="Our old contact has quit the company.  We have added a new contact to this organization." value="1"/>
+									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="There were no problems when I called today.really long string really long string realy long stringreally long string really long string realy long stringreally long string really long string realy long stringreally long string really long string realy long string" value="1"/>
+									</label>
+									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
+									</label>
+									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
+									</label>
+									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
+									</label>
+									<label wordwrap="true" text="2007-09-10 11:47 / New Contact" value="1">
+										<label wordwrap="true" text="Author: tbrady" value="1"/>
+										<label wordwrap="true" text="Our old contact has quit the company.  We have added a new contact to this organization." value="1"/>
 									</label>
 								</tree>
 							</widget>   
+							</panel>	
 						</panel>
 					</tab>
 					<!-- end TAB 2 -->
@@ -508,3 +519,5 @@
 		</option>
 	</rpc>
 </screen>
+  </xsl:template>
+</xsl:stylesheet>

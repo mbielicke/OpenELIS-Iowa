@@ -28,7 +28,7 @@ public class OpenELIS extends Screen implements PopupListener {
 	private boolean insideParentMenuPanel = false;
 	private OpenELISConstants openElisConstants = null;
 	public OpenELIS() {
-        super("OpenELIS.xml");
+        super("OpenELIS");
         rpc.action = "OpenELIS";
         getXML();
 	}

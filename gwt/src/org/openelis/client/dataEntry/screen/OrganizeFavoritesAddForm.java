@@ -20,7 +20,7 @@ public class OrganizeFavoritesAddForm extends ScreenForm {
 	private Label newMessage;
 	//private Label message;
 	public OrganizeFavoritesAddForm() {
-        super("organizeFavoritesAdd.xml");
+        super("organizeFavoritesAdd");
         rpc.action = "OrganizeFavoritesAddForm";
         getXML();
     }

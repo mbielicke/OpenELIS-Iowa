@@ -156,5 +156,5 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String contact();
     String note();
     String subject();
-    String addNewNote();
+    String newNote();
 }
