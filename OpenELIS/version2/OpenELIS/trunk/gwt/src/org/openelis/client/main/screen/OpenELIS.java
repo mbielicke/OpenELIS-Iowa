@@ -2,9 +2,12 @@ package org.openelis.client.main.screen;
 
 import org.openelis.client.dataEntry.screen.OrganizationForm;
 import org.openelis.client.dataEntry.screen.OrganizeFavoritesForm;
+import org.openelis.client.main.OpenELISScreenInt;
+import org.openelis.client.main.OpenELISScreenIntAsync;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.client.utilities.screen.TestScreen;
+import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenLabel;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
@@ -12,10 +15,15 @@ import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
 import org.openelis.gwt.client.screen.ScreenVertical;
 import org.openelis.gwt.client.screen.ScreenWidget;
+import org.openelis.gwt.client.services.ScreenServiceInt;
+import org.openelis.gwt.client.services.ScreenServiceIntAsync;
 import org.openelis.gwt.client.widget.WindowBrowser;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -23,25 +31,24 @@ import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OpenELIS extends Screen implements PopupListener {
+public class OpenELIS extends AppScreen implements PopupListener {
 	
 	private boolean insideParentMenuPanel = false;
 	private OpenELISConstants openElisConstants = null;
-	public OpenELIS() {
-        super("OpenELIS");
-        rpc.action = "OpenELIS";
+	private ConstantsWithLookup constants = (ConstantsWithLookup) Screen.getWidgetMap().get("OpenELISConstants");
+	private static OpenELISScreenIntAsync screenService = (OpenELISScreenIntAsync)GWT.create(OpenELISScreenInt.class);
+    private static ServiceDefTarget target = (ServiceDefTarget)screenService;
+    
+	public OpenELIS() {	    
+        super();
+        String base = GWT.getModuleBaseURL();
+        base += "OpenELISScreen";
+        target.setServiceEntryPoint(base);
+        service = screenService;
         getXML();
-	}
-	
-	public OpenELIS(String xml) {
-        super(xml+".xml");
-        rpc.action = xml;
-        getXML();
-	}
-	
-    public void afterSubmit(String method, boolean Success) {
+    }
 
-        if (method.equals("draw")) {
+   public void afterDraw(boolean Success) {
         	//set the constants so we can use it later
             setOpenElisConstants((OpenELISConstants) constants);
             
@@ -81,7 +88,6 @@ public class OpenELIS extends Screen implements PopupListener {
                     Window.alert(caught.getMessage());
                 }
             });*/
-        }
     }
 
     public void onClick(Widget item) {
