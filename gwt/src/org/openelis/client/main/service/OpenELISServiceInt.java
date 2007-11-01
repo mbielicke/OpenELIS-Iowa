@@ -1,10 +1,8 @@
 package org.openelis.client.main.service;
 
-import com.google.gwt.user.client.rpc.RemoteService;
+import org.openelis.gwt.client.services.AppServiceInt;
 
-public interface OpenELISServiceInt extends RemoteService {
-
-	public void logout();
+public interface OpenELISServiceInt extends AppServiceInt {
 	
 	public String getMenuList(); 
 }

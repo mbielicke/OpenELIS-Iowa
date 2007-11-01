@@ -2,9 +2,9 @@ package org.openelis.client.main.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface OpenELISServiceIntAsync {
+import org.openelis.gwt.client.services.AppServiceIntAsync;
 
-	public void logout(AsyncCallback callback);
+public interface OpenELISServiceIntAsync extends AppServiceIntAsync {
 	
 	public void getMenuList(AsyncCallback callback);
 }
