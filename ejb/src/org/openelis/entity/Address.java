@@ -15,11 +15,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.util.Auditable;
 
 @Entity
 @Table(name="address")
@@ -27,7 +28,7 @@ import org.openelis.interfaces.Auditable;
 public class Address implements Auditable, Cloneable {
   
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name="id")
   private Integer id;             
 
