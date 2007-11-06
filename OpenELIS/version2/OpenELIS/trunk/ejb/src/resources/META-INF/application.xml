@@ -1,0 +1,11 @@
+<application>
+  <module>
+     <ejb>openelis.jar</ejb>
+  </module>
+  <module>
+     <ejb>openelis-common.jar</ejb>
+  </module>
+  <module>
+     <java>openelis-lib.jar</java>
+  </module>
+</application>

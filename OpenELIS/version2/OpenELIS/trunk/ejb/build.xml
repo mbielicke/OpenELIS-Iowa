@@ -8,21 +8,35 @@
 
   <property environment="env"/>
   <property name="src.resources" value="${basedir}/src/resources"/>
-
+ 
   <target name="ejbjar">
     <jar jarfile="build/openelis.jar">
-      <fileset dir="bin">
-      	  <include name="org/openelis/domain/*.class"/>
-      	  <include name="org/openelis/remote/*.class"/>
-  	      <include name="org/openelis/bean/*.class"/>
-      	  <include name="org/openelis/entity/*.class"/>
-      	  <include name="org/openelis/local/*.class"/>
-      	  <include name="org/openelis/util/*.class"/>
-      </fileset>
-      <fileset dir="${src.resources}/">
-      	  <include name="*.properties"/>
-      </fileset>
-     </jar>
+        <fileset dir="bin">
+      	    <include name="org/openelis/domain/*.class"/>
+      	    <include name="org/openelis/remote/*.class"/>
+  	        <include name="org/openelis/bean/*.class"/>
+      	    <include name="org/openelis/entity/*.class"/>
+      	    <include name="org/openelis/local/*.class"/>
+      	    <include name="org/openelis/utils/*.class"/>
+        </fileset>
+        <fileset dir="${src.resources}/">
+          	<include name="META-INF/persistence.xml"/>
+         </fileset>
+    </jar>
+    <jar jarfile="build/openelis.ear"> 
+        <fileset dir="${src.resources}/">
+            <include name="META-INF/application.xml"/>
+        </fileset>
+    	<fileset dir="build">
+    		<include name="openelis.jar"/>
+        </fileset>
+        <fileset dir="../common-svn">
+        	  <include name="openelis-common.jar"/>
+        </fileset>
+        <fileset dir="../lib-svn">
+        	  <include name="openelis-lib.jar"/>
+        </fileset>
+    </jar>
   </target>
 
 </project>
