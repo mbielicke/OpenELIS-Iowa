@@ -97,5 +97,39 @@
         timeToLiveSeconds="600"
         overflowToDisk="true"
         />
+        
+     <cache name="ipLockout"
+       maxElementsInMemory="100"
+       eternal="false"
+       timeToIdleSeconds="60"
+       timeToLiveSeconds="60"
+       overflowToDisk="flase"
+      />
+      
+      <cache name="usernameLockout"
+       maxElementsInMemory="100"
+       eternal="false"
+       timeToIdleSeconds="60"
+       timeToLiveSeconds="60"
+       overflowToDisk="false"
+      />
+      
+      <cache name="usernameAttempts"
+       maxElementsInMemory="100"
+       eternal="false"
+       timeToIdleSeconds="60"
+       timeToLiveSeconds="60"
+       overflowToDisk="false"
+      />
+      
+      <cache name="ipAttempts"
+       maxElementsInMemory="100"
+       eternal="false"
+       timeToIdleSeconds="60"
+       timeToLiveSeconds="60"
+       overflowToDisk="false"
+      />
+      
+      
 
 </ehcache>
