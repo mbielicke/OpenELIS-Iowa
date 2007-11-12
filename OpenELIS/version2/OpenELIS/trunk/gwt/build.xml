@@ -28,6 +28,12 @@ Builds the a servlet warfile.
 	  
 
 	   <target name="openelis-web" depends="init">
+	   	  <jar jarfile="build/elissecurity.jar">
+	   	    <fileset dir="../SecurityJBoss/bin">
+	   	  	   <include name="edu/uiowa/uhl/security/domain/*.class"/>
+	   	       <include name="edu/uiowa/uhl/security/remote/*.class"/>
+	   	    </fileset>
+	   	  </jar>
 	   	  <delete file="${build.dir}/openelis.war" />
 	      <war destfile="${build.dir}/openelis.war"
 	           webxml="${meta.dir}/openelis-web.xml">
@@ -45,6 +51,10 @@ Builds the a servlet warfile.
 	      	  	       includes="gwt-servlet.jar"/>
 	      	  <lib dir="../lib-svn"
 	      	           includes="openelis-lib.jar"/>
+	      	  <lib dir="../common-svn"
+	      	           includes="openelis-common.jar"/>
+	      	  <lib dir="build"
+	      	           includes="elissecurity.jar"/>
 	      </war>
 	   </target>
 
