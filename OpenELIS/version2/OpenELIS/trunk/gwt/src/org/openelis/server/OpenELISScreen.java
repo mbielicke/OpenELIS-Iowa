@@ -1,6 +1,6 @@
 package org.openelis.server;
 
-import org.openelis.client.main.OpenELISScreenInt;
+import org.openelis.client.main.screen.openelis.OpenELISScreenInt;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
