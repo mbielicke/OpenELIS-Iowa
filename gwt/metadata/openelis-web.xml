@@ -31,10 +31,39 @@
     <servlet-class>org.openelis.server.OpenELISServiceImpl</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
+  
+  <servlet>
+    <servlet-name>OpenELISScreen</servlet-name>
+    <servlet-class>org.openelis.server.OpenELISScreen</servlet-class>
+  </servlet>
+  
+    <servlet>
+    <servlet-name>OrganizationScreen</servlet-name>
+    <servlet-class>org.openelis.server.OrganizationScreen</servlet-class>
+  </servlet>
+    
+  <servlet>
+    <servlet-name>OrganizeFavoritesScreen</servlet-name>
+    <servlet-class>org.openelis.server.OrganizeFavoritesScreen</servlet-class>
+  </servlet>
 
   <!-- inmsp Servlet Mappings-->
     
-
+<servlet-mapping>
+    <servlet-name>OpenELISScreen</servlet-name>
+    <url-pattern>/OpenELISScreen</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>OrganizationScreen</servlet-name>
+    <url-pattern>/OrganizationScreen</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>OrganizeFavoritesScreen</servlet-name>
+    <url-pattern>/OrganizeFavoritesScreen</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>OpenELISService</servlet-name>
     <url-pattern>/OpenELISService</url-pattern>
