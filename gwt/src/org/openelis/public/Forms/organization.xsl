@@ -18,13 +18,195 @@
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="horizontal" spacing="5" xsi:type="Panel">
+		<panel layout="horizontal" spacing="0" xsi:type="Panel">
 			<!--left table goes here -->
 			<!--<widget>
 				-->	
-				<aToZ height="425px" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}" visible="false" rows="16">
+				<aToZ height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				<!-- letter buttons for the left panel.  If you want to add another langauge just add another if block -->
+				<buttonPanel>
+				<xsl:if test="string($language)='en'">
+			<panel layout="vertical" xsi:type="Panel" spacing="1">
+				<widget>
+            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
+          </widget>
+          </panel>
+		</xsl:if>
+		<xsl:if test="string($language)='cn'">
+		<!-- no panel for chinese characters.  Not sure if this is possible for chinese. -->
+		</xsl:if>	
+		<xsl:if test="string($language)='fa'">
+		<!-- no panel for farsi characters.  Not sure if this is possible for farsi. -->
+		</xsl:if>
+		<xsl:if test="string($language)='sp'">
+			<panel layout="vertical" xsi:type="Panel">
+			<widget>
+            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+          </widget>
+           <widget>
+            <html key="ch" onclick="this">&lt;a class='navIndex'&gt;CH&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="ll" onclick="this">&lt;a class='navIndex'&gt;LL&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="ñ" onclick="this">&lt;a class='navIndex'&gt;Ñ&lt;/a&gt;</html>
+          </widget>          
+          <widget>
+            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
+          </widget>
+          </panel>
+		</xsl:if>
+			</buttonPanel>
 							<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
-							<widths>150</widths>
+							<widths>175</widths>
 							<editors>
 								<label/>
 							</editors>
@@ -104,7 +286,7 @@
           </widget>
           <widget>
             <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-          </widget>
+          </widget>OrganizationContactsTable
           <widget>
             <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
           </widget>
@@ -147,7 +329,7 @@
 		</panel>-->
 			<panel layout="vertical" spacing="2" width="600px" xsi:type="Panel">
 				<widget halign="center">
-					<buttonPanel buttons="qacub" key="buttons"/>
+					<buttonPanel buttons="qacubnp" key="buttons"/>
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
@@ -187,7 +369,7 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="streetAddress" width="212px"/>
+											<textbox case="upper" key="multUnit" width="212px"/>
 										</widget>								
 									</row>
 									<row>
@@ -195,7 +377,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/></text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="multUnit" width="212px"/>
+											<textbox case="upper" key="streetAddress" width="212px"/>
 										</widget>										
 									</row>
 									<row>
@@ -328,7 +510,7 @@
 							<!--<panel layout="vertical" width="590px" xsi:type="Panel"> -->
 							<!-- <panel key="scrollablePanel" layout="horizontal" width="600px" height="175px" xsi:type="Panel"> -->
 							<widget halign="center">
-								<table width="575px" height="135px" key="contactsTable" rows="10" title="">
+								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" rows="10" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -449,7 +631,9 @@
 							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
 							 <panel layout="horizontal" xsi:type="Panel" width="100%" height="115px" overflow="auto" spacing="0" padding="0">
 							 <widget valign="top">
-								<tree height="100%" key="noteTree">
+							 	<pagedTree height="100%" itemsPerPage="1000"/>
+							
+								<!--<tree height="100%" key="noteTree">
 									<label wordwrap="true" text="2007-09-23 15:26 / This organization doesn't work well with others" value="1">
 										<label wordwrap="true" text="Author: tbrady" value="1"/>
 										<label wordwrap="true" text="I called this company on sept 11 and they wouldn't work with us.  This will not work in the future. really long string really long string realy long string" value="1"/>
@@ -478,8 +662,8 @@
 										<label wordwrap="true" text="Author: tbrady" value="1"/>
 										<label wordwrap="true" text="Our old contact has quit the company.  We have added a new contact to this organization." value="1"/>
 									</label>
-								</tree>
-							</widget>   
+								</tree> -->
+							</widget>    
 							</panel>	
 						</panel>
 					</tab>
@@ -489,7 +673,21 @@
 		</panel>
 	</display>
 	<rpc>
-	<number key="id" required="false" type="integer"/>
+  <string key="orgName" max="40" required="true"/>
+  <string key="streetAddress" max="30" required="true"/>
+  <string key="multUnit" max="30" required="true"/>
+  <string key="city" max="30" required="true"/>
+  <string key="zipCode" max="10" required="true"/>
+  <string key="workPhone" max="21" required="false"/>
+  <string key="cellPhone" max="16" required="false"/>
+  <string key="faxPhone" max="16" required="false"/>
+  <string key="email" max="80" required="false"/>
+  <string key="action" max="20" required="false"/>
+  <number key="parentOrg" type="integer" required="false"/>
+  <check key="isActive" required="false"/>
+  <table key="contactsTable"/>
+  <tree key="noteTree"/>
+  <number key="id" required="false" type="integer"/>
 		<option key="addType" multi="false" required="false">
 			<item value="1">Home</item>
 			<item value="2">Business</item>
@@ -499,8 +697,9 @@
 			<item value="2">Business</item>
 		</option>
 		<option key="state" multi="false" required="false">
-			<item value="1">AL</item>
-			<item value="2">AR</item>
+			<item value="AL">AL</item>
+			<item value="AR">AR</item>
+			<item value="IA">IA</item>
 		</option>
 		<option key="contactState" multi="false" required="false">
 			<item value="1">AL</item>
