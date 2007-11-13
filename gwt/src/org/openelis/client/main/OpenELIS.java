@@ -1,5 +1,7 @@
 package org.openelis.client.main;
 
+import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTable;
+import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.Screen;
@@ -24,6 +26,7 @@ import org.openelis.gwt.client.screen.ScreenMenuLabel;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
 import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
 import org.openelis.gwt.client.screen.ScreenOption;
+import org.openelis.gwt.client.screen.ScreenPagedTree;
 import org.openelis.gwt.client.screen.ScreenRadio;
 import org.openelis.gwt.client.screen.ScreenStack;
 import org.openelis.gwt.client.screen.ScreenTab;
@@ -51,6 +54,7 @@ import org.openelis.gwt.common.CheckField;
 import org.openelis.gwt.common.DateField;
 import org.openelis.gwt.common.NumberField;
 import org.openelis.gwt.common.OptionField;
+import org.openelis.gwt.common.PagedTreeField;
 import org.openelis.gwt.common.QueryCheckField;
 import org.openelis.gwt.common.QueryDateField;
 import org.openelis.gwt.common.QueryNumberField;
@@ -94,8 +98,8 @@ public class OpenELIS implements EntryPoint {
                 
         }
     });
-    Window.enableScrolling(true);
-	RootPanel.get("main").add(new org.openelis.client.main.screen.OpenELIS());
+    Window.enableScrolling(false);
+	RootPanel.get("main").add(new org.openelis.client.main.screen.openelis.OpenELIS());
   }
   
   private void setWidgetMap() {
@@ -142,6 +146,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.RPC_OPTION, new OptionField());
       map.addWidget(WidgetMap.RPC_STRING, new StringField());
       map.addWidget(WidgetMap.RPC_TABLE, new TableField());
+      map.addWidget(WidgetMap.RPC_PAGED_TREE, new PagedTreeField());
       map.addWidget(WidgetMap.RPC_QUERY_CHECK, new QueryCheckField());
       map.addWidget(WidgetMap.RPC_QUERY_DATE, new QueryDateField());
       map.addWidget(WidgetMap.RPC_QUERY_NUMBER, new QueryNumberField());
@@ -158,8 +163,12 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.LEFT_MENU_PANEL, new ScreenAToZPanel());
       map.addWidget("titledPanel", new ScreenTitledPanel());
       map.addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
-      map.addWidget("OpenELISConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
+      map.addWidget("AppConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
       map.addWidget("OpenELISService",OpenELISService.getInstance());
+      map.addWidget("OrganizationNameTable", new OrganizationNameTable());
+      map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
+      map.addWidget("pagedTree", new ScreenPagedTree());
+      
 	  Screen.setWidgetMap(map);
   }
 }
