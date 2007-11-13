@@ -4,9 +4,9 @@ import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTab
 import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
-import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
+import org.openelis.gwt.client.screen.ScreenBase;
 import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
 import org.openelis.gwt.client.screen.ScreenCalendar;
@@ -169,6 +169,6 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
       map.addWidget("pagedTree", new ScreenPagedTree());
       
-	  Screen.setWidgetMap(map);
+	  ScreenBase.setWidgetMap(map);
   }
 }
