@@ -40,7 +40,9 @@ public class OrganizationContact implements Auditable, Cloneable {
   @Column(name="name")
   private String name;             
 
-
+  @Column(name="address")
+  private Integer address; 
+  
   @Transient
   private OrganizationContact original;
 
@@ -124,5 +126,11 @@ public class OrganizationContact implements Auditable, Cloneable {
   public String getTableName() {
     return "organization_contact";
   }
+public Integer getAddress() {
+	return address;
+}
+public void setAddress(Integer address) {
+	this.address = address;
+}
   
 }   
