@@ -1,10 +1,7 @@
-package org.openelis.client.main.screen;
+package org.openelis.client.main.screen.openelis;
 
-import org.openelis.client.dataEntry.screen.OrganizationForm;
-import org.openelis.client.dataEntry.screen.OrganizeFavoritesForm;
-import org.openelis.client.main.OpenELISScreenInt;
-import org.openelis.client.main.OpenELISScreenIntAsync;
-import org.openelis.client.main.constants.OpenELISConstants;
+import org.openelis.client.dataEntry.screen.organization.Organization;
+import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.client.utilities.screen.TestScreen;
 import org.openelis.gwt.client.screen.AppScreen;
@@ -15,8 +12,6 @@ import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
 import org.openelis.gwt.client.screen.ScreenVertical;
 import org.openelis.gwt.client.screen.ScreenWidget;
-import org.openelis.gwt.client.services.ScreenServiceInt;
-import org.openelis.gwt.client.services.ScreenServiceIntAsync;
 import org.openelis.gwt.client.widget.WindowBrowser;
 
 import com.google.gwt.core.client.GWT;
@@ -33,9 +28,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class OpenELIS extends AppScreen implements PopupListener {
 	
-	private boolean insideParentMenuPanel = false;
-	private OpenELISConstants openElisConstants = null;
-	private ConstantsWithLookup constants = (ConstantsWithLookup) Screen.getWidgetMap().get("OpenELISConstants");
+	//private OpenELISConstants openElisConstants = null;
+	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) Screen.getWidgetMap().get("AppConstants");
 	private static OpenELISScreenIntAsync screenService = (OpenELISScreenIntAsync)GWT.create(OpenELISScreenInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
@@ -50,7 +44,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
 
    public void afterDraw(boolean Success) {
         	//set the constants so we can use it later
-            setOpenElisConstants((OpenELISConstants) constants);
+           // setOpenElisConstants((OpenELISConstants) constants);
             
         	WindowBrowser browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
@@ -69,6 +63,31 @@ public class OpenELIS extends AppScreen implements PopupListener {
                     Window.alert(caught.getMessage());
                 }
             });
+            
+            //try and disable a menu element
+            FlexTable sampleManagementTable = (FlexTable) getWidget("sampleManagementPanelTable");
+            Label projectLabel = (Label) getWidget("projectLabel");
+            Label sampleLookupLabel = (Label) getWidget("sampleLookupLabel");
+            Label copyLabel = (Label) getWidget("copyLabel");
+            FlexTable editTable = (FlexTable) getWidget("editPanelTable");
+            
+            //disable first row in sample management menu
+            sampleManagementTable.getRowFormatter().addStyleName(0,"disabled");
+            sampleManagementTable.getCellFormatter().removeStyleName(0,0,"topMenuPanelIconPanel");
+            sampleManagementTable.getCellFormatter().addStyleName(0,0,"topMenuPanelIconPanelDisabled");
+            projectLabel.addStyleName("disabled");
+            
+//          disable third row in sample management menu
+            sampleManagementTable.getRowFormatter().addStyleName(2,"disabled");
+            sampleManagementTable.getCellFormatter().removeStyleName(2,0,"topMenuPanelIconPanel");
+            sampleManagementTable.getCellFormatter().addStyleName(2,0,"topMenuPanelIconPanelDisabled");
+            sampleLookupLabel.addStyleName("disabled");
+            
+//          disable second row in edit menu
+            editTable.getRowFormatter().addStyleName(1,"disabled");
+            editTable.getCellFormatter().removeStyleName(1,0,"topMenuPanelIconPanel");
+            editTable.getCellFormatter().addStyleName(1,0,"topMenuPanelIconPanelDisabled");
+            copyLabel.addStyleName("disabled");
             
             //set the view top menu checkbox to checked
             CheckBox check = (CheckBox) getWidget("showLeftMenu");
@@ -410,7 +429,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	closeTopMenuPanel(pn,(Label) getWidget("dataEntry"),(ScreenLabel) widgets.get("organizationLabel"));
         	
         	//we need to do the organization action        	openElisConstants.loadingMessage()
-        	browser.addScreen(new OrganizationForm(), openElisConstants.organization(), "Organization", null);
+        	browser.addScreen(new Organization(), openElisConstants.getString("organization"), "Organization", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("patientIcon")) || (item == widgets.get("patientLabel")) || (item == widgets.get("patientDescription")) || 
         		(item == widgets.get("favTopPatient")) || (item == widgets.get("favLeftPatient"))){
 //        	if the data entry is open we need to close it
@@ -511,7 +530,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("favorites"),(ScreenLabel) widgets.get("organizeFavoritesLabel"));
         	//we need to do the system variable action
-        	browser.addScreen(new OrganizeFavoritesForm(), "Organize Favorites", openElisConstants.organizeFavorites(),openElisConstants.loadingMessage());
+        	browser.addScreen(new OrganizeFavorites(), "Organize Favorites", openElisConstants.getString("organizeFavorites"),openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("closeCurrentWindowLabel")) || 
         		(item == widgets.get("favTopCloseCurrentWindow")) || (item == widgets.get("favLeftCloseCurrentWindow"))){
 //        	if the window is open we need to close it
@@ -543,13 +562,16 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	if(check.isChecked()){
         		//unhide the left menu
         		vp.setVisible(true);
+        		browser.setBrowserHeight();
+        		
         	}else{
         		//hide the left menu
         		vp.setVisible(false);
+        		browser.setBrowserHeight();
         	}
         	
         }else if(item == widgets.get("testScreen")){
-        	browser.addScreen(new TestScreen(), "Test Form", "TestScreen", openElisConstants.loadingMessage());
+        	browser.addScreen(new TestScreen(), "Test Form", "TestScreen", openElisConstants.getString("loadingMessage"));
         }else{
         	System.out.println(widgets.get("help").toString()+" == "+item.toString());
         }
@@ -679,8 +701,4 @@ public class OpenELIS extends AppScreen implements PopupListener {
     		table.getCellFormatter().addStyleName(i,col, style);
     	}
     }
-   
-    private void setOpenElisConstants(OpenELISConstants constants){
-		this.openElisConstants = constants;
-	}
 }
