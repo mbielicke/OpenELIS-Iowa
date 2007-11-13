@@ -3,9 +3,7 @@ package org.openelis.client.main.screen.openelis;
 import org.openelis.client.dataEntry.screen.organization.Organization;
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
-import org.openelis.client.utilities.screen.TestScreen;
 import org.openelis.gwt.client.screen.AppScreen;
-import org.openelis.gwt.client.screen.Screen;
 import org.openelis.gwt.client.screen.ScreenLabel;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
 import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
@@ -29,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class OpenELIS extends AppScreen implements PopupListener {
 	
 	//private OpenELISConstants openElisConstants = null;
-	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) Screen.getWidgetMap().get("AppConstants");
+	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
 	private static OpenELISScreenIntAsync screenService = (OpenELISScreenIntAsync)GWT.create(OpenELISScreenInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
@@ -570,8 +568,6 @@ public class OpenELIS extends AppScreen implements PopupListener {
         		browser.setBrowserHeight();
         	}
         	
-        }else if(item == widgets.get("testScreen")){
-        	browser.addScreen(new TestScreen(), "Test Form", "TestScreen", openElisConstants.getString("loadingMessage"));
         }else{
         	System.out.println(widgets.get("help").toString()+" == "+item.toString());
         }

@@ -1,16 +1,13 @@
 package org.openelis.client.dataEntry.screen.organization;
 
+import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.screen.Screen;
-import org.openelis.gwt.client.screen.ScreenTable;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
 import org.openelis.gwt.client.widget.AToZPanel;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormTable;
 import org.openelis.gwt.common.AbstractField;
-import org.openelis.gwt.common.StringField;
 import org.openelis.gwt.common.TableModel;
-import org.openelis.gwt.common.TableRow;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
@@ -24,7 +21,7 @@ import com.google.gwt.xml.client.Document;
 
 public class Organization  extends AppScreenForm {
 	
-	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) Screen.getWidgetMap().get("AppConstants");
+	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
 	
 	private static OrganizationScreenIntAsync screenService = (OrganizationScreenIntAsync)GWT.create(OrganizationScreenInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
@@ -44,8 +41,8 @@ public class Organization  extends AppScreenForm {
 		if (sender == widgets.get("addButton")) {
 			ScreenTablePanel tp = (ScreenTablePanel)widgets.get("noteFormPanel");
         	tp.getWidget().setVisible(true);
-        }else if (sender == widgets.get("lookupParentOrganizationHtml")){
-        	new OrganizationChoose();
+        //}else if (sender == widgets.get("lookupParentOrganizationHtml")){
+        	//new OrganizationChoose();
         }else if(sender == widgets.get("openSidePanelButton")){
         	HorizontalPanel hp = (HorizontalPanel) getWidget("leftPanel");
         	if(hp.isVisible()){
