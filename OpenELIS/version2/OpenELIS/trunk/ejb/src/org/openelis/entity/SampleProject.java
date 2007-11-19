@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="sample_project")
@@ -49,28 +49,36 @@ public class SampleProject implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSample() {
     return sample;
   }
   public void setSample(Integer sample) {
-    this.sample = sample;
+    if((sample == null && this.sample != null) || 
+       (sample != null && !sample.equals(this.sample)))
+      this.sample = sample;
   }
 
   public Integer getProject() {
     return project;
   }
   public void setProject(Integer project) {
-    this.project = project;
+    if((project == null && this.project != null) || 
+       (project != null && !project.equals(this.project)))
+      this.project = project;
   }
 
   public String getIsPermanent() {
     return isPermanent;
   }
   public void setIsPermanent(String isPermanent) {
-    this.isPermanent = isPermanent;
+    if((isPermanent == null && this.isPermanent != null) || 
+       (isPermanent != null && !isPermanent.equals(this.isPermanent)))
+      this.isPermanent = isPermanent;
   }
 
   

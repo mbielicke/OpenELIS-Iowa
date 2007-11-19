@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="inventory_component")
@@ -49,28 +49,36 @@ public class InventoryComponent implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getInventoryItem() {
     return inventoryItem;
   }
   public void setInventoryItem(Integer inventoryItem) {
-    this.inventoryItem = inventoryItem;
+    if((inventoryItem == null && this.inventoryItem != null) || 
+       (inventoryItem != null && !inventoryItem.equals(this.inventoryItem)))
+      this.inventoryItem = inventoryItem;
   }
 
   public Integer getComponent() {
     return component;
   }
   public void setComponent(Integer component) {
-    this.component = component;
+    if((component == null && this.component != null) || 
+       (component != null && !component.equals(this.component)))
+      this.component = component;
   }
 
   public Double getQuantity() {
     return quantity;
   }
   public void setQuantity(Double quantity) {
-    this.quantity = quantity;
+    if((quantity == null && this.quantity != null) || 
+       (quantity != null && !quantity.equals(this.quantity)))
+      this.quantity = quantity;
   }
 
   

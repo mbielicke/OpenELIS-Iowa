@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="test_worksheet_item")
@@ -52,35 +52,45 @@ public class TestWorksheetItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getTestWorksheet() {
     return testWorksheet;
   }
   public void setTestWorksheet(Integer testWorksheet) {
-    this.testWorksheet = testWorksheet;
+    if((testWorksheet == null && this.testWorksheet != null) || 
+       (testWorksheet != null && !testWorksheet.equals(this.testWorksheet)))
+      this.testWorksheet = testWorksheet;
   }
 
   public Integer getPosition() {
     return position;
   }
   public void setPosition(Integer position) {
-    this.position = position;
+    if((position == null && this.position != null) || 
+       (position != null && !position.equals(this.position)))
+      this.position = position;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getQcName() {
     return qcName;
   }
   public void setQcName(String qcName) {
-    this.qcName = qcName;
+    if((qcName == null && this.qcName != null) || 
+       (qcName != null && !qcName.equals(this.qcName)))
+      this.qcName = qcName;
   }
 
   

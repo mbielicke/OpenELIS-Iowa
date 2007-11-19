@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="inventory_receipt")
@@ -61,21 +61,27 @@ public class InventoryReceipt implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getInventoryItem() {
     return inventoryItem;
   }
   public void setInventoryItem(Integer inventoryItem) {
-    this.inventoryItem = inventoryItem;
+    if((inventoryItem == null && this.inventoryItem != null) || 
+       (inventoryItem != null && !inventoryItem.equals(this.inventoryItem)))
+      this.inventoryItem = inventoryItem;
   }
 
   public Integer getOrganization() {
     return organization;
   }
   public void setOrganization(Integer organization) {
-    this.organization = organization;
+    if((organization == null && this.organization != null) || 
+       (organization != null && !organization.equals(this.organization)))
+      this.organization = organization;
   }
 
   public Datetime getReceivedDate() {
@@ -84,35 +90,45 @@ public class InventoryReceipt implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,receivedDate);
   }
   public void setReceivedDate (Datetime received_date){
-    this.receivedDate = received_date.getDate();
+    if((receivedDate == null && this.receivedDate != null) || 
+       (receivedDate != null && !receivedDate.equals(this.receivedDate)))
+      this.receivedDate = received_date.getDate();
   }
 
   public Integer getQuantityReceived() {
     return quantityReceived;
   }
   public void setQuantityReceived(Integer quantityReceived) {
-    this.quantityReceived = quantityReceived;
+    if((quantityReceived == null && this.quantityReceived != null) || 
+       (quantityReceived != null && !quantityReceived.equals(this.quantityReceived)))
+      this.quantityReceived = quantityReceived;
   }
 
   public Double getUnitCost() {
     return unitCost;
   }
   public void setUnitCost(Double unitCost) {
-    this.unitCost = unitCost;
+    if((unitCost == null && this.unitCost != null) || 
+       (unitCost != null && !unitCost.equals(this.unitCost)))
+      this.unitCost = unitCost;
   }
 
   public String getQcReference() {
     return qcReference;
   }
   public void setQcReference(String qcReference) {
-    this.qcReference = qcReference;
+    if((qcReference == null && this.qcReference != null) || 
+       (qcReference != null && !qcReference.equals(this.qcReference)))
+      this.qcReference = qcReference;
   }
 
   public String getExternalReference() {
     return externalReference;
   }
   public void setExternalReference(String externalReference) {
-    this.externalReference = externalReference;
+    if((externalReference == null && this.externalReference != null) || 
+       (externalReference != null && !externalReference.equals(this.externalReference)))
+      this.externalReference = externalReference;
   }
 
   

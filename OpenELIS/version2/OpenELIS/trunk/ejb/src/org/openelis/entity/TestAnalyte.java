@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="test_analyte")
@@ -61,56 +61,72 @@ public class TestAnalyte implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getTest() {
     return test;
   }
   public void setTest(Integer test) {
-    this.test = test;
+    if((test == null && this.test != null) || 
+       (test != null && !test.equals(this.test)))
+      this.test = test;
   }
 
   public Integer getResultGroup() {
     return resultGroup;
   }
   public void setResultGroup(Integer resultGroup) {
-    this.resultGroup = resultGroup;
+    if((resultGroup == null && this.resultGroup != null) || 
+       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
+      this.resultGroup = resultGroup;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public Integer getAnalyte() {
     return analyte;
   }
   public void setAnalyte(Integer analyte) {
-    this.analyte = analyte;
+    if((analyte == null && this.analyte != null) || 
+       (analyte != null && !analyte.equals(this.analyte)))
+      this.analyte = analyte;
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   

@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="method")
@@ -58,35 +58,45 @@ public class Method implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getReportingDescription() {
     return reportingDescription;
   }
   public void setReportingDescription(String reportingDescription) {
-    this.reportingDescription = reportingDescription;
+    if((reportingDescription == null && this.reportingDescription != null) || 
+       (reportingDescription != null && !reportingDescription.equals(this.reportingDescription)))
+      this.reportingDescription = reportingDescription;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public Datetime getActiveBegin() {
@@ -95,7 +105,9 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    this.activeBegin = active_begin.getDate();
+    if((activeBegin == null && this.activeBegin != null) || 
+       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+      this.activeBegin = active_begin.getDate();
   }
 
   public Datetime getActiveEnd() {
@@ -104,7 +116,9 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    this.activeEnd = active_end.getDate();
+    if((activeEnd == null && this.activeEnd != null) || 
+       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+      this.activeEnd = active_end.getDate();
   }
 
   

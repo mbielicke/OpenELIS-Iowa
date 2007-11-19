@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="project_parameter")
@@ -52,35 +52,45 @@ public class ProjectParameter implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getProject() {
     return project;
   }
   public void setProject(Integer project) {
-    this.project = project;
+    if((project == null && this.project != null) || 
+       (project != null && !project.equals(this.project)))
+      this.project = project;
   }
 
   public String getParameter() {
     return parameter;
   }
   public void setParameter(String parameter) {
-    this.parameter = parameter;
+    if((parameter == null && this.parameter != null) || 
+       (parameter != null && !parameter.equals(this.parameter)))
+      this.parameter = parameter;
   }
 
   public String getOperation() {
     return operation;
   }
   public void setOperation(String operation) {
-    this.operation = operation;
+    if((operation == null && this.operation != null) || 
+       (operation != null && !operation.equals(this.operation)))
+      this.operation = operation;
   }
 
   public String getValue() {
     return value;
   }
   public void setValue(String value) {
-    this.value = value;
+    if((value == null && this.value != null) || 
+       (value != null && !value.equals(this.value)))
+      this.value = value;
   }
 
   

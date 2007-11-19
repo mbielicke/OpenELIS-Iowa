@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="aux_field")
@@ -61,56 +61,72 @@ public class AuxField implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public Integer getAnalyte() {
     return analyte;
   }
   public void setAnalyte(Integer analyte) {
-    this.analyte = analyte;
+    if((analyte == null && this.analyte != null) || 
+       (analyte != null && !analyte.equals(this.analyte)))
+      this.analyte = analyte;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public String getIsRequired() {
     return isRequired;
   }
   public void setIsRequired(String isRequired) {
-    this.isRequired = isRequired;
+    if((isRequired == null && this.isRequired != null) || 
+       (isRequired != null && !isRequired.equals(this.isRequired)))
+      this.isRequired = isRequired;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   

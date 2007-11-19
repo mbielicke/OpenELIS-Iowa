@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="test")
@@ -100,42 +100,54 @@ public class Test implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getReportingDescription() {
     return reportingDescription;
   }
   public void setReportingDescription(String reportingDescription) {
-    this.reportingDescription = reportingDescription;
+    if((reportingDescription == null && this.reportingDescription != null) || 
+       (reportingDescription != null && !reportingDescription.equals(this.reportingDescription)))
+      this.reportingDescription = reportingDescription;
   }
 
   public Integer getMethod() {
     return method;
   }
   public void setMethod(Integer method) {
-    this.method = method;
+    if((method == null && this.method != null) || 
+       (method != null && !method.equals(this.method)))
+      this.method = method;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public Datetime getActiveBegin() {
@@ -144,7 +156,9 @@ public class Test implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    this.activeBegin = active_begin.getDate();
+    if((activeBegin == null && this.activeBegin != null) || 
+       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+      this.activeBegin = active_begin.getDate();
   }
 
   public Datetime getActiveEnd() {
@@ -153,98 +167,126 @@ public class Test implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    this.activeEnd = active_end.getDate();
+    if((activeEnd == null && this.activeEnd != null) || 
+       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+      this.activeEnd = active_end.getDate();
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getTimeTransit() {
     return timeTransit;
   }
   public void setTimeTransit(Integer timeTransit) {
-    this.timeTransit = timeTransit;
+    if((timeTransit == null && this.timeTransit != null) || 
+       (timeTransit != null && !timeTransit.equals(this.timeTransit)))
+      this.timeTransit = timeTransit;
   }
 
   public Integer getTimeHolding() {
     return timeHolding;
   }
   public void setTimeHolding(Integer timeHolding) {
-    this.timeHolding = timeHolding;
+    if((timeHolding == null && this.timeHolding != null) || 
+       (timeHolding != null && !timeHolding.equals(this.timeHolding)))
+      this.timeHolding = timeHolding;
   }
 
   public Integer getTimeTaAverage() {
     return timeTaAverage;
   }
   public void setTimeTaAverage(Integer timeTaAverage) {
-    this.timeTaAverage = timeTaAverage;
+    if((timeTaAverage == null && this.timeTaAverage != null) || 
+       (timeTaAverage != null && !timeTaAverage.equals(this.timeTaAverage)))
+      this.timeTaAverage = timeTaAverage;
   }
 
   public Integer getTimeTaWarning() {
     return timeTaWarning;
   }
   public void setTimeTaWarning(Integer timeTaWarning) {
-    this.timeTaWarning = timeTaWarning;
+    if((timeTaWarning == null && this.timeTaWarning != null) || 
+       (timeTaWarning != null && !timeTaWarning.equals(this.timeTaWarning)))
+      this.timeTaWarning = timeTaWarning;
   }
 
   public Integer getTimeTaMax() {
     return timeTaMax;
   }
   public void setTimeTaMax(Integer timeTaMax) {
-    this.timeTaMax = timeTaMax;
+    if((timeTaMax == null && this.timeTaMax != null) || 
+       (timeTaMax != null && !timeTaMax.equals(this.timeTaMax)))
+      this.timeTaMax = timeTaMax;
   }
 
   public Integer getLabel() {
     return label;
   }
   public void setLabel(Integer label) {
-    this.label = label;
+    if((label == null && this.label != null) || 
+       (label != null && !label.equals(this.label)))
+      this.label = label;
   }
 
   public Integer getLabelQty() {
     return labelQty;
   }
   public void setLabelQty(Integer labelQty) {
-    this.labelQty = labelQty;
+    if((labelQty == null && this.labelQty != null) || 
+       (labelQty != null && !labelQty.equals(this.labelQty)))
+      this.labelQty = labelQty;
   }
 
   public Integer getTestTrailer() {
     return testTrailer;
   }
   public void setTestTrailer(Integer testTrailer) {
-    this.testTrailer = testTrailer;
+    if((testTrailer == null && this.testTrailer != null) || 
+       (testTrailer != null && !testTrailer.equals(this.testTrailer)))
+      this.testTrailer = testTrailer;
   }
 
   public Integer getSection() {
     return section;
   }
   public void setSection(Integer section) {
-    this.section = section;
+    if((section == null && this.section != null) || 
+       (section != null && !section.equals(this.section)))
+      this.section = section;
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   public Integer getTestFormat() {
     return testFormat;
   }
   public void setTestFormat(Integer testFormat) {
-    this.testFormat = testFormat;
+    if((testFormat == null && this.testFormat != null) || 
+       (testFormat != null && !testFormat.equals(this.testFormat)))
+      this.testFormat = testFormat;
   }
 
   public Integer getRevisionMethod() {
     return revisionMethod;
   }
   public void setRevisionMethod(Integer revisionMethod) {
-    this.revisionMethod = revisionMethod;
+    if((revisionMethod == null && this.revisionMethod != null) || 
+       (revisionMethod != null && !revisionMethod.equals(this.revisionMethod)))
+      this.revisionMethod = revisionMethod;
   }
 
   

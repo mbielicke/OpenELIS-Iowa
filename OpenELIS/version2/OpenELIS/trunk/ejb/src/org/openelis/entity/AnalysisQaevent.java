@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="analysis_qaevent")
@@ -46,21 +46,27 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getAnalysis() {
     return analysis;
   }
   public void setAnalysis(Integer analysis) {
-    this.analysis = analysis;
+    if((analysis == null && this.analysis != null) || 
+       (analysis != null && !analysis.equals(this.analysis)))
+      this.analysis = analysis;
   }
 
   public Integer getQaevent() {
     return qaevent;
   }
   public void setQaevent(Integer qaevent) {
-    this.qaevent = qaevent;
+    if((qaevent == null && this.qaevent != null) || 
+       (qaevent != null && !qaevent.equals(this.qaevent)))
+      this.qaevent = qaevent;
   }
 
   

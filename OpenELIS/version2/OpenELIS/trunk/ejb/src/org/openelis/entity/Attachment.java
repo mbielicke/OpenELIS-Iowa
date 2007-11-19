@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="attachment")
@@ -52,35 +52,45 @@ public class Attachment implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getFilename() {
     return filename;
   }
   public void setFilename(String filename) {
-    this.filename = filename;
+    if((filename == null && this.filename != null) || 
+       (filename != null && !filename.equals(this.filename)))
+      this.filename = filename;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getStorageReference() {
     return storageReference;
   }
   public void setStorageReference(String storageReference) {
-    this.storageReference = storageReference;
+    if((storageReference == null && this.storageReference != null) || 
+       (storageReference != null && !storageReference.equals(this.storageReference)))
+      this.storageReference = storageReference;
   }
 
   

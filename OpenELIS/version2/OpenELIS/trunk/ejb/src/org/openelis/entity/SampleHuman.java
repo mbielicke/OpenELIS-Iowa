@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="sample_human")
@@ -52,35 +52,45 @@ public class SampleHuman implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSample() {
     return sample;
   }
   public void setSample(Integer sample) {
-    this.sample = sample;
+    if((sample == null && this.sample != null) || 
+       (sample != null && !sample.equals(this.sample)))
+      this.sample = sample;
   }
 
   public Integer getPatient() {
     return patient;
   }
   public void setPatient(Integer patient) {
-    this.patient = patient;
+    if((patient == null && this.patient != null) || 
+       (patient != null && !patient.equals(this.patient)))
+      this.patient = patient;
   }
 
   public Integer getProvider() {
     return provider;
   }
   public void setProvider(Integer provider) {
-    this.provider = provider;
+    if((provider == null && this.provider != null) || 
+       (provider != null && !provider.equals(this.provider)))
+      this.provider = provider;
   }
 
   public String getProviderPhone() {
     return providerPhone;
   }
   public void setProviderPhone(String providerPhone) {
-    this.providerPhone = providerPhone;
+    if((providerPhone == null && this.providerPhone != null) || 
+       (providerPhone != null && !providerPhone.equals(this.providerPhone)))
+      this.providerPhone = providerPhone;
   }
 
   

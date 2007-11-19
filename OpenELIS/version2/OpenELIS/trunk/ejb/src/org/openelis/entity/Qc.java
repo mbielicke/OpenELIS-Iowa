@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="qc")
@@ -73,35 +73,45 @@ public class Qc implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getSource() {
     return source;
   }
   public void setSource(String source) {
-    this.source = source;
+    if((source == null && this.source != null) || 
+       (source != null && !source.equals(this.source)))
+      this.source = source;
   }
 
   public String getLotNumber() {
     return lotNumber;
   }
   public void setLotNumber(String lotNumber) {
-    this.lotNumber = lotNumber;
+    if((lotNumber == null && this.lotNumber != null) || 
+       (lotNumber != null && !lotNumber.equals(this.lotNumber)))
+      this.lotNumber = lotNumber;
   }
 
   public Datetime getPreparedDate() {
@@ -110,28 +120,36 @@ public class Qc implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,preparedDate);
   }
   public void setPreparedDate (Datetime prepared_date){
-    this.preparedDate = prepared_date.getDate();
+    if((preparedDate == null && this.preparedDate != null) || 
+       (preparedDate != null && !preparedDate.equals(this.preparedDate)))
+      this.preparedDate = prepared_date.getDate();
   }
 
   public Double getPreparedVolume() {
     return preparedVolume;
   }
   public void setPreparedVolume(Double preparedVolume) {
-    this.preparedVolume = preparedVolume;
+    if((preparedVolume == null && this.preparedVolume != null) || 
+       (preparedVolume != null && !preparedVolume.equals(this.preparedVolume)))
+      this.preparedVolume = preparedVolume;
   }
 
   public Integer getPreparedUnit() {
     return preparedUnit;
   }
   public void setPreparedUnit(Integer preparedUnit) {
-    this.preparedUnit = preparedUnit;
+    if((preparedUnit == null && this.preparedUnit != null) || 
+       (preparedUnit != null && !preparedUnit.equals(this.preparedUnit)))
+      this.preparedUnit = preparedUnit;
   }
 
   public Integer getPreparedBy() {
     return preparedBy;
   }
   public void setPreparedBy(Integer preparedBy) {
-    this.preparedBy = preparedBy;
+    if((preparedBy == null && this.preparedBy != null) || 
+       (preparedBy != null && !preparedBy.equals(this.preparedBy)))
+      this.preparedBy = preparedBy;
   }
 
   public Datetime getUsableDate() {
@@ -140,7 +158,9 @@ public class Qc implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,usableDate);
   }
   public void setUsableDate (Datetime usable_date){
-    this.usableDate = usable_date.getDate();
+    if((usableDate == null && this.usableDate != null) || 
+       (usableDate != null && !usableDate.equals(this.usableDate)))
+      this.usableDate = usable_date.getDate();
   }
 
   public Datetime getExpireDate() {
@@ -149,14 +169,18 @@ public class Qc implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,expireDate);
   }
   public void setExpireDate (Datetime expire_date){
-    this.expireDate = expire_date.getDate();
+    if((expireDate == null && this.expireDate != null) || 
+       (expireDate != null && !expireDate.equals(this.expireDate)))
+      this.expireDate = expire_date.getDate();
   }
 
   public String getIsSingleUse() {
     return isSingleUse;
   }
   public void setIsSingleUse(String isSingleUse) {
-    this.isSingleUse = isSingleUse;
+    if((isSingleUse == null && this.isSingleUse != null) || 
+       (isSingleUse != null && !isSingleUse.equals(this.isSingleUse)))
+      this.isSingleUse = isSingleUse;
   }
 
   

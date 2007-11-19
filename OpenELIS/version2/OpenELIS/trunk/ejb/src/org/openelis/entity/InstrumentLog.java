@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="instrument_log")
@@ -55,28 +55,36 @@ public class InstrumentLog implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getInstrument() {
     return instrument;
   }
   public void setInstrument(Integer instrument) {
-    this.instrument = instrument;
+    if((instrument == null && this.instrument != null) || 
+       (instrument != null && !instrument.equals(this.instrument)))
+      this.instrument = instrument;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public Integer getWorksheet() {
     return worksheet;
   }
   public void setWorksheet(Integer worksheet) {
-    this.worksheet = worksheet;
+    if((worksheet == null && this.worksheet != null) || 
+       (worksheet != null && !worksheet.equals(this.worksheet)))
+      this.worksheet = worksheet;
   }
 
   public Datetime getEventBegin() {
@@ -85,7 +93,9 @@ public class InstrumentLog implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,eventBegin);
   }
   public void setEventBegin (Datetime event_begin){
-    this.eventBegin = event_begin.getDate();
+    if((eventBegin == null && this.eventBegin != null) || 
+       (eventBegin != null && !eventBegin.equals(this.eventBegin)))
+      this.eventBegin = event_begin.getDate();
   }
 
   public Datetime getEventEnd() {
@@ -94,7 +104,9 @@ public class InstrumentLog implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,eventEnd);
   }
   public void setEventEnd (Datetime event_end){
-    this.eventEnd = event_end.getDate();
+    if((eventEnd == null && this.eventEnd != null) || 
+       (eventEnd != null && !eventEnd.equals(this.eventEnd)))
+      this.eventEnd = event_end.getDate();
   }
 
   

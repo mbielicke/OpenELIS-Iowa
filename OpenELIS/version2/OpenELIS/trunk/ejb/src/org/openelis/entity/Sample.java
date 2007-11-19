@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="sample")
@@ -76,35 +76,45 @@ public class Sample implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getNextItemSequence() {
     return nextItemSequence;
   }
   public void setNextItemSequence(Integer nextItemSequence) {
-    this.nextItemSequence = nextItemSequence;
+    if((nextItemSequence == null && this.nextItemSequence != null) || 
+       (nextItemSequence != null && !nextItemSequence.equals(this.nextItemSequence)))
+      this.nextItemSequence = nextItemSequence;
   }
 
   public Integer getDomain() {
     return domain;
   }
   public void setDomain(Integer domain) {
-    this.domain = domain;
+    if((domain == null && this.domain != null) || 
+       (domain != null && !domain.equals(this.domain)))
+      this.domain = domain;
   }
 
   public Integer getAccessionNumber() {
     return accessionNumber;
   }
   public void setAccessionNumber(Integer accessionNumber) {
-    this.accessionNumber = accessionNumber;
+    if((accessionNumber == null && this.accessionNumber != null) || 
+       (accessionNumber != null && !accessionNumber.equals(this.accessionNumber)))
+      this.accessionNumber = accessionNumber;
   }
 
   public Integer getRevision() {
     return revision;
   }
   public void setRevision(Integer revision) {
-    this.revision = revision;
+    if((revision == null && this.revision != null) || 
+       (revision != null && !revision.equals(this.revision)))
+      this.revision = revision;
   }
 
   public Datetime getEnteredDate() {
@@ -113,7 +123,9 @@ public class Sample implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,enteredDate);
   }
   public void setEnteredDate (Datetime entered_date){
-    this.enteredDate = entered_date.getDate();
+    if((enteredDate == null && this.enteredDate != null) || 
+       (enteredDate != null && !enteredDate.equals(this.enteredDate)))
+      this.enteredDate = entered_date.getDate();
   }
 
   public Datetime getReceivedDate() {
@@ -122,14 +134,18 @@ public class Sample implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,receivedDate);
   }
   public void setReceivedDate (Datetime received_date){
-    this.receivedDate = received_date.getDate();
+    if((receivedDate == null && this.receivedDate != null) || 
+       (receivedDate != null && !receivedDate.equals(this.receivedDate)))
+      this.receivedDate = received_date.getDate();
   }
 
   public Integer getReceivedBy() {
     return receivedBy;
   }
   public void setReceivedBy(Integer receivedBy) {
-    this.receivedBy = receivedBy;
+    if((receivedBy == null && this.receivedBy != null) || 
+       (receivedBy != null && !receivedBy.equals(this.receivedBy)))
+      this.receivedBy = receivedBy;
   }
 
   public Datetime getCollectionDate() {
@@ -138,28 +154,36 @@ public class Sample implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,collectionDate);
   }
   public void setCollectionDate (Datetime collection_date){
-    this.collectionDate = collection_date.getDate();
+    if((collectionDate == null && this.collectionDate != null) || 
+       (collectionDate != null && !collectionDate.equals(this.collectionDate)))
+      this.collectionDate = collection_date.getDate();
   }
 
   public Integer getStatus() {
     return status;
   }
   public void setStatus(Integer status) {
-    this.status = status;
+    if((status == null && this.status != null) || 
+       (status != null && !status.equals(this.status)))
+      this.status = status;
   }
 
   public Integer getPackage() {
     return _package;
   }
   public void setPackage(Integer _package) {
-    this._package = _package;
+    if((_package == null && this._package != null) || 
+       (_package != null && !_package.equals(this._package)))
+      this._package = _package;
   }
 
   public String getClientReference() {
     return clientReference;
   }
   public void setClientReference(String clientReference) {
-    this.clientReference = clientReference;
+    if((clientReference == null && this.clientReference != null) || 
+       (clientReference != null && !clientReference.equals(this.clientReference)))
+      this.clientReference = clientReference;
   }
 
   public Datetime getReleasedDate() {
@@ -168,7 +192,9 @@ public class Sample implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,releasedDate);
   }
   public void setReleasedDate (Datetime released_date){
-    this.releasedDate = released_date.getDate();
+    if((releasedDate == null && this.releasedDate != null) || 
+       (releasedDate != null && !releasedDate.equals(this.releasedDate)))
+      this.releasedDate = released_date.getDate();
   }
 
   

@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="provider")
@@ -52,35 +52,45 @@ public class Provider implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getPerson() {
     return person;
   }
   public void setPerson(Integer person) {
-    this.person = person;
+    if((person == null && this.person != null) || 
+       (person != null && !person.equals(this.person)))
+      this.person = person;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getExternalId() {
     return externalId;
   }
   public void setExternalId(String externalId) {
-    this.externalId = externalId;
+    if((externalId == null && this.externalId != null) || 
+       (externalId != null && !externalId.equals(this.externalId)))
+      this.externalId = externalId;
   }
 
   public String getNpi() {
     return npi;
   }
   public void setNpi(String npi) {
-    this.npi = npi;
+    if((npi == null && this.npi != null) || 
+       (npi != null && !npi.equals(this.npi)))
+      this.npi = npi;
   }
 
   
