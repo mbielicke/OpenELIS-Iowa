@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="project")
@@ -64,21 +64,27 @@ public class Project implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public Datetime getStartedDate() {
@@ -87,7 +93,9 @@ public class Project implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,startedDate);
   }
   public void setStartedDate (Datetime started_date){
-    this.startedDate = started_date.getDate();
+    if((startedDate == null && this.startedDate != null) || 
+       (startedDate != null && !startedDate.equals(this.startedDate)))
+      this.startedDate = started_date.getDate();
   }
 
   public Datetime getCompletedDate() {
@@ -96,35 +104,45 @@ public class Project implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,completedDate);
   }
   public void setCompletedDate (Datetime completed_date){
-    this.completedDate = completed_date.getDate();
+    if((completedDate == null && this.completedDate != null) || 
+       (completedDate != null && !completedDate.equals(this.completedDate)))
+      this.completedDate = completed_date.getDate();
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public String getReferenceTo() {
     return referenceTo;
   }
   public void setReferenceTo(String referenceTo) {
-    this.referenceTo = referenceTo;
+    if((referenceTo == null && this.referenceTo != null) || 
+       (referenceTo != null && !referenceTo.equals(this.referenceTo)))
+      this.referenceTo = referenceTo;
   }
 
   public Integer getOwner() {
     return owner;
   }
   public void setOwner(Integer owner) {
-    this.owner = owner;
+    if((owner == null && this.owner != null) || 
+       (owner != null && !owner.equals(this.owner)))
+      this.owner = owner;
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   

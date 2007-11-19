@@ -1,6 +1,5 @@
 package org.openelis.utils;
 
-import org.openelis.interfaces.Auditable;
 import org.openelis.local.HistoryLocal;
 
 import javax.naming.InitialContext;

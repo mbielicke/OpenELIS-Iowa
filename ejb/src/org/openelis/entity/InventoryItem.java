@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="inventory_item")
@@ -76,91 +76,117 @@ public class InventoryItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public Integer getQuantityMinLevel() {
     return quantityMinLevel;
   }
   public void setQuantityMinLevel(Integer quantityMinLevel) {
-    this.quantityMinLevel = quantityMinLevel;
+    if((quantityMinLevel == null && this.quantityMinLevel != null) || 
+       (quantityMinLevel != null && !quantityMinLevel.equals(this.quantityMinLevel)))
+      this.quantityMinLevel = quantityMinLevel;
   }
 
   public Integer getQuantityMaxLevel() {
     return quantityMaxLevel;
   }
   public void setQuantityMaxLevel(Integer quantityMaxLevel) {
-    this.quantityMaxLevel = quantityMaxLevel;
+    if((quantityMaxLevel == null && this.quantityMaxLevel != null) || 
+       (quantityMaxLevel != null && !quantityMaxLevel.equals(this.quantityMaxLevel)))
+      this.quantityMaxLevel = quantityMaxLevel;
   }
 
   public Integer getQuantityToReorder() {
     return quantityToReorder;
   }
   public void setQuantityToReorder(Integer quantityToReorder) {
-    this.quantityToReorder = quantityToReorder;
+    if((quantityToReorder == null && this.quantityToReorder != null) || 
+       (quantityToReorder != null && !quantityToReorder.equals(this.quantityToReorder)))
+      this.quantityToReorder = quantityToReorder;
   }
 
   public Integer getUnitOfMeasure() {
     return unitOfMeasure;
   }
   public void setUnitOfMeasure(Integer unitOfMeasure) {
-    this.unitOfMeasure = unitOfMeasure;
+    if((unitOfMeasure == null && this.unitOfMeasure != null) || 
+       (unitOfMeasure != null && !unitOfMeasure.equals(this.unitOfMeasure)))
+      this.unitOfMeasure = unitOfMeasure;
   }
 
   public String getIsReorderAuto() {
     return isReorderAuto;
   }
   public void setIsReorderAuto(String isReorderAuto) {
-    this.isReorderAuto = isReorderAuto;
+    if((isReorderAuto == null && this.isReorderAuto != null) || 
+       (isReorderAuto != null && !isReorderAuto.equals(this.isReorderAuto)))
+      this.isReorderAuto = isReorderAuto;
   }
 
   public String getIsLotMaintained() {
     return isLotMaintained;
   }
   public void setIsLotMaintained(String isLotMaintained) {
-    this.isLotMaintained = isLotMaintained;
+    if((isLotMaintained == null && this.isLotMaintained != null) || 
+       (isLotMaintained != null && !isLotMaintained.equals(this.isLotMaintained)))
+      this.isLotMaintained = isLotMaintained;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public Integer getAverageLeadTime() {
     return averageLeadTime;
   }
   public void setAverageLeadTime(Integer averageLeadTime) {
-    this.averageLeadTime = averageLeadTime;
+    if((averageLeadTime == null && this.averageLeadTime != null) || 
+       (averageLeadTime != null && !averageLeadTime.equals(this.averageLeadTime)))
+      this.averageLeadTime = averageLeadTime;
   }
 
   public Double getAverageCost() {
     return averageCost;
   }
   public void setAverageCost(Double averageCost) {
-    this.averageCost = averageCost;
+    if((averageCost == null && this.averageCost != null) || 
+       (averageCost != null && !averageCost.equals(this.averageCost)))
+      this.averageCost = averageCost;
   }
 
   public Integer getAverageDailyUse() {
     return averageDailyUse;
   }
   public void setAverageDailyUse(Integer averageDailyUse) {
-    this.averageDailyUse = averageDailyUse;
+    if((averageDailyUse == null && this.averageDailyUse != null) || 
+       (averageDailyUse != null && !averageDailyUse.equals(this.averageDailyUse)))
+      this.averageDailyUse = averageDailyUse;
   }
 
   

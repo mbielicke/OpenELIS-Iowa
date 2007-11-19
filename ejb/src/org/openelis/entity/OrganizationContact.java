@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="organization_contact")
@@ -41,8 +41,9 @@ public class OrganizationContact implements Auditable, Cloneable {
   private String name;             
 
   @Column(name="address")
-  private Integer address; 
-  
+  private Integer address;             
+
+
   @Transient
   private OrganizationContact original;
 
@@ -51,28 +52,45 @@ public class OrganizationContact implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getOrganization() {
     return organization;
   }
   public void setOrganization(Integer organization) {
-    this.organization = organization;
+    if((organization == null && this.organization != null) || 
+       (organization != null && !organization.equals(this.organization)))
+      this.organization = organization;
   }
 
   public Integer getContactType() {
     return contactType;
   }
   public void setContactType(Integer contactType) {
-    this.contactType = contactType;
+    if((contactType == null && this.contactType != null) || 
+       (contactType != null && !contactType.equals(this.contactType)))
+      this.contactType = contactType;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
+  }
+
+  public Integer getAddress() {
+    return address;
+  }
+  public void setAddress(Integer address) {
+    if((address == null && this.address != null) || 
+       (address != null && !address.equals(this.address)))
+      this.address = address;
   }
 
   
@@ -115,6 +133,13 @@ public class OrganizationContact implements Auditable, Cloneable {
         root.appendChild(elem);
       }      
 
+      if((address == null && original.address != null) || 
+         (address != null && !address.equals(original.address))){
+        Element elem = doc.createElement("address");
+        elem.appendChild(doc.createTextNode(original.address.toString()));
+        root.appendChild(elem);
+      }      
+
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
     }catch(Exception e){
@@ -126,11 +151,5 @@ public class OrganizationContact implements Auditable, Cloneable {
   public String getTableName() {
     return "organization_contact";
   }
-public Integer getAddress() {
-	return address;
-}
-public void setAddress(Integer address) {
-	this.address = address;
-}
   
 }   

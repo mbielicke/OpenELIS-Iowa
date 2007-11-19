@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="instrument")
@@ -70,56 +70,72 @@ public class Instrument implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getModelNumber() {
     return modelNumber;
   }
   public void setModelNumber(String modelNumber) {
-    this.modelNumber = modelNumber;
+    if((modelNumber == null && this.modelNumber != null) || 
+       (modelNumber != null && !modelNumber.equals(this.modelNumber)))
+      this.modelNumber = modelNumber;
   }
 
   public String getSerialNumber() {
     return serialNumber;
   }
   public void setSerialNumber(String serialNumber) {
-    this.serialNumber = serialNumber;
+    if((serialNumber == null && this.serialNumber != null) || 
+       (serialNumber != null && !serialNumber.equals(this.serialNumber)))
+      this.serialNumber = serialNumber;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getLocation() {
     return location;
   }
   public void setLocation(String location) {
-    this.location = location;
+    if((location == null && this.location != null) || 
+       (location != null && !location.equals(this.location)))
+      this.location = location;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public Datetime getActiveBegin() {
@@ -128,7 +144,9 @@ public class Instrument implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    this.activeBegin = active_begin.getDate();
+    if((activeBegin == null && this.activeBegin != null) || 
+       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+      this.activeBegin = active_begin.getDate();
   }
 
   public Datetime getActiveEnd() {
@@ -137,14 +155,18 @@ public class Instrument implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    this.activeEnd = active_end.getDate();
+    if((activeEnd == null && this.activeEnd != null) || 
+       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+      this.activeEnd = active_end.getDate();
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   

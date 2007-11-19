@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="category")
@@ -52,35 +52,45 @@ public class Category implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getSystemName() {
     return systemName;
   }
   public void setSystemName(String systemName) {
-    this.systemName = systemName;
+    if((systemName == null && this.systemName != null) || 
+       (systemName != null && !systemName.equals(this.systemName)))
+      this.systemName = systemName;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public Integer getSection() {
     return section;
   }
   public void setSection(Integer section) {
-    this.section = section;
+    if((section == null && this.section != null) || 
+       (section != null && !section.equals(this.section)))
+      this.section = section;
   }
 
   

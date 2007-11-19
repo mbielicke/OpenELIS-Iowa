@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="sample_environmental")
@@ -58,49 +58,63 @@ public class SampleEnvironmental implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSample() {
     return sample;
   }
   public void setSample(Integer sample) {
-    this.sample = sample;
+    if((sample == null && this.sample != null) || 
+       (sample != null && !sample.equals(this.sample)))
+      this.sample = sample;
   }
 
   public String getIsHazardous() {
     return isHazardous;
   }
   public void setIsHazardous(String isHazardous) {
-    this.isHazardous = isHazardous;
+    if((isHazardous == null && this.isHazardous != null) || 
+       (isHazardous != null && !isHazardous.equals(this.isHazardous)))
+      this.isHazardous = isHazardous;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getCollector() {
     return collector;
   }
   public void setCollector(String collector) {
-    this.collector = collector;
+    if((collector == null && this.collector != null) || 
+       (collector != null && !collector.equals(this.collector)))
+      this.collector = collector;
   }
 
   public String getCollectorPhone() {
     return collectorPhone;
   }
   public void setCollectorPhone(String collectorPhone) {
-    this.collectorPhone = collectorPhone;
+    if((collectorPhone == null && this.collectorPhone != null) || 
+       (collectorPhone != null && !collectorPhone.equals(this.collectorPhone)))
+      this.collectorPhone = collectorPhone;
   }
 
   public String getSamplingLocation() {
     return samplingLocation;
   }
   public void setSamplingLocation(String samplingLocation) {
-    this.samplingLocation = samplingLocation;
+    if((samplingLocation == null && this.samplingLocation != null) || 
+       (samplingLocation != null && !samplingLocation.equals(this.samplingLocation)))
+      this.samplingLocation = samplingLocation;
   }
 
   

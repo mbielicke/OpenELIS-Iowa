@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="storage_location")
@@ -58,49 +58,63 @@ public class StorageLocation implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getLocation() {
     return location;
   }
   public void setLocation(String location) {
-    this.location = location;
+    if((location == null && this.location != null) || 
+       (location != null && !location.equals(this.location)))
+      this.location = location;
   }
 
   public Integer getParentStorageLocation() {
     return parentStorageLocation;
   }
   public void setParentStorageLocation(Integer parentStorageLocation) {
-    this.parentStorageLocation = parentStorageLocation;
+    if((parentStorageLocation == null && this.parentStorageLocation != null) || 
+       (parentStorageLocation != null && !parentStorageLocation.equals(this.parentStorageLocation)))
+      this.parentStorageLocation = parentStorageLocation;
   }
 
   public Integer getStorageUnit() {
     return storageUnit;
   }
   public void setStorageUnit(Integer storageUnit) {
-    this.storageUnit = storageUnit;
+    if((storageUnit == null && this.storageUnit != null) || 
+       (storageUnit != null && !storageUnit.equals(this.storageUnit)))
+      this.storageUnit = storageUnit;
   }
 
   public String getIsAvailable() {
     return isAvailable;
   }
   public void setIsAvailable(String isAvailable) {
-    this.isAvailable = isAvailable;
+    if((isAvailable == null && this.isAvailable != null) || 
+       (isAvailable != null && !isAvailable.equals(this.isAvailable)))
+      this.isAvailable = isAvailable;
   }
 
   

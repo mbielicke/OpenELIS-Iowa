@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="analysis")
@@ -85,77 +85,99 @@ public class Analysis implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSampleItem() {
     return sampleItem;
   }
   public void setSampleItem(Integer sampleItem) {
-    this.sampleItem = sampleItem;
+    if((sampleItem == null && this.sampleItem != null) || 
+       (sampleItem != null && !sampleItem.equals(this.sampleItem)))
+      this.sampleItem = sampleItem;
   }
 
   public Integer getRevision() {
     return revision;
   }
   public void setRevision(Integer revision) {
-    this.revision = revision;
+    if((revision == null && this.revision != null) || 
+       (revision != null && !revision.equals(this.revision)))
+      this.revision = revision;
   }
 
   public Integer getTest() {
     return test;
   }
   public void setTest(Integer test) {
-    this.test = test;
+    if((test == null && this.test != null) || 
+       (test != null && !test.equals(this.test)))
+      this.test = test;
   }
 
   public Integer getSection() {
     return section;
   }
   public void setSection(Integer section) {
-    this.section = section;
+    if((section == null && this.section != null) || 
+       (section != null && !section.equals(this.section)))
+      this.section = section;
   }
 
   public Integer getPreAnalysis() {
     return preAnalysis;
   }
   public void setPreAnalysis(Integer preAnalysis) {
-    this.preAnalysis = preAnalysis;
+    if((preAnalysis == null && this.preAnalysis != null) || 
+       (preAnalysis != null && !preAnalysis.equals(this.preAnalysis)))
+      this.preAnalysis = preAnalysis;
   }
 
   public Integer getParentAnalysis() {
     return parentAnalysis;
   }
   public void setParentAnalysis(Integer parentAnalysis) {
-    this.parentAnalysis = parentAnalysis;
+    if((parentAnalysis == null && this.parentAnalysis != null) || 
+       (parentAnalysis != null && !parentAnalysis.equals(this.parentAnalysis)))
+      this.parentAnalysis = parentAnalysis;
   }
 
   public Integer getParentResult() {
     return parentResult;
   }
   public void setParentResult(Integer parentResult) {
-    this.parentResult = parentResult;
+    if((parentResult == null && this.parentResult != null) || 
+       (parentResult != null && !parentResult.equals(this.parentResult)))
+      this.parentResult = parentResult;
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getUnitOfMeasure() {
     return unitOfMeasure;
   }
   public void setUnitOfMeasure(Integer unitOfMeasure) {
-    this.unitOfMeasure = unitOfMeasure;
+    if((unitOfMeasure == null && this.unitOfMeasure != null) || 
+       (unitOfMeasure != null && !unitOfMeasure.equals(this.unitOfMeasure)))
+      this.unitOfMeasure = unitOfMeasure;
   }
 
   public Integer getStatus() {
     return status;
   }
   public void setStatus(Integer status) {
-    this.status = status;
+    if((status == null && this.status != null) || 
+       (status != null && !status.equals(this.status)))
+      this.status = status;
   }
 
   public Datetime getAvailableDate() {
@@ -164,7 +186,9 @@ public class Analysis implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,availableDate);
   }
   public void setAvailableDate (Datetime available_date){
-    this.availableDate = available_date.getDate();
+    if((availableDate == null && this.availableDate != null) || 
+       (availableDate != null && !availableDate.equals(this.availableDate)))
+      this.availableDate = available_date.getDate();
   }
 
   public Datetime getStartedDate() {
@@ -173,7 +197,9 @@ public class Analysis implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,startedDate);
   }
   public void setStartedDate (Datetime started_date){
-    this.startedDate = started_date.getDate();
+    if((startedDate == null && this.startedDate != null) || 
+       (startedDate != null && !startedDate.equals(this.startedDate)))
+      this.startedDate = started_date.getDate();
   }
 
   public Datetime getCompletedDate() {
@@ -182,7 +208,9 @@ public class Analysis implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,completedDate);
   }
   public void setCompletedDate (Datetime completed_date){
-    this.completedDate = completed_date.getDate();
+    if((completedDate == null && this.completedDate != null) || 
+       (completedDate != null && !completedDate.equals(this.completedDate)))
+      this.completedDate = completed_date.getDate();
   }
 
   public Datetime getReleasedDate() {
@@ -191,7 +219,9 @@ public class Analysis implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,releasedDate);
   }
   public void setReleasedDate (Datetime released_date){
-    this.releasedDate = released_date.getDate();
+    if((releasedDate == null && this.releasedDate != null) || 
+       (releasedDate != null && !releasedDate.equals(this.releasedDate)))
+      this.releasedDate = released_date.getDate();
   }
 
   public Datetime getPrintedDate() {
@@ -200,7 +230,9 @@ public class Analysis implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,printedDate);
   }
   public void setPrintedDate (Datetime printed_date){
-    this.printedDate = printed_date.getDate();
+    if((printedDate == null && this.printedDate != null) || 
+       (printedDate != null && !printedDate.equals(this.printedDate)))
+      this.printedDate = printed_date.getDate();
   }
 
   

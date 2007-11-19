@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="person")
@@ -49,28 +49,36 @@ public class Person implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getLastName() {
     return lastName;
   }
   public void setLastName(String lastName) {
-    this.lastName = lastName;
+    if((lastName == null && this.lastName != null) || 
+       (lastName != null && !lastName.equals(this.lastName)))
+      this.lastName = lastName;
   }
 
   public String getFirstName() {
     return firstName;
   }
   public void setFirstName(String firstName) {
-    this.firstName = firstName;
+    if((firstName == null && this.firstName != null) || 
+       (firstName != null && !firstName.equals(this.firstName)))
+      this.firstName = firstName;
   }
 
   public String getMiddleName() {
     return middleName;
   }
   public void setMiddleName(String middleName) {
-    this.middleName = middleName;
+    if((middleName == null && this.middleName != null) || 
+       (middleName != null && !middleName.equals(this.middleName)))
+      this.middleName = middleName;
   }
 
   

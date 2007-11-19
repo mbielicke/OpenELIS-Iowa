@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="test_result")
@@ -64,63 +64,81 @@ public class TestResult implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getTest() {
     return test;
   }
   public void setTest(Integer test) {
-    this.test = test;
+    if((test == null && this.test != null) || 
+       (test != null && !test.equals(this.test)))
+      this.test = test;
   }
 
   public Integer getResultGroup() {
     return resultGroup;
   }
   public void setResultGroup(Integer resultGroup) {
-    this.resultGroup = resultGroup;
+    if((resultGroup == null && this.resultGroup != null) || 
+       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
+      this.resultGroup = resultGroup;
   }
 
   public Integer getFlag() {
     return flag;
   }
   public void setFlag(Integer flag) {
-    this.flag = flag;
+    if((flag == null && this.flag != null) || 
+       (flag != null && !flag.equals(this.flag)))
+      this.flag = flag;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getValue() {
     return value;
   }
   public void setValue(String value) {
-    this.value = value;
+    if((value == null && this.value != null) || 
+       (value != null && !value.equals(this.value)))
+      this.value = value;
   }
 
   public Integer getSignificantDigits() {
     return significantDigits;
   }
   public void setSignificantDigits(Integer significantDigits) {
-    this.significantDigits = significantDigits;
+    if((significantDigits == null && this.significantDigits != null) || 
+       (significantDigits != null && !significantDigits.equals(this.significantDigits)))
+      this.significantDigits = significantDigits;
   }
 
   public String getQuantLimit() {
     return quantLimit;
   }
   public void setQuantLimit(String quantLimit) {
-    this.quantLimit = quantLimit;
+    if((quantLimit == null && this.quantLimit != null) || 
+       (quantLimit != null && !quantLimit.equals(this.quantLimit)))
+      this.quantLimit = quantLimit;
   }
 
   public String getContLevel() {
     return contLevel;
   }
   public void setContLevel(String contLevel) {
-    this.contLevel = contLevel;
+    if((contLevel == null && this.contLevel != null) || 
+       (contLevel != null && !contLevel.equals(this.contLevel)))
+      this.contLevel = contLevel;
   }
 
   

@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="order")
@@ -79,14 +79,18 @@ public class Order implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getOrganization() {
     return organization;
   }
   public void setOrganization(Integer organization) {
-    this.organization = organization;
+    if((organization == null && this.organization != null) || 
+       (organization != null && !organization.equals(this.organization)))
+      this.organization = organization;
   }
 
   public Datetime getOrderedDate() {
@@ -95,7 +99,9 @@ public class Order implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,orderedDate);
   }
   public void setOrderedDate (Datetime ordered_date){
-    this.orderedDate = ordered_date.getDate();
+    if((orderedDate == null && this.orderedDate != null) || 
+       (orderedDate != null && !orderedDate.equals(this.orderedDate)))
+      this.orderedDate = ordered_date.getDate();
   }
 
   public Datetime getNeededbyDate() {
@@ -104,49 +110,63 @@ public class Order implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,neededbyDate);
   }
   public void setNeededbyDate (Datetime neededby_date){
-    this.neededbyDate = neededby_date.getDate();
+    if((neededbyDate == null && this.neededbyDate != null) || 
+       (neededbyDate != null && !neededbyDate.equals(this.neededbyDate)))
+      this.neededbyDate = neededby_date.getDate();
   }
 
   public String getRequestedBy() {
     return requestedBy;
   }
   public void setRequestedBy(String requestedBy) {
-    this.requestedBy = requestedBy;
+    if((requestedBy == null && this.requestedBy != null) || 
+       (requestedBy != null && !requestedBy.equals(this.requestedBy)))
+      this.requestedBy = requestedBy;
   }
 
   public String getCostCenter() {
     return costCenter;
   }
   public void setCostCenter(String costCenter) {
-    this.costCenter = costCenter;
+    if((costCenter == null && this.costCenter != null) || 
+       (costCenter != null && !costCenter.equals(this.costCenter)))
+      this.costCenter = costCenter;
   }
 
   public Integer getProcessedBy() {
     return processedBy;
   }
   public void setProcessedBy(Integer processedBy) {
-    this.processedBy = processedBy;
+    if((processedBy == null && this.processedBy != null) || 
+       (processedBy != null && !processedBy.equals(this.processedBy)))
+      this.processedBy = processedBy;
   }
 
   public Integer getShippingType() {
     return shippingType;
   }
   public void setShippingType(Integer shippingType) {
-    this.shippingType = shippingType;
+    if((shippingType == null && this.shippingType != null) || 
+       (shippingType != null && !shippingType.equals(this.shippingType)))
+      this.shippingType = shippingType;
   }
 
   public Integer getShippingCarrier() {
     return shippingCarrier;
   }
   public void setShippingCarrier(Integer shippingCarrier) {
-    this.shippingCarrier = shippingCarrier;
+    if((shippingCarrier == null && this.shippingCarrier != null) || 
+       (shippingCarrier != null && !shippingCarrier.equals(this.shippingCarrier)))
+      this.shippingCarrier = shippingCarrier;
   }
 
   public Double getShippingCost() {
     return shippingCost;
   }
   public void setShippingCost(Double shippingCost) {
-    this.shippingCost = shippingCost;
+    if((shippingCost == null && this.shippingCost != null) || 
+       (shippingCost != null && !shippingCost.equals(this.shippingCost)))
+      this.shippingCost = shippingCost;
   }
 
   public Datetime getDeliveredDate() {
@@ -155,28 +175,36 @@ public class Order implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,deliveredDate);
   }
   public void setDeliveredDate (Datetime delivered_date){
-    this.deliveredDate = delivered_date.getDate();
+    if((deliveredDate == null && this.deliveredDate != null) || 
+       (deliveredDate != null && !deliveredDate.equals(this.deliveredDate)))
+      this.deliveredDate = delivered_date.getDate();
   }
 
   public String getIsExternal() {
     return isExternal;
   }
   public void setIsExternal(String isExternal) {
-    this.isExternal = isExternal;
+    if((isExternal == null && this.isExternal != null) || 
+       (isExternal != null && !isExternal.equals(this.isExternal)))
+      this.isExternal = isExternal;
   }
 
   public String getExternalOrderNumber() {
     return externalOrderNumber;
   }
   public void setExternalOrderNumber(String externalOrderNumber) {
-    this.externalOrderNumber = externalOrderNumber;
+    if((externalOrderNumber == null && this.externalOrderNumber != null) || 
+       (externalOrderNumber != null && !externalOrderNumber.equals(this.externalOrderNumber)))
+      this.externalOrderNumber = externalOrderNumber;
   }
 
   public String getIsFilled() {
     return isFilled;
   }
   public void setIsFilled(String isFilled) {
-    this.isFilled = isFilled;
+    if((isFilled == null && this.isFilled != null) || 
+       (isFilled != null && !isFilled.equals(this.isFilled)))
+      this.isFilled = isFilled;
   }
 
   

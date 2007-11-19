@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="order_item")
@@ -52,35 +52,45 @@ public class OrderItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getOrder() {
     return order;
   }
   public void setOrder(Integer order) {
-    this.order = order;
+    if((order == null && this.order != null) || 
+       (order != null && !order.equals(this.order)))
+      this.order = order;
   }
 
   public Integer getInventoryLocation() {
     return inventoryLocation;
   }
   public void setInventoryLocation(Integer inventoryLocation) {
-    this.inventoryLocation = inventoryLocation;
+    if((inventoryLocation == null && this.inventoryLocation != null) || 
+       (inventoryLocation != null && !inventoryLocation.equals(this.inventoryLocation)))
+      this.inventoryLocation = inventoryLocation;
   }
 
   public Integer getQuantityRequested() {
     return quantityRequested;
   }
   public void setQuantityRequested(Integer quantityRequested) {
-    this.quantityRequested = quantityRequested;
+    if((quantityRequested == null && this.quantityRequested != null) || 
+       (quantityRequested != null && !quantityRequested.equals(this.quantityRequested)))
+      this.quantityRequested = quantityRequested;
   }
 
   public Integer getQuantityReceived() {
     return quantityReceived;
   }
   public void setQuantityReceived(Integer quantityReceived) {
-    this.quantityReceived = quantityReceived;
+    if((quantityReceived == null && this.quantityReceived != null) || 
+       (quantityReceived != null && !quantityReceived.equals(this.quantityReceived)))
+      this.quantityReceived = quantityReceived;
   }
 
   

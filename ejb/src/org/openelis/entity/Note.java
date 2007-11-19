@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="note")
@@ -61,21 +61,27 @@ public class Note implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getReferenceId() {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    this.referenceId = referenceId;
+    if((referenceId == null && this.referenceId != null) || 
+       (referenceId != null && !referenceId.equals(this.referenceId)))
+      this.referenceId = referenceId;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public Datetime getTimestamp() {
@@ -84,35 +90,45 @@ public class Note implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,timestamp);
   }
   public void setTimestamp (Datetime timestamp){
-    this.timestamp = timestamp.getDate();
+    if((timestamp == null && this.timestamp != null) || 
+       (timestamp != null && !timestamp.equals(this.timestamp)))
+      this.timestamp = timestamp.getDate();
   }
 
   public String getIsExternal() {
     return isExternal;
   }
   public void setIsExternal(String isExternal) {
-    this.isExternal = isExternal;
+    if((isExternal == null && this.isExternal != null) || 
+       (isExternal != null && !isExternal.equals(this.isExternal)))
+      this.isExternal = isExternal;
   }
 
   public Integer getSystemUser() {
     return systemUser;
   }
   public void setSystemUser(Integer systemUser) {
-    this.systemUser = systemUser;
+    if((systemUser == null && this.systemUser != null) || 
+       (systemUser != null && !systemUser.equals(this.systemUser)))
+      this.systemUser = systemUser;
   }
 
   public String getSubject() {
     return subject;
   }
   public void setSubject(String subject) {
-    this.subject = subject;
+    if((subject == null && this.subject != null) || 
+       (subject != null && !subject.equals(this.subject)))
+      this.subject = subject;
   }
 
   public String getText() {
     return text;
   }
   public void setText(String text) {
-    this.text = text;
+    if((text == null && this.text != null) || 
+       (text != null && !text.equals(this.text)))
+      this.text = text;
   }
 
   

@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="attachment_item")
@@ -49,28 +49,36 @@ public class AttachmentItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getReferenceId() {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    this.referenceId = referenceId;
+    if((referenceId == null && this.referenceId != null) || 
+       (referenceId != null && !referenceId.equals(this.referenceId)))
+      this.referenceId = referenceId;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public Integer getAttachment() {
     return attachment;
   }
   public void setAttachment(Integer attachment) {
-    this.attachment = attachment;
+    if((attachment == null && this.attachment != null) || 
+       (attachment != null && !attachment.equals(this.attachment)))
+      this.attachment = attachment;
   }
 
   

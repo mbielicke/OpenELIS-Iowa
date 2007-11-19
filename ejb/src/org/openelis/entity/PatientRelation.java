@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="patient_relation")
@@ -49,28 +49,36 @@ public class PatientRelation implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getRelation() {
     return relation;
   }
   public void setRelation(Integer relation) {
-    this.relation = relation;
+    if((relation == null && this.relation != null) || 
+       (relation != null && !relation.equals(this.relation)))
+      this.relation = relation;
   }
 
   public Integer getFromPatient() {
     return fromPatient;
   }
   public void setFromPatient(Integer fromPatient) {
-    this.fromPatient = fromPatient;
+    if((fromPatient == null && this.fromPatient != null) || 
+       (fromPatient != null && !fromPatient.equals(this.fromPatient)))
+      this.fromPatient = fromPatient;
   }
 
   public Integer getToPatient() {
     return toPatient;
   }
   public void setToPatient(Integer toPatient) {
-    this.toPatient = toPatient;
+    if((toPatient == null && this.toPatient != null) || 
+       (toPatient != null && !toPatient.equals(this.toPatient)))
+      this.toPatient = toPatient;
   }
 
   

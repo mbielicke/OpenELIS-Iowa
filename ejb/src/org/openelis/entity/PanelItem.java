@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="panel_item")
@@ -52,35 +52,45 @@ public class PanelItem implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getPanel() {
     return panel;
   }
   public void setPanel(Integer panel) {
-    this.panel = panel;
+    if((panel == null && this.panel != null) || 
+       (panel != null && !panel.equals(this.panel)))
+      this.panel = panel;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public String getTestName() {
     return testName;
   }
   public void setTestName(String testName) {
-    this.testName = testName;
+    if((testName == null && this.testName != null) || 
+       (testName != null && !testName.equals(this.testName)))
+      this.testName = testName;
   }
 
   public String getMethodName() {
     return methodName;
   }
   public void setMethodName(String methodName) {
-    this.methodName = methodName;
+    if((methodName == null && this.methodName != null) || 
+       (methodName != null && !methodName.equals(this.methodName)))
+      this.methodName = methodName;
   }
 
   

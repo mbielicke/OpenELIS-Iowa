@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="patient")
@@ -58,14 +58,18 @@ public class Patient implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getPerson() {
     return person;
   }
   public void setPerson(Integer person) {
-    this.person = person;
+    if((person == null && this.person != null) || 
+       (person != null && !person.equals(this.person)))
+      this.person = person;
   }
 
   public Datetime getBirthDate() {
@@ -74,7 +78,9 @@ public class Patient implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,birthDate);
   }
   public void setBirthDate (Datetime birth_date){
-    this.birthDate = birth_date.getDate();
+    if((birthDate == null && this.birthDate != null) || 
+       (birthDate != null && !birthDate.equals(this.birthDate)))
+      this.birthDate = birth_date.getDate();
   }
 
   public Datetime getBirthTime() {
@@ -83,28 +89,36 @@ public class Patient implements Auditable, Cloneable {
     return new Datetime(Datetime.HOUR,Datetime.MINUTE,birthTime);
   }
   public void setBirthTime (Datetime birth_time){
-    this.birthTime = birth_time.getDate();
+    if((birthTime == null && this.birthTime != null) || 
+       (birthTime != null && !birthTime.equals(this.birthTime)))
+      this.birthTime = birth_time.getDate();
   }
 
   public Integer getGender() {
     return gender;
   }
   public void setGender(Integer gender) {
-    this.gender = gender;
+    if((gender == null && this.gender != null) || 
+       (gender != null && !gender.equals(this.gender)))
+      this.gender = gender;
   }
 
   public String getRace() {
     return race;
   }
   public void setRace(String race) {
-    this.race = race;
+    if((race == null && this.race != null) || 
+       (race != null && !race.equals(this.race)))
+      this.race = race;
   }
 
   public Integer getEthnicity() {
     return ethnicity;
   }
   public void setEthnicity(Integer ethnicity) {
-    this.ethnicity = ethnicity;
+    if((ethnicity == null && this.ethnicity != null) || 
+       (ethnicity != null && !ethnicity.equals(this.ethnicity)))
+      this.ethnicity = ethnicity;
   }
 
   

@@ -2,7 +2,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Local
 public interface HistoryLocal {

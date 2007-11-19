@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="test_worksheet")
@@ -55,42 +55,54 @@ public class TestWorksheet implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getTest() {
     return test;
   }
   public void setTest(Integer test) {
-    this.test = test;
+    if((test == null && this.test != null) || 
+       (test != null && !test.equals(this.test)))
+      this.test = test;
   }
 
   public Integer getBatchCapacity() {
     return batchCapacity;
   }
   public void setBatchCapacity(Integer batchCapacity) {
-    this.batchCapacity = batchCapacity;
+    if((batchCapacity == null && this.batchCapacity != null) || 
+       (batchCapacity != null && !batchCapacity.equals(this.batchCapacity)))
+      this.batchCapacity = batchCapacity;
   }
 
   public Integer getTotalCapacity() {
     return totalCapacity;
   }
   public void setTotalCapacity(Integer totalCapacity) {
-    this.totalCapacity = totalCapacity;
+    if((totalCapacity == null && this.totalCapacity != null) || 
+       (totalCapacity != null && !totalCapacity.equals(this.totalCapacity)))
+      this.totalCapacity = totalCapacity;
   }
 
   public Integer getNumberFormat() {
     return numberFormat;
   }
   public void setNumberFormat(Integer numberFormat) {
-    this.numberFormat = numberFormat;
+    if((numberFormat == null && this.numberFormat != null) || 
+       (numberFormat != null && !numberFormat.equals(this.numberFormat)))
+      this.numberFormat = numberFormat;
   }
 
   public Integer getScriptlet() {
     return scriptlet;
   }
   public void setScriptlet(Integer scriptlet) {
-    this.scriptlet = scriptlet;
+    if((scriptlet == null && this.scriptlet != null) || 
+       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
+      this.scriptlet = scriptlet;
   }
 
   

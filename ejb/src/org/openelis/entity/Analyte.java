@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="analyte")
@@ -55,42 +55,54 @@ public class Analyte implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public Integer getAnalyteGroup() {
     return analyteGroup;
   }
   public void setAnalyteGroup(Integer analyteGroup) {
-    this.analyteGroup = analyteGroup;
+    if((analyteGroup == null && this.analyteGroup != null) || 
+       (analyteGroup != null && !analyteGroup.equals(this.analyteGroup)))
+      this.analyteGroup = analyteGroup;
   }
 
   public Integer getParentAnalyte() {
     return parentAnalyte;
   }
   public void setParentAnalyte(Integer parentAnalyte) {
-    this.parentAnalyte = parentAnalyte;
+    if((parentAnalyte == null && this.parentAnalyte != null) || 
+       (parentAnalyte != null && !parentAnalyte.equals(this.parentAnalyte)))
+      this.parentAnalyte = parentAnalyte;
   }
 
   public String getExternalId() {
     return externalId;
   }
   public void setExternalId(String externalId) {
-    this.externalId = externalId;
+    if((externalId == null && this.externalId != null) || 
+       (externalId != null && !externalId.equals(this.externalId)))
+      this.externalId = externalId;
   }
 
   

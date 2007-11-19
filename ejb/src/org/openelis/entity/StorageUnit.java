@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="storage_unit")
@@ -49,28 +49,36 @@ public class StorageUnit implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public String getCategory() {
     return category;
   }
   public void setCategory(String category) {
-    this.category = category;
+    if((category == null && this.category != null) || 
+       (category != null && !category.equals(this.category)))
+      this.category = category;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getIsSingular() {
     return isSingular;
   }
   public void setIsSingular(String isSingular) {
-    this.isSingular = isSingular;
+    if((isSingular == null && this.isSingular != null) || 
+       (isSingular != null && !isSingular.equals(this.isSingular)))
+      this.isSingular = isSingular;
   }
 
   

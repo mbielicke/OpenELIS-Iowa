@@ -15,12 +15,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.util.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="address")
@@ -28,7 +27,7 @@ import org.openelis.util.Auditable;
 public class Address implements Auditable, Cloneable {
   
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue
   @Column(name="id")
   private Integer id;             
 
@@ -83,105 +82,135 @@ public class Address implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getReferenceId() {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    this.referenceId = referenceId;
+    if((referenceId == null && this.referenceId != null) || 
+       (referenceId != null && !referenceId.equals(this.referenceId)))
+      this.referenceId = referenceId;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getMultipleUnit() {
     return multipleUnit;
   }
   public void setMultipleUnit(String multipleUnit) {
-    this.multipleUnit = multipleUnit;
+    if((multipleUnit == null && this.multipleUnit != null) || 
+       (multipleUnit != null && !multipleUnit.equals(this.multipleUnit)))
+      this.multipleUnit = multipleUnit;
   }
 
   public String getStreetAddress() {
     return streetAddress;
   }
   public void setStreetAddress(String streetAddress) {
-    this.streetAddress = streetAddress;
+    if((streetAddress == null && this.streetAddress != null) || 
+       (streetAddress != null && !streetAddress.equals(this.streetAddress)))
+      this.streetAddress = streetAddress;
   }
 
   public String getCity() {
     return city;
   }
   public void setCity(String city) {
-    this.city = city;
+    if((city == null && this.city != null) || 
+       (city != null && !city.equals(this.city)))
+      this.city = city;
   }
 
   public String getState() {
     return state;
   }
   public void setState(String state) {
-    this.state = state;
+    if((state == null && this.state != null) || 
+       (state != null && !state.equals(this.state)))
+      this.state = state;
   }
 
   public String getZipCode() {
     return zipCode;
   }
   public void setZipCode(String zipCode) {
-    this.zipCode = zipCode;
+    if((zipCode == null && this.zipCode != null) || 
+       (zipCode != null && !zipCode.equals(this.zipCode)))
+      this.zipCode = zipCode;
   }
 
   public String getWorkPhone() {
     return workPhone;
   }
   public void setWorkPhone(String workPhone) {
-    this.workPhone = workPhone;
+    if((workPhone == null && this.workPhone != null) || 
+       (workPhone != null && !workPhone.equals(this.workPhone)))
+      this.workPhone = workPhone;
   }
 
   public String getHomePhone() {
     return homePhone;
   }
   public void setHomePhone(String homePhone) {
-    this.homePhone = homePhone;
+    if((homePhone == null && this.homePhone != null) || 
+       (homePhone != null && !homePhone.equals(this.homePhone)))
+      this.homePhone = homePhone;
   }
 
   public String getCellPhone() {
     return cellPhone;
   }
   public void setCellPhone(String cellPhone) {
-    this.cellPhone = cellPhone;
+    if((cellPhone == null && this.cellPhone != null) || 
+       (cellPhone != null && !cellPhone.equals(this.cellPhone)))
+      this.cellPhone = cellPhone;
   }
 
   public String getFaxPhone() {
     return faxPhone;
   }
   public void setFaxPhone(String faxPhone) {
-    this.faxPhone = faxPhone;
+    if((faxPhone == null && this.faxPhone != null) || 
+       (faxPhone != null && !faxPhone.equals(this.faxPhone)))
+      this.faxPhone = faxPhone;
   }
 
   public String getEmail() {
     return email;
   }
   public void setEmail(String email) {
-    this.email = email;
+    if((email == null && this.email != null) || 
+       (email != null && !email.equals(this.email)))
+      this.email = email;
   }
 
   public String getCountry() {
     return country;
   }
   public void setCountry(String country) {
-    this.country = country;
+    if((country == null && this.country != null) || 
+       (country != null && !country.equals(this.country)))
+      this.country = country;
   }
 
   

@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="dictionary")
@@ -58,49 +58,63 @@ public class Dictionary implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getCategory() {
     return category;
   }
   public void setCategory(Integer category) {
-    this.category = category;
+    if((category == null && this.category != null) || 
+       (category != null && !category.equals(this.category)))
+      this.category = category;
   }
 
   public Integer getRelatedEntry() {
     return relatedEntry;
   }
   public void setRelatedEntry(Integer relatedEntry) {
-    this.relatedEntry = relatedEntry;
+    if((relatedEntry == null && this.relatedEntry != null) || 
+       (relatedEntry != null && !relatedEntry.equals(this.relatedEntry)))
+      this.relatedEntry = relatedEntry;
   }
 
   public String getSystemName() {
     return systemName;
   }
   public void setSystemName(String systemName) {
-    this.systemName = systemName;
+    if((systemName == null && this.systemName != null) || 
+       (systemName != null && !systemName.equals(this.systemName)))
+      this.systemName = systemName;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    this.isActive = isActive;
+    if((isActive == null && this.isActive != null) || 
+       (isActive != null && !isActive.equals(this.isActive)))
+      this.isActive = isActive;
   }
 
   public String getLocalAbbrev() {
     return localAbbrev;
   }
   public void setLocalAbbrev(String localAbbrev) {
-    this.localAbbrev = localAbbrev;
+    if((localAbbrev == null && this.localAbbrev != null) || 
+       (localAbbrev != null && !localAbbrev.equals(this.localAbbrev)))
+      this.localAbbrev = localAbbrev;
   }
 
   public String getEntry() {
     return entry;
   }
   public void setEntry(String entry) {
-    this.entry = entry;
+    if((entry == null && this.entry != null) || 
+       (entry != null && !entry.equals(this.entry)))
+      this.entry = entry;
   }
 
   

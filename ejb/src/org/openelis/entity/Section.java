@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="section")
@@ -55,42 +55,54 @@ public class Section implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getParentSection() {
     return parentSection;
   }
   public void setParentSection(Integer parentSection) {
-    this.parentSection = parentSection;
+    if((parentSection == null && this.parentSection != null) || 
+       (parentSection != null && !parentSection.equals(this.parentSection)))
+      this.parentSection = parentSection;
   }
 
   public String getName() {
     return name;
   }
   public void setName(String name) {
-    this.name = name;
+    if((name == null && this.name != null) || 
+       (name != null && !name.equals(this.name)))
+      this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
   public void setDescription(String description) {
-    this.description = description;
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
   }
 
   public String getIsExternal() {
     return isExternal;
   }
   public void setIsExternal(String isExternal) {
-    this.isExternal = isExternal;
+    if((isExternal == null && this.isExternal != null) || 
+       (isExternal != null && !isExternal.equals(this.isExternal)))
+      this.isExternal = isExternal;
   }
 
   public Integer getOrganization() {
     return organization;
   }
   public void setOrganization(Integer organization) {
-    this.organization = organization;
+    if((organization == null && this.organization != null) || 
+       (organization != null && !organization.equals(this.organization)))
+      this.organization = organization;
   }
 
   

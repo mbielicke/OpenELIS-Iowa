@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="qc_analyte")
@@ -55,42 +55,54 @@ public class QcAnalyte implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getQc() {
     return qc;
   }
   public void setQc(Integer qc) {
-    this.qc = qc;
+    if((qc == null && this.qc != null) || 
+       (qc != null && !qc.equals(this.qc)))
+      this.qc = qc;
   }
 
   public Integer getAnalyte() {
     return analyte;
   }
   public void setAnalyte(Integer analyte) {
-    this.analyte = analyte;
+    if((analyte == null && this.analyte != null) || 
+       (analyte != null && !analyte.equals(this.analyte)))
+      this.analyte = analyte;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getValue() {
     return value;
   }
   public void setValue(String value) {
-    this.value = value;
+    if((value == null && this.value != null) || 
+       (value != null && !value.equals(this.value)))
+      this.value = value;
   }
 
   public String getIsTrendable() {
     return isTrendable;
   }
   public void setIsTrendable(String isTrendable) {
-    this.isTrendable = isTrendable;
+    if((isTrendable == null && this.isTrendable != null) || 
+       (isTrendable != null && !isTrendable.equals(this.isTrendable)))
+      this.isTrendable = isTrendable;
   }
 
   

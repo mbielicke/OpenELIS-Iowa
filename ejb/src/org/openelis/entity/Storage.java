@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="storage")
@@ -55,28 +55,36 @@ public class Storage implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getReferenceId() {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    this.referenceId = referenceId;
+    if((referenceId == null && this.referenceId != null) || 
+       (referenceId != null && !referenceId.equals(this.referenceId)))
+      this.referenceId = referenceId;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public Integer getStorageLocation() {
     return storageLocation;
   }
   public void setStorageLocation(Integer storageLocation) {
-    this.storageLocation = storageLocation;
+    if((storageLocation == null && this.storageLocation != null) || 
+       (storageLocation != null && !storageLocation.equals(this.storageLocation)))
+      this.storageLocation = storageLocation;
   }
 
   public Datetime getCheckin() {
@@ -85,7 +93,9 @@ public class Storage implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,checkin);
   }
   public void setCheckin (Datetime checkin){
-    this.checkin = checkin.getDate();
+    if((checkin == null && this.checkin != null) || 
+       (checkin != null && !checkin.equals(this.checkin)))
+      this.checkin = checkin.getDate();
   }
 
   public Datetime getCheckout() {
@@ -94,7 +104,9 @@ public class Storage implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.MINUTE,checkout);
   }
   public void setCheckout (Datetime checkout){
-    this.checkout = checkout.getDate();
+    if((checkout == null && this.checkout != null) || 
+       (checkout != null && !checkout.equals(this.checkout)))
+      this.checkout = checkout.getDate();
   }
 
   

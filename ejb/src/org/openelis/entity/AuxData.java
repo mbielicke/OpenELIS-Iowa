@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="aux_data")
@@ -61,56 +61,72 @@ public class AuxData implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public Integer getAuxField() {
     return auxField;
   }
   public void setAuxField(Integer auxField) {
-    this.auxField = auxField;
+    if((auxField == null && this.auxField != null) || 
+       (auxField != null && !auxField.equals(this.auxField)))
+      this.auxField = auxField;
   }
 
   public Integer getReferenceId() {
     return referenceId;
   }
   public void setReferenceId(Integer referenceId) {
-    this.referenceId = referenceId;
+    if((referenceId == null && this.referenceId != null) || 
+       (referenceId != null && !referenceId.equals(this.referenceId)))
+      this.referenceId = referenceId;
   }
 
   public Integer getReferenceTable() {
     return referenceTable;
   }
   public void setReferenceTable(Integer referenceTable) {
-    this.referenceTable = referenceTable;
+    if((referenceTable == null && this.referenceTable != null) || 
+       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
+      this.referenceTable = referenceTable;
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getValue() {
     return value;
   }
   public void setValue(String value) {
-    this.value = value;
+    if((value == null && this.value != null) || 
+       (value != null && !value.equals(this.value)))
+      this.value = value;
   }
 
   

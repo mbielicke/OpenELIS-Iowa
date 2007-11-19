@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
-import org.openelis.interfaces.Auditable;
+import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name="result")
@@ -64,63 +64,81 @@ public class Result implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    this.id = id;
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
   }
 
   public Integer getAnalysis() {
     return analysis;
   }
   public void setAnalysis(Integer analysis) {
-    this.analysis = analysis;
+    if((analysis == null && this.analysis != null) || 
+       (analysis != null && !analysis.equals(this.analysis)))
+      this.analysis = analysis;
   }
 
   public Integer getSortOrder() {
     return sortOrder;
   }
   public void setSortOrder(Integer sortOrder) {
-    this.sortOrder = sortOrder;
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public String getIsReportable() {
     return isReportable;
   }
   public void setIsReportable(String isReportable) {
-    this.isReportable = isReportable;
+    if((isReportable == null && this.isReportable != null) || 
+       (isReportable != null && !isReportable.equals(this.isReportable)))
+      this.isReportable = isReportable;
   }
 
   public Integer getAnalyte() {
     return analyte;
   }
   public void setAnalyte(Integer analyte) {
-    this.analyte = analyte;
+    if((analyte == null && this.analyte != null) || 
+       (analyte != null && !analyte.equals(this.analyte)))
+      this.analyte = analyte;
   }
 
   public Integer getType() {
     return type;
   }
   public void setType(Integer type) {
-    this.type = type;
+    if((type == null && this.type != null) || 
+       (type != null && !type.equals(this.type)))
+      this.type = type;
   }
 
   public String getValue() {
     return value;
   }
   public void setValue(String value) {
-    this.value = value;
+    if((value == null && this.value != null) || 
+       (value != null && !value.equals(this.value)))
+      this.value = value;
   }
 
   public Integer getTestResult() {
     return testResult;
   }
   public void setTestResult(Integer testResult) {
-    this.testResult = testResult;
+    if((testResult == null && this.testResult != null) || 
+       (testResult != null && !testResult.equals(this.testResult)))
+      this.testResult = testResult;
   }
 
   public String getQuantLimit() {
     return quantLimit;
   }
   public void setQuantLimit(String quantLimit) {
-    this.quantLimit = quantLimit;
+    if((quantLimit == null && this.quantLimit != null) || 
+       (quantLimit != null && !quantLimit.equals(this.quantLimit)))
+      this.quantLimit = quantLimit;
   }
 
   
