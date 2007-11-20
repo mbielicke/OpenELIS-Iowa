@@ -15,19 +15,24 @@ public class OrganizationContactsTable implements TableManager {
    
 
     public boolean canSelect(int row, TableController controller) {        
-        if(userForm.bpanel.state == FormInt.DISPLAY)           
-            return true;
-        return false;
+       return true;
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
-       
-        return true;
+    	//if(userForm.bpanel.state == FormInt.ADD || userForm.bpanel.state == FormInt.UPDATE)           
+        //    return true;
+        //return false;
+    	if(disableRows){
+            return false;
+        }
+        
+       return true;
     }
 
     public boolean canDelete(int row, TableController controller) {
-        
-        return true;
+    	//if(userForm.bpanel.state == FormInt.ADD || userForm.bpanel.state == FormInt.UPDATE)           
+            return true;
+      //  return false;
     }
 
     public boolean action(int row, int col, TableController controller) {
@@ -39,12 +44,13 @@ public class OrganizationContactsTable implements TableManager {
         //}  
        
         
-        return true;
+        return false;
     }
 
     public boolean canInsert(int row, TableController controller) {
-        
-        return true;
+    	//if(userForm.bpanel.state == FormInt.ADD || userForm.bpanel.state == FormInt.UPDATE)           
+            return false;
+      //  return false;        
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
@@ -55,8 +61,11 @@ public class OrganizationContactsTable implements TableManager {
 
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-
-        return true;
+    	if (col == 0 && row == controller.model.numRows() - 1) {
+            return true;
+        }   
+        
+        return false;
     }
 
 

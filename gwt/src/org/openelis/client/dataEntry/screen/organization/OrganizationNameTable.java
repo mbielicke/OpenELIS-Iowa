@@ -31,7 +31,7 @@ public class OrganizationNameTable implements TableManager {
     }
 
     public boolean action(int row, int col, TableController controller) {
-        if(userForm != null){ 
+        if(userForm != null && userForm.bpanel.state == FormInt.DISPLAY){ 
         //	userForm.fetch(key);
             userForm.fetchData(controller.model.getRow(row)
                                             .getHidden("id"));                     
