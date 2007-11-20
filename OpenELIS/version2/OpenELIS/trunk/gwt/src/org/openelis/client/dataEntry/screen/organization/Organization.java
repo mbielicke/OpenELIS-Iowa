@@ -2,10 +2,15 @@ package org.openelis.client.dataEntry.screen.organization;
 
 import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.AppScreenForm;
+import org.openelis.gwt.client.screen.ScreenLabel;
+import org.openelis.gwt.client.screen.ScreenPagedTree;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
+import org.openelis.gwt.client.screen.ScreenTextBox;
 import org.openelis.gwt.client.widget.AToZPanel;
 import org.openelis.gwt.client.widget.ButtonPanel;
+import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.FormTable;
+import org.openelis.gwt.client.widget.pagedtree.TreeModel;
 import org.openelis.gwt.common.AbstractField;
 import org.openelis.gwt.common.TableModel;
 
@@ -14,17 +19,24 @@ import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
-public class Organization  extends AppScreenForm {
+public class Organization  extends AppScreenForm{
 	
 	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
 	
 	private static OrganizationScreenIntAsync screenService = (OrganizationScreenIntAsync)GWT.create(OrganizationScreenInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
+    private int tabSelectedIndex = 0;
     
 	Document xml = null;
 	public Organization() {
@@ -143,6 +155,12 @@ public class Organization  extends AppScreenForm {
             
         	bpanel = (ButtonPanel)getWidget("buttons");
         	
+        	OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)((FormTable)getWidget("contactsTable")).controller.manager;        
+        	orgContactsTable.disableRows = true;
+            
+        	final ScreenPagedTree pagedTree = (ScreenPagedTree)widgets.get("notesTree");
+        	pagedTree.controller.setTreeListener(this);
+        	
         //	if(constants != null)
         //		message.setText(openElisConstants.getString("loadCompleteMessage"));
         //	else
@@ -159,6 +177,8 @@ public class Organization  extends AppScreenForm {
         		screenService.getInitialModel(aToZWidget.leftTable.controller.model, new AsyncCallback(){
         	           public void onSuccess(Object result){
         	        	   aToZWidget.leftTable.controller.setModel((TableModel)result);
+        	        	   aToZWidget.leftTable.controller.select(0, 0);
+        	        	  // aToZWidget.leftTable.controller.unselect(0);
         	              // load();
         	               afterFetch(true);
         	           }
@@ -167,6 +187,7 @@ public class Organization  extends AppScreenForm {
         	               afterFetch(false);
         	           }
         	        });
+        		
         		
         		//ScreenAToZPanel aToZ = (ScreenAToZPanel) widgets.get("organizationsTable");
         		//AToZPanel aToZWidget = (AToZPanel) getWidget("organizationsTable");
@@ -208,34 +229,25 @@ public class Organization  extends AppScreenForm {
     public void fetchData(AbstractField id) {
     	//need to set the action field to tell the screen what to load
     	//we will load either the contacts tab or the notes tab
-        rpc.setFieldValue("action", "contacts");
+    	if(tabSelectedIndex == 0)
+    	rpc.setFieldValue("action", "contacts");
         
-        fetch(id);      
+        fetch(id);
+        
+        if(tabSelectedIndex == 1){
+	        //need to load notes tree if the notes tab is visible
+	        final ScreenPagedTree pagedTree = (ScreenPagedTree)widgets.get("notesTree");
+	        screenService.getNoteTreeModel(id,true,new AsyncCallback() {
+	            public void onSuccess(Object result) {
+	            	pagedTree.controller.setModel((TreeModel)result);
+	            }
+	
+	            public void onFailure(Throwable caught) {
+	                Window.alert(caught.getMessage());
+	        }
+	            });
+        }
     }
-	
-	public void add(int state) {
-		// TODO Auto-generated method stub
-		super.add(state);
-		
-	//	Window.alert("TEST");
-	}
-	
-	public void abort(int state) {
-		// TODO Auto-generated method stub
-		super.abort(state);
-		
-		
-	}
-	
-	public void query(int state) {
-		// TODO Auto-generated method stub
-		super.query(state);
-	}
-	
-	public void commit(int state) {
-		// TODO Auto-generated method stub
-		super.commit(state);
-	}
 	
 	private void getOrganizations(String letter){
 		final AToZPanel aToZWidget = (AToZPanel) getWidget("organizationsTable");
@@ -253,5 +265,163 @@ public class Organization  extends AppScreenForm {
                                                             }
                                                         });
 	}
+	
 
+	public void onTreeItemStateChanged(TreeItem item) {
+		 final TreeItem currItem = item;
+         if(currItem.getChildCount() > 0){
+           if(currItem.getChild(0).getText().equals("dummy"))               
+             currItem.removeItems();
+           else return;
+         }        
+         
+         if(currItem.getUserObject()!=null){ 
+             screenService.getNoteTreeSecondLevelXml((String)currItem.getUserObject(),false,new AsyncCallback() {
+                 
+                 public void onSuccess(Object result) {
+                   
+                     try {                          
+                         Document doc = XMLParser.parse((String)result);                   
+                         Node node = doc.getDocumentElement();
+                         
+                         NodeList items = node.getChildNodes();
+                         for (int i = 0; i < items.getLength(); i++) {
+                            if (items.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                              TreeItem childitem = createTreeItem(items.item(i));                                                  
+                              currItem.addItem(childitem);
+                            }
+                            
+                         }
+                           
+                                                                                   
+                     } catch (Exception e) {
+                         Window.alert(e.getMessage());
+                     }
+                 }
+
+                 public void onFailure(Throwable caught) {
+                     Window.alert(caught.getMessage());
+                 }
+             });
+          }  
+               
+		//super.onTreeItemStateChanged(item);
+	}
+	
+	private TreeItem createTreeItem(Node node){
+	       
+        String itemText = null;
+        Object userObject = null;
+        ScreenLabel label = null;
+        if (node.getAttributes().getNamedItem("text") != null) {
+            itemText = node.getAttributes().getNamedItem("text").getNodeValue();
+        }
+        if (node.getAttributes().getNamedItem("value") != null) {
+            userObject = node.getAttributes().getNamedItem("value").getNodeValue();
+        }
+        
+        TreeItem item = null;
+        if(itemText!=null){
+          label = new ScreenLabel(itemText,userObject)  ;
+        } 
+        
+        if(label!=null){
+            //initWidget(label);
+            item = new TreeItem(label);
+           // item.setText(((Label)label.getWidget()).getText());
+        }
+          item.setUserObject(userObject);
+          
+        NodeList items = node.getChildNodes();
+        for (int i = 0; i < items.getLength(); i++) {
+            if (items.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                item.addItem(createTreeItem(items.item(i)));
+            }
+        }
+        return item;
+    } 
+
+	public void onTabSelected(SourcesTabEvents sources, int index) {
+		tabSelectedIndex = index;
+		
+		super.onTabSelected(sources, index);
+	}
+	
+	//button panel action methods
+	public void add(int state) {
+		super.add(state);
+		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
+		orgId.enable(false);
+		
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)((FormTable)getWidget("contactsTable")).controller.manager;        
+    	orgContactsTable.disableRows = false;
+	}
+	
+	public void abort(int state) {
+		if(state == FormInt.QUERY){
+		//	((DeckPanel)getWidget("formDeck")).showWidget(0);
+		
+		}
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)((FormTable)getWidget("contactsTable")).controller.manager;        
+    	orgContactsTable.disableRows = true;
+    	
+		super.abort(state);		
+	}
+
+	public void up(int state) {	
+		super.up(state);
+	}
+	
+	public void afterUpdate(boolean success) {
+		super.afterUpdate(success);
+		
+		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
+		orgId.enable(false);
+		
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)((FormTable)getWidget("contactsTable")).controller.manager;        
+    	orgContactsTable.disableRows = false;
+	}
+	
+	public void next(int state) {
+		// TODO Auto-generated method stub
+		super.next(state);
+	}
+	
+	public void prev(int state) {
+		// TODO Auto-generated method stub
+		super.prev(state);
+	}
+	
+	public void query(int state) {
+		//((DeckPanel)getWidget("formDeck")).showWidget(1);
+		super.query(state);
+	}
+	
+	public void afterCommitQuery(boolean success) {
+		//((DeckPanel)getWidget("formDeck")).showWidget(0);
+		super.afterCommitQuery(success);
+	}
+	
+	public void afterCommitAdd(boolean success) {
+		// TODO Auto-generated method stub
+		super.afterCommitAdd(success);
+	}
+	
+	public void afterCommitUpdate(boolean success) {
+		
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)((FormTable)getWidget("contactsTable")).controller.manager;        
+    	orgContactsTable.disableRows = true;
+    	
+		super.afterCommitUpdate(success);
+	}
+
+	public void afterDelete(boolean success) {
+		// TODO Auto-generated method stub
+		super.afterDelete(success);
+	}
+	
+	public void commit(int state) {
+    	((FormTable)getWidget("contactsTable")).controller.unselect(-1);
+		super.commit(state);
+	}
 }
