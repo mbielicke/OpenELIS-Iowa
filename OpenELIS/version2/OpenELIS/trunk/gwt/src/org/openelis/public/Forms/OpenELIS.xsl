@@ -1091,7 +1091,8 @@
 			
 			
 	</display>
-	<rpc/>
+	<rpc key="display"/>
+	<rpc key="query"/>
 </screen>
   </xsl:template>
 </xsl:stylesheet>

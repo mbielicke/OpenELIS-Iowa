@@ -22,7 +22,7 @@
 			<!--left table goes here -->
 			<!--<widget>
 				-->	
-				<aToZ height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				<aToZ height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" visible="false" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
 				<!-- letter buttons for the left panel.  If you want to add another langauge just add another if block -->
 				<buttonPanel>
 				<xsl:if test="string($language)='en'">
@@ -333,22 +333,45 @@
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
-					<panel layout="horizontal" width="600px" height="175px" xsi:type="Panel">
-							<panel layout="vertical" width="600px" xsi:type="Panel">
+					<panel layout="vertical" width="600px" xsi:type="Panel">
+							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
+							<row>
 									<panel layout="horizontal" xsi:type="Panel" height="10px"/>
-									
-									<panel key="secMod" width="1px" layout="horizontal" style="FormBorderless" xsi:type="Panel">
-								
-										<widget halign="left">
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
+							</row>
+									<row>
+									<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"organizationId")'/></text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="orgName" width="290px"/>
+										<textbox key="orgId" width="100px" tab="orgName,isActive"/>
+										</widget>
+									</row>
+									<row>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="orgId"/>
+									</widget>
+									</row>
+									<row>
+								
+										<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
+										</widget>
+										<widget colspan="3">
+										<textbox case="upper" key="orgName" width="290px" tab="multUnit,orgName"/>
 										</widget>
 
-									</panel>
-									<panel layout="horizontal" xsi:type="Panel" height="10px"/>
-									<panel layout="horizontal" xsi:type="Panel" halign="center">
+									</row>
+									<row>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="orgName"/>
+									</widget>
+									</row>
+									<row>
+									<panel layout="vertical" height="10px" xsi:type="Panel"/>
+									</row>
+								<!--	<panel layout="horizontal" xsi:type="Panel" halign="center">
 									<titledPanel style="FieldSet">
 									<legend style="Legend">
 										<panel layout="horizontal" xsi:type="Panel">
@@ -361,172 +384,196 @@
 										</widget>		
 										</panel>		
 									</legend>
-									<content>
-									<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
+									<content> -->
+									
 									<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/></text>
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="multUnit" width="212px"/>
-										</widget>								
+											<textbox case="upper" key="multUnit" width="212px" tab="streetAddress,orgName"/>
+										</widget>	
+										<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/></text>
+										</widget>
+										<widget>
+											<textbox case="upper" key="city" width="212px" tab="state,streetAddress"/>
+										</widget>							
 									</row>
+									<row>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="multUnit"/>
+									</widget>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="city"/>
+									</widget>
+									</row>
+									
 									<row>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/></text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="streetAddress" width="212px"/>
-										</widget>										
-									</row>
-									<row>
+											<textbox case="upper" key="streetAddress" width="212px" tab="city,multUnit"/>
+										</widget>	
 										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/></text>
-										</widget>
-										<widget>
-											<textbox case="upper" key="city" width="212px"/>
-										</widget>
-									</row>
-									<row>
-									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/></text>
 												</widget>
 										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
 												
-												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
+												<!--<panel layout="horizontal" width="1px" xsi:type="Panel"/> -->
 												<widget>
-													<option key="state"/>
+													<option key="state" tab="zipCode,city"/>
 												</widget>
-									<panel layout="horizontal" width="48px" xsi:type="Panel"/>
+									<panel layout="horizontal" width="37px" xsi:type="Panel"/>
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/></text>
 												</widget>
 												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
 												<widget>
-													<maskedbox key="zipCode" width="60" mask="99999-9999"/>
+													<maskedbox key="zipCode" width="70" mask="99999-9999" tab="country,state"/>
+													<!--<textbox case="upper" key="zipCode" width="70" tab="country,state"/> -->
 												</widget>
-									</panel>
+									</panel>									
 									</row>
 									<row>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="streetAddress"/>
+									</widget>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
+									<widget>
+									<error id="state,zipCode"/>
+									</widget>
+									</row>
+									<row>
+									<panel layout="horizontal" width="1px" height="1px" xsi:type="Panel"/>
+									<panel layout="horizontal" width="1px" height="1px" xsi:type="Panel"/>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/></text>
 										</widget>
 										<widget>
-											<option key="country"/>
+											<option key="country" tab="parentOrg,zipCode"/>
 										</widget>
 										</row>
-									</panel>
-									</content>
-									</titledPanel>
-								<panel layout="horizontal" width="20px" xsi:type="Panel"/>
-									<titledPanel style="FieldSet">
-									<legend>
-									<panel layout="horizontal" xsi:type="Panel">
-									<widget>
-											<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/phone.png&quot;&gt;</html>
-										</widget>
-										<panel layout="horizontal" xsi:type="Panel" width="2px"/>
-										<widget>
-											<text><xsl:value-of select='resource:getString($constants,"phoneEmail")'/></text>
-										</widget>		
-										</panel>		
-									</legend>
-									<content>
-							<panel key="secMod" layout="table" style="FormBorderless" width="200px" xsi:type="Table">
 									<row>
+									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
 									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"workNumber")'/></text>
-										</widget>
-										<widget>
-											<maskedbox key="workPhone" mask="999-999-999-9999.9999" width="125px"/>
-										</widget>
+									<error id="country"/>
+									</widget>
 									</row>
-									<row>
+								<row>
+									<panel layout="vertical" height="10px" xsi:type="Panel"/>
+								</row>
+								<row>
 									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"cellNumber")'/></text>
-										</widget>
-										<widget>
-											<textbox key="cellPhone" width="90px"/>
-										</widget>
-									</row>
-									<row>
-									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"faxNumber")'/></text>
-										</widget>
-										<widget>
-											<textbox key="faxPhone" width="90px"/>
-										</widget>
-									</row>
-									<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"email")'/></text>
-										</widget>
-										<widget>
-											<textbox case="mixed" key="email"/>
-										</widget>
-									</row>
-								</panel>
-								</content>
-								</titledPanel>
-								</panel>
-								<panel layout="horizontal" xsi:type="Panel" height="10px"/>
-								<panel layout="horizontal" style="FormBorderless" width="100%" xsi:type="Panel">
-								<panel key="secMod" layout="horizontal" halign="left" width="1px" xsi:type="Panel" padding="0" spacing="0">
-										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/></text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="parentOrg" width="225px"/>
-										
+											<textbox case="upper" key="parentOrg" width="225px" tab="isActive,country"/>
 										</widget>
-										<panel layout="horizontal" width="25px" xsi:type="Panel">
-										<widget>
-											<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/lookupButtonIcon.png&quot;&gt;</html>
-										</widget>
-										</panel>
-									</panel>
-								<panel key="secMod" layout="horizontal" halign="right" style="FormBorderless" width="1px" xsi:type="Panel" padding="0" spacing="0">
+
+								</row>
+								<row>
+									<widget>
+									<error id="parentOrg"/>
+									</widget>
+									</row>
+								
+								<row>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/></text>
 										</widget>
 										<widget>
-											<check key="isActive"/>
+											<check key="isActive" tab="contactsTable,parentOrg"/>
+											<query>
+										<option tab="contactsTable,parentOrg"/>
+										</query>
 										</widget>
+								</row>
+								<row>
+									<widget>
+									<error id="isActive"/>
+									</widget>
+									</row>
 								</panel>
-								</panel>
-								<panel layout="vertical" height="10px" xsi:type="Panel" />
-							</panel>
-							
-					
-							</panel>
-					</deck> 
-				</panel>
-				<!-- tabbed panel needs to go here -->
-				<panel height="200px" key="tab333" halign="center" layout="tab" width="600px" xsi:type="Tab">
+							<!--	<panel layout="vertical" height="10px" xsi:type="Panel" /> -->
+<!-- tabbed panel needs to go here -->
+				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" width="600px" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="5" xsi:type="Panel">
 							<!--<panel layout="vertical" width="590px" xsi:type="Panel"> -->
 							<!-- <panel key="scrollablePanel" layout="horizontal" width="600px" height="175px" xsi:type="Panel"> -->
 							<widget halign="center">
-								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" rows="10" title="">
+								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" autoAdd="true" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
 										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>215,215,215,215,25,65,110,90,90,90,430,145</widths>
+										<widths>130,130,130,130,50,68,100,90,90,90,150,145</widths>
 										<editors>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
 											<option>
+											<item value=" "> </item>
 											<item value="AL">AL</item>
 											<item value="AK">AK</item>
+											<item value="AZ">AZ</item>
+											<item value="AR">AR</item>
+											<item value="CA">CA</item>
+											<item value="CO">CO</item>
+											<item value="CT">CT</item>
+											<item value="DE">DE</item>
+											<item value="FL">FL</item>
+											<item value="GA">GA</item>
+											<item value="HI">HI</item>
+											<item value="ID">ID</item>
+											<item value="IL">IL</item>
+											<item value="IN">IN</item>
 											<item value="IA">IA</item>
+											<item value="KS">KS</item>
+											<item value="KY">KY</item>
+											<item value="LA">LA</item>
+											<item value="ME">ME</item>
+											<item value="MD">MD</item>
+											<item value="MA">MA</item>
+											<item value="MI">MI</item>
+											<item value="MN">MN</item>
+											<item value="MS">MS</item>
+											<item value="MO">MO</item>
+											<item value="MT">MT</item>
+											<item value="NE">NE</item>
+											<item value="NV">NV</item>
+											<item value="NJ">NJ</item>
+											<item value="NH">NH</item>
+											<item value="NM">NM</item>
+											<item value="NY">NY</item>
+											<item value="NC">NC</item>
+											<item value="ND">ND</item>
+											<item value="OH">OH</item>
+											<item value="OK">OK</item>
+											<item value="OR">OR</item>
+											<item value="PA">PA</item>
+											<item value="RI">RI</item>
+											<item value="SC">SC</item>
+											<item value="SD">SD</item>
+											<item value="TN">TN</item>
+											<item value="TC">TX</item>
+											<item value="UT">UT</item>
+											<item value="VT">VT</item>
+											<item value="VA">VA</item>
+											<item value="WA">WA</item>
+											<item value="WV">WV</item>
+											<item value="WI">WI</item>
+											<item value="WY">WY</item>											
 											</option>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
@@ -535,7 +582,8 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 										 	<option>
-											<item value="AL">United States</item>
+										 	<item value=" "> </item>
+											<item value="United States">United States</item>
 											</option>
 										</editors>
 										<fields>
@@ -543,19 +591,116 @@
 											<string/>
 											<string/>
 											<string/>
-											<string>0</string>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
-											<string>0</string>
+											<string/>
+											<string/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
+									<query>
+									<table width="575px" height="135px" autoAdd="false" rows="1" title="">
+										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
+										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
+										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
+										<widths>130,130,130,130,50,68,100,90,90,90,150,145</widths>
+										<editors>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<option>
+											<item value=" "> </item>
+											<item value="AL">AL</item>
+											<item value="AK">AK</item>
+											<item value="AZ">AZ</item>
+											<item value="AR">AR</item>
+											<item value="CA">CA</item>
+											<item value="CO">CO</item>
+											<item value="CT">CT</item>
+											<item value="DE">DE</item>
+											<item value="FL">FL</item>
+											<item value="GA">GA</item>
+											<item value="HI">HI</item>
+											<item value="ID">ID</item>
+											<item value="IL">IL</item>
+											<item value="IN">IN</item>
+											<item value="IA">IA</item>
+											<item value="KS">KS</item>
+											<item value="KY">KY</item>
+											<item value="LA">LA</item>
+											<item value="ME">ME</item>
+											<item value="MD">MD</item>
+											<item value="MA">MA</item>
+											<item value="MI">MI</item>
+											<item value="MN">MN</item>
+											<item value="MS">MS</item>
+											<item value="MO">MO</item>
+											<item value="MT">MT</item>
+											<item value="NE">NE</item>
+											<item value="NV">NV</item>
+											<item value="NJ">NJ</item>
+											<item value="NH">NH</item>
+											<item value="NM">NM</item>
+											<item value="NY">NY</item>
+											<item value="NC">NC</item>
+											<item value="ND">ND</item>
+											<item value="OH">OH</item>
+											<item value="OK">OK</item>
+											<item value="OR">OR</item>
+											<item value="PA">PA</item>
+											<item value="RI">RI</item>
+											<item value="SC">SC</item>
+											<item value="SD">SD</item>
+											<item value="TN">TN</item>
+											<item value="TC">TX</item>
+											<item value="UT">UT</item>
+											<item value="VT">VT</item>
+											<item value="VA">VA</item>
+											<item value="WA">WA</item>
+											<item value="WV">WV</item>
+											<item value="WI">WI</item>
+											<item value="WY">WY</item>											
+											</option>
+										 	<textbox case="mixed"/>
+										 	<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+										 	<option>
+										 	<item value=" "> </item>
+											<item value="United States">United States</item>
+											</option>
+										</editors>
+										<fields>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+										</fields>
+										<sorts>true,true,true,true,true,true,true,true,true,true,true,true</sorts>
+										<filters>false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
+										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
+									</table>
+									</query>
 								</widget>
 							<!--	</panel> -->
 								<!--</panel>		 -->
@@ -599,7 +744,7 @@
 					<!-- start TAB 2 -->
 					<tab key="noteTab" text="{resource:getString($constants,'note')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="200px" spacing="0" padding="0" xsi:type="Panel">
-						<titledPanel style="FieldSet">
+						<!--<titledPanel style="FieldSet">
 									<legend style="Legend">
 										<panel layout="horizontal" xsi:type="Panel">
 										<widget>
@@ -607,7 +752,8 @@
 										</widget>		
 										</panel>		
 									</legend>
-									<content>
+									<content>-->
+									<panel layout="vertical" height="3px" xsi:type="Panel"/>
 							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
@@ -626,12 +772,14 @@
 										</widget>
 										</row>
 								</panel> 
-							</content>
+<!--							</content>
 							</titledPanel>
+							-->
 							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
-							 <panel layout="horizontal" xsi:type="Panel" width="100%" height="115px" overflow="auto" spacing="0" padding="0">
+							<!-- <panel layout="horizontal" xsi:type="Panel" width="100%" height="115px" overflow="auto" spacing="0" padding="0"> -->
 							 <widget valign="top">
-							 	<pagedTree height="100%" itemsPerPage="1000"/>
+                 
+							 	<pagedTree key="notesTree" vertical="true" width="596px" height="107px" itemsPerPage="1000" title="abc"/>
 							
 								<!--<tree height="100%" key="noteTree">
 									<label wordwrap="true" text="2007-09-23 15:26 / This organization doesn't work well with others" value="1">
@@ -664,58 +812,169 @@
 									</label>
 								</tree> -->
 							</widget>    
-							</panel>	
+							<!--</panel>	-->
 						</panel>
 					</tab>
 					<!-- end TAB 2 -->
 				</panel>
+				</panel>
+					</deck> 
+				</panel>
 			</panel>
 		</panel>
 	</display>
-	<rpc>
+	<rpc key="display">
+  <number key="orgId" type="integer" required="false"/>
+  <number key="addressId" required="false" type="integer"/>
   <string key="orgName" max="40" required="true"/>
   <string key="streetAddress" max="30" required="true"/>
-  <string key="multUnit" max="30" required="true"/>
+  <string key="multUnit" max="30" required="false" value="test"/>
   <string key="city" max="30" required="true"/>
   <string key="zipCode" max="10" required="true"/>
-  <string key="workPhone" max="21" required="false"/>
-  <string key="cellPhone" max="16" required="false"/>
-  <string key="faxPhone" max="16" required="false"/>
-  <string key="email" max="80" required="false"/>
   <string key="action" max="20" required="false"/>
-  <number key="parentOrg" type="integer" required="false"/>
+  <string key="parentOrg" max="40" required="false"/>
   <check key="isActive" required="false"/>
+  <string key="usersSubject" max="60" required="false"/>
+  <string key="usersNote" required="false"/>
   <table key="contactsTable"/>
-  <tree key="noteTree"/>
   <number key="id" required="false" type="integer"/>
-		<option key="addType" multi="false" required="false">
-			<item value="1">Home</item>
-			<item value="2">Business</item>
-		</option>
-		<option key="contactAddType" multi="false" required="false">
-			<item value="1">Home</item>
-			<item value="2">Business</item>
-		</option>
-		<option key="state" multi="false" required="false">
+		<option key="state" multi="false" required="true">
+			<item value=" "> </item>
 			<item value="AL">AL</item>
+			<item value="AK">AK</item>
+			<item value="AZ">AZ</item>
 			<item value="AR">AR</item>
+			<item value="CA">CA</item>
+			<item value="CO">CO</item>
+			<item value="CT">CT</item>
+			<item value="DE">DE</item>
+			<item value="FL">FL</item>
+			<item value="GA">GA</item>
+			<item value="HI">HI</item>
+			<item value="ID">ID</item>
+			<item value="IL">IL</item>
+			<item value="IN">IN</item>
 			<item value="IA">IA</item>
+			<item value="KS">KS</item>
+			<item value="KY">KY</item>
+			<item value="LA">LA</item>
+			<item value="ME">ME</item>
+			<item value="MD">MD</item>
+			<item value="MA">MA</item>
+			<item value="MI">MI</item>
+			<item value="MN">MN</item>
+			<item value="MS">MS</item>
+			<item value="MO">MO</item>
+			<item value="MT">MT</item>
+			<item value="NE">NE</item>
+			<item value="NV">NV</item>
+			<item value="NJ">NJ</item>
+			<item value="NH">NH</item>
+			<item value="NM">NM</item>
+			<item value="NY">NY</item>
+			<item value="NC">NC</item>
+			<item value="ND">ND</item>
+			<item value="OH">OH</item>
+			<item value="OK">OK</item>
+			<item value="OR">OR</item>
+			<item value="PA">PA</item>
+			<item value="RI">RI</item>
+			<item value="SC">SC</item>
+			<item value="SD">SD</item>
+			<item value="TN">TN</item>
+			<item value="TC">TX</item>
+			<item value="UT">UT</item>
+			<item value="VT">VT</item>
+			<item value="VA">VA</item>
+			<item value="WA">WA</item>
+			<item value="WV">WV</item>
+			<item value="WI">WI</item>
+			<item value="WY">WY</item>	
 		</option>
-		<option key="contactState" multi="false" required="false">
-			<item value="1">AL</item>
-			<item value="2">AR</item>
-		</option>
-		<option key="country" multi="false" required="false">
-			<item value="1">United States</item>
+		<option key="country" multi="false" required="true">
+		 	<item value=" "> </item>
+			<item value="United States">United States</item>
 			<item value="2">AAAA</item>
 		</option>
-		<option key="contactCountry" multi="false" required="false">
-			<item value="1">United States</item>
+	</rpc>
+	<rpc key="query">
+  <queryNumber key="orgId" type="integer"/>
+  <queryNumber key="addressId" type="integer"/>
+  <queryString key="orgName"/>
+  <queryString key="streetAddress"/>
+  <queryString key="multUnit" value="query"/>
+  <queryString key="city"/>
+  <queryString key="zipCode"/>
+  <queryString key="action"/>
+  <queryString key="parentOrg"/>
+  <queryOption key="isActive" type="alpha" multi="true">
+  	<item value=" "> </item>
+  	<item value="Y">Y</item>
+  	<item value="N">N</item>
+  </queryOption>
+
+  <queryString key="usersSubject"/>
+  <queryString key="usersNote"/>
+  <table key="contactsTable"/>
+  <queryNumber key="id" type="integer"/>
+  <queryOption key="state" multi="true" type="alpha">
+			<item value=" "> </item>
+			<item value="AL">AL</item>
+			<item value="AK">AK</item>
+			<item value="AZ">AZ</item>
+			<item value="AR">AR</item>
+			<item value="CA">CA</item>
+			<item value="CO">CO</item>
+			<item value="CT">CT</item>
+			<item value="DE">DE</item>
+			<item value="FL">FL</item>
+			<item value="GA">GA</item>
+			<item value="HI">HI</item>
+			<item value="ID">ID</item>
+			<item value="IL">IL</item>
+			<item value="IN">IN</item>
+			<item value="IA">IA</item>
+			<item value="KS">KS</item>
+			<item value="KY">KY</item>
+			<item value="LA">LA</item>
+			<item value="ME">ME</item>
+			<item value="MD">MD</item>
+			<item value="MA">MA</item>
+			<item value="MI">MI</item>
+			<item value="MN">MN</item>
+			<item value="MS">MS</item>
+			<item value="MO">MO</item>
+			<item value="MT">MT</item>
+			<item value="NE">NE</item>
+			<item value="NV">NV</item>
+			<item value="NJ">NJ</item>
+			<item value="NH">NH</item>
+			<item value="NM">NM</item>
+			<item value="NY">NY</item>
+			<item value="NC">NC</item>
+			<item value="ND">ND</item>
+			<item value="OH">OH</item>
+			<item value="OK">OK</item>
+			<item value="OR">OR</item>
+			<item value="PA">PA</item>
+			<item value="RI">RI</item>
+			<item value="SC">SC</item>
+			<item value="SD">SD</item>
+			<item value="TN">TN</item>
+			<item value="TC">TX</item>
+			<item value="UT">UT</item>
+			<item value="VT">VT</item>
+			<item value="VA">VA</item>
+			<item value="WA">WA</item>
+			<item value="WV">WV</item>
+			<item value="WI">WI</item>
+			<item value="WY">WY</item>	
+		</queryOption>
+		<queryOption key="country" multi="true" type="alpha">
+		 	<item value=" "> </item>
+			<item value="United States">United States</item>
 			<item value="2">AAAA</item>
-		</option>
-		<option key="optParentOrg" multi="false" required="false">
-			<item value="2">University of Iowa Hospital</item>
-		</option>
+		</queryOption>
 	</rpc>
 </screen>
   </xsl:template>
