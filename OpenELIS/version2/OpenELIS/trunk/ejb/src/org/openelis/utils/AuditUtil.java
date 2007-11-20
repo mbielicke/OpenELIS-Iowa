@@ -1,12 +1,12 @@
 package org.openelis.utils;
 
-import org.openelis.local.HistoryLocal;
-
 import javax.naming.InitialContext;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
+
+import org.openelis.local.HistoryLocal;
 
 public class AuditUtil {
 
@@ -17,7 +17,7 @@ public class AuditUtil {
     private HistoryLocal getHistory() {
         try {
             InitialContext ctx = new InitialContext();
-            return (HistoryLocal)ctx.lookup("HistoryBean/local");
+            return (HistoryLocal)ctx.lookup("openelis/HistoryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
