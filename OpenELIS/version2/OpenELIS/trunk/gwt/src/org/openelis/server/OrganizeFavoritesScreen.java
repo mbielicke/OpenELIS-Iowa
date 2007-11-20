@@ -19,6 +19,11 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organizeFavorites.xsl");
 	}
 
+	public FormRPC abort(FormRPC rpc, AbstractField key) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public FormRPC commitAdd(FormRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
@@ -34,22 +39,7 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		return null;
 	}
 
-	public FormRPC delete(AbstractField key) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public FormRPC fetch(AbstractField key) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public FormRPC fetchForUpdate(AbstractField key) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public FormRPC abort(AbstractField key) throws RPCException {
+	public FormRPC delete(FormRPC rpc, AbstractField key) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -63,5 +53,7 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 
 }
