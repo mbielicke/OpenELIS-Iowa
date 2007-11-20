@@ -10,7 +10,8 @@ public class OrganizationDO implements Serializable{
 	private static final long serialVersionUID = -5149465794756622618L;
 
 	protected Integer id; 
-	protected Integer parentOrganization;  
+	protected Integer parentOrganization; 
+	protected String parentOrganizationName;
 	protected String name;    
 	protected String isActive; 
 	 
@@ -18,9 +19,10 @@ public class OrganizationDO implements Serializable{
 
     }
 
-    public OrganizationDO(Integer id, Integer parentOrganization, String name, String isActive) {
+    public OrganizationDO(Integer id, Integer parentOrganization, String name, String isActive, String parentOrganizationName) {
         this.id = id;
         this.parentOrganization = parentOrganization;
+        this.parentOrganizationName = parentOrganizationName;
         this.name = name;
         this.isActive = isActive;
     }
@@ -55,5 +57,13 @@ public class OrganizationDO implements Serializable{
 
 	public void setParentOrganization(Integer parentOrganization) {
 		this.parentOrganization = parentOrganization;
+	}
+
+	public String getParentOrganizationName() {
+		return parentOrganizationName;
+	}
+
+	public void setParentOrganizationName(String parentOrganizationName) {
+		this.parentOrganizationName = parentOrganizationName;
 	}
 }
