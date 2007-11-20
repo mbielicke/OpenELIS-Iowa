@@ -15,6 +15,7 @@ public class OrganizationAddressDO implements Serializable{
 	//organization fields
 	protected Integer organizationId; 
 	protected Integer parentOrganization;  
+	protected String parentOrganizationName;
 	protected String name;    
 	protected String isActive; 
 	
@@ -42,13 +43,14 @@ public class OrganizationAddressDO implements Serializable{
 		
 	}
 	
-	public OrganizationAddressDO(Integer organizationId, Integer parentOrganization, String name, String isActive,
+	public OrganizationAddressDO(Integer organizationId, Integer parentOrganization, String parentOrganizationName, String name, String isActive,
 			Integer addressId, Integer referenceId, Integer referenceTable, Integer type, String multipleUnit, 
 			String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone,
 			String cellPhone, String faxPhone, String email, String country){
 		
 		this.organizationId = organizationId;
 		this.parentOrganization = parentOrganization;
+		this.parentOrganizationName = parentOrganizationName;
 		this.name = name;
 		this.isActive = isActive;
 		this.addressId = addressId;
@@ -230,6 +232,14 @@ public class OrganizationAddressDO implements Serializable{
 
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
+	}
+
+	public String getParentOrganizationName() {
+		return parentOrganizationName;
+	}
+
+	public void setParentOrganizationName(String parentOrganizationName) {
+		this.parentOrganizationName = parentOrganizationName;
 	}
 
 }
