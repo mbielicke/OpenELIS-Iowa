@@ -20,21 +20,21 @@ public class History {
     private Integer referenceId;
     @Column(name = "reference_table")
     private Integer referenceTable;
-    @Column(name = "occurred")
+    @Column(name = "timestamp")
     private Date timestamp;
     @Column(name = "activity")
-    private String activity;
+    private Integer activity;
     @Column(name = "system_user")
     private Integer systemUser;
     @Lob
     @Column(name = "changes")
     private String changes;
 
-    public String getActivity() {
+    public Integer getActivity() {
         return activity;
     }
 
-    public void setActivity(String activity) {
+    public void setActivity(Integer activity) {
         this.activity = activity;
     }
 
