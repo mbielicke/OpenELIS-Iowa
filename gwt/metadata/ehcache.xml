@@ -114,6 +114,14 @@
        overflowToDisk="false"
       />
       
+      <cache name="screenQueryRpc"
+       maxElementsInMemory="1000000"
+       eternal="false"
+       timeToIdleSeconds="300"
+       timeToLiveSeconds="600"
+       overflowToDisk="false"
+      />
+      
       <cache name="usernameAttempts"
        maxElementsInMemory="100"
        eternal="false"
@@ -128,8 +136,6 @@
        timeToIdleSeconds="60"
        timeToLiveSeconds="60"
        overflowToDisk="false"
-      />
-      
-      
+      />    
 
 </ehcache>
