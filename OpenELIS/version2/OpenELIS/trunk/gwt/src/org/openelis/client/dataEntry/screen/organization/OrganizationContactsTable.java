@@ -15,7 +15,9 @@ public class OrganizationContactsTable implements TableManager {
    
 
     public boolean canSelect(int row, TableController controller) {        
-       return true;
+    	if(userForm.bpanel.state == FormInt.ADD || userForm.bpanel.state == FormInt.UPDATE)           
+            return true;
+        return false;
     }
 
     public boolean canEdit(int row, int col, TableController controller) {

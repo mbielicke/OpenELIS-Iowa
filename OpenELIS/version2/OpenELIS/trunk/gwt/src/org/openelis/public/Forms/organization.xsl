@@ -20,12 +20,9 @@
 	<display>
 		<panel layout="horizontal" spacing="0" xsi:type="Panel">
 			<!--left table goes here -->
-			<!--<widget>
-				-->	
-				<aToZ height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" visible="false" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
-				<!-- letter buttons for the left panel.  If you want to add another langauge just add another if block -->
-				<buttonPanel>
-				<xsl:if test="string($language)='en'">
+				<aToZ height="425px" width="auto" key="hideablePanel" visible="false" onclick="this">
+				 <panel layout="horizontal" xsi:type="Panel" spacing="5">
+				 <xsl:if test="string($language)='en'">
 			<panel layout="vertical" xsi:type="Panel" spacing="1">
 				<widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
@@ -108,10 +105,10 @@
           </panel>
 		</xsl:if>
 		<xsl:if test="string($language)='cn'">
-		<!-- no panel for chinese characters.  Not sure if this is possible for chinese. -->
+
 		</xsl:if>	
 		<xsl:if test="string($language)='fa'">
-		<!-- no panel for farsi characters.  Not sure if this is possible for farsi. -->
+
 		</xsl:if>
 		<xsl:if test="string($language)='sp'">
 			<panel layout="vertical" xsi:type="Panel">
@@ -204,8 +201,9 @@
           </widget>
           </panel>
 		</xsl:if>
-			</buttonPanel>
-							<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
+				 
+				<table height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>
 								<label/>
@@ -215,118 +213,9 @@
 							</fields>
 							<sorts>false</sorts>
 							<filters>false</filters>
-					</aToZ>    
-					<!--</widget>
-			-->
-			
-<!--			<panel layout="horizontal" spacing="5" xsi:type="Panel" key="leftPanel" visible="false">
-				<panel layout="vertical" spacing="1" valign="middle" xsi:type="Panel">
-					 <widget>
-            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-          </widget>OrganizationContactsTable
-          <widget>
-            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
-          </widget>
+				</table>
 				</panel>
-				<panel layout="vertical" width="150px" xsi:type="Panel">
-					<widget>
-					
-						<table height="400px" key="organizationsTable" title="Organizations">
-							<headers>Name</headers>
-							<widths>-1</widths>
-							<editors>
-								<label/>
-							</editors>
-							<fields>
-								<string/>
-							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
-						</table>
-					</widget>
-					<widget halign="center">
-						<check key="inactive" onClick="this">Show Inactive</check>
-					</widget>
-				</panel>
-			</panel> -->
-			<!-- end left table -->
-			<!--<panel width="25px" height="660px" layout="horizontal" xsi:type="Panel" style="LeftMenuPanePanel" valign="middle">
-		<widget halign="center" valign="middle">
-			<html key="openSidePanelButton" onclick="this">&lt;img src=&quot;Images/arrow-right-unselected.png&quot; onmouseover=&quot;this.src='Images/arrow-right-selected.png';&quot;onmouseout=&quot;this.src='Images/arrow-right-unselected.png';&quot;&gt;</html>
-		</widget>
-		</panel>-->
+				</aToZ>
 			<panel layout="vertical" spacing="2" width="600px" xsi:type="Panel">
 				<widget halign="center">
 					<buttonPanel buttons="qacubnp" key="buttons"/>
@@ -371,21 +260,7 @@
 									<row>
 									<panel layout="vertical" height="10px" xsi:type="Panel"/>
 									</row>
-								<!--	<panel layout="horizontal" xsi:type="Panel" halign="center">
-									<titledPanel style="FieldSet">
-									<legend style="Legend">
-										<panel layout="horizontal" xsi:type="Panel">
-									<widget>
-											<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/house.png&quot;&gt;</html>
-										</widget>
-										<panel layout="horizontal" xsi:type="Panel" width="3px"/>
-										<widget>
-											<text><xsl:value-of select='resource:getString($constants,"address")'/></text>
-										</widget>		
-										</panel>		
-									</legend>
-									<content> -->
-									
+						
 									<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/></text>
@@ -473,7 +348,10 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/></text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="parentOrg" width="225px" tab="isActive,country"/>
+										<auto cat="" case="upper" serviceUrl="OrganizationScreen" key="parentOrg" width="225px" popupWidth="350px" tab="isActive,country"/>
+										<query>
+											<textbox case="upper" width="225px" tab="isActive,country"/>
+										</query>
 										</widget>
 
 								</row>
@@ -500,14 +378,11 @@
 									</widget>
 									</row>
 								</panel>
-							<!--	<panel layout="vertical" height="10px" xsi:type="Panel" /> -->
 <!-- tabbed panel needs to go here -->
 				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" width="600px" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="5" xsi:type="Panel">
-							<!--<panel layout="vertical" width="590px" xsi:type="Panel"> -->
-							<!-- <panel key="scrollablePanel" layout="horizontal" width="600px" height="175px" xsi:type="Panel"> -->
 							<widget halign="center">
 								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" autoAdd="true" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -566,7 +441,7 @@
 											<item value="SC">SC</item>
 											<item value="SD">SD</item>
 											<item value="TN">TN</item>
-											<item value="TC">TX</item>
+											<item value="TX">TX</item>
 											<item value="UT">UT</item>
 											<item value="VT">VT</item>
 											<item value="VA">VA</item>
@@ -605,7 +480,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="575px" height="135px" autoAdd="false" rows="1" title="">
+									<table width="575px" height="135px" rows="1" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -662,7 +537,7 @@
 											<item value="SC">SC</item>
 											<item value="SD">SD</item>
 											<item value="TN">TN</item>
-											<item value="TC">TX</item>
+											<item value="TX">TX</item>
 											<item value="UT">UT</item>
 											<item value="VT">VT</item>
 											<item value="VA">VA</item>
@@ -687,14 +562,14 @@
 											<queryString/>
 											<queryString/>
 											<queryString/>
+											<queryOption multi="true" type="string"/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<queryString/>
-											<queryString/>
+											<queryOption multi="true" type="string"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -702,41 +577,8 @@
 									</table>
 									</query>
 								</widget>
-							<!--	</panel> -->
-								<!--</panel>		 -->
 								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
-								<button halign="center" key="removeContactButton" style="ScreenButtonPanel" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeContact')}"/>
-							<!--	<panel layout="horizontal" xsi:type="Panel" height="20px"/>
-								<panel layout="horizontal" xsi:type="Panel" halign="left">
-								<panel layout="horizontal" xsi:type="Panel" width="180px">
-								<text width="175px" wordwrap="true">This is dummy text to fill in this space.  User instructions will eventually go into this space.
-								This is dummy text to fill in this space. User instructions will eventually go into this space.</text>
-								</panel>
-									<panel layout="vertical" xsi:type="Panel">
-								<widget>
-									<table height="75px" width="450px" key="reportingTable" rows="5" title="Reporting Information">
-										<headers>Format,Route</headers>
-										<widths>75,475</widths>
-										<editors>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-										</editors>
-										<fields>
-											<string/>
-											<string/>
-										</fields>
-										<sorts>true,false</sorts>
-										<filters>false,false</filters>
-										<colAligns>left,left</colAligns>
-									</table>
-								</widget>
-								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
-							<panel layout="horizontal" xsi:type="Panel" halign="center">
-									<button halign="center" key="removeRouteButton" style="ScreenButtonPanel" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; Remove Route"/>
-							</panel>
-									</panel>
-								</panel> -->
-						<!--		</panel> -->
+								<button halign="center" onclick="this" key="removeContactButton" style="ScreenButtonPanel" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeContact')}"/>
 							</panel>
 								<!-- end TAB 1 data table -->
 						<!-- END TAB 1 -->
@@ -744,15 +586,7 @@
 					<!-- start TAB 2 -->
 					<tab key="noteTab" text="{resource:getString($constants,'note')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="200px" spacing="0" padding="0" xsi:type="Panel">
-						<!--<titledPanel style="FieldSet">
-									<legend style="Legend">
-										<panel layout="horizontal" xsi:type="Panel">
-										<widget>
-											<text><xsl:value-of select='resource:getString($constants,"newNote")'/></text>
-										</widget>		
-										</panel>		
-									</legend>
-									<content>-->
+
 									<panel layout="vertical" height="3px" xsi:type="Panel"/>
 							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
@@ -772,50 +606,16 @@
 										</widget>
 										</row>
 								</panel> 
-<!--							</content>
-							</titledPanel>
-							-->
+
 							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
-							<!-- <panel layout="horizontal" xsi:type="Panel" width="100%" height="115px" overflow="auto" spacing="0" padding="0"> -->
 							 <widget valign="top">
                  
 							 	<pagedTree key="notesTree" vertical="true" width="596px" height="107px" itemsPerPage="1000" title="abc"/>
-							
-								<!--<tree height="100%" key="noteTree">
-									<label wordwrap="true" text="2007-09-23 15:26 / This organization doesn't work well with others" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="I called this company on sept 11 and they wouldn't work with us.  This will not work in the future. really long string really long string realy long string" value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="There were no problems when I called today.really long string really long string realy long stringreally long string really long string realy long stringreally long string really long string realy long stringreally long string really long string realy long string" value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-18 08:25 / Problem resolved" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="There were no problems when I called today." value="1"/>
-									</label>
-									<label wordwrap="true" text="2007-09-10 11:47 / New Contact" value="1">
-										<label wordwrap="true" text="Author: tbrady" value="1"/>
-										<label wordwrap="true" text="Our old contact has quit the company.  We have added a new contact to this organization." value="1"/>
-									</label>
-								</tree> -->
+
 							</widget>    
-							<!--</panel>	-->
+
 						</panel>
 					</tab>
-					<!-- end TAB 2 -->
 				</panel>
 				</panel>
 					</deck> 
@@ -832,10 +632,11 @@
   <string key="city" max="30" required="true"/>
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
-  <string key="parentOrg" max="40" required="false"/>
   <check key="isActive" required="false"/>
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
+  <string key="parentOrgText" required="false" max="40"/>
+  <number key="parentOrgId" type="integer" required="false"/> 
   <table key="contactsTable"/>
   <number key="id" required="false" type="integer"/>
 		<option key="state" multi="false" required="true">
@@ -882,7 +683,7 @@
 			<item value="SC">SC</item>
 			<item value="SD">SD</item>
 			<item value="TN">TN</item>
-			<item value="TC">TX</item>
+			<item value="TX">TX</item>
 			<item value="UT">UT</item>
 			<item value="VT">VT</item>
 			<item value="VA">VA</item>
@@ -907,7 +708,7 @@
   <queryString key="zipCode"/>
   <queryString key="action"/>
   <queryString key="parentOrg"/>
-  <queryOption key="isActive" type="alpha" multi="true">
+  <queryOption key="isActive" type="string" multi="true">
   	<item value=" "> </item>
   	<item value="Y">Y</item>
   	<item value="N">N</item>
@@ -915,9 +716,9 @@
 
   <queryString key="usersSubject"/>
   <queryString key="usersNote"/>
-  <table key="contactsTable"/>
+ <table key="contactsTable"/>
   <queryNumber key="id" type="integer"/>
-  <queryOption key="state" multi="true" type="alpha">
+  <queryOption key="state" multi="true" type="string">
 			<item value=" "> </item>
 			<item value="AL">AL</item>
 			<item value="AK">AK</item>
@@ -961,7 +762,7 @@
 			<item value="SC">SC</item>
 			<item value="SD">SD</item>
 			<item value="TN">TN</item>
-			<item value="TC">TX</item>
+			<item value="TX">TX</item>
 			<item value="UT">UT</item>
 			<item value="VT">VT</item>
 			<item value="VA">VA</item>
@@ -970,11 +771,14 @@
 			<item value="WI">WI</item>
 			<item value="WY">WY</item>	
 		</queryOption>
-		<queryOption key="country" multi="true" type="alpha">
+		<queryOption key="country" multi="true" type="string">
 		 	<item value=" "> </item>
 			<item value="United States">United States</item>
-			<item value="2">AAAA</item>
+			<item value="AAAAA">AAAA</item>
 		</queryOption>
+	</rpc>
+	<rpc key="queryByLetter">
+		<queryString key="orgName"/>
 	</rpc>
 </screen>
   </xsl:template>

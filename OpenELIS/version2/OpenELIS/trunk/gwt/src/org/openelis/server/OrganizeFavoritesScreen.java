@@ -29,7 +29,7 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		return null;
 	}
 
-	public FormRPC commitQuery(FormRPC rpc) throws RPCException {
+	public AbstractField commitQuery(FormRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
