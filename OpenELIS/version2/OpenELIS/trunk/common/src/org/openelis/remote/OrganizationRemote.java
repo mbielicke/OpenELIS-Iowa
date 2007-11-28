@@ -1,4 +1,6 @@
 package org.openelis.remote;
+import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -30,7 +32,15 @@ public interface OrganizationRemote {
 	//method to return just contacts
 	public List getOrganizationContacts(Integer organizationId);
 	
-	//update organization
-	
-	//delete things
+	//method to query for organizations
+	 public List query(HashMap fields, int first, int max) throws RemoteException;
+	 
+	 //auto complete lookup
+	 public List autoCompleteLookupByName(String orgName, int maxResults);
+	 
+	 //auto complete lookup
+	 public List autoCompleteLookupById(Integer id);
+	 
+	 //a way for the servlet to get the system user id
+	 public Integer getSystemUserId();
 }
