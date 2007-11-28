@@ -6,6 +6,7 @@ import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
+import org.openelis.gwt.client.screen.ScreenAuto;
 import org.openelis.gwt.client.screen.ScreenBase;
 import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
@@ -157,6 +158,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.PANEL_STACK, new ScreenStack());
       map.addWidget(WidgetMap.WINBROWSER, new ScreenWindowBrowser());
       map.addWidget(WidgetMap.APP_MESSAGE,new ScreenAppMessage());
+      map.addWidget(WidgetMap.AUTO, new ScreenAuto());
       map.addWidget(WidgetMap.HTML, new ScreenHTML());
       map.addWidget("ProxyListener", new ProxyListener());
       map.addWidget("HoverListener", new HoverListener());

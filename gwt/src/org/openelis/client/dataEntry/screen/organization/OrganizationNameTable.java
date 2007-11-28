@@ -10,9 +10,7 @@ public class OrganizationNameTable implements TableManager {
 
     public void setOrganizationForm(Organization form) {
         userForm = form;
-    }
-    
-   
+    }  
 
     public boolean canSelect(int row, TableController controller) {        
         if(userForm.bpanel.state == FormInt.DISPLAY)           
