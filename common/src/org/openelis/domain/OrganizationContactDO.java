@@ -30,8 +30,18 @@ public class OrganizationContactDO implements Serializable {
 	protected String cellPhone; 
 	protected String faxPhone;   
 	protected String email;        
-	protected String country; 
+	protected String country;
 	
+	protected Boolean delete;
+	
+	public Boolean getDelete() {
+		return delete;
+	}
+
+	public void setDelete(Boolean delete) {
+		this.delete = delete;
+	}
+
 	public OrganizationContactDO() {
 
     }
