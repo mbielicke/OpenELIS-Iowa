@@ -10,12 +10,17 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -43,6 +48,9 @@ public class OrganizationContact implements Auditable, Cloneable {
   @Column(name="address")
   private Integer address;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "address", insertable = false, updatable = false)
+  private Address orgContactaddress;
 
   @Transient
   private OrganizationContact original;
@@ -151,5 +159,11 @@ public class OrganizationContact implements Auditable, Cloneable {
   public String getTableName() {
     return "organization_contact";
   }
+public Address getAddressTable() {
+	return orgContactaddress;
+}
+public void setAddressTable(Address addressTable) {
+	this.orgContactaddress = addressTable;
+}
   
 }   
