@@ -13,7 +13,7 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
 
-<xsl:output method="html" encoding="ISO-8859-1" indent="yes"/>
+<xsl:output method="html" encoding="UTF-8" indent="yes"/>
 
 <xsl:template match="login">
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>

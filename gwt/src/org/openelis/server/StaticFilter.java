@@ -169,6 +169,7 @@ public class StaticFilter implements Filter {
                 ((HttpServletResponse)response).setHeader("Cache-Control","no-cache");
                 ((HttpServletResponse)response).setHeader("Cache-Control","no-store");
                 ((HttpServletResponse)response).setDateHeader("Expires", 0 );
+                ((HttpServletResponse)response).setContentType("text/html");
                 response.getWriter().write(ServiceUtils.getXML(Constants.APP_ROOT+"login.xsl", doc));
             }catch(Exception e){
                 e.printStackTrace();
