@@ -19,117 +19,28 @@ public class OrganizationAddressDO implements Serializable{
 	protected String isActive; 
 	
 	//address fields
-	protected Integer addressId; 
-	protected Integer referenceId;   
-	protected Integer referenceTable; 
-	protected Integer type; 
-	protected String multipleUnit;  
-	protected String streetAddress;
-	protected String city;  
-	protected String state;   
-	protected String zipCode; 
-	protected String workPhone;
-	protected String homePhone; 
-	protected String cellPhone; 
-	protected String faxPhone;   
-	protected String email;        
-	protected String country; 
-	
-	//contacts list
-	protected List contacts = new ArrayList();
-	
+	protected AddressDO addressDO = new AddressDO();
+
 	public OrganizationAddressDO(){
 		
 	}
-	
+
 	public OrganizationAddressDO(Integer organizationId, Integer parentOrganization, String name, String isActive,
-			Integer addressId, Integer referenceId, Integer referenceTable, Integer type, String multipleUnit, 
-			String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone,
-			String cellPhone, String faxPhone, String email, String country){
+			Integer addressId, String multipleUnit, String streetAddress, String city, String state, String zipCode,
+			String country){
 		
 		this.organizationId = organizationId;
 		this.parentOrganization = parentOrganization;
 		this.name = name;
 		this.isActive = isActive;
-		this.addressId = addressId;
-		this.referenceId = referenceId;
-		this.referenceTable = referenceTable;
-		this.type = type;
-		this.multipleUnit = multipleUnit;
-		this.streetAddress = streetAddress;
-		this.city = city;
-		this.state = state;
-		this.zipCode = zipCode;
-		this.workPhone = workPhone;
-		this.homePhone = homePhone;
-		this.cellPhone = cellPhone;
-		this.faxPhone = faxPhone;
-		this.email = email;
-		this.country = country;	
-	}
-
-	public Integer getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(Integer addressId) {
-		this.addressId = addressId;
-	}
-
-	public String getCellPhone() {
-		return cellPhone;
-	}
-
-	public void setCellPhone(String cellPhone) {
-		this.cellPhone = cellPhone;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public List getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List contacts) {
-		this.contacts = contacts;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getFaxPhone() {
-		return faxPhone;
-	}
-
-	public void setFaxPhone(String faxPhone) {
-		this.faxPhone = faxPhone;
-	}
-
-	public String getHomePhone() {
-		return homePhone;
-	}
-
-	public void setHomePhone(String homePhone) {
-		this.homePhone = homePhone;
+		addressDO.setId(addressId);
+		addressDO.setMultipleUnit(multipleUnit);
+		addressDO.setStreetAddress(streetAddress);
+		addressDO.setCity(city);
+		addressDO.setState(state);
+		addressDO.setZipCode(zipCode);
+		addressDO.setCountry(country);
+		
 	}
 
 	public String getIsActive() {
@@ -138,14 +49,6 @@ public class OrganizationAddressDO implements Serializable{
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
-	}
-
-	public String getMultipleUnit() {
-		return multipleUnit;
-	}
-
-	public void setMultipleUnit(String multipleUnit) {
-		this.multipleUnit = multipleUnit;
 	}
 
 	public String getName() {
@@ -172,59 +75,7 @@ public class OrganizationAddressDO implements Serializable{
 		this.parentOrganization = parentOrganization;
 	}
 
-	public Integer getReferenceId() {
-		return referenceId;
-	}
-
-	public void setReferenceId(Integer referenceId) {
-		this.referenceId = referenceId;
-	}
-
-	public Integer getReferenceTable() {
-		return referenceTable;
-	}
-
-	public void setReferenceTable(Integer referenceTable) {
-		this.referenceTable = referenceTable;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-	public String getWorkPhone() {
-		return workPhone;
-	}
-
-	public void setWorkPhone(String workPhone) {
-		this.workPhone = workPhone;
-	}
-
-	public String getZipCode() {
-		return zipCode;
-	}
-
-	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
+	public AddressDO getAddressDO() {
+		return addressDO;
 	}
 }
