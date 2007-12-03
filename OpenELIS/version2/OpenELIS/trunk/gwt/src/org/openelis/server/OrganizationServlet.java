@@ -2,18 +2,15 @@ package org.openelis.server;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
-import net.sf.ehcache.CacheManager;
-
-import org.openelis.client.dataEntry.screen.organization.OrganizationScreenInt;
+import org.openelis.client.dataEntry.screen.organization.OrganizationServletInt;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.domain.OrganizationTableRowDO;
 import org.openelis.gwt.client.services.AppScreenFormServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.client.services.TableServiceInt;
@@ -24,9 +21,7 @@ import org.openelis.gwt.common.AutoCompleteRPC;
 import org.openelis.gwt.common.Filter;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.NumberField;
-import org.openelis.gwt.common.OptionField;
-import org.openelis.gwt.common.QueryField;
-import org.openelis.gwt.common.QueryNumberField;
+import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.QueryOptionField;
 import org.openelis.gwt.common.QueryStringField;
 import org.openelis.gwt.common.RPCException;
@@ -40,17 +35,17 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.constants.UTFResource;
+import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.gwt.user.client.Window;
-
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
-public class OrganizationScreen extends AppServlet implements AppScreenFormServiceInt, 
-															  OrganizationScreenInt, 
+public class OrganizationServlet extends AppServlet implements AppScreenFormServiceInt, 
+															  OrganizationServletInt, 
 															  TableServiceInt, 
 															  AutoCompleteServiceInt {
 
@@ -58,12 +53,13 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 	 * 
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
-	private static final int leftTableRowsPerPage = 16;
+	private static final int leftTableRowsPerPage = 22;
 
 	private TableModel model; 
-	private boolean queryByLetter = false;
-	private String letter = "";
 	private String systemUserId = "";
+	
+	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+			new Locale((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 	
 	public String getXML() throws RPCException {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");
@@ -133,23 +129,21 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 			OrganizationContactDO contactDO = new OrganizationContactDO();
 			TableRow row = contactsTable.getRow(i);
 			//contact data
-			contactDO.setContactType(1); //FIXME need to find out what value goes in here
-			contactDO.setName(((StringField)row.getColumn(0)).toString());
+			contactDO.setContactType(Integer.valueOf(((StringField)row.getColumn(0)).toString()));
+			contactDO.setName(((StringField)row.getColumn(1)).toString());
 			//contact address data
-			//contactDO.setReferenceId(referenceId); //set inside the update bean
-			//contactDO.setReferenceTable(referenceTable); //set inside the update bean
 			contactDO.setType(1); //FIXME need to find out what value goes in here
-			contactDO.setMultipleUnit(((StringField)row.getColumn(1)).toString());
-			contactDO.setStreetAddress(((StringField)row.getColumn(2)).toString());
-			contactDO.setCity(((StringField)row.getColumn(3)).toString());
-			contactDO.setState(((StringField)row.getColumn(4)).toString());
-			contactDO.setZipCode(((StringField)row.getColumn(5)).toString());
-			contactDO.setWorkPhone(((StringField)row.getColumn(6)).toString());
-			contactDO.setHomePhone(((StringField)row.getColumn(7)).toString());
-			contactDO.setCellPhone(((StringField)row.getColumn(8)).toString());
-			contactDO.setFaxPhone(((StringField)row.getColumn(9)).toString());
-			contactDO.setEmail(((StringField)row.getColumn(10)).toString());
-			contactDO.setCountry(((StringField)row.getColumn(11)).toString());
+			contactDO.setMultipleUnit(((StringField)row.getColumn(2)).toString());
+			contactDO.setStreetAddress(((StringField)row.getColumn(3)).toString());
+			contactDO.setCity(((StringField)row.getColumn(4)).toString());
+			contactDO.setState(((StringField)row.getColumn(5)).toString());
+			contactDO.setZipCode(((StringField)row.getColumn(6)).toString());
+			contactDO.setWorkPhone(((StringField)row.getColumn(7)).toString());
+			contactDO.setHomePhone(((StringField)row.getColumn(8)).toString());
+			contactDO.setCellPhone(((StringField)row.getColumn(9)).toString());
+			contactDO.setFaxPhone(((StringField)row.getColumn(10)).toString());
+			contactDO.setEmail(((StringField)row.getColumn(11)).toString());
+			contactDO.setCountry(((StringField)row.getColumn(12)).toString());
 			
 			organizationContacts.add(contactDO);
 		}
@@ -201,22 +195,22 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 		HashMap<String,AbstractField> fields = rpc.getFieldMap();
 
 		//contacts table
-		TableModel contactsTable = (TableModel)rpc.getField("contactsTable").getValue();
+		TableModel contactsTable = (TableModel)rpc.getField("contactsTable").getValue();		
 		
 		if(contactsTable != null){
-			QueryOptionField aa = (QueryOptionField)contactsTable.getRow(0).getColumn(4);
-			fields.put("contactName",(QueryStringField)contactsTable.getRow(0).getColumn(0));
-			fields.put("contactMultUnit",(QueryStringField)contactsTable.getRow(0).getColumn(1));
-			fields.put("contactStreetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(2));
-			fields.put("contactCity",(QueryStringField)contactsTable.getRow(0).getColumn(3));
-			fields.put("contactState",(QueryOptionField)contactsTable.getRow(0).getColumn(4));
-			fields.put("contactZipCode",(QueryStringField)contactsTable.getRow(0).getColumn(5));
-			fields.put("contactWorkPhone",(QueryStringField)contactsTable.getRow(0).getColumn(6));
-			fields.put("contactHomePhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
-			fields.put("contactCellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
-			fields.put("contactFaxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
-			fields.put("contactEmail",(QueryStringField)contactsTable.getRow(0).getColumn(10));
-			fields.put("contactCountry",(QueryOptionField)contactsTable.getRow(0).getColumn(11));
+			fields.put("contactType",(QueryStringField)contactsTable.getRow(0).getColumn(0));
+			fields.put("contactName",(QueryStringField)contactsTable.getRow(0).getColumn(1));
+			fields.put("contactMultUnit",(QueryStringField)contactsTable.getRow(0).getColumn(2));
+			fields.put("contactStreetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(3));
+			fields.put("contactCity",(QueryStringField)contactsTable.getRow(0).getColumn(4));
+			fields.put("contactState",(QueryOptionField)contactsTable.getRow(0).getColumn(5));
+			fields.put("contactZipCode",(QueryStringField)contactsTable.getRow(0).getColumn(6));
+			fields.put("contactWorkPhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
+			fields.put("contactHomePhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
+			fields.put("contactCellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
+			fields.put("contactFaxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(10));
+			fields.put("contactEmail",(QueryStringField)contactsTable.getRow(0).getColumn(11));
+			fields.put("contactCountry",(QueryOptionField)contactsTable.getRow(0).getColumn(12));
 		}
 
 		List organizationNames = new ArrayList();
@@ -226,17 +220,12 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}
-		
-		//minimum i need
-		//what page the query was on previously
-		//the rpc for the query
+
 		TableModel orgModel = new TableModel();
 		orgModel.paged = true;
 		orgModel.rowsPerPage = leftTableRowsPerPage;
 		orgModel.showIndex = false;
 		orgModel.pageIndex = 0;
-		//orgModel.totalPages = (organizationNames.size() > leftTableRowsPerPage ? 2 : 1);
-		//orgModel.totalRows = (1*leftTableRowsPerPage)+leftTableRowsPerPage+1;
 		
 		Iterator itraaa = organizationNames.iterator();
 		
@@ -263,6 +252,9 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 		}
 		TableField tf = new TableField();
         tf.setValue(orgModel);
+        
+        //save the model for the paging method
+        this.model = orgModel;
         
         //need to save the rpc used to the encache
         if(systemUserId.equals(""))
@@ -307,24 +299,22 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 				contactDO.setId((Integer)contactId.getValue());
 			contactDO.setOrganization(orgId);
 			contactDO.setContactType(1); //FIXME need to find out what value goes in here
-			contactDO.setName(((StringField)row.getColumn(0)).toString());
+			contactDO.setName(((StringField)row.getColumn(1)).toString());
 			//contact address data
 			if(addId != null)
-				contactDO.setAddressId((Integer)addId.getValue()); 
-			//contactDO.setReferenceId(referenceId); //set inside the update bean
-			//contactDO.setReferenceTable(referenceTable); //set inside the update bean
-			contactDO.setType(1); //FIXME need to find out what value goes in here
-			contactDO.setMultipleUnit(((StringField)row.getColumn(1)).toString());
-			contactDO.setStreetAddress(((StringField)row.getColumn(2)).toString());
-			contactDO.setCity(((StringField)row.getColumn(3)).toString());
-			contactDO.setState(((StringField)row.getColumn(4)).toString());
-			contactDO.setZipCode(((StringField)row.getColumn(5)).toString());
-			contactDO.setWorkPhone(((StringField)row.getColumn(6)).toString());
-			contactDO.setHomePhone(((StringField)row.getColumn(7)).toString());
-			contactDO.setCellPhone(((StringField)row.getColumn(8)).toString());
-			contactDO.setFaxPhone(((StringField)row.getColumn(9)).toString());
-			contactDO.setEmail(((StringField)row.getColumn(10)).toString());
-			contactDO.setCountry(((StringField)row.getColumn(11)).toString());
+			contactDO.setAddressId((Integer)addId.getValue()); 
+			contactDO.setContactType(Integer.valueOf((String)((StringField)row.getColumn(0)).getValue()));
+			contactDO.setMultipleUnit(((StringField)row.getColumn(2)).toString());
+			contactDO.setStreetAddress(((StringField)row.getColumn(3)).toString());
+			contactDO.setCity(((StringField)row.getColumn(4)).toString());
+			contactDO.setState(((StringField)row.getColumn(5)).toString());
+			contactDO.setZipCode(((StringField)row.getColumn(6)).toString());
+			contactDO.setWorkPhone(((StringField)row.getColumn(7)).toString());
+			contactDO.setHomePhone(((StringField)row.getColumn(8)).toString());
+			contactDO.setCellPhone(((StringField)row.getColumn(9)).toString());
+			contactDO.setFaxPhone(((StringField)row.getColumn(10)).toString());
+			contactDO.setEmail(((StringField)row.getColumn(11)).toString());
+			contactDO.setCountry(((StringField)row.getColumn(12)).toString());
 			
 			StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
 			if(deleteFlag == null){
@@ -341,9 +331,6 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 		organizationNote.setSubject((String)rpc.getFieldValue("usersSubject"));
 		organizationNote.setText((String)rpc.getFieldValue("usersNote"));
 		organizationNote.setIsExternal("Y");
-		//organizationNote.setReferenceId(referenceId); handled in the update bean
-		//organizationNote.setSystemUser(systemUser);   handled in the update bean
-		//organizationNote.setTimestamp(new Date());    handled in the update bean		
 		
 		//send the changes to the database
 		remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
@@ -526,7 +513,7 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
       return rpc;  
 	}
 
-	public TableModel getInitialModel(TableModel model) {
+	/*public TableModel getInitialModel(TableModel model) {
 		TableModel returnModel = model;
 		this.model = model;
         try 
@@ -578,7 +565,7 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
         }
         
         return returnModel;
-	}
+	}*/
 	
 	public TableModel fillContactsTable(TableModel contactsModel, List contactsList){
 		//TableModel contactsModel = new TableModel();
@@ -599,18 +586,19 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 	                row.addHidden("contactId", id);
 	                row.addHidden("addId", addId);
 	                
-	                row.getColumn(0).setValue(contactRow.getName());
-	                row.getColumn(1).setValue(contactRow.getMultipleUnit());
-	                row.getColumn(2).setValue(contactRow.getStreetAddress());
-	                row.getColumn(3).setValue(contactRow.getCity());
-	                row.getColumn(4).setValue(contactRow.getState());
-	                row.getColumn(5).setValue(contactRow.getZipCode());
-	                row.getColumn(6).setValue(contactRow.getWorkPhone());
-	                row.getColumn(7).setValue(contactRow.getHomePhone());
-	                row.getColumn(8).setValue(contactRow.getCellPhone());
-	                row.getColumn(9).setValue(contactRow.getFaxPhone());
-	                row.getColumn(10).setValue(contactRow.getEmail());
-	                row.getColumn(11).setValue(contactRow.getCountry());
+	                row.getColumn(0).setValue(contactRow.getContactType().toString());
+	                row.getColumn(1).setValue(contactRow.getName());
+	                row.getColumn(2).setValue(contactRow.getMultipleUnit());
+	                row.getColumn(3).setValue(contactRow.getStreetAddress());
+	                row.getColumn(4).setValue(contactRow.getCity());
+	                row.getColumn(5).setValue(contactRow.getState());
+	                row.getColumn(6).setValue(contactRow.getZipCode());
+	                row.getColumn(7).setValue(contactRow.getWorkPhone());
+	                row.getColumn(8).setValue(contactRow.getHomePhone());
+	                row.getColumn(9).setValue(contactRow.getCellPhone());
+	                row.getColumn(10).setValue(contactRow.getFaxPhone());
+	                row.getColumn(11).setValue(contactRow.getEmail());
+	                row.getColumn(12).setValue(contactRow.getCountry());
 	                
 	                contactsModel.addRow(row);
 	       } 
@@ -630,14 +618,14 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
 
 	public TableModel getOrganizationByLetter(String letter, TableModel returnModel, FormRPC letterRPC) {
 		 OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-		 queryByLetter = true;
-		 this.letter = letter;
+		 this.model = returnModel;
+
 		 letterRPC.setFieldValue("orgName",letter.toUpperCase()+"*");
 		 try 
          {
 			 List organizations = new ArrayList();
 				try{
-					organizations = remote.query(letterRPC.getFieldMap(),0,16);
+					organizations = remote.query(letterRPC.getFieldMap(),0,leftTableRowsPerPage);
 
 			}catch(Exception e){
 				throw new RPCException(e.getMessage());
@@ -668,10 +656,12 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
             e.printStackTrace();
            return null;
        }
-	//	returnModel.paged = true;
+		returnModel.paged = true;
 		//returnModel.totalRows=1;
 		returnModel.rowsPerPage=leftTableRowsPerPage;
 		returnModel.pageIndex=0;
+		//returnModel.totalPages=
+		//returnModel.totalRows=
 		
 //		need to save the rpc used to the encache
 		if(systemUserId.equals(""))
@@ -701,10 +691,13 @@ public class OrganizationScreen extends AppServlet implements AppScreenFormServi
         reqModel.rowsPerPage = leftTableRowsPerPage;
         reqModel.showIndex = false;
         reqModel.pageIndex = page;
-        
+   
         //need to get the query rpc out of the cache
         FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Organization");
-        
+
+        if(rpc == null)
+        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+
         List organizations = null;
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         try{

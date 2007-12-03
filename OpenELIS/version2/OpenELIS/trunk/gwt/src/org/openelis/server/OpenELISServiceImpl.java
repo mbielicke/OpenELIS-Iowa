@@ -1,12 +1,18 @@
 package org.openelis.server;
 
+import java.util.Locale;
+
 import org.apache.log4j.Logger;
 import org.openelis.client.main.service.OpenELISServiceInt;
+import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.server.AppServlet;
+import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.google.gwt.i18n.client.ConstantsWithLookup;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,9 +22,13 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
 
     private static Logger log = Logger.getLogger(OpenELISServiceImpl.class);
 
+    //private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+	//		new Locale((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+    
 	public String getMenuList() {
         log.debug("in Tree xml");
         try {
+        //	System.out.println((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale")));
             Document doc = XMLUtil.createNew("list");
             Element root = doc.getDocumentElement();
             root.setAttribute("key", "menuList");

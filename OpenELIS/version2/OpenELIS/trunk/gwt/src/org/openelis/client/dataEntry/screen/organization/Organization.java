@@ -14,7 +14,6 @@ import org.openelis.gwt.client.widget.FormTable;
 import org.openelis.gwt.client.widget.pagedtree.TreeModel;
 import org.openelis.gwt.common.AbstractField;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.NumberField;
 import org.openelis.gwt.common.StringField;
 import org.openelis.gwt.common.TableField;
 import org.openelis.gwt.common.TableModel;
@@ -22,14 +21,16 @@ import org.openelis.gwt.common.TableRow;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -41,7 +42,7 @@ public class Organization  extends AppScreenForm{
 	
 	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
 	
-	private static OrganizationScreenIntAsync screenService = (OrganizationScreenIntAsync)GWT.create(OrganizationScreenInt.class);
+	private static OrganizationServletIntAsync screenService = (OrganizationServletIntAsync)GWT.create(OrganizationServletInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
     private int tabSelectedIndex = 0;
     private Widget selected;
@@ -50,7 +51,7 @@ public class Organization  extends AppScreenForm{
 	public Organization() {
         super();
         String base = GWT.getModuleBaseURL();
-        base += "OrganizationScreen";
+        base += "OrganizationServlet";
         target.setServiceEntryPoint(base);
         service = screenService;
         formService = screenService;
@@ -80,108 +81,83 @@ public class Organization  extends AppScreenForm{
         }
 		
 		if(sender == widgets.get("a")){
-            getOrganizations("a");
-            setStyleNameOnButton(sender);
+            getOrganizations("a", sender);
         }
         else if(sender == widgets.get("b")){
-            getOrganizations("b");
-            setStyleNameOnButton(sender);
+            getOrganizations("b", sender);
         }
         else if(sender == widgets.get("c")){
-            getOrganizations("c");
-            setStyleNameOnButton(sender);
+            getOrganizations("c", sender);
         }
         else if(sender == widgets.get("d")){
-            getOrganizations("d");
-            setStyleNameOnButton(sender);
+            getOrganizations("d", sender);
         }
         else if(sender == widgets.get("e")){
-            getOrganizations("e");
-            setStyleNameOnButton(sender);
+            getOrganizations("e", sender);
         }
         else if(sender == widgets.get("f")){
-            getOrganizations("f");
-            setStyleNameOnButton(sender);
+            getOrganizations("f", sender);
         }
         else if(sender == widgets.get("g")){
-            getOrganizations("g");
-            setStyleNameOnButton(sender);
+            getOrganizations("g", sender);
         }
         else if(sender == widgets.get("h")){
-            getOrganizations("h");
-            setStyleNameOnButton(sender);
+            getOrganizations("h", sender);
         }
         else if(sender == widgets.get("i")){
-            getOrganizations("i");
-            setStyleNameOnButton(sender);
+            getOrganizations("i", sender);
         }
         else if(sender == widgets.get("j")){
-            getOrganizations("j");
-            setStyleNameOnButton(sender);
+            getOrganizations("j", sender);
         }
         else if(sender == widgets.get("k")){
-            getOrganizations("k");
-            setStyleNameOnButton(sender);
+            getOrganizations("k", sender);
         }
         else if(sender == widgets.get("l")){
-            getOrganizations("l");
-            setStyleNameOnButton(sender);
+            getOrganizations("l", sender);
         }
         else if(sender == widgets.get("m")){
-            getOrganizations("m");
-            setStyleNameOnButton(sender);
+            getOrganizations("m", sender);
         }
         else if(sender == widgets.get("n")){
-            getOrganizations("n");
-            setStyleNameOnButton(sender);
+            getOrganizations("n", sender);
         }
         else if(sender == widgets.get("o")){
-            getOrganizations("o");
+            getOrganizations("o", sender);
             setStyleNameOnButton(sender);
         }
         else if(sender == widgets.get("p")){
-            getOrganizations("p");
-            setStyleNameOnButton(sender);
+            getOrganizations("p", sender);
         }
         else if(sender == widgets.get("q")){
-            getOrganizations("q");
-            setStyleNameOnButton(sender);
+            getOrganizations("q", sender);
         }
         else if(sender == widgets.get("r")){
-            getOrganizations("r");
-            setStyleNameOnButton(sender);
+            getOrganizations("r", sender);
         }
         else if(sender == widgets.get("s")){
-            getOrganizations("s");
-            setStyleNameOnButton(sender);
+            getOrganizations("s", sender);
         }
         else if(sender == widgets.get("t")){
-            getOrganizations("t");
-            setStyleNameOnButton(sender);
+            getOrganizations("t", sender);
         }
         else if(sender == widgets.get("u")){
-            getOrganizations("u");
-            setStyleNameOnButton(sender);
+            getOrganizations("u", sender);
         }
         else if(sender == widgets.get("v")){
-            getOrganizations("v");
-            setStyleNameOnButton(sender);
+            getOrganizations("v", sender);
         }
         else if(sender == widgets.get("w")){
-            getOrganizations("w");
-            setStyleNameOnButton(sender);
+            getOrganizations("w", sender);
         }
         else if(sender == widgets.get("x")){
-            getOrganizations("x");
-            setStyleNameOnButton(sender);
+            getOrganizations("x", sender);
         }
         else if(sender == widgets.get("y")){
-            getOrganizations("y");
-            setStyleNameOnButton(sender);
+            getOrganizations("y", sender);
         }
         else if(sender == widgets.get("z")){
-            getOrganizations("z");
-            setStyleNameOnButton(sender);
+            getOrganizations("z", sender);
         }else if(sender == widgets.get("removeContactButton")){
         	FormTable orgContactsTable = (FormTable)getWidget("contactsTable");        
         	int selectedRow = orgContactsTable.controller.selected;
@@ -199,9 +175,22 @@ public class Organization  extends AppScreenForm{
     			 row.addHidden("deleteFlag", deleteFlag);
         	}
         	
-        }else if(sender == ((ScreenAToZPanel)widgets.get("hideablePanel")).arrowButton){
-
-        	((FormTable)getWidget("organizationsTable")).controller.reset();
+        }else if(sender == ((ScreenAToZPanel)widgets.get("hideablePanel")).div){
+        	DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                	ScreenAToZPanel panel = (ScreenAToZPanel)widgets.get("hideablePanel");
+                	
+                	//get the selected row
+                	int selectedRow = ((FormTable)getWidget("organizationsTable")).controller.selected;
+//                	only need to reset the table if the user is opening the panel
+                	if(panel.panelOpen())
+                		((FormTable)getWidget("organizationsTable")).controller.reset();
+                	//if the table had a selected row previously then reselect it
+                	if(selectedRow > -1)
+                		((FormTable)getWidget("organizationsTable")).controller.select(selectedRow, 0);
+                }
+            });
+        	
         }
 	}
 	
@@ -218,33 +207,22 @@ public class Organization  extends AppScreenForm{
         	Button removeContactButton = (Button) getWidget("removeContactButton");
         	removeContactButton.setEnabled(false);
         	
+        	//enable the show inactive check box
+        	((CheckBox)getWidget("inactive")).setEnabled(true);
         //	if(constants != null)
         //		message.setText(openElisConstants.getString("loadCompleteMessage"));
         //	else
         		message.setText("done");
         		
-        		//get contacts table and set the managers form
-        		FormTable contactsTable = (FormTable) getWidget("contactsTable");
-        		((OrganizationContactsTable)contactsTable.controller.manager).setOrganizationForm(this);
-        		
-        		
+    		//get contacts table and set the managers form
+    		FormTable contactsTable = (FormTable) getWidget("contactsTable");
+    		((OrganizationContactsTable)contactsTable.controller.manager).setOrganizationForm(this);
+    		contactsTable.controller.select(0, 5);
+    		
 //        		get contacts table and set the managers form
-        		FormTable orgNameTable = (FormTable) getWidget("organizationsTable");
-        		((OrganizationNameTable)orgNameTable.controller.manager).setOrganizationForm(this);
-        		/*final AToZPanel aToZWidget = (AToZPanel) getWidget("organizationsTable");
-        		
-        		((OrganizationNameTable)aToZWidget.leftTable.controller.manager).setOrganizationForm(this);
-        		*/
-        		screenService.getInitialModel(((FormTable)getWidget("organizationsTable")).controller.model, new AsyncCallback(){
-        	           public void onSuccess(Object result){
-        	        	   ((FormTable)getWidget("organizationsTable")).controller.setModel((TableModel)result); 
-        	           }
-        	           public void onFailure(Throwable caught){
-        	               Window.alert(caught.getMessage());
-        	               afterFetch(false);
-        	           }
-        	        });
-        		
+    		FormTable orgNameTable = (FormTable) getWidget("organizationsTable");
+    		((OrganizationNameTable)orgNameTable.controller.manager).setOrganizationForm(this);
+
         	super.afterDraw(success);
 	}
 	
@@ -256,12 +234,14 @@ public class Organization  extends AppScreenForm{
         
         fetch(id);
         
-        if(tabSelectedIndex == 1){
+        //FIXME load everything for now until the new framework is in place
+       // if(tabSelectedIndex == 1){
 	        //need to load notes tree if the notes tab is visible
 	        final ScreenPagedTree pagedTree = (ScreenPagedTree)widgets.get("notesTree");
 	        screenService.getNoteTreeModel(id,true,new AsyncCallback() {
 	            public void onSuccess(Object result) {
 	            	pagedTree.controller.setModel((TreeModel)result);
+                    
 	            	afterFetch(true);
 	            }
 	
@@ -270,32 +250,55 @@ public class Organization  extends AppScreenForm{
 	                afterFetch(false);
 	        }
 	            });
-        }
+        //}
+    }
+    
+    public void afterFetch(boolean success){
+        super.afterFetch(success);
+        
+        //need to get the org name table model
+        FormTable orgNameTM = (FormTable)getWidget("organizationsTable");
+        int numberOfRows = orgNameTM.controller.model.numRows();
+        int rowSelected = orgNameTM.controller.selected;
+        //need to set the next and previous buttons accordingly
+        if(numberOfRows > 1 && rowSelected < numberOfRows-1)
+        	bpanel.enable("n", true);
+        else
+        	bpanel.enable("n", false);
+        
+        if(numberOfRows > 1 && rowSelected > 0)
+        	bpanel.enable("p", true);
+        else
+        	bpanel.enable("p", false);
     }
 	
-	private void getOrganizations(String letter){
-		final FormTable orgTable = (FormTable) getWidget("organizationsTable");
-		
-		//aToZWidget.leftTable.controller.view
-		FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
-		
-        screenService.getOrganizationByLetter(letter,orgTable.controller.model, letterRPC, new AsyncCallback() {
-                                                            public void onSuccess(Object result) {
-                                                            	orgTable.controller.setModel((TableModel)result);
-                                                           	
-                                                            	//select the first row of the org names table...
-                                                                if(((TableModel)result).numRows() > 0)
-                                                                	orgTable.controller.select( 0, 0);
-                                                                
-                                                                //enable the next button
-                                                                if(((TableModel)result).numRows() > 1)
-                                                                	bpanel.enable("n", true);     
-                                                            }
-
-                                                            public void onFailure(Throwable caught) {
-                                                                Window.alert(caught.getMessage());
-                                                            }
-                                                        });
+	private void getOrganizations(String letter, Widget sender){
+		//we only want to allow them to select a letter if they are in display mode..
+		if(bpanel.getState() == FormInt.DISPLAY){
+			final FormTable orgTable = (FormTable) getWidget("organizationsTable");
+			
+			//aToZWidget.leftTable.controller.view
+			FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
+			
+	        screenService.getOrganizationByLetter(letter,orgTable.controller.model, letterRPC, new AsyncCallback() {
+	                                                            public void onSuccess(Object result) {
+	                                                            	orgTable.controller.setModel((TableModel)result);
+	                                                           	
+	                                                            	//select the first row of the org names table...
+	                                                                if(((TableModel)result).numRows() > 0)
+	                                                                	orgTable.controller.select( 0, 0);
+	                                                                
+	                                                                //enable the next button
+	                                                                if(((TableModel)result).numRows() > 1)
+	                                                                	bpanel.enable("n", true);     
+	                                                            }
+	
+	                                                            public void onFailure(Throwable caught) {
+	                                                                Window.alert(caught.getMessage());
+	                                                            }
+	                                                        });
+	        setStyleNameOnButton(sender);
+		}
 	}
 	
 
@@ -375,7 +378,12 @@ public class Organization  extends AppScreenForm{
 
 	public void onTabSelected(SourcesTabEvents sources, int index) {
 		tabSelectedIndex = index;
-		
+		//we need to do a org contacts table reset so that it will always show the data
+		if(index == 0 && bpanel.getState() == FormInt.DISPLAY){
+			FormTable contacts = (FormTable)getWidget("contactsTable");
+			contacts.controller.model.deleteRow(contacts.controller.model.numRows()-1);
+			contacts.controller.reset();
+		}
 		super.onTabSelected(sources, index);
 	}
 	
@@ -393,14 +401,20 @@ public class Organization  extends AppScreenForm{
     	
     	Button removeContactButton = (Button) getWidget("removeContactButton");
     	removeContactButton.setEnabled(true);
+    	
+		FormTable contactsTable = (FormTable) getWidget("contactsTable");
+	
+		contactsTable.controller.select(0, 5);
 	}
 	
 	public void abort(int state) {
-		if(state == FormInt.QUERY){
-		//	((DeckPanel)getWidget("formDeck")).showWidget(0);
-		
-		}
 		FormTable orgContacts = (FormTable)getWidget("contactsTable");
+		//need to remove the extra table row on update
+		if(bpanel.getState() == FormInt.UPDATE)
+			orgContacts.controller.model.deleteRow(orgContacts.controller.model.numRows()-1);
+		
+		super.abort(state);	
+		
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable)orgContacts.controller.manager;        
     	orgContactsTable.disableRows = true;
     	orgContacts.controller.unselect(-1);
@@ -408,7 +422,27 @@ public class Organization  extends AppScreenForm{
     	Button removeContactButton = (Button) getWidget("removeContactButton");
     	removeContactButton.setEnabled(false);
     	
-		super.abort(state);		
+    	 //need to get the org name table model
+        FormTable orgNameTM = (FormTable)getWidget("organizationsTable");
+        int numberOfRows = orgNameTM.controller.model.numRows();
+        int totalPages = orgNameTM.controller.model.totalPages;
+        int rowSelected = orgNameTM.controller.selected;
+        int currentPage = orgNameTM.controller.model.pageIndex;
+
+        //set the next previous buttons if needed
+        if(numberOfRows > 1 && rowSelected != -1 && (rowSelected < numberOfRows-1 || currentPage < totalPages-1))
+        	bpanel.enable("n", true);
+        else
+        	bpanel.enable("n", false);
+        
+        if(numberOfRows > 1 && rowSelected > 0)
+        	bpanel.enable("p", true);
+        else
+        	bpanel.enable("p", false);
+        
+    	//set the update button if needed
+    	if(rowSelected != -1)
+    		bpanel.enable("u",true);	
 	}
 
 	public void up(int state) {	

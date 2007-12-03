@@ -7,9 +7,9 @@ import org.openelis.gwt.common.TableModel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface OrganizationScreenIntAsync extends AppScreenFormServiceIntAsync {
+public interface OrganizationServletIntAsync extends AppScreenFormServiceIntAsync {
 
-	public void getInitialModel(TableModel model, AsyncCallback callback);
+	//public void getInitialModel(TableModel model, AsyncCallback callback);
 	
 	public void getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC, AsyncCallback callback);
 	
