@@ -25,10 +25,12 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.OptionItem;
+import org.openelis.gwt.common.QueryCheckField;
 import org.openelis.gwt.common.QueryNumberField;
 import org.openelis.gwt.common.QueryOptionField;
 import org.openelis.gwt.common.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
@@ -53,11 +55,13 @@ public class OrganizationBean implements OrganizationRemote {
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private AddressLocal addressBean;
     
     {
         try {
             InitialContext cont = new InitialContext();
             lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
+            addressBean =  (AddressLocal)cont.lookup("openelis/AddressBean/local");
         }catch(Exception e){
             
         }
@@ -73,8 +77,7 @@ public class OrganizationBean implements OrganizationRemote {
 		Query query = manager.createNamedQuery("getOrganizationAndAddress");
 		query.setParameter("id", organizationId);
 		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
-		
-		
+
         return orgAddressContacts;
 	}
 	
@@ -86,7 +89,7 @@ public class OrganizationBean implements OrganizationRemote {
         return getOrganizationAddress(id, false);
     }
 
-	public List<OrganizationTableRowDO> getOrganizationNameList(int startPos, int maxResults) {
+	/*public List<OrganizationTableRowDO> getOrganizationNameList(int startPos, int maxResults) {
 		Query query = manager.createNamedQuery("getOrganizationNameRows");
 		
 		if(maxResults > 0){
@@ -98,7 +101,7 @@ public class OrganizationBean implements OrganizationRemote {
 		
         return orgList;
 
-	}
+	}*/
 	
 	@RolesAllowed("organization-update")
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) {
@@ -119,105 +122,50 @@ public class OrganizationBean implements OrganizationRemote {
             	organization = new Organization();
             else
                 organization = manager.find(Organization.class, organizationDO.getOrganizationId());
-            
-            Address orgAddress = null;
-            if (organizationDO.getAddressId() == null)
-            	orgAddress = new Address();
-            else
-            	orgAddress = manager.find(Address.class, organizationDO.getAddressId());
+
+            //send the address to the update address bean
+            System.out.println(addressBean);
+            Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
             
             //update organization
-            if(orgAddress.getId() != null)
-            	organization.setAddress(organizationDO.getAddressId());
+            organization.setAddress(orgAddressId);
             
             organization.setIsActive(organizationDO.getIsActive());
             organization.setName(organizationDO.getName());
             organization.setParentOrganization(organizationDO.getParentOrganization());
-            //update organization address
-            //orgAddress.setType(type) FIXME need to set this to business (or org)
-            if(organization.getId() != null)
-            	orgAddress.setReferenceId(organization.getId());
-            else
-            	orgAddress.setReferenceId(0);
-            
-            orgAddress.setReferenceTable(organizationReferenceId);
-            orgAddress.setMultipleUnit(organizationDO.getMultipleUnit());
-            orgAddress.setStreetAddress(organizationDO.getStreetAddress());
-            orgAddress.setCity(organizationDO.getCity());
-            orgAddress.setState(organizationDO.getState());
-            orgAddress.setZipCode(organizationDO.getZipCode());
-            orgAddress.setCountry(organizationDO.getCountry());
-            
-            if (orgAddress.getId() == null) {
-                manager.persist(orgAddress);
-                organization.setAddress(orgAddress.getId());
-	            
-	            if (organization.getId() == null) {
-	                manager.persist(organization);
-	                orgAddress.setReferenceId(organization.getId());
-	            }
+                    
+	        if (organization.getId() == null) {
+	        	manager.persist(organization);
             }
             
             //update contacts
             for (Iterator contactsItr = contacts.iterator(); contactsItr.hasNext();) {
 				OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
-				Address contactAddress = null;
 	            OrganizationContact orgContact = null;
 	            
 	            if (contactDO.getId() == null)
 	            	orgContact = new OrganizationContact();
 	            else
 	            	orgContact = manager.find(OrganizationContact.class, contactDO.getId());
-	       
-	            if (contactDO.getAddressId() == null)
-	            	contactAddress = new Address();
-	            else
-	            	contactAddress = manager.find(Address.class, contactDO.getAddressId());
-	            
-	            if(contactDO.getDelete() && orgContact.getId() != null && contactAddress != null){
+
+	            if(contactDO.getDelete() && orgContact.getId() != null){
 	            	//delete the contact record and the address record from the database
 	            	manager.remove(orgContact);
-	            	manager.remove(contactAddress);
+	            	addressBean.deleteAddress(contactDO.getAddressDO());
 	            	
 	            }else{
-		            if(orgContact.getId() != null)
-		            	contactAddress.setReferenceId(orgContact.getId());
-		            else
-		            	contactAddress.setReferenceId(0);
-		            
-		            contactAddress.setReferenceTable(organizationContactReferenceId);
-		            contactAddress.setType(contactDO.getType());
-		            contactAddress.setMultipleUnit(contactDO.getMultipleUnit());
-		            contactAddress.setStreetAddress(contactDO.getStreetAddress());
-		            contactAddress.setCity(contactDO.getCity());
-		            contactAddress.setState(contactDO.getState());
-		            contactAddress.setZipCode(contactDO.getZipCode());
-		            contactAddress.setWorkPhone(contactDO.getWorkPhone());
-		            contactAddress.setHomePhone(contactDO.getHomePhone());
-		            contactAddress.setCellPhone(contactDO.getCellPhone());
-		            contactAddress.setFaxPhone(contactDO.getFaxPhone());
-		            contactAddress.setEmail(contactDO.getEmail());
-		            contactAddress.setCountry(contactDO.getCountry());          
-	
-		            if (contactAddress.getId() == null) {
-		                manager.persist(contactAddress);
-		                
-		                orgContact.setContactType(contactDO.getContactType());
-			            orgContact.setName(contactDO.getName());
-			            orgContact.setOrganization(organization.getId());
-			            orgContact.setAddress(contactAddress.getId());
+//	            	send the contact address to the address bean
+		            Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+			                
+		            orgContact.setContactType(contactDO.getContactType());
+			        orgContact.setName(contactDO.getName());
+			        orgContact.setOrganization(organization.getId());
+			        orgContact.setAddress(contactAddressId);
 			            
-			            if (orgContact.getId() == null) {
-			                manager.persist(orgContact);
-			                contactAddress.setReferenceId(orgContact.getId());
-			            }
-		            }else{
-		            	orgContact.setContactType(contactDO.getContactType());
-			            orgContact.setName(contactDO.getName());
-			            orgContact.setOrganization(organization.getId());
-			            orgContact.setAddress(contactAddress.getId());
-		            }
-	            }
+			        if (orgContact.getId() == null) {
+			            manager.persist(orgContact);
+			        }
+	           }
 			}
             
             
@@ -304,7 +252,6 @@ public class OrganizationBean implements OrganizationRemote {
 	    }
 
 	public List query(HashMap fields, int first, int max) throws RemoteException{
-	
 //		organization reference table id
     	Query refIdQuery = manager.createNamedQuery("getTableId");
     	refIdQuery.setParameter("name", "organization");
@@ -347,6 +294,9 @@ public class OrganizationBean implements OrganizationRemote {
         	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "o.isActive"));
   
          //org contact elements
+         if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
+        		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
+        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("contactType"), "oc.contactType"));
          if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactName"), "oc.name"));
          if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
@@ -384,7 +334,7 @@ public class OrganizationBean implements OrganizationRemote {
         	 query.setFirstResult(first);
          if(max > -1)
         	 query.setMaxResults(max);
-         
+             
 //       ***set the parameters in the query
 //       org elements
          if(fields.containsKey("orgId"))
@@ -411,6 +361,9 @@ public class OrganizationBean implements OrganizationRemote {
         		 !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
         	 QueryBuilder.setParameters((QueryOptionField)fields.get("isActive"), "o.isActive", query);
 //       org contact elements
+         if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
+        		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
+        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactType"), "oc.contactType", query);
          if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactName"), "oc.name", query);
          if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
@@ -421,7 +374,7 @@ public class OrganizationBean implements OrganizationRemote {
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactCity"), "oca.city", query);
          if(fields.containsKey("contactState") && ((QueryOptionField)fields.get("contactState")).getSelections().size()>0 && 
         		 !(((QueryOptionField)fields.get("contactState")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactState")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactState"), "oca.state", query);
+        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactState"), "oca.state", query);
          if(fields.containsKey("contactZipCode") && ((QueryStringField)fields.get("contactZipCode")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactZipCode"), "oca.zipCode", query);
          if(fields.containsKey("contactWorkPhone") && ((QueryStringField)fields.get("contactWorkPhone")).getComparator() != null)
@@ -436,7 +389,7 @@ public class OrganizationBean implements OrganizationRemote {
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactEmail"), "oca.email", query);
          if(fields.containsKey("contactCountry") && ((QueryOptionField)fields.get("contactCountry")).getSelections().size()>0 && 
         		 !(((QueryOptionField)fields.get("contactCountry")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactCountry")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactCountry"), "oca.country", query);
+        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactCountry"), "oca.country", query);
 //       org notes
          if(fields.containsKey("usersSubject"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);

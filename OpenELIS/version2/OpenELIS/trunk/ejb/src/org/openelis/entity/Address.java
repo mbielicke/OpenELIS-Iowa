@@ -31,15 +31,6 @@ public class Address implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="reference_id")
-  private Integer referenceId;             
-
-  @Column(name="reference_table")
-  private Integer referenceTable;             
-
-  @Column(name="type")
-  private Integer type;             
-
   @Column(name="multiple_unit")
   private String multipleUnit;             
 
@@ -85,33 +76,6 @@ public class Address implements Auditable, Cloneable {
     if((id == null && this.id != null) || 
        (id != null && !id.equals(this.id)))
       this.id = id;
-  }
-
-  public Integer getReferenceId() {
-    return referenceId;
-  }
-  public void setReferenceId(Integer referenceId) {
-    if((referenceId == null && this.referenceId != null) || 
-       (referenceId != null && !referenceId.equals(this.referenceId)))
-      this.referenceId = referenceId;
-  }
-
-  public Integer getReferenceTable() {
-    return referenceTable;
-  }
-  public void setReferenceTable(Integer referenceTable) {
-    if((referenceTable == null && this.referenceTable != null) || 
-       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
-      this.referenceTable = referenceTable;
-  }
-
-  public Integer getType() {
-    return type;
-  }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
   }
 
   public String getMultipleUnit() {
@@ -229,27 +193,6 @@ public class Address implements Auditable, Cloneable {
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
         elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
-
-      if((referenceId == null && original.referenceId != null) || 
-         (referenceId != null && !referenceId.equals(original.referenceId))){
-        Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString()));
-        root.appendChild(elem);
-      }      
-
-      if((referenceTable == null && original.referenceTable != null) || 
-         (referenceTable != null && !referenceTable.equals(original.referenceTable))){
-        Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString()));
-        root.appendChild(elem);
-      }      
-
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
         root.appendChild(elem);
       }      
 
