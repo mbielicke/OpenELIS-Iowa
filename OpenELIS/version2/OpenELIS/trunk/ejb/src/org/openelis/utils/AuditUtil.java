@@ -35,7 +35,7 @@ public class AuditUtil {
     void postCreate(Object entity) {
         if (entity instanceof Auditable) {
             Auditable aud = (Auditable)entity;
-            getHistory().write(aud, "A");
+            getHistory().write(aud, 1, "entity inserted");
         }
     }
 
@@ -43,7 +43,7 @@ public class AuditUtil {
     void postUpdate(Object entity) {
         if (entity instanceof Auditable) {
             Auditable aud = (Auditable)entity;
-            getHistory().write(aud, "U");
+            getHistory().write(aud, 2, aud.getChangeXML());
         }
     }
 
@@ -51,7 +51,7 @@ public class AuditUtil {
     void postDelete(Object entity) {
         if (entity instanceof Auditable) {
             Auditable aud = (Auditable)entity;
-            getHistory().write(aud, "D");
+            getHistory().write(aud, 3, "entity deleted");
         }
     }
 

@@ -32,14 +32,14 @@ public class HistoryBean implements HistoryLocal {
 
 	    private Logger log = Logger.getLogger(this.getClass());
 
-	    public void write(Auditable aud, String operation) {
+	    public void write(Auditable aud, Integer operation, String changes) {
 	        try {
 	            log.debug("Entering write");
 	            String change = null;
-	            if (operation.equals("U")) {
-	                change = aud.getChangeXML();
+	            //if (operation == 2) {
+	                change = changes;
 	                log.debug("Changes : " + change);
-	            }
+	            //}
 	            History history = new History();
 	            history.setReferenceId(aud.getId());
 	            Query query = manager.createNamedQuery("getTableId");
@@ -47,7 +47,7 @@ public class HistoryBean implements HistoryLocal {
 	            history.setReferenceTable((Integer)query.getSingleResult());
 	            
 	            //FIXME activity will be a dictionary entry eventually
-	            history.setActivity(1);
+	            history.setActivity(operation);
 	            history.setTimestamp(new Date());
 	            try{
 	                String princ = ctx.getCallerPrincipal().getName();
@@ -58,9 +58,10 @@ public class HistoryBean implements HistoryLocal {
 	            }catch(Exception e){
 	                history.setSystemUser(0);
 	            }
-	            if (change != null)
+	            if (change != null){
 	                history.setChanges(change);
-	            manager.persist(history);
+	                manager.persist(history);
+	            }
 	            log.debug("Exiting write");
 	        } catch (Exception e) {
 	            log.error(e.getMessage());
