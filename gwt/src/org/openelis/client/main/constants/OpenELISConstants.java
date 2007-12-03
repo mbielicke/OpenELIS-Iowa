@@ -6,6 +6,7 @@ public interface OpenELISConstants extends ConstantsWithLookup {
 	//common
 	String greeting();
     String  favorites();
+    String queryExpiredException();
     
     //button panel
     String abort();
