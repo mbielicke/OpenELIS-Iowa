@@ -214,15 +214,12 @@
 							<sorts>false</sorts>
 							<filters>false</filters>
 				</table>
-				<widget halign="center">
-					<check key="inactive" onClick="this">Show Inactive</check>
-				</widget>
 				</panel>
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
 				<widget halign="center">
-					<buttonPanel buttons="qacubnp" key="buttons"/>
+					<buttonPanel buttons="qpnaucb" key="buttons"/>
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
@@ -352,7 +349,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/></text>
 										</widget>
 										<widget>
-										<auto cat="" case="upper" serviceUrl="OrganizationScreen" key="parentOrg" width="225px" popupWidth="350px" tab="isActive,country"/>
+										<auto cat="" case="upper" serviceUrl="OrganizationServlet" key="parentOrg" width="225px" popupWidth="350px" tab="isActive,country"/>
 										<query>
 											<textbox case="upper" width="225px" tab="isActive,country"/>
 										</query>
@@ -521,8 +518,8 @@
 										 	<option multi="true" fromModel="true"/>										 	
 										</editors>
 										<fields>
-											<queryOption multi="true" type="string">
-											<item value=" "> </item>
+											<queryOption multi="true" type="integer">
+											<item value="0"> </item>
 											<item value="1">NURSE</item>
 											<item value="2">RECEPTIONIST</item>
 											<item value="3">TECHNICIAN</item>
@@ -663,7 +660,7 @@
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
   <check key="isActive" required="false"/>
-  <check key="inactive" required="false"/>
+
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
   <string key="parentOrgText" required="false" max="40"/>

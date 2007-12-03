@@ -207,8 +207,6 @@ public class Organization  extends AppScreenForm{
         	Button removeContactButton = (Button) getWidget("removeContactButton");
         	removeContactButton.setEnabled(false);
         	
-        	//enable the show inactive check box
-        	((CheckBox)getWidget("inactive")).setEnabled(true);
         //	if(constants != null)
         //		message.setText(openElisConstants.getString("loadCompleteMessage"));
         //	else
@@ -428,7 +426,7 @@ public class Organization  extends AppScreenForm{
         int totalPages = orgNameTM.controller.model.totalPages;
         int rowSelected = orgNameTM.controller.selected;
         int currentPage = orgNameTM.controller.model.pageIndex;
-
+    	
         //set the next previous buttons if needed
         if(numberOfRows > 1 && rowSelected != -1 && (rowSelected < numberOfRows-1 || currentPage < totalPages-1))
         	bpanel.enable("n", true);
@@ -473,7 +471,6 @@ public class Organization  extends AppScreenForm{
 	}
 	
 	public void query(int state) {
-    	
 		super.query(state);
 	}
 	
@@ -487,7 +484,7 @@ public class Organization  extends AppScreenForm{
         //select the first row of the org names table...
         if(orgsTable.controller.model.numRows() > 0)
         	orgsTable.controller.select( 0, 0);
-        
+    	
         //enable the next button
         if(model.numRows() > 1)
         	bpanel.enable("n", true);     
