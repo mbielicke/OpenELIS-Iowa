@@ -38,8 +38,8 @@
   </servlet>
   
     <servlet>
-    <servlet-name>OrganizationScreen</servlet-name>
-    <servlet-class>org.openelis.server.OrganizationScreen</servlet-class>
+    <servlet-name>OrganizationServlet</servlet-name>
+    <servlet-class>org.openelis.server.OrganizationServlet</servlet-class>
   </servlet>
     
   <servlet>
@@ -55,8 +55,8 @@
   </servlet-mapping>
   
     <servlet-mapping>
-    <servlet-name>OrganizationScreen</servlet-name>
-    <url-pattern>/OrganizationScreen</url-pattern>
+    <servlet-name>OrganizationServlet</servlet-name>
+    <url-pattern>/OrganizationServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

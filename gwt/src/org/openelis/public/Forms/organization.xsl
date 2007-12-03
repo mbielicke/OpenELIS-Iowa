@@ -18,12 +18,12 @@
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="horizontal" spacing="0" xsi:type="Panel">
+		<panel layout="horizontal" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
 				<aToZ height="425px" width="auto" key="hideablePanel" visible="false" onclick="this">
-				 <panel layout="horizontal" xsi:type="Panel" spacing="5">
+				 <panel layout="horizontal" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
-			<panel layout="vertical" xsi:type="Panel" spacing="1">
+			<panel layout="vertical" xsi:type="Panel" spacing="0">
 				<widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
           </widget>
@@ -201,8 +201,8 @@
           </widget>
           </panel>
 		</xsl:if>
-				 
-				<table height="425px" manager="OrganizationNameTable" serviceUrl="OrganizationScreen" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				 <panel layout="vertical" xsi:type="Panel" width="150px">
+				<table height="380px" manager="OrganizationNameTable" serviceUrl="OrganizationServlet" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
 				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>
@@ -214,9 +214,13 @@
 							<sorts>false</sorts>
 							<filters>false</filters>
 				</table>
+				<widget halign="center">
+					<check key="inactive" onClick="this">Show Inactive</check>
+				</widget>
+				</panel>
 				</panel>
 				</aToZ>
-			<panel layout="vertical" spacing="2" width="600px" xsi:type="Panel">
+			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
 				<widget halign="center">
 					<buttonPanel buttons="qacubnp" key="buttons"/>
 				</widget>
@@ -382,17 +386,26 @@
 				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" width="600px" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
-							<panel layout="vertical" spacing="5" xsi:type="Panel">
+							<panel layout="vertical" spacing="0" xsi:type="Panel">
 							<widget halign="center">
 								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" autoAdd="true" title="">
-										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
 										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>130,130,130,130,50,68,100,90,90,90,150,145</widths>
+										<widths>115,130,130,130,130,50,68,100,90,90,90,150,145</widths>
 										<editors>
+											<option>
+											<item value=" "> </item>
+											<item value="1">NURSE</item>
+											<item value="2">RECEPTIONIST</item>
+											<item value="3">TECHNICIAN</item>
+											<item value="4">MAIN CONTACT</item>
+											<item value="5">SECOND CONTACT</item>
+											<item value="6">DOCTOR</item>
+											</option>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
@@ -458,7 +471,10 @@
 											<textbox case="mixed"/>
 										 	<option>
 										 	<item value=" "> </item>
-											<item value="United States">United States</item>
+											<item value="United States">UNITED STATES</item>
+    										<item value="AAAA">AAAA</item>
+    										<item value="BBBB">BBBB</item>
+    										<item value="CCCC">CCCC</item>
 											</option>
 										</editors>
 										<fields>
@@ -474,26 +490,51 @@
 											<string/>
 											<string/>
 											<string/>
+											<string/>
 										</fields>
-										<sorts>true,true,true,true,true,true,true,true,true,true,true,true</sorts>
-										<filters>false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
-										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
+										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
+										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
+										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
 									<table width="575px" height="135px" rows="1" title="">
-										<headers><xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
 										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>130,130,130,130,50,68,100,90,90,90,150,145</widths>
+										<widths>115,130,130,130,130,50,68,100,90,90,90,150,145</widths>
 										<editors>
+											<option multi="true" fromModel="true"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<option>
+											<option multi="true" fromModel="true"/>
+										 	<textbox case="mixed"/>
+										 	<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+										 	<option multi="true" fromModel="true"/>										 	
+										</editors>
+										<fields>
+											<queryOption multi="true" type="string">
+											<item value=" "> </item>
+											<item value="1">NURSE</item>
+											<item value="2">RECEPTIONIST</item>
+											<item value="3">TECHNICIAN</item>
+											<item value="4">MAIN CONTACT</item>
+											<item value="5">SECOND CONTACT</item>
+											<item value="6">DOCTOR</item>
+											</queryOption>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<queryOption multi="true" type="string">
 											<item value=" "> </item>
 											<item value="AL">AL</item>
 											<item value="AK">AK</item>
@@ -544,36 +585,25 @@
 											<item value="WA">WA</item>
 											<item value="WV">WV</item>
 											<item value="WI">WI</item>
-											<item value="WY">WY</item>											
-											</option>
-										 	<textbox case="mixed"/>
-										 	<textbox case="mixed"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-										 	<option>
-										 	<item value=" "> </item>
-											<item value="United States">United States</item>
-											</option>
-										</editors>
-										<fields>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryOption multi="true" type="string"/>
+											<item value="WY">WY</item>					
+											</queryOption>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<queryOption multi="true" type="string"/>
+											<queryOption multi="true" type="string">
+											<item value=" "> </item>
+											<item value="United States">UNITED STATES</item>
+    										<item value="AAAA">AAAA</item>
+    										<item value="BBBB">BBBB</item>
+    										<item value="CCCC">CCCC</item>
+											</queryOption>
 										</fields>
-										<sorts>true,true,true,true,true,true,true,true,true,true,true,true</sorts>
-										<filters>false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
-										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
+										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
+										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
+										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									</query>
 								</widget>
@@ -633,6 +663,7 @@
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
   <check key="isActive" required="false"/>
+  <check key="inactive" required="false"/>
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
   <string key="parentOrgText" required="false" max="40"/>
@@ -694,8 +725,10 @@
 		</option>
 		<option key="country" multi="false" required="true">
 		 	<item value=" "> </item>
-			<item value="United States">United States</item>
-			<item value="2">AAAA</item>
+			<item value="United States">UNITED STATES</item>
+    		<item value="AAAA">AAAA</item>
+    		<item value="BBBB">BBBB</item>
+    		<item value="CCCC">CCCC</item>
 		</option>
 	</rpc>
 	<rpc key="query">
@@ -773,8 +806,10 @@
 		</queryOption>
 		<queryOption key="country" multi="true" type="string">
 		 	<item value=" "> </item>
-			<item value="United States">United States</item>
-			<item value="AAAAA">AAAA</item>
+			<item value="United States">UNITED STATES</item>
+    		<item value="AAAA">AAAA</item>
+    		<item value="BBBB">BBBB</item>
+    		<item value="CCCC">CCCC</item>
 		</queryOption>
 	</rpc>
 	<rpc key="queryByLetter">

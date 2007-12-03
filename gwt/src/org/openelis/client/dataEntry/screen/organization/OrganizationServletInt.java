@@ -6,9 +6,9 @@ import org.openelis.gwt.common.AbstractField;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.TableModel;
 
-public interface OrganizationScreenInt extends AppScreenFormServiceInt {
+public interface OrganizationServletInt extends AppScreenFormServiceInt {
 
-	public TableModel getInitialModel(TableModel model);
+	//public TableModel getInitialModel(TableModel model);
 	
 	public TableModel getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC);
 	
