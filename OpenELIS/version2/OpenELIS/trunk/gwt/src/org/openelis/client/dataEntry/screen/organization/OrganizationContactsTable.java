@@ -3,6 +3,7 @@ package org.openelis.client.dataEntry.screen.organization;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableController;
 import org.openelis.gwt.client.widget.table.TableManager;
+import org.openelis.gwt.common.data.DataModel;
 
 public class OrganizationContactsTable implements TableManager {
 	private Organization userForm;
@@ -76,4 +77,32 @@ public class OrganizationContactsTable implements TableManager {
 
         
     }
+
+
+
+	public void getNextPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void getPage(int page) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void getPreviousPage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void setModel(TableController controller, DataModel model) {
+		// TODO Auto-generated method stub
+		
+	}
 }

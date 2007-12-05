@@ -13,11 +13,11 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
 
-  <xsl:template match="doc">
+  <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display>
+	<display focus="orgName">
 		<panel layout="horizontal" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
 				<aToZ height="425px" width="auto" key="hideablePanel" visible="false" onclick="this">
@@ -202,7 +202,7 @@
           </panel>
 		</xsl:if>
 				 <panel layout="vertical" xsi:type="Panel" width="150px">
-				<table height="380px" manager="OrganizationNameTable" serviceUrl="OrganizationServlet" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				<table height="380px" manager="OrganizationNameTable" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
 				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>
@@ -218,7 +218,7 @@
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
-				<widget halign="center">
+				<widget>
 					<buttonPanel buttons="qpnaucb" key="buttons"/>
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
@@ -383,7 +383,7 @@
 				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" width="600px" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
-							<panel layout="vertical" spacing="0" xsi:type="Panel">
+							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
 							<widget halign="center">
 								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" autoAdd="true" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -475,19 +475,19 @@
 											</option>
 										</editors>
 										<fields>
+											<string xml:space="preserve"> </string>
+											<string/>
+											<string/>
+											<string/>
+											<string/>
+											<string xml:space="preserve"> </string>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
+											<string xml:space="preserve"> </string>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
