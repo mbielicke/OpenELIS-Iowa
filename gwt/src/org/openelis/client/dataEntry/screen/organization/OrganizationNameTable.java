@@ -3,6 +3,9 @@ package org.openelis.client.dataEntry.screen.organization;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableController;
 import org.openelis.gwt.client.widget.table.TableManager;
+import org.openelis.gwt.common.TableRow;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 
 public class OrganizationNameTable implements TableManager {
     private Organization userForm;
@@ -14,7 +17,7 @@ public class OrganizationNameTable implements TableManager {
 
     public boolean canSelect(int row, TableController controller) {        
         if(userForm.bpanel.state == FormInt.DISPLAY)           
-            return true;
+        	userForm.modelWidget.select(row);
         return false;
     }
 
@@ -29,11 +32,6 @@ public class OrganizationNameTable implements TableManager {
     }
 
     public boolean action(int row, int col, TableController controller) {
-        if(userForm != null && userForm.bpanel.state == FormInt.DISPLAY){ 
-        //	userForm.fetch(key);
-            userForm.fetchData(controller.model.getRow(row)
-                                            .getHidden("id"));                     
-        }  
         
         return true;
     }
@@ -61,6 +59,35 @@ public class OrganizationNameTable implements TableManager {
 
         
     }
-    
-    
+
+	public void getNextPage() {
+		userForm.modelWidget.setPage(userForm.modelWidget.getPage()+1);		
+	}
+
+	public void getPage(int page) {
+		userForm.modelWidget.setPage(page);
+		
+	}
+
+	public void getPreviousPage() {
+		userForm.modelWidget.setPage(userForm.modelWidget.getPage()-1);	
+		
+	}
+
+	public void setModel(TableController controller, DataModel model) {
+		controller.model.reset();
+		for (int i = 0; i < model.size(); i++) {
+			DataSet row = (DataSet)model.get(i);
+			TableRow tRow = controller.model.createRow();
+			
+			tRow.getColumn(0).setDataObject(row.getObject(1));
+			controller.model.addRow(tRow);
+		}
+		controller.model.paged = true;
+		controller.model.rowsPerPage = 1;
+		controller.model.totalRows = 2;
+		controller.model.totalPages = 2;
+		controller.model.pageIndex = 0;
+		controller.reset();
+	}    
 }
