@@ -31,14 +31,17 @@ public class Provider implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="person")
-  private Integer person;             
+  @Column(name="last_name")
+  private String lastName;             
+
+  @Column(name="first_name")
+  private String firstName;             
+
+  @Column(name="middle_name")
+  private String middleName;             
 
   @Column(name="type")
   private Integer type;             
-
-  @Column(name="external_id")
-  private String externalId;             
 
   @Column(name="npi")
   private String npi;             
@@ -57,13 +60,31 @@ public class Provider implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getPerson() {
-    return person;
+  public String getLastName() {
+    return lastName;
   }
-  public void setPerson(Integer person) {
-    if((person == null && this.person != null) || 
-       (person != null && !person.equals(this.person)))
-      this.person = person;
+  public void setLastName(String lastName) {
+    if((lastName == null && this.lastName != null) || 
+       (lastName != null && !lastName.equals(this.lastName)))
+      this.lastName = lastName;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+  public void setFirstName(String firstName) {
+    if((firstName == null && this.firstName != null) || 
+       (firstName != null && !firstName.equals(this.firstName)))
+      this.firstName = firstName;
+  }
+
+  public String getMiddleName() {
+    return middleName;
+  }
+  public void setMiddleName(String middleName) {
+    if((middleName == null && this.middleName != null) || 
+       (middleName != null && !middleName.equals(this.middleName)))
+      this.middleName = middleName;
   }
 
   public Integer getType() {
@@ -73,15 +94,6 @@ public class Provider implements Auditable, Cloneable {
     if((type == null && this.type != null) || 
        (type != null && !type.equals(this.type)))
       this.type = type;
-  }
-
-  public String getExternalId() {
-    return externalId;
-  }
-  public void setExternalId(String externalId) {
-    if((externalId == null && this.externalId != null) || 
-       (externalId != null && !externalId.equals(this.externalId)))
-      this.externalId = externalId;
   }
 
   public String getNpi() {
@@ -112,10 +124,24 @@ public class Provider implements Auditable, Cloneable {
         root.appendChild(elem);
       }      
 
-      if((person == null && original.person != null) || 
-         (person != null && !person.equals(original.person))){
-        Element elem = doc.createElement("person");
-        elem.appendChild(doc.createTextNode(original.person.toString()));
+      if((lastName == null && original.lastName != null) || 
+         (lastName != null && !lastName.equals(original.lastName))){
+        Element elem = doc.createElement("last_name");
+        elem.appendChild(doc.createTextNode(original.lastName.toString()));
+        root.appendChild(elem);
+      }      
+
+      if((firstName == null && original.firstName != null) || 
+         (firstName != null && !firstName.equals(original.firstName))){
+        Element elem = doc.createElement("first_name");
+        elem.appendChild(doc.createTextNode(original.firstName.toString()));
+        root.appendChild(elem);
+      }      
+
+      if((middleName == null && original.middleName != null) || 
+         (middleName != null && !middleName.equals(original.middleName))){
+        Element elem = doc.createElement("middle_name");
+        elem.appendChild(doc.createTextNode(original.middleName.toString()));
         root.appendChild(elem);
       }      
 
@@ -123,13 +149,6 @@ public class Provider implements Auditable, Cloneable {
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
         elem.appendChild(doc.createTextNode(original.type.toString()));
-        root.appendChild(elem);
-      }      
-
-      if((externalId == null && original.externalId != null) || 
-         (externalId != null && !externalId.equals(original.externalId))){
-        Element elem = doc.createElement("external_id");
-        elem.appendChild(doc.createTextNode(original.externalId.toString()));
         root.appendChild(elem);
       }      
 
