@@ -20,7 +20,7 @@
 	<display focus="orgName">
 		<panel layout="horizontal" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="auto" key="hideablePanel" visible="false" onclick="this">
+				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" onclick="this">
 				 <panel layout="horizontal" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
 			<panel layout="vertical" xsi:type="Panel" spacing="0">
@@ -111,7 +111,7 @@
 
 		</xsl:if>
 		<xsl:if test="string($language)='sp'">
-			<panel layout="vertical" xsi:type="Panel">
+			<panel layout="vertical" xsi:type="Panel" cellpadding="0" cellspacing="0">
 			<widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
           </widget>
@@ -201,8 +201,7 @@
           </widget>
           </panel>
 		</xsl:if>
-				 <panel layout="vertical" xsi:type="Panel" width="150px">
-				<table height="380px" manager="OrganizationNameTable" width="auto" key="organizationsTable" title="{resource:getString($constants,'organizations')}">
+				<table manager="OrganizationNameTable" width="auto" key="organizationsTable" maxRows="20" title="{resource:getString($constants,'organizations')}">
 				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>
@@ -215,7 +214,6 @@
 							<filters>false</filters>
 				</table>
 				</panel>
-				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
 				<widget>
@@ -226,7 +224,7 @@
 					<panel layout="vertical" width="600px" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
 							<row>
-									<panel layout="horizontal" xsi:type="Panel" height="10px"/>
+									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 							</row>
 									<row>
 									<widget>
@@ -259,7 +257,7 @@
 									</widget>
 									</row>
 									<row>
-									<panel layout="vertical" height="10px" xsi:type="Panel"/>
+									<panel layout="vertical" xsi:type="Panel" style="FormVerticalSpacing"/>
 									</row>
 						
 									<row>
@@ -299,12 +297,22 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/></text>
 												</widget>
 										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
-												
-												<!--<panel layout="horizontal" width="1px" xsi:type="Panel"/> -->
 												<widget>
-													<option key="state" tab="zipCode,city"/>
+													<!--<option key="state" tab="zipCode,city"/>-->
+													<auto cat="state" key="state" case="upper" serviceUrl="OrganizationServlet" width="40px" popupHeight="100px" dropdown="true" type="string" fromModel="true" tab="country,city">
+													<widths>40</widths>
+													<editors>
+														<label/>
+													</editors>
+													<fields>
+														<string/>
+													</fields>
+													</auto>
+													<query>
+													<option tab="country,city"/>
+												</query>
 												</widget>
-									<panel layout="horizontal" width="37px" xsi:type="Panel"/>
+									<panel layout="horizontal" width="29px" xsi:type="Panel"/>
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/></text>
 												</widget>
@@ -322,7 +330,7 @@
 									</widget>
 									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
 									<widget>
-									<error id="state,zipCode"/>
+									<error id="stateId,zipCode"/>
 									</widget>
 									</row>
 									<row>
@@ -332,24 +340,50 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/></text>
 										</widget>
 										<widget>
-											<option key="country" tab="parentOrg,zipCode"/>
+										<auto cat="country" key="country" case="upper" serviceUrl="OrganizationServlet" width="150px" popupHeight="100px" dropdown="true" type="string" fromModel="true" tab="parentOrg,zipCode">
+													<widths>150</widths>
+													<editors>
+														<label/>
+													</editors>
+													<fields>
+														<string/>
+													</fields>
+													</auto>
+													<query>
+													<option tab="parentOrg,zipCode"/>
+												</query>
 										</widget>
 										</row>
 									<row>
 									<panel layout="horizontal" width="1px" xsi:type="Panel"/>
 									<widget>
-									<error id="country"/>
+									<error id="countryId"/>
 									</widget>
 									</row>
 								<row>
-									<panel layout="vertical" height="10px" xsi:type="Panel"/>
+									<panel layout="vertical" xsi:type="Panel" style="FormVerticalSpacing"/>
 								</row>
 								<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/></text>
 										</widget>
 										<widget>
-										<auto cat="" case="upper" serviceUrl="OrganizationServlet" key="parentOrg" width="225px" popupWidth="350px" tab="isActive,country"/>
+										<auto cat="parentOrg" case="upper" serviceUrl="OrganizationServlet" key="parentOrg" width="225px" type="integer" popupHeight="150px" tab="isActive,country">
+										<headers>Name,Street,City,St</headers>
+										<widths>180,110,100,20</widths>
+										<editors>
+											<label/>
+											<label/>
+											<label/>
+											<label/>
+										</editors>
+										<fields>
+											<string/>
+											<string/>
+											<string/>
+											<string/>
+										</fields>
+										</auto>
 										<query>
 											<textbox case="upper" width="225px" tab="isActive,country"/>
 										</query>
@@ -384,8 +418,8 @@
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
-							<widget halign="center">
-								<table width="575px" height="135px" key="contactsTable" manager="OrganizationContactsTable" autoAdd="true" title="">
+							<widget valign="top">
+								<table width="567px" key="contactsTable" manager="OrganizationContactsTable" maxRows="7" autoAdd="true" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -494,7 +528,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="575px" height="135px" rows="1" title="">
+									<table width="567px" rows="1" title="" maxRows="7">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -605,14 +639,17 @@
 									</query>
 								</widget>
 								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
-								<button halign="center" onclick="this" key="removeContactButton" style="ScreenButtonPanel" html="&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeContact')}"/>
+																<!--&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; -->
+								<button halign="right" onclick="this" key="removeContactButton" style="ScreenButtonPanel" html="{resource:getString($constants,'removeContact')}"/>
+								
+								
 							</panel>
 								<!-- end TAB 1 data table -->
 						<!-- END TAB 1 -->
 					</tab>			
 					<!-- start TAB 2 -->
 					<tab key="noteTab" text="{resource:getString($constants,'note')}">
-						<panel key="secMod3" layout="vertical" width="100%" height="200px" spacing="0" padding="0" xsi:type="Panel">
+						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
 
 									<panel layout="vertical" height="3px" xsi:type="Panel"/>
 							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
@@ -637,7 +674,7 @@
 							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
 							 <widget valign="top">
                  
-							 	<pagedTree key="notesTree" vertical="true" width="596px" height="107px" itemsPerPage="1000" title="abc"/>
+							 	<pagedTree key="notesTree" vertical="true" width="585px" height="100px" itemsPerPage="1000" title="abc"/>
 
 							</widget>    
 
@@ -663,11 +700,13 @@
 
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <string key="parentOrgText" required="false" max="40"/>
+  <!--<string key="parentOrgText" required="false" max="40"/>-->
   <number key="parentOrgId" type="integer" required="false"/> 
   <table key="contactsTable"/>
+  <tree key="notesTree"/>
   <number key="id" required="false" type="integer"/>
-		<option key="state" multi="false" required="true">
+  <string key="stateId" required="true"/>
+  <option key="state" multi="false" required="false">
 			<item value=" "> </item>
 			<item value="AL">AL</item>
 			<item value="AK">AK</item>
@@ -720,12 +759,13 @@
 			<item value="WI">WI</item>
 			<item value="WY">WY</item>	
 		</option>
-		<option key="country" multi="false" required="true">
+		<string key="countryId" required="true"/>
+		<option key="country" multi="false" required="false">
 		 	<item value=" "> </item>
-			<item value="United States">UNITED STATES</item>
-    		<item value="AAAA">AAAA</item>
+		 	<item value="AAAA">AAAA</item>
     		<item value="BBBB">BBBB</item>
     		<item value="CCCC">CCCC</item>
+			<item value="United States">UNITED STATES</item>
 		</option>
 	</rpc>
 	<rpc key="query">
@@ -746,7 +786,8 @@
 
   <queryString key="usersSubject"/>
   <queryString key="usersNote"/>
- <table key="contactsTable"/>
+  <table key="contactsTable"/>
+  <tree key="notesTree"/>
   <queryNumber key="id" type="integer"/>
   <queryOption key="state" multi="true" type="string">
 			<item value=" "> </item>

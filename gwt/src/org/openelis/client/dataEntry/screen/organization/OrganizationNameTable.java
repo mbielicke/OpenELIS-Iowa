@@ -1,8 +1,8 @@
 package org.openelis.client.dataEntry.screen.organization;
 
 import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.table.TableController;
-import org.openelis.gwt.client.widget.table.TableManager;
+import org.openelis.gwt.client.widget.table.small.TableController;
+import org.openelis.gwt.client.widget.table.small.TableManager;
 import org.openelis.gwt.common.TableRow;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
@@ -60,8 +60,9 @@ public class OrganizationNameTable implements TableManager {
         
     }
 
-	public void getNextPage() {
-		userForm.modelWidget.setPage(userForm.modelWidget.getPage()+1);		
+	public void getNextPage(TableController controller) {
+		userForm.modelWidget.getModel().selecttLast(false);
+		userForm.modelWidget.setPage(userForm.modelWidget.getPage()+1);
 	}
 
 	public void getPage(int page) {
@@ -69,9 +70,9 @@ public class OrganizationNameTable implements TableManager {
 		
 	}
 
-	public void getPreviousPage() {
-		userForm.modelWidget.setPage(userForm.modelWidget.getPage()-1);	
-		
+	public void getPreviousPage(TableController controller) {
+		userForm.modelWidget.getModel().selecttLast(false);
+		userForm.modelWidget.setPage(userForm.modelWidget.getPage()-1);
 	}
 
 	public void setModel(TableController controller, DataModel model) {
@@ -83,11 +84,15 @@ public class OrganizationNameTable implements TableManager {
 			tRow.getColumn(0).setDataObject(row.getObject(1));
 			controller.model.addRow(tRow);
 		}
+		if(userForm.modelWidget.getPage() > 0)
+			controller.model.pageIndex = 1;
+		else
+			controller.model.pageIndex = 0;
 		controller.model.paged = true;
 		controller.model.rowsPerPage = 1;
 		controller.model.totalRows = 2;
-		controller.model.totalPages = 2;
-		controller.model.pageIndex = 0;
+		controller.model.totalPages = 3;
+		
 		controller.reset();
-	}    
+	}  
 }

@@ -12,7 +12,7 @@ public interface OrganizationServletInt extends AppScreenFormServiceInt {
 	
 	public TableModel getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC);
 	
-	public TreeModel getNoteTreeModel(AbstractField key, boolean topLevel);
+	public TreeModel getNoteTreeModel(Integer key, boolean topLevel);
 	
 	public String getNoteTreeSecondLevelXml(String key, boolean topLevel);
 }
