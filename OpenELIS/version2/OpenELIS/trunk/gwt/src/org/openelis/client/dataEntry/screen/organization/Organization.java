@@ -3,21 +3,17 @@ package org.openelis.client.dataEntry.screen.organization;
 import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.AppScreenForm;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
-import org.openelis.gwt.client.screen.ScreenInputWidget;
 import org.openelis.gwt.client.screen.ScreenLabel;
 import org.openelis.gwt.client.screen.ScreenPagedTree;
 import org.openelis.gwt.client.screen.ScreenTable;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
+import org.openelis.gwt.client.screen.ScreenTableWidgetSmall;
 import org.openelis.gwt.client.screen.ScreenTextBox;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.FormTable;
-import org.openelis.gwt.client.widget.pagedtree.TreeModel;
-import org.openelis.gwt.common.AbstractField;
+import org.openelis.gwt.client.widget.table.small.TableWidget;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.StringField;
-import org.openelis.gwt.common.TableField;
-import org.openelis.gwt.common.TableModel;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.TableRow;
 
 import com.google.gwt.core.client.GWT;
@@ -28,7 +24,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -145,7 +140,7 @@ public class Organization extends AppScreenForm {
 		} else if (sender == widgets.get("z")) {
 			getOrganizations("z", sender);
 		} else if (sender == widgets.get("removeContactButton")) {
-			FormTable orgContactsTable = (FormTable) getWidget("contactsTable");
+			TableWidget orgContactsTable = (TableWidget) getWidget("contactsTable");
 			int selectedRow = orgContactsTable.controller.selected;
 			if (selectedRow > -1
 					&& orgContactsTable.controller.model.numRows() > 1) {
@@ -171,11 +166,11 @@ public class Organization extends AppScreenForm {
 							.get("hideablePanel");
 
 					// get the selected row
-					int selectedRow = ((FormTable) getWidget("organizationsTable")).controller.selected;
+					int selectedRow = ((TableWidget) getWidget("organizationsTable")).controller.selected;
 					// only need to reset the table if the user is opening the
 					// panel
 					if (panel.panelOpen())
-						((FormTable) getWidget("organizationsTable")).controller
+						((TableWidget) getWidget("organizationsTable")).controller
 								.reset();
 
 				}
@@ -188,7 +183,7 @@ public class Organization extends AppScreenForm {
 
 		bpanel = (ButtonPanel) getWidget("buttons");
 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((FormTable) getWidget("contactsTable")).controller.manager;
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
 
 		final ScreenPagedTree pagedTree = (ScreenPagedTree) widgets
@@ -198,7 +193,7 @@ public class Organization extends AppScreenForm {
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(false);
 
-		FormTable orgNameTable = (FormTable) getWidget("organizationsTable");
+		TableWidget orgNameTable = (TableWidget) getWidget("organizationsTable");
 		modelWidget.addChangeListener(orgNameTable.controller);
 
 		// if(constants != null)
@@ -207,7 +202,7 @@ public class Organization extends AppScreenForm {
 		message.setText("done");
 
 		// get contacts table and set the managers form
-		FormTable contactsTable = (FormTable) getWidget("contactsTable");
+		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
 		((OrganizationContactsTable) contactsTable.controller.manager)
 				.setOrganizationForm(this);
 
@@ -219,16 +214,11 @@ public class Organization extends AppScreenForm {
 		super.afterDraw(success);
 	}
 
-	public void afterFetch(boolean success) {
-		super.afterFetch(success);
-
-	}
-
-	public void fetch() {
+	/*public void fetch() {
 		FormRPC letterRPC = (FormRPC) this.forms.get("display");
 		((ScreenInputWidget)widgets.get("contactsTable")).submit(letterRPC.getField("contactsTable"));
 		super.fetch();
-	}
+	}*/
 
 	private void getOrganizations(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
@@ -326,7 +316,7 @@ public class Organization extends AppScreenForm {
 		// we need to do a org contacts table reset so that it will always show
 		// the data
 		if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
-			FormTable contacts = (FormTable) getWidget("contactsTable");
+			TableWidget contacts = (TableWidget) getWidget("contactsTable");
 			contacts.controller.model.deleteRow(contacts.controller.model
 					.numRows() - 1);
 			contacts.controller.reset();
@@ -340,20 +330,20 @@ public class Organization extends AppScreenForm {
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((FormTable) getWidget("contactsTable")).controller.manager;
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = false;
 
 		// unselect the row from the table
-		((FormTable) getWidget("organizationsTable")).controller.unselect(-1);
+		((TableWidget) getWidget("organizationsTable")).controller.unselect(-1);
 
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(true);
 
-		FormTable contactsTable = (FormTable) getWidget("contactsTable");
+		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
 	}
 
 	public void abort(int state) {
-		FormTable orgContacts = (FormTable) getWidget("contactsTable");
+		TableWidget orgContacts = (TableWidget) getWidget("contactsTable");
 		// need to remove the extra table row on update
 		if (bpanel.getState() == FormInt.UPDATE)
 			orgContacts.controller.model.deleteRow(orgContacts.controller.model
@@ -369,12 +359,16 @@ public class Organization extends AppScreenForm {
 		removeContactButton.setEnabled(false);
 
 		// need to get the org name table model
-		FormTable orgNameTM = (FormTable) getWidget("organizationsTable");
+		TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
 		int rowSelected = orgNameTM.controller.selected;
 
 		// set the update button if needed
 		if (rowSelected != -1)
 			bpanel.enable("u", true);
+		
+		//after update we need to enable the next previous buttons
+		
+		//after query we need to enable the next previous buttons
 	}
 
 	public void up(int state) {
@@ -387,7 +381,7 @@ public class Organization extends AppScreenForm {
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((FormTable) getWidget("contactsTable")).controller.manager;
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = false;
 
 		Button removeContactButton = (Button) getWidget("removeContactButton");
@@ -395,12 +389,10 @@ public class Organization extends AppScreenForm {
 	}
 
 	public void next(int state) {
-		Window.alert("next");
 		super.next(state);
 	}
 
 	public void prev(int state) {
-		Window.alert("prev");
 		super.prev(state);
 	}
 
@@ -422,7 +414,7 @@ public class Organization extends AppScreenForm {
 
 	public void afterCommitUpdate(boolean success) {
 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((FormTable) getWidget("contactsTable")).controller.manager;
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
 
 		Button removeContactButton = (Button) getWidget("removeContactButton");
@@ -438,11 +430,11 @@ public class Organization extends AppScreenForm {
 
 	public void commit(int state) {
 		if (state == FormInt.QUERY) {
-			((FormTable) ((ScreenTable) ((ScreenTable) widgets
+			((TableWidget) ((ScreenTableWidgetSmall) ((ScreenTableWidgetSmall) widgets
 					.get("contactsTable")).getQueryWidget()).getWidget()).controller
 					.unselect(-1);
 		} else {
-			((FormTable) getWidget("contactsTable")).controller.unselect(-1);
+			((TableWidget) getWidget("contactsTable")).controller.unselect(-1);
 		}
 		super.commit(state);
 	}

@@ -13,7 +13,7 @@ public interface OrganizationServletIntAsync extends AppScreenFormServiceIntAsyn
 	
 	public void getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC, AsyncCallback callback);
 	
-	public void getNoteTreeModel(AbstractField key, boolean topLevel, AsyncCallback callback);
+	public void getNoteTreeModel(Integer key, boolean topLevel, AsyncCallback callback);
 	
 	public void getNoteTreeSecondLevelXml(String key, boolean topLevel, AsyncCallback callback);
 	
