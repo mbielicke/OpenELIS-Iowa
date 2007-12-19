@@ -7,20 +7,22 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
+@NamedQueries({@NamedQuery(name = "getProviderNameRowsByLetter", query = "select new org.openelis.domain.ProviderTableRowDO(p.id,p.lastName,p.firstName) " + "from Provider p where p.lastName like :letter order by lastName,firstName"),
+               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.type,p.npi" +                                                                                                  
+                               "  from Provider p where p.id = :id")})              
 @Entity
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})
