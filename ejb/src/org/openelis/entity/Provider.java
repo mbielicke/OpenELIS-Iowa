@@ -21,7 +21,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "getProviderNameRowsByLetter", query = "select new org.openelis.domain.ProviderTableRowDO(p.id,p.lastName,p.firstName) " + "from Provider p where p.lastName like :letter order by lastName,firstName"),
-               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.type,p.npi" +                                                                                                  
+               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.type,p.npi)" +                                                                                                  
                                "  from Provider p where p.id = :id")})              
 @Entity
 @Table(name="provider")
