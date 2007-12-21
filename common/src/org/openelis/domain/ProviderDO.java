@@ -16,9 +16,7 @@ public class ProviderDO implements Serializable{
 
     private String firstName;             
 
-    private String middleName;             
-
-    private String type;             
+    private String middleName;                            
 
     private String npi;
     
@@ -28,12 +26,11 @@ public class ProviderDO implements Serializable{
         
     }
     
-    public ProviderDO(Integer id,String lastName, String firstName, String middleName, String type,Integer typeId,String npi){
+    public ProviderDO(Integer id,String lastName, String firstName, String middleName, Integer typeId,String npi){
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
-        this.middleName= middleName;
-        this.type = type;
+        this.middleName= middleName;        
         this.npi = npi;   
         this.typeId = typeId;
     }
@@ -76,15 +73,7 @@ public class ProviderDO implements Serializable{
 
     public void setNpi(String npi) {
         this.npi = npi;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+    }    
 
     public Integer getTypeId() {
         return typeId;
