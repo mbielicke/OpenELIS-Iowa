@@ -10,6 +10,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -17,6 +18,8 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderTableRowDO;
+import org.openelis.entity.Organization;
+import org.openelis.entity.Provider;
 import org.openelis.gwt.common.QueryNumberField;
 import org.openelis.gwt.common.QueryOptionField;
 import org.openelis.gwt.common.QueryStringField;
@@ -70,8 +73,12 @@ public class ProviderBean implements ProviderRemote {
     }
 
     public List getProviderAddresses(Integer providerId) {
-        // TODO Auto-generated method stub
-        return null;
+        Query query = manager.createNamedQuery("getProviderAddresses");
+        query.setParameter("id", providerId);
+        
+        List providerAddresses = query.getResultList();// getting list of addresses from the 
+    
+        return providerAddresses;
     }
 
     public List<ProviderTableRowDO> getProviderNameListByLetter(String letter,
@@ -92,12 +99,12 @@ public class ProviderBean implements ProviderRemote {
     }
 
     public List getProviderNotes(Integer providerId, boolean topLevel) {
-        // TODO Auto-generated method stub
+        
         return null;
     }
 
     public ProviderDO getProviderUpdate(Integer id) throws Exception {
-        // TODO Auto-generated method stub
+        
         return null;
     }
 
@@ -122,7 +129,7 @@ public class ProviderBean implements ProviderRemote {
         System.out.println("starting query");
         
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct p.id, p.lastName, p.firstName from Provider p ");
+        sb.append("select distinct p.id, p.lastName, p.firstName from Provider p where 1=1 ");
         if(fields.containsKey("lastName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("lastName"), "p.lastName"));
         if(fields.containsKey("firstName"))
@@ -157,11 +164,33 @@ public class ProviderBean implements ProviderRemote {
         
     }
 
-    public Integer updateProvider(ProviderDO providerDO,
-                                  NoteDO noteDO,
-                                  List addresses) {
-        // TODO Auto-generated method stub
-        return null;
+    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        Provider provider = null;
+        try{
+            if (providerDO.getId() == null){
+                provider = new Provider();
+            } 
+            else{
+                provider = manager.find(Provider.class, providerDO.getId());
+            }
+            
+            provider.setFirstName(providerDO.getFirstName());
+            provider.setLastName(providerDO.getLastName());
+            provider.setMiddleName(providerDO.getMiddleName());
+            provider.setNpi(providerDO.getNpi());
+            provider.setType(providerDO.getTypeId());
+            
+            if (provider.getId() == null) {
+                manager.persist(provider);
+            }
+            
+            
+        }catch(Exception ex){
+           ex.printStackTrace(); 
+        }
+        
+        return provider.getId();
     }
 
 }
