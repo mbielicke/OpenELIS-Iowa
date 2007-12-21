@@ -21,12 +21,13 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "getProviderNameRowsByLetter", query = "select new org.openelis.domain.ProviderTableRowDO(p.id,p.lastName,p.firstName) " + "from Provider p where p.lastName like :letter order by lastName,firstName"),
-               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.entry,d.id,p.npi)" +                                                                                                  
+               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
                                "  from Provider p, Dictionary d where d.id = p.type and p.id = :id"),
                @NamedQuery(name = "getProviderAddresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.provider, " +
                                            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
                                            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from Provider p, ProviderAddress pa, Address a "+
-                                           " where pa.provider = p.id and pa.address = a.id and p.id = :id order by pa.location")})          
+                                           " where pa.provider = p.id and pa.address = a.id and p.id = :id order by pa.location"),
+               @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Provider p, Dictionary d, Category c where p.type = d.id and d.category = c.id")})          
 @Entity 
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})
