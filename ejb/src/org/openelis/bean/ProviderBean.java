@@ -2,6 +2,7 @@ package org.openelis.bean;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,10 +17,12 @@ import javax.persistence.Query;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderTableRowDO;
 import org.openelis.entity.Organization;
 import org.openelis.entity.Provider;
+import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.QueryNumberField;
 import org.openelis.gwt.common.QueryOptionField;
 import org.openelis.gwt.common.QueryStringField;
@@ -185,12 +188,35 @@ public class ProviderBean implements ProviderRemote {
                 manager.persist(provider);
             }
             
+            for (Iterator iter = addresses.iterator(); iter.hasNext();) {
+                ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();
+                ProviderAddress provAdd = null;
+                
+                if (provAddDO.getId() == null){
+                    provAdd = new ProviderAddress();
+                } 
+                else{
+                    provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
+                }
+                
+                Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
+                
+                provAdd.setExternalId(provAddDO.getExternalId());
+                provAdd.setLocation(provAddDO.getLocation());
+                provAdd.setProvider(provider.getId());
+                provAdd.setAddress(addressId);
+            }
             
         }catch(Exception ex){
            ex.printStackTrace(); 
         }
         
         return provider.getId();
+    }
+
+    public List<Object[]> getProviderTypes() {
+        Query query = manager.createNamedQuery("getProviderTypes");        
+        return query.getResultList();
     }
 
 }
