@@ -17,9 +17,9 @@ public class ProviderAddressDO implements Serializable {
 
     private String externalId;             
 
-    private Integer provider;             
+    private Integer provider;       
 
-    private AddressDO addressDO;
+    private AddressDO addressDO ;
     
     public ProviderAddressDO(){
         
@@ -33,6 +33,7 @@ public class ProviderAddressDO implements Serializable {
         this.location = location;
         this.externalId = externalId;
         this.provider = provider;
+        addressDO = new AddressDO();
         addressDO.setId(addressId);
         addressDO.setMultipleUnit(multipleUnit);
         addressDO.setStreetAddress(streetAddress);
@@ -87,5 +88,6 @@ public class ProviderAddressDO implements Serializable {
     public void setProvider(Integer provider) {
         this.provider = provider;
     }
+    
 
 }
