@@ -11,16 +11,26 @@ public class ProviderAddressDO implements Serializable {
      */
     private static final long serialVersionUID = -1754500573676617534L;
     
-    private Integer id;             
+    protected Integer id;             
 
-    private String location;             
+    protected String location;             
 
-    private String externalId;             
+    protected String externalId;             
 
-    private Integer provider;       
+    protected Integer provider;       
 
-    private AddressDO addressDO = new AddressDO();
+    protected AddressDO addressDO = new AddressDO();
     
+    protected Boolean delete;
+    
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
+
     public ProviderAddressDO(){
         
     }
