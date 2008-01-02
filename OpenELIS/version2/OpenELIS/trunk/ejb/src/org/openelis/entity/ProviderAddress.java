@@ -12,8 +12,11 @@ import org.openelis.util.XMLUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -42,6 +45,10 @@ public class ProviderAddress implements Auditable, Cloneable {
   private Integer address;             
 
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "address", insertable = false, updatable = false)
+  private Address provAddress;
+  
   @Transient
   private ProviderAddress original;
 
@@ -149,5 +156,13 @@ public class ProviderAddress implements Auditable, Cloneable {
   public String getTableName() {
     return "provider_address";
   }
+public Address getProvAddress() {
+    return provAddress;
+}
+public void setProvAddress(Address provAddress) {
+    this.provAddress = provAddress;
+}
+  
+ 
   
 }   
