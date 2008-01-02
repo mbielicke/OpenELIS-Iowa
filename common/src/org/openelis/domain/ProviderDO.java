@@ -10,17 +10,17 @@ public class ProviderDO implements Serializable{
      */
     private static final long serialVersionUID = 3704651414103685347L;
 
-    private Integer id;             
+    protected Integer id;             
 
-    private String lastName;             
+    protected String lastName;             
 
-    private String firstName;             
+    protected String firstName;             
 
-    private String middleName;                            
+    protected String middleName;                            
 
-    private String npi;
+    protected String npi;
     
-    private Integer typeId;
+    protected Integer typeId;
 
     public ProviderDO(){
         

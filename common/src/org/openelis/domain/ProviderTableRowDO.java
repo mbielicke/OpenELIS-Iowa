@@ -8,9 +8,9 @@ public class ProviderTableRowDO implements Serializable {
      * 
      */
     private static final long serialVersionUID = -8893266886890030344L;
-    private Integer id;
-    private String lastName;
-    private String firstName;
+    protected Integer id;
+    protected String lastName;
+    protected String firstName;
     
     public ProviderTableRowDO(){
         
