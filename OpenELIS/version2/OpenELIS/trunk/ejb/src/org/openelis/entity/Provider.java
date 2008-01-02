@@ -5,6 +5,8 @@ package org.openelis.entity;
   * Provider Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.util.XMLUtil;
@@ -12,10 +14,13 @@ import org.openelis.util.XMLUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -27,7 +32,13 @@ import org.openelis.utils.Auditable;
                                            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
                                            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from Provider p, ProviderAddress pa, Address a "+
                                            " where pa.provider = p.id and pa.address = a.id and p.id = :id order by pa.location"),
-               @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Provider p, Dictionary d, Category c where p.type = d.id and d.category = c.id")})          
+               @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='provider_type' and d.category = c.id"),
+               @NamedQuery(name = "getProviderNotesTopLevel", query = "select n.id, n.timestamp, n.subject " + 
+                       "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id"),
+               @NamedQuery(name = "getProviderNotesSecondLevel", query = "select n.id, n.systemUser, n.text " +
+                      "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.id = :id")})
+               //@NamedQuery(name = "getStates", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='states' and d.category = c.id")          
+              // @NamedQuery(name = "getCountries", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='states' and d.category = c.id")
 @Entity 
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})
@@ -52,8 +63,15 @@ public class Provider implements Auditable, Cloneable {
 
   @Column(name="npi")
   private String npi;             
-
-
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id")
+  private Collection<ProviderAddress> providerAddress;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+  private Collection<Note> provNote;
+  
   @Transient
   private Provider original;
 
@@ -177,5 +195,19 @@ public class Provider implements Auditable, Cloneable {
   public String getTableName() {
     return "provider";
   }
+  
+  public Collection<ProviderAddress> getProviderAddress() {
+     return providerAddress;
+  }
+  
+  public void setProviderAddress(Collection<ProviderAddress> providerAddress) {
+    this.providerAddress = providerAddress;
+  }
+public Collection<Note> getProvNote() {
+    return provNote;
+}
+public void setProvNote(Collection<Note> provNote) {
+    this.provNote = provNote;
+}
   
 }   
