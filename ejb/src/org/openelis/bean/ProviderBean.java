@@ -20,15 +20,18 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderTableRowDO;
+import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
-import org.openelis.gwt.common.QueryNumberField;
-import org.openelis.gwt.common.QueryOptionField;
-import org.openelis.gwt.common.QueryStringField;
+import org.openelis.gwt.common.data.OptionItem;
+import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.ProviderRemote;
+import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -102,8 +105,19 @@ public class ProviderBean implements ProviderRemote {
     }
 
     public List getProviderNotes(Integer providerId, boolean topLevel) {
+       Query query = null;
         
-        return null;
+        if(topLevel){
+            query = manager.createNamedQuery("getProviderNotesTopLevel");
+        }else{
+            query = manager.createNamedQuery("getProviderNotesSecondLevel");
+        }
+        
+        query.setParameter("id", providerId);
+        
+        List provNotes = query.getResultList();// getting list of notes from the provider id
+
+        return provNotes;
     }
 
     public ProviderDO getProviderUpdate(Integer id) throws Exception {
@@ -126,13 +140,16 @@ public class ProviderBean implements ProviderRemote {
 
     public List query(HashMap fields, int first, int max) throws RemoteException {
         
-        //Query refIdQuery = manager.createNamedQuery("getTableId");
-        //refIdQuery.setParameter("name", "provider");
-        //Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
+        Query refIdQuery = manager.createNamedQuery("getTableId");
+        refIdQuery.setParameter("name", "provider");
+        Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
+        
         System.out.println("starting query");
         
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct p.id, p.lastName, p.firstName from Provider p where 1=1 ");
+        sb.append("select distinct p.id, p.lastName, p.firstName from Provider p left join p.provNote n left join p.providerAddress pa left join pa.provAddress a where " +
+                " (n.referenceTable = "+providerReferenceId+" or n.referenceTable is null) "
+                );
         if(fields.containsKey("lastName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("lastName"), "p.lastName"));
         if(fields.containsKey("firstName"))
@@ -142,8 +159,43 @@ public class ProviderBean implements ProviderRemote {
         if(fields.containsKey("middleName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("middleName"), "p.middleName"));
         if(fields.containsKey("providerType"))
-            sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("type"), "p.type"));
+            sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("providerType"), "p.type"));
         
+        System.out.println("creating query");
+        
+        System.out.println("before table fields");
+         if(fields.containsKey("location") && ((QueryStringField)fields.get("location")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("location"), "pa.location"));
+         if(fields.containsKey("externalId") && ((QueryStringField)fields.get("externalId")).getComparator() != null)
+             sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("externalId"), "pa.externalId"));
+           if(fields.containsKey("multiUnit") && ((QueryStringField)fields.get("multiUnit")).getComparator() != null)
+                    sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("multiUnit"), "a.multipleUnit"));
+                if(fields.containsKey("streetAddress") && ((QueryStringField)fields.get("streetAddress")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("streetAddress"), "a.streetAddress"));
+                if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"), "a.city"));
+                if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
+                     !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
+                 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("state"), "a.state"));
+                if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
+                    !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
+                    sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("country"), "a.country"));  
+                if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"), "a.zipCode"));
+                if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("workPhone"), "a.workPhone"));
+                if(fields.containsKey("homePhone") && ((QueryStringField)fields.get("homePhone")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("homePhone"), "a.homePhone"));
+                if(fields.containsKey("cellPhone") && ((QueryStringField)fields.get("cellPhone")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("cellPhone"), "a.cellPhone"));
+                if(fields.containsKey("faxPhone") && ((QueryStringField)fields.get("faxPhone")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("faxPhone"), "a.faxPhone"));
+                if(fields.containsKey("email") && ((QueryStringField)fields.get("email")).getComparator() != null)
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("email"), "a.email"));
+                if(fields.containsKey("usersSubject"))
+                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("usersSubject"),"n.subject"));
+                
+                System.out.println("after table fields");
         Query query = manager.createQuery(sb.toString()+" order by p.lastName, p.firstName ");
         
         if(first > -1)
@@ -151,6 +203,9 @@ public class ProviderBean implements ProviderRemote {
         if(max > -1)
          query.setMaxResults(max);
         
+        System.out.println("setting parameters");
+        
+        System.out.println("before table fields");
         if(fields.containsKey("lastName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("lastName"), "p.lastName",query);
         if(fields.containsKey("firstName"))
@@ -160,17 +215,71 @@ public class ProviderBean implements ProviderRemote {
         if(fields.containsKey("middleName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("middleName"), "p.middleName",query);
         if(fields.containsKey("providerType"))
-            QueryBuilder.setParameters((QueryOptionField)fields.get("type"), "p.type",query);
+            QueryBuilder.setParameters((QueryOptionField)fields.get("providerType"), "p.type",query);
         
+        if(fields.containsKey("location")&& ((QueryStringField)fields.get("location")).getComparator() != null)
+           QueryBuilder.setParameters((QueryStringField)fields.get("location"), "pa.location",query);
+        
+        if(fields.containsKey("externalId")&&  ((QueryStringField)fields.get("externalId")).getComparator() != null) 
+           QueryBuilder.setParameters((QueryStringField)fields.get("externalId"), "pa.externalId",query);
+    
+         if(fields.containsKey("multiUnit") && ((QueryStringField)fields.get("multiUnit")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("multiUnit"), "a.multipleUnit",query);
+         
+         if(fields.containsKey("streetAddress") && ((QueryStringField)fields.get("streetAddress")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("streetAddress"), "a.streetAddress",query);
+         
+         if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("city"), "a.city",query);
+         
+         if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
+                !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
+             QueryBuilder.setParameters((QueryOptionField)fields.get("state"), "a.state",query);
+         
+         if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
+               !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
+             QueryBuilder.setParameters((QueryOptionField)fields.get("country"), "a.country",query);
+         
+         if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "a.zipCode",query);
+         
+         if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("workPhone"), "a.workPhone",query);
+         
+         if(fields.containsKey("homePhone") && ((QueryStringField)fields.get("homePhone")).getComparator() != null) 
+             QueryBuilder.setParameters((QueryStringField)fields.get("homePhone"), "a.homePhone",query);
+         
+         if(fields.containsKey("cellPhone") && ((QueryStringField)fields.get("cellPhone")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("cellPhone"), "a.cellPhone",query);
+         
+         if(fields.containsKey("faxPhone")&& ((QueryStringField)fields.get("faxPhone")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("faxPhone"), "a.faxPhone",query);
+         
+         if(fields.containsKey("email") && ((QueryStringField)fields.get("email")).getComparator() != null)
+             QueryBuilder.setParameters((QueryStringField)fields.get("email"), "a.email",query);
+         
+         System.out.println("after table fields");
+         
+         if(fields.containsKey("usersSubject"))
+             QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
+         
+         
+         
         System.out.println("ending query");
         return query.getResultList();
         
     }
 
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) {
+        System.out.println("starting updateProvider()");
         manager.setFlushMode(FlushModeType.COMMIT);
         Provider provider = null;
         try{
+            
+            Query query = manager.createNamedQuery("getTableId");
+            query.setParameter("name", "provider");
+            Integer providerReferenceId = (Integer)query.getSingleResult();
+            
             if (providerDO.getId() == null){
                 provider = new Provider();
             } 
@@ -198,14 +307,68 @@ public class ProviderBean implements ProviderRemote {
                 else{
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
+                System.out.println("provAddDO "+provAddDO);
+                if(provAddDO.getDelete()!=null){ 
+                  if(provAddDO.getDelete()&& provAdd.getId() != null){
+                    //delete the contact record and the address record from the database                    
+                     manager.remove(provAdd);
+                     System.out.println("removed provAdd");
+                     addressBean.deleteAddress(provAddDO.getAddressDO());
+                     }
+                  else{                
+                      Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
+                   
+                      provAdd.setExternalId(provAddDO.getExternalId());
+                      provAdd.setLocation(provAddDO.getLocation());
+                      provAdd.setProvider(provider.getId());
+                      provAdd.setAddress(addressId);
+                                        
+                      
+                      if(provAdd.getId()==null){
+                          manager.persist(provAdd);
+                          System.out.println("persisted provAdd");
+                      }
+                      System.out.println("updated provAdd");
+                   }
+                }else{                
+                   Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
                 
-                Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
-                
-                provAdd.setExternalId(provAddDO.getExternalId());
-                provAdd.setLocation(provAddDO.getLocation());
-                provAdd.setProvider(provider.getId());
-                provAdd.setAddress(addressId);
+                   provAdd.setExternalId(provAddDO.getExternalId());
+                   provAdd.setLocation(provAddDO.getLocation());
+                   provAdd.setProvider(provider.getId());
+                   provAdd.setAddress(addressId);
+                                     
+                   
+                   if(provAdd.getId()==null){
+                       manager.persist(provAdd);
+                       System.out.println("persisted provAdd");
+                   }
+                   System.out.println("updated provAdd");
+                }
             }
+                                    
+            //update note
+            Note note = null;
+            //we need to make sure the note is filled out...
+            if(!("".equals(noteDO.getText())) ||   !("".equals(noteDO.getSubject()))){
+                note = new Note();
+                note.setIsExternal(noteDO.getIsExternal());
+                note.setReferenceId(provider.getId());
+                note.setReferenceTable(providerReferenceId);
+                note.setSubject(noteDO.getSubject());
+                note.setSystemUser(getSystemUserId());
+                note.setText(noteDO.getText());
+                note.setTimestamp(Datetime.getInstance());
+            }
+            
+            //insert into note table if necessary
+            if(note != null){
+                if(note.getId() == null){
+                manager.persist(note);
+                System.out.println("persisted note");
+             }
+            }
+            lockBean.giveUpLock(providerReferenceId,provider.getId()); 
             
         }catch(Exception ex){
            ex.printStackTrace(); 
