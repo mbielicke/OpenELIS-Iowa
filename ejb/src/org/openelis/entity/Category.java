@@ -7,19 +7,24 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "getCategorySysNameRowsByLetter", query = "select new org.openelis.domain.CategoryTableRowDO(c.id,c.systemName) " + 
+                              "from Category c where c.systemName like :letter order by systemName"),
+               @NamedQuery(name = "getCategory", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
+                              "  from Category c where c.id = :id")})
 
 @Entity
 @Table(name="category")
