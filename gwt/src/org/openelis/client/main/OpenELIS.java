@@ -9,7 +9,7 @@ import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
 import org.openelis.gwt.client.screen.ScreenAuto;
-import org.openelis.gwt.client.screen.ScreenAutoDropdown;
+//import org.openelis.gwt.client.screen.ScreenAutoDropdown;
 import org.openelis.gwt.client.screen.ScreenBase;
 import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
@@ -176,7 +176,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
       map.addWidget("pagedTree", new ScreenPagedTree());   
-      map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
+      //map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
 	  ScreenBase.setWidgetMap(map);
   }
 }
