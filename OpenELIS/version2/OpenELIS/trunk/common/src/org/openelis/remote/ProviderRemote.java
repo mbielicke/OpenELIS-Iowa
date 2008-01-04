@@ -12,16 +12,16 @@ import org.openelis.domain.ProviderDO;
 @Remote
 public interface ProviderRemote {
     
-    //  method to return list of provider ids and provider names by what letter they start with
+    //  method to return list of provider ids and provider names by the letter they start with
     public List getProviderNameListByLetter(String letter, int startPos, int maxResults);
     
-    //  method to return org name, address
+    //  method to return provider 
     public ProviderDO getProvider(Integer providerId, boolean unlock);
     
     //update initial call for provider
     public ProviderDO getProviderUpdate(Integer id) throws Exception;
     
-    //commit a change to org, or insert a new provider
+    //commit a change to provider, or insert a new provider
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses);
     
     //method to return just notes
