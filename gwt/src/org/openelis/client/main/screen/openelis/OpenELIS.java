@@ -1,5 +1,7 @@
 package org.openelis.client.main.screen.openelis;
 
+import org.openelis.client.dataEntry.screen.Provider.Provider;
+import org.openelis.client.dataEntry.screen.dictionary.Dictionary;
 import org.openelis.client.dataEntry.screen.organization.Organization;
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
@@ -449,7 +451,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("dataEntry"),(ScreenLabel) widgets.get("providerLabel"));
         	//we need to do the provider action
-        	//FIXME code the provider action
+            browser.addScreen(new Provider(), openElisConstants.getString("provider"), "Provider", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("sampleLoginIcon")) || (item == widgets.get("sampleLoginLabel")) || (item == widgets.get("sampleLoginDescription")) || 
         		(item == widgets.get("favTopSampleLogin")) || (item == widgets.get("favLeftSampleLogin"))){
 //        	if the data entry is open we need to close it
@@ -473,7 +475,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("utilities"),(ScreenLabel) widgets.get("dictionaryLabel"));
         	//we need to do the dictionary action
-        	//FIXME code the dictionary action
+            browser.addScreen(new Dictionary(), openElisConstants.getString("dictionary"), "Dictionary", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("labelIcon")) || (item == widgets.get("labelLabel")) || (item == widgets.get("labelDescription")) || 
         		(item == widgets.get("favTopLabel")) || (item == widgets.get("favLeftLabel"))){
 //        	if the utilities is open we need to close it
