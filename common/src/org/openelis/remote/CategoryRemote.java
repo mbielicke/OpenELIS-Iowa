@@ -11,16 +11,16 @@ import org.openelis.domain.CategoryDO;
 @Remote
 public interface CategoryRemote {
     //  method to return list of category ids and system names by the letter they start with
-    public List getProviderNameListByLetter(String letter, int startPos, int maxResults);
+    public List getCategoryNameListByLetter(String letter, int startPos, int maxResults);
     
     //  method to return category 
     public CategoryDO getCategory(Integer categoryId, boolean unlock);
     
-    //  update initial call for provider
-    public CategoryDO getProviderUpdate(Integer id) throws Exception;
+    //  update initial call for category
+    public CategoryDO getCategoryUpdate(Integer id) throws Exception;
     
     // commit a change to category, or insert a new category
-    public Integer updateProvider(CategoryDO categoryDO, List dictEntries);
+    public Integer updateCategory(CategoryDO categoryDO, List dictEntries);
     
     //  method to query for category
     public List query(HashMap fields, int first, int max) throws RemoteException;
