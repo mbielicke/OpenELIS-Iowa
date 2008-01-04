@@ -16,16 +16,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderTableRowDO;
 import org.openelis.entity.Note;
-import org.openelis.entity.Organization;
 import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.data.OptionItem;
-import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
