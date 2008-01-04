@@ -1,5 +1,7 @@
 package org.openelis.client.main;
 
+import org.openelis.client.dataEntry.screen.Provider.ProviderAddressesTable;
+import org.openelis.client.dataEntry.screen.Provider.ProviderNamesTable;
 import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTable;
 import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
@@ -33,8 +35,10 @@ import org.openelis.gwt.client.screen.ScreenRadio;
 import org.openelis.gwt.client.screen.ScreenStack;
 import org.openelis.gwt.client.screen.ScreenTab;
 import org.openelis.gwt.client.screen.ScreenTabBrowser;
+import org.openelis.gwt.client.screen.ScreenTableWidget;
+
 import org.openelis.gwt.client.screen.ScreenTablePanel;
-import org.openelis.gwt.client.screen.ScreenTableWidgetSmall;
+
 import org.openelis.gwt.client.screen.ScreenText;
 import org.openelis.gwt.client.screen.ScreenTextArea;
 import org.openelis.gwt.client.screen.ScreenTextBox;
@@ -45,24 +49,25 @@ import org.openelis.gwt.client.screen.ScreenWindowBrowser;
 import org.openelis.gwt.client.widget.HoverListener;
 import org.openelis.gwt.client.widget.ProxyListener;
 import org.openelis.gwt.client.widget.WidgetMap;
-import org.openelis.gwt.client.widget.table.small.TableCalendar;
-import org.openelis.gwt.client.widget.table.small.TableCheck;
-import org.openelis.gwt.client.widget.table.small.TableLabel;
-import org.openelis.gwt.client.widget.table.small.TableMaskedTextBox;
-import org.openelis.gwt.client.widget.table.small.TableOption;
-import org.openelis.gwt.client.widget.table.small.TableTextBox;
-import org.openelis.gwt.common.OptionField;
-import org.openelis.gwt.common.PagedTreeField;
-import org.openelis.gwt.common.QueryCheckField;
-import org.openelis.gwt.common.QueryDateField;
-import org.openelis.gwt.common.QueryNumberField;
-import org.openelis.gwt.common.QueryOptionField;
-import org.openelis.gwt.common.QueryStringField;
-import org.openelis.gwt.common.TableField;
+import org.openelis.gwt.client.widget.table.TableCalendar;
+import org.openelis.gwt.client.widget.table.TableCheck;
+import org.openelis.gwt.client.widget.table.TableLabel;
+import org.openelis.gwt.client.widget.table.TableMaskedTextBox;
+import org.openelis.gwt.client.widget.table.TableOption;
+import org.openelis.gwt.client.widget.table.TableTextBox;
+
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.OptionField;
+import org.openelis.gwt.common.data.PagedTreeField;
+import org.openelis.gwt.common.data.QueryCheckField;
+import org.openelis.gwt.common.data.QueryDateField;
+import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -120,7 +125,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.MASKED_BOX, new ScreenMaskedBox());
       map.addWidget(WidgetMap.OPTION_LIST, new ScreenOption());
       map.addWidget(WidgetMap.RADIO_BUTTON, new ScreenRadio());
-      map.addWidget(WidgetMap.TABLE, new ScreenTableWidgetSmall());
+      map.addWidget(WidgetMap.TABLE, new ScreenTableWidget());
       map.addWidget(WidgetMap.TEXT, new ScreenText());
       map.addWidget(WidgetMap.TEXT_AREA, new ScreenTextArea());
       map.addWidget(WidgetMap.TEXBOX, new ScreenTextBox());
@@ -168,9 +173,10 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("OpenELISService",OpenELISService.getInstance());
       map.addWidget("OrganizationNameTable", new OrganizationNameTable());
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
-      map.addWidget("pagedTree", new ScreenPagedTree());
-      map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown());
-      
+      map.addWidget("ProviderNamesTable", new ProviderNamesTable());
+      map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
+      map.addWidget("pagedTree", new ScreenPagedTree());   
+      map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
 	  ScreenBase.setWidgetMap(map);
   }
 }
