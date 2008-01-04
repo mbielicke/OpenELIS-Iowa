@@ -34,7 +34,7 @@ public class Provider extends AppScreenForm{
     private ScreenPagedTree randomTree = null;
     private VerticalPanel vp = null; 
     private Widget selected;
-    private int tabSelectedIndex = 0;    
+   // private int tabSelectedIndex = 0;    
    
     public Provider(){
         super();
@@ -215,7 +215,7 @@ public class Provider extends AppScreenForm{
     }
 
     public void onTabSelected(SourcesTabEvents sources, int index) {
-        tabSelectedIndex = index;
+        //tabSelectedIndex = index;
         // we need to do a provider addresses table reset so that it will always show
         // the data
         if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
