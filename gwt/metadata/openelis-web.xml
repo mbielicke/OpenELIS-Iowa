@@ -37,7 +37,7 @@
     <servlet-class>org.openelis.server.OpenELISScreen</servlet-class>
   </servlet>
   
-    <servlet>
+  <servlet>
     <servlet-name>OrganizationServlet</servlet-name>
     <servlet-class>org.openelis.server.OrganizationServlet</servlet-class>
   </servlet>
@@ -47,6 +47,15 @@
     <servlet-class>org.openelis.server.OrganizeFavoritesScreen</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>ProviderServlet</servlet-name>
+    <servlet-class>org.openelis.server.ProviderServlet</servlet-class>
+  </servlet>  
+  
+  <servlet>
+    <servlet-name>DictionaryServlet</servlet-name>
+    <servlet-class>org.openelis.server.DictionaryServlet</servlet-class>
+  </servlet>
   <!-- inmsp Servlet Mappings-->
     
 <servlet-mapping>
@@ -54,7 +63,7 @@
     <url-pattern>/OpenELISScreen</url-pattern>
   </servlet-mapping>
   
-    <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>OrganizationServlet</servlet-name>
     <url-pattern>/OrganizationServlet</url-pattern>
   </servlet-mapping>
@@ -67,6 +76,16 @@
   <servlet-mapping>
     <servlet-name>OpenELISService</servlet-name>
     <url-pattern>/OpenELISService</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>ProviderServlet</servlet-name>
+    <url-pattern>/ProviderServlet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>DictionaryServlet</servlet-name>
+    <url-pattern>/DictionaryServlet</url-pattern>
   </servlet-mapping>
     
   <session-config>
