@@ -39,10 +39,8 @@ import org.w3c.dom.Element;
 	           		              "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)" +
 						           "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.address and " +
 						           " orgz.id = contact.organization and orgz.id = :id"),
-			   @NamedQuery(name = "getOrganizationNotesTopLevel", query = "select n.id, n.timestamp, n.subject " + 
+			   @NamedQuery(name = "getOrganizationNotesTopLevel", query = "select n.id, n.systemUser, n.text, n.timestamp, n.subject " + 
 					   "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.referenceId = :id"),
-			   @NamedQuery(name = "getOrganizationNotesSecondLevel", query = "select n.id, n.systemUser, n.text " +
-					   "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.id = :id"),
 			   @NamedQuery(name = "getAutoCompleteById", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
 					   "  from Organization o where o.id = :id"),
 			   @NamedQuery(name = "getAutoCompleteByName", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
