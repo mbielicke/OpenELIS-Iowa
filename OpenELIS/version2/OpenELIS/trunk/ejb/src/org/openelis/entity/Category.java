@@ -24,7 +24,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "getCategorySysNameRowsByLetter", query = "select new org.openelis.domain.CategoryTableRowDO(c.id,c.systemName) " + 
                               "from Category c where c.systemName like :letter order by systemName"),
                @NamedQuery(name = "getCategory", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
-                              "  from Category c where c.id = :id")})
+                              "  from Category c where c.id = :id"),
+              @NamedQuery(name = "getDictionaryEntries", query = "select new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntry," +
+                             "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                              "  from Dictionary d, Category c where d.category = c.id and c.id = :id")})
 
 @Entity
 @Table(name="category")
