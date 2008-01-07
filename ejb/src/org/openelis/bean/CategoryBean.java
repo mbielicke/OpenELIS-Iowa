@@ -128,4 +128,13 @@ public class CategoryBean implements CategoryRemote {
         return null;
     }
 
+    public List getDictionaryEntries(Integer categoryId) {
+        Query query = manager.createNamedQuery("getDictionaryEntries");
+        query.setParameter("id", categoryId);
+        
+        List providerAddresses = query.getResultList();// getting list of dictionary entries  
+    
+        return providerAddresses;
+    }
+
 }
