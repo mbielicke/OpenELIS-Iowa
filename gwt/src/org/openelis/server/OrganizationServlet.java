@@ -1,6 +1,5 @@
 package org.openelis.server;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,24 +12,21 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.client.services.AppScreenFormServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
-import org.openelis.gwt.client.widget.pagedtree.TreeModel;
-import org.openelis.gwt.client.widget.pagedtree.TreeModelItem;
-import org.openelis.gwt.common.AbstractField;
-import org.openelis.gwt.common.AutoCompleteRPC;
 import org.openelis.gwt.common.Filter;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.QueryNotFoundException;
-import org.openelis.gwt.common.QueryOptionField;
-import org.openelis.gwt.common.QueryStringField;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableModel;
-import org.openelis.gwt.common.TableRow;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
@@ -38,10 +34,8 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
+import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
@@ -54,7 +48,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	 * 
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
-	private static final int leftTableRowsPerPage = 20;
+	private static final int leftTableRowsPerPage = 21;
 
 	private TableModel model; 
 	private String systemUserId = "";
@@ -124,7 +118,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 			OrganizationContactDO contactDO = new OrganizationContactDO();
 			TableRow row = contactsTable.getRow(i);
 			//contact data
-			contactDO.setContactType(Integer.valueOf(((StringField)row.getColumn(0)).toString()));
+			contactDO.setContactType((Integer)((NumberField)row.getColumn(0)).getValue());
 			contactDO.setName(((StringField)row.getColumn(1)).toString());
 			//contact address data
 			contactDO.getAddressDO().setMultipleUnit(((StringField)row.getColumn(2)).toString());
@@ -336,7 +330,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 				//contact address data
 				if(addId != null)
 				contactDO.getAddressDO().setId((Integer)addId.getValue()); 
-				contactDO.setContactType(Integer.valueOf((String)((StringField)row.getColumn(0)).getValue()));
+				contactDO.setContactType((Integer)((NumberField)row.getColumn(0)).getValue());
 				contactDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
 				contactDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
 				contactDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
@@ -423,88 +417,52 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
 		//}
 	        //load the notes
-	        TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);
-	        rpcReturn.setFieldValue("notesTree", treeModel);
+	        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+	        rpcReturn.setFieldValue("notesModel", notesModel);
         
       return rpcReturn;  
 	}
 	
-	public TreeModel getNoteTreeModel(Integer key, boolean topLevel){
+	public DataModel getNotesModel(Integer key){
 		//remote interface to call the organization bean
 		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 
-		List notesList = remote.getOrganizationNotes(key,topLevel);
+		//gets the whole notes list now
+		List notesList = remote.getOrganizationNotes(key);
 		
-		TreeModel treeModel = new TreeModel();
+		DataModel notesModel = new DataModel();
 		Iterator itr = notesList.iterator();
 		while(itr.hasNext()){
 			Object[] result = (Object[])itr.next();
 			//id
 			Integer id = (Integer)result[0];
-			//date
-			Timestamp date = (Timestamp)result[1];
-			//subject
-			String subject = (String)result[2];
-			
-			TreeModelItem treeModelItem = new TreeModelItem();
-			treeModelItem.setText(date.toString()+" / "+subject);
-			treeModelItem.setUserObject(id.toString());
-			
-			treeModelItem.setHasDummyChild(true);
-			
-			treeModel.addItem(treeModelItem);
-		}
-       
-       return treeModel;
-	}
-	
-	public String getNoteTreeSecondLevelXml(String key, boolean topLevel){
-		//remote interface to call the organization bean
-		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-
-		List notesList = remote.getOrganizationNotes(Integer.valueOf(key),topLevel);
-		
-		try {
-			Iterator itr = notesList.iterator();
-			
-			//int i=0;
-			Document doc = XMLUtil.createNew("tree");
-			while(itr.hasNext()){
-			Object[] result = (Object[])itr.next();	
-            //id
-			//Integer id = (Integer) result[0];
-			//user
-			Integer userId = (Integer) result[1];
+			//user id
+			Integer userId = (Integer)result[1];
 			//body
-			String body = (String) result[2];
+			String body = (String)result[2];
+			//date
+			Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
+			//subject
+			String subject = (String)result[4];
+			
+			DataSet set = new DataSet();
+			StringObject subjectLine = new StringObject();
+			StringObject bodyLine = new StringObject();
 			
 			SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
 			SystemUserDO user = securityRemote.getSystemUser(userId,false);
-            
-            Element root = doc.getDocumentElement();
-            root.setAttribute("key", "menuList");
-            root.setAttribute("height", "100%");
-            root.setAttribute("vertical","true");           
-                 
-             Element elem = doc.createElement("label");
-             elem.setAttribute("text", "Author: "+ user.getLastName()+", "+user.getFirstName()); 
-             
-             Element elem2 = doc.createElement("label");
-             elem2.setAttribute("text", body); 
-                  	                                                  
-             root.appendChild(elem); 
-             root.appendChild(elem2);
-			}
-             
-            //}                       
-            return XMLUtil.toString(doc);
-        }catch(Exception e){
-            //log.error(e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
+			
+			subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
+			bodyLine.setValue(body);
+			
+			set.addObject(subjectLine);
+			set.addObject(bodyLine);
+			notesModel.add(set);
+		}
+       
+       return notesModel;
 	}
-
+	
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
 		return fetch(key, rpcReturn);
 	}
@@ -527,7 +485,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	                row.addHidden("contactId", id);
 	                row.addHidden("addId", addId);
 	                
-	                row.getColumn(0).setValue(contactRow.getContactType().toString());
+	                row.getColumn(0).setValue(contactRow.getContactType());
 	                row.getColumn(1).setValue(contactRow.getName());
 	                row.getColumn(2).setValue(contactRow.getAddressDO().getMultipleUnit());
 	                row.getColumn(3).setValue(contactRow.getAddressDO().getStreetAddress());
@@ -640,6 +598,12 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 			return getDropdownDisplay(model, (String)value.getValue());
 		}else if(cat.equals("country")){
 			return getDropdownDisplay(model, (String)value.getValue());
+		}else if(cat.equals("contactType")){
+			return getDropdownDisplay(model, (Integer)value.getValue());
+		}else if(cat.equals("contactState")){
+			return getDropdownDisplay(model, (String)value.getValue());
+		}else if(cat.equals("contactCountry")){
+			return getDropdownDisplay(model, (String)value.getValue());
 		}
 		return null;		
 		
@@ -647,7 +611,6 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	
 	private DataModel getParentOrgDisplay(Integer value){
 		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-		AutoCompleteRPC rpc = new AutoCompleteRPC();
 		
 		List autoCompleteList = remote.autoCompleteLookupById(value);
 		
@@ -694,6 +657,27 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		
 		return dataModel;		
 	}
+	
+	private DataModel getDropdownDisplay(DataModel model, Integer value){
+		DataModel dataModel = new DataModel();
+		DataSet set = new DataSet();
+		for (int i = 0; i < model.size(); i++) {
+			if(((NumberObject)model.get(i).getObject(0)).getValue() == value){
+				
+				StringObject id = new StringObject();
+				id.setValue(((StringObject)model.get(i).getObject(0)).getValue());
+				StringObject name = new StringObject();
+				name.setValue(((StringObject)model.get(i).getObject(2)).getValue());
+				set.addObject(id);
+				set.addObject(name);
+				dataModel.add(set);
+				break;
+			}
+			
+		}
+		
+		return dataModel;		
+	}
 
 	//autocomplete textbox method
 	//match is what they typed
@@ -703,6 +687,12 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		}else if(cat.equals("state")){
 			return getDropdownMatches(model, match);
 		}else if(cat.equals("country")){
+			return getDropdownMatches(model, match);
+		}else if(cat.equals("contactState")){
+			return getDropdownMatches(model, match);
+		}else if(cat.equals("contactType")){
+			return getDropdownMatches(model, match);
+		}else if(cat.equals("contactCountry")){
 			return getDropdownMatches(model, match);
 		}
 		return null;		

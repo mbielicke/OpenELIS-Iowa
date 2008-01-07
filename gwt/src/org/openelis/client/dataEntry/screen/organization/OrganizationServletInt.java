@@ -1,10 +1,9 @@
 package org.openelis.client.dataEntry.screen.organization;
 
 import org.openelis.gwt.client.services.AppScreenFormServiceInt;
-import org.openelis.gwt.client.widget.pagedtree.TreeModel;
-import org.openelis.gwt.common.AbstractField;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.TableModel;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableModel;
 
 public interface OrganizationServletInt extends AppScreenFormServiceInt {
 
@@ -12,7 +11,5 @@ public interface OrganizationServletInt extends AppScreenFormServiceInt {
 	
 	public TableModel getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC);
 	
-	public TreeModel getNoteTreeModel(Integer key, boolean topLevel);
-	
-	public String getNoteTreeSecondLevelXml(String key, boolean topLevel);
+	public DataModel getNotesModel(Integer key);
 }
