@@ -23,7 +23,7 @@ public interface OrganizationRemote {
 	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts);
 	
 	//method to return just notes
-	public List getOrganizationNotes(Integer organizationId, boolean topLevel);
+	public List getOrganizationNotes(Integer organizationId);
 	
 	//method to return just contacts
 	public List getOrganizationContacts(Integer organizationId);
