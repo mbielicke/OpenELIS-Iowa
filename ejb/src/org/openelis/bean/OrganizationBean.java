@@ -20,15 +20,13 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationTableRowDO;
-import org.openelis.entity.Address;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
-import org.openelis.gwt.common.OptionItem;
-import org.openelis.gwt.common.QueryCheckField;
-import org.openelis.gwt.common.QueryNumberField;
-import org.openelis.gwt.common.QueryOptionField;
-import org.openelis.gwt.common.QueryStringField;
+import org.openelis.gwt.common.data.OptionItem;
+import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
@@ -39,8 +37,6 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
-//@SecurityDomain("security")
-//@RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote {
 
 	@PersistenceContext(name = "openelis")
@@ -208,14 +204,13 @@ public class OrganizationBean implements OrganizationRemote {
         return orgAddressContacts;
 	}
 	
-	public List getOrganizationNotes(Integer organizationId, boolean topLevel) {
+	public List getOrganizationNotes(Integer organizationId) {
 		Query query = null;
 		
-		if(topLevel){
-			query = manager.createNamedQuery("getOrganizationNotesTopLevel");
-		}else{
-			query = manager.createNamedQuery("getOrganizationNotesSecondLevel");
-		}
+		query = manager.createNamedQuery("getOrganizationNotesTopLevel");
+		//}else{
+		//	query = manager.createNamedQuery("getOrganizationNotesSecondLevel");
+		//}
 		
 		query.setParameter("id", organizationId);
 		
@@ -330,10 +325,14 @@ public class OrganizationBean implements OrganizationRemote {
    
          Query query = manager.createQuery(sb.toString()+" order by o.name");
          
-         if(first > -1)
+         if(first > -1){
         	 query.setFirstResult(first);
-         if(max > -1)
+        	 System.out.println("first ["+first+"]");
+         }
+         if(max > -1){
         	 query.setMaxResults(max);
+        	 System.out.println("Max ["+max+"]");
+         }
              
 //       ***set the parameters in the query
 //       org elements
