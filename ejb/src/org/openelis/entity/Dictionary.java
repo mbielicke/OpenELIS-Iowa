@@ -7,15 +7,16 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -35,7 +36,7 @@ public class Dictionary implements Auditable, Cloneable {
   private Integer category;             
 
   @Column(name="related_entry")
-  private Integer relatedEntry;             
+  private Integer relatedEntryKey;             
 
   @Column(name="system_name")
   private String systemName;             
@@ -49,7 +50,10 @@ public class Dictionary implements Auditable, Cloneable {
   @Column(name="entry")
   private String entry;             
 
-
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "related_entry",insertable = false, updatable = false)
+  private Dictionary relatedEntryRow;
+  
   @Transient
   private Dictionary original;
 
@@ -71,15 +75,7 @@ public class Dictionary implements Auditable, Cloneable {
        (category != null && !category.equals(this.category)))
       this.category = category;
   }
-
-  public Integer getRelatedEntry() {
-    return relatedEntry;
-  }
-  public void setRelatedEntry(Integer relatedEntry) {
-    if((relatedEntry == null && this.relatedEntry != null) || 
-       (relatedEntry != null && !relatedEntry.equals(this.relatedEntry)))
-      this.relatedEntry = relatedEntry;
-  }
+  
 
   public String getSystemName() {
     return systemName;
@@ -143,10 +139,10 @@ public class Dictionary implements Auditable, Cloneable {
         root.appendChild(elem);
       }      
 
-      if((relatedEntry == null && original.relatedEntry != null) || 
-         (relatedEntry != null && !relatedEntry.equals(original.relatedEntry))){
+      if((relatedEntryKey == null && original.relatedEntryKey != null) || 
+         (relatedEntryKey != null && !relatedEntryKey.equals(original.relatedEntryKey))){
         Element elem = doc.createElement("related_entry");
-        elem.appendChild(doc.createTextNode(original.relatedEntry.toString()));
+        elem.appendChild(doc.createTextNode(original.relatedEntryKey.toString()));
         root.appendChild(elem);
       }      
 
@@ -188,6 +184,21 @@ public class Dictionary implements Auditable, Cloneable {
    
   public String getTableName() {
     return "dictionary";
+  }
+  
+  public Integer getRelatedEntryKey() {
+    return relatedEntryKey;
+  }
+  
+  public void setRelatedEntryKey(Integer relatedEntryKey) {
+    this.relatedEntryKey = relatedEntryKey;
+   }
+  
+  public Dictionary getRelatedEntryRow() {
+    return relatedEntryRow;
+  }
+  public void setRelatedEntryRow(Dictionary relatedEntryRow) {
+    this.relatedEntryRow = relatedEntryRow;
   }
   
 }   
