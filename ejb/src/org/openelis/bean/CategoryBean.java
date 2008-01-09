@@ -2,6 +2,7 @@ package org.openelis.bean;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -10,11 +11,16 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.CategoryTableRowDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.entity.Category;
+import org.openelis.entity.Dictionary;
+import org.openelis.entity.Provider;
 import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
@@ -124,8 +130,46 @@ public class CategoryBean implements CategoryRemote {
     }
 
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        Category category  = null;
         
-        return null;
+        if (categoryDO.getId() == null){
+            category = new Category();
+        } 
+        else{
+            category = manager.find(Category.class, categoryDO.getId());
+        }        
+        
+        category.setDescription(categoryDO.getDescription());
+        category.setSystemName(categoryDO.getSystemName());
+        category.setName(categoryDO.getName());
+        category.setSection(categoryDO.getSection());
+        
+        if(category.getId()==null){
+            manager.persist(category);
+        }
+        
+        for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
+            DictionaryDO dictDO = (DictionaryDO)iter.next();
+            Dictionary dictionary = null;
+             if(dictDO.getId() == null){
+                 dictionary = new Dictionary();
+             }else{
+                  dictionary  = manager.find(Dictionary.class,dictDO.getId());
+                 }
+             dictionary.setCategory(dictDO.getCategory());
+             dictionary.setEntry(dictDO.getEntry());
+             dictionary.setIsActive(dictDO.getIsActive());
+             dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+             dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
+             dictionary.setSystemName(dictDO.getSystemName());    
+             
+             if(dictionary.getId()==null){
+                 manager.persist(dictionary);
+             }
+             
+        }
+        return  category.getId();
     }
 
     public List getDictionaryEntries(Integer categoryId) {
@@ -135,6 +179,19 @@ public class CategoryBean implements CategoryRemote {
         List providerAddresses = query.getResultList();// getting list of dictionary entries  
     
         return providerAddresses;
+    }
+    
+    public Integer getEntryId(String entry){
+       Query query = manager.createNamedQuery("getEntryId");  
+       query.setParameter("entry", entry);
+       Integer entryId = null;
+       try{ 
+         entryId = (Integer)query.getSingleResult();
+       }catch(Exception ex){
+           ex.printStackTrace();
+           return null;
+       }     
+       return entryId;
     }
 
 }
