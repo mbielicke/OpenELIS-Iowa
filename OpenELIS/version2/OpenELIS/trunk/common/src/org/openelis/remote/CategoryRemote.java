@@ -30,4 +30,7 @@ public interface CategoryRemote {
         
      //  method to return just dictionary entries
     public List getDictionaryEntries(Integer categoryId);
+    
+    // method to return the id for a given row,identified by the value "entry" here,in the Dictionary table 
+    public Integer getEntryId(String entry);
 }
