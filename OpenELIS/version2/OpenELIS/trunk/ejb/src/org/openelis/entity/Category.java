@@ -25,9 +25,11 @@ import org.openelis.utils.Auditable;
                               "from Category c where c.systemName like :letter order by systemName"),
                @NamedQuery(name = "getCategory", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
                               "  from Category c where c.id = :id"),
-              @NamedQuery(name = "getDictionaryEntries", query = "select new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntry," +
-                             "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                              "  from Dictionary d, Category c where d.category = c.id and c.id = :id")})
+              @NamedQuery(name = "getDictionaryEntries", query = "select distinct new org.openelis.domain.DictionaryEntryTableRowDO(d.id, d.category, d.relatedEntryKey," +
+                             "d.systemName,d.isActive,  d.localAbbrev, d.entry,rel.entry)" +                                                                                                  
+                              "  from  Dictionary d left join d.relatedEntryRow rel where d.category = :id " +
+                              " order by d.systemName "),
+              @NamedQuery(name = "getEntryId", query = "select d.id from Dictionary d where d.entry = :entry")})
 
 @Entity
 @Table(name="category")
@@ -51,7 +53,7 @@ public class Category implements Auditable, Cloneable {
   @Column(name="section")
   private Integer section;             
 
-
+  
   @Transient
   private Category original;
 
