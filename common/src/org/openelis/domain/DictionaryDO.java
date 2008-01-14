@@ -23,6 +23,16 @@ public class DictionaryDO implements Serializable {
 
     protected String entry;
     
+    protected Boolean delete;
+    
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
+    
     public DictionaryDO(){
         
     }
