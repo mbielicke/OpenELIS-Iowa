@@ -20,7 +20,6 @@ import org.openelis.domain.CategoryTableRowDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
-import org.openelis.entity.Provider;
 import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
@@ -157,16 +156,39 @@ public class CategoryBean implements CategoryRemote {
              }else{
                   dictionary  = manager.find(Dictionary.class,dictDO.getId());
                  }
-             dictionary.setCategory(dictDO.getCategory());
-             dictionary.setEntry(dictDO.getEntry());
-             dictionary.setIsActive(dictDO.getIsActive());
-             dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-             dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
-             dictionary.setSystemName(dictDO.getSystemName());    
              
-             if(dictionary.getId()==null){
-                 manager.persist(dictionary);
+             System.out.println("dictionary "+dictionary);
+             
+             if(dictDO.getDelete()!=null){ 
+               if(dictDO.getDelete()&& (dictionary.getId() != null)){
+                 //delete the dictionary entry from the database                    
+                    manager.remove(dictionary);
+                    System.out.println("removed dictionary");
+               }else{
+                   dictionary.setCategory(category.getId());
+                   dictionary.setEntry(dictDO.getEntry());
+                   dictionary.setIsActive(dictDO.getIsActive());
+                   dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                   dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
+                   dictionary.setSystemName(dictDO.getSystemName());    
+               
+                if(dictionary.getId()==null){
+                  manager.persist(dictionary);
+                }
+               }
+              }else{
+                   dictionary.setCategory(category.getId());
+                   dictionary.setEntry(dictDO.getEntry());
+                   dictionary.setIsActive(dictDO.getIsActive());
+                   dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                   dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
+                   dictionary.setSystemName(dictDO.getSystemName());    
+               
+               if(dictionary.getId()==null){
+                  manager.persist(dictionary);
+               }
              }
+             
              
         }
         return  category.getId();
@@ -181,17 +203,58 @@ public class CategoryBean implements CategoryRemote {
         return providerAddresses;
     }
     
-    public Integer getEntryId(String entry){
-       Query query = manager.createNamedQuery("getEntryId");  
-       query.setParameter("entry", entry);
-       Integer entryId = null;
+    public List getMatchingEntries(Integer id,String entry){
+       Query query = manager.createNamedQuery("getMatchingEntries");  
+       query.setParameter("entry", entry);       
+       query.setParameter("id", id);
+       System.out.println("id "+ id);
+       System.out.println("entry "+ "\""+entry+"\"");
+       List entryList = null;
        try{ 
-         entryId = (Integer)query.getSingleResult();
+           entryList = (List)query.getResultList();
        }catch(Exception ex){
            ex.printStackTrace();
            return null;
        }     
-       return entryId;
+       return entryList;
     }
 
+    public Integer getEntryIdForSystemName(String systemName){
+        Query query = manager.createNamedQuery("getEntryIdForSystemName");  
+        query.setParameter("systemName", systemName);
+        Integer entryId = null;
+        try{ 
+          entryId = (Integer)query.getSingleResult();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }     
+        return entryId;
+    } 
+    
+    public Integer getEntryIdForEntry(String entry){
+        Query query = manager.createNamedQuery("getEntryIdForEntry");  
+        query.setParameter("entry", entry);
+        Integer entryId = null;
+        try{ 
+          entryId = (Integer)query.getSingleResult();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }     
+        return entryId;
+    } 
+        
+    public Integer getCategoryId(String systemName){
+        Query query = manager.createNamedQuery("getCategoryIdBySystemName");  
+        query.setParameter("systemName", systemName);
+        Integer categoryId = null;
+        try{ 
+            categoryId = (Integer)query.getSingleResult();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }     
+        return categoryId;
+    }
 }
