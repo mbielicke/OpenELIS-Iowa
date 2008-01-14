@@ -5,6 +5,8 @@ package org.openelis.entity;
   * Category Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.util.XMLUtil;
@@ -12,10 +14,13 @@ import org.openelis.util.XMLUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -29,8 +34,11 @@ import org.openelis.utils.Auditable;
                              "d.systemName,d.isActive,  d.localAbbrev, d.entry,rel.entry)" +                                                                                                  
                               "  from  Dictionary d left join d.relatedEntryRow rel where d.category = :id " +
                               " order by d.systemName "),
-              @NamedQuery(name = "getEntryId", query = "select d.id from Dictionary d where d.entry = :entry")})
-
+              @NamedQuery(name = "getMatchingEntries", query = "select d.id, d.entry from Dictionary d where d.entry like :entry and d.category = :id order by d.entry"),
+              @NamedQuery(name = "getEntryIdForSystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
+              @NamedQuery(name = "getEntryIdForEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
+              @NamedQuery(name = "getCategoryIdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
+               
 @Entity
 @Table(name="category")
 @EntityListeners({AuditUtil.class})
@@ -53,6 +61,9 @@ public class Category implements Auditable, Cloneable {
   @Column(name="section")
   private Integer section;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id")
+  private Collection<Dictionary> dictionary;
   
   @Transient
   private Category original;
@@ -161,5 +172,17 @@ public class Category implements Auditable, Cloneable {
   public String getTableName() {
     return "category";
   }
+public Collection<Dictionary> getDictionary() {
+    return dictionary;
+}
+public void setDictionary(Collection<Dictionary> dictionary) {
+    this.dictionary = dictionary;
+}
+public Category getOriginal() {
+    return original;
+}
+public void setOriginal(Category original) {
+    this.original = original;
+}
   
 }   
