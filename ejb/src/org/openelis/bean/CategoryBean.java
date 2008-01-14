@@ -203,6 +203,13 @@ public class CategoryBean implements CategoryRemote {
         return providerAddresses;
     }
     
+    public List getDropdownValues(Integer categoryId) {
+    	Query query = manager.createNamedQuery("getDropdownValues");
+    	query.setParameter("id", categoryId);
+    	
+    	return query.getResultList();
+    }
+    
     public List getMatchingEntries(Integer id,String entry){
        Query query = manager.createNamedQuery("getMatchingEntries");  
        query.setParameter("entry", entry);       

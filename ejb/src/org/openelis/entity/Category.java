@@ -34,6 +34,7 @@ import org.openelis.utils.Auditable;
                              "d.systemName,d.isActive,  d.localAbbrev, d.entry,rel.entry)" +                                                                                                  
                               "  from  Dictionary d left join d.relatedEntryRow rel where d.category = :id " +
                               " order by d.systemName "),
+              @NamedQuery(name = "getDropdownValues", query = "select d.id, d.entry from Dictionary d where d.isActive='Y' and d.category = :id"),
               @NamedQuery(name = "getMatchingEntries", query = "select d.id, d.entry from Dictionary d where d.entry like :entry and d.category = :id order by d.entry"),
               @NamedQuery(name = "getEntryIdForSystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
               @NamedQuery(name = "getEntryIdForEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
