@@ -38,5 +38,7 @@ public interface CategoryRemote {
     
     public Integer getEntryIdForEntry(String entry);
     
-    public Integer getCategoryId(String systemName);     
+    public Integer getCategoryId(String systemName); 
+    
+    public List getDropdownValues(Integer categoryId);
 }
