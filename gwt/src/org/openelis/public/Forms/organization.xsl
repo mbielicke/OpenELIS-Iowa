@@ -359,7 +359,17 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="country" key="country" case="upper" serviceUrl="OrganizationServlet" width="196px" popupHeight="100px" dropdown="true" fromModel="true" type="string" tab="parentOrg,zipCode">
+												<autoDropdown cat="country" key="country" case="upper" serviceUrl="OrganizationServlet" width="196px" dropdown="true" fromModel="true" type="string" tab="parentOrg,zipCode">
+													<autoWidths>175</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+												</autoDropdown>
+											<query>
+													<autoDropdown cat="country" case="upper" serviceUrl="OrganizationServlet" width="196px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="parentOrg,zipCode">
 													<autoWidths>175</autoWidths>
 													<autoEditors>
 														<label/>
@@ -368,9 +378,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 														<string/>
 													</autoFields>
 													</autoDropdown>
-													<query>
-													<option tab="parentOrg,zipCode"/>
-												</query>
+											</query>
 										</widget>					
 									</row>
 								<row>
@@ -408,7 +416,21 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<widget>
 											<check key="isActive" tab="contactsTable,parentOrg"/>
 											<query>
-										<option tab="contactsTable,parentOrg"/>
+											<autoDropdown cat="isActive" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="contactsTable,parentOrg">
+													<autoWidths>19</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+													<autoItems>
+													<item value=""> </item>
+													<item value="Y">Y</item>
+													<item value="N">N</item>
+													</autoItems>
+													</autoDropdown>
+										<!--<option tab="contactsTable,parentOrg"/>-->
 										</query>
 										</widget>
 								</row>
@@ -802,18 +824,19 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
   <queryString key="zipCode"/>
   <queryString key="action"/>
   <queryString key="parentOrg"/>
-  <queryOption key="isActive" type="string" multi="true">
+  <!--<queryOption key="isActive" type="string" multi="true">
   	<item value=" "> </item>
   	<item value="Y">Y</item>
   	<item value="N">N</item>
-  </queryOption>
-
+  </queryOption>-->
   <queryString key="usersSubject"/>
   <queryString key="usersNote"/>
   <table key="contactsTable"/>
   <tree key="notesTree"/>
   <queryNumber key="id" type="integer"/>
-  <collection key="state" type="string" required="true"/>
+  <collection key="state" type="string" required="false"/>
+  <collection key="country" type="string" required="false"/>
+  <collection key="isActive" type="string" required="false"/>
 <!--  <queryOption key="state" multi="true" type="string">
 			<item value=" "> </item>
 			<item value="AL">AL</item>
@@ -867,13 +890,13 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 			<item value="WI">WI</item>
 			<item value="WY">WY</item>	
 		</queryOption>-->
-		<queryOption key="country" multi="true" type="string">
+		<!--<queryOption key="country" multi="true" type="string">
 		 	<item value=" "> </item>
 			<item value="United States">UNITED STATES</item>
     		<item value="AAAA">AAAA</item>
     		<item value="BBBB">BBBB</item>
     		<item value="CCCC">CCCC</item>
-		</queryOption>
+		</queryOption>-->
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="orgName"/>
