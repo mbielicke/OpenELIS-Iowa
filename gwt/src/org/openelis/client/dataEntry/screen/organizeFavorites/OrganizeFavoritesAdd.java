@@ -1,13 +1,13 @@
 package org.openelis.client.dataEntry.screen.organizeFavorites;
 
 import org.openelis.gwt.client.screen.ScreenForm;
-import org.openelis.gwt.client.screen.ScreenTable;
+import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.widget.ButtonPanel;
-import org.openelis.gwt.client.widget.FormTable;
 import org.openelis.gwt.client.widget.PopupWindow;
-import org.openelis.gwt.common.CheckField;
-import org.openelis.gwt.common.StringField;
-import org.openelis.gwt.common.TableRow;
+import org.openelis.gwt.client.widget.table.TableWidget;
+import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -42,13 +42,13 @@ public class OrganizeFavoritesAdd extends ScreenForm {
             window.setContentPanel(window.content);
             
             //fill the table
-            ScreenTable table = (ScreenTable) widgets.get("favoriteItemsTable");
+            ScreenTableWidget table = (ScreenTableWidget) widgets.get("favoriteItemsTable");
             table = fillReportingTable(table);
             
             DeferredCommand.addCommand(new Command() {
                 public void execute() {
                     bpanel = (ButtonPanel) getWidget("popupButtons");
-                	bpanel.enable("cb", true);
+                	//bpanel.enable("cb", true);
                 	message = newMessage;
 
                 	
@@ -60,7 +60,7 @@ public class OrganizeFavoritesAdd extends ScreenForm {
         }
 	}
 	
-public ScreenTable fillReportingTable(ScreenTable tempTable){
+public ScreenTableWidget fillReportingTable(ScreenTableWidget tempTable){
 		
 		tempTable = deleteAllRows(tempTable);
 		
@@ -74,7 +74,7 @@ public ScreenTable fillReportingTable(ScreenTable tempTable){
 	    	tempRow.addColumn(tempStringfield1);
 	    	//tempRow.addColumn(tempCheckField);
 	    	
-	    	((FormTable)tempTable.getWidget()).controller.addRow(tempRow);
+	    	((TableWidget)tempTable.getWidget()).controller.addRow(tempRow);
 		}
 		TableRow row1 = new TableRow();
     	StringField field1 = new StringField();
@@ -83,15 +83,15 @@ public ScreenTable fillReportingTable(ScreenTable tempTable){
     	row1.addColumn(field1);
     	//row1.addColumn(field3);
     	
-    	((FormTable)tempTable.getWidget()).controller.addRow(row1);
+    	((TableWidget)tempTable.getWidget()).controller.addRow(row1);
 	
 		return tempTable;
 	}	
 
-	public ScreenTable deleteAllRows(ScreenTable tempTable){
+	public ScreenTableWidget deleteAllRows(ScreenTableWidget tempTable){
 //	remove all the rows before you add any
-	while(((FormTable)tempTable.getWidget()).controller.model.numRows()>0){
-		((FormTable)tempTable.getWidget()).controller.deleteRow(0);
+	while(((TableWidget)tempTable.getWidget()).controller.model.numRows()>0){
+		((TableWidget)tempTable.getWidget()).controller.deleteRow(0);
 	}
 	
 	return tempTable;

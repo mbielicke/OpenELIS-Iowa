@@ -30,7 +30,7 @@ public class OrganizeFavorites extends AppScreenForm {
 
 	public void afterDraw(boolean sucess) {  	
         	bpanel = (ButtonPanel)getWidget("buttons");
-        	bpanel.enable("cb", true);
+        	//bpanel.enable("cb", true);
         	message.setText("done");
         	//super.afterDraw(sucess);
 	}
