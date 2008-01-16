@@ -1,9 +1,9 @@
 package org.openelis.client.dataEntry.screen.organization;
 
 import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.table.small.TableController;
-import org.openelis.gwt.client.widget.table.small.TableManager;
-import org.openelis.gwt.common.TableRow;
+import org.openelis.gwt.client.widget.table.TableController;
+import org.openelis.gwt.client.widget.table.TableManager;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 
