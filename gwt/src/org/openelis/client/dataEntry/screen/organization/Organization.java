@@ -3,11 +3,10 @@ package org.openelis.client.dataEntry.screen.organization;
 import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.AppScreenForm;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
-import org.openelis.gwt.client.screen.ScreenLabel;
-import org.openelis.gwt.client.screen.ScreenPagedTree;
-import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
+import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.screen.ScreenTextBox;
+import org.openelis.gwt.client.widget.AppButton;
 import org.openelis.gwt.client.widget.Button;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
@@ -21,20 +20,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
 
 public class Organization extends AppScreenForm {
 
@@ -210,45 +204,15 @@ public class Organization extends AppScreenForm {
 				.setOrganizationForm(this);
 
 		super.afterDraw(success);
+		
+		bpanel.setButtonState("prev", AppButton.DISABLED);
+		bpanel.setButtonState("next", AppButton.DISABLED);
 	}
 
 	public void afterFetch(boolean success) {
 		super.afterFetch(success);
 		
-		FormRPC displayRPC = (FormRPC) this.forms.get("display");
-		DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
-
-		VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-		
-		//we need to remove anything in the notes tab if it exists
-		vp.clear();
-		int i=0;
-		while(notesModel != null && i<notesModel.size()){
-			HorizontalPanel subjectPanel = new HorizontalPanel();
-			HorizontalPanel spacerPanel = new HorizontalPanel();
-			HorizontalPanel bodyPanel = new HorizontalPanel();
-			
-			Label subjectLabel = new Label();
-			Label bodyLabel = new Label();
-			
-			vp.add(subjectPanel);
-			vp.add(bodyPanel);
-			subjectPanel.add(subjectLabel);
-			bodyPanel.add(spacerPanel);
-			bodyPanel.add(bodyLabel);			
-			
-			spacerPanel.setWidth("25px");
-			subjectPanel.setWidth("100%");
-			bodyPanel.setWidth("100%");
-			
-			subjectLabel.addStyleName("NotesText");
-			bodyLabel.addStyleName("NotesText");
-			
-			subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
-			bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
-			
-			i++;
-		}
+		loadNotes();
 	}
 	private void getOrganizations(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
@@ -283,8 +247,15 @@ public class Organization extends AppScreenForm {
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
-		orgContactsTable.disableRows = false;
+		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
+		OrganizationContactsTable orgContactsTableManager = (OrganizationContactsTable) contactTable.controller.manager;
+		orgContactsTableManager.disableRows = false;
+		contactTable.controller.setAutoAdd(true);
+		contactTable.controller.addRow();
+		
+		//set focus to the org name field
+		TextBox orgName = (TextBox)getWidget("orgName");
+		orgName.setFocus(true);
 
 		// unselect the row from the table
 		((TableWidget) getWidget("organizationsTable")).controller.unselect(-1);
@@ -310,6 +281,9 @@ public class Organization extends AppScreenForm {
 
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(false);
+		
+		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
+		contactTable.controller.setAutoAdd(false);
 
 		// need to get the org name table model
 		TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
@@ -317,15 +291,7 @@ public class Organization extends AppScreenForm {
 
 		// set the update button if needed
 		if (rowSelected != -1)
-			bpanel.enable("u", true);
-		
-		//after update we need to enable the next previous buttons
-		
-		//after query we need to enable the next previous buttons
-	}
-
-	public void up(int state) {
-		super.up(state);
+			bpanel.setButtonState("update", AppButton.UNPRESSED);
 	}
 
 	public void afterUpdate(boolean success) {
@@ -333,52 +299,54 @@ public class Organization extends AppScreenForm {
 
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
-
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
-		orgContactsTable.disableRows = false;
+		
+		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
+		OrganizationContactsTable orgContactsTableManager = (OrganizationContactsTable) contactTable.controller.manager;
+		orgContactsTableManager.disableRows = false;
+		contactTable.controller.setAutoAdd(true);
+		contactTable.controller.addRow();
+		
+		//set focus to the org name field
+		TextBox orgName = (TextBox)getWidget("orgName");
+		orgName.setFocus(true);
 
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(true);
-	}
-
-	public void next(int state) {
-		super.next(state);
-	}
-
-	public void prev(int state) {
-		super.prev(state);
-	}
-
-	public void query(int state) {
-		super.query(state);
-	}
-
-	public void afterCommitQuery(Object field, boolean success) {
-		super.afterCommitQuery(success);
-
 	}
 
 	public void afterCommitAdd(boolean success) {
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(true);
 
+		loadNotes();
+		
+		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
+		contactTable.controller.setAutoAdd(false);
+		
 		super.afterCommitAdd(success);
 	}
 
+	public void query(int state) {
+		super.query(state);
+		
+		//set focus to the org name field
+		TextBox orgName = (TextBox)getWidget("orgId");
+		orgName.setFocus(true);
+	}
+	
 	public void afterCommitUpdate(boolean success) {
 
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
-
+		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
+		contactTable.controller.setAutoAdd(false);
+		
 		Button removeContactButton = (Button) getWidget("removeContactButton");
 		removeContactButton.setEnabled(false);
+		
+		loadNotes();
 
 		super.afterCommitUpdate(success);
-	}
-
-	public void afterDelete(boolean success) {
-		// TODO Auto-generated method stub
-		super.afterDelete(success);
 	}
 
 	public void commit(int state) {
@@ -398,5 +366,45 @@ public class Organization extends AppScreenForm {
 			selected.removeStyleName("current");
 		selected = sender;
 		return sender;
+	}
+	
+	private void loadNotes(){
+		FormRPC displayRPC = (FormRPC) this.forms.get("display");
+		DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
+
+		VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+		
+		//we need to remove anything in the notes tab if it exists
+		vp.clear();
+		int i=0;
+		while(notesModel != null && i<notesModel.size()){
+			HorizontalPanel subjectPanel = new HorizontalPanel();
+			HorizontalPanel spacerPanel = new HorizontalPanel();
+			HorizontalPanel bodyPanel = new HorizontalPanel();
+			
+			Label subjectLabel = new Label();
+			Label bodyLabel = new Label();
+			
+			vp.add(subjectPanel);
+			vp.add(bodyPanel);
+			subjectPanel.add(subjectLabel);
+			bodyPanel.add(spacerPanel);
+			bodyPanel.add(bodyLabel);			
+			
+			spacerPanel.setWidth("25px");
+			subjectPanel.setWidth("100%");
+			bodyPanel.setWidth("100%");
+			
+			subjectLabel.addStyleName("NotesText");
+			bodyLabel.addStyleName("NotesText");
+			
+			subjectLabel.setWordWrap(true);
+			bodyLabel.setWordWrap(true);
+			
+			subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
+			bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
+			
+			i++;
+		}
 	}
 }
