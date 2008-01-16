@@ -7,9 +7,10 @@ import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
+import org.openelis.gwt.client.screen.ScreenAppButton;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
 import org.openelis.gwt.client.screen.ScreenAuto;
-//import org.openelis.gwt.client.screen.ScreenAutoDropdown;
+import org.openelis.gwt.client.screen.ScreenAutoDropdown;
 import org.openelis.gwt.client.screen.ScreenBase;
 import org.openelis.gwt.client.screen.ScreenButton;
 import org.openelis.gwt.client.screen.ScreenButtonPanel;
@@ -35,10 +36,8 @@ import org.openelis.gwt.client.screen.ScreenRadio;
 import org.openelis.gwt.client.screen.ScreenStack;
 import org.openelis.gwt.client.screen.ScreenTab;
 import org.openelis.gwt.client.screen.ScreenTabBrowser;
-import org.openelis.gwt.client.screen.ScreenTableWidget;
-
 import org.openelis.gwt.client.screen.ScreenTablePanel;
-
+import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.screen.ScreenText;
 import org.openelis.gwt.client.screen.ScreenTextArea;
 import org.openelis.gwt.client.screen.ScreenTextBox;
@@ -49,15 +48,18 @@ import org.openelis.gwt.client.screen.ScreenWindowBrowser;
 import org.openelis.gwt.client.widget.HoverListener;
 import org.openelis.gwt.client.widget.ProxyListener;
 import org.openelis.gwt.client.widget.WidgetMap;
+import org.openelis.gwt.client.widget.table.TableAuto;
+import org.openelis.gwt.client.widget.table.TableAutoDropdown;
 import org.openelis.gwt.client.widget.table.TableCalendar;
 import org.openelis.gwt.client.widget.table.TableCheck;
 import org.openelis.gwt.client.widget.table.TableLabel;
 import org.openelis.gwt.client.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.client.widget.table.TableOption;
 import org.openelis.gwt.client.widget.table.TableTextBox;
-
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.OptionField;
 import org.openelis.gwt.common.data.PagedTreeField;
@@ -136,6 +138,8 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.TABLE_MASKED_BOX, new TableMaskedTextBox());
       map.addWidget(WidgetMap.TABLE_OPTION_LIST, new TableOption());
       map.addWidget(WidgetMap.TABLE_TEXTBOX, new TableTextBox());
+      map.addWidget(WidgetMap.TABLE_AUTO, new TableAuto());
+      map.addWidget(WidgetMap.TABLE_AUTO_DROPDOWN, new TableAutoDropdown());
       map.addWidget(WidgetMap.DRAGLIST, new ScreenDragList());
       map.addWidget(WidgetMap.LABEL, new ScreenLabel());
      // map.addWidget("menuList", new ScreenMenuPanel());
@@ -146,10 +150,12 @@ public class OpenELIS implements EntryPoint {
      // map.addWidget("ContactTable", new ContactTable());
       //map.addWidget("ContactReportingTable", new ContactReportingTable());
       map.addWidget(WidgetMap.RPC_CHECKBOX, new CheckField());
+      map.addWidget(WidgetMap.RPC_MODEL, new ModelField());
       map.addWidget(WidgetMap.RPC_DATE, new DateField());
       map.addWidget(WidgetMap.RPC_NUMBER, new NumberField());
       map.addWidget(WidgetMap.RPC_OPTION, new OptionField());
       map.addWidget(WidgetMap.RPC_STRING, new StringField());
+      map.addWidget("rpc-collection", new CollectionField());
       map.addWidget(WidgetMap.RPC_TABLE, new TableField());
       map.addWidget(WidgetMap.RPC_PAGED_TREE, new PagedTreeField());
       map.addWidget(WidgetMap.RPC_QUERY_CHECK, new QueryCheckField());
@@ -176,7 +182,9 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
       map.addWidget("pagedTree", new ScreenPagedTree());   
-      //map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
+      map.addWidget(WidgetMap.APP_BUTTON, new ScreenAppButton());
+      map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
+
 	  ScreenBase.setWidgetMap(map);
   }
 }
