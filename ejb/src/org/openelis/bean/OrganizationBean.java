@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.openelis.domain.OrganizationTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.OptionItem;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryOptionField;
@@ -274,20 +276,21 @@ public class OrganizationBean implements OrganizationRemote {
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit"));
          if(fields.containsKey("city"))
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"),"o.orgAddress.city"));
-         if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("state"),"o.orgAddress.state"));
+         
+         
+         if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"),"o.orgAddress.state"));        
          if(fields.containsKey("zipCode"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"),"o.orgAddress.zipCode"));
-         if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("country"),"o.orgAddress.country"));
+        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"),"o.orgAddress.zipCode"));         
+         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"),"o.orgAddress.country"));        
          if(fields.containsKey("parentOrg"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentOrg"),"o.parentOrg.name"));
-         if(fields.containsKey("isActive") && ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "o.isActive"));
-  
+        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentOrg"),"o.parentOrg.name"));         
+         if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isActive"), "o.isActive"));         
          //org contact elements
          if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
         		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
@@ -345,21 +348,25 @@ public class OrganizationBean implements OrganizationRemote {
          if(fields.containsKey("multUnit"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit", query);
          if(fields.containsKey("city"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("city"), "o.orgAddress.city", query);
-         if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryOptionField)fields.get("state"), "o.orgAddress.state", query);
+        	 QueryBuilder.setParameters((QueryStringField)fields.get("city"), "o.orgAddress.city", query);     
+         
+         
+         if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
+        	 QueryBuilder.setParameters((CollectionField)fields.get("state"), "o.orgAddress.state", query);         
          if(fields.containsKey("zipCode"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "o.orgAddress.zipCode", query);
-         if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
-        	QueryBuilder.setParameters((QueryOptionField)fields.get("country"), "o.orgAddress.country", query);
+         
+         
+         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
+        	QueryBuilder.setParameters((CollectionField)fields.get("country"), "o.orgAddress.country", query);        
          if(fields.containsKey("parentOrg"))       	 
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("parentOrg"), "o.parentOrg.name", query);
-         if(fields.containsKey("isActive") && ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryOptionField)fields.get("isActive"), "o.isActive", query);
-//       org contact elements
+        	 QueryBuilder.setParameters((QueryStringField)fields.get("parentOrg"), "o.parentOrg.name", query);        
+         if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
+        	 QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "o.isActive", query);         
+         //       org contact elements
          if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
         		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
         	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactType"), "oc.contactType", query);
