@@ -20,6 +20,7 @@ import org.openelis.domain.CategoryTableRowDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
+import org.openelis.gwt.common.data.OptionItem;
 import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
@@ -103,7 +104,7 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws RemoteException {
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct c.id, c.systemName from Category c where 1=1 " );
+        sb.append("select distinct c.id, c.systemName from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
         if(fields.containsKey("systemName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("systemName"), "c.systemName"));
         if(fields.containsKey("name"))
@@ -113,8 +114,25 @@ public class CategoryBean implements CategoryRemote {
         if(fields.containsKey("secName"))
             sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("secName"), "c.section"));
         
-        Query query = manager.createQuery(sb.toString()+" order by  c.systemName");
+        if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
+                        !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
+            sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "d.isActive"));
+        if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
+            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("dictSystemName"), "d.systemName"));
+        if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)
+            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("abbreviation"), "d.localAbbrev"));
+        if(fields.containsKey("entry")&& ((QueryStringField)fields.get("entry")).getComparator() != null)
+            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("entry"), "d.entry"));
+        if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
+           sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("relatedEntry"), "relEntry.entry"));
         
+        Query query = manager.createQuery(sb.toString()+" order by c.systemName");
+        
+        if(first > -1)
+            query.setFirstResult(first);
+        if(max > -1)
+            query.setMaxResults(max);
+           
         if(fields.containsKey("systemName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("systemName"), "c.systemName",query);
         if(fields.containsKey("name"))
@@ -123,6 +141,18 @@ public class CategoryBean implements CategoryRemote {
             QueryBuilder.setParameters((QueryStringField)fields.get("desc"), "c.description",query);  
         if(fields.containsKey("secName"))
             QueryBuilder.setParameters((QueryOptionField)fields.get("secName"), "c.section",query);
+        
+        if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
+                        !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
+            QueryBuilder.setParameters((QueryOptionField)fields.get("isActive"), "d.isActive",query);
+        if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("dictSystemName"), "d.systemName",query);
+        if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("abbreviation"), "d.localAbbrev",query);
+        if(fields.containsKey("entry")&& ((QueryStringField)fields.get("entry")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("entry"), "d.entry",query);
+        if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("relatedEntry"), "relEntry.entry",query);
         
         return query.getResultList();
             
@@ -158,37 +188,31 @@ public class CategoryBean implements CategoryRemote {
                  }
              
              System.out.println("dictionary "+dictionary);
-             
+             boolean update = false;
              if(dictDO.getDelete()!=null){ 
                if(dictDO.getDelete()&& (dictionary.getId() != null)){
                  //delete the dictionary entry from the database                    
                     manager.remove(dictionary);
                     System.out.println("removed dictionary");
                }else{
-                   dictionary.setCategory(category.getId());
-                   dictionary.setEntry(dictDO.getEntry());
-                   dictionary.setIsActive(dictDO.getIsActive());
-                   dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                   dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
-                   dictionary.setSystemName(dictDO.getSystemName());    
-               
-                if(dictionary.getId()==null){
-                  manager.persist(dictionary);
-                }
+                   update = true;
                }
               }else{
-                   dictionary.setCategory(category.getId());
-                   dictionary.setEntry(dictDO.getEntry());
-                   dictionary.setIsActive(dictDO.getIsActive());
-                   dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                   dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
-                   dictionary.setSystemName(dictDO.getSystemName());    
-               
-               if(dictionary.getId()==null){
-                  manager.persist(dictionary);
-               }
+                   update = true;
              }
              
+             if(update){
+                 dictionary.setCategory(category.getId());
+                 dictionary.setEntry(dictDO.getEntry());
+                 dictionary.setIsActive(dictDO.getIsActive());
+                 dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                 dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
+                 dictionary.setSystemName(dictDO.getSystemName());    
+             
+              if(dictionary.getId()==null){
+                manager.persist(dictionary);
+              }
+             }
              
         }
         return  category.getId();
