@@ -16,6 +16,7 @@ import org.openelis.gwt.client.widget.WindowBrowser;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -107,6 +108,8 @@ public class OpenELIS extends AppScreen implements PopupListener {
                     Window.alert(caught.getMessage());
                 }
             });*/
+            
+            browser.setBrowserHeight();
     }
 
     public void onClick(Widget item) {
