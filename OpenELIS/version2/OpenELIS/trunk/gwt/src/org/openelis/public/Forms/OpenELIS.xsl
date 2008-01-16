@@ -25,32 +25,62 @@
 					<label key="file" style="topMenuBarItem" text="{resource:getString($constants,'file')}" onClick="this" hover="Hover"/>
 				</widget>
 				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
+				<widget>
 					<label key="edit" style="topMenuBarItem" text="{resource:getString($constants,'edit')}" onClick="this" hover="Hover"/>
 				</widget>
+				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
 				<widget>
 					<label key="sampleManagement" style="topMenuBarItem" text="{resource:getString($constants,'sampleManagement')}" onClick="this" hover="Hover"/>
 				</widget>
 				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
+				<widget>
 					<label key="analysisManagement" style="topMenuBarItem" text="{resource:getString($constants,'analysisManagement')}" onClick="this" hover="Hover"/>
 				</widget>
+				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
 				<widget>
 					<label key="supplyManagement" style="topMenuBarItem" text="{resource:getString($constants,'supplyManagement')}" onClick="this" hover="Hover"/>
 				</widget>
 				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
+				<widget>
 					<label key="reports" style="topMenuBarItem" text="{resource:getString($constants,'reports')}" onClick="this" hover="Hover"/>
 				</widget>
+				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
 				<widget>
 					<label key="dataEntry" style="topMenuBarItem" text="{resource:getString($constants,'dataEntry')}" onClick="this" hover="Hover"/>
 				</widget>
 				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
+				<widget>
 					<label key="utilities" style="topMenuBarItem" text="{resource:getString($constants,'utilities')}" onClick="this" hover="Hover"/>
 				</widget>
+				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
 				<widget>
 					<label key="favorites" style="topMenuBarItem" text="{resource:getString($constants,'favorites')}" onClick="this" hover="Hover"/>
 				</widget>
 				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
+				<widget>
 					<label key="window" style="topMenuBarItem" text="{resource:getString($constants,'window')}" onClick="this" hover="Hover"/>
 				</widget>
+				<widget>
+            <html style="topMenuBarSpacer" xml:space="preserve"> </html>
+          </widget>
 				<widget>
 					<label key="help" style="topMenuBarItem" text="{resource:getString($constants,'help')}" onClick="this" hover="Hover"/>
 				</widget>
