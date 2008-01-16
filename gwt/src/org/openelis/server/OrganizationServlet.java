@@ -17,7 +17,9 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -31,6 +33,7 @@ import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
@@ -76,8 +79,8 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
         rpc.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
         rpc.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
         rpc.setFieldValue("isActive",((organizationDO.getIsActive() != null && organizationDO.getIsActive().equals("Y")) ? true : false));
-        rpc.setFieldValue("state",organizationDO.getAddressDO().getState());
-        rpc.setFieldValue("country",organizationDO.getAddressDO().getCountry());
+        rpc.setFieldValue("stateId",organizationDO.getAddressDO().getState());
+        rpc.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
         rpc.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
 		//get the filled out DO object
@@ -379,6 +382,13 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	        //need to build the contacts table now...
 	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
 	        
+	        //load the notes
+	        rpcReturn.setFieldValue("usersSubject", null);
+	        rpcReturn.setFieldValue("usersNote", null);
+	        
+	        DataModel notesModel = getNotesModel(orgId);
+	        rpcReturn.setFieldValue("notesModel", notesModel);
+	        
 		//}
 		
 		return rpcReturn;
@@ -414,7 +424,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
 	        //need to build the contacts table now...
 	        TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
+	        rpcReturn.setFieldValue("contactsTable",rmodel);
 		//}
 	        //load the notes
 	        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
@@ -587,24 +597,85 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		return null;
 	}
 
-	public DataModel getInitialModel(DataModel model, String cat){
-		return null;
+	public DataModel getInitialModel(String cat){
+		int id = -1;
+		CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+		
+		if(cat.equals("state")){
+			id = remote.getCategoryId("state");
+		}else if(cat.equals("country")){
+			id = remote.getCategoryId("country");
+		}else if(cat.equals("contactType")){
+			id = remote.getCategoryId("contactType");
+		}else if(cat.equals("contactState")){
+			id = remote.getCategoryId("state");
+		}else if(cat.equals("contactCountry")){
+			id = remote.getCategoryId("country");			
+		}
+		List entries = new ArrayList();
+		if(id > -1)
+			entries = remote.getDropdownValues(id);
+		
+		//we need to build the model to return
+		DataModel returnModel = new DataModel();
+			
+		//create a blank entry to begin the list
+		DataSet blankset = new DataSet();
+		
+		StringObject blankStringId = new StringObject();
+		BooleanObject blankSelected = new BooleanObject();
+		
+		blankStringId.setValue("");
+		blankset.addObject(blankStringId);
+		
+		blankset.addObject(blankStringId);			
+		
+		blankSelected.setValue(new Boolean(false));
+		blankset.addObject(blankSelected);
+		
+		returnModel.add(blankset);
+		int i=0;
+		while(i < entries.size()){
+			DataSet set = new DataSet();
+			Object[] result = (Object[]) entries.get(i);
+			//id
+			Integer dropdownId = (Integer)result[0];
+			//entry
+			String dropdownText = (String)result[1];
+			
+			StringObject textObject = new StringObject();
+			StringObject stringId = new StringObject();
+			NumberObject numberId = new NumberObject();
+			BooleanObject selected = new BooleanObject();
+			
+			textObject.setValue(dropdownText);
+			set.addObject(textObject);
+			
+			if(cat.equals("contactType")){
+				numberId.setType("integer");
+				numberId.setValue(dropdownId);
+				set.addObject(numberId);
+			}else{
+				stringId.setValue(dropdownText);
+				set.addObject(stringId);			
+			}
+			
+			selected.setValue(new Boolean(false));
+			set.addObject(selected);
+			
+			returnModel.add(set);
+			
+			i++;
+		}		
+		
+		return returnModel;
 	}
+	
 	//autocomplete textbox method	
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-		if(cat.equals("parentOrg")){
+		if(cat.equals("parentOrg"))
 			return getParentOrgDisplay((Integer)value.getValue());
-		}else if(cat.equals("state")){
-			return getDropdownDisplay(model, (String)value.getValue());
-		}else if(cat.equals("country")){
-			return getDropdownDisplay(model, (String)value.getValue());
-		}else if(cat.equals("contactType")){
-			return getDropdownDisplay(model, (Integer)value.getValue());
-		}else if(cat.equals("contactState")){
-			return getDropdownDisplay(model, (String)value.getValue());
-		}else if(cat.equals("contactCountry")){
-			return getDropdownDisplay(model, (String)value.getValue());
-		}
+		
 		return null;		
 		
 	}
@@ -637,64 +708,12 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		return model;		
 	}
 	
-	private DataModel getDropdownDisplay(DataModel model, String value){
-		DataModel dataModel = new DataModel();
-		DataSet set = new DataSet();
-		for (int i = 0; i < model.size(); i++) {
-			if(((StringObject)model.get(i).getObject(0)).getValue().equals(value)){
-				
-				StringObject id = new StringObject();
-				id.setValue(((StringObject)model.get(i).getObject(0)).getValue());
-				StringObject name = new StringObject();
-				name.setValue(((StringObject)model.get(i).getObject(2)).getValue());
-				set.addObject(id);
-				set.addObject(name);
-				dataModel.add(set);
-				break;
-			}
-			
-		}
-		
-		return dataModel;		
-	}
-	
-	private DataModel getDropdownDisplay(DataModel model, Integer value){
-		DataModel dataModel = new DataModel();
-		DataSet set = new DataSet();
-		for (int i = 0; i < model.size(); i++) {
-			if(((NumberObject)model.get(i).getObject(0)).getValue() == value){
-				
-				StringObject id = new StringObject();
-				id.setValue(((StringObject)model.get(i).getObject(0)).getValue());
-				StringObject name = new StringObject();
-				name.setValue(((StringObject)model.get(i).getObject(2)).getValue());
-				set.addObject(id);
-				set.addObject(name);
-				dataModel.add(set);
-				break;
-			}
-			
-		}
-		
-		return dataModel;		
-	}
-
 	//autocomplete textbox method
 	//match is what they typed
 	public DataModel getMatches(String cat, DataModel model, String match) {
-		if(cat.equals("parentOrg")){
+		if(cat.equals("parentOrg"))
 			return getParentOrgMatches(match);
-		}else if(cat.equals("state")){
-			return getDropdownMatches(model, match);
-		}else if(cat.equals("country")){
-			return getDropdownMatches(model, match);
-		}else if(cat.equals("contactState")){
-			return getDropdownMatches(model, match);
-		}else if(cat.equals("contactType")){
-			return getDropdownMatches(model, match);
-		}else if(cat.equals("contactCountry")){
-			return getDropdownMatches(model, match);
-		}
+		
 		return null;		
 	}
 	
@@ -804,23 +823,6 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 			}
 		}
 		
-		return dataModel;		
-	}
-	
-	private DataModel getDropdownMatches(DataModel model, String match){
-		DataModel dataModel = new DataModel();
-		DataSet set = new DataSet();
-		int i=0;
-		while(i<model.size() && ((String)model.get(i).getObject(model.get(i).size()-2).getValue()).indexOf(match) != 0){
-			i++;
-		}
-		if(i < model.size()){
-			NumberObject startPos = new NumberObject();
-			startPos.setType("integer");
-			startPos.setValue(i);
-			set.addObject(startPos);
-			dataModel.add(set);
-		}
 		return dataModel;		
 	}
 
