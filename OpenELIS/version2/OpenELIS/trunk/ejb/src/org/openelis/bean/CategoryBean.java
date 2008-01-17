@@ -228,7 +228,7 @@ public class CategoryBean implements CategoryRemote {
     }
     
     public List getDropdownValues(Integer categoryId) {
-    	Query query = manager.createNamedQuery("getDropdownValues");
+    	Query query = manager.createNamedQuery("getDictionaryDropdownValues");
     	query.setParameter("id", categoryId);
     	
     	return query.getResultList();
