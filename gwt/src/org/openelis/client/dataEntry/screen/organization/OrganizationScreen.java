@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 
-public class Organization extends AppScreenForm {
+public class OrganizationScreen extends AppScreenForm {
 
 	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen
 			.getWidgetMap().get("AppConstants");
@@ -46,7 +46,7 @@ public class Organization extends AppScreenForm {
 
 	Document xml = null;
 
-	public Organization() {
+	public OrganizationScreen() {
 		super();
 		String base = GWT.getModuleBaseURL();
 		base += "OrganizationServlet";
