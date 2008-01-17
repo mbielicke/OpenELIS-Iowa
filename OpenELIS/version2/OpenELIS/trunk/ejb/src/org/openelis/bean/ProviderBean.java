@@ -379,4 +379,15 @@ public class ProviderBean implements ProviderRemote {
         return query.getResultList();
     }
 
+    public List getProviderNotes(Integer providerId) {
+       Query query = null;
+       query = manager.createNamedQuery("getProviderNotesTopLevel");
+       
+       query.setParameter("id", providerId);
+        
+       List provNotes = query.getResultList();// getting list of notes from the provider id
+
+       return provNotes;
+    }
+
 }
