@@ -291,8 +291,8 @@ public class CategoryBean implements CategoryRemote {
     }
     
     public Object[] autoCompleteLookupById(Integer id){
-        Query query = null;
-        query = manager.createNamedQuery("getAutoCompleteById");
+        
+        Query query  = manager.createNamedQuery("getEntryAutoCompleteById");
         query.setParameter("id",id);
         return (Object[])query.getSingleResult();
     } 
