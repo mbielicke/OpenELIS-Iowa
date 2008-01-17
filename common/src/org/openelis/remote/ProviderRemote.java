@@ -38,4 +38,6 @@ public interface ProviderRemote {
      
      //method to get all the dicntionary entries for providers
      public List<Object[]> getProviderTypes();
+     
+     public List getProviderNotes(Integer providerId);    
 }
