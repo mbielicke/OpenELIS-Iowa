@@ -275,9 +275,7 @@ public class OrganizationBean implements OrganizationRemote {
          if(fields.containsKey("multUnit"))
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit"));
          if(fields.containsKey("city"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"),"o.orgAddress.city"));
-         
-         
+        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"),"o.orgAddress.city"));         
          if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
         	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"),"o.orgAddress.state"));        
@@ -287,14 +285,14 @@ public class OrganizationBean implements OrganizationRemote {
         		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
         	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"),"o.orgAddress.country"));        
          if(fields.containsKey("parentOrg"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentOrg"),"o.parentOrg.name"));         
+        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentOrg"),"o.parentOrg.name")); 
          if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
         	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isActive"), "o.isActive"));         
          //org contact elements
-         if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("contactType"), "oc.contactType"));
+         if(fields.containsKey("contactType") && ((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactType"), "oc.contactType"));         
          if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactName"), "oc.name"));
          if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
@@ -303,9 +301,9 @@ public class OrganizationBean implements OrganizationRemote {
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactStreetAddress"), "oca.streetAddress"));
          if(fields.containsKey("contactCity") && ((QueryStringField)fields.get("contactCity")).getComparator() != null)
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactCity"), "oca.city"));
-         if(fields.containsKey("contactState") && ((QueryOptionField)fields.get("contactState")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactState")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactState")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("contactState"), "oca.state"));
+         if(fields.containsKey("contactState") && ((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactState"), "oca.state"));    
          if(fields.containsKey("contactZipCode") && ((QueryStringField)fields.get("contactZipCode")).getComparator() != null)
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactZipCode"), "oca.zipCode"));
          if(fields.containsKey("contactWorkPhone") && ((QueryStringField)fields.get("contactWorkPhone")).getComparator() != null)
@@ -318,9 +316,9 @@ public class OrganizationBean implements OrganizationRemote {
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactFaxPhone"), "oca.faxPhone"));
          if(fields.containsKey("contactEmail") && ((QueryStringField)fields.get("contactEmail")).getComparator() != null)
         	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactEmail"), "oca.email"));
-         if(fields.containsKey("contactCountry") && ((QueryOptionField)fields.get("contactCountry")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactCountry")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactCountry")).getSelections().get(0)).display)))
-        	 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("contactCountry"), "oca.country"));         
+         if(fields.containsKey("contactCountry") && ((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).get(0))))
+        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactCountry"), "oca.country"));         
          
          //org notes
          if(fields.containsKey("usersSubject"))
@@ -348,28 +346,24 @@ public class OrganizationBean implements OrganizationRemote {
          if(fields.containsKey("multUnit"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit", query);
          if(fields.containsKey("city"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("city"), "o.orgAddress.city", query);     
-         
-         
+        	 QueryBuilder.setParameters((QueryStringField)fields.get("city"), "o.orgAddress.city", query);  
          if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
         	 QueryBuilder.setParameters((CollectionField)fields.get("state"), "o.orgAddress.state", query);         
          if(fields.containsKey("zipCode"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "o.orgAddress.zipCode", query);
-         
-         
          if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-        	QueryBuilder.setParameters((CollectionField)fields.get("country"), "o.orgAddress.country", query);        
+        	QueryBuilder.setParameters((CollectionField)fields.get("country"), "o.orgAddress.country", query); 
          if(fields.containsKey("parentOrg"))       	 
         	 QueryBuilder.setParameters((QueryStringField)fields.get("parentOrg"), "o.parentOrg.name", query);        
          if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "o.isActive", query);         
+        	 QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "o.isActive", query);      
          //       org contact elements
-         if(fields.containsKey("contactType") && ((QueryOptionField)fields.get("contactType")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactType")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactType")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactType"), "oc.contactType", query);
+         if(fields.containsKey("contactType") && ((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).get(0))))
+        	 QueryBuilder.setParameters((CollectionField)fields.get("contactType"), "oc.contactType", query);
          if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactName"), "oc.name", query);
          if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
@@ -378,9 +372,9 @@ public class OrganizationBean implements OrganizationRemote {
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactStreetAddress"), "oca.streetAddress", query);
          if(fields.containsKey("contactCity") && ((QueryStringField)fields.get("contactCity")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactCity"), "oca.city", query);
-         if(fields.containsKey("contactState") && ((QueryOptionField)fields.get("contactState")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactState")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactState")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactState"), "oca.state", query);
+         if(fields.containsKey("contactState") && ((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).get(0))))
+        	 QueryBuilder.setParameters((CollectionField)fields.get("contactState"), "oca.state", query);
          if(fields.containsKey("contactZipCode") && ((QueryStringField)fields.get("contactZipCode")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactZipCode"), "oca.zipCode", query);
          if(fields.containsKey("contactWorkPhone") && ((QueryStringField)fields.get("contactWorkPhone")).getComparator() != null)
@@ -393,9 +387,9 @@ public class OrganizationBean implements OrganizationRemote {
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactFaxPhone"), "oca.faxPhone", query);
          if(fields.containsKey("contactEmail") && ((QueryStringField)fields.get("contactEmail")).getComparator() != null)
         	 QueryBuilder.setParameters((QueryStringField)fields.get("contactEmail"), "oca.email", query);
-         if(fields.containsKey("contactCountry") && ((QueryOptionField)fields.get("contactCountry")).getSelections().size()>0 && 
-        		 !(((QueryOptionField)fields.get("contactCountry")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("contactCountry")).getSelections().get(0)).display)))
-        	 QueryBuilder.setParameters((QueryOptionField)fields.get("contactCountry"), "oca.country", query);
+         if(fields.containsKey("contactCountry") && ((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size()>0 &&
+        		 !(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).get(0))))
+        	 QueryBuilder.setParameters((CollectionField)fields.get("contactCountry"), "oca.country", query);
 //       org notes
          if(fields.containsKey("usersSubject"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
