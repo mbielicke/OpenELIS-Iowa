@@ -30,9 +30,8 @@ public interface CategoryRemote {
         
      //  method to return just dictionary entries
     public List getDictionaryEntries(Integer categoryId);
-    
-    // method to return the id for a given row,identified by the value "entry" here,in the Dictionary table 
-    public List getMatchingEntries(Integer id,String entry);
+        
+    public List getMatchingEntries(String entry,int maxResults);
     
     public Integer getEntryIdForSystemName(String systemName);
     
@@ -41,4 +40,6 @@ public interface CategoryRemote {
     public Integer getCategoryId(String systemName); 
     
     public List getDropdownValues(Integer categoryId);
+    
+    public Object[] autoCompleteLookupById(Integer id);
 }
