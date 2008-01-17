@@ -2,7 +2,7 @@ package org.openelis.client.main.screen.openelis;
 
 import org.openelis.client.dataEntry.screen.Provider.Provider;
 import org.openelis.client.dataEntry.screen.dictionary.Dictionary;
-import org.openelis.client.dataEntry.screen.organization.Organization;
+import org.openelis.client.dataEntry.screen.organization.OrganizationScreen;
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.gwt.client.screen.AppScreen;
@@ -432,7 +432,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	closeTopMenuPanel(pn,(Label) getWidget("dataEntry"),(ScreenLabel) widgets.get("organizationLabel"));
         	
         	//we need to do the organization action        	openElisConstants.loadingMessage()
-        	browser.addScreen(new Organization(), openElisConstants.getString("organization"), "Organization", openElisConstants.getString("loadingMessage"));
+        	browser.addScreen(new OrganizationScreen(), openElisConstants.getString("organization"), "Organization", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("patientIcon")) || (item == widgets.get("patientLabel")) || (item == widgets.get("patientDescription")) || 
         		(item == widgets.get("favTopPatient")) || (item == widgets.get("favLeftPatient"))){
 //        	if the data entry is open we need to close it
