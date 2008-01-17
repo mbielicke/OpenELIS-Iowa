@@ -234,12 +234,13 @@ public class CategoryBean implements CategoryRemote {
     	return query.getResultList();
     }
     
-    public List getMatchingEntries(Integer id,String entry){
+    public List getMatchingEntries(String entry, int maxResults){
        Query query = manager.createNamedQuery("getMatchingEntries");  
        query.setParameter("entry", entry);       
-       query.setParameter("id", id);
-       System.out.println("id "+ id);
+       query.setMaxResults(maxResults);
+       
        System.out.println("entry "+ "\""+entry+"\"");
+       
        List entryList = null;
        try{ 
            entryList = (List)query.getResultList();
@@ -288,4 +289,12 @@ public class CategoryBean implements CategoryRemote {
         }     
         return categoryId;
     }
+    
+    public Object[] autoCompleteLookupById(Integer id){
+        Query query = null;
+        query = manager.createNamedQuery("getAutoCompleteById");
+        query.setParameter("id",id);
+        return (Object[])query.getSingleResult();
+    } 
+    
 }
