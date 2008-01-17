@@ -18,6 +18,7 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -229,19 +230,19 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 			contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();		
 		
 		if(contactsTable != null){
-			fields.put("contactType",(QueryOptionField)contactsTable.getRow(0).getColumn(0));
+			fields.put("contactType",(CollectionField)contactsTable.getRow(0).getColumn(0));
 			fields.put("contactName",(QueryStringField)contactsTable.getRow(0).getColumn(1));
 			fields.put("contactMultUnit",(QueryStringField)contactsTable.getRow(0).getColumn(2));
 			fields.put("contactStreetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(3));
 			fields.put("contactCity",(QueryStringField)contactsTable.getRow(0).getColumn(4));
-			fields.put("contactState",(QueryOptionField)contactsTable.getRow(0).getColumn(5));
+			fields.put("contactState",(CollectionField)contactsTable.getRow(0).getColumn(5));
 			fields.put("contactZipCode",(QueryStringField)contactsTable.getRow(0).getColumn(6));
 			fields.put("contactWorkPhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
 			fields.put("contactHomePhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
 			fields.put("contactCellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
 			fields.put("contactFaxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(10));
 			fields.put("contactEmail",(QueryStringField)contactsTable.getRow(0).getColumn(11));
-			fields.put("contactCountry",(QueryOptionField)contactsTable.getRow(0).getColumn(12));
+			fields.put("contactCountry",(CollectionField)contactsTable.getRow(0).getColumn(12));
 		}
 
 		List organizationNames = new ArrayList();
@@ -606,7 +607,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		}else if(cat.equals("country")){
 			id = remote.getCategoryId("country");
 		}else if(cat.equals("contactType")){
-			id = remote.getCategoryId("contactType");
+			id = remote.getCategoryId("contact_type");
 		}else if(cat.equals("contactState")){
 			id = remote.getCategoryId("state");
 		}else if(cat.equals("contactCountry")){
@@ -623,12 +624,19 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		DataSet blankset = new DataSet();
 		
 		StringObject blankStringId = new StringObject();
+		NumberObject blankNumberId = new NumberObject();
 		BooleanObject blankSelected = new BooleanObject();
 		
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
 		
-		blankset.addObject(blankStringId);			
+		blankNumberId.setType("integer");
+		blankNumberId.setValue(new Integer(0));
+		
+		if(cat.equals("contactType"))
+			blankset.addObject(blankNumberId);
+		else
+			blankset.addObject(blankStringId);			
 		
 		blankSelected.setValue(new Boolean(false));
 		blankset.addObject(blankSelected);
