@@ -33,12 +33,10 @@ import org.openelis.utils.Auditable;
                                            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from Provider p, ProviderAddress pa, Address a "+
                                            " where pa.provider = p.id and pa.address = a.id and p.id = :id order by pa.location"),
                @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='provider_type' and d.category = c.id"),
-               @NamedQuery(name = "getProviderNotesTopLevel", query = "select n.id, n.timestamp, n.subject " + 
+               @NamedQuery(name = "getProviderNotesTopLevel", query = "select n.id,n.systemUser,n.text, n.timestamp, n.subject " + 
                        "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id"),
                @NamedQuery(name = "getProviderNotesSecondLevel", query = "select n.id, n.systemUser, n.text " +
-                      "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.id = :id")})
-               //@NamedQuery(name = "getStates", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='states' and d.category = c.id")          
-              // @NamedQuery(name = "getCountries", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='states' and d.category = c.id")
+                      "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.id = :id")})               
 @Entity 
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})
