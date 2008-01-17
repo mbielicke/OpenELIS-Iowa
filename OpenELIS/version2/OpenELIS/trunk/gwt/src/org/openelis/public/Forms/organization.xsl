@@ -450,7 +450,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" key="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" popupHeight="80px" dropdown="true" type="integer">
+											<autoDropdown cat="contactType" key="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" type="integer">
 											<autoWidths>90</autoWidths>
 											<autoEditors>
 												<label/>
@@ -458,21 +458,12 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<autoFields>
 											    <string/>
 											</autoFields>
-											<autoItems>
-												<item value="0"> </item>
-												<item value="1">NURSE</item>
-												<item value="2">RECEPTIONIST</item>
-												<item value="3">TECHNICIAN</item>
-												<item value="4">MAIN CONTACT</item>
-												<item value="5">SECOND CONTACT</item>
-												<item value="6">DOCTOR</item>
-											</autoItems>
 											</autoDropdown>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="contactState" key="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" popupHeight="80px" dropdown="true" type="string">
+											<autoDropdown cat="contactState" key="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -480,59 +471,6 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 												<autoFields>
 													<string/>
 												</autoFields>
-												<autoItems>
-													<item value=" "> </item>
-													<item value="AL">AL</item>
-													<item value="AK">AK</item>
-													<item value="AZ">AZ</item>
-													<item value="AR">AR</item>
-													<item value="CA">CA</item>
-													<item value="CO">CO</item>
-													<item value="CT">CT</item>
-													<item value="DE">DE</item>
-													<item value="FL">FL</item>
-													<item value="GA">GA</item>
-													<item value="HI">HI</item>
-													<item value="ID">ID</item>
-													<item value="IL">IL</item>
-													<item value="IN">IN</item>
-													<item value="IA">IA</item>
-													<item value="KS">KS</item>
-													<item value="KY">KY</item>
-													<item value="LA">LA</item>
-													<item value="ME">ME</item>
-													<item value="MD">MD</item>
-													<item value="MA">MA</item>
-													<item value="MI">MI</item>
-													<item value="MN">MN</item>
-													<item value="MS">MS</item>
-													<item value="MO">MO</item>
-													<item value="MT">MT</item>
-													<item value="NE">NE</item>
-													<item value="NV">NV</item>
-													<item value="NJ">NJ</item>
-													<item value="NH">NH</item>
-													<item value="NM">NM</item>
-													<item value="NY">NY</item>
-													<item value="NC">NC</item>
-													<item value="ND">ND</item>
-													<item value="OH">OH</item>
-													<item value="OK">OK</item>
-													<item value="OR">OR</item>
-													<item value="PA">PA</item>
-													<item value="RI">RI</item>
-													<item value="SC">SC</item>
-													<item value="SD">SD</item>
-													<item value="TN">TN</item>
-													<item value="TX">TX</item>
-													<item value="UT">UT</item>
-													<item value="VT">VT</item>
-													<item value="VA">VA</item>
-													<item value="WA">WA</item>
-													<item value="WV">WV</item>
-													<item value="WI">WI</item>
-													<item value="WY">WY</item>											
-												</autoItems>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
@@ -540,7 +478,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<autoDropdown cat="contactCountry" key="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" popupHeight="80px" dropdown="true" type="string">
+											<autoDropdown cat="contactCountry" key="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
@@ -548,13 +486,6 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<autoFields>
 											    <string/>
 											</autoFields>
-											<autoItems>
-												<item value=" "> </item>
-												<item value="United States">UNITED STATES</item>
-    											<item value="AAAA">AAAA</item>
-    											<item value="BBBB">BBBB</item>
-    											<item value="CCCC">CCCC</item>
-											</autoItems>
 											</autoDropdown>
 										</editors>
 										<fields>
@@ -584,102 +515,60 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>115,130,130,130,130,50,68,100,90,90,90,150,145</widths>
+										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<option multi="true" fromModel="true"/>
+											<autoDropdown cat="contactType" key="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" multiSelect="true" type="integer">
+											<autoWidths>90</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+											    <string/>
+											</autoFields>
+											</autoDropdown>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<option multi="true" fromModel="true"/>
+											<autoDropdown cat="contactState" key="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" multiSelect="true" type="string">
+												<autoWidths>40</autoWidths>
+												<autoEditors>
+													<label/>
+												</autoEditors>
+												<autoFields>
+													<string/>
+												</autoFields>
+											</autoDropdown>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-										 	<option multi="true" fromModel="true"/>										 	
+										 	<autoDropdown cat="contactCountry" key="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" multiSelect="true" type="string">
+											<autoWidths>110</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+											    <string/>
+											</autoFields>
+											</autoDropdown>									 	
 										</editors>
 										<fields>
-											<queryOption multi="true" type="integer">
-											<item value="0"> </item>
-											<item value="1">NURSE</item>
-											<item value="2">RECEPTIONIST</item>
-											<item value="3">TECHNICIAN</item>
-											<item value="4">MAIN CONTACT</item>
-											<item value="5">SECOND CONTACT</item>
-											<item value="6">DOCTOR</item>
-											</queryOption>
+											<collection/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<queryOption multi="true" type="string">
-											<item value=" "> </item>
-											<item value="AL">AL</item>
-											<item value="AK">AK</item>
-											<item value="AZ">AZ</item>
-											<item value="AR">AR</item>
-											<item value="CA">CA</item>
-											<item value="CO">CO</item>
-											<item value="CT">CT</item>
-											<item value="DE">DE</item>
-											<item value="FL">FL</item>
-											<item value="GA">GA</item>
-											<item value="HI">HI</item>
-											<item value="ID">ID</item>
-											<item value="IL">IL</item>
-											<item value="IN">IN</item>
-											<item value="IA">IA</item>
-											<item value="KS">KS</item>
-											<item value="KY">KY</item>
-											<item value="LA">LA</item>
-											<item value="ME">ME</item>
-											<item value="MD">MD</item>
-											<item value="MA">MA</item>
-											<item value="MI">MI</item>
-											<item value="MN">MN</item>
-											<item value="MS">MS</item>
-											<item value="MO">MO</item>
-											<item value="MT">MT</item>
-											<item value="NE">NE</item>
-											<item value="NV">NV</item>
-											<item value="NJ">NJ</item>
-											<item value="NH">NH</item>
-											<item value="NM">NM</item>
-											<item value="NY">NY</item>
-											<item value="NC">NC</item>
-											<item value="ND">ND</item>
-											<item value="OH">OH</item>
-											<item value="OK">OK</item>
-											<item value="OR">OR</item>
-											<item value="PA">PA</item>
-											<item value="RI">RI</item>
-											<item value="SC">SC</item>
-											<item value="SD">SD</item>
-											<item value="TN">TN</item>
-											<item value="TX">TX</item>
-											<item value="UT">UT</item>
-											<item value="VT">VT</item>
-											<item value="VA">VA</item>
-											<item value="WA">WA</item>
-											<item value="WV">WV</item>
-											<item value="WI">WI</item>
-											<item value="WY">WY</item>					
-											</queryOption>
+											<collection/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<queryOption multi="true" type="string">
-											<item value=" "> </item>
-											<item value="United States">UNITED STATES</item>
-    										<item value="AAAA">AAAA</item>
-    										<item value="BBBB">BBBB</item>
-    										<item value="CCCC">CCCC</item>
-											</queryOption>
+											<collection/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
