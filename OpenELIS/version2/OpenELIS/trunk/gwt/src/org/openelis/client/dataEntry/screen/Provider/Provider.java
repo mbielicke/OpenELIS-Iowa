@@ -1,6 +1,7 @@
 package org.openelis.client.dataEntry.screen.Provider;
 
 import org.openelis.gwt.client.screen.AppScreenForm;
+import org.openelis.gwt.client.widget.AppButton;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableWidget;
@@ -50,8 +51,12 @@ public class Provider extends AppScreenForm{
         
         ((ProviderNamesTable) provideNamesTable.controller.manager).setProviderForm(this);
         
-        Button removeContactButton = (Button) getWidget("removeAddressButton");
-        removeContactButton.setEnabled(false);                      
+        //Button removeContactButton = (Button) getWidget("removeAddressButton");
+        //removeContactButton.setEnabled(false);      
+        
+        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton.addClickListener(this);
+        removeContactButton.changeState(AppButton.DISABLED);
         
         /*ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
         /provAddressTable.setProviderForm(this);
