@@ -407,7 +407,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 					</tab>
    </panel>   
    <!--<button halign= "right" onclick = "this" key= "removeAddressButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeRow')}"/>-->
-  <appButton halign= "right" onclick = "this" key= "removeAddressButton"  text = "{resource:getString($constants,'removeRow')}"/>
+  <!--<appButton halign= "right" onclick = "this" key= "removeAddressButton"  text = "{resource:getString($constants,'removeRow')}"/>-->
+  <widget>
+    <appButton key = "removeAddressButton">
+     <widget>
+      <text>Remove Row</text>
+     </widget> 
+   </appButton>
+  </widget>
   </panel>
  </panel>
 </display>
