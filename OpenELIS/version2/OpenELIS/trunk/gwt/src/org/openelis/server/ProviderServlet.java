@@ -12,6 +12,7 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.client.services.AppScreenServiceInt;
+import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.client.widget.pagedtree.TreeModel;
 import org.openelis.gwt.client.widget.pagedtree.TreeModelItem;
 import org.openelis.gwt.common.FormRPC;
@@ -22,12 +23,12 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.StringField;
 
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.OptionField;
-import org.openelis.gwt.common.data.OptionItem;
-import org.openelis.gwt.common.data.QueryOptionField;
+
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
@@ -36,9 +37,12 @@ import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.CategoryRemote;
+
 import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
+import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -47,9 +51,11 @@ import org.w3c.dom.Element;
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
+
 public class ProviderServlet extends AppServlet implements
                                                AppScreenServiceInt,
-                                               ProviderServletInt {
+                                               ProviderServletInt,
+                                               AutoCompleteServiceInt{
 
     /**
      * 
@@ -83,21 +89,7 @@ public class ProviderServlet extends AppServlet implements
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        OptionField providerOpt =  (OptionField)rpcReturn.getField("providerType");        
-        
-        /*OptionItem selItem = null;
-        
-        ArrayList selections = providerOpt.getSelections();
-        System.out.println("selections.size() (in add) "+ selections.size());
-        if(selections.size() > 0){
-            selItem = (OptionItem)selections.get(0);
-        }
-        else{
-            selItem = (OptionItem)providerOpt.getOptions().get(0);
-        }*/
-        providerDO.setTypeId(new Integer((String)providerOpt.getValue()));
-        //providerDO.setTypeId(new Integer(selItem.akey));
-        //System.out.println("selected type id(in add)"+ new Integer(selItem.akey));
+        providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
         
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
         
@@ -157,39 +149,22 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        //rpcReturn.setFieldValue("providerType",provDO.getType().trim());  
-        //System.out.println("\""+provDO.getType()+"\"");
-        providerOpt =  (OptionField)rpcReturn.getField("providerType");
-        providerOpt.getOptions().clear();
-        // System.out.println("typeId "+provDO.getTypeId());
-        //System.out.println("type "+provDO.getType()); 
-        List<Object[]> provTypes = remote.getProviderTypes();
-        List<OptionItem> optionlist = new ArrayList<OptionItem>();
-        
-        for (Iterator iter = provTypes.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
-             
-             if(((Integer)idType[0]).equals(provDO.getTypeId())){
-              providerOpt.addOption(provDO.getTypeId().toString(),(String)idType[1]);    
-             }else{
-                OptionItem item = new OptionItem();
-                item.akey = idType[0].toString();
-                item.display = (String)idType[1]; 
-                optionlist.add(item);
-             }             
-          } 
-        
-        for (Iterator iter = optionlist.iterator(); iter.hasNext();) {
-            providerOpt.getOptions().add(iter.next());            
-        }
+        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
+                
         
         List addressList = remote.getProviderAddresses(providerId);
         rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
             
         System.out.println("size of addressList from database"+ addressList.size());
         
-        TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
-        rpcReturn.setFieldValue("notesTree", treeModel);
+        //TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
+        //rpcReturn.setFieldValue("notesTree", treeModel);
+        
+        rpcReturn.setFieldValue("usersSubject", null);
+        rpcReturn.setFieldValue("usersNote", null);
+        
+        DataModel notesModel = getNotesModel(provDO.getId());
+        rpcReturn.setFieldValue("notesModel", notesModel);
         
         return rpcReturn;
     }
@@ -248,7 +223,11 @@ public class ProviderServlet extends AppServlet implements
             //lname.setValue(lnameResult);
             if(fnameResult !=null){
              //fname.setValue(", "+fnameResult);
+               if(!(fnameResult.trim().equals(""))) 
                 name.setValue(lnameResult+","+fnameResult);
+               else {
+                   name.setValue(lnameResult);       
+               }
             }
             else {
                 name.setValue(lnameResult);       
@@ -288,8 +267,8 @@ public class ProviderServlet extends AppServlet implements
                 fields.put("multiUnit",(QueryStringField)provAddTable.getRow(0).getColumn(2));
                 fields.put("streetAddress",(QueryStringField)provAddTable.getRow(0).getColumn(3));                
                 fields.put("city",(QueryStringField)provAddTable.getRow(0).getColumn(4));
-                fields.put("state",(QueryOptionField)provAddTable.getRow(0).getColumn(5));
-                fields.put("country",(QueryOptionField)provAddTable.getRow(0).getColumn(6));
+                fields.put("state",(CollectionField)provAddTable.getRow(0).getColumn(5));
+                fields.put("country",(CollectionField)provAddTable.getRow(0).getColumn(6));
                 fields.put("zipCode",(QueryStringField)provAddTable.getRow(0).getColumn(7));
                 fields.put("workPhone",(QueryStringField)provAddTable.getRow(0).getColumn(8));
                 fields.put("homePhone",(QueryStringField)provAddTable.getRow(0).getColumn(9));
@@ -303,6 +282,7 @@ public class ProviderServlet extends AppServlet implements
                     providerNames = remote.query(fields,0,leftTableRowsPerPage);
 
             }catch(Exception e){
+                e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }
 
@@ -362,19 +342,10 @@ public class ProviderServlet extends AppServlet implements
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
+        providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
+                
+              
         
-        OptionField providerOpt =  (OptionField)rpcReturn.getField("providerType");        
-        
-        /*OptionItem selItem = null;
-        
-        ArrayList selections = providerOpt.getSelections();
-        if(selections.size() > 0){
-            selItem = (OptionItem)selections.get(0);
-        }
-        else{
-            selItem = (OptionItem)providerOpt.getOptions().get(0);
-        }*/
-        providerDO.setTypeId(new Integer((String)providerOpt.getValue()));
         //providerDO.setTypeId(new Integer(selItem.akey));
         
         //System.out.println("selected type id "+ new Integer(selItem.akey));
@@ -446,37 +417,20 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        //rpcReturn.setFieldValue("providerType",provDO.getType().trim());  
-        //System.out.println("\""+provDO.getType()+"\"");
-        providerOpt =  (OptionField)rpcReturn.getField("providerType");
-        providerOpt.getOptions().clear();
-        // System.out.println("typeId "+provDO.getTypeId());
-        //System.out.println("type "+provDO.getType()); 
-        List<Object[]> provTypes = remote.getProviderTypes();
-        List<OptionItem> optionlist = new ArrayList<OptionItem>();
-        
-        for (Iterator iter = provTypes.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
-             
-             if(((Integer)idType[0]).equals(provDO.getTypeId())){
-              providerOpt.addOption(provDO.getTypeId().toString(),(String)idType[1]);    
-             }else{
-                OptionItem item = new OptionItem();
-                item.akey = idType[0].toString();
-                item.display = (String)idType[1]; 
-                optionlist.add(item);
-             }             
-          } 
-        
-        for (Iterator iter = optionlist.iterator(); iter.hasNext();) {
-            providerOpt.getOptions().add(iter.next());            
-        }
+        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
+                
         
         List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
         rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
         
-        TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
-        rpcReturn.setFieldValue("notesTree", treeModel);
+        //TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
+        //rpcReturn.setFieldValue("notesTree", treeModel);
+        
+        rpcReturn.setFieldValue("usersSubject", null);
+        rpcReturn.setFieldValue("usersNote", null);
+        
+        DataModel notesModel = getNotesModel(provDO.getId());
+        rpcReturn.setFieldValue("notesModel", notesModel);
         
         return rpcReturn;
     }
@@ -487,50 +441,30 @@ public class ProviderServlet extends AppServlet implements
     }
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
-        //System.out.println("key " +key);
+        System.out.println("starting provider fetch");
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         Integer providerId = (Integer)key.getObject(0).getValue();
-//      System.out.println("in contacts");
-        ProviderDO provDO = remote.getProvider(providerId,false);
+        
+        System.out.println("provider "+remote.getProvider(providerId,false));
+        
+        ProviderDO provDO = (ProviderDO)remote.getProvider(providerId,false);        
 //      set the fields in the RPC
         rpcReturn.setFieldValue("providerId", provDO.getId());
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        //rpcReturn.setFieldValue("providerType",provDO.getType().trim());  
-        //System.out.println("\""+provDO.getType()+"\"");
-        OptionField providerOpt =  (OptionField)rpcReturn.getField("providerType");
-        providerOpt.getOptions().clear();
-       // System.out.println("typeId "+provDO.getTypeId());
-        //System.out.println("type "+provDO.getType()); 
-        List<Object[]> provTypes = remote.getProviderTypes();
-        List<OptionItem> optionlist = new ArrayList<OptionItem>();
-        
-        for (Iterator iter = provTypes.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
-            //System.out.println("typeId "+idType[0]);
-            //System.out.println("type "+idType[1]); 
-             if(((Integer)idType[0]).equals(provDO.getTypeId())){
-              providerOpt.addOption(provDO.getTypeId().toString(),(String)idType[1]);    
-             }else{
-                OptionItem item = new OptionItem();
-                item.akey = idType[0].toString();
-                item.display = (String)idType[1]; 
-                optionlist.add(item);
-             }             
-          } 
-        
-        for (Iterator iter = optionlist.iterator(); iter.hasNext();) {
-            providerOpt.getOptions().add(iter.next());            
-        }
+        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
         
         List addressList = remote.getProviderAddresses(providerId);
         rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
         
-        TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
-        rpcReturn.setFieldValue("notesTree", treeModel);
+        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
+        //rpcReturn.setFieldValue("notesTree", treeModel);
 
+        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        rpcReturn.setFieldValue("notesModel", notesModel);
+        
         return rpcReturn;
     }
 
@@ -658,5 +592,146 @@ public class ProviderServlet extends AppServlet implements
             e.printStackTrace();
             return null;
         }
+    }
+
+    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public DataModel getInitialModel(String cat) {
+        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        List entries = null; 
+        int id = -1;
+        
+        System.out.println("starting getInitialModel");
+        DataModel model = new DataModel();
+        
+        if(cat.equals("providerType")){
+            id = catRemote.getCategoryId("provider_type");                       
+        }else if(cat.equals("state")){
+            id = catRemote.getCategoryId("state");
+        }else if(cat.equals("country")){
+            id = catRemote.getCategoryId("country");            
+        }
+        
+        System.out.println("cat "+ cat +" id "+ id);
+        if(id >-1){
+            entries = catRemote.getDropdownValues(id);
+            DataSet blankset = new DataSet();
+            System.out.println("entries.size() "+ entries.size());
+            StringObject blankStringId = new StringObject();
+                          
+            BooleanObject blankSelected = new BooleanObject();               
+            blankStringId.setValue("");
+            blankset.addObject(blankStringId);
+            
+            NumberObject blankNumberId = new NumberObject();
+            blankNumberId.setType("integer");
+            blankNumberId.setValue(new Integer(0));
+            if(cat.equals("providerType")){
+              blankset.addObject(blankNumberId);
+            } else{
+              blankset.addObject(blankStringId);  
+            }            
+            
+            blankSelected.setValue(new Boolean(false));
+            blankset.addObject(blankSelected);
+            
+            model.add(blankset);
+        System.out.println("added blankset");
+       // System.out.println("typeId "+provDO.getTypeId());
+        //System.out.println("type "+provDO.getType()); 
+       // List<Object[]> provTypes = remote.getProviderTypes();        
+        
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+            Object[] idType = (Object[])iter.next();
+            //System.out.println("typeId "+idType[0]);
+            //System.out.println("type "+idType[1]); 
+            DataSet set = new DataSet();
+            //Object[] result = (Object[]) entries.get(i);
+            //id
+            Integer dropdownId = (Integer)idType[0];
+            //entry
+            String dropdownText = (String)idType[1];
+            
+            StringObject textObject = new StringObject();
+            
+            
+            BooleanObject selected = new BooleanObject();
+            
+            textObject.setValue(dropdownText);
+            set.addObject(textObject);
+            
+            if(cat.equals("providerType")){
+                NumberObject numberId = new NumberObject();
+                numberId.setType("integer");
+                numberId.setValue(dropdownId);
+                set.addObject(numberId);
+            }else{
+               StringObject stringId = new StringObject();
+               stringId.setValue(dropdownText);
+               set.addObject(stringId);            
+            }
+            
+            selected.setValue(new Boolean(false));
+            set.addObject(selected);
+            
+            model.add(set);
+            System.out.println("added dataset");
+         }
+        }
+        System.out.println("ending getInitialModel");
+        return model;
+    }
+    
+    public DataModel getNotesModel(Integer key){
+        //remote interface to call the organization bean
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+
+        //gets the whole notes list now
+        List notesList = remote.getProviderNotes(key);
+        
+        DataModel notesModel = new DataModel();
+        System.out.println("notesList.size() "+ notesList.size());
+        Iterator itr = notesList.iterator();
+        while(itr.hasNext()){
+            System.out.println("");
+            Object[] result = (Object[])itr.next();
+            //id
+            Integer id = (Integer)result[0];
+            //user id
+            Integer userId = (Integer)result[1];
+            //body
+            String body = (String)result[2];
+            //date
+            Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
+            //subject
+            String subject = (String)result[4];
+            
+            System.out.println("userId "+ userId+ " body "+ body+ " date "+date+ " subject "+subject);
+            
+            DataSet set = new DataSet();
+            StringObject subjectLine = new StringObject();
+            StringObject bodyLine = new StringObject();
+            
+            SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
+            SystemUserDO user = securityRemote.getSystemUser(userId,false);
+            
+            subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
+            bodyLine.setValue(body);
+            
+            set.addObject(subjectLine);
+            set.addObject(bodyLine);
+            notesModel.add(set);
+        }
+       
+       return notesModel;
+    }
+
+    public DataModel getMatches(String cat, DataModel model, String match) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
