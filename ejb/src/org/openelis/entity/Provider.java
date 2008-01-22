@@ -201,11 +201,11 @@ public class Provider implements Auditable, Cloneable {
   public void setProviderAddress(Collection<ProviderAddress> providerAddress) {
     this.providerAddress = providerAddress;
   }
-public Collection<Note> getProvNote() {
+   public Collection<Note> getProvNote() {
     return provNote;
-}
-public void setProvNote(Collection<Note> provNote) {
+  }
+   public void setProvNote(Collection<Note> provNote) {
     this.provNote = provNote;
-}
+  }
   
 }   
