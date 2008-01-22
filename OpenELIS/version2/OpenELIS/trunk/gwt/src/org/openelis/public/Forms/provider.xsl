@@ -126,7 +126,49 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <panel layout= "vertical" xsi:type = "Panel">
    <panel layout= "vertical" spacing= "2" xsi:type= "Panel">
     <widget halign= "center">
-      <buttonPanel buttons= "qaucbpn" key= "buttons"/>
+      <buttonPanel key="buttons">
+            <appButton action="query" toggle="true">
+              <widget>
+                <text>Query</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="add" toggle="true">
+              <widget>
+                <text>Add</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="update" toggle="true">
+              <widget>
+                <text>Update</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="commit" >
+              <widget>
+                <text>Commit</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="abort" >
+              <widget>
+                <text>Abort</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="previous">
+              <widget>
+                <text>Previous</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="next">
+              <widget>
+                <text>Next</text>
+              </widget>
+            </appButton>
+          </buttonPanel>
     </widget>
     <widget halign= "center">
      <appMessage key= "message"/>
@@ -145,9 +187,27 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_Type")'/></text>
      </widget>
      <widget>
-      <option key= "providerType"  multi= "false" required= "true" onChange= "this"/>
-     </widget>
-    <!-- multi= "false" required= "true" onChange= "this"-->
+										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"   fromModel="true" type="integer" >
+													<autoWidths>60</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+										</autoDropdown>
+												<query>
+												  <autoDropdown cat="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"  multiSelect="true" fromModel="true" type="integer" >
+													<autoWidths>60</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+										          </autoDropdown>
+												 </query>
+										</widget>          
     </row>
     <row>
      <widget>
@@ -175,83 +235,45 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    
    <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
     <panel height= "200px" key= "orgTabPanel" halign= "center" layout= "tab" width= "600px" xsi:type= "Tab">
-     <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">
+     <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
-        <table width= "auto" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" autoAdd= "true" title= "{resource:getString($constants,'provider_Locations')}">
+        <table width= "auto" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" autoAdd= "true" title= "">
          <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		 <widths>115,130,130,130,130,50,68,100,90,90,90,150,145</widths>
+		 <widths>115,130,130,130,130,50,100,100,90,90,90,150,145</widths>
 		 <editors>
 		  <textbox case= "upper"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
-		  <option>
-		   <item value= ""/>
-		   <item value= "AL">AL</item>
-		   <item value= "AK">AK</item>
-		   <item value= "AZ">AZ</item>
-		   <item value= "AR">AR</item>
-		   <item value= "CA">CA</item>
-		   <item value= "CO">CO</item>
-		   <item value= "CT">CT</item>
-		   <item value= "DE">DE</item>
-		   <item value= "FL">FL</item>
-		   <item value= "GA">GA</item>
-		   <item value= "HI">HI</item>
-		   <item value= "ID">ID</item>
-		   <item value= "IL">IL</item>
-		   <item value= "IN">IN</item>
-		   <item value= "IA">IA</item>
-		   <item value= "KS">KS</item>
-		   <item value= "KY">KY</item>
-		   <item value= "LA">LA</item>
-		   <item value= "ME">ME</item>
-		   <item value= "MD">MD</item>
-		   <item value= "MA">MA</item>
-		   <item value= "MI">MI</item>
-		   <item value= "MN">MN</item>
-		   <item value= "MS">MS</item>
-		   <item value= "MO">MO</item>
-		   <item value= "MT">MT</item>
-		   <item value= "NE">NE</item>
-		   <item value= "NV">NV</item>
-		   <item value= "NJ">NJ</item>
-		   <item value= "NH">NH</item>
-		   <item value= "NM">NM</item>
-		   <item value= "NY">NY</item>
-		   <item value= "NC">NC</item>
-		   <item value= "ND">ND</item>
-		   <item value= "OH">OH</item>
-		   <item value= "OK">OK</item>
-		   <item value= "OR">OR</item>
-		   <item value= "PA">PA</item>
-		   <item value= "RI">RI</item>
-		   <item value= "SC">SC</item>
-		   <item value= "SD">SD</item>
-		   <item value= "TN">TN</item>
-		   <item value= "TX">TX</item>
-		   <item value= "UT">UT</item>
-		   <item value= "VT">VT</item>
-		   <item value= "VA">VA</item>
-		   <item value= "WA">WA</item>
-		   <item value= "WV">WV</item>
-		   <item value= "WI">WI</item>
-		   <item value= "WY">WY</item>
-		  </option>
-		  <option>
-			<item value= ""/>
-			<item value= "UnitedStates">UNITED STATES</item>
-			<item value= "AAAA">AAAA</item>
-			<item value= "BBBB">BBBB</item>
-			<item value= "CCCC">CCCC</item>
-		 </option>
+		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="ProviderServlet" width="40px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+												<autoWidths>40</autoWidths>
+												<autoEditors>
+													<label/>
+												</autoEditors>
+												<autoFields>
+													<string/>
+												</autoFields>
+												<autoItems>												 																																			
+												</autoItems>
+											</autoDropdown>		  
+		    <autoDropdown cat="country" key="country" case="upper" serviceUrl="ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+											<autoWidths>110</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+											    <string/>
+											</autoFields>
+											<autoItems>												
+											</autoItems>
+			</autoDropdown>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -265,14 +287,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <string/>
 		  <string/>
 		  <string/>
+		  <string xml:space="preserve"> </string>
+		  <string xml:space="preserve"> </string>
 		  <string/>
 		  <string/>
 		  <string/>
 		  <string/>
 		  <string/>
-		  <string/>
-		  <string/>
-		  <string/>
+		  <string/>	  
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
@@ -293,9 +315,30 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
-		  <option multi = "true" fromModel = "true"/>		   
-		  <option multi="true" fromModel="true">			
-		  </option>
+		  <!--<option multi = "true" fromModel = "true"/>-->
+		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="ProviderServlet" width="40px" popupHeight="80px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
+												<autoWidths>40</autoWidths>
+												<autoEditors>
+													<label/>
+												</autoEditors>
+												<autoFields>
+													<string/>
+												</autoFields>
+												<autoItems>												 																																			
+												</autoItems>
+											</autoDropdown>
+		  <!--<option multi="true" fromModel="true"/>-->
+		  <autoDropdown cat="country" key="country" case="upper" serviceUrl="ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
+											<autoWidths>110</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+											    <string/>
+											</autoFields>
+											<autoItems>												
+											</autoItems>
+			</autoDropdown>		  
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -309,66 +352,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
-		  <queryOption multi="true" type="string">
-		   <item value= ""/>
-		   <item value= "AL">AL</item>
-		   <item value= "AK">AK</item>
-		   <item value= "AZ">AZ</item>
-		   <item value= "AR">AR</item>
-		   <item value= "CA">CA</item>
-		   <item value= "CO">CO</item>
-		   <item value= "CT">CT</item>
-		   <item value= "DE">DE</item>
-		   <item value= "FL">FL</item>
-		   <item value= "GA">GA</item>
-		   <item value= "HI">HI</item>
-		   <item value= "ID">ID</item>
-		   <item value= "IL">IL</item>
-		   <item value= "IN">IN</item>
-		   <item value= "IA">IA</item>
-		   <item value= "KS">KS</item>
-		   <item value= "KY">KY</item>
-		   <item value= "LA">LA</item>
-		   <item value= "ME">ME</item>
-		   <item value= "MD">MD</item>
-		   <item value= "MA">MA</item>
-		   <item value= "MI">MI</item>
-		   <item value= "MN">MN</item>
-		   <item value= "MS">MS</item>
-		   <item value= "MO">MO</item>
-		   <item value= "MT">MT</item>
-		   <item value= "NE">NE</item>
-		   <item value= "NV">NV</item>
-		   <item value= "NJ">NJ</item>
-		   <item value= "NH">NH</item>
-		   <item value= "NM">NM</item>
-		   <item value= "NY">NY</item>
-		   <item value= "NC">NC</item>
-		   <item value= "ND">ND</item>
-		   <item value= "OH">OH</item>
-		   <item value= "OK">OK</item>
-		   <item value= "OR">OR</item>
-		   <item value= "PA">PA</item>
-		   <item value= "RI">RI</item>
-		   <item value= "SC">SC</item>
-		   <item value= "SD">SD</item>
-		   <item value= "TN">TN</item>
-		   <item value= "TX">TX</item>
-		   <item value= "UT">UT</item>
-		   <item value= "VT">VT</item>
-		   <item value= "VA">VA</item>
-		   <item value= "WA">WA</item>
-		   <item value= "WV">WV</item>
-		   <item value= "WI">WI</item>
-		   <item value= "WY">WY</item>
-		  </queryOption>
-		  <queryOption multi="true" type="string">
-		    <item value= ""/>
-			<item value= "UnitedStates">UNITED STATES</item>
-			<item value= "AAAA">AAAA</item>
-			<item value= "BBBB">BBBB</item>
-			<item value= "CCCC">CCCC</item>
-		  </queryOption>	
+		  <!--<queryOption multi="true" type="string"/>-->
+		  <collection/>
+		  <collection/>
+		  <!--<queryOption multi="true" type="string"/>-->		    		  	
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
@@ -381,11 +368,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    </query>
-	  </widget>
-	  		 
-	  <panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>
-		<button halign= "center" onclick = "this" key= "removeAddressButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'provider_RemAddress')}"/>
-	</panel>									
+	  </widget>			 	  	  
+	</panel> 									
   </tab>
   
   <tab key="noteTab" text="{resource:getString($constants,'note')}">
@@ -398,7 +382,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="510px"/>
+										<textbox case="mixed" key="usersSubject" width="400px"/>
 										</widget>
 										</row>
 										<row>
@@ -406,21 +390,23 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget>
-										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
+										<textarea width="400px" height="50px" case="mixed" key="usersNote"/>
 										</widget>
 										</row>
 								</panel> 
 
-							<panel layout="vertical" height="2px" xsi:type="Panel"/>	
-							 <widget valign="top">
+							<panel layout="vertical" height="2px" xsi:type="Panel"/>
+							<panel key="notesPanel" valign="top" layout="vertical" width="100%" xsi:type="Panel"/>	
+							 <!--<widget valign="top">
                  
-							 	<pagedTree key="notesTree" vertical="true" width="585px" height="100px" itemsPerPage="1000" title="Provider Notes"/>
-
-							</widget>    
+							  <pagedTree key="notesTree" vertical="true" width="400px" height="100px" itemsPerPage="1000" title="Provider Notes"/>
+                               
+							</widget> -->    
 
 						</panel>
 					</tab>
-   </panel>
+   </panel>   
+   <button halign= "right" onclick = "this" key= "removeAddressButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeRow')}"/>
   </panel>
  </panel>
 </display>
@@ -431,15 +417,12 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <string key="firstName" max="20" required="false"/> 
   <string key="npi" max="20" required="false"/>
   <string key="middleName" max="20" required="false"/>	
-  <table key="providerAddressTable"/>						      		     
-  <option key= "providerType"   multi= "false" required= "false"/>
+  <table key="providerAddressTable"/>						      		       
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <tree key="notesTree"/>
-  <!--   <item value= ""/>
-    <item value= "118">Nurse</item>
-	<item value= "119">Physician</item>
-  </option> -->
+  <number key="providerTypeId" type="integer" required="false"/>
+  <!--<tree key="notesTree"/>-->
+  <model key = "notesModel"/>
 </rpc>
 					   
 <rpc key= "query">     
@@ -450,18 +433,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="middleName" />	  
   <queryString key="usersSubject" />
   <queryString key="usersNote" />                           
-  <table key="providerAddressTable"/>	
-  <!--<queryString key= "providerType" max = "255" required="false"/>-->
-  <queryOption key= "providerType" multi= "true"  type= "string">
-  <item value= ""/>
-  <item value= "118">Nurse</item>
-  <item value= "119">Physician</item>
-   <!--<item value= "3">TECHNICIAN</item>
-   <item value= "4">MAIN CONTACT</item>
-   <item value= "5">SECOND CONTACT</item>
-   <item value= "6">DOCTOR</item>-->
-  </queryOption> 
-  <tree key="notesTree"/>
+  <table key="providerAddressTable"/>	   
+  <!--<tree key="notesTree"/>-->
 </rpc>
 
 <rpc key="queryByLetter">
