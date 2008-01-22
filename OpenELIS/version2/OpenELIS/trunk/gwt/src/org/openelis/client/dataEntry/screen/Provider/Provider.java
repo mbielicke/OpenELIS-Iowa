@@ -1,7 +1,6 @@
 package org.openelis.client.dataEntry.screen.Provider;
 
 import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.screen.ScreenPagedTree;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableWidget;
@@ -15,7 +14,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -29,8 +27,6 @@ public class Provider extends AppScreenForm{
     
     private static ServiceDefTarget target = (ServiceDefTarget) screenService;
 
-    private ScreenPagedTree randomTree = null;
-    private VerticalPanel vp = null; 
     private Widget selected;
    // private int tabSelectedIndex = 0;    
    
@@ -69,7 +65,7 @@ public class Provider extends AppScreenForm{
         int intH = new Integer(woutPx).intValue() + 150;
       
          ScrollPanel scrollableView = (ScrollPanel)randomTree.controller.getScrollableView("100%", new Integer(intH).toString()+"px");              
-         vp.add(scrollableView);*/             
+         vp.add(scrollableView);*/     
         super.afterDraw(success);
     }
       
@@ -91,7 +87,12 @@ public class Provider extends AppScreenForm{
         
         ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
         provAddressTable.disableRows = false;
-              
+        
+        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+        
+        vp.clear();
+        
+        super.add(state);      
     }
     
     public void afterUpdate(boolean success) {
@@ -102,6 +103,12 @@ public class Provider extends AppScreenForm{
         
         ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
         provAddressTable.disableRows = false;                
+    }
+    
+    public void query(int state){
+      VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
+      vp.clear();
+      super.query(state);
     }
        
     
@@ -219,48 +226,7 @@ public class Provider extends AppScreenForm{
         super.onTabSelected(sources, index);
     }    
     
-    public void onTreeItemStateChanged(TreeItem item) {
-        /*final TreeItem currItem = item;
-        if (currItem.getChildCount() > 0) {
-            if (currItem.getChild(0).getText().equals("dummy"))
-                currItem.removeItems();
-            else
-                return;
-        }
-
-        if (currItem.getUserObject() != null) {
-            screenService.getNoteTreeSecondLevelXml((String) currItem
-                    .getUserObject(), false, new AsyncCallback() {
-
-                public void onSuccess(Object result) {
-
-                    try {
-                        Document doc = XMLParser.parse((String) result);
-                        Node node = doc.getDocumentElement();
-
-                        NodeList items = node.getChildNodes();
-                        for (int i = 0; i < items.getLength(); i++) {
-                            if (items.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                                TreeItem childitem = createTreeItem(items
-                                        .item(i));
-                                currItem.addItem(childitem);
-                            }
-
-                        }
-                        
-                     TreeModel model = randomTree.controller.model;
-                     model.addTextChildItems(currItem, (String)result);
-
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                    }
-                }
-
-                public void onFailure(Throwable caught) {
-                    Window.alert(caught.getMessage());
-                }
-            });
-        }*/
+    public void onTreeItemStateChanged(TreeItem item) {      
      
        
     }
@@ -272,20 +238,22 @@ public class Provider extends AppScreenForm{
     }
     
     public void commitAdd(){
+        
+        super.commitAdd();      
         loadNotes();
-        super.commitAdd();        
         Button removeContactButton = (Button) getWidget("removeAddressButton");
         removeContactButton.setEnabled(false);
     }
     
     public void commitUpdate(){
-        loadNotes();
+        
         super.commitUpdate();
+        loadNotes();
         Button removeContactButton = (Button) getWidget("removeAddressButton");
         removeContactButton.setEnabled(false);
     }
 
-    private void loadNotes(){
+    private void loadNotes(){       
         FormRPC displayRPC = (FormRPC) this.forms.get("display");
         DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
 
@@ -294,7 +262,8 @@ public class Provider extends AppScreenForm{
         //we need to remove anything in the notes tab if it exists
         vp.clear();
         int i=0;
-        while(notesModel != null && i<notesModel.size()){
+        if(notesModel != null){ 
+          while(i<notesModel.size()){
             HorizontalPanel subjectPanel = new HorizontalPanel();
             HorizontalPanel spacerPanel = new HorizontalPanel();
             HorizontalPanel bodyPanel = new HorizontalPanel();
@@ -323,5 +292,6 @@ public class Provider extends AppScreenForm{
             
             i++;
         }
+       }    
     }
 }
