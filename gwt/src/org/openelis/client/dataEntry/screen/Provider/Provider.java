@@ -4,21 +4,19 @@ import org.openelis.gwt.client.screen.AppScreenForm;
 import org.openelis.gwt.client.screen.ScreenPagedTree;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.pagedtree.TreeModel;
 import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.OptionField;
+import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -59,9 +57,9 @@ public class Provider extends AppScreenForm{
         Button removeContactButton = (Button) getWidget("removeAddressButton");
         removeContactButton.setEnabled(false);                      
         
-        //ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
-        //provAddressTable.setProviderForm(this);
-        //provAddressTable.disableRows = true;
+        /*ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
+        /provAddressTable.setProviderForm(this);
+        /provAddressTable.disableRows = true;
         
         randomTree = (ScreenPagedTree) widgets.get("notesTree");
         vp = (VerticalPanel)randomTree.getParent();
@@ -71,7 +69,7 @@ public class Provider extends AppScreenForm{
         int intH = new Integer(woutPx).intValue() + 150;
       
          ScrollPanel scrollableView = (ScrollPanel)randomTree.controller.getScrollableView("100%", new Integer(intH).toString()+"px");              
-         vp.add(scrollableView);             
+         vp.add(scrollableView);*/             
         super.afterDraw(success);
     }
       
@@ -86,13 +84,7 @@ public class Provider extends AppScreenForm{
         super.up(state);      
     }
     
-    public void add(int state){
-        OptionField provOpt =  (OptionField)rpc.getField("providerType");
-        provOpt.getOptions().clear();
-        provOpt.addOption("118","Nurse");
-        provOpt.addOption("119","Physician");
-        
-        super.add(state);
+    public void add(int state){        
         
         Button removeContactButton = (Button) getWidget("removeAddressButton");
         removeContactButton.setEnabled(true);
@@ -228,7 +220,7 @@ public class Provider extends AppScreenForm{
     }    
     
     public void onTreeItemStateChanged(TreeItem item) {
-        final TreeItem currItem = item;
+        /*final TreeItem currItem = item;
         if (currItem.getChildCount() > 0) {
             if (currItem.getChild(0).getText().equals("dummy"))
                 currItem.removeItems();
@@ -243,7 +235,7 @@ public class Provider extends AppScreenForm{
                 public void onSuccess(Object result) {
 
                     try {
-                       /* Document doc = XMLParser.parse((String) result);
+                        Document doc = XMLParser.parse((String) result);
                         Node node = doc.getDocumentElement();
 
                         NodeList items = node.getChildNodes();
@@ -254,7 +246,7 @@ public class Provider extends AppScreenForm{
                                 currItem.addItem(childitem);
                             }
 
-                        }*/
+                        }
                         
                      TreeModel model = randomTree.controller.model;
                      model.addTextChildItems(currItem, (String)result);
@@ -268,42 +260,68 @@ public class Provider extends AppScreenForm{
                     Window.alert(caught.getMessage());
                 }
             });
-        }
-
+        }*/
+     
        
     }
+    
+    public void afterFetch(boolean success) {
+        super.afterFetch(success);
+        
+        loadNotes();
+    }
+    
+    public void commitAdd(){
+        loadNotes();
+        super.commitAdd();        
+        Button removeContactButton = (Button) getWidget("removeAddressButton");
+        removeContactButton.setEnabled(false);
+    }
+    
+    public void commitUpdate(){
+        loadNotes();
+        super.commitUpdate();
+        Button removeContactButton = (Button) getWidget("removeAddressButton");
+        removeContactButton.setEnabled(false);
+    }
 
-    /*private TreeItem createTreeItem(Node node) {
+    private void loadNotes(){
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
 
-        String itemText = null;
-        Object userObject = null;
-        ScreenLabel label = null;
-        if (node.getAttributes().getNamedItem("text") != null) {
-            itemText = node.getAttributes().getNamedItem("text").getNodeValue();
+        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+        
+        //we need to remove anything in the notes tab if it exists
+        vp.clear();
+        int i=0;
+        while(notesModel != null && i<notesModel.size()){
+            HorizontalPanel subjectPanel = new HorizontalPanel();
+            HorizontalPanel spacerPanel = new HorizontalPanel();
+            HorizontalPanel bodyPanel = new HorizontalPanel();
+            
+            Label subjectLabel = new Label();
+            Label bodyLabel = new Label();
+            
+            vp.add(subjectPanel);
+            vp.add(bodyPanel);
+            subjectPanel.add(subjectLabel);
+            bodyPanel.add(spacerPanel);
+            bodyPanel.add(bodyLabel);           
+            
+            spacerPanel.setWidth("25px");
+            subjectPanel.setWidth("100%");
+            bodyPanel.setWidth("100%");
+            
+            subjectLabel.addStyleName("NotesText");
+            bodyLabel.addStyleName("NotesText");
+            
+            subjectLabel.setWordWrap(true);
+            bodyLabel.setWordWrap(true);
+            
+            subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
+            bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
+            
+            i++;
         }
-        if (node.getAttributes().getNamedItem("value") != null) {
-            userObject = node.getAttributes().getNamedItem("value")
-                    .getNodeValue();
-        }
-
-        TreeItem item = null;
-        if (itemText != null) {
-            label = new ScreenLabel(itemText, userObject);
-        }
-
-        if (label != null) {
-            // initWidget(label);
-            item = new TreeItem(label);
-            // item.setText(((Label)label.getWidget()).getText());
-        }
-        item.setUserObject(userObject);
-
-        NodeList items = node.getChildNodes();
-        for (int i = 0; i < items.getLength(); i++) {
-            if (items.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                item.addItem(createTreeItem(items.item(i)));
-            }
-        }
-        return item;
-    }*/
+    }
 }
