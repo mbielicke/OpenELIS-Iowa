@@ -8,4 +8,5 @@ public interface ProviderServletIntAsync extends AppScreenFormServiceIntAsync{
     
     public void getNoteTreeModel(Integer key, boolean topLevel, AsyncCallback callback);    
     public void getNoteTreeSecondLevelXml(String key, boolean topLevel, AsyncCallback callback);
+    public void getNotesModel(Integer key, AsyncCallback callback);
 }
