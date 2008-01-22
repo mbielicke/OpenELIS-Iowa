@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,8 +23,7 @@ import org.openelis.domain.ProviderTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
-import org.openelis.gwt.common.data.OptionItem;
-import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.AddressLocal;
@@ -70,8 +70,8 @@ public class ProviderBean implements ProviderRemote {
         
         Query query = manager.createNamedQuery("getProvider");
         query.setParameter("id", providerId);
-        ProviderDO provider = (ProviderDO) query.getSingleResult();// getting organization with address and contacts
-
+        ProviderDO provider = (ProviderDO) query.getSingleResult();// getting provider 
+        System.out.println(provider);
         return provider;
     }
 
@@ -95,7 +95,7 @@ public class ProviderBean implements ProviderRemote {
             query.setMaxResults(maxResults);
         }
         
-        List<ProviderTableRowDO> orgList = query.getResultList();// getting a list of organizations
+        List<ProviderTableRowDO> orgList = query.getResultList();// getting a list of providers
         
         return orgList;
        
@@ -155,8 +155,9 @@ public class ProviderBean implements ProviderRemote {
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("npi"), "p.npi"));
         if(fields.containsKey("middleName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("middleName"), "p.middleName"));
-        if(fields.containsKey("providerType"))
-            sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("providerType"), "p.type"));
+        if(fields.containsKey("providerType")&& ((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size()>0 && 
+                        !(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).get(0))))
+            sb.append(QueryBuilder.getQuery((CollectionField)fields.get("providerType"), "p.type"));
         
         System.out.println("creating query");
         
@@ -171,12 +172,12 @@ public class ProviderBean implements ProviderRemote {
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("streetAddress"), "a.streetAddress"));
                 if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"), "a.city"));
-                if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
-                     !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
-                 sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("state"), "a.state"));
-                if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
-                    !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
-                    sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("country"), "a.country"));  
+                if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 && 
+                     !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
+                 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"), "a.state"));
+                if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
+                      !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
+                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"), "a.country"));  
                 if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"), "a.zipCode"));
                 if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
@@ -211,8 +212,9 @@ public class ProviderBean implements ProviderRemote {
             QueryBuilder.setParameters((QueryStringField)fields.get("npi"), "p.npi",query);
         if(fields.containsKey("middleName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("middleName"), "p.middleName",query);
-        if(fields.containsKey("providerType"))
-            QueryBuilder.setParameters((QueryOptionField)fields.get("providerType"), "p.type",query);
+        if(fields.containsKey("providerType")&& ((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size()>0 &&
+                     !(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).get(0))))
+            QueryBuilder.setParameters((CollectionField)fields.get("providerType"), "p.type",query);
         
         if(fields.containsKey("location")&& ((QueryStringField)fields.get("location")).getComparator() != null)
            QueryBuilder.setParameters((QueryStringField)fields.get("location"), "pa.location",query);
@@ -229,13 +231,13 @@ public class ProviderBean implements ProviderRemote {
          if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
              QueryBuilder.setParameters((QueryStringField)fields.get("city"), "a.city",query);
          
-         if(fields.containsKey("state") && ((QueryOptionField)fields.get("state")).getSelections().size()>0 && 
-                !(((QueryOptionField)fields.get("state")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("state")).getSelections().get(0)).display)))
-             QueryBuilder.setParameters((QueryOptionField)fields.get("state"), "a.state",query);
+         if(fields.containsKey("state")&& ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
+                         !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
+             QueryBuilder.setParameters((CollectionField)fields.get("state"), "a.state",query);
          
-         if(fields.containsKey("country") && ((QueryOptionField)fields.get("country")).getSelections().size()>0 && 
-               !(((QueryOptionField)fields.get("country")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("country")).getSelections().get(0)).display)))
-             QueryBuilder.setParameters((QueryOptionField)fields.get("country"), "a.country",query);
+         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
+                         !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
+             QueryBuilder.setParameters((CollectionField)fields.get("country"), "a.country",query);
          
          if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
              QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "a.zipCode",query);
