@@ -48,6 +48,10 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
@@ -463,15 +467,14 @@ public class ProviderServlet extends AppServlet implements
         //rpcReturn.setFieldValue("notesTree", treeModel);
 
         DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        rpcReturn.setFieldValue("notesModel", notesModel);
+        rpcReturn.setFieldValue("notesModel", notesModel);                                    
         
         return rpcReturn;
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         return fetch(key, rpcReturn);
-    }
-    
+    }    
     
     
     public TableModel fillAddressTable(TableModel addressModel, List contactsList){
