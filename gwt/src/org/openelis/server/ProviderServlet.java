@@ -74,7 +74,7 @@ public class ProviderServlet extends AppServlet implements
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
-        return null;
+        return fetch(key, rpcReturn);
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
