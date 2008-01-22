@@ -1,23 +1,62 @@
 package org.openelis.server;
 
-import org.openelis.client.dataEntry.screen.dictionary.DictionaryServletInt;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import org.openelis.client.utilities.screen.dictionary.DictionaryServletInt;
+import org.openelis.domain.CategoryDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryEntryTableRowDO;
 import org.openelis.gwt.client.services.AppScreenServiceInt;
+import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.OptionField;
+import org.openelis.gwt.common.data.OptionItem;
+import org.openelis.gwt.common.data.QueryOptionField;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.persistence.CachingManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.constants.UTFResource;
+import org.openelis.util.SessionManager;
+
+import edu.uiowa.uhl.security.domain.SectionIdNameDO;
+import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
 public class DictionaryServlet extends AppServlet implements
                                                  AppScreenServiceInt,
-                                                 DictionaryServletInt {
+                                                 DictionaryServletInt,
+                                                 AutoCompleteServiceInt{
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
+    private static final int leftTableRowsPerPage = 20;
+    private String systemUserId = "";
+    
+
+    private UTFResource openElisConstants = UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+                                                                new Locale((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
     public String getXML() throws RPCException {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"); 
@@ -29,18 +68,330 @@ public class DictionaryServlet extends AppServlet implements
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        System.out.println("Dictionary:  starting commit add");
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        CategoryDO categoryDO = new CategoryDO();
+        //NumberField categoryId = (NumberField) rpcSend.getField("categoryId");
+        
+       // categoryDO.setId((Integer)categoryId.getValue());
+        categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
+        categoryDO.setName((String)rpcSend.getFieldValue("name"));
+        categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
+        
+        System.out.println("systemName "+(String)rpcSend.getFieldValue("systemName"));
+        
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("secNameId"));
+        /*OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");        
+               
+         if(!sectionOpt.getValue().equals(""))
+          categoryDO.setSection(new Integer((String)sectionOpt.getValue()));
+        
+        System.out.println("sectionOpt.getValue() "+sectionOpt.getValue());*/
+        
+        List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
+        
+        TableModel dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
+        
+        for(int iter = 0; iter < dictEntryTable.numRows(); iter++){
+         TableRow row = dictEntryTable.getRow(iter);
+         DictionaryDO dictDO = new DictionaryDO();
+         boolean doloop = false;
+         
+         String sysName = (String)((StringField)row.getColumn(1)).getValue();
+         String entry = (String)((StringField)row.getColumn(3)).getValue();
+         
+         if(sysName!=null && entry!=null){
+           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
+               doloop =true;
+           } 
+          }
+         
+          if(doloop){   
+           System.out.println("dict sysName "+ sysName);                 
+           dictDO.setSystemName(sysName);
+           dictDO.setEntry(entry);         
+           //NumberField id = (NumberField)row.getHidden("id");
+           NumberField relEntryId = (NumberField)row.getHidden("relEntryId");
+         
+          // dictDO.setId((Integer)id.getValue());
+           if(relEntryId!=null){
+            dictDO.setRelatedEntry((Integer)relEntryId.getValue());
+           } 
+           System.out.println("before setting DO from row");
+           CheckField isActive =  (CheckField)row.getColumn(0);
+           if(isActive.isChecked()){           
+              dictDO.setIsActive("Y");
+           }   
+           else{
+               dictDO.setIsActive("N");
+           }   
+          dictDO.setSystemName((String)((StringField)row.getColumn(1)).getValue());
+          dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());
+          dictDO.setEntry((String)((StringField)row.getColumn(3)).getValue());          
+          if(relEntryId!=null){
+              if(relEntryId.getValue()!=null){
+               dictDO.setRelatedEntry((Integer)relEntryId.getValue());
+             }
+            }
+          
+          System.out.println("after setting DO from row");
+          
+          dictDOList.add(dictDO);
+         }
+        } 
+        
+        Integer categoryId = remote.updateCategory(categoryDO, dictDOList);
+        System.out.println("after updateCategory()");
+        
+         categoryDO = remote.getCategory((Integer)categoryId, false);
+         rpcReturn.setFieldValue("categoryId", categoryId);
+         rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
+         rpcReturn.setFieldValue("name", categoryDO.getName());
+         rpcReturn.setFieldValue("desc", categoryDO.getDescription());
+         rpcReturn.setFieldValue("secNameId",categoryDO.getSection()); 
+         
+         System.out.println("after setting fields on the form");
+         
+        // fillSectionOption(sectionOpt ,categoryDO);
+         
+         
+         List addressList = remote.getDictionaryEntries(categoryId);
+         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+         
+         System.out.println("Dictionary:  ending commitadd");
+        return rpcReturn;
     }
 
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        System.out.println("starting commitQuery");
+        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
+        if(rpcSend == null){
+           //need to get the query rpc out of the cache
+        //if(systemUserId.equals("")){
+           // systemUserId = remote.getSystemUserId().toString();
+        //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
+       // }
+        
+        System.out.println("put screenQueryRpc");
+        
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Category");
+
+           if(rpc == null)
+               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+
+            List categories = null;
+                
+            try{
+                
+                CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
+                categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                System.out.println("categories.size() "+categories.size());
+            }catch(Exception e){
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());
+            }
+        
+        int i=0;
+        model.clear();
+       // List providers = new ArrayList();
+        
+        //while(i < organizations.size() && i < leftTableRowsPerPage) {
+        while(i < categories.size() && i < leftTableRowsPerPage) {
+            //Object[] result = (Object[])organizations.get(i);
+            Object[] result = (Object[])categories.get(i);
+            //org id
+            Integer idResult = (Integer)result[0];
+            //org name
+            String sysNameResult = (String)result[1];
+                        
+
+            DataSet row = new DataSet();
+            
+            NumberObject id = new NumberObject();
+            id.setType("integer");
+            id.setValue(idResult);
+            
+            StringObject sysName = new StringObject();
+                        
+            sysName.setValue(sysNameResult);    
+            
+            row.addObject(id);          
+            //row.addObject(lname);
+            //row.addObject(fname);
+            row.addObject(sysName);
+            model.add(row);
+   
+         }
+        //} 
+        //if(systemUserId.equals("")){
+            //systemUserId = remote.getSystemUserId().toString();
+        //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
+        
+        System.out.println("ending commitQuery");
+        return model;   
+        } else{
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+            
+            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+
+            //contacts table
+             TableModel dictEntryTable = null;
+            if(rpcSend.getField("dictEntTable") != null)
+                dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
+                
+            System.out.println("dictEntTable != null");
+            
+            if(dictEntryTable != null){    
+                System.out.println("dictEntryTable != null");
+                fields.put("isActive",(QueryOptionField)dictEntryTable.getRow(0).getColumn(0));
+                fields.put("dictSystemName",(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
+                fields.put("abbreviation",(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
+                fields.put("entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
+                fields.put("relatedEntry",(NumberField)dictEntryTable.getRow(0).getColumn(4));                
+                       
+            }
+            
+            //System.out.println("rpcSend "+rpcSend); 
+
+            List systemNames = new ArrayList();
+                try{                    
+                    System.out.println("in try systemNames");
+                    systemNames = remote.query(fields,0,leftTableRowsPerPage);
+                     System.out.println("systemNames.size() "+systemNames.size()); 
+            }catch(Exception e){
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());                
+            }
+
+            Iterator itraaa = systemNames.iterator();
+            model=  new DataModel();
+            while(itraaa.hasNext()){
+                Object[] result = (Object[])(Object[])itraaa.next();
+                //org id
+                Integer idResult = (Integer)result[0];
+                //org name
+                String sysNameResult = (String)result[1];
+                            
+                
+                DataSet row = new DataSet();
+                
+                NumberObject id = new NumberObject();
+                //StringObject lname = new StringObject();
+                //StringObject fname = new StringObject();
+                StringObject sysName = new StringObject();
+                id.setType("integer");
+                //lname.setValue(lnameResult);
+                sysName.setValue(sysNameResult);
+                id.setValue(idResult);
+                
+                row.addObject(id);          
+                //row.addObject(lname);
+                //row.addObject(fname);
+                row.addObject(sysName);
+                model.add(row);
+
+            } 
+        if(systemUserId.equals(""))
+          systemUserId = remote.getSystemUserId().toString();
+          CachingManager.putElement("screenQueryRpc", systemUserId+":Category", rpcSend);          
+       }
+        return model;
     }
 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        CategoryDO categoryDO = new CategoryDO();
+        NumberField categoryId = (NumberField) rpcSend.getField("categoryId");
+        
+        categoryDO.setId((Integer)categoryId.getValue());
+        categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
+        categoryDO.setName((String)rpcSend.getFieldValue("name"));
+        categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("secNameId"));        
+        /*OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");        
+               
+         /if(!sectionOpt.getValue().equals(""))
+          categoryDO.setSection(new Integer((String)sectionOpt.getValue()));
+        
+        System.out.println("sectionOpt.getValue() "+sectionOpt.getValue());*/
+        
+        List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
+        
+        TableModel dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
+        
+        for(int iter = 0; iter < dictEntryTable.numRows(); iter++){
+            
+         TableRow row = dictEntryTable.getRow(iter);
+         DictionaryDO dictDO = new DictionaryDO();
+         
+         boolean doloop = false;
+         
+         String sysName = (String)((StringField)row.getColumn(1)).getValue();
+         String entry = (String)((StringField)row.getColumn(3)).getValue();
+         
+         if(sysName!=null && entry!=null){
+           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
+               doloop =true;
+           } 
+          }
+         
+          if(doloop){   
+           dictDO.setSystemName(sysName);
+           dictDO.setEntry(entry);
+                  
+           NumberField id = (NumberField)row.getHidden("id");
+           //NumberField relEntryId = (NumberField)row.getHidden("relEntryId");                         
+         
+            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+              if(deleteFlag == null){
+                dictDO.setDelete(false);
+              }else{
+              dictDO.setDelete("Y".equals(deleteFlag.getValue()));
+             }
+         
+             if(id!=null){
+              if(id.getValue()!=null){
+                dictDO.setId((Integer)id.getValue());
+              } 
+             } 
+         
+            
+             NumberField relEntryId = (NumberField)row.getColumn(4); 
+              if(relEntryId!=null){
+                 if(relEntryId.getValue()!=null){
+                   dictDO.setRelatedEntry((Integer)relEntryId.getValue());
+                 }
+                }
+         
+            CheckField isActive =  (CheckField)row.getColumn(0);
+             if(isActive.isChecked()){           
+               dictDO.setIsActive("Y");
+            }   
+            else{
+                dictDO.setIsActive("N");
+             }   
+             dictDO.setCategory((Integer)categoryId.getValue());         
+             dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());         
+             dictDOList.add(dictDO);
+             }
+          }
+        
+         remote.updateCategory(categoryDO, dictDOList);
+         
+         categoryDO = remote.getCategory((Integer)categoryId.getValue(), false);
+         rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
+         rpcReturn.setFieldValue("name", categoryDO.getName());
+         rpcReturn.setFieldValue("desc", categoryDO.getDescription());
+         rpcReturn.setFieldValue("secNameId",categoryDO.getSection()); 
+         
+         //fillSectionOption(sectionOpt ,categoryDO);
+         
+         List addressList = remote.getDictionaryEntries((Integer)categoryId.getValue());
+         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+         
+         
+        return rpcReturn;
     }
 
     public FormRPC delete(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -48,14 +399,329 @@ public class DictionaryServlet extends AppServlet implements
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {       
+        System.out.println("called fetch for key "+ (Integer)key.getObject(0).getValue());
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer categoryId = (Integer)key.getObject(0).getValue();
+//      System.out.println("in contacts");
+        CategoryDO catDO = remote.getCategory(categoryId,false);
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("categoryId", catDO.getId());
+        rpcReturn.setFieldValue("systemName",catDO.getSystemName());
+        rpcReturn.setFieldValue("name",catDO.getName());
+        rpcReturn.setFieldValue("desc",catDO.getDescription());    
+        rpcReturn.setFieldValue("secNameId",catDO.getSection());    
+        
+        //OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");
+        //fillSectionOption(sectionOpt ,catDO);
+                                   
+        List addressList = remote.getDictionaryEntries(categoryId);
+        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        
+        return rpcReturn;
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        return fetch(key, rpcReturn);
     }
 
+    public TableModel fillDictEntryTable(TableModel dictEntryModel, List contactsList){
+        System.out.println("starting  fillAddressTable");
+         try{
+             dictEntryModel.reset();
+             
+             for(int iter = 0;iter < contactsList.size();iter++) {
+                 DictionaryEntryTableRowDO addressRow  = (DictionaryEntryTableRowDO)contactsList.get(iter);
+                 DictionaryDO dictDO = addressRow.getDictionaryDO();
+
+                    TableRow row = dictEntryModel.createRow();
+                    NumberField id = new NumberField();
+                    id.setType("integer");
+                    //NumberField sectionId = new NumberField();
+                   // sectionId.setType("integer");
+                     id.setValue(dictDO.getId());
+                   // sectionId.setValue(addressRow.g)
+                     row.addHidden("id", id);
+                     
+                     NumberField relEntryId = new NumberField();
+                     relEntryId.setType("integer");                     
+                     relEntryId.setValue(dictDO.getRelatedEntry());
+
+                     row.addHidden("relEntryId", relEntryId);
+                     
+                     row.getColumn(0).setValue(dictDO.getIsActive());
+                     row.getColumn(1).setValue(dictDO.getSystemName());
+                     row.getColumn(2).setValue(dictDO.getLocalAbbrev());
+                     row.getColumn(3).setValue(dictDO.getEntry());
+                     row.getColumn(4).setValue(dictDO.getRelatedEntry());                                                                                 
+                     dictEntryModel.addRow(row);
+            } 
+             
+         } catch (Exception e) {
+
+             e.printStackTrace();
+             return null;
+         }       
+         
+         return dictEntryModel;  
+     }
+    
+    public void fillSectionOption(OptionField sectionOpt ,CategoryDO catDO){
+        sectionOpt.getOptions().clear();
+        // System.out.println("typeId "+provDO.getTypeId());
+         //System.out.println("type "+provDO.getType()); 
+         SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
+         List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
+         
+         if(catDO!=null){
+           if(catDO.getSection()!=null){ 
+             SectionIdNameDO section = utilRemote.getSection(catDO.getSection());
+             //if((section.getId()).equals(catDO.getSection())){
+             sectionOpt.addOption(catDO.getSection().toString(),section.getName());    
+             // } 
+             }else{   
+                 sectionOpt.addOption("0"," "); 
+             }
+           }else{   
+               sectionOpt.addOption("0"," "); 
+           }
+         
+         OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
+         if(sections!=null){
+             System.out.println("sections.size() "+ sections.size());   
+            List<OptionItem> optionlist = new ArrayList<OptionItem>();
+         
+          for (Iterator iter = sections.iterator(); iter.hasNext();) {
+              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
+              
+             //System.out.println("typeId "+idType[0]);
+             //System.out.println("type "+idType[1]);              
+              
+              //if the section has already been added to the drop down don't add it again
+                if(!firstItem.display.equals(sectionDO.getName())){          
+                 OptionItem item = new OptionItem();
+                 //System.out.println("section "+ sectionDO);
+                 item.akey = sectionDO.getId().toString();
+                 item.display = sectionDO.getName(); 
+                 
+                 optionlist.add(item);
+                }
+              //}             
+           } 
+         
+           for (Iterator iter = optionlist.iterator(); iter.hasNext();) {
+               sectionOpt.getOptions().add(iter.next());            
+           }
+          }
+    }
+    
+        
+   /* public Integer getRelatedEntryId(String relatedEntry){
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer entryId = remote.getEntryId(relatedEntry);        
+        return entryId;
+    }*/
+    
+    public Integer getEntryIdForSystemName(String systemName){
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer entryId = remote.getEntryIdForSystemName(systemName);        
+        return entryId;
+    }
+    
+    public Integer getEntryIdForEntry(String entry){
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer entryId = remote.getEntryIdForEntry(entry);        
+        return entryId;
+    }
+    
+    /* public String getMatchingEntriesXML(Integer id,String relatedEntry){
+        try{
+            Document doc = XMLUtil.createNew("list");
+            Element root = doc.getDocumentElement();
+            //HashMap perms = getPermissions();
+            root.setAttribute("key", "matchingEntriesList");
+            root.setAttribute("height", "100%"); 
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+            System.out.println("id "+ id);
+            System.out.println("relatedEntry "+ "\""+relatedEntry+"\"");
+            //List entries = remote.getMatchingEntries(id, relatedEntry);
+            System.out.println("entries "+ entries.size());
+             if(entries !=null){
+                 for (Iterator iter = entries.iterator(); iter.hasNext();) {
+                    Object[] element = (Object[])iter.next();
+                    Integer entryId = (Integer)element[0];                   
+                    String entryText = element[1].toString();
+                    Element elem = doc.createElement("item");
+                    elem.setAttribute("text", entryText);
+                    //elem.setAttribute("constant", "true");
+                    elem.setAttribute("value", entryId.toString());
+                    elem.setAttribute("style", "ScreenLabel");
+                    elem.setAttribute("onClick", "this");
+                    //elem.setAttribute("hover", "Hover");
+                    root.appendChild(elem);
+                 }                 
+             }else {
+                 return null;
+             }
+             return XMLUtil.toString(doc);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }   
+    }*/
+
+    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
+      System.out.println("getDisplay");
+      
+      DataModel dataModel = new DataModel(); 
+      try{
+        if(cat.equals("relatedEntry")){
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        
+        Object[] result  = (Object[])remote.autoCompleteLookupById((Integer)value.getValue());        
+        Integer dictId = (Integer)result[0];
+        String entry = (String)result[1];
+        DataSet data = new DataSet();
+        
+        NumberObject id = new NumberObject();
+        id.setType("integer");
+        id.setValue(dictId);
+        StringObject nameObject = new StringObject();
+        nameObject.setValue(entry.trim());
+        
+        //StringObject displayObject = new StringObject();
+        //displayObject.setValue(entry.trim());
+        
+        data.addObject(id);        
+        data.addObject(nameObject);
+        
+        
+        dataModel.add(data);
+       }
+      }catch(Exception ex){
+          ex.printStackTrace();
+      } 
+        return dataModel;
+    }
+
+    public DataModel getInitialModel(String cat) {
+        System.out.println("getInitialModel");
+        DataModel model = new DataModel();
+        DataSet blankset = new DataSet();
+        
+        StringObject blankStringId = new StringObject();
+                      
+        BooleanObject blankSelected = new BooleanObject();               
+        blankStringId.setValue("");
+        blankset.addObject(blankStringId);
+        
+        NumberObject blankNumberId = new NumberObject();
+        blankNumberId.setType("integer");
+        blankNumberId.setValue(new Integer(0));
+        blankset.addObject(blankNumberId);
+        
+        blankSelected.setValue(new Boolean(false));
+        blankset.addObject(blankSelected);
+        
+        model.add(blankset);
+        
+        if(cat.equals("section")){
+        // System.out.println("typeId "+provDO.getTypeId());
+         //System.out.println("type "+provDO.getType()); 
+         SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
+         List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
+         
+       
+        // SectionIdNameDO section = utilRemote.getSection(catDO.getSection());
+             //if((section.getId()).equals(catDO.getSection())){
+             //sectionOpt.addOption(catDO.getSection().toString(),section.getName());    
+             // } 
+             
+        
+        System.out.println("added blankset");
+        // OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
+         if(sections!=null){
+            // System.out.println("sections.size() "+ sections.size());   
+          //  List<OptionItem> optionlist = new ArrayList<OptionItem>();
+         
+          for (Iterator iter = sections.iterator(); iter.hasNext();) {
+              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
+                           
+                DataSet set = new DataSet();
+                //Object[] result = (Object[]) entries.get(i);
+                //id
+                Integer dropdownId = sectionDO.getId();
+                //entry
+                String dropdownText = sectionDO.getName();
+                
+                StringObject textObject = new StringObject();
+                //StringObject stringId = new StringObject();
+                NumberObject numberId = new NumberObject();
+                BooleanObject selected = new BooleanObject();
+                
+                textObject.setValue(dropdownText);
+                set.addObject(textObject);
+                
+               // if(cat.equals("contactType")){
+                    numberId.setType("integer");
+                    numberId.setValue(dropdownId);
+                    set.addObject(numberId);
+               // }else{
+                  //  stringId.setValue(dropdownText);
+                  //  set.addObject(stringId);            
+               // }
+                
+                selected.setValue(new Boolean(false));
+                set.addObject(selected);
+                
+                model.add(set);
+                System.out.println("added dataset");
+              //}             
+           }                
+           
+          }
+        }       
+        return model;
+    }
+
+    public DataModel getMatches(String cat, DataModel model, String match) {
+        System.out.println("getMatches");
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+        List entries = remote.getMatchingEntries(match+"%", 10);
+        DataModel dataModel = new DataModel();
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+            
+            Object[] element = (Object[])iter.next();
+            Integer entryId = (Integer)element[0];                   
+            String entryText = element[1].toString();
+            
+            DataSet data = new DataSet();
+            //hidden id
+            NumberObject idObject = new NumberObject();
+            idObject.setType("integer");
+            idObject.setValue(entryId);
+            data.addObject(idObject);
+            
+            StringObject nameObject = new StringObject();
+            nameObject.setValue(entryText.trim());
+            data.addObject(nameObject);
+            
+            StringObject displayObject = new StringObject();
+            displayObject.setValue(entryText.trim());
+            data.addObject(displayObject);
+            
+            StringObject selectedFlag = new StringObject();
+            selectedFlag.setValue("N");
+            data.addObject(selectedFlag);
+            
+            //add the dataset to the datamodel
+            dataModel.add(data);
+        }
+       
+        
+        return dataModel;
+    }
+
+    
+    
 }
