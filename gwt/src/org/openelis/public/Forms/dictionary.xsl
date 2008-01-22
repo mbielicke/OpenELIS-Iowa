@@ -20,10 +20,7 @@
 	<display>
 		<panel layout="horizontal" spacing="5" xsi:type="Panel">
 			<!--left table goes here -->
-			
-				
-				
-					
+																
   <aToZ height= "425px" width = "auto" key= "hideablePanel" visible= "false" onclick= "this">
    <panel layout= "horizontal" xsi:type= "Panel" spacing= "0">
     <xsl:if test="string($language)='en'">
@@ -110,7 +107,7 @@
     </xsl:if>
     
     <panel layout= "vertical" width = "175px" xsi:type= "Panel" >
-      <table maxRows = "20" rows = "0" width= "auto" key = "categoryTable" title="{resource:getString($constants,'dic_Categories')}">
+      <table maxRows = "20" rows = "0" width= "auto" key = "categoryTable" serviceUrl= "DictionaryServlet" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'dic_Categories')}">
        <headers><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></headers>
 							<widths>150</widths>
 							<editors>
@@ -130,20 +127,57 @@
 				<!-- end left table -->
 				<panel layout="vertical" spacing="5" width="500px" xsi:type="Panel">
 					<widget halign="center">
-						<buttonPanel buttons="qaucbpn" key="buttons"/>
+						<!--<buttonPanel buttons="qaucbpn" key="buttons"/>-->
+						<buttonPanel key="buttons">
+            <appButton action="query" toggle="true">
+              <widget>
+                <text>Query</text>
+              </widget>
+            </appButton>            
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="previous">
+              <widget>
+                <text>Previous</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="next">
+              <widget>
+                <text>Next</text>
+              </widget>
+            </appButton>
+            <appButton action="add" toggle="true">
+              <widget>
+                <text>Add</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="update" toggle="true">
+              <widget>
+                <text>Update</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="commit">
+              <widget>
+                <text>Commit</text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="abort">
+              <widget>
+                <text>Abort</text>
+              </widget>
+            </appButton>
+            
+          </buttonPanel>
+
+						
 					</widget>
 					<panel layout="horizontal" spacing="5" width="200px" xsi:type="Panel">
 						<panel layout="vertical" spacing="5" width="200px" xsi:type="Panel">
 							<!-- first vertical panel for org fields -->
-							<panel key="secMod" layout="table" style="Form" width="200px" xsi:type="Table">							
-								<row>
-									<widget halign="right">
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="sysName"/>
-									</widget>
-								</row>								
+							<panel key="secMod" layout="table" style="Form" width="200px" xsi:type="Table">																							
 								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
@@ -162,27 +196,58 @@
 								</row>
 								<row>								
 									 <widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_SectionName")'/></text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_Section")'/></text>
 									 </widget>
 									 
 									 <!--<panel layout="horizontal" spacing="5" width="150px" xsi:type="Panel">-->
+									  <!--<widget>
+									  	<textbox case="mixed" key="secName"/>
+									  	<option key="secName" multi= "false" required= "false" onChange= "this"/>
+									  </widget>-->
 									  <widget>
-									  	<!--<textbox case="mixed" key="secName"/>-->
-									  	<option key="secName" multi= "false" required= "true" onChange= "this"/>
-									  </widget>
+										<autoDropdown cat="section" key="secName" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
+													<autoWidths>80</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+										</autoDropdown>
+													<query>
+													<!--<option/>-->
+												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
+													<autoWidths>80</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+										</autoDropdown>
+												</query>
+										</widget>
 								      <!--<widget>
 								 			<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/lookupButtonIcon.png&quot;&gt;</html>
 									  </widget>	-->									  
                                 <!-- </panel> -->								   						
-								</row>							  
+								</row>	
+								<row>
+									<widget halign="right">
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></text>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="systemName"/>
+									</widget>
+								</row>						  
 							</panel>
 						</panel>
 					</panel>
 					<panel height="25px" layout="vertical"  xsi:type="Panel"/>
-					<panel layout="horizontal" spacing="5" xsi:type="Panel">
+					<panel layout="vertical" spacing="5" xsi:type="Panel">
 						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "7" width = "auto" key="dictEntTable" autoAdd= "true" rows="1" title="{resource:getString($constants,'dic_Entries')}">
+							<table maxRows = "6" rows = "0" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable" autoAdd= "true"  title="{resource:getString($constants,'dic_Entries')}">
 								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
@@ -192,90 +257,97 @@
 									<textbox/>									
 									<textbox/>									
 									<textbox/>	
-									<option>
-									  <item value= " "> </item>
-									  <item value= "1">Entry1</item>
-									  <item value= "2">Entry2</item>
-                             		  <item value= "3">Entry3</item>
-			                          <item value= "4">Entry4</item>
-   		                            </option>								
-									<!--<lookupWImg onclick = "LookupListener" />-->
+									<!--<textbox/>-->
+									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="DictionaryServlet" width="100px" popupHeight="50px"  type="integer">
+												<autoWidths>100</autoWidths>
+												<autoEditors>
+													<label/>
+												</autoEditors>
+												<autoFields>
+													<string/>
+												</autoFields>												
+									</auto>																										
 								</editors>
 								<fields>
 									<check/>																		
 									<string/>									
 									<string/>
 									<string/>
-									<string/>									
+									<number type="integer">0</number>									
 								</fields>
-								<sorts>false,true,true,true,false</sorts>
+								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
 						  <query>
-						   	<table width = "auto" maxRows = "7" rows="1" title="">
+						   	<table width = "auto" maxRows = "5" rows="1" title="">
 								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
 								<widths>45,95,75,110,100</widths>
 								<editors>
-									<option multi="true" fromModel="true"/>									
+									<option multi="true" fromModel="true"/>																
 									<textbox/>									
 									<textbox/>									
-									<textbox/>	
-									<option multi="true" fromModel="true"/>									  																
+									<textbox/>										
+									<!--<textbox/>-->
+									<auto cat="relatedEntry" case="mixed" serviceUrl="DictionaryServlet" width="100px" popupHeight="50px"  type="integer">
+												<autoWidths>100</autoWidths>
+												<autoEditors>
+													<label/>
+												</autoEditors>
+												<autoFields>
+													<string/>
+												</autoFields>												
+									</auto>
 								</editors>
 								<fields>
 									<queryOption multi="true" type="string">	
 									 <item value= " "> </item>
 									 <item value= "Y">Y</item>														
-									 <item value= "N">N</item>																	
-									</queryOption>
+									 <item value= "N">N</item>											 															
+									</queryOption>									
 									<queryString/>									
 									<queryString/>
 									<queryString/>
-									<queryOption multi="true" type="string">
-									  <item value= " "> </item>
-									  <item value= "1">Entry1</item>
-									  <item value= "2">Entry2</item>
-                             		  <item value= "3">Entry3</item>
-			                          <item value= "4">Entry4</item>	                            									
-									</queryOption>
+									<!--<queryString/>-->
+									<number type="integer">0</number>		
 								</fields>
-								<sorts>false,true,true,true,false</sorts>
+								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
-						  </query>
+						  </query>						  
 						</widget>
+						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>						
+		                <button halign= "right" action = "this" onclick = "this" key= "removeEntryButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt;{resource:getString($constants,'removeRow')}"/>
+		                <!-- <appButton halign = "right" key= "removeEntryButton" action="" >
+                           <widget>
+                            <text><xsl:value-of select='resource:getString($constants,"dic_RemEntry")'/></text>
+                         </widget>
+                        </appButton>	 -->
 					</panel>					
 				</panel>
 		</panel>
 	</display>
 	<rpc key = "display">
 	 <number key="categoryId" type="integer" required="false"/>	
-	 <string key="sysName" max="30" required="true"/>
+	 <string key="systemName" max="30" required="true"/>
 	 <string key="name" max="50" required="true"/>
 	 <string key="desc" max="60" required="false"/>
-	 <table key="dictEntTable"/>	
-	 <option key="secName" multi= "false" required= "false">
-	  <item value= ""/>
-      <item value= "1">Section1</item>
-      <item value= "2">Section2</item>
-      </option>
+     <table key="dictEntTable"/>	 
+     <number key="secNameId" type="integer" required="false"/>
 	</rpc>
-	<rpc key = "query">
-	 <queryNumber key="categoryId" type="integer" />		
+	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
-	 <queryString key="sysName"/>
+	 <queryString key="systemName"/>
 	 <queryString key="name"/>
-	 <queryString key="desc"/>
-	 <queryOption key="secName" multi= "true" type= "string">
-	  <item value= ""/>
-      <item value= "1">Section1</item>
-      <item value= "2">Section2</item>
-     </queryOption> 
+	 <queryString key="desc"/>	 
 	</rpc>
+	
+	<rpc key="queryByLetter">
+      <queryString key="systemName"/>
+    </rpc>
 </screen>
 </xsl:template>
 </xsl:stylesheet> 
