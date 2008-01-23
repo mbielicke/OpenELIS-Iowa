@@ -1,7 +1,6 @@
 package org.openelis.server;
 
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavoritesScreenInt;
-import org.openelis.gwt.common.AbstractField;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
