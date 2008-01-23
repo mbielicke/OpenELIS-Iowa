@@ -48,9 +48,6 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
@@ -406,6 +403,11 @@ public class ProviderServlet extends AppServlet implements
            } 
         }
          
+        System.out.println("new note in commitUpdate");
+        
+        System.out.println("new note's subject : "+(String)rpcSend.getFieldValue("usersSubject"));
+        System.out.println("new note's body : "+(String)rpcSend.getFieldValue("usersNote"));
+        
         providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
         providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
         providerNote.setIsExternal("Y");
@@ -433,6 +435,7 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("usersSubject", null);
         rpcReturn.setFieldValue("usersNote", null);
         
+        System.out.println("notes model in commitUpdate");
         DataModel notesModel = getNotesModel(provDO.getId());
         rpcReturn.setFieldValue("notesModel", notesModel);
         
@@ -699,11 +702,9 @@ public class ProviderServlet extends AppServlet implements
         DataModel notesModel = new DataModel();
         System.out.println("notesList.size() "+ notesList.size());
         Iterator itr = notesList.iterator();
-        while(itr.hasNext()){
-            System.out.println("");
+        while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
-            //id
-            Integer id = (Integer)result[0];
+                        
             //user id
             Integer userId = (Integer)result[1];
             //body
