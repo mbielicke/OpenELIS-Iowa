@@ -6,6 +6,7 @@ import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTab
 import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
+import org.openelis.client.supply.screen.storage.StorageNameTable;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppButton;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
@@ -178,6 +179,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("AppConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
       map.addWidget("OpenELISService",OpenELISService.getInstance());
       map.addWidget("OrganizationNameTable", new OrganizationNameTable());
+      map.addWidget("StorageNameTable", new StorageNameTable());
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());

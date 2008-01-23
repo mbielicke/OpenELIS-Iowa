@@ -56,6 +56,11 @@
     <servlet-name>DictionaryServlet</servlet-name>
     <servlet-class>org.openelis.server.DictionaryServlet</servlet-class>
   </servlet>
+  
+  <servlet>
+    <servlet-name>StorageServlet</servlet-name>
+    <servlet-class>org.openelis.server.StorageServlet</servlet-class>
+  </servlet>
   <!-- inmsp Servlet Mappings-->
     
 <servlet-mapping>
@@ -66,6 +71,11 @@
   <servlet-mapping>
     <servlet-name>OrganizationServlet</servlet-name>
     <url-pattern>/OrganizationServlet</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>StorageServlet</servlet-name>
+    <url-pattern>/StorageServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -86,6 +96,11 @@
   <servlet-mapping>
     <servlet-name>DictionaryServlet</servlet-name>
     <url-pattern>/DictionaryServlet</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>StorageServlet</servlet-name>
+    <url-pattern>/StorageServlet</url-pattern>
   </servlet-mapping>
     
   <session-config>

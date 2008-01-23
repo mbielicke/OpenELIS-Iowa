@@ -281,7 +281,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
         if(systemUserId.equals(""))
         	systemUserId = remote.getSystemUserId().toString();
         CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
-		}  
+		}
 		return model;
 	}
 

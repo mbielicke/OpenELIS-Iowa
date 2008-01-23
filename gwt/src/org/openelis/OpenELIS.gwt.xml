@@ -18,6 +18,7 @@
     <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
     <servlet path='/OrganizationServlet' class='org.openelis.server.OrganizationServlet'/>  
     <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>  
+    <servlet path='/StorageServlet' class='org.openelis.server.StorageServlet'/>  
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->

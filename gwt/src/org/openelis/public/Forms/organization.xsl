@@ -23,7 +23,7 @@
 				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" onclick="this">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
-			<panel layout="vertical" xsi:type="Panel" spacing="0">
+			<panel layout="vertical" xsi:type="Panel" spacing="0" style="AtoZ">
 				<widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
           </widget>
