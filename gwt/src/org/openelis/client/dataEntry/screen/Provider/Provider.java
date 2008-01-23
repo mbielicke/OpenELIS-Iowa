@@ -89,7 +89,10 @@ public class Provider extends AppScreenForm{
     
     public void abort(int state){
       if(shownotes){
-          loadNotes();
+          FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+          DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
+          
+          loadNotes(notesModel);
           shownotes = false;
       } 
        super.abort(state); 
@@ -256,14 +259,19 @@ public class Provider extends AppScreenForm{
         
         super.afterFetch(success);
         //Window.alert("afterFetch");
-        loadNotes();
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
+        
+        loadNotes(notesModel);
         
     }
     
     public void commitAdd(){
-        
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");                 
+        loadNotes(notesModel);
         super.commitAdd();      
-        loadNotes();
+        
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
         //removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
@@ -271,10 +279,12 @@ public class Provider extends AppScreenForm{
     }
     
     public void commitUpdate(){
-       
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
+        
+        loadNotes(notesModel);
         super.commitUpdate();
-        //Window.alert("commitUpdate"); 
-        loadNotes();
+        //Window.alert("commitUpdate");         
         
         
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
@@ -283,20 +293,15 @@ public class Provider extends AppScreenForm{
         removeContactButton.changeState(AppButton.DISABLED);
     }
 
-    private void loadNotes(){       
-        FormRPC displayRPC = (FormRPC) this.forms.get("display");
-        Integer providerId = (Integer)displayRPC.getFieldValue("providerId");
-        //DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
-          screenService.getNotesModel(providerId, new AsyncCallback(){
-              public void onSuccess(Object result){
-                  DataModel notesModel = (DataModel)result; 
-                  VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+    private void loadNotes(DataModel notesModel){       
+                     
+        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
                   
                   //we need to remove anything in the notes tab if it exists
                   vp.clear();
                   int i=0;
                   if(notesModel != null){ 
-                      Window.alert(new Integer(notesModel.size()).toString());
+                      
                     while(i<notesModel.size()){
                       HorizontalPanel subjectPanel = new HorizontalPanel();
                       HorizontalPanel spacerPanel = new HorizontalPanel();
@@ -328,11 +333,7 @@ public class Provider extends AppScreenForm{
                   }
                  } 
               }
-              public void onFailure(Throwable caught){
-                  Window.alert(caught.getMessage());
-          
-              }
-          });
+                 
            
-    }
+    
 }
