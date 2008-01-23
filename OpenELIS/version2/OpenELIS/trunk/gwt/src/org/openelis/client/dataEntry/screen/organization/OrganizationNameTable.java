@@ -8,10 +8,10 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 
 public class OrganizationNameTable implements TableManager {
-    private Organization userForm;
+    private OrganizationScreen userForm;
     public boolean disableRows = false;
 
-    public void setOrganizationForm(Organization form) {
+    public void setOrganizationForm(OrganizationScreen form) {
         userForm = form;
     }  
 
