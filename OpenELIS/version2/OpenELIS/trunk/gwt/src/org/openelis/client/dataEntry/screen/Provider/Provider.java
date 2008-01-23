@@ -12,6 +12,7 @@ import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -29,6 +30,7 @@ public class Provider extends AppScreenForm{
     private static ServiceDefTarget target = (ServiceDefTarget) screenService;
 
     private Widget selected;
+    private boolean shownotes = false;
    // private int tabSelectedIndex = 0;    
    
     public Provider(){
@@ -85,6 +87,14 @@ public class Provider extends AppScreenForm{
         super.up(state);      
     }
     
+    public void abort(int state){
+      if(shownotes){
+          loadNotes();
+          shownotes = false;
+      } 
+       super.abort(state); 
+    }
+    
     public void add(int state){        
         
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
@@ -98,7 +108,6 @@ public class Provider extends AppScreenForm{
         VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
         
         vp.clear();
-        
         super.add(state);      
     }
     
@@ -111,12 +120,15 @@ public class Provider extends AppScreenForm{
         removeContactButton.changeState(AppButton.UNPRESSED);
         
         ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
-        provAddressTable.disableRows = false;                
+        provAddressTable.disableRows = false;
+        
+        shownotes = true;
     }
     
     public void query(int state){
       VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
       vp.clear();
+      shownotes = true;
       super.query(state);
     }
        
@@ -174,8 +186,8 @@ public class Provider extends AppScreenForm{
             getProviders("y", sender);
         } else if (sender == widgets.get("z")) {
             getProviders("z", sender);
-        }else if (sender == widgets.get("removeAddressButton")) {            
-            Window.alert("remove row");
+        }else if (sender == getWidget("removeAddressButton")) {            
+            //Window.alert("remove row");
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
             int selectedRow = provAddTable.controller.selected;
             if (selectedRow > -1
@@ -241,9 +253,11 @@ public class Provider extends AppScreenForm{
     }
     
     public void afterFetch(boolean success) {
-        super.afterFetch(success);
         
+        super.afterFetch(success);
+        //Window.alert("afterFetch");
         loadNotes();
+        
     }
     
     public void commitAdd(){
@@ -257,9 +271,12 @@ public class Provider extends AppScreenForm{
     }
     
     public void commitUpdate(){
-        
+       
         super.commitUpdate();
+        //Window.alert("commitUpdate"); 
         loadNotes();
+        
+        
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
        // removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
@@ -268,43 +285,54 @@ public class Provider extends AppScreenForm{
 
     private void loadNotes(){       
         FormRPC displayRPC = (FormRPC) this.forms.get("display");
-        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
-
-        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-        
-        //we need to remove anything in the notes tab if it exists
-        vp.clear();
-        int i=0;
-        if(notesModel != null){ 
-          while(i<notesModel.size()){
-            HorizontalPanel subjectPanel = new HorizontalPanel();
-            HorizontalPanel spacerPanel = new HorizontalPanel();
-            HorizontalPanel bodyPanel = new HorizontalPanel();
-            
-            Label subjectLabel = new Label();
-            Label bodyLabel = new Label();
-            
-            vp.add(subjectPanel);
-            vp.add(bodyPanel);
-            subjectPanel.add(subjectLabel);
-            bodyPanel.add(spacerPanel);
-            bodyPanel.add(bodyLabel);           
-            
-            spacerPanel.setWidth("25px");
-            subjectPanel.setWidth("100%");
-            bodyPanel.setWidth("100%");
-            
-            subjectLabel.addStyleName("NotesText");
-            bodyLabel.addStyleName("NotesText");
-            
-            subjectLabel.setWordWrap(true);
-            bodyLabel.setWordWrap(true);
-            
-            subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
-            bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
-            
-            i++;
-        }
-       }    
+        Integer providerId = (Integer)displayRPC.getFieldValue("providerId");
+        //DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");
+          screenService.getNotesModel(providerId, new AsyncCallback(){
+              public void onSuccess(Object result){
+                  DataModel notesModel = (DataModel)result; 
+                  VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+                  
+                  //we need to remove anything in the notes tab if it exists
+                  vp.clear();
+                  int i=0;
+                  if(notesModel != null){ 
+                      Window.alert(new Integer(notesModel.size()).toString());
+                    while(i<notesModel.size()){
+                      HorizontalPanel subjectPanel = new HorizontalPanel();
+                      HorizontalPanel spacerPanel = new HorizontalPanel();
+                      HorizontalPanel bodyPanel = new HorizontalPanel();
+                      
+                      Label subjectLabel = new Label();
+                      Label bodyLabel = new Label();
+                      
+                      vp.add(subjectPanel);
+                      vp.add(bodyPanel);
+                      subjectPanel.add(subjectLabel);
+                      bodyPanel.add(spacerPanel);
+                      bodyPanel.add(bodyLabel);           
+                      
+                      spacerPanel.setWidth("25px");
+                      subjectPanel.setWidth("100%");
+                      bodyPanel.setWidth("100%");
+                      
+                      subjectLabel.addStyleName("NotesText");
+                      bodyLabel.addStyleName("NotesText");
+                      
+                      subjectLabel.setWordWrap(true);
+                      bodyLabel.setWordWrap(true);
+                      
+                      subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
+                      bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
+                      
+                      i++;
+                  }
+                 } 
+              }
+              public void onFailure(Throwable caught){
+                  Window.alert(caught.getMessage());
+          
+              }
+          });
+           
     }
 }
