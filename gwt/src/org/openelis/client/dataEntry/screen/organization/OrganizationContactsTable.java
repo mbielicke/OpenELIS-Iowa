@@ -6,10 +6,10 @@ import org.openelis.gwt.client.widget.table.TableManager;
 import org.openelis.gwt.common.data.DataModel;
 
 public class OrganizationContactsTable implements TableManager {
-	private Organization userForm;
+	private OrganizationScreen userForm;
     public boolean disableRows = false;
     
-    public void setOrganizationForm(Organization form) {
+    public void setOrganizationForm(OrganizationScreen form) {
         userForm = form;
     }
     
