@@ -11,6 +11,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -151,7 +152,6 @@ public class Provider extends AppScreenForm{
             getProviders("n", sender);
         } else if (sender == widgets.get("o")) {
             getProviders("o", sender);
-            setStyleNameOnButton(sender);
         } else if (sender == widgets.get("p")) {
             getProviders("p", sender);
         } else if (sender == widgets.get("q")) {
@@ -175,6 +175,7 @@ public class Provider extends AppScreenForm{
         } else if (sender == widgets.get("z")) {
             getProviders("z", sender);
         }else if (sender == widgets.get("removeAddressButton")) {            
+            Window.alert("remove row");
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
             int selectedRow = provAddTable.controller.selected;
             if (selectedRow > -1
