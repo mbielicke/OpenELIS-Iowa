@@ -326,14 +326,11 @@ public class OrganizationBean implements OrganizationRemote {
    
          Query query = manager.createQuery(sb.toString()+" order by o.name");
          
-         if(first > -1){
+         if(first > -1)
         	 query.setFirstResult(first);
-        	 System.out.println("first ["+first+"]");
-         }
-         if(max > -1){
+ 
+         if(max > -1)
         	 query.setMaxResults(max);
-        	 System.out.println("Max ["+max+"]");
-         }
              
 //       ***set the parameters in the query
 //       org elements
