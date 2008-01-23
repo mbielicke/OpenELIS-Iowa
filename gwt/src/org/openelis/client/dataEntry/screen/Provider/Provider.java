@@ -12,7 +12,6 @@ import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -87,8 +86,10 @@ public class Provider extends AppScreenForm{
     
     public void add(int state){        
         
-        Button removeContactButton = (Button) getWidget("removeAddressButton");
-        removeContactButton.setEnabled(true);
+       // Button removeContactButton = (Button) getWidget("removeAddressButton");
+       // removeContactButton.setEnabled(true);
+        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton.changeState(AppButton.UNPRESSED);
         
         ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
         provAddressTable.disableRows = false;
@@ -103,8 +104,10 @@ public class Provider extends AppScreenForm{
     public void afterUpdate(boolean success) {
         super.afterUpdate(success);
         
-        Button removeContactButton = (Button) getWidget("removeAddressButton");
-        removeContactButton.setEnabled(true);
+        //Button removeContactButton = (Button) getWidget("removeAddressButton");
+        //removeContactButton.setEnabled(true);
+        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton.changeState(AppButton.UNPRESSED);
         
         ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
         provAddressTable.disableRows = false;                
@@ -246,16 +249,20 @@ public class Provider extends AppScreenForm{
         
         super.commitAdd();      
         loadNotes();
-        Button removeContactButton = (Button) getWidget("removeAddressButton");
-        removeContactButton.setEnabled(false);
+        //Button removeContactButton = (Button) getWidget("removeAddressButton");
+        //removeContactButton.setEnabled(false);
+        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton.changeState(AppButton.DISABLED);
     }
     
     public void commitUpdate(){
         
         super.commitUpdate();
         loadNotes();
-        Button removeContactButton = (Button) getWidget("removeAddressButton");
-        removeContactButton.setEnabled(false);
+       // Button removeContactButton = (Button) getWidget("removeAddressButton");
+       // removeContactButton.setEnabled(false);
+        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton.changeState(AppButton.DISABLED);
     }
 
     private void loadNotes(){       
