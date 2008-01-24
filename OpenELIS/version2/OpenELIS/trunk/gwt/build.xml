@@ -47,11 +47,11 @@ Builds the a servlet warfile.
 	          <classes dir="${bin.dir}"
 	      	           includes="org/openelis/**/*" />
 	          <lib dir="lib"/>
-	      	  <lib dir="../lib-svn/compile/linux"
+	      	  <lib dir="../UHL-GWT-tools/gwt-linux-UHL.1.4"
 	      	  	       includes="gwt-servlet.jar"/>
-	      	  <lib dir="../lib-svn"
+	      	  <lib dir="../OpenELIS-Lib"
 	      	           includes="openelis-lib.jar"/>
-	      	  <lib dir="../common-svn"
+	      	   <lib dir="../OpenELIS-common"
 	      	           includes="openelis-common.jar"/>
 	      	  <lib dir="build"
 	      	           includes="elissecurity.jar"/>
