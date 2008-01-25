@@ -40,7 +40,7 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		return null;
 	}
 
-	public FormRPC delete(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -482,6 +482,24 @@
 						</widget>
 						</panel>
 					</row>
+					<row style="topMenuPanel">
+						<!--icon-->
+							<widget valign="middle" style="topMenuPanelIconPanel">
+								<html key="storageUnitIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:4">&#160;</html>
+							</widget>
+						<!--  spacer -->
+					<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>
+						<!-- title and description -->
+						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
+							<widget>
+								<label key="storageUnitLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnit')}"/>
+							</widget>
+							<widget>
+								<label key="storageUnitDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnitDescription')}"/>
+						</widget>
+						</panel>
+					</row>
 				</panel>
 			</menuPopupPanel>
 			

@@ -20,11 +20,14 @@
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" onclick="this">
+				<aToZ height="75px" width="100%" key="hideablePanel" visible="false" onclick="this">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
-					    <panel layout="horizontal" xsi:type="Panel" spacing="0" padding="0">
+		    <panel layout="horizontal" xsi:type="Panel" spacing="0" padding="0">
 			<panel layout="vertical" xsi:type="Panel" spacing="0">
+			<widget>
+            <html key="#" onclick="this">&lt;a class='navIndex'&gt;#&lt;/a&gt;</html>
+          </widget>
 				<widget>
             <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
           </widget>
@@ -205,8 +208,8 @@
           </widget>
           </panel>
 		</xsl:if>
-				<table manager="StorageNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="8" title="{resource:getString($constants,'locations')}">
-				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
+				<table manager="StorageUnitDescTable" width="auto" style="ScreenLeftTable" key="StorageUnitTable" maxRows="10" title="{resource:getString($constants,'storageUnits')}">
+				<headers><xsl:value-of select='resource:getString($constants,"description")'/></headers>
 							<widths>175</widths>
 							<editors>
 								<label/>
@@ -219,7 +222,7 @@
 				</table>
 				</panel>
 				</aToZ>
-			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
+			<panel layout="vertical" spacing="0" width="400px" xsi:type="Panel">
 				<widget>
 					
 
@@ -259,6 +262,13 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
             </appButton>
             <html>&lt;div
 style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="delete" toggle="true">
+              <widget>
+                <text>Delete</text>
+              </widget>
+            </appButton>
+            <html>&lt;div
+style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="commit">
               <widget>
                 <text>Commit</text>
@@ -275,7 +285,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
-					<panel layout="vertical" width="600px" xsi:type="Panel">
+					<panel layout="vertical" width="400px" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
@@ -290,17 +300,48 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 								</row>
 								<row>								
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="name" width="150px" tab="multUnit,orgName"/>
+										<autoDropdown key="category" cat="category" case="upper" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="contactsTable,parentOrg">
+											<autoWidths>89</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+												<string/>
+											</autoFields>
+										</autoDropdown>
+										<query>
+										<autoDropdown cat="category" case="upper" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="contactsTable,parentOrg">
+											<autoWidths>89</autoWidths>
+											<autoEditors>
+												<label/>
+											</autoEditors>
+											<autoFields>
+												<string/>
+											</autoFields>
+										</autoDropdown>
+										</query>
+									</widget>
+								</row>
+								<row>								
+									<widget>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"sortOrder")'/>:</text>
+										<textbox case="upper" key="description" width="300px" tab="multUnit,orgName"/>
+									</widget>
+								</row>
+								<row>
+									<widget>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="sortOrder" cat="sortOrder" case="upper" serviceUrl="StorageServlet" width="61px" dropdown="true" type="integer" tab="contactsTable,parentOrg">
-													<autoWidths>40</autoWidths>
+										<check key="isSingular" tab="contactsTable,parentOrg"/>
+										<query>
+											<autoDropdown cat="isSingular" case="upper" serviceUrl="StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="contactsTable,parentOrg">
+													<autoWidths>19</autoWidths>
 													<autoEditors>
 														<label/>
 													</autoEditors>
@@ -308,40 +349,12 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 														<string/>
 													</autoFields>
 													<autoItems>
-													<item value="0"> </item>
-													<item value="1">ASC</item>
-													<item value="2">DESC</item>
-
+													<item value=""> </item>
+													<item value="Y">Y</item>
+													<item value="N">N</item>
 													</autoItems>
 													</autoDropdown>
-									</widget>		
-								</row>
-								<row>								
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="upper" key="location" width="225px" tab="multUnit,orgName"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="upper" key="parentStorage" width="150px" tab="multUnit,orgName"/>
-									</widget>	
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="upper" key="storageUnit" width="150px" tab="multUnit,orgName"/>
-									</widget>	
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
-									</widget>
-									<widget>
-										<check key="isAvailable" tab="contactsTable,parentOrg"/>
+										</query>
 									</widget>
 								</row>
 							</panel>
@@ -352,13 +365,20 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 		</panel>
 	</display>
 	<rpc key="display">
-  
+  	<number key="id" type="integer" required="false"/>
+  	<string key="categoryId" required="true"/>
+  	<string key="description" required="true"/>
+  	<check key="isSingular" required="false"/>
 	</rpc>
 	<rpc key="query">
-  
+ 	<queryNumber key="id" type="integer" required="false"/>
+ 	<collection key="category" type="string" required="false"/>
+  	<queryString key="description" required="true"/>
+  	<collection key="isSingular" type="string" required="false"/>
+
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="locName"/>
+		<queryString key="description"/>
 	</rpc>
 </screen>
   </xsl:template>

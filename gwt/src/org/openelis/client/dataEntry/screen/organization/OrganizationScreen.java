@@ -57,31 +57,6 @@ public class OrganizationScreen extends AppScreenForm {
 	}
 
 	public void onClick(Widget sender) {
-		if (sender == widgets.get("addButton")) {
-			ScreenTablePanel tp = (ScreenTablePanel) widgets
-					.get("noteFormPanel");
-			tp.getWidget().setVisible(true);
-			// }else if (sender == widgets.get("lookupParentOrganizationHtml")){
-			// new OrganizationChoose();
-		} else if (sender == widgets.get("openSidePanelButton")) {
-			HorizontalPanel hp = (HorizontalPanel) getWidget("leftPanel");
-			if (hp.isVisible()) {
-				hp.setVisible(false);
-				// HTML html = new HTML("<img
-				// src=\"Images/close_left_panel.png\">");
-				HTML screenHtml = (HTML) getWidget("openSidePanelButton");
-				screenHtml
-						.setHTML("<img src=\"Images/arrow-right-unselected.png\" onmouseover=\"this.src='Images/arrow-right-selected.png';\" onmouseout=\"this.src='Images/arrow-right-unselected.png';\">");
-				// screenHtml.initWidget(html);
-				// html.setStyleName("ScreenHTML");
-			} else {
-				hp.setVisible(true);
-				HTML screenHtml = (HTML) getWidget("openSidePanelButton");
-				screenHtml
-						.setHTML("<img src=\"Images/arrow-left-unselected.png\" onmouseover=\"this.src='Images/arrow-left-selected.png';\" onmouseout=\"this.src='Images/arrow-left-unselected.png';\">");
-			}
-		}
-
 		if (sender == widgets.get("a")) {
 			getOrganizations("a", sender);
 		} else if (sender == widgets.get("b")) {
@@ -112,7 +87,6 @@ public class OrganizationScreen extends AppScreenForm {
 			getOrganizations("n", sender);
 		} else if (sender == widgets.get("o")) {
 			getOrganizations("o", sender);
-			setStyleNameOnButton(sender);
 		} else if (sender == widgets.get("p")) {
 			getOrganizations("p", sender);
 		} else if (sender == widgets.get("q")) {
@@ -135,7 +109,7 @@ public class OrganizationScreen extends AppScreenForm {
 			getOrganizations("y", sender);
 		} else if (sender == widgets.get("z")) {
 			getOrganizations("z", sender);
-		} else if (sender == widgets.get("removeContactButton")) {
+		} else if (sender == getWidget("removeContactButton")) {
 			TableWidget orgContactsTable = (TableWidget) getWidget("contactsTable");
 			int selectedRow = orgContactsTable.controller.selected;
 			if (selectedRow > -1
@@ -155,23 +129,6 @@ public class OrganizationScreen extends AppScreenForm {
 				row.addHidden("deleteFlag", deleteFlag);
 			}
 
-		} else if (sender == ((ScreenAToZPanel) widgets.get("hideablePanel")).div) {
-			DeferredCommand.addCommand(new Command() {
-				public void execute() {
-					ScreenAToZPanel panel = (ScreenAToZPanel) widgets
-							.get("hideablePanel");
-
-					// get the selected row
-					int selectedRow = ((TableWidget) getWidget("organizationsTable")).controller.selected;
-					// only need to reset the table if the user is opening the
-					// panel
-					if (panel.panelOpen())
-						((TableWidget) getWidget("organizationsTable")).controller
-								.reset();
-
-				}
-			});
-
 		}
 	}
 
@@ -182,8 +139,9 @@ public class OrganizationScreen extends AppScreenForm {
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
 
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(false);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.addClickListener(this);
+		removeContactButton.changeState(AppButton.DISABLED);
 
 		TableWidget orgNameTable = (TableWidget) getWidget("organizationsTable");
 		modelWidget.addChangeListener(orgNameTable.controller);
@@ -253,6 +211,10 @@ public class OrganizationScreen extends AppScreenForm {
 		contactTable.controller.setAutoAdd(true);
 		contactTable.controller.addRow();
 		
+		VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+		//we need to remove anything in the notes tab if it exists
+		vp.clear();
+		
 		//set focus to the org name field
 		TextBox orgName = (TextBox)getWidget("orgName");
 		orgName.setFocus(true);
@@ -260,8 +222,8 @@ public class OrganizationScreen extends AppScreenForm {
 		// unselect the row from the table
 		((TableWidget) getWidget("organizationsTable")).controller.unselect(-1);
 
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(true);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.UNPRESSED);
 
 		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
 	}
@@ -279,8 +241,8 @@ public class OrganizationScreen extends AppScreenForm {
 		orgContactsTable.disableRows = true;
 		orgContacts.controller.unselect(-1);
 
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(false);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.DISABLED);
 		
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
 		contactTable.controller.setAutoAdd(false);
@@ -310,13 +272,13 @@ public class OrganizationScreen extends AppScreenForm {
 		TextBox orgName = (TextBox)getWidget("orgName");
 		orgName.setFocus(true);
 
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(true);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.UNPRESSED);
 	}
 
 	public void afterCommitAdd(boolean success) {
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(true);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.UNPRESSED);
 
 		loadNotes();
 		
@@ -341,8 +303,8 @@ public class OrganizationScreen extends AppScreenForm {
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
 		contactTable.controller.setAutoAdd(false);
 		
-		Button removeContactButton = (Button) getWidget("removeContactButton");
-		removeContactButton.setEnabled(false);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.UNPRESSED);
 		
 		loadNotes();
 

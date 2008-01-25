@@ -13,6 +13,7 @@ import org.openelis.domain.DictionaryEntryTableRowDO;
 import org.openelis.gwt.client.services.AppScreenServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -187,8 +188,11 @@ public class DictionaryServlet extends AppServlet implements
                 categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                 System.out.println("categories.size() "+categories.size());
             }catch(Exception e){
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());
+	        	if(e instanceof LastPageException){
+	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
+	        	}else{
+	        		throw new RPCException(e.getMessage());	
+	        	}
             }
         
         int i=0;
@@ -394,7 +398,7 @@ public class DictionaryServlet extends AppServlet implements
         return rpcReturn;
     }
 
-    public FormRPC delete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

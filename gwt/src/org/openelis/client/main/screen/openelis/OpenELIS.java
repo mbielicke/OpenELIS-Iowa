@@ -6,6 +6,7 @@ import org.openelis.client.dataEntry.screen.organization.OrganizationScreen;
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.client.supply.screen.storage.StorageScreen;
+import org.openelis.client.supply.screen.storageUnit.StorageUnitScreen;
 import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.ScreenLabel;
 import org.openelis.gwt.client.screen.ScreenMenuPanel;
@@ -417,6 +418,14 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	closeTopMenuPanel(pn,(Label) getWidget("supplyManagement"),(ScreenLabel) widgets.get("storageLabel"));
         	//we need to do the storage action
         	browser.addScreen(new StorageScreen(), openElisConstants.getString("storage"), "Storage", openElisConstants.getString("loadingMessage"));
+        }else if((item == widgets.get("storageUnitIcon")) || (item == widgets.get("storageUnitLabel")) || (item == widgets.get("storageUnitDescription")) || 
+        		(item == widgets.get("favTopStorageUnit")) || (item == widgets.get("favLeftStorageUnit"))){
+//        	if the supply management is open we need to close it
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("supplyManagementPanel");        	
+  
+        	closeTopMenuPanel(pn,(Label) getWidget("supplyManagement"),(ScreenLabel) widgets.get("storageUnitLabel"));
+        	//we need to do the storage unit action
+        	browser.addScreen(new StorageUnitScreen(), openElisConstants.getString("storageUnit"), "Storage", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("fastSampleLoginIcon")) || (item == widgets.get("fastSampleLoginLabel")) || (item == widgets.get("fastSampleLoginDescription")) || 
         		(item == widgets.get("favTopFastSampleLogin")) || (item == widgets.get("favLeftFastSampleLogin"))){
 //        	if the data entry is open we need to close it

@@ -14,17 +14,16 @@ import org.openelis.gwt.client.services.AppScreenFormServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.Filter;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -58,7 +57,8 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	private String systemUserId = "";
 	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
-			new Locale((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
+					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 	
 	public String getXML() throws RPCException {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");
@@ -192,7 +192,11 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	        try{
 	        	organizations = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
 	        }catch(Exception e){
-				throw new RPCException(e.getMessage());
+	        	if(e instanceof LastPageException){
+	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
+	        	}else{
+	        		throw new RPCException(e.getMessage());	
+	        	}			
 	        }
 
 	        int i=0;
@@ -395,7 +399,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		return rpcReturn;
 	}
 
-	public FormRPC delete(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
