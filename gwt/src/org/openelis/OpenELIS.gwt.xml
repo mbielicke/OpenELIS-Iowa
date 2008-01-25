@@ -22,7 +22,8 @@
     <servlet path='/StorageServlet' class='org.openelis.server.StorageServlet'/>  
     <servlet path='/ProviderServlet' class='org.openelis.server.ProviderServlet'/>
     <servlet path='/DictionaryServlet' class='org.openelis.server.DictionaryServlet'/>
-    <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>        
+    <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>  
+    <servlet path='/StorageUnitServlet' class='org.openelis.server.StorageUnitServlet'/>  
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->
