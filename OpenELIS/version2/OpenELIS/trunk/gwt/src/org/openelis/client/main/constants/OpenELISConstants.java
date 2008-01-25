@@ -7,6 +7,7 @@ public interface OpenELISConstants extends ConstantsWithLookup {
 	String greeting();
     String  favorites();
     String queryExpiredException();
+    String lastPageException();
     
     //button panel
     String abort();
@@ -38,6 +39,10 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String updateAborted();
     String updatingComplete();
     String mustCommitOrAbort();
+    String deleteComplete();
+    String deleteMessage();
+    String deleteAborted();
+    String deleting();
     
     //OpenELIS screen
     String file();
@@ -85,6 +90,7 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String orderDescription();
     String storage();
     String storageDescription();
+    String storageUnit();
     String category1();
     String category1Description();
     String category2();
@@ -152,7 +158,7 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String active();
     String parentOrganization();
     String contactsForThisOrganization();
-    String removeContact();
+    String removeRow();
     String contactName();
     String contact();
     String note();
