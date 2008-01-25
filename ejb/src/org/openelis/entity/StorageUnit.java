@@ -5,21 +5,23 @@ package org.openelis.entity;
   * StorageUnit Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+@NamedQueries({@NamedQuery(name = "getStorageUnit", query = "select new org.openelis.domain.StorageUnitDO(s.id,s.category,s.description,s.isSingular) from StorageUnit s where s.id = :id")})
 
 @Entity
 @Table(name="storage_unit")

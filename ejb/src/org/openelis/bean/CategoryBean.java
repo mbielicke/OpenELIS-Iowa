@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,12 +19,14 @@ import org.openelis.domain.CategoryTableRowDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.OptionItem;
 import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
@@ -102,7 +103,7 @@ public class CategoryBean implements CategoryRemote {
         
     }
 
-    public List query(HashMap fields, int first, int max) throws RemoteException {
+    public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("select distinct c.id, c.systemName from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
         if(fields.containsKey("systemName"))
@@ -128,10 +129,11 @@ public class CategoryBean implements CategoryRemote {
         
         Query query = manager.createQuery(sb.toString()+" order by c.systemName");
         
-        if(first > -1)
-            query.setFirstResult(first);
-        if(max > -1)
-            query.setMaxResults(max);
+//      if(first > -1)
+    	// query.setFirstResult(first);
+
+        if(first > -1 && max > -1)
+        	query.setMaxResults(first+max);
            
         if(fields.containsKey("systemName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("systemName"), "c.systemName",query);
@@ -154,7 +156,12 @@ public class CategoryBean implements CategoryRemote {
         if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
             QueryBuilder.setParameters((QueryStringField)fields.get("relatedEntry"), "relEntry.entry",query);
         
-        return query.getResultList();
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        if(returnList == null)
+       	 throw new LastPageException();
+        else
+       	 return returnList;
+        //return query.getResultList();
             
     }
 
