@@ -1,6 +1,5 @@
 package org.openelis.remote;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public interface ProviderRemote {
     public List getProviderAddresses(Integer providerId);
     
      //method to query for provider
-     public List query(HashMap fields, int first, int max) throws RemoteException;
+     public List query(HashMap fields, int first, int max) throws Exception;
      
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();
