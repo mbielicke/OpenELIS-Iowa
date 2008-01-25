@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +22,7 @@ import org.openelis.domain.ProviderTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
@@ -30,6 +30,7 @@ import org.openelis.remote.AddressLocal;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
@@ -135,7 +136,7 @@ public class ProviderBean implements ProviderRemote {
         
     }
 
-    public List query(HashMap fields, int first, int max) throws RemoteException {
+    public List query(HashMap fields, int first, int max) throws Exception {
         
         Query refIdQuery = manager.createNamedQuery("getTableId");
         refIdQuery.setParameter("name", "provider");
@@ -196,10 +197,11 @@ public class ProviderBean implements ProviderRemote {
                 System.out.println("after table fields");
         Query query = manager.createQuery(sb.toString()+" order by p.lastName, p.firstName ");
         
-        if(first > -1)
-         query.setFirstResult(first);
-        if(max > -1)
-         query.setMaxResults(max);
+//      if(first > -1)
+    	// query.setFirstResult(first);
+
+        if(first > -1 && max > -1)
+        	query.setMaxResults(first+max);
         
         System.out.println("setting parameters");
         
@@ -262,10 +264,12 @@ public class ProviderBean implements ProviderRemote {
          if(fields.containsKey("usersSubject"))
              QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
          
-         
-         
-        System.out.println("ending query");
-        return query.getResultList();
+         List returnList = GetPage.getPage(query.getResultList(), first, max);
+         if(returnList == null)
+        	 throw new LastPageException();
+         else
+        	 return returnList;
+         //return query.getResultList();
         
     }
 

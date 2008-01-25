@@ -24,16 +24,17 @@ import org.openelis.domain.OrganizationTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.OptionItem;
 import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
@@ -248,7 +249,7 @@ public class OrganizationBean implements OrganizationRemote {
 	        
 	    }
 
-	public List query(HashMap fields, int first, int max) throws RemoteException{
+	public List query(HashMap fields, int first, int max) throws Exception{
 //		organization reference table id
     	Query refIdQuery = manager.createNamedQuery("getTableId");
     	refIdQuery.setParameter("name", "organization");
@@ -326,11 +327,11 @@ public class OrganizationBean implements OrganizationRemote {
    
          Query query = manager.createQuery(sb.toString()+" order by o.name");
          
-         if(first > -1)
-        	 query.setFirstResult(first);
+        // if(first > -1)
+        	// query.setFirstResult(first);
  
-         if(max > -1)
-        	 query.setMaxResults(max);
+         if(first > -1 && max > -1)
+        	 query.setMaxResults(first+max);
              
 //       ***set the parameters in the query
 //       org elements
@@ -390,8 +391,13 @@ public class OrganizationBean implements OrganizationRemote {
 //       org notes
          if(fields.containsKey("usersSubject"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
-        
-         return query.getResultList();
+         List returnList = GetPage.getPage(query.getResultList(), first, max);
+         
+         if(returnList == null)
+        	 throw new LastPageException();
+         else
+        	 return returnList;
+         //return query.getResultList();
 	}
 	
 	public List autoCompleteLookupById(Integer id){
