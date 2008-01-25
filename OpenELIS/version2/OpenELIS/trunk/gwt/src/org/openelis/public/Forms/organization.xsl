@@ -278,10 +278,10 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 							</row>
 									<row>
 									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"organizationId")'/>:</text>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 										</widget>
 										<widget>
-										<textbox key="orgId" width="100px" tab="orgName,isActive"/>
+										<textbox key="orgId" width="75px" tab="orgName,isActive"/>
 										</widget>
 									</row>
 									<row>								
@@ -556,19 +556,19 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											</autoDropdown>									 	
 										</editors>
 										<fields>
-											<collection/>
+											<collection type="integer"/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<collection/>
+											<collection type="string"/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<collection/>
+											<collection type="string"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -578,9 +578,13 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 								</widget>
 								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
 																<!--&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; -->
-								<button halign="right" onclick="this" key="removeContactButton" style="ScreenButtonPanel" text="{resource:getString($constants,'removeRow')}"/>
-								
-								
+									<widget halign="right">
+									<appButton action="removeContact" onclick="this" key="removeContactButton">
+						              <widget>
+                						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							              </widget>
+						            </appButton>
+						            </widget>
 							</panel>
 								<!-- end TAB 1 data table -->
 						<!-- END TAB 1 -->

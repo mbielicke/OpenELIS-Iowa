@@ -4,6 +4,7 @@ import org.openelis.gwt.client.screen.AppScreenForm;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.Widget;
 
 public class StorageScreen extends AppScreenForm{
 
@@ -11,7 +12,6 @@ public class StorageScreen extends AppScreenForm{
 	.create(StorageServletInt.class);
 	
 	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
-
 	
 	public StorageScreen() {
 		super();
@@ -22,4 +22,5 @@ public class StorageScreen extends AppScreenForm{
 		formService = screenService;
 		getXML();
 	}
+
 }

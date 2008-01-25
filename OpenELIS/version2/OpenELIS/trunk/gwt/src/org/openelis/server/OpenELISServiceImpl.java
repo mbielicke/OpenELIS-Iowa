@@ -86,6 +86,15 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("onClick", "this");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
+            
+            elem = doc.createElement("menulabel");
+            elem.setAttribute("text", "Storage Unit");
+            elem.setAttribute("constant", "true");
+            elem.setAttribute("key", "favLeftStorageUnit");
+            elem.setAttribute("style", "ListSubItem");
+            elem.setAttribute("onClick", "this");
+            elem.setAttribute("hover", "Hover");
+            root.appendChild(elem);
                     
             return XMLUtil.toString(doc);
         }catch(Exception e){

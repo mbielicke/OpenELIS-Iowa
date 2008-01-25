@@ -1,4 +1,4 @@
-package org.openelis.client.supply.screen.storage;
+package org.openelis.client.supply.screen.storageUnit;
 
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableController;
@@ -7,11 +7,11 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 
-public class StorageNameTable implements TableManager {
-    private StorageScreen userForm;
+public class StorageUnitDescTable implements TableManager {
+    private StorageUnitScreen userForm;
     public boolean disableRows = false;
 
-    public void setStorageForm(StorageScreen form) {
+    public void setStorageUnitForm(StorageUnitScreen form) {
         userForm = form;
     }  
 
@@ -86,3 +86,4 @@ public class StorageNameTable implements TableManager {
 		controller.reset();
 	}  
 }
+

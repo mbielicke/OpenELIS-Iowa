@@ -7,6 +7,7 @@ import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
 import org.openelis.client.supply.screen.storage.StorageNameTable;
+import org.openelis.client.supply.screen.storageUnit.StorageUnitDescTable;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
 import org.openelis.gwt.client.screen.ScreenAppButton;
 import org.openelis.gwt.client.screen.ScreenAppMessage;
@@ -118,7 +119,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget(WidgetMap.PANEL_TABLE, new ScreenTablePanel());
       map.addWidget(WidgetMap.PANEL_DECK, new ScreenDeck());
       map.addWidget(WidgetMap.PANEL_HSPLIT, new ScreenHorizontalSplit());
-      map.addWidget(WidgetMap.BUTTON, new ScreenButton());
+      map.addWidget(WidgetMap.BUTTON, new ScreenAppButton());
       map.addWidget(WidgetMap.BUTTON_PANEL, new ScreenButtonPanel());
       map.addWidget(WidgetMap.CALENDAR, new ScreenCalendar());
       map.addWidget(WidgetMap.CHECKBOX, new ScreenCheck());
@@ -180,6 +181,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("OpenELISService",OpenELISService.getInstance());
       map.addWidget("OrganizationNameTable", new OrganizationNameTable());
       map.addWidget("StorageNameTable", new StorageNameTable());
+      map.addWidget("StorageUnitDescTable", new StorageUnitDescTable());
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
