@@ -10,6 +10,7 @@
     <inherits name="org.openelis.client.main.Main"/>
     <inherits name="org.openelis.client.utilities.Utilities"/>
     <inherits name="org.openelis.client.dataEntry.DataEntry"/>
+    <inherits name="org.openelis.client.analysis.Analysis"/>
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.client.main.OpenELIS'/>
@@ -17,8 +18,11 @@
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
     <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
     <servlet path='/OrganizationServlet' class='org.openelis.server.OrganizationServlet'/>  
-    <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>  
+    <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>      
     <servlet path='/StorageServlet' class='org.openelis.server.StorageServlet'/>  
+    <servlet path='/ProviderServlet' class='org.openelis.server.ProviderServlet'/>
+    <servlet path='/DictionaryServlet' class='org.openelis.server.DictionaryServlet'/>
+    <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>        
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->
