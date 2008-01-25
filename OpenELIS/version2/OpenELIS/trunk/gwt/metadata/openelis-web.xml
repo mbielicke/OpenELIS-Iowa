@@ -61,6 +61,11 @@
     <servlet-name>StorageServlet</servlet-name>
     <servlet-class>org.openelis.server.StorageServlet</servlet-class>
   </servlet>
+  
+    <servlet>
+    <servlet-name>StorageUnitServlet</servlet-name>
+    <servlet-class>org.openelis.server.StorageUnitServlet</servlet-class>
+  </servlet>
   <!-- inmsp Servlet Mappings-->
     
 <servlet-mapping>
@@ -101,6 +106,11 @@
     <servlet-mapping>
     <servlet-name>StorageServlet</servlet-name>
     <url-pattern>/StorageServlet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>StorageUnitServlet</servlet-name>
+    <url-pattern>/StorageUnitServlet</url-pattern>
   </servlet-mapping>
     
   <session-config>
