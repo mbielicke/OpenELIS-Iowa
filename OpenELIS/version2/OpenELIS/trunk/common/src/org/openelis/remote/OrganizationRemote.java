@@ -1,5 +1,4 @@
 package org.openelis.remote;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public interface OrganizationRemote {
 	public List getOrganizationContacts(Integer organizationId);
 	
 	//method to query for organizations
-	 public List query(HashMap fields, int first, int max) throws RemoteException;
+	 public List query(HashMap fields, int first, int max) throws Exception;
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String orgName, int maxResults);

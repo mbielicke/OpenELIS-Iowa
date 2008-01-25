@@ -1,6 +1,5 @@
 package org.openelis.remote;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public interface CategoryRemote {
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries);
     
     //  method to query for category
-    public List query(HashMap fields, int first, int max) throws RemoteException;
+    public List query(HashMap fields, int first, int max) throws Exception;
     
     //a way for the servlet to get the system user id
     public Integer getSystemUserId();
