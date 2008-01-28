@@ -58,8 +58,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
         
-        sb.append("select distinct s.id,s.description " + "from StorageUnit s where 1=1 "
-        		);
+        sb.append("select distinct s.id,s.description " + "from StorageUnit s where 1=1 ");
          //***append the abstract fields to the string buffer
         if(fields.containsKey("id"))
         	sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("id"), "s.id"));
@@ -150,8 +149,7 @@ public class StorageUnitBean implements StorageUnitRemote{
             e.printStackTrace();
             return null;
         } finally {
-        }
-        
+        }        
     }
 
 	public void deleteStorageUnit(Integer StorageUnitId) throws RemoteException {
@@ -166,5 +164,20 @@ public class StorageUnitBean implements StorageUnitRemote{
             //log.error(e.getMessage());
             e.printStackTrace();
         }		
+	}
+
+	public List autoCompleteLookupByDescription(String desc, int maxResults) {
+		Query query = null;
+		query = manager.createNamedQuery("getStorageUnitAutoCompleteByDesc");
+		query.setParameter("desc",desc);
+		query.setMaxResults(maxResults);
+		return query.getResultList();
+	}
+
+	public List autoCompleteLookupById(Integer id) {
+		Query query = null;
+		query = manager.createNamedQuery("getStorageUnitAutoCompleteById");
+		query.setParameter("id",id);
+		return query.getResultList();
 	}	 
 }

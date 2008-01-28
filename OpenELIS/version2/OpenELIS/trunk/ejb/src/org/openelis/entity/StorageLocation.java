@@ -5,22 +5,33 @@ package org.openelis.entity;
   * StorageLocation Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries({@NamedQuery(name = "getStorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+" s.location,s.parentStorageLocation,s.storageUnit,s.isAvailable) from StorageLocation s where s.id = :id"),
+@NamedQuery(name = "getStorageLocationAutoCompleteByName", query = "select s.id, s.name, s.location " +
+							 " from StorageLocation s where s.name like :name"),
+@NamedQuery(name = "getStorageLocationAutoCompleteById", query = "select s.id, s.name, s.location " +
+							 " from StorageLocation s where s.id = :id")})
+							 
+							 
 @Entity
 @Table(name="storage_location")
 @EntityListeners({AuditUtil.class})
@@ -49,7 +60,14 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="is_available")
   private String isAvailable;             
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
+  private StorageLocation parentStorageLocationName;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
+  private StorageUnit storageUnitName;
+  
   @Transient
   private StorageLocation original;
 
@@ -189,5 +207,18 @@ public class StorageLocation implements Auditable, Cloneable {
   public String getTableName() {
     return "storage_location";
   }
+public StorageLocation getParentStorageLocationName() {
+	return parentStorageLocationName;
+}
+public void setParentStorageLocationName(
+		StorageLocation parentStorageLocationName) {
+	this.parentStorageLocationName = parentStorageLocationName;
+}
+public StorageUnit getStorageUnitName() {
+	return storageUnitName;
+}
+public void setStorageUnitName(StorageUnit storageUnitName) {
+	this.storageUnitName = storageUnitName;
+}
   
 }   
