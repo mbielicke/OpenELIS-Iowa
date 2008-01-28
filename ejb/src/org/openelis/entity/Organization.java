@@ -41,9 +41,9 @@ import org.w3c.dom.Element;
 						           " orgz.id = contact.organization and orgz.id = :id"),
 			   @NamedQuery(name = "getOrganizationNotesTopLevel", query = "select n.id, n.systemUser, n.text, n.timestamp, n.subject " + 
 					   "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.referenceId = :id"),
-			   @NamedQuery(name = "getAutoCompleteById", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
+			   @NamedQuery(name = "getOrganizationAutoCompleteById", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
 					   "  from Organization o where o.id = :id"),
-			   @NamedQuery(name = "getAutoCompleteByName", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
+			   @NamedQuery(name = "getOrganizationAutoCompleteByName", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
 					   "  from Organization o where o.name like :name")})
                                                                   
 @Entity
