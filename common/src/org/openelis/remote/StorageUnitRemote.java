@@ -10,7 +10,7 @@ import org.openelis.domain.StorageUnitDO;
 
 @Remote
 public interface StorageUnitRemote {
-	//commit a change to org, or insert a new org
+	//commit a change to storage unit, or insert a new storage unit
 	public Integer updateStorageUnit(StorageUnitDO unitDO);
 	
 	//method to return a whole storage unit
@@ -21,6 +21,12 @@ public interface StorageUnitRemote {
 	 
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();
+	 
+//	auto complete lookup
+	 public List autoCompleteLookupByDescription(String desc, int maxResults);
+	 
+	 //auto complete lookup
+	 public List autoCompleteLookupById(Integer id);
 	 
 	 public void deleteStorageUnit(Integer StorageUnitId) throws RemoteException;
 
