@@ -77,6 +77,7 @@ public class OrganizationNameTable implements TableManager {
 
 	public void setModel(TableController controller, DataModel model) {
 		controller.model.reset();
+		//controller.reset();
 		for (int i = 0; i < model.size(); i++) {
 			DataSet row = (DataSet)model.get(i);
 			TableRow tRow = controller.model.createRow();
@@ -93,6 +94,6 @@ public class OrganizationNameTable implements TableManager {
 		controller.model.totalRows = 2;
 		controller.model.totalPages = 3;
 		
-		controller.reset();
+		controller.loadModel(controller.model);
 	}  
 }

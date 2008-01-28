@@ -8,10 +8,10 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 
 public class StorageNameTable implements TableManager {
-    private StorageScreen userForm;
+    private StorageLocationScreen userForm;
     public boolean disableRows = false;
 
-    public void setStorageForm(StorageScreen form) {
+    public void setStorageForm(StorageLocationScreen form) {
         userForm = form;
     }  
 
@@ -83,6 +83,6 @@ public class StorageNameTable implements TableManager {
 		controller.model.totalRows = 2;
 		controller.model.totalPages = 3;
 		
-		controller.reset();
+		controller.loadModel(controller.model);
 	}  
 }
