@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -402,14 +400,14 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	public List autoCompleteLookupById(Integer id){
 		Query query = null;
-		query = manager.createNamedQuery("getAutoCompleteById");
+		query = manager.createNamedQuery("getOrganizationAutoCompleteById");
 		query.setParameter("id",id);
 		return query.getResultList();
 	}
 	
 	public List autoCompleteLookupByName(String orgName, int maxResults){
 		Query query = null;
-		query = manager.createNamedQuery("getAutoCompleteByName");
+		query = manager.createNamedQuery("getOrganizationAutoCompleteByName");
 		query.setParameter("name",orgName);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
