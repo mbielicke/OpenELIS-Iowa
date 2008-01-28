@@ -1,9 +1,9 @@
 package org.openelis.client.supply.screen.storageUnit;
 
-import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTable;
-import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.gwt.client.screen.AppScreenForm;
+import org.openelis.gwt.client.screen.ScreenTextBox;
 import org.openelis.gwt.client.widget.AppButton;
+import org.openelis.gwt.client.widget.AutoCompleteDropdown;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableWidget;
@@ -11,7 +11,7 @@ import org.openelis.gwt.common.FormRPC;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class StorageUnitScreen extends AppScreenForm{
@@ -118,6 +118,38 @@ public class StorageUnitScreen extends AppScreenForm{
 		bpanel.setButtonState("next", AppButton.DISABLED);
 		bpanel.setButtonState("delete", AppButton.DISABLED);
 		bpanel.setButtonState("update", AppButton.DISABLED);
+	}
+	
+	public void add(int state) {
+		super.add(state);
+		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
+		id.enable(false);
+
+		//set focus to the name field
+		AutoCompleteDropdown cat = (AutoCompleteDropdown)getWidget("category");
+		cat.setFocus(true);
+		
+//		 unselect the row from the table
+		((TableWidget) getWidget("StorageUnitTable")).controller.unselect(-1);
+	}
+	
+	public void query(int state) {
+		super.query(state);
+		
+		//set focus to the id field
+		TextBox id = (TextBox)getWidget("id");
+		id.setFocus(true);
+	}
+	
+	public void afterUpdate(boolean success) {
+		super.afterUpdate(success);
+		
+		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
+		id.enable(false);
+
+		//set focus to the name field
+		AutoCompleteDropdown cat = (AutoCompleteDropdown)getWidget("category");
+		cat.setFocus(true);
 	}
 	
 	private void getStorageUnits(String letter, Widget sender) {
