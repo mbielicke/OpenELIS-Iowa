@@ -33,4 +33,5 @@ public interface QaEventRemote {
     //method to get all the tests for a given QaEvent
     public List<Object[]> getTests(Integer Id);
     
+    
 }
