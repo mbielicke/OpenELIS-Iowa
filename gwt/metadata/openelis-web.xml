@@ -58,8 +58,8 @@
   </servlet>
   
   <servlet>
-    <servlet-name>StorageServlet</servlet-name>
-    <servlet-class>org.openelis.server.StorageServlet</servlet-class>
+    <servlet-name>StorageLocationServlet</servlet-name>
+    <servlet-class>org.openelis.server.StorageLocationServlet</servlet-class>
   </servlet>
   
     <servlet>
@@ -79,8 +79,8 @@
   </servlet-mapping>
   
     <servlet-mapping>
-    <servlet-name>StorageServlet</servlet-name>
-    <url-pattern>/StorageServlet</url-pattern>
+    <servlet-name>StorageLocationServlet</servlet-name>
+    <url-pattern>/StorageLocationServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -101,11 +101,6 @@
   <servlet-mapping>
     <servlet-name>DictionaryServlet</servlet-name>
     <url-pattern>/DictionaryServlet</url-pattern>
-  </servlet-mapping>
-  
-    <servlet-mapping>
-    <servlet-name>StorageServlet</servlet-name>
-    <url-pattern>/StorageServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
