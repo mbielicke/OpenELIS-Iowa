@@ -83,7 +83,7 @@ public class StorageUnitDescTable implements TableManager {
 		controller.model.totalRows = 2;
 		controller.model.totalPages = 3;
 		
-		controller.reset();
+		controller.loadModel(controller.model);
 	}  
 }
 
