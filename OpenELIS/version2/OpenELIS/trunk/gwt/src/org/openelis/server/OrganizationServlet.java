@@ -64,7 +64,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");
 	}
 
-	public FormRPC abort(DataSet key, FormRPC rpc) throws RPCException {
+	public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
 //		remote interface to call the organization bean
 		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
@@ -72,28 +72,28 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getObject(0).getValue(),true);
 
 //		set the fields in the RPC
-		rpc.setFieldValue("orgId", (Integer)key.getObject(0).getValue());
-        rpc.setFieldValue("orgName",organizationDO.getName());
-        rpc.setFieldValue("streetAddress",organizationDO.getAddressDO().getStreetAddress());
-        rpc.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
-        rpc.setFieldValue("city",organizationDO.getAddressDO().getCity());
-        rpc.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-        rpc.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
-        rpc.setFieldValue("isActive",((organizationDO.getIsActive() != null && organizationDO.getIsActive().equals("Y")) ? true : false));
-        rpc.setFieldValue("stateId",organizationDO.getAddressDO().getState());
-        rpc.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
-        rpc.setFieldValue("addressId", organizationDO.getAddressDO().getId());
+		rpcReturn.setFieldValue("orgId", (Integer)key.getObject(0).getValue());
+		rpcReturn.setFieldValue("orgName",organizationDO.getName());
+        rpcReturn.setFieldValue("streetAddress",organizationDO.getAddressDO().getStreetAddress());
+        rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
+        rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
+        rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
+        rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
+        rpcReturn.setFieldValue("isActive",((organizationDO.getIsActive() != null && organizationDO.getIsActive().equals("Y")) ? true : false));
+        rpcReturn.setFieldValue("stateId",organizationDO.getAddressDO().getState());
+        rpcReturn.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
+        rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
 		//get the filled out DO object
-		if(rpc.getFieldValue("action").equals("contacts")){		
+		if(rpcReturn.getFieldValue("action").equals("contacts")){		
 	        //load the contacts
 	        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
 	        //need to build the contacts table now...
-	        rpc.setFieldValue("contactsTable",fillContactsTable((TableModel)rpc.getField("contactsTable").getValue(),contactsList));
+	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
 	        
 		}
         
-      return rpc;  
+      return rpcReturn;  
 	}
 
 	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {

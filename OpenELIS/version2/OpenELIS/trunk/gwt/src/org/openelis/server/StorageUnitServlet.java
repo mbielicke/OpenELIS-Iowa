@@ -45,8 +45,19 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
 	public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
+//		remote interface to call the storage unit bean
+		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
+		
+		
+		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)key.getObject(0).getValue(),true);
+
+//		set the fields in the RPC
+		rpcReturn.setFieldValue("id", storageUnitDO.getId());
+		rpcReturn.setFieldValue("categoryId", storageUnitDO.getCategory().trim());
+		rpcReturn.setFieldValue("description", storageUnitDO.getDescription().trim());
+		rpcReturn.setFieldValue("isSingular", ("Y".equals(storageUnitDO.getIsSingular())));
+        
+      return rpcReturn;  
 	}
 
 	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
