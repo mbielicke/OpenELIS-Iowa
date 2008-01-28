@@ -291,7 +291,7 @@ public class OrganizationScreen extends AppScreenForm {
 	public void query(int state) {
 		super.query(state);
 		
-		//set focus to the org name field
+		//set focus to the org id field
 		TextBox orgName = (TextBox)getWidget("orgId");
 		orgName.setFocus(true);
 	}
