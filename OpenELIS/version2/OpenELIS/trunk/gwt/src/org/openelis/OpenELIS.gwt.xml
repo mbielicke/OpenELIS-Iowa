@@ -19,7 +19,7 @@
     <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
     <servlet path='/OrganizationServlet' class='org.openelis.server.OrganizationServlet'/>  
     <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>      
-    <servlet path='/StorageServlet' class='org.openelis.server.StorageServlet'/>  
+    <servlet path='/StorageLocationServlet' class='org.openelis.server.StorageLocationServlet'/>  
     <servlet path='/ProviderServlet' class='org.openelis.server.ProviderServlet'/>
     <servlet path='/DictionaryServlet' class='org.openelis.server.DictionaryServlet'/>
     <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>  
