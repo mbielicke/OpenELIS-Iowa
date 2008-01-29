@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -71,15 +72,20 @@ public class HistoryBean implements HistoryLocal {
 
 	    private Integer getSystemUserId(){
 	        log.debug(ctx.getCallerPrincipal().getName()+" in LockBean "+ctx.toString());
-	            try {
-	                SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-	                                                                     .getName());
+	        try {
+	            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
 	                return systemUserDO.getId();
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	                return null;
-	            } finally {
-	            }
-	            
-	        }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return null;
+	        } finally {
+            }        
+	    }
+        
+        public List getHistoryEntries(Integer referenceId, Integer referenceTable) {
+            Query query = manager.createNamedQuery("getEntries");
+            query.setParameter("referenceId", referenceId);
+            query.setParameter("referenceTable", referenceTable);
+            return query.getResultList();
+        }
 }

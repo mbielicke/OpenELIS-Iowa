@@ -7,7 +7,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+@NamedQueries({@NamedQuery(name="getEntries", query="from History where referenceId = :referenceId and referenceTable = :referenceTable")})
 
 @Entity
 @Table(name = "history")
