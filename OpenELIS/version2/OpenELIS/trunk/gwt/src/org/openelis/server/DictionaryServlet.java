@@ -19,13 +19,13 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.OptionField;
 import org.openelis.gwt.common.data.OptionItem;
-import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -65,11 +65,10 @@ public class DictionaryServlet extends AppServlet implements
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
-        return null;
+        return fetch(key, rpcReturn);
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        System.out.println("Dictionary:  starting commit add");
+    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         CategoryDO categoryDO = new CategoryDO();
         //NumberField categoryId = (NumberField) rpcSend.getField("categoryId");
@@ -78,16 +77,10 @@ public class DictionaryServlet extends AppServlet implements
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-        
-        System.out.println("systemName "+(String)rpcSend.getFieldValue("systemName"));
+                
         
         categoryDO.setSection((Integer)rpcSend.getFieldValue("secNameId"));
-        /*OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");        
-               
-         if(!sectionOpt.getValue().equals(""))
-          categoryDO.setSection(new Integer((String)sectionOpt.getValue()));
         
-        System.out.println("sectionOpt.getValue() "+sectionOpt.getValue());*/
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -108,7 +101,7 @@ public class DictionaryServlet extends AppServlet implements
           }
          
           if(doloop){   
-           System.out.println("dict sysName "+ sysName);                 
+                          
            dictDO.setSystemName(sysName);
            dictDO.setEntry(entry);         
            //NumberField id = (NumberField)row.getHidden("id");
@@ -117,8 +110,7 @@ public class DictionaryServlet extends AppServlet implements
           // dictDO.setId((Integer)id.getValue());
            if(relEntryId!=null){
             dictDO.setRelatedEntry((Integer)relEntryId.getValue());
-           } 
-           System.out.println("before setting DO from row");
+           }            
            CheckField isActive =  (CheckField)row.getColumn(0);
            if(isActive.isChecked()){           
               dictDO.setIsActive("Y");
@@ -134,15 +126,13 @@ public class DictionaryServlet extends AppServlet implements
                dictDO.setRelatedEntry((Integer)relEntryId.getValue());
              }
             }
-          
-          System.out.println("after setting DO from row");
+                    
           
           dictDOList.add(dictDO);
          }
         } 
         
-        Integer categoryId = remote.updateCategory(categoryDO, dictDOList);
-        System.out.println("after updateCategory()");
+        Integer categoryId = remote.updateCategory(categoryDO, dictDOList);        
         
          categoryDO = remote.getCategory((Integer)categoryId, false);
          rpcReturn.setFieldValue("categoryId", categoryId);
@@ -150,21 +140,18 @@ public class DictionaryServlet extends AppServlet implements
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
          rpcReturn.setFieldValue("secNameId",categoryDO.getSection()); 
-         
-         System.out.println("after setting fields on the form");
+                  
          
         // fillSectionOption(sectionOpt ,categoryDO);
          
          
          List addressList = remote.getDictionaryEntries(categoryId);
          rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
-         
-         System.out.println("Dictionary:  ending commitadd");
+                  
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        System.out.println("starting commitQuery");
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
         //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
         if(rpcSend == null){
            //need to get the query rpc out of the cache
@@ -172,8 +159,7 @@ public class DictionaryServlet extends AppServlet implements
            // systemUserId = remote.getSystemUserId().toString();
         //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
        // }
-        
-        System.out.println("put screenQueryRpc");
+                
         
             FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Category");
 
@@ -186,7 +172,7 @@ public class DictionaryServlet extends AppServlet implements
                 
                 CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
                 categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                System.out.println("categories.size() "+categories.size());
+                
             }catch(Exception e){
 	        	if(e instanceof LastPageException){
 	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -230,8 +216,7 @@ public class DictionaryServlet extends AppServlet implements
         //if(systemUserId.equals("")){
             //systemUserId = remote.getSystemUserId().toString();
         //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
-        
-        System.out.println("ending commitQuery");
+                
         return model;   
         } else{
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
@@ -241,27 +226,22 @@ public class DictionaryServlet extends AppServlet implements
             //contacts table
              TableModel dictEntryTable = null;
             if(rpcSend.getField("dictEntTable") != null)
-                dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
-                
-            System.out.println("dictEntTable != null");
+                dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();                            
             
-            if(dictEntryTable != null){    
-                System.out.println("dictEntryTable != null");
-                fields.put("isActive",(QueryOptionField)dictEntryTable.getRow(0).getColumn(0));
+            if(dictEntryTable != null){                   
+                fields.put("isActive",(CollectionField)dictEntryTable.getRow(0).getColumn(0));
                 fields.put("dictSystemName",(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
                 fields.put("abbreviation",(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
                 fields.put("entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
-                fields.put("relatedEntry",(NumberField)dictEntryTable.getRow(0).getColumn(4));                
+                fields.put("relatedEntry",(QueryStringField)dictEntryTable.getRow(0).getColumn(4));                
                        
             }
             
             //System.out.println("rpcSend "+rpcSend); 
 
             List systemNames = new ArrayList();
-                try{                    
-                    System.out.println("in try systemNames");
-                    systemNames = remote.query(fields,0,leftTableRowsPerPage);
-                     System.out.println("systemNames.size() "+systemNames.size()); 
+                try{                                        
+                    systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
             }catch(Exception e){
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());                
@@ -398,13 +378,9 @@ public class DictionaryServlet extends AppServlet implements
         return rpcReturn;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+   
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {       
-        System.out.println("called fetch for key "+ (Integer)key.getObject(0).getValue());
+    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {               
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = (Integer)key.getObject(0).getValue();
 //      System.out.println("in contacts");
@@ -415,9 +391,7 @@ public class DictionaryServlet extends AppServlet implements
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
         rpcReturn.setFieldValue("secNameId",catDO.getSection());    
-        
-        //OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");
-        //fillSectionOption(sectionOpt ,catDO);
+                
                                    
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -429,8 +403,7 @@ public class DictionaryServlet extends AppServlet implements
         return fetch(key, rpcReturn);
     }
 
-    public TableModel fillDictEntryTable(TableModel dictEntryModel, List contactsList){
-        System.out.println("starting  fillAddressTable");
+    public TableModel fillDictEntryTable(TableModel dictEntryModel, List contactsList){        
          try{
              dictEntryModel.reset();
              
@@ -440,11 +413,9 @@ public class DictionaryServlet extends AppServlet implements
 
                     TableRow row = dictEntryModel.createRow();
                     NumberField id = new NumberField();
-                    id.setType("integer");
-                    //NumberField sectionId = new NumberField();
-                   // sectionId.setType("integer");
+                    id.setType("integer");                    
                      id.setValue(dictDO.getId());
-                   // sectionId.setValue(addressRow.g)
+                   
                      row.addHidden("id", id);
                      
                      NumberField relEntryId = new NumberField();
@@ -472,8 +443,7 @@ public class DictionaryServlet extends AppServlet implements
     
     public void fillSectionOption(OptionField sectionOpt ,CategoryDO catDO){
         sectionOpt.getOptions().clear();
-        // System.out.println("typeId "+provDO.getTypeId());
-         //System.out.println("type "+provDO.getType()); 
+        
          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
          List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
          
@@ -491,15 +461,11 @@ public class DictionaryServlet extends AppServlet implements
            }
          
          OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
-         if(sections!=null){
-             System.out.println("sections.size() "+ sections.size());   
+         if(sections!=null){               
             List<OptionItem> optionlist = new ArrayList<OptionItem>();
          
           for (Iterator iter = sections.iterator(); iter.hasNext();) {
-              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
-              
-             //System.out.println("typeId "+idType[0]);
-             //System.out.println("type "+idType[1]);              
+              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();                                   
               
               //if the section has already been added to the drop down don't add it again
                 if(!firstItem.display.equals(sectionDO.getName())){          
@@ -519,12 +485,7 @@ public class DictionaryServlet extends AppServlet implements
           }
     }
     
-        
-   /* public Integer getRelatedEntryId(String relatedEntry){
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer entryId = remote.getEntryId(relatedEntry);        
-        return entryId;
-    }*/
+           
     
     public Integer getEntryIdForSystemName(String systemName){
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
@@ -537,45 +498,9 @@ public class DictionaryServlet extends AppServlet implements
         Integer entryId = remote.getEntryIdForEntry(entry);        
         return entryId;
     }
-    
-    /* public String getMatchingEntriesXML(Integer id,String relatedEntry){
-        try{
-            Document doc = XMLUtil.createNew("list");
-            Element root = doc.getDocumentElement();
-            //HashMap perms = getPermissions();
-            root.setAttribute("key", "matchingEntriesList");
-            root.setAttribute("height", "100%"); 
-            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            System.out.println("id "+ id);
-            System.out.println("relatedEntry "+ "\""+relatedEntry+"\"");
-            //List entries = remote.getMatchingEntries(id, relatedEntry);
-            System.out.println("entries "+ entries.size());
-             if(entries !=null){
-                 for (Iterator iter = entries.iterator(); iter.hasNext();) {
-                    Object[] element = (Object[])iter.next();
-                    Integer entryId = (Integer)element[0];                   
-                    String entryText = element[1].toString();
-                    Element elem = doc.createElement("item");
-                    elem.setAttribute("text", entryText);
-                    //elem.setAttribute("constant", "true");
-                    elem.setAttribute("value", entryId.toString());
-                    elem.setAttribute("style", "ScreenLabel");
-                    elem.setAttribute("onClick", "this");
-                    //elem.setAttribute("hover", "Hover");
-                    root.appendChild(elem);
-                 }                 
-             }else {
-                 return null;
-             }
-             return XMLUtil.toString(doc);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return null;
-        }   
-    }*/
+       
 
-    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-      System.out.println("getDisplay");
+    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {     
       
       DataModel dataModel = new DataModel(); 
       try{
@@ -608,8 +533,7 @@ public class DictionaryServlet extends AppServlet implements
         return dataModel;
     }
 
-    public DataModel getInitialModel(String cat) {
-        System.out.println("getInitialModel");
+    public DataModel getInitialModel(String cat) {        
         DataModel model = new DataModel();
         DataSet blankset = new DataSet();
         
@@ -634,15 +558,9 @@ public class DictionaryServlet extends AppServlet implements
          //System.out.println("type "+provDO.getType()); 
          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
          List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
-         
-       
-        // SectionIdNameDO section = utilRemote.getSection(catDO.getSection());
-             //if((section.getId()).equals(catDO.getSection())){
-             //sectionOpt.addOption(catDO.getSection().toString(),section.getName());    
-             // } 
+                      
              
-        
-        System.out.println("added blankset");
+                
         // OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
          if(sections!=null){
             // System.out.println("sections.size() "+ sections.size());   
@@ -678,8 +596,7 @@ public class DictionaryServlet extends AppServlet implements
                 selected.setValue(new Boolean(false));
                 set.addObject(selected);
                 
-                model.add(set);
-                System.out.println("added dataset");
+                model.add(set);                
               //}             
            }                
            
@@ -688,8 +605,7 @@ public class DictionaryServlet extends AppServlet implements
         return model;
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match) {
-        System.out.println("getMatches");
+    public DataModel getMatches(String cat, DataModel model, String match) {        
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
         List entries = remote.getMatchingEntries(match+"%", 10);
         DataModel dataModel = new DataModel();
@@ -724,6 +640,11 @@ public class DictionaryServlet extends AppServlet implements
        
         
         return dataModel;
+    }
+
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     

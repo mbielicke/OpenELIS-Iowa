@@ -12,7 +12,6 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.client.services.AppScreenServiceInt;
-import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.client.widget.pagedtree.TreeModel;
 import org.openelis.gwt.client.widget.pagedtree.TreeModelItem;
 import org.openelis.gwt.common.FormRPC;
@@ -56,8 +55,7 @@ import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 public class ProviderServlet extends AppServlet implements
                                                AppScreenServiceInt,
-                                               ProviderServletInt,
-                                               AutoCompleteServiceInt{
+                                               ProviderServletInt{
 
     /**
      * 
@@ -75,13 +73,11 @@ public class ProviderServlet extends AppServlet implements
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
         return fetch(key, rpcReturn);
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        
-       System.out.println("starting commitAdd() ");
+               
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO = new ProviderDO();
         NoteDO providerNote = new NoteDO();
@@ -96,8 +92,7 @@ public class ProviderServlet extends AppServlet implements
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-        
-        System.out.println("addressTable.numRows() "+ addressTable.numRows());
+                
         for(int iter = 0; iter < addressTable.numRows(); iter++){
             
             ProviderAddressDO provAddDO = new ProviderAddressDO();
@@ -108,8 +103,7 @@ public class ProviderServlet extends AppServlet implements
             
            // if(provAddId != null){
            //  provAddDO.setId((Integer)(provAddId).getValue());
-           // } 
-            System.out.println("location "+ (String)((StringField)row.getColumn(0)).getValue());
+           // }             
             provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
             //provAddDO.setProvider((Integer)providerId.getValue());
@@ -138,11 +132,9 @@ public class ProviderServlet extends AppServlet implements
         providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
         providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
         providerNote.setIsExternal("Y");
+                
         
-        System.out.println("provAddDOList.size() "+ provAddDOList.size());
-        
-        Integer providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);
-        System.out.println("after add "+ provAddDOList.size());
+        Integer providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
         
         ProviderDO provDO = remote.getProvider(providerId,false);
         //set the fields in the RPC
@@ -156,8 +148,7 @@ public class ProviderServlet extends AppServlet implements
         
         List addressList = remote.getProviderAddresses(providerId);
         rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-            
-        System.out.println("size of addressList from database"+ addressList.size());
+                    
         
         //TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
         //rpcReturn.setFieldValue("notesTree", treeModel);
@@ -171,8 +162,7 @@ public class ProviderServlet extends AppServlet implements
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        System.out.println("starting commitQuery");
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
         //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
         if(rpcSend == null){
            //need to get the query rpc out of the cache
@@ -180,8 +170,7 @@ public class ProviderServlet extends AppServlet implements
            // systemUserId = remote.getSystemUserId().toString();
         //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
        // }
-        
-        System.out.println("put screenQueryRpc");
+               
         
             FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Provider");
 
@@ -250,8 +239,7 @@ public class ProviderServlet extends AppServlet implements
         //if(systemUserId.equals("")){
             //systemUserId = remote.getSystemUserId().toString();
         //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
-        
-        System.out.println("ending commitQuery");
+                
         return model;   
         } else{
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
@@ -406,8 +394,7 @@ public class ProviderServlet extends AppServlet implements
             provAddDOList.add(provAddDO);   
            } 
         }
-         
-        System.out.println("new note in commitUpdate");
+                 
         
         System.out.println("new note's subject : "+(String)rpcSend.getFieldValue("usersSubject"));
         System.out.println("new note's body : "+(String)rpcSend.getFieldValue("usersNote"));
@@ -415,8 +402,7 @@ public class ProviderServlet extends AppServlet implements
         providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
         providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
         providerNote.setIsExternal("Y");
-        
-        System.out.println("provAddDOList.size() "+ provAddDOList.size());
+                
         
         remote.updateProvider(providerDO, providerNote, provAddDOList);
         
@@ -438,25 +424,19 @@ public class ProviderServlet extends AppServlet implements
         
         rpcReturn.setFieldValue("usersSubject", null);
         rpcReturn.setFieldValue("usersNote", null);
-        
-        System.out.println("notes model in commitUpdate");
+               
         DataModel notesModel = getNotesModel(provDO.getId());
         rpcReturn.setFieldValue("notesModel", notesModel);
         
         return rpcReturn;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+   
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
-        System.out.println("starting provider fetch");
+    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         Integer providerId = (Integer)key.getObject(0).getValue();
         
-        System.out.println("provider "+remote.getProvider(providerId,false));
         
         ProviderDO provDO = (ProviderDO)remote.getProvider(providerId,false);        
 //      set the fields in the RPC
@@ -484,8 +464,7 @@ public class ProviderServlet extends AppServlet implements
     }    
     
     
-    public TableModel fillAddressTable(TableModel addressModel, List contactsList){
-       System.out.println("starting  fillAddressTable");
+    public TableModel fillAddressTable(TableModel addressModel, List contactsList){       
         try{
             addressModel.reset();
             
@@ -614,8 +593,7 @@ public class ProviderServlet extends AppServlet implements
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
-        
-        System.out.println("starting getInitialModel");
+                
         DataModel model = new DataModel();
         
         if(cat.equals("providerType")){
@@ -629,8 +607,7 @@ public class ProviderServlet extends AppServlet implements
         System.out.println("cat "+ cat +" id "+ id);
         if(id >-1){
             entries = catRemote.getDropdownValues(id);
-            DataSet blankset = new DataSet();
-            System.out.println("entries.size() "+ entries.size());
+            DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
                           
             BooleanObject blankSelected = new BooleanObject();               
@@ -649,11 +626,8 @@ public class ProviderServlet extends AppServlet implements
             blankSelected.setValue(new Boolean(false));
             blankset.addObject(blankSelected);
             
-            model.add(blankset);
-        System.out.println("added blankset");
-       // System.out.println("typeId "+provDO.getTypeId());
-        //System.out.println("type "+provDO.getType()); 
-       // List<Object[]> provTypes = remote.getProviderTypes();        
+            model.add(blankset);        
+          
         
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             Object[] idType = (Object[])iter.next();
@@ -689,10 +663,9 @@ public class ProviderServlet extends AppServlet implements
             set.addObject(selected);
             
             model.add(set);
-            System.out.println("added dataset");
+            
          }
-        }
-        System.out.println("ending getInitialModel");
+        }        
         return model;
     }
     
@@ -703,8 +676,7 @@ public class ProviderServlet extends AppServlet implements
         //gets the whole notes list now
         List notesList = remote.getProviderNotes(key);
         
-        DataModel notesModel = new DataModel();
-        System.out.println("notesList.size() "+ notesList.size());
+        DataModel notesModel = new DataModel();        
         Iterator itr = notesList.iterator();
         while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
@@ -717,8 +689,7 @@ public class ProviderServlet extends AppServlet implements
             Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
             //subject
             String subject = (String)result[4];
-            
-            System.out.println("userId "+ userId+ " body "+ body+ " date "+date+ " subject "+subject);
+                        
             
             DataSet set = new DataSet();
             StringObject subjectLine = new StringObject();
@@ -738,7 +709,7 @@ public class ProviderServlet extends AppServlet implements
        return notesModel;
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match) {
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
