@@ -1,10 +1,11 @@
 package org.openelis.client.main.screen.openelis;
 
+import org.openelis.client.analysis.screen.qaevent.QAEvent;
 import org.openelis.client.dataEntry.screen.Provider.Provider;
-import org.openelis.client.dataEntry.screen.dictionary.Dictionary;
 import org.openelis.client.dataEntry.screen.organization.OrganizationScreen;
 import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavorites;
 import org.openelis.client.main.service.OpenELISService;
+import org.openelis.client.utilities.screen.dictionary.Dictionary;
 import org.openelis.client.supply.screen.storage.StorageLocationScreen;
 import org.openelis.client.supply.screen.storageUnit.StorageUnitScreen;
 import org.openelis.gwt.client.screen.AppScreen;
@@ -353,7 +354,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("analysisManagement"),(ScreenLabel) widgets.get("qaEventsLabel"));
         	//we need to do the qa events action
-        	//FIXME code the qa events action
+            browser.addScreen(new QAEvent(), openElisConstants.getString("qaEvents"), "QAEvents", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("resultsIcon")) || (item == widgets.get("resultsLabel")) || (item == widgets.get("resultsDescription")) || 
         		(item == widgets.get("favTopResults")) || (item == widgets.get("favLeftResults"))){
 //        	if the edit analysis management is open we need to close it
