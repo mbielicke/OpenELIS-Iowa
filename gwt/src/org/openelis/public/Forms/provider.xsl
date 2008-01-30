@@ -125,51 +125,51 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   
   <panel layout= "vertical" xsi:type = "Panel">
    <panel layout= "vertical" spacing= "2" xsi:type= "Panel">
-    <widget halign= "center">
-      <buttonPanel key="buttons">
+    <widget halign="center">						
+		<buttonPanel key="buttons">
             <appButton action="query" toggle="true">
               <widget>
-                <text>Query</text>
+                <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
               </widget>
-            </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="add" toggle="true">
-              <widget>
-                <text>Add</text>
-              </widget>
-            </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="update" toggle="true">
-              <widget>
-                <text>Update</text>
-              </widget>
-            </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="commit" >
-              <widget>
-                <text>Commit</text>
-              </widget>
-            </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="abort" >
-              <widget>
-                <text>Abort</text>
-              </widget>
-            </appButton>
+            </appButton>            
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="previous">
               <widget>
-                <text>Previous</text>
+                <text><xsl:value-of select='resource:getString($constants,"previous")'/></text>
               </widget>
             </appButton>
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="next">
               <widget>
-                <text>Next</text>
+                <text><xsl:value-of select='resource:getString($constants,"next")'/></text>
               </widget>
             </appButton>
-          </buttonPanel>
-    </widget>
+            <appButton action="add" toggle="true">
+              <widget>
+                <text><xsl:value-of select='resource:getString($constants,"add")'/></text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="update" toggle="true">
+              <widget>
+                <text><xsl:value-of select='resource:getString($constants,"update")'/></text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="commit">
+              <widget>
+                <text><xsl:value-of select='resource:getString($constants,"commit")'/></text>
+              </widget>
+            </appButton>
+            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <appButton action="abort">
+              <widget>
+                <text><xsl:value-of select='resource:getString($constants,"abort")'/></text>
+              </widget>
+            </appButton>            
+          </buttonPanel>						
+	</widget>
+					
     <widget halign= "center">
      <appMessage key= "message"/>
     </widget>
@@ -178,13 +178,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    <panel key= "secMod" layout= "table" width= "450px" style= "Form" xsi:type= "Table">
     <row>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_LastName")'/></text>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
       <textbox key = "lastName" case = "upper" />
      </widget>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_Type")'/></text>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
      <widget>
 										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"   fromModel="true" type="integer" >
@@ -211,7 +211,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
     <row>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_FirstName")'/></text>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
      </widget>
      <widget>
       <textbox key= "firstName" case = "upper"   width= "150px"/>
@@ -225,7 +225,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
     <row>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_MiddleName")'/></text>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
       <textbox key= "middleName" case = "upper" width= "150px"/>
@@ -238,7 +238,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
-        <table width= "auto" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" autoAdd= "true" title= "">
+        <table width= "auto" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
          <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -315,7 +315,6 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
 		  <textbox case= "upper"/>
-		  <!--<option multi = "true" fromModel = "true"/>-->
 		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="ProviderServlet" width="40px" popupHeight="80px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
@@ -327,7 +326,6 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<autoItems>												 																																			
 												</autoItems>
 											</autoDropdown>
-		  <!--<option multi="true" fromModel="true"/>-->
 		  <autoDropdown cat="country" key="country" case="upper" serviceUrl="ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
@@ -352,10 +350,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
-		  <!--<queryOption multi="true" type="string"/>-->
 		  <collection/>
-		  <collection/>
-		  <!--<queryOption multi="true" type="string"/>-->		    		  	
+		  <collection/>	    		  	
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
@@ -408,10 +404,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    </panel>   
    <!--<button halign= "right" onclick = "this" key= "removeAddressButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; {resource:getString($constants,'removeRow')}"/>-->
   <!--<appButton halign= "right" onclick = "this" key= "removeAddressButton"  text = "{resource:getString($constants,'removeRow')}"/>-->
-  <widget>
-    <appButton key = "removeAddressButton">
+  <widget halign = "right">
+    <appButton  action="remove" key = "removeAddressButton">
      <widget>
-      <text>Remove Row</text>
+      <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
      </widget> 
    </appButton>
   </widget>
@@ -429,7 +425,6 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
   <number key="providerTypeId" type="integer" required="false"/>
-  <!--<tree key="notesTree"/>-->
   <model key = "notesModel"/>
 </rpc>
 					   
@@ -441,8 +436,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="middleName" />	  
   <queryString key="usersSubject" />
   <queryString key="usersNote" />                           
-  <table key="providerAddressTable"/>	   
-  <!--<tree key="notesTree"/>-->
+  <table key="providerAddressTable"/>
+  <collection key="providerType" type="integer" required="false"/>	     
 </rpc>
 
 <rpc key="queryByLetter">
