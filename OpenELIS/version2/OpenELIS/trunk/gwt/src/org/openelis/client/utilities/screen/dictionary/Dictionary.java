@@ -3,31 +3,26 @@ package org.openelis.client.utilities.screen.dictionary;
 
 
 import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.screen.ScreenScrollList;
+import org.openelis.gwt.client.screen.ScreenAutoDropdown;
+import org.openelis.gwt.client.widget.AppButton;
+import org.openelis.gwt.client.widget.AutoCompleteDropdown;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.PopupWindow;
-import org.openelis.gwt.client.widget.ScrollList;
+import org.openelis.gwt.client.widget.table.TableController;
 import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.XMLParser;
+
 
 public class Dictionary extends AppScreenForm implements MouseListener{
     private static DictionaryServletIntAsync screenService = (DictionaryServletIntAsync) GWT
@@ -39,16 +34,14 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     
     public Dictionary(){
         super();        
-       try{         
+       
         String base = GWT.getModuleBaseURL();
         base += "DictionaryServlet";        
         target.setServiceEntryPoint(base);
         service = screenService;
         formService = screenService;        
         getXML(); 
-       }catch(Exception ex){
-           Window.alert(ex.getMessage());
-       } 
+      
     }
     
     private Widget selected;
@@ -67,62 +60,70 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         dictEntryTable = (TableWidget)getWidget("dictEntTable");
         ((DictionaryEntriesTable) dictEntryTable.controller.manager).setDictionaryForm(this);
         
-        Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        removeEntryButton.setEnabled(false);
-        //AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");        
-        //removeEntryButton.addClickListener(this);
-        //removeEntryButton.changeState(AppButton.DISABLED);                      
+        TableController provAddTable = (TableController)(dictEntryTable.controller);
+        provAddTable.setAutoAdd(false);
+        
+        //Button removeEntryButton = (Button) getWidget("removeEntryButton");
+        //removeEntryButton.setEnabled(false);
+        AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");        
+        removeEntryButton.addClickListener(this);
+        removeEntryButton.changeState(AppButton.DISABLED);                      
         
         super.afterDraw(success);
-        
+        loadDropdowns();
       // }catch(Exception ex){
        //    ex.printStackTrace();
        //    Window.alert(ex.getMessage());
       // } 
     }
     
+    public void up(int state){
+        TableController provAddTable = (TableController)(dictEntryTable.controller);
+        provAddTable.setAutoAdd(true);
+        
+        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
+        dictEntManager.resetLists();
+        
+        super.up(state);
+    }
+    
     public void afterUpdate(boolean success) {
         super.afterUpdate(success);
         
-        //AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
-        //removeEntryButton.changeState(AppButton.UNPRESSED);          
+        AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+        removeEntryButton.changeState(AppButton.UNPRESSED);          
         
-        Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        removeEntryButton.setEnabled(true);
+        //Button removeEntryButton = (Button) getWidget("removeEntryButton");
+        //removeEntryButton.setEnabled(true);
     }
     
     public void commitAdd(){
-       if(!(message.getText().equals(constants.getString("enterInformationPressCommit")))){
-           Window.alert(constants.getString("correctErrors"));
-       }else{
+      
         super.commitAdd();
-        //AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
-        //removeEntryButton.changeState(AppButton.DISABLED);            
-        
-        Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        removeEntryButton.setEnabled(false);
-       } 
+         AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
+         removeEntryButton.changeState(AppButton.DISABLED);            
+                
     }
     
     public void commitUpdate(){
-      if(!(message.getText().equals(constants.getString("updateFieldsPressCommit")))){
-            Window.alert(constants.getString("correctErrors"));
-       }else{
+     
          super.commitUpdate();
-        //AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
-        //removeEntryButton.changeState(AppButton.DISABLED);            
+        AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+        removeEntryButton.changeState(AppButton.DISABLED);            
         
-        Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        removeEntryButton.setEnabled(false);
-       }       
+             
     }
     
     public void abort(int state){
-        //AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
-       // removeEntryButton.changeState(AppButton.DISABLED);     
+        AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+        removeEntryButton.changeState(AppButton.DISABLED);     
        try{ 
-        Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        removeEntryButton.setEnabled(false);
+       // Button removeEntryButton = (Button) getWidget("removeEntryButton");
+        //removeEntryButton.setEnabled(false);
+        
+        TableController provAddTable = (TableController)(dictEntryTable.controller);
+        provAddTable.setAutoAdd(false);
+        
         super.abort(state);
        }catch(Exception ex){
            Window.alert("abort "+ex.getMessage());
@@ -232,12 +233,18 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         }
         
        public void add(int state){                       
-            
-            super.add(state);           
+           TableController dictEntController = (TableController)(dictEntryTable.controller);
+           dictEntController.setAutoAdd(true);           
+          
+           DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
+           dictEntManager.resetLists();
            
+           super.add(state);                                  
+            //Button removeEntryButton = (Button) getWidget("removeEntryButton");
+           // removeEntryButton.setEnabled(true);
             
-            Button removeEntryButton = (Button) getWidget("removeEntryButton");
-            removeEntryButton.setEnabled(true);
+            AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+            removeEntryButton.changeState(AppButton.UNPRESSED);  
         }
         
         public void query(int state){             
@@ -264,11 +271,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                     }
                       
                   if(printErrorMessage){
-                          message.setText(constants.getString("dictSystemNameError")); 
-                     } 
-                  //else{
-                   //      message.setText("Update fields, then press Commit");
-                    // }                        
+                      showError("sysNameExists"); 
+                     }                                          
                    }                 
                     public void onFailure(Throwable caught) {
                         Window.alert(caught.getMessage());
@@ -292,7 +296,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                       }
                     
                     if(printErrorMessage){
-                        message.setText(constants.getString("dictEntryError"));
+                        showError("entryExists");
                     }
                     //else{
                       //  message.setText("Update fields, then press Commit");
@@ -305,54 +309,39 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                     }
                  });
         }
-        
-        
-        public void showEntriesPopUp(String xml){
-            
-            window  = new PopupWindow("Matching entries");            
-           // ScrollList list = new ScrollList();
-            //Document doc = XMLParser.parse(xml);
-            //Element root = doc.getDocumentElement();
-            //ScreenDragList list =  new ScreenDragList(root,this);
-            ScreenScrollList list =  new ScreenScrollList(getScrollXML(),this);
-            
-            
-            //list.setHeight("100px");
-            //list.setWidth("50px");            
-            list.load(xml);            
-            list.setVisible(true);                                  
-            
-                                  
-            window.content.add(list);
-            window.content.setStyleName("Content");
-            window.setContentPanel(window.content);
-            
-            ((ScrollList)(list.getWidget())).addChangeListener(new ChangeListener(){
-                public void onChange(Widget sender){
-                 //Window.alert(((Widget)sender).toString());    
-                    ScrollList entryList = (ScrollList)sender;
-                   // Window.alert(table.getUserObject().toString());   
-                   
-                    DataModel model = entryList.getDataModel();
-                    //model.select(0);
-                    DataSet set = model.getSelected();
-                    Window.alert(((String)set.getObject(1).getValue()));
-                } 
-            });
-            DeferredCommand.addCommand(new Command() {
-                public void execute() {
-                    window.setVisible(true);
-                    window.setPopupPosition((Window.getClientWidth() - window.getOffsetWidth())/2,100);
-                    window.size();
-                }
-            });
+                              
+        public void showError(String errorType){
+           if(errorType.equals("sysNameExists")){
+               message.setText(constants.getString("dictSystemNameError"));
+           }
+           if(errorType.equals("entryExists")){
+               message.setText(constants.getString("dictEntryError"));
+           }
+           if(errorType.equals("sysNameUnique")){
+               message.setText("System names for Dictionary must be unique");
+           }
+           if(errorType.equals("entryUnique")){
+               message.setText("Entry text for Dictionary must be unique");
+           }
         }
         
-        private Element getScrollXML(){            
-            String xml = "<scrolllist maxRows =\"10\"  multi=\"true\"/>";
-            Document doc = XMLParser.parse(xml);
-            Element root = doc.getDocumentElement();
-            return root; 
-        }
+        private void loadDropdowns(){
+            
+            //load state dropdowns
+            screenService.getInitialModel("section", new AsyncCallback(){
+                   public void onSuccess(Object result){
+                       DataModel stateDataModel = (DataModel)result;
+                       ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("secName");
+                       ScreenAutoDropdown querySection = displaySection.getQueryWidget();
+                       
+                       ((AutoCompleteDropdown)displaySection.getWidget()).setModel(stateDataModel);
+                       ((AutoCompleteDropdown)querySection.getWidget()).setModel(stateDataModel);
+                                              
+                   }
+                   public void onFailure(Throwable caught){
+                       Window.alert(caught.getMessage());
+                   }
+                });
+        } 
                              
 }
