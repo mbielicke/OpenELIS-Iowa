@@ -58,10 +58,20 @@
   </servlet>
   
   <servlet>
+    <servlet-name>QAEventServlet</servlet-name>
+    <servlet-class>org.openelis.server.QAEventServlet</servlet-class>
+  </servlet>
+ 
+ <servlet>
+    <servlet-name>StorageServlet</servlet-name>
+    <servlet-class>org.openelis.server.StorageServlet</servlet-class>
+  </servlet>
+
+  <servlet>
     <servlet-name>StorageLocationServlet</servlet-name>
     <servlet-class>org.openelis.server.StorageLocationServlet</servlet-class>
   </servlet>
-  
+
     <servlet>
     <servlet-name>StorageUnitServlet</servlet-name>
     <servlet-class>org.openelis.server.StorageUnitServlet</servlet-class>
@@ -78,11 +88,11 @@
     <url-pattern>/OrganizationServlet</url-pattern>
   </servlet-mapping>
   
-    <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>StorageLocationServlet</servlet-name>
     <url-pattern>/StorageLocationServlet</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>OrganizeFavoritesScreen</servlet-name>
     <url-pattern>/OrganizeFavoritesScreen</url-pattern>
@@ -101,6 +111,16 @@
   <servlet-mapping>
     <servlet-name>DictionaryServlet</servlet-name>
     <url-pattern>/DictionaryServlet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>QAEventServlet</servlet-name>
+    <url-pattern>/QAEventServlet</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>StorageServlet</servlet-name>
+    <url-pattern>/StorageServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
