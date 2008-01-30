@@ -1,11 +1,14 @@
 package org.openelis.client.main;
 
+import org.openelis.client.analysis.screen.qaevent.QAEventsNamesTable;
 import org.openelis.client.dataEntry.screen.Provider.ProviderAddressesTable;
 import org.openelis.client.dataEntry.screen.Provider.ProviderNamesTable;
 import org.openelis.client.dataEntry.screen.organization.OrganizationContactsTable;
 import org.openelis.client.dataEntry.screen.organization.OrganizationNameTable;
 import org.openelis.client.main.constants.OpenELISConstants;
 import org.openelis.client.main.service.OpenELISService;
+import org.openelis.client.utilities.screen.dictionary.CategorySystemNamesTable;
+import org.openelis.client.utilities.screen.dictionary.DictionaryEntriesTable;
 import org.openelis.client.supply.screen.storage.StorageNameTable;
 import org.openelis.client.supply.screen.storageUnit.StorageUnitDescTable;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
@@ -185,10 +188,12 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
-      map.addWidget("pagedTree", new ScreenPagedTree());   
-      map.addWidget(WidgetMap.APP_BUTTON, new ScreenAppButton());
+      map.addWidget("CategorySystemNamesTable", new CategorySystemNamesTable());
+      map.addWidget("pagedTree", new ScreenPagedTree());    
+      map.addWidget("appButton", new ScreenAppButton());
+      map.addWidget("DictionaryEntriesTable", new DictionaryEntriesTable());
+      map.addWidget("QAEventsNamesTable", new QAEventsNamesTable()); 
       map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
-
 	  ScreenBase.setWidgetMap(map);
   }
 }
