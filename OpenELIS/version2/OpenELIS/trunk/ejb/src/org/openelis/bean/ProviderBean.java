@@ -96,9 +96,9 @@ public class ProviderBean implements ProviderRemote {
             query.setMaxResults(maxResults);
         }
         
-        List<ProviderTableRowDO> orgList = query.getResultList();// getting a list of providers
+        List<ProviderTableRowDO> provList = query.getResultList();// getting a list of providers
         
-        return orgList;
+        return provList;
        
     }
 
@@ -141,8 +141,7 @@ public class ProviderBean implements ProviderRemote {
         Query refIdQuery = manager.createNamedQuery("getTableId");
         refIdQuery.setParameter("name", "provider");
         Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
-        
-        System.out.println("starting query");
+               
         
         StringBuffer sb = new StringBuffer();
         sb.append("select distinct p.id, p.lastName, p.firstName from Provider p left join p.provNote n left join p.providerAddress pa left join pa.provAddress a where " +
@@ -160,9 +159,6 @@ public class ProviderBean implements ProviderRemote {
                         !(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).get(0))))
             sb.append(QueryBuilder.getQuery((CollectionField)fields.get("providerType"), "p.type"));
         
-        System.out.println("creating query");
-        
-        System.out.println("before table fields");
          if(fields.containsKey("location") && ((QueryStringField)fields.get("location")).getComparator() != null)
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("location"), "pa.location"));
          if(fields.containsKey("externalId") && ((QueryStringField)fields.get("externalId")).getComparator() != null)
@@ -194,7 +190,7 @@ public class ProviderBean implements ProviderRemote {
                 if(fields.containsKey("usersSubject"))
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("usersSubject"),"n.subject"));
                 
-                System.out.println("after table fields");
+               
         Query query = manager.createQuery(sb.toString()+" order by p.lastName, p.firstName ");
         
 //      if(first > -1)
@@ -203,9 +199,7 @@ public class ProviderBean implements ProviderRemote {
         if(first > -1 && max > -1)
         	query.setMaxResults(first+max);
         
-        System.out.println("setting parameters");
-        
-        System.out.println("before table fields");
+      
         if(fields.containsKey("lastName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("lastName"), "p.lastName",query);
         if(fields.containsKey("firstName"))
@@ -258,12 +252,12 @@ public class ProviderBean implements ProviderRemote {
          
          if(fields.containsKey("email") && ((QueryStringField)fields.get("email")).getComparator() != null)
              QueryBuilder.setParameters((QueryStringField)fields.get("email"), "a.email",query);
-         
-         System.out.println("after table fields");
+                
          
          if(fields.containsKey("usersSubject"))
              QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
          
+        
          List returnList = GetPage.getPage(query.getResultList(), first, max);
          if(returnList == null)
         	 throw new LastPageException();
@@ -274,7 +268,6 @@ public class ProviderBean implements ProviderRemote {
     }
 
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) {
-        System.out.println("starting updateProvider()");
         manager.setFlushMode(FlushModeType.COMMIT);
         Provider provider = null;
         try{
@@ -310,12 +303,10 @@ public class ProviderBean implements ProviderRemote {
                 else{
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
-                System.out.println("provAddDO "+provAddDO);
                 if(provAddDO.getDelete()!=null){ 
                   if(provAddDO.getDelete()&& provAdd.getId() != null){
                     //delete the contact record and the address record from the database                    
-                     manager.remove(provAdd);
-                     System.out.println("removed provAdd");
+                     manager.remove(provAdd);                     
                      addressBean.deleteAddress(provAddDO.getAddressDO());
                      }
                   else{                
@@ -328,10 +319,8 @@ public class ProviderBean implements ProviderRemote {
                                         
                       
                       if(provAdd.getId()==null){
-                          manager.persist(provAdd);
-                          System.out.println("persisted provAdd");
-                      }
-                      System.out.println("updated provAdd");
+                          manager.persist(provAdd);                          
+                      }                     
                    }
                 }else{                
                    Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
@@ -343,10 +332,8 @@ public class ProviderBean implements ProviderRemote {
                                      
                    
                    if(provAdd.getId()==null){
-                       manager.persist(provAdd);
-                       System.out.println("persisted provAdd");
-                   }
-                   System.out.println("updated provAdd");
+                       manager.persist(provAdd);                       
+                   }                  
                 }
             }
                                     
