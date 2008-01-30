@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,7 @@ import javax.persistence.Query;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -70,9 +70,20 @@ public class StorageLocationBean implements StorageLocationRemote{
 		return query.getResultList();
 	}
 
-	public void deleteStorageLoc(Integer StorageLocId) throws RemoteException {
+	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
+		
+//		we need to see if this item can be deleted first
+		Query query = null;
+		query = manager.createNamedQuery("getStorageLocationByParentId");
+		query.setParameter("id", StorageLocId);
+		List linkedRecords = query.getResultList();
+		
+		if(linkedRecords.size() > 0){
+			throw new RPCDeleteException();
+		}
+		//then we need to delete it
 		try {
             	storageLocation = manager.find(StorageLocation.class, StorageLocId);
             	if(storageLocation != null)
@@ -164,7 +175,6 @@ public class StorageLocationBean implements StorageLocationRemote{
         	 throw new LastPageException();
          else
         	 return returnList;
-         //return query.getResultList();
 	}
 
 	public Integer updateStorageLoc(StorageLocationDO storageDO) {
