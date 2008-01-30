@@ -108,35 +108,35 @@ public class Label implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((printerType == null && original.printerType != null) || 
          (printerType != null && !printerType.equals(original.printerType))){
         Element elem = doc.createElement("printer_type");
-        elem.appendChild(doc.createTextNode(original.printerType.toString()));
+        elem.appendChild(doc.createTextNode(original.printerType.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

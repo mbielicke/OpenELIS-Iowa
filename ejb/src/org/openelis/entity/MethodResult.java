@@ -120,42 +120,42 @@ public class MethodResult implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((method == null && original.method != null) || 
          (method != null && !method.equals(original.method))){
         Element elem = doc.createElement("method");
-        elem.appendChild(doc.createTextNode(original.method.toString()));
+        elem.appendChild(doc.createTextNode(original.method.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((resultGroup == null && original.resultGroup != null) || 
          (resultGroup != null && !resultGroup.equals(original.resultGroup))){
         Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString()));
+        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((flags == null && original.flags != null) || 
          (flags != null && !flags.equals(original.flags))){
         Element elem = doc.createElement("flags");
-        elem.appendChild(doc.createTextNode(original.flags.toString()));
+        elem.appendChild(doc.createTextNode(original.flags.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((value == null && original.value != null) || 
          (value != null && !value.equals(original.value))){
         Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString()));
+        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
         root.appendChild(elem);
       }      
 

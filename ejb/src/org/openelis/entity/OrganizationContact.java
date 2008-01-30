@@ -109,52 +109,52 @@ public class OrganizationContact implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((organization == null && original.organization != null) || 
-         (organization != null && !organization.equals(original.organization))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString()));
-        root.appendChild(elem);
-      }      
+        if((organization == null && original.organization != null) || 
+           (organization != null && !organization.equals(original.organization))){
+          Element elem = doc.createElement("organization");
+          elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((contactType == null && original.contactType != null) || 
-         (contactType != null && !contactType.equals(original.contactType))){
-        Element elem = doc.createElement("contact_type");
-        elem.appendChild(doc.createTextNode(original.contactType.toString()));
-        root.appendChild(elem);
-      }      
+        if((contactType == null && original.contactType != null) || 
+           (contactType != null && !contactType.equals(original.contactType))){
+          Element elem = doc.createElement("contact_type");
+          elem.appendChild(doc.createTextNode(original.contactType.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
-        root.appendChild(elem);
-      }      
+        if((name == null && original.name != null) || 
+           (name != null && !name.equals(original.name))){
+          Element elem = doc.createElement("name");
+          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((address == null && original.address != null) || 
-         (address != null && !address.equals(original.address))){
-        Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString()));
-        root.appendChild(elem);
-      }      
+        if((address == null && original.address != null) || 
+           (address != null && !address.equals(original.address))){
+          Element elem = doc.createElement("address");
+          elem.appendChild(doc.createTextNode(original.address.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "organization_contact";

@@ -137,73 +137,73 @@ public class QaEvent implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
-        root.appendChild(elem);
-      }      
+        if((name == null && original.name != null) || 
+           (name != null && !name.equals(original.name))){
+          Element elem = doc.createElement("name");
+          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
-        root.appendChild(elem);
-      }      
+        if((description == null && original.description != null) || 
+           (description != null && !description.equals(original.description))){
+          Element elem = doc.createElement("description");
+          elem.appendChild(doc.createTextNode(original.description.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
-        root.appendChild(elem);
-      }      
+        if((test == null && original.test != null) || 
+           (test != null && !test.equals(original.test))){
+          Element elem = doc.createElement("test");
+          elem.appendChild(doc.createTextNode(original.test.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
-        root.appendChild(elem);
-      }      
+        if((type == null && original.type != null) || 
+           (type != null && !type.equals(original.type))){
+          Element elem = doc.createElement("type");
+          elem.appendChild(doc.createTextNode(original.type.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((isBillable == null && original.isBillable != null) || 
-         (isBillable != null && !isBillable.equals(original.isBillable))){
-        Element elem = doc.createElement("is_billable");
-        elem.appendChild(doc.createTextNode(original.isBillable.toString()));
-        root.appendChild(elem);
-      }      
+        if((isBillable == null && original.isBillable != null) || 
+           (isBillable != null && !isBillable.equals(original.isBillable))){
+          Element elem = doc.createElement("is_billable");
+          elem.appendChild(doc.createTextNode(original.isBillable.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((reportingSequence == null && original.reportingSequence != null) || 
-         (reportingSequence != null && !reportingSequence.equals(original.reportingSequence))){
-        Element elem = doc.createElement("reporting_sequence");
-        elem.appendChild(doc.createTextNode(original.reportingSequence.toString()));
-        root.appendChild(elem);
-      }      
+        if((reportingSequence == null && original.reportingSequence != null) || 
+           (reportingSequence != null && !reportingSequence.equals(original.reportingSequence))){
+          Element elem = doc.createElement("reporting_sequence");
+          elem.appendChild(doc.createTextNode(original.reportingSequence.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((reportingText == null && original.reportingText != null) || 
-         (reportingText != null && !reportingText.equals(original.reportingText))){
-        Element elem = doc.createElement("reporting_text");
-        elem.appendChild(doc.createTextNode(original.reportingText.toString()));
-        root.appendChild(elem);
-      }      
+        if((reportingText == null && original.reportingText != null) || 
+           (reportingText != null && !reportingText.equals(original.reportingText))){
+          Element elem = doc.createElement("reporting_text");
+          elem.appendChild(doc.createTextNode(original.reportingText.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "qaevent";

@@ -122,42 +122,42 @@ public class InventoryLocation implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((inventoryItem == null && original.inventoryItem != null) || 
          (inventoryItem != null && !inventoryItem.equals(original.inventoryItem))){
         Element elem = doc.createElement("inventory_item");
-        elem.appendChild(doc.createTextNode(original.inventoryItem.toString()));
+        elem.appendChild(doc.createTextNode(original.inventoryItem.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((lotNumber == null && original.lotNumber != null) || 
          (lotNumber != null && !lotNumber.equals(original.lotNumber))){
         Element elem = doc.createElement("lot_number");
-        elem.appendChild(doc.createTextNode(original.lotNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.lotNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((storageLocation == null && original.storageLocation != null) || 
          (storageLocation != null && !storageLocation.equals(original.storageLocation))){
         Element elem = doc.createElement("storage_location");
-        elem.appendChild(doc.createTextNode(original.storageLocation.toString()));
+        elem.appendChild(doc.createTextNode(original.storageLocation.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityOnhand == null && original.quantityOnhand != null) || 
          (quantityOnhand != null && !quantityOnhand.equals(original.quantityOnhand))){
         Element elem = doc.createElement("quantity_onhand");
-        elem.appendChild(doc.createTextNode(original.quantityOnhand.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityOnhand.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((expirationDate == null && original.expirationDate != null) || 
          (expirationDate != null && !expirationDate.equals(original.expirationDate))){
         Element elem = doc.createElement("expiration_date");
-        elem.appendChild(doc.createTextNode(original.expirationDate.toString()));
+        elem.appendChild(doc.createTextNode(original.expirationDate.toString().trim()));
         root.appendChild(elem);
       }      
 

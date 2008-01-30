@@ -160,63 +160,63 @@ public class Project implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((startedDate == null && original.startedDate != null) || 
          (startedDate != null && !startedDate.equals(original.startedDate))){
         Element elem = doc.createElement("started_date");
-        elem.appendChild(doc.createTextNode(original.startedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.startedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((completedDate == null && original.completedDate != null) || 
          (completedDate != null && !completedDate.equals(original.completedDate))){
         Element elem = doc.createElement("completed_date");
-        elem.appendChild(doc.createTextNode(original.completedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.completedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceTo == null && original.referenceTo != null) || 
          (referenceTo != null && !referenceTo.equals(original.referenceTo))){
         Element elem = doc.createElement("reference_to");
-        elem.appendChild(doc.createTextNode(original.referenceTo.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceTo.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((owner == null && original.owner != null) || 
          (owner != null && !owner.equals(original.owner))){
         Element elem = doc.createElement("owner");
-        elem.appendChild(doc.createTextNode(original.owner.toString()));
+        elem.appendChild(doc.createTextNode(original.owner.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

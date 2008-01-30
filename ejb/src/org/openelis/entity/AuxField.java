@@ -144,56 +144,56 @@ public class AuxField implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sortOrder == null && original.sortOrder != null) || 
          (sortOrder != null && !sortOrder.equals(original.sortOrder))){
         Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString()));
+        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analyte == null && original.analyte != null) || 
          (analyte != null && !analyte.equals(original.analyte))){
         Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString()));
+        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceTable == null && original.referenceTable != null) || 
          (referenceTable != null && !referenceTable.equals(original.referenceTable))){
         Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isRequired == null && original.isRequired != null) || 
          (isRequired != null && !isRequired.equals(original.isRequired))){
         Element elem = doc.createElement("is_required");
-        elem.appendChild(doc.createTextNode(original.isRequired.toString()));
+        elem.appendChild(doc.createTextNode(original.isRequired.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isReportable == null && original.isReportable != null) || 
          (isReportable != null && !isReportable.equals(original.isReportable))){
         Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString()));
+        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

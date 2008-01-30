@@ -146,56 +146,56 @@ public class Note implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceId == null && original.referenceId != null) || 
          (referenceId != null && !referenceId.equals(original.referenceId))){
         Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceTable == null && original.referenceTable != null) || 
          (referenceTable != null && !referenceTable.equals(original.referenceTable))){
         Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timestamp == null && original.timestamp != null) || 
          (timestamp != null && !timestamp.equals(original.timestamp))){
         Element elem = doc.createElement("timestamp");
-        elem.appendChild(doc.createTextNode(original.timestamp.toString()));
+        elem.appendChild(doc.createTextNode(original.timestamp.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isExternal == null && original.isExternal != null) || 
          (isExternal != null && !isExternal.equals(original.isExternal))){
         Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString()));
+        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((systemUser == null && original.systemUser != null) || 
          (systemUser != null && !systemUser.equals(original.systemUser))){
         Element elem = doc.createElement("system_user");
-        elem.appendChild(doc.createTextNode(original.systemUser.toString()));
+        elem.appendChild(doc.createTextNode(original.systemUser.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((subject == null && original.subject != null) || 
          (subject != null && !subject.equals(original.subject))){
         Element elem = doc.createElement("subject");
-        elem.appendChild(doc.createTextNode(original.subject.toString()));
+        elem.appendChild(doc.createTextNode(original.subject.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((text == null && original.text != null) || 
          (text != null && !text.equals(original.text))){
         Element elem = doc.createElement("text");
-        elem.appendChild(doc.createTextNode(original.text.toString()));
+        elem.appendChild(doc.createTextNode(original.text.toString().trim()));
         root.appendChild(elem);
       }      
 

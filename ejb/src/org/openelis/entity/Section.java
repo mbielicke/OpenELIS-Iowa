@@ -120,42 +120,42 @@ public class Section implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((parentSection == null && original.parentSection != null) || 
          (parentSection != null && !parentSection.equals(original.parentSection))){
         Element elem = doc.createElement("parent_section");
-        elem.appendChild(doc.createTextNode(original.parentSection.toString()));
+        elem.appendChild(doc.createTextNode(original.parentSection.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isExternal == null && original.isExternal != null) || 
          (isExternal != null && !isExternal.equals(original.isExternal))){
         Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString()));
+        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((organization == null && original.organization != null) || 
          (organization != null && !organization.equals(original.organization))){
         Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString()));
+        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
         root.appendChild(elem);
       }      
 

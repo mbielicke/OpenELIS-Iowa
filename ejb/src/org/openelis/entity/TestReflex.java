@@ -120,42 +120,42 @@ public class TestReflex implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((test == null && original.test != null) || 
          (test != null && !test.equals(original.test))){
         Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
+        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testAnalyte == null && original.testAnalyte != null) || 
          (testAnalyte != null && !testAnalyte.equals(original.testAnalyte))){
         Element elem = doc.createElement("test_analyte");
-        elem.appendChild(doc.createTextNode(original.testAnalyte.toString()));
+        elem.appendChild(doc.createTextNode(original.testAnalyte.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testResult == null && original.testResult != null) || 
          (testResult != null && !testResult.equals(original.testResult))){
         Element elem = doc.createElement("test_result");
-        elem.appendChild(doc.createTextNode(original.testResult.toString()));
+        elem.appendChild(doc.createTextNode(original.testResult.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((flags == null && original.flags != null) || 
          (flags != null && !flags.equals(original.flags))){
         Element elem = doc.createElement("flags");
-        elem.appendChild(doc.createTextNode(original.flags.toString()));
+        elem.appendChild(doc.createTextNode(original.flags.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((addTest == null && original.addTest != null) || 
          (addTest != null && !addTest.equals(original.addTest))){
         Element elem = doc.createElement("add_test");
-        elem.appendChild(doc.createTextNode(original.addTest.toString()));
+        elem.appendChild(doc.createTextNode(original.addTest.toString().trim()));
         root.appendChild(elem);
       }      
 

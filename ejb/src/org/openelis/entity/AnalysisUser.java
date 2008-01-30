@@ -96,28 +96,28 @@ public class AnalysisUser implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analysis == null && original.analysis != null) || 
          (analysis != null && !analysis.equals(original.analysis))){
         Element elem = doc.createElement("analysis");
-        elem.appendChild(doc.createTextNode(original.analysis.toString()));
+        elem.appendChild(doc.createTextNode(original.analysis.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((systemUser == null && original.systemUser != null) || 
          (systemUser != null && !systemUser.equals(original.systemUser))){
         Element elem = doc.createElement("system_user");
-        elem.appendChild(doc.createTextNode(original.systemUser.toString()));
+        elem.appendChild(doc.createTextNode(original.systemUser.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((action == null && original.action != null) || 
          (action != null && !action.equals(original.action))){
         Element elem = doc.createElement("action");
-        elem.appendChild(doc.createTextNode(original.action.toString()));
+        elem.appendChild(doc.createTextNode(original.action.toString().trim()));
         root.appendChild(elem);
       }      
 

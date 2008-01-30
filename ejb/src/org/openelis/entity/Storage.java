@@ -119,59 +119,59 @@ public class Storage implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((referenceId == null && original.referenceId != null) || 
-         (referenceId != null && !referenceId.equals(original.referenceId))){
-        Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString()));
-        root.appendChild(elem);
-      }      
+        if((referenceId == null && original.referenceId != null) || 
+           (referenceId != null && !referenceId.equals(original.referenceId))){
+          Element elem = doc.createElement("reference_id");
+          elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((referenceTable == null && original.referenceTable != null) || 
-         (referenceTable != null && !referenceTable.equals(original.referenceTable))){
-        Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString()));
-        root.appendChild(elem);
-      }      
+        if((referenceTable == null && original.referenceTable != null) || 
+           (referenceTable != null && !referenceTable.equals(original.referenceTable))){
+          Element elem = doc.createElement("reference_table");
+          elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((storageLocation == null && original.storageLocation != null) || 
-         (storageLocation != null && !storageLocation.equals(original.storageLocation))){
-        Element elem = doc.createElement("storage_location");
-        elem.appendChild(doc.createTextNode(original.storageLocation.toString()));
-        root.appendChild(elem);
-      }      
+        if((storageLocation == null && original.storageLocation != null) || 
+           (storageLocation != null && !storageLocation.equals(original.storageLocation))){
+          Element elem = doc.createElement("storage_location");
+          elem.appendChild(doc.createTextNode(original.storageLocation.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((checkin == null && original.checkin != null) || 
-         (checkin != null && !checkin.equals(original.checkin))){
-        Element elem = doc.createElement("checkin");
-        elem.appendChild(doc.createTextNode(original.checkin.toString()));
-        root.appendChild(elem);
-      }      
+        if((checkin == null && original.checkin != null) || 
+           (checkin != null && !checkin.equals(original.checkin))){
+          Element elem = doc.createElement("checkin");
+          elem.appendChild(doc.createTextNode(original.checkin.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((checkout == null && original.checkout != null) || 
-         (checkout != null && !checkout.equals(original.checkout))){
-        Element elem = doc.createElement("checkout");
-        elem.appendChild(doc.createTextNode(original.checkout.toString()));
-        root.appendChild(elem);
-      }      
+        if((checkout == null && original.checkout != null) || 
+           (checkout != null && !checkout.equals(original.checkout))){
+          Element elem = doc.createElement("checkout");
+          elem.appendChild(doc.createTextNode(original.checkout.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "storage";

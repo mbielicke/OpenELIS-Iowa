@@ -96,28 +96,28 @@ public class InventoryComponent implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((inventoryItem == null && original.inventoryItem != null) || 
          (inventoryItem != null && !inventoryItem.equals(original.inventoryItem))){
         Element elem = doc.createElement("inventory_item");
-        elem.appendChild(doc.createTextNode(original.inventoryItem.toString()));
+        elem.appendChild(doc.createTextNode(original.inventoryItem.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((component == null && original.component != null) || 
          (component != null && !component.equals(original.component))){
         Element elem = doc.createElement("component");
-        elem.appendChild(doc.createTextNode(original.component.toString()));
+        elem.appendChild(doc.createTextNode(original.component.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantity == null && original.quantity != null) || 
          (quantity != null && !quantity.equals(original.quantity))){
         Element elem = doc.createElement("quantity");
-        elem.appendChild(doc.createTextNode(original.quantity.toString()));
+        elem.appendChild(doc.createTextNode(original.quantity.toString().trim()));
         root.appendChild(elem);
       }      
 

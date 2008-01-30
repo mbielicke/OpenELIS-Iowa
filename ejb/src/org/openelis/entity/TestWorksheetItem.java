@@ -108,35 +108,35 @@ public class TestWorksheetItem implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testWorksheet == null && original.testWorksheet != null) || 
          (testWorksheet != null && !testWorksheet.equals(original.testWorksheet))){
         Element elem = doc.createElement("test_worksheet");
-        elem.appendChild(doc.createTextNode(original.testWorksheet.toString()));
+        elem.appendChild(doc.createTextNode(original.testWorksheet.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((position == null && original.position != null) || 
          (position != null && !position.equals(original.position))){
         Element elem = doc.createElement("position");
-        elem.appendChild(doc.createTextNode(original.position.toString()));
+        elem.appendChild(doc.createTextNode(original.position.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((qcName == null && original.qcName != null) || 
          (qcName != null && !qcName.equals(original.qcName))){
         Element elem = doc.createElement("qc_name");
-        elem.appendChild(doc.createTextNode(original.qcName.toString()));
+        elem.appendChild(doc.createTextNode(original.qcName.toString().trim()));
         root.appendChild(elem);
       }      
 

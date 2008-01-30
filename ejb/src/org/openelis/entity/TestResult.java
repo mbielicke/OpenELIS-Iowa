@@ -156,63 +156,63 @@ public class TestResult implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((test == null && original.test != null) || 
          (test != null && !test.equals(original.test))){
         Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
+        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((resultGroup == null && original.resultGroup != null) || 
          (resultGroup != null && !resultGroup.equals(original.resultGroup))){
         Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString()));
+        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((flag == null && original.flag != null) || 
          (flag != null && !flag.equals(original.flag))){
         Element elem = doc.createElement("flag");
-        elem.appendChild(doc.createTextNode(original.flag.toString()));
+        elem.appendChild(doc.createTextNode(original.flag.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((value == null && original.value != null) || 
          (value != null && !value.equals(original.value))){
         Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString()));
+        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((significantDigits == null && original.significantDigits != null) || 
          (significantDigits != null && !significantDigits.equals(original.significantDigits))){
         Element elem = doc.createElement("significant_digits");
-        elem.appendChild(doc.createTextNode(original.significantDigits.toString()));
+        elem.appendChild(doc.createTextNode(original.significantDigits.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantLimit == null && original.quantLimit != null) || 
          (quantLimit != null && !quantLimit.equals(original.quantLimit))){
         Element elem = doc.createElement("quant_limit");
-        elem.appendChild(doc.createTextNode(original.quantLimit.toString()));
+        elem.appendChild(doc.createTextNode(original.quantLimit.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((contLevel == null && original.contLevel != null) || 
          (contLevel != null && !contLevel.equals(original.contLevel))){
         Element elem = doc.createElement("cont_level");
-        elem.appendChild(doc.createTextNode(original.contLevel.toString()));
+        elem.appendChild(doc.createTextNode(original.contLevel.toString().trim()));
         root.appendChild(elem);
       }      
 

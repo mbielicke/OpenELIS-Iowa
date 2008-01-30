@@ -120,42 +120,42 @@ public class Analyte implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analyteGroup == null && original.analyteGroup != null) || 
          (analyteGroup != null && !analyteGroup.equals(original.analyteGroup))){
         Element elem = doc.createElement("analyte_group");
-        elem.appendChild(doc.createTextNode(original.analyteGroup.toString()));
+        elem.appendChild(doc.createTextNode(original.analyteGroup.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((parentAnalyte == null && original.parentAnalyte != null) || 
          (parentAnalyte != null && !parentAnalyte.equals(original.parentAnalyte))){
         Element elem = doc.createElement("parent_analyte");
-        elem.appendChild(doc.createTextNode(original.parentAnalyte.toString()));
+        elem.appendChild(doc.createTextNode(original.parentAnalyte.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((externalId == null && original.externalId != null) || 
          (externalId != null && !externalId.equals(original.externalId))){
         Element elem = doc.createElement("external_id");
-        elem.appendChild(doc.createTextNode(original.externalId.toString()));
+        elem.appendChild(doc.createTextNode(original.externalId.toString().trim()));
         root.appendChild(elem);
       }      
 

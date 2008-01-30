@@ -108,35 +108,35 @@ public class ProjectParameter implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((project == null && original.project != null) || 
          (project != null && !project.equals(original.project))){
         Element elem = doc.createElement("project");
-        elem.appendChild(doc.createTextNode(original.project.toString()));
+        elem.appendChild(doc.createTextNode(original.project.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((parameter == null && original.parameter != null) || 
          (parameter != null && !parameter.equals(original.parameter))){
         Element elem = doc.createElement("parameter");
-        elem.appendChild(doc.createTextNode(original.parameter.toString()));
+        elem.appendChild(doc.createTextNode(original.parameter.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((operation == null && original.operation != null) || 
          (operation != null && !operation.equals(original.operation))){
         Element elem = doc.createElement("operation");
-        elem.appendChild(doc.createTextNode(original.operation.toString()));
+        elem.appendChild(doc.createTextNode(original.operation.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((value == null && original.value != null) || 
          (value != null && !value.equals(original.value))){
         Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString()));
+        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
         root.appendChild(elem);
       }      
 

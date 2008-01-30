@@ -172,70 +172,70 @@ public class Patient implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((lastName == null && original.lastName != null) || 
          (lastName != null && !lastName.equals(original.lastName))){
         Element elem = doc.createElement("last_name");
-        elem.appendChild(doc.createTextNode(original.lastName.toString()));
+        elem.appendChild(doc.createTextNode(original.lastName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((firstName == null && original.firstName != null) || 
          (firstName != null && !firstName.equals(original.firstName))){
         Element elem = doc.createElement("first_name");
-        elem.appendChild(doc.createTextNode(original.firstName.toString()));
+        elem.appendChild(doc.createTextNode(original.firstName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((middleName == null && original.middleName != null) || 
          (middleName != null && !middleName.equals(original.middleName))){
         Element elem = doc.createElement("middle_name");
-        elem.appendChild(doc.createTextNode(original.middleName.toString()));
+        elem.appendChild(doc.createTextNode(original.middleName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((address == null && original.address != null) || 
          (address != null && !address.equals(original.address))){
         Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString()));
+        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((birthDate == null && original.birthDate != null) || 
          (birthDate != null && !birthDate.equals(original.birthDate))){
         Element elem = doc.createElement("birth_date");
-        elem.appendChild(doc.createTextNode(original.birthDate.toString()));
+        elem.appendChild(doc.createTextNode(original.birthDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((birthTime == null && original.birthTime != null) || 
          (birthTime != null && !birthTime.equals(original.birthTime))){
         Element elem = doc.createElement("birth_time");
-        elem.appendChild(doc.createTextNode(original.birthTime.toString()));
+        elem.appendChild(doc.createTextNode(original.birthTime.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((gender == null && original.gender != null) || 
          (gender != null && !gender.equals(original.gender))){
         Element elem = doc.createElement("gender");
-        elem.appendChild(doc.createTextNode(original.gender.toString()));
+        elem.appendChild(doc.createTextNode(original.gender.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((race == null && original.race != null) || 
          (race != null && !race.equals(original.race))){
         Element elem = doc.createElement("race");
-        elem.appendChild(doc.createTextNode(original.race.toString()));
+        elem.appendChild(doc.createTextNode(original.race.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((ethnicity == null && original.ethnicity != null) || 
          (ethnicity != null && !ethnicity.equals(original.ethnicity))){
         Element elem = doc.createElement("ethnicity");
-        elem.appendChild(doc.createTextNode(original.ethnicity.toString()));
+        elem.appendChild(doc.createTextNode(original.ethnicity.toString().trim()));
         root.appendChild(elem);
       }      
 

@@ -222,98 +222,98 @@ public class Order implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((organization == null && original.organization != null) || 
          (organization != null && !organization.equals(original.organization))){
         Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString()));
+        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((orderedDate == null && original.orderedDate != null) || 
          (orderedDate != null && !orderedDate.equals(original.orderedDate))){
         Element elem = doc.createElement("ordered_date");
-        elem.appendChild(doc.createTextNode(original.orderedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.orderedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((neededbyDate == null && original.neededbyDate != null) || 
          (neededbyDate != null && !neededbyDate.equals(original.neededbyDate))){
         Element elem = doc.createElement("neededby_date");
-        elem.appendChild(doc.createTextNode(original.neededbyDate.toString()));
+        elem.appendChild(doc.createTextNode(original.neededbyDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((requestedBy == null && original.requestedBy != null) || 
          (requestedBy != null && !requestedBy.equals(original.requestedBy))){
         Element elem = doc.createElement("requested_by");
-        elem.appendChild(doc.createTextNode(original.requestedBy.toString()));
+        elem.appendChild(doc.createTextNode(original.requestedBy.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((costCenter == null && original.costCenter != null) || 
          (costCenter != null && !costCenter.equals(original.costCenter))){
         Element elem = doc.createElement("cost_center");
-        elem.appendChild(doc.createTextNode(original.costCenter.toString()));
+        elem.appendChild(doc.createTextNode(original.costCenter.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((processedBy == null && original.processedBy != null) || 
          (processedBy != null && !processedBy.equals(original.processedBy))){
         Element elem = doc.createElement("processed_by");
-        elem.appendChild(doc.createTextNode(original.processedBy.toString()));
+        elem.appendChild(doc.createTextNode(original.processedBy.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((shippingType == null && original.shippingType != null) || 
          (shippingType != null && !shippingType.equals(original.shippingType))){
         Element elem = doc.createElement("shipping_type");
-        elem.appendChild(doc.createTextNode(original.shippingType.toString()));
+        elem.appendChild(doc.createTextNode(original.shippingType.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((shippingCarrier == null && original.shippingCarrier != null) || 
          (shippingCarrier != null && !shippingCarrier.equals(original.shippingCarrier))){
         Element elem = doc.createElement("shipping_carrier");
-        elem.appendChild(doc.createTextNode(original.shippingCarrier.toString()));
+        elem.appendChild(doc.createTextNode(original.shippingCarrier.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((shippingCost == null && original.shippingCost != null) || 
          (shippingCost != null && !shippingCost.equals(original.shippingCost))){
         Element elem = doc.createElement("shipping_cost");
-        elem.appendChild(doc.createTextNode(original.shippingCost.toString()));
+        elem.appendChild(doc.createTextNode(original.shippingCost.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((deliveredDate == null && original.deliveredDate != null) || 
          (deliveredDate != null && !deliveredDate.equals(original.deliveredDate))){
         Element elem = doc.createElement("delivered_date");
-        elem.appendChild(doc.createTextNode(original.deliveredDate.toString()));
+        elem.appendChild(doc.createTextNode(original.deliveredDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isExternal == null && original.isExternal != null) || 
          (isExternal != null && !isExternal.equals(original.isExternal))){
         Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString()));
+        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((externalOrderNumber == null && original.externalOrderNumber != null) || 
          (externalOrderNumber != null && !externalOrderNumber.equals(original.externalOrderNumber))){
         Element elem = doc.createElement("external_order_number");
-        elem.appendChild(doc.createTextNode(original.externalOrderNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.externalOrderNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isFilled == null && original.isFilled != null) || 
          (isFilled != null && !isFilled.equals(original.isFilled))){
         Element elem = doc.createElement("is_filled");
-        elem.appendChild(doc.createTextNode(original.isFilled.toString()));
+        elem.appendChild(doc.createTextNode(original.isFilled.toString().trim()));
         root.appendChild(elem);
       }      
 

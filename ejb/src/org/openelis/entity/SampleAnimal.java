@@ -49,6 +49,9 @@ public class SampleAnimal implements Auditable, Cloneable {
   @Column(name="sampling_location")
   private String samplingLocation;             
 
+  @Column(name="address")
+  private Integer address;             
+
 
   @Transient
   private SampleAnimal original;
@@ -117,6 +120,15 @@ public class SampleAnimal implements Auditable, Cloneable {
       this.samplingLocation = samplingLocation;
   }
 
+  public Integer getAddress() {
+    return address;
+  }
+  public void setAddress(Integer address) {
+    if((address == null && this.address != null) || 
+       (address != null && !address.equals(this.address)))
+      this.address = address;
+  }
+
   
   public void setClone() {
     try {
@@ -132,49 +144,56 @@ public class SampleAnimal implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sample == null && original.sample != null) || 
          (sample != null && !sample.equals(original.sample))){
         Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString()));
+        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((animalCommonName == null && original.animalCommonName != null) || 
          (animalCommonName != null && !animalCommonName.equals(original.animalCommonName))){
         Element elem = doc.createElement("animal_common_name");
-        elem.appendChild(doc.createTextNode(original.animalCommonName.toString()));
+        elem.appendChild(doc.createTextNode(original.animalCommonName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((animalScientificName == null && original.animalScientificName != null) || 
          (animalScientificName != null && !animalScientificName.equals(original.animalScientificName))){
         Element elem = doc.createElement("animal_scientific_name");
-        elem.appendChild(doc.createTextNode(original.animalScientificName.toString()));
+        elem.appendChild(doc.createTextNode(original.animalScientificName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((collector == null && original.collector != null) || 
          (collector != null && !collector.equals(original.collector))){
         Element elem = doc.createElement("collector");
-        elem.appendChild(doc.createTextNode(original.collector.toString()));
+        elem.appendChild(doc.createTextNode(original.collector.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((collectorPhone == null && original.collectorPhone != null) || 
          (collectorPhone != null && !collectorPhone.equals(original.collectorPhone))){
         Element elem = doc.createElement("collector_phone");
-        elem.appendChild(doc.createTextNode(original.collectorPhone.toString()));
+        elem.appendChild(doc.createTextNode(original.collectorPhone.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((samplingLocation == null && original.samplingLocation != null) || 
          (samplingLocation != null && !samplingLocation.equals(original.samplingLocation))){
         Element elem = doc.createElement("sampling_location");
-        elem.appendChild(doc.createTextNode(original.samplingLocation.toString()));
+        elem.appendChild(doc.createTextNode(original.samplingLocation.toString().trim()));
+        root.appendChild(elem);
+      }      
+
+      if((address == null && original.address != null) || 
+         (address != null && !address.equals(original.address))){
+        Element elem = doc.createElement("address");
+        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
         root.appendChild(elem);
       }      
 

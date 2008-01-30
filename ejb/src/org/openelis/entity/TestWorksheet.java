@@ -120,42 +120,42 @@ public class TestWorksheet implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((test == null && original.test != null) || 
          (test != null && !test.equals(original.test))){
         Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
+        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((batchCapacity == null && original.batchCapacity != null) || 
          (batchCapacity != null && !batchCapacity.equals(original.batchCapacity))){
         Element elem = doc.createElement("batch_capacity");
-        elem.appendChild(doc.createTextNode(original.batchCapacity.toString()));
+        elem.appendChild(doc.createTextNode(original.batchCapacity.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((totalCapacity == null && original.totalCapacity != null) || 
          (totalCapacity != null && !totalCapacity.equals(original.totalCapacity))){
         Element elem = doc.createElement("total_capacity");
-        elem.appendChild(doc.createTextNode(original.totalCapacity.toString()));
+        elem.appendChild(doc.createTextNode(original.totalCapacity.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((numberFormat == null && original.numberFormat != null) || 
          (numberFormat != null && !numberFormat.equals(original.numberFormat))){
         Element elem = doc.createElement("number_format");
-        elem.appendChild(doc.createTextNode(original.numberFormat.toString()));
+        elem.appendChild(doc.createTextNode(original.numberFormat.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

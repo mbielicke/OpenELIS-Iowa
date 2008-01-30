@@ -108,35 +108,35 @@ public class Attachment implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((filename == null && original.filename != null) || 
          (filename != null && !filename.equals(original.filename))){
         Element elem = doc.createElement("filename");
-        elem.appendChild(doc.createTextNode(original.filename.toString()));
+        elem.appendChild(doc.createTextNode(original.filename.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((storageReference == null && original.storageReference != null) || 
          (storageReference != null && !storageReference.equals(original.storageReference))){
         Element elem = doc.createElement("storage_reference");
-        elem.appendChild(doc.createTextNode(original.storageReference.toString()));
+        elem.appendChild(doc.createTextNode(original.storageReference.toString().trim()));
         root.appendChild(elem);
       }      
 

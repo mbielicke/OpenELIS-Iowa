@@ -96,28 +96,28 @@ public class SampleOrganization implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sample == null && original.sample != null) || 
          (sample != null && !sample.equals(original.sample))){
         Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString()));
+        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((organization == null && original.organization != null) || 
          (organization != null && !organization.equals(original.organization))){
         Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString()));
+        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 

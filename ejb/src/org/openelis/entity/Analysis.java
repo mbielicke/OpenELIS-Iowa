@@ -250,112 +250,112 @@ public class Analysis implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sampleItem == null && original.sampleItem != null) || 
          (sampleItem != null && !sampleItem.equals(original.sampleItem))){
         Element elem = doc.createElement("sample_item");
-        elem.appendChild(doc.createTextNode(original.sampleItem.toString()));
+        elem.appendChild(doc.createTextNode(original.sampleItem.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((revision == null && original.revision != null) || 
          (revision != null && !revision.equals(original.revision))){
         Element elem = doc.createElement("revision");
-        elem.appendChild(doc.createTextNode(original.revision.toString()));
+        elem.appendChild(doc.createTextNode(original.revision.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((test == null && original.test != null) || 
          (test != null && !test.equals(original.test))){
         Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
+        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((section == null && original.section != null) || 
          (section != null && !section.equals(original.section))){
         Element elem = doc.createElement("section");
-        elem.appendChild(doc.createTextNode(original.section.toString()));
+        elem.appendChild(doc.createTextNode(original.section.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((preAnalysis == null && original.preAnalysis != null) || 
          (preAnalysis != null && !preAnalysis.equals(original.preAnalysis))){
         Element elem = doc.createElement("pre_analysis");
-        elem.appendChild(doc.createTextNode(original.preAnalysis.toString()));
+        elem.appendChild(doc.createTextNode(original.preAnalysis.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((parentAnalysis == null && original.parentAnalysis != null) || 
          (parentAnalysis != null && !parentAnalysis.equals(original.parentAnalysis))){
         Element elem = doc.createElement("parent_analysis");
-        elem.appendChild(doc.createTextNode(original.parentAnalysis.toString()));
+        elem.appendChild(doc.createTextNode(original.parentAnalysis.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((parentResult == null && original.parentResult != null) || 
          (parentResult != null && !parentResult.equals(original.parentResult))){
         Element elem = doc.createElement("parent_result");
-        elem.appendChild(doc.createTextNode(original.parentResult.toString()));
+        elem.appendChild(doc.createTextNode(original.parentResult.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isReportable == null && original.isReportable != null) || 
          (isReportable != null && !isReportable.equals(original.isReportable))){
         Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString()));
+        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((unitOfMeasure == null && original.unitOfMeasure != null) || 
          (unitOfMeasure != null && !unitOfMeasure.equals(original.unitOfMeasure))){
         Element elem = doc.createElement("unit_of_measure");
-        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString()));
+        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((status == null && original.status != null) || 
          (status != null && !status.equals(original.status))){
         Element elem = doc.createElement("status");
-        elem.appendChild(doc.createTextNode(original.status.toString()));
+        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((availableDate == null && original.availableDate != null) || 
          (availableDate != null && !availableDate.equals(original.availableDate))){
         Element elem = doc.createElement("available_date");
-        elem.appendChild(doc.createTextNode(original.availableDate.toString()));
+        elem.appendChild(doc.createTextNode(original.availableDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((startedDate == null && original.startedDate != null) || 
          (startedDate != null && !startedDate.equals(original.startedDate))){
         Element elem = doc.createElement("started_date");
-        elem.appendChild(doc.createTextNode(original.startedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.startedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((completedDate == null && original.completedDate != null) || 
          (completedDate != null && !completedDate.equals(original.completedDate))){
         Element elem = doc.createElement("completed_date");
-        elem.appendChild(doc.createTextNode(original.completedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.completedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((releasedDate == null && original.releasedDate != null) || 
          (releasedDate != null && !releasedDate.equals(original.releasedDate))){
         Element elem = doc.createElement("released_date");
-        elem.appendChild(doc.createTextNode(original.releasedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.releasedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((printedDate == null && original.printedDate != null) || 
          (printedDate != null && !printedDate.equals(original.printedDate))){
         Element elem = doc.createElement("printed_date");
-        elem.appendChild(doc.createTextNode(original.printedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.printedDate.toString().trim()));
         root.appendChild(elem);
       }      
 

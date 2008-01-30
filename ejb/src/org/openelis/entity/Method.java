@@ -136,49 +136,49 @@ public class Method implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((reportingDescription == null && original.reportingDescription != null) || 
          (reportingDescription != null && !reportingDescription.equals(original.reportingDescription))){
         Element elem = doc.createElement("reporting_description");
-        elem.appendChild(doc.createTextNode(original.reportingDescription.toString()));
+        elem.appendChild(doc.createTextNode(original.reportingDescription.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeBegin == null && original.activeBegin != null) || 
          (activeBegin != null && !activeBegin.equals(original.activeBegin))){
         Element elem = doc.createElement("active_begin");
-        elem.appendChild(doc.createTextNode(original.activeBegin.toString()));
+        elem.appendChild(doc.createTextNode(original.activeBegin.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeEnd == null && original.activeEnd != null) || 
          (activeEnd != null && !activeEnd.equals(original.activeEnd))){
         Element elem = doc.createElement("active_end");
-        elem.appendChild(doc.createTextNode(original.activeEnd.toString()));
+        elem.appendChild(doc.createTextNode(original.activeEnd.toString().trim()));
         root.appendChild(elem);
       }      
 

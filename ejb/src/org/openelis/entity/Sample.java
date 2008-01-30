@@ -212,91 +212,91 @@ public class Sample implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((nextItemSequence == null && original.nextItemSequence != null) || 
          (nextItemSequence != null && !nextItemSequence.equals(original.nextItemSequence))){
         Element elem = doc.createElement("next_item_sequence");
-        elem.appendChild(doc.createTextNode(original.nextItemSequence.toString()));
+        elem.appendChild(doc.createTextNode(original.nextItemSequence.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((domain == null && original.domain != null) || 
          (domain != null && !domain.equals(original.domain))){
         Element elem = doc.createElement("domain");
-        elem.appendChild(doc.createTextNode(original.domain.toString()));
+        elem.appendChild(doc.createTextNode(original.domain.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((accessionNumber == null && original.accessionNumber != null) || 
          (accessionNumber != null && !accessionNumber.equals(original.accessionNumber))){
         Element elem = doc.createElement("accession_number");
-        elem.appendChild(doc.createTextNode(original.accessionNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.accessionNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((revision == null && original.revision != null) || 
          (revision != null && !revision.equals(original.revision))){
         Element elem = doc.createElement("revision");
-        elem.appendChild(doc.createTextNode(original.revision.toString()));
+        elem.appendChild(doc.createTextNode(original.revision.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((enteredDate == null && original.enteredDate != null) || 
          (enteredDate != null && !enteredDate.equals(original.enteredDate))){
         Element elem = doc.createElement("entered_date");
-        elem.appendChild(doc.createTextNode(original.enteredDate.toString()));
+        elem.appendChild(doc.createTextNode(original.enteredDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((receivedDate == null && original.receivedDate != null) || 
          (receivedDate != null && !receivedDate.equals(original.receivedDate))){
         Element elem = doc.createElement("received_date");
-        elem.appendChild(doc.createTextNode(original.receivedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.receivedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((receivedBy == null && original.receivedBy != null) || 
          (receivedBy != null && !receivedBy.equals(original.receivedBy))){
         Element elem = doc.createElement("received_by");
-        elem.appendChild(doc.createTextNode(original.receivedBy.toString()));
+        elem.appendChild(doc.createTextNode(original.receivedBy.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((collectionDate == null && original.collectionDate != null) || 
          (collectionDate != null && !collectionDate.equals(original.collectionDate))){
         Element elem = doc.createElement("collection_date");
-        elem.appendChild(doc.createTextNode(original.collectionDate.toString()));
+        elem.appendChild(doc.createTextNode(original.collectionDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((status == null && original.status != null) || 
          (status != null && !status.equals(original.status))){
         Element elem = doc.createElement("status");
-        elem.appendChild(doc.createTextNode(original.status.toString()));
+        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((_package == null && original._package != null) || 
          (_package != null && !_package.equals(original._package))){
         Element elem = doc.createElement("package");
-        elem.appendChild(doc.createTextNode(original._package.toString()));
+        elem.appendChild(doc.createTextNode(original._package.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((clientReference == null && original.clientReference != null) || 
          (clientReference != null && !clientReference.equals(original.clientReference))){
         Element elem = doc.createElement("client_reference");
-        elem.appendChild(doc.createTextNode(original.clientReference.toString()));
+        elem.appendChild(doc.createTextNode(original.clientReference.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((releasedDate == null && original.releasedDate != null) || 
          (releasedDate != null && !releasedDate.equals(original.releasedDate))){
         Element elem = doc.createElement("released_date");
-        elem.appendChild(doc.createTextNode(original.releasedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.releasedDate.toString().trim()));
         root.appendChild(elem);
       }      
 

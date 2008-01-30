@@ -120,42 +120,42 @@ public class QcAnalyte implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((qc == null && original.qc != null) || 
          (qc != null && !qc.equals(original.qc))){
         Element elem = doc.createElement("qc");
-        elem.appendChild(doc.createTextNode(original.qc.toString()));
+        elem.appendChild(doc.createTextNode(original.qc.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analyte == null && original.analyte != null) || 
          (analyte != null && !analyte.equals(original.analyte))){
         Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString()));
+        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((value == null && original.value != null) || 
          (value != null && !value.equals(original.value))){
         Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString()));
+        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isTrendable == null && original.isTrendable != null) || 
          (isTrendable != null && !isTrendable.equals(original.isTrendable))){
         Element elem = doc.createElement("is_trendable");
-        elem.appendChild(doc.createTextNode(original.isTrendable.toString()));
+        elem.appendChild(doc.createTextNode(original.isTrendable.toString().trim()));
         root.appendChild(elem);
       }      
 
