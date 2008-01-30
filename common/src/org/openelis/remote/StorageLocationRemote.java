@@ -1,6 +1,5 @@
 package org.openelis.remote;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,5 +27,5 @@ public interface StorageLocationRemote {
 	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
 	 
-	 public void deleteStorageLoc(Integer StorageLocId) throws RemoteException;
+	 public void deleteStorageLoc(Integer StorageLocId) throws Exception;
 }
