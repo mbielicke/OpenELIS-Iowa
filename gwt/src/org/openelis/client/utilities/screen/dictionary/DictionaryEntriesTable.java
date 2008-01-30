@@ -1,5 +1,8 @@
 package org.openelis.client.utilities.screen.dictionary;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableController;
 import org.openelis.gwt.client.widget.table.TableManager;
 import org.openelis.gwt.common.data.DataModel;
@@ -13,9 +16,9 @@ public class DictionaryEntriesTable implements TableManager {
     
     private Dictionary dictionaryForm = null;
     private TableRow relEntryRow = null; 
-    
-    //private int currEditrow = -1;
-    //private int prevEditRow;
+    private ArrayList systemNamesList = new ArrayList();  
+    private ArrayList entryList = new ArrayList(); 
+
 
     public void setDictionaryForm(Dictionary dictionaryForm) {
         this.dictionaryForm = dictionaryForm;
@@ -32,7 +35,6 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -41,8 +43,7 @@ public class DictionaryEntriesTable implements TableManager {
         return false;
     }
 
-    public boolean canSelect(int row, TableController controller) {
-        // TODO Auto-generated method stub
+    public boolean canSelect(int row, TableController controller) {       
         return true;
     }
 
@@ -51,29 +52,9 @@ public class DictionaryEntriesTable implements TableManager {
         return false;
     }
 
-    public void finishedEditing(int row, int col, TableController controller) {
-        /* if(col == 4){          
-         relEntryRow =  controller.model.getRow(row);         
-        StringField sfield = (StringField)relEntryRow.getColumn(col);   
-        String relatedEntry = (String)sfield.getValue();
-         if(relatedEntry != null){
-          if(!relatedEntry.trim().equals(""))
-           dictionaryForm.checkRelatedEntry(relatedEntry.trim());          
-         }
-         //showPopUp(id);
-        PopupPanel choicesPopup = new PopupPanel(true);
-         choicesPopup.clear();
-            choicesPopup.addStyleName("AutoCompletePopup");
-            //choicesPopup.addPopupListener(this);
-            choicesPopup.setPopupPosition(100,
-                 150);
-            Label label = new Label("test");
-            choicesPopup.setWidget(label);
-            choicesPopup.show();
-         
-      }*/
+    public void finishedEditing(int row, int col, TableController controller) {        
         
-      if(col == 1){          
+      if(col == 1){         
          TableRow tableRow =  controller.model.getRow(row);
          StringField field = (StringField)tableRow.getColumn(col);   
          String systemName = (String)field.getValue();
@@ -86,7 +67,8 @@ public class DictionaryEntriesTable implements TableManager {
            if(!systemName.trim().equals("")){
             dictionaryForm.checkSystemName(id,systemName.trim());
            } 
-          } 
+          }
+         existsInList("systemName",systemName.trim());
        }      
       if(col == 3){            
          TableRow tableRow =  controller.model.getRow(row);
@@ -101,8 +83,10 @@ public class DictionaryEntriesTable implements TableManager {
            if(!entry.trim().equals("")){
             dictionaryForm.checkEntry(id,entry.trim());
            } 
-          }           
-       }      
+          }
+         existsInList("entry",entry.trim());
+       } 
+      
      if(col == 1 && (row == controller.model.numRows()-1)){          
        controller.addRow();  
       }
@@ -138,6 +122,29 @@ public class DictionaryEntriesTable implements TableManager {
         relEntryId.setType("integer");                     
         relEntryId.setValue(entryId);
         relEntryRow.addHidden("relEntryId", relEntryId);        
+    }
+    
+    public void resetLists(){
+        systemNamesList.clear();   
+        entryList.clear();
+    }
+    
+    public void existsInList(String listName, String text){
+       if(listName.equals("systemName")){
+          if(systemNamesList.contains(text)){
+              dictionaryForm.showError("sysNameUnique");
+          }else{
+              systemNamesList.add(text);
+              
+          } 
+       }
+       if(listName.equals("entry")){
+           if(entryList.contains(text)){
+               dictionaryForm.showError("entryUnique");
+           }else{
+               entryList.add(text);              
+           } 
+        }    
     }
     
 }
