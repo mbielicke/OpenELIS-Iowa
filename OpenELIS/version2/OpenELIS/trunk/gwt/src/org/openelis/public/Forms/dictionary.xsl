@@ -126,47 +126,46 @@
   
 				<!-- end left table -->
 				<panel layout="vertical" spacing="5" width="500px" xsi:type="Panel">
-					<widget halign="center">
-						<!--<buttonPanel buttons="qaucbpn" key="buttons"/>-->
+					<widget halign="center">						
 						<buttonPanel key="buttons">
             <appButton action="query" toggle="true">
               <widget>
-                <text>Query</text>
+                <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
               </widget>
             </appButton>            
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="previous">
               <widget>
-                <text>Previous</text>
+                <text><xsl:value-of select='resource:getString($constants,"previous")'/></text>
               </widget>
             </appButton>
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="next">
               <widget>
-                <text>Next</text>
+                <text><xsl:value-of select='resource:getString($constants,"next")'/></text>
               </widget>
             </appButton>
             <appButton action="add" toggle="true">
               <widget>
-                <text>Add</text>
+                <text><xsl:value-of select='resource:getString($constants,"add")'/></text>
               </widget>
             </appButton>
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="update" toggle="true">
               <widget>
-                <text>Update</text>
+                <text><xsl:value-of select='resource:getString($constants,"update")'/></text>
               </widget>
             </appButton>
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="commit">
               <widget>
-                <text>Commit</text>
+                <text><xsl:value-of select='resource:getString($constants,"commit")'/></text>
               </widget>
             </appButton>
             <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="abort">
               <widget>
-                <text>Abort</text>
+                <text><xsl:value-of select='resource:getString($constants,"abort")'/></text>
               </widget>
             </appButton>
             
@@ -188,7 +187,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_Description")'/></text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
 										<textbox case="mixed" key="desc" width="300px"/>
@@ -196,7 +195,7 @@
 								</row>
 								<row>								
 									 <widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_Section")'/></text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"section")'/></text>
 									 </widget>
 									 
 									 <!--<panel layout="horizontal" spacing="5" width="150px" xsi:type="Panel">-->
@@ -247,7 +246,7 @@
 					<panel layout="vertical" spacing="5" xsi:type="Panel">
 						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "6" rows = "0" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable" autoAdd= "true"  title="{resource:getString($constants,'dic_Entries')}">
+							<table maxRows = "6" rows = "0" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="{resource:getString($constants,'dic_Entries')}">
 								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
@@ -284,34 +283,33 @@
 								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
-								<widths>45,95,75,110,100</widths>
-								<editors>
-									<option multi="true" fromModel="true"/>																
-									<textbox/>									
-									<textbox/>									
-									<textbox/>										
-									<!--<textbox/>-->
-									<auto cat="relatedEntry" case="mixed" serviceUrl="DictionaryServlet" width="100px" popupHeight="50px"  type="integer">
-												<autoWidths>100</autoWidths>
+								<widths>65,95,75,110,100</widths>
+								<editors>									
+									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="DictionaryServlet" width="40px" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
+												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
 												</autoEditors>
 												<autoFields>
 													<string/>
-												</autoFields>												
-									</auto>
+												</autoFields>
+												<autoItems>
+												 <item value= " "> </item>
+									             <item value= "Y">Y</item>														
+									             <item value= "N">N</item>													 																																			
+												</autoItems>
+										</autoDropdown>																
+									<textbox/>									
+									<textbox/>									
+									<textbox/>										
+									<textbox case = "mixed"/>									
 								</editors>
-								<fields>
-									<queryOption multi="true" type="string">	
-									 <item value= " "> </item>
-									 <item value= "Y">Y</item>														
-									 <item value= "N">N</item>											 															
-									</queryOption>									
+								<fields>									
+									<collection/>										
 									<queryString/>									
 									<queryString/>
 									<queryString/>
-									<!--<queryString/>-->
-									<number type="integer">0</number>		
+									<queryString/>									
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
@@ -320,12 +318,14 @@
 						  </query>						  
 						</widget>
 						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>						
-		                <button halign= "right" action = "this" onclick = "this" key= "removeEntryButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt;{resource:getString($constants,'removeRow')}"/>
-		                <!-- <appButton halign = "right" key= "removeEntryButton" action="" >
-                           <widget>
-                            <text><xsl:value-of select='resource:getString($constants,"dic_RemEntry")'/></text>
-                         </widget>
-                        </appButton>	 -->
+		                <!--<button halign= "right" action = "this" onclick = "this" key= "removeEntryButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt;{resource:getString($constants,'removeRow')}"/>	-->
+		                <widget halign = "right">
+                            <appButton  action="remove" key = "removeEntryButton">
+                              <widget>
+                                  <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+                               </widget> 
+                             </appButton>
+                           </widget>	                
 					</panel>					
 				</panel>
 		</panel>
@@ -342,9 +342,9 @@
 	 <table key="dictEntTable"/>	
 	 <queryString key="systemName"/>
 	 <queryString key="name"/>
-	 <queryString key="desc"/>	 
+	 <queryString key="desc"/>
+	 <collection key="secName" type="integer"/>
 	</rpc>
-	
 	<rpc key="queryByLetter">
       <queryString key="systemName"/>
     </rpc>
