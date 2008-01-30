@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,7 @@ import javax.persistence.Query;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -152,11 +152,22 @@ public class StorageUnitBean implements StorageUnitRemote{
         }        
     }
 
-	public void deleteStorageUnit(Integer StorageUnitId) throws RemoteException {
+	public void deleteStorageUnit(Integer storageUnitId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
+		
+		//we need to see if this item can be deleted first
+		Query query = null;
+		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
+		query.setParameter("id", storageUnitId);
+		List linkedRecords = query.getResultList();
+		
+		if(linkedRecords.size() > 0){
+			throw new RPCDeleteException();
+		}
+		//then we need to delete it
 		try {
-            	storageUnit = manager.find(StorageUnit.class, StorageUnitId);
+            	storageUnit = manager.find(StorageUnit.class, storageUnitId);
             	if(storageUnit != null)
             		manager.remove(storageUnit);
             	
