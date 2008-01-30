@@ -85,20 +85,6 @@ public class OrganizationBean implements OrganizationRemote {
         lockBean.getLock((Integer)query.getSingleResult(),id); 
         return getOrganizationAddress(id, false);
     }
-
-	/*public List<OrganizationTableRowDO> getOrganizationNameList(int startPos, int maxResults) {
-		Query query = manager.createNamedQuery("getOrganizationNameRows");
-		
-		if(maxResults > 0){
-			query.setFirstResult(startPos);
-			query.setMaxResults(maxResults);
-		}
-		
-		List  orgList = query.getResultList();// getting a list of organizations
-		
-        return orgList;
-
-	}*/
 	
 	@RolesAllowed("organization-update")
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) {
