@@ -96,28 +96,28 @@ public class SampleProject implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sample == null && original.sample != null) || 
          (sample != null && !sample.equals(original.sample))){
         Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString()));
+        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((project == null && original.project != null) || 
          (project != null && !project.equals(original.project))){
         Element elem = doc.createElement("project");
-        elem.appendChild(doc.createTextNode(original.project.toString()));
+        elem.appendChild(doc.createTextNode(original.project.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isPermanent == null && original.isPermanent != null) || 
          (isPermanent != null && !isPermanent.equals(original.isPermanent))){
         Element elem = doc.createElement("is_permanent");
-        elem.appendChild(doc.createTextNode(original.isPermanent.toString()));
+        elem.appendChild(doc.createTextNode(original.isPermanent.toString().trim()));
         root.appendChild(elem);
       }      
 

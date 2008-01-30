@@ -40,6 +40,9 @@ public class Person implements Auditable, Cloneable {
   @Column(name="middle_name")
   private String middleName;             
 
+  @Column(name="address")
+  private Integer address;             
+
 
   @Transient
   private Person original;
@@ -81,6 +84,15 @@ public class Person implements Auditable, Cloneable {
       this.middleName = middleName;
   }
 
+  public Integer getAddress() {
+    return address;
+  }
+  public void setAddress(Integer address) {
+    if((address == null && this.address != null) || 
+       (address != null && !address.equals(this.address)))
+      this.address = address;
+  }
+
   
   public void setClone() {
     try {
@@ -96,28 +108,35 @@ public class Person implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((lastName == null && original.lastName != null) || 
          (lastName != null && !lastName.equals(original.lastName))){
         Element elem = doc.createElement("last_name");
-        elem.appendChild(doc.createTextNode(original.lastName.toString()));
+        elem.appendChild(doc.createTextNode(original.lastName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((firstName == null && original.firstName != null) || 
          (firstName != null && !firstName.equals(original.firstName))){
         Element elem = doc.createElement("first_name");
-        elem.appendChild(doc.createTextNode(original.firstName.toString()));
+        elem.appendChild(doc.createTextNode(original.firstName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((middleName == null && original.middleName != null) || 
          (middleName != null && !middleName.equals(original.middleName))){
         Element elem = doc.createElement("middle_name");
-        elem.appendChild(doc.createTextNode(original.middleName.toString()));
+        elem.appendChild(doc.createTextNode(original.middleName.toString().trim()));
+        root.appendChild(elem);
+      }      
+
+      if((address == null && original.address != null) || 
+         (address != null && !address.equals(original.address))){
+        Element elem = doc.createElement("address");
+        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
         root.appendChild(elem);
       }      
 

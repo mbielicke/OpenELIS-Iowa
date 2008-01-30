@@ -96,28 +96,28 @@ public class AttachmentItem implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceId == null && original.referenceId != null) || 
          (referenceId != null && !referenceId.equals(original.referenceId))){
         Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((referenceTable == null && original.referenceTable != null) || 
          (referenceTable != null && !referenceTable.equals(original.referenceTable))){
         Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString()));
+        elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((attachment == null && original.attachment != null) || 
          (attachment != null && !attachment.equals(original.attachment))){
         Element elem = doc.createElement("attachment");
-        elem.appendChild(doc.createTextNode(original.attachment.toString()));
+        elem.appendChild(doc.createTextNode(original.attachment.toString().trim()));
         root.appendChild(elem);
       }      
 

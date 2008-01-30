@@ -304,147 +304,147 @@ public class Test implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((reportingDescription == null && original.reportingDescription != null) || 
          (reportingDescription != null && !reportingDescription.equals(original.reportingDescription))){
         Element elem = doc.createElement("reporting_description");
-        elem.appendChild(doc.createTextNode(original.reportingDescription.toString()));
+        elem.appendChild(doc.createTextNode(original.reportingDescription.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((method == null && original.method != null) || 
          (method != null && !method.equals(original.method))){
         Element elem = doc.createElement("method");
-        elem.appendChild(doc.createTextNode(original.method.toString()));
+        elem.appendChild(doc.createTextNode(original.method.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeBegin == null && original.activeBegin != null) || 
          (activeBegin != null && !activeBegin.equals(original.activeBegin))){
         Element elem = doc.createElement("active_begin");
-        elem.appendChild(doc.createTextNode(original.activeBegin.toString()));
+        elem.appendChild(doc.createTextNode(original.activeBegin.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeEnd == null && original.activeEnd != null) || 
          (activeEnd != null && !activeEnd.equals(original.activeEnd))){
         Element elem = doc.createElement("active_end");
-        elem.appendChild(doc.createTextNode(original.activeEnd.toString()));
+        elem.appendChild(doc.createTextNode(original.activeEnd.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isReportable == null && original.isReportable != null) || 
          (isReportable != null && !isReportable.equals(original.isReportable))){
         Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString()));
+        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timeTransit == null && original.timeTransit != null) || 
          (timeTransit != null && !timeTransit.equals(original.timeTransit))){
         Element elem = doc.createElement("time_transit");
-        elem.appendChild(doc.createTextNode(original.timeTransit.toString()));
+        elem.appendChild(doc.createTextNode(original.timeTransit.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timeHolding == null && original.timeHolding != null) || 
          (timeHolding != null && !timeHolding.equals(original.timeHolding))){
         Element elem = doc.createElement("time_holding");
-        elem.appendChild(doc.createTextNode(original.timeHolding.toString()));
+        elem.appendChild(doc.createTextNode(original.timeHolding.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timeTaAverage == null && original.timeTaAverage != null) || 
          (timeTaAverage != null && !timeTaAverage.equals(original.timeTaAverage))){
         Element elem = doc.createElement("time_ta_average");
-        elem.appendChild(doc.createTextNode(original.timeTaAverage.toString()));
+        elem.appendChild(doc.createTextNode(original.timeTaAverage.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timeTaWarning == null && original.timeTaWarning != null) || 
          (timeTaWarning != null && !timeTaWarning.equals(original.timeTaWarning))){
         Element elem = doc.createElement("time_ta_warning");
-        elem.appendChild(doc.createTextNode(original.timeTaWarning.toString()));
+        elem.appendChild(doc.createTextNode(original.timeTaWarning.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((timeTaMax == null && original.timeTaMax != null) || 
          (timeTaMax != null && !timeTaMax.equals(original.timeTaMax))){
         Element elem = doc.createElement("time_ta_max");
-        elem.appendChild(doc.createTextNode(original.timeTaMax.toString()));
+        elem.appendChild(doc.createTextNode(original.timeTaMax.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((label == null && original.label != null) || 
          (label != null && !label.equals(original.label))){
         Element elem = doc.createElement("label");
-        elem.appendChild(doc.createTextNode(original.label.toString()));
+        elem.appendChild(doc.createTextNode(original.label.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((labelQty == null && original.labelQty != null) || 
          (labelQty != null && !labelQty.equals(original.labelQty))){
         Element elem = doc.createElement("label_qty");
-        elem.appendChild(doc.createTextNode(original.labelQty.toString()));
+        elem.appendChild(doc.createTextNode(original.labelQty.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testTrailer == null && original.testTrailer != null) || 
          (testTrailer != null && !testTrailer.equals(original.testTrailer))){
         Element elem = doc.createElement("test_trailer");
-        elem.appendChild(doc.createTextNode(original.testTrailer.toString()));
+        elem.appendChild(doc.createTextNode(original.testTrailer.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((section == null && original.section != null) || 
          (section != null && !section.equals(original.section))){
         Element elem = doc.createElement("section");
-        elem.appendChild(doc.createTextNode(original.section.toString()));
+        elem.appendChild(doc.createTextNode(original.section.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testFormat == null && original.testFormat != null) || 
          (testFormat != null && !testFormat.equals(original.testFormat))){
         Element elem = doc.createElement("test_format");
-        elem.appendChild(doc.createTextNode(original.testFormat.toString()));
+        elem.appendChild(doc.createTextNode(original.testFormat.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((revisionMethod == null && original.revisionMethod != null) || 
          (revisionMethod != null && !revisionMethod.equals(original.revisionMethod))){
         Element elem = doc.createElement("revision_method");
-        elem.appendChild(doc.createTextNode(original.revisionMethod.toString()));
+        elem.appendChild(doc.createTextNode(original.revisionMethod.toString().trim()));
         root.appendChild(elem);
       }      
 

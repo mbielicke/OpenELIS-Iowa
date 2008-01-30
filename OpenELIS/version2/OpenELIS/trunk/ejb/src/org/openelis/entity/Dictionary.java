@@ -121,66 +121,66 @@ public class Dictionary implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((category == null && original.category != null) || 
-         (category != null && !category.equals(original.category))){
-        Element elem = doc.createElement("category");
-        elem.appendChild(doc.createTextNode(original.category.toString()));
-        root.appendChild(elem);
-      }      
+        if((category == null && original.category != null) || 
+           (category != null && !category.equals(original.category))){
+          Element elem = doc.createElement("category");
+          elem.appendChild(doc.createTextNode(original.category.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((relatedEntryKey == null && original.relatedEntryKey != null) || 
-         (relatedEntryKey != null && !relatedEntryKey.equals(original.relatedEntryKey))){
-        Element elem = doc.createElement("related_entry");
-        elem.appendChild(doc.createTextNode(original.relatedEntryKey.toString()));
-        root.appendChild(elem);
-      }      
+        if((relatedEntryKey == null && original.relatedEntryKey != null) || 
+           (relatedEntryKey != null && !relatedEntryKey.equals(original.relatedEntryKey))){
+          Element elem = doc.createElement("related_entry");
+          elem.appendChild(doc.createTextNode(original.relatedEntryKey.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((systemName == null && original.systemName != null) || 
-         (systemName != null && !systemName.equals(original.systemName))){
-        Element elem = doc.createElement("system_name");
-        elem.appendChild(doc.createTextNode(original.systemName.toString()));
-        root.appendChild(elem);
-      }      
+        if((systemName == null && original.systemName != null) || 
+           (systemName != null && !systemName.equals(original.systemName))){
+          Element elem = doc.createElement("system_name");
+          elem.appendChild(doc.createTextNode(original.systemName.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((isActive == null && original.isActive != null) || 
-         (isActive != null && !isActive.equals(original.isActive))){
-        Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
-        root.appendChild(elem);
-      }      
+        if((isActive == null && original.isActive != null) || 
+           (isActive != null && !isActive.equals(original.isActive))){
+          Element elem = doc.createElement("is_active");
+          elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((localAbbrev == null && original.localAbbrev != null) || 
-         (localAbbrev != null && !localAbbrev.equals(original.localAbbrev))){
-        Element elem = doc.createElement("local_abbrev");
-        elem.appendChild(doc.createTextNode(original.localAbbrev.toString()));
-        root.appendChild(elem);
-      }      
+        if((localAbbrev == null && original.localAbbrev != null) || 
+           (localAbbrev != null && !localAbbrev.equals(original.localAbbrev))){
+          Element elem = doc.createElement("local_abbrev");
+          elem.appendChild(doc.createTextNode(original.localAbbrev.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((entry == null && original.entry != null) || 
-         (entry != null && !entry.equals(original.entry))){
-        Element elem = doc.createElement("entry");
-        elem.appendChild(doc.createTextNode(original.entry.toString()));
-        root.appendChild(elem);
-      }      
+        if((entry == null && original.entry != null) || 
+           (entry != null && !entry.equals(original.entry))){
+          Element elem = doc.createElement("entry");
+          elem.appendChild(doc.createTextNode(original.entry.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "dictionary";

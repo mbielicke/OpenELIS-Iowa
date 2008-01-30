@@ -204,91 +204,91 @@ public class InventoryItem implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityMinLevel == null && original.quantityMinLevel != null) || 
          (quantityMinLevel != null && !quantityMinLevel.equals(original.quantityMinLevel))){
         Element elem = doc.createElement("quantity_min_level");
-        elem.appendChild(doc.createTextNode(original.quantityMinLevel.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityMinLevel.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityMaxLevel == null && original.quantityMaxLevel != null) || 
          (quantityMaxLevel != null && !quantityMaxLevel.equals(original.quantityMaxLevel))){
         Element elem = doc.createElement("quantity_max_level");
-        elem.appendChild(doc.createTextNode(original.quantityMaxLevel.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityMaxLevel.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityToReorder == null && original.quantityToReorder != null) || 
          (quantityToReorder != null && !quantityToReorder.equals(original.quantityToReorder))){
         Element elem = doc.createElement("quantity_to_reorder");
-        elem.appendChild(doc.createTextNode(original.quantityToReorder.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityToReorder.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((unitOfMeasure == null && original.unitOfMeasure != null) || 
          (unitOfMeasure != null && !unitOfMeasure.equals(original.unitOfMeasure))){
         Element elem = doc.createElement("unit_of_measure");
-        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString()));
+        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isReorderAuto == null && original.isReorderAuto != null) || 
          (isReorderAuto != null && !isReorderAuto.equals(original.isReorderAuto))){
         Element elem = doc.createElement("is_reorder_auto");
-        elem.appendChild(doc.createTextNode(original.isReorderAuto.toString()));
+        elem.appendChild(doc.createTextNode(original.isReorderAuto.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isLotMaintained == null && original.isLotMaintained != null) || 
          (isLotMaintained != null && !isLotMaintained.equals(original.isLotMaintained))){
         Element elem = doc.createElement("is_lot_maintained");
-        elem.appendChild(doc.createTextNode(original.isLotMaintained.toString()));
+        elem.appendChild(doc.createTextNode(original.isLotMaintained.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((averageLeadTime == null && original.averageLeadTime != null) || 
          (averageLeadTime != null && !averageLeadTime.equals(original.averageLeadTime))){
         Element elem = doc.createElement("average_lead_time");
-        elem.appendChild(doc.createTextNode(original.averageLeadTime.toString()));
+        elem.appendChild(doc.createTextNode(original.averageLeadTime.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((averageCost == null && original.averageCost != null) || 
          (averageCost != null && !averageCost.equals(original.averageCost))){
         Element elem = doc.createElement("average_cost");
-        elem.appendChild(doc.createTextNode(original.averageCost.toString()));
+        elem.appendChild(doc.createTextNode(original.averageCost.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((averageDailyUse == null && original.averageDailyUse != null) || 
          (averageDailyUse != null && !averageDailyUse.equals(original.averageDailyUse))){
         Element elem = doc.createElement("average_daily_use");
-        elem.appendChild(doc.createTextNode(original.averageDailyUse.toString()));
+        elem.appendChild(doc.createTextNode(original.averageDailyUse.toString().trim()));
         root.appendChild(elem);
       }      
 

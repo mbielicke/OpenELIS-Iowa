@@ -155,59 +155,52 @@ public class Organization implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((parentOrganization == null && original.parentOrganization != null) || 
-         (parentOrganization != null && !parentOrganization.equals(original.parentOrganization))){
-        Element elem = doc.createElement("parent_organization");
-        elem.appendChild(doc.createTextNode(original.parentOrganization.toString()));
-        root.appendChild(elem);
-      }      
+        if((parentOrganization == null && original.parentOrganization != null) || 
+           (parentOrganization != null && !parentOrganization.equals(original.parentOrganization))){
+          Element elem = doc.createElement("parent_organization");
+          elem.appendChild(doc.createTextNode(original.parentOrganization.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name.trim()))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+        if((name == null && original.name != null) || 
+           (name != null && !name.equals(original.name))){
+          Element elem = doc.createElement("name");
+          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((isActive == null && original.isActive != null) || 
-         (isActive != null && !isActive.equals(original.isActive))){
-        Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
-        root.appendChild(elem);
+        if((isActive == null && original.isActive != null) || 
+           (isActive != null && !isActive.equals(original.isActive))){
+          Element elem = doc.createElement("is_active");
+          elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
+          root.appendChild(elem);
+        }      
+
+        if((address == null && original.address != null) || 
+           (address != null && !address.equals(original.address))){
+          Element elem = doc.createElement("address");
+          elem.appendChild(doc.createTextNode(original.address.toString().trim()));
+          root.appendChild(elem);
+        }      
+
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
       }
-      
-      if((address == null && original.address != null) || 
-    		  (address != null && !address.equals(original.address))){
-    	  Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.address.toString()));
-          root.appendChild(elem);    	  
-      }
-
-      if((address == null && original.address != null) || 
-         (address != null && !address.equals(original.address))){
-        Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString()));
-        root.appendChild(elem);
-      }      
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "organization";

@@ -185,101 +185,101 @@ public class Address implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((multipleUnit == null && original.multipleUnit != null) || 
-         (multipleUnit != null && !multipleUnit.equals(original.multipleUnit))){
-        Element elem = doc.createElement("multiple_unit");
-        elem.appendChild(doc.createTextNode(original.multipleUnit.toString()));
-        root.appendChild(elem);
-      }      
+        if((multipleUnit == null && original.multipleUnit != null) || 
+           (multipleUnit != null && !multipleUnit.equals(original.multipleUnit))){
+          Element elem = doc.createElement("multiple_unit");
+          elem.appendChild(doc.createTextNode(original.multipleUnit.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((streetAddress == null && original.streetAddress != null) || 
-         (streetAddress != null && !streetAddress.equals(original.streetAddress))){
-        Element elem = doc.createElement("street_address");
-        elem.appendChild(doc.createTextNode(original.streetAddress.toString()));
-        root.appendChild(elem);
-      }      
+        if((streetAddress == null && original.streetAddress != null) || 
+           (streetAddress != null && !streetAddress.equals(original.streetAddress))){
+          Element elem = doc.createElement("street_address");
+          elem.appendChild(doc.createTextNode(original.streetAddress.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((city == null && original.city != null) || 
-         (city != null && !city.equals(original.city))){
-        Element elem = doc.createElement("city");
-        elem.appendChild(doc.createTextNode(original.city.toString()));
-        root.appendChild(elem);
-      }      
+        if((city == null && original.city != null) || 
+           (city != null && !city.equals(original.city))){
+          Element elem = doc.createElement("city");
+          elem.appendChild(doc.createTextNode(original.city.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((state == null && original.state != null) || 
-         (state != null && !state.equals(original.state))){
-        Element elem = doc.createElement("state");
-        elem.appendChild(doc.createTextNode(original.state.toString()));
-        root.appendChild(elem);
-      }      
+        if((state == null && original.state != null) || 
+           (state != null && !state.equals(original.state))){
+          Element elem = doc.createElement("state");
+          elem.appendChild(doc.createTextNode(original.state.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((zipCode == null && original.zipCode != null) || 
-         (zipCode != null && !zipCode.equals(original.zipCode))){
-        Element elem = doc.createElement("zip_code");
-        elem.appendChild(doc.createTextNode(original.zipCode.toString()));
-        root.appendChild(elem);
-      }      
+        if((zipCode == null && original.zipCode != null) || 
+           (zipCode != null && !zipCode.equals(original.zipCode))){
+          Element elem = doc.createElement("zip_code");
+          elem.appendChild(doc.createTextNode(original.zipCode.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((workPhone == null && original.workPhone != null) || 
-         (workPhone != null && !workPhone.equals(original.workPhone))){
-        Element elem = doc.createElement("work_phone");
-        elem.appendChild(doc.createTextNode(original.workPhone.toString()));
-        root.appendChild(elem);
-      }      
+        if((workPhone == null && original.workPhone != null) || 
+           (workPhone != null && !workPhone.equals(original.workPhone))){
+          Element elem = doc.createElement("work_phone");
+          elem.appendChild(doc.createTextNode(original.workPhone.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((homePhone == null && original.homePhone != null) || 
-         (homePhone != null && !homePhone.equals(original.homePhone))){
-        Element elem = doc.createElement("home_phone");
-        elem.appendChild(doc.createTextNode(original.homePhone.toString()));
-        root.appendChild(elem);
-      }      
+        if((homePhone == null && original.homePhone != null) || 
+           (homePhone != null && !homePhone.equals(original.homePhone))){
+          Element elem = doc.createElement("home_phone");
+          elem.appendChild(doc.createTextNode(original.homePhone.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((cellPhone == null && original.cellPhone != null) || 
-         (cellPhone != null && !cellPhone.equals(original.cellPhone))){
-        Element elem = doc.createElement("cell_phone");
-        elem.appendChild(doc.createTextNode(original.cellPhone.toString()));
-        root.appendChild(elem);
-      }      
+        if((cellPhone == null && original.cellPhone != null) || 
+           (cellPhone != null && !cellPhone.equals(original.cellPhone))){
+          Element elem = doc.createElement("cell_phone");
+          elem.appendChild(doc.createTextNode(original.cellPhone.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((faxPhone == null && original.faxPhone != null) || 
-         (faxPhone != null && !faxPhone.equals(original.faxPhone))){
-        Element elem = doc.createElement("fax_phone");
-        elem.appendChild(doc.createTextNode(original.faxPhone.toString()));
-        root.appendChild(elem);
-      }      
+        if((faxPhone == null && original.faxPhone != null) || 
+           (faxPhone != null && !faxPhone.equals(original.faxPhone))){
+          Element elem = doc.createElement("fax_phone");
+          elem.appendChild(doc.createTextNode(original.faxPhone.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((email == null && original.email != null) || 
-         (email != null && !email.equals(original.email))){
-        Element elem = doc.createElement("email");
-        elem.appendChild(doc.createTextNode(original.email.toString()));
-        root.appendChild(elem);
-      }      
+        if((email == null && original.email != null) || 
+           (email != null && !email.equals(original.email))){
+          Element elem = doc.createElement("email");
+          elem.appendChild(doc.createTextNode(original.email.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((country == null && original.country != null) || 
-         (country != null && !country.equals(original.country))){
-        Element elem = doc.createElement("country");
-        elem.appendChild(doc.createTextNode(original.country.toString()));
-        root.appendChild(elem);
-      }      
+        if((country == null && original.country != null) || 
+           (country != null && !country.equals(original.country))){
+          Element elem = doc.createElement("country");
+          elem.appendChild(doc.createTextNode(original.country.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "address";

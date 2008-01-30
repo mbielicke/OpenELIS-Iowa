@@ -198,84 +198,84 @@ public class Qc implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((source == null && original.source != null) || 
          (source != null && !source.equals(original.source))){
         Element elem = doc.createElement("source");
-        elem.appendChild(doc.createTextNode(original.source.toString()));
+        elem.appendChild(doc.createTextNode(original.source.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((lotNumber == null && original.lotNumber != null) || 
          (lotNumber != null && !lotNumber.equals(original.lotNumber))){
         Element elem = doc.createElement("lot_number");
-        elem.appendChild(doc.createTextNode(original.lotNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.lotNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((preparedDate == null && original.preparedDate != null) || 
          (preparedDate != null && !preparedDate.equals(original.preparedDate))){
         Element elem = doc.createElement("prepared_date");
-        elem.appendChild(doc.createTextNode(original.preparedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.preparedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((preparedVolume == null && original.preparedVolume != null) || 
          (preparedVolume != null && !preparedVolume.equals(original.preparedVolume))){
         Element elem = doc.createElement("prepared_volume");
-        elem.appendChild(doc.createTextNode(original.preparedVolume.toString()));
+        elem.appendChild(doc.createTextNode(original.preparedVolume.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((preparedUnit == null && original.preparedUnit != null) || 
          (preparedUnit != null && !preparedUnit.equals(original.preparedUnit))){
         Element elem = doc.createElement("prepared_unit");
-        elem.appendChild(doc.createTextNode(original.preparedUnit.toString()));
+        elem.appendChild(doc.createTextNode(original.preparedUnit.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((preparedBy == null && original.preparedBy != null) || 
          (preparedBy != null && !preparedBy.equals(original.preparedBy))){
         Element elem = doc.createElement("prepared_by");
-        elem.appendChild(doc.createTextNode(original.preparedBy.toString()));
+        elem.appendChild(doc.createTextNode(original.preparedBy.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((usableDate == null && original.usableDate != null) || 
          (usableDate != null && !usableDate.equals(original.usableDate))){
         Element elem = doc.createElement("usable_date");
-        elem.appendChild(doc.createTextNode(original.usableDate.toString()));
+        elem.appendChild(doc.createTextNode(original.usableDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((expireDate == null && original.expireDate != null) || 
          (expireDate != null && !expireDate.equals(original.expireDate))){
         Element elem = doc.createElement("expire_date");
-        elem.appendChild(doc.createTextNode(original.expireDate.toString()));
+        elem.appendChild(doc.createTextNode(original.expireDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isSingleUse == null && original.isSingleUse != null) || 
          (isSingleUse != null && !isSingleUse.equals(original.isSingleUse))){
         Element elem = doc.createElement("is_single_use");
-        elem.appendChild(doc.createTextNode(original.isSingleUse.toString()));
+        elem.appendChild(doc.createTextNode(original.isSingleUse.toString().trim()));
         root.appendChild(elem);
       }      
 

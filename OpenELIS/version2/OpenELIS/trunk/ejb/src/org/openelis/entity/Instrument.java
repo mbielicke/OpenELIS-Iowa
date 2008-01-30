@@ -184,77 +184,77 @@ public class Instrument implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((description == null && original.description != null) || 
          (description != null && !description.equals(original.description))){
         Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
+        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((modelNumber == null && original.modelNumber != null) || 
          (modelNumber != null && !modelNumber.equals(original.modelNumber))){
         Element elem = doc.createElement("model_number");
-        elem.appendChild(doc.createTextNode(original.modelNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.modelNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((serialNumber == null && original.serialNumber != null) || 
          (serialNumber != null && !serialNumber.equals(original.serialNumber))){
         Element elem = doc.createElement("serial_number");
-        elem.appendChild(doc.createTextNode(original.serialNumber.toString()));
+        elem.appendChild(doc.createTextNode(original.serialNumber.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((location == null && original.location != null) || 
          (location != null && !location.equals(original.location))){
         Element elem = doc.createElement("location");
-        elem.appendChild(doc.createTextNode(original.location.toString()));
+        elem.appendChild(doc.createTextNode(original.location.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString()));
+        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeBegin == null && original.activeBegin != null) || 
          (activeBegin != null && !activeBegin.equals(original.activeBegin))){
         Element elem = doc.createElement("active_begin");
-        elem.appendChild(doc.createTextNode(original.activeBegin.toString()));
+        elem.appendChild(doc.createTextNode(original.activeBegin.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((activeEnd == null && original.activeEnd != null) || 
          (activeEnd != null && !activeEnd.equals(original.activeEnd))){
         Element elem = doc.createElement("active_end");
-        elem.appendChild(doc.createTextNode(original.activeEnd.toString()));
+        elem.appendChild(doc.createTextNode(original.activeEnd.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

@@ -124,42 +124,42 @@ public class InstrumentLog implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((instrument == null && original.instrument != null) || 
          (instrument != null && !instrument.equals(original.instrument))){
         Element elem = doc.createElement("instrument");
-        elem.appendChild(doc.createTextNode(original.instrument.toString()));
+        elem.appendChild(doc.createTextNode(original.instrument.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((worksheet == null && original.worksheet != null) || 
          (worksheet != null && !worksheet.equals(original.worksheet))){
         Element elem = doc.createElement("worksheet");
-        elem.appendChild(doc.createTextNode(original.worksheet.toString()));
+        elem.appendChild(doc.createTextNode(original.worksheet.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((eventBegin == null && original.eventBegin != null) || 
          (eventBegin != null && !eventBegin.equals(original.eventBegin))){
         Element elem = doc.createElement("event_begin");
-        elem.appendChild(doc.createTextNode(original.eventBegin.toString()));
+        elem.appendChild(doc.createTextNode(original.eventBegin.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((eventEnd == null && original.eventEnd != null) || 
          (eventEnd != null && !eventEnd.equals(original.eventEnd))){
         Element elem = doc.createElement("event_end");
-        elem.appendChild(doc.createTextNode(original.eventEnd.toString()));
+        elem.appendChild(doc.createTextNode(original.eventEnd.toString().trim()));
         root.appendChild(elem);
       }      
 

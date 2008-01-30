@@ -144,56 +144,56 @@ public class TestAnalyte implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((test == null && original.test != null) || 
          (test != null && !test.equals(original.test))){
         Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString()));
+        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((resultGroup == null && original.resultGroup != null) || 
          (resultGroup != null && !resultGroup.equals(original.resultGroup))){
         Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString()));
+        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sortOrder == null && original.sortOrder != null) || 
          (sortOrder != null && !sortOrder.equals(original.sortOrder))){
         Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString()));
+        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analyte == null && original.analyte != null) || 
          (analyte != null && !analyte.equals(original.analyte))){
         Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString()));
+        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((isReportable == null && original.isReportable != null) || 
          (isReportable != null && !isReportable.equals(original.isReportable))){
         Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString()));
+        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((scriptlet == null && original.scriptlet != null) || 
          (scriptlet != null && !scriptlet.equals(original.scriptlet))){
         Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString()));
+        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
         root.appendChild(elem);
       }      
 

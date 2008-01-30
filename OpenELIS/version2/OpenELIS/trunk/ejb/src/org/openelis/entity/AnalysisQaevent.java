@@ -84,21 +84,21 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analysis == null && original.analysis != null) || 
          (analysis != null && !analysis.equals(original.analysis))){
         Element elem = doc.createElement("analysis");
-        elem.appendChild(doc.createTextNode(original.analysis.toString()));
+        elem.appendChild(doc.createTextNode(original.analysis.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((qaevent == null && original.qaevent != null) || 
          (qaevent != null && !qaevent.equals(original.qaevent))){
         Element elem = doc.createElement("qaevent");
-        elem.appendChild(doc.createTextNode(original.qaevent.toString()));
+        elem.appendChild(doc.createTextNode(original.qaevent.toString().trim()));
         root.appendChild(elem);
       }      
 

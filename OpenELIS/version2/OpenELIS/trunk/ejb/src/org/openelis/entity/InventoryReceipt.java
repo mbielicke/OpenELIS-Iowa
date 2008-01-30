@@ -146,56 +146,56 @@ public class InventoryReceipt implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((inventoryItem == null && original.inventoryItem != null) || 
          (inventoryItem != null && !inventoryItem.equals(original.inventoryItem))){
         Element elem = doc.createElement("inventory_item");
-        elem.appendChild(doc.createTextNode(original.inventoryItem.toString()));
+        elem.appendChild(doc.createTextNode(original.inventoryItem.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((organization == null && original.organization != null) || 
          (organization != null && !organization.equals(original.organization))){
         Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString()));
+        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((receivedDate == null && original.receivedDate != null) || 
          (receivedDate != null && !receivedDate.equals(original.receivedDate))){
         Element elem = doc.createElement("received_date");
-        elem.appendChild(doc.createTextNode(original.receivedDate.toString()));
+        elem.appendChild(doc.createTextNode(original.receivedDate.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityReceived == null && original.quantityReceived != null) || 
          (quantityReceived != null && !quantityReceived.equals(original.quantityReceived))){
         Element elem = doc.createElement("quantity_received");
-        elem.appendChild(doc.createTextNode(original.quantityReceived.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityReceived.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((unitCost == null && original.unitCost != null) || 
          (unitCost != null && !unitCost.equals(original.unitCost))){
         Element elem = doc.createElement("unit_cost");
-        elem.appendChild(doc.createTextNode(original.unitCost.toString()));
+        elem.appendChild(doc.createTextNode(original.unitCost.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((qcReference == null && original.qcReference != null) || 
          (qcReference != null && !qcReference.equals(original.qcReference))){
         Element elem = doc.createElement("qc_reference");
-        elem.appendChild(doc.createTextNode(original.qcReference.toString()));
+        elem.appendChild(doc.createTextNode(original.qcReference.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((externalReference == null && original.externalReference != null) || 
          (externalReference != null && !externalReference.equals(original.externalReference))){
         Element elem = doc.createElement("external_reference");
-        elem.appendChild(doc.createTextNode(original.externalReference.toString()));
+        elem.appendChild(doc.createTextNode(original.externalReference.toString().trim()));
         root.appendChild(elem);
       }      
 

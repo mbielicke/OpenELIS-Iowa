@@ -94,45 +94,45 @@ public class StorageUnit implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
-        root.appendChild(elem);
-      }      
+      try {
+        Document doc = XMLUtil.createNew("change");
+        Element root = doc.getDocumentElement();
+        
+        if((id == null && original.id != null) || 
+           (id != null && !id.equals(original.id))){
+          Element elem = doc.createElement("id");
+          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((category == null && original.category != null) || 
-         (category != null && !category.equals(original.category))){
-        Element elem = doc.createElement("category");
-        elem.appendChild(doc.createTextNode(original.category.toString()));
-        root.appendChild(elem);
-      }      
+        if((category == null && original.category != null) || 
+           (category != null && !category.equals(original.category))){
+          Element elem = doc.createElement("category");
+          elem.appendChild(doc.createTextNode(original.category.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString()));
-        root.appendChild(elem);
-      }      
+        if((description == null && original.description != null) || 
+           (description != null && !description.equals(original.description))){
+          Element elem = doc.createElement("description");
+          elem.appendChild(doc.createTextNode(original.description.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if((isSingular == null && original.isSingular != null) || 
-         (isSingular != null && !isSingular.equals(original.isSingular))){
-        Element elem = doc.createElement("is_singular");
-        elem.appendChild(doc.createTextNode(original.isSingular.toString()));
-        root.appendChild(elem);
-      }      
+        if((isSingular == null && original.isSingular != null) || 
+           (isSingular != null && !isSingular.equals(original.isSingular))){
+          Element elem = doc.createElement("is_singular");
+          elem.appendChild(doc.createTextNode(original.isSingular.toString().trim()));
+          root.appendChild(elem);
+        }      
 
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+        if(root.hasChildNodes())
+          return XMLUtil.toString(doc);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
     }
-    return null;
-  }
    
   public String getTableName() {
     return "storage_unit";

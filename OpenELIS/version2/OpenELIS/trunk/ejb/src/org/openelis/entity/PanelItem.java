@@ -108,35 +108,35 @@ public class PanelItem implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((panel == null && original.panel != null) || 
          (panel != null && !panel.equals(original.panel))){
         Element elem = doc.createElement("panel");
-        elem.appendChild(doc.createTextNode(original.panel.toString()));
+        elem.appendChild(doc.createTextNode(original.panel.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sortOrder == null && original.sortOrder != null) || 
          (sortOrder != null && !sortOrder.equals(original.sortOrder))){
         Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString()));
+        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((testName == null && original.testName != null) || 
          (testName != null && !testName.equals(original.testName))){
         Element elem = doc.createElement("test_name");
-        elem.appendChild(doc.createTextNode(original.testName.toString()));
+        elem.appendChild(doc.createTextNode(original.testName.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((methodName == null && original.methodName != null) || 
          (methodName != null && !methodName.equals(original.methodName))){
         Element elem = doc.createElement("method_name");
-        elem.appendChild(doc.createTextNode(original.methodName.toString()));
+        elem.appendChild(doc.createTextNode(original.methodName.toString().trim()));
         root.appendChild(elem);
       }      
 

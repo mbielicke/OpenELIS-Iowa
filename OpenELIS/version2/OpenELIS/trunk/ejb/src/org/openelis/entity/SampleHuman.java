@@ -108,35 +108,35 @@ public class SampleHuman implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sample == null && original.sample != null) || 
          (sample != null && !sample.equals(original.sample))){
         Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString()));
+        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((patient == null && original.patient != null) || 
          (patient != null && !patient.equals(original.patient))){
         Element elem = doc.createElement("patient");
-        elem.appendChild(doc.createTextNode(original.patient.toString()));
+        elem.appendChild(doc.createTextNode(original.patient.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((provider == null && original.provider != null) || 
          (provider != null && !provider.equals(original.provider))){
         Element elem = doc.createElement("provider");
-        elem.appendChild(doc.createTextNode(original.provider.toString()));
+        elem.appendChild(doc.createTextNode(original.provider.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((providerPhone == null && original.providerPhone != null) || 
          (providerPhone != null && !providerPhone.equals(original.providerPhone))){
         Element elem = doc.createElement("provider_phone");
-        elem.appendChild(doc.createTextNode(original.providerPhone.toString()));
+        elem.appendChild(doc.createTextNode(original.providerPhone.toString().trim()));
         root.appendChild(elem);
       }      
 

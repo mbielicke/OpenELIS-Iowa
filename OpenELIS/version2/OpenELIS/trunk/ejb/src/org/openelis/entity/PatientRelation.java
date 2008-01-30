@@ -96,28 +96,28 @@ public class PatientRelation implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((relation == null && original.relation != null) || 
          (relation != null && !relation.equals(original.relation))){
         Element elem = doc.createElement("relation");
-        elem.appendChild(doc.createTextNode(original.relation.toString()));
+        elem.appendChild(doc.createTextNode(original.relation.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((fromPatient == null && original.fromPatient != null) || 
          (fromPatient != null && !fromPatient.equals(original.fromPatient))){
         Element elem = doc.createElement("from_patient");
-        elem.appendChild(doc.createTextNode(original.fromPatient.toString()));
+        elem.appendChild(doc.createTextNode(original.fromPatient.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((toPatient == null && original.toPatient != null) || 
          (toPatient != null && !toPatient.equals(original.toPatient))){
         Element elem = doc.createElement("to_patient");
-        elem.appendChild(doc.createTextNode(original.toPatient.toString()));
+        elem.appendChild(doc.createTextNode(original.toPatient.toString().trim()));
         root.appendChild(elem);
       }      
 

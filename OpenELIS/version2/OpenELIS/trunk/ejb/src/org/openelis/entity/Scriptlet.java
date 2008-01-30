@@ -84,21 +84,21 @@ public class Scriptlet implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((name == null && original.name != null) || 
          (name != null && !name.equals(original.name))){
         Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString()));
+        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((codeSource == null && original.codeSource != null) || 
          (codeSource != null && !codeSource.equals(original.codeSource))){
         Element elem = doc.createElement("code_source");
-        elem.appendChild(doc.createTextNode(original.codeSource.toString()));
+        elem.appendChild(doc.createTextNode(original.codeSource.toString().trim()));
         root.appendChild(elem);
       }      
 

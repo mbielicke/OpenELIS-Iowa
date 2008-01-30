@@ -120,42 +120,42 @@ public class MethodAnalyte implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((method == null && original.method != null) || 
          (method != null && !method.equals(original.method))){
         Element elem = doc.createElement("method");
-        elem.appendChild(doc.createTextNode(original.method.toString()));
+        elem.appendChild(doc.createTextNode(original.method.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((resultGroup == null && original.resultGroup != null) || 
          (resultGroup != null && !resultGroup.equals(original.resultGroup))){
         Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString()));
+        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((sortOrder == null && original.sortOrder != null) || 
          (sortOrder != null && !sortOrder.equals(original.sortOrder))){
         Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString()));
+        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((analyte == null && original.analyte != null) || 
          (analyte != null && !analyte.equals(original.analyte))){
         Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString()));
+        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
         root.appendChild(elem);
       }      
 

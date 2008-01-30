@@ -108,35 +108,35 @@ public class OrderItem implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((order == null && original.order != null) || 
          (order != null && !order.equals(original.order))){
         Element elem = doc.createElement("order");
-        elem.appendChild(doc.createTextNode(original.order.toString()));
+        elem.appendChild(doc.createTextNode(original.order.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((inventoryLocation == null && original.inventoryLocation != null) || 
          (inventoryLocation != null && !inventoryLocation.equals(original.inventoryLocation))){
         Element elem = doc.createElement("inventory_location");
-        elem.appendChild(doc.createTextNode(original.inventoryLocation.toString()));
+        elem.appendChild(doc.createTextNode(original.inventoryLocation.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityRequested == null && original.quantityRequested != null) || 
          (quantityRequested != null && !quantityRequested.equals(original.quantityRequested))){
         Element elem = doc.createElement("quantity_requested");
-        elem.appendChild(doc.createTextNode(original.quantityRequested.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityRequested.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((quantityReceived == null && original.quantityReceived != null) || 
          (quantityReceived != null && !quantityReceived.equals(original.quantityReceived))){
         Element elem = doc.createElement("quantity_received");
-        elem.appendChild(doc.createTextNode(original.quantityReceived.toString()));
+        elem.appendChild(doc.createTextNode(original.quantityReceived.toString().trim()));
         root.appendChild(elem);
       }      
 

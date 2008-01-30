@@ -96,28 +96,28 @@ public class AuxFieldValue implements Auditable, Cloneable {
       if((id == null && original.id != null) || 
          (id != null && !id.equals(original.id))){
         Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString()));
+        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((auxField == null && original.auxField != null) || 
          (auxField != null && !auxField.equals(original.auxField))){
         Element elem = doc.createElement("aux_field");
-        elem.appendChild(doc.createTextNode(original.auxField.toString()));
+        elem.appendChild(doc.createTextNode(original.auxField.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((type == null && original.type != null) || 
          (type != null && !type.equals(original.type))){
         Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString()));
+        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
         root.appendChild(elem);
       }      
 
       if((value == null && original.value != null) || 
          (value != null && !value.equals(original.value))){
         Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString()));
+        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
         root.appendChild(elem);
       }      
 
