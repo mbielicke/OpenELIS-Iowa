@@ -410,6 +410,10 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		
 //		System.out.println("in contacts");
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getObject(0).getValue(),false);
+		
+		if(rpcReturn.getFieldValue("stateModel") == null && rpcReturn.getFieldValue("countryModel") == null){
+			//load the 
+		}
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("orgId", organizationDO.getOrganizationId());
 		rpcReturn.setFieldValue("orgName",organizationDO.getName());
@@ -612,11 +616,12 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 			id = remote.getCategoryId("country");
 		}else if(cat.equals("contactType")){
 			id = remote.getCategoryId("contact_type");
-		}else if(cat.equals("contactState")){
+		}
+		/*else if(cat.equals("contactState")){
 			id = remote.getCategoryId("state");
 		}else if(cat.equals("contactCountry")){
 			id = remote.getCategoryId("country");			
-		}
+		}*/
 		List entries = new ArrayList();
 		if(id > -1)
 			entries = remote.getDropdownValues(id);
@@ -837,7 +842,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		
 		return dataModel;		
 	}
-
+	
 	//???
 	public String getTip(AbstractField key) throws RPCException {
 		return null;

@@ -14,4 +14,6 @@ public interface OrganizationServletIntAsync extends AppScreenFormServiceIntAsyn
 	
 	public void getNotesModel(Integer key, AsyncCallback callback);
 	
+	public void getInitialModel(String cat, AsyncCallback callback);
+	
 }

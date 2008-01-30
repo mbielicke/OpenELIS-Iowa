@@ -12,4 +12,6 @@ public interface OrganizationServletInt extends AppScreenFormServiceInt {
 	public TableModel getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC);
 	
 	public DataModel getNotesModel(Integer key);
+	
+	public DataModel getInitialModel(String cat);
 }
