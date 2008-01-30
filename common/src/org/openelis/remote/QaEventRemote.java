@@ -26,12 +26,9 @@ public interface QaEventRemote {
     
     //a way for the servlet to get the system user id
     public Integer getSystemUserId();
-    
-    //method to get all the dictionary entries for QaEvents
-    public List<Object[]> getQaEventTypes();
-    
+        
     //method to get all the tests for a given QaEvent
-    public List<Object[]> getTests(Integer Id);
+    public List<Object[]> getTestNames();
     
     
 }
