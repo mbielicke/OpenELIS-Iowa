@@ -1,9 +1,14 @@
 package org.openelis.client.dataEntry.screen.Provider;
 
 import org.openelis.gwt.client.screen.AppScreenForm;
+import org.openelis.gwt.client.screen.ScreenAutoDropdown;
+import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.widget.AppButton;
+import org.openelis.gwt.client.widget.AutoCompleteDropdown;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
+import org.openelis.gwt.client.widget.table.TableAutoDropdown;
+import org.openelis.gwt.client.widget.table.TableController;
 import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
@@ -17,7 +22,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -44,8 +48,7 @@ public class Provider extends AppScreenForm{
     }
     
     public void afterDraw(boolean success) {
-        bpanel = (ButtonPanel) getWidget("buttons");
-        
+        bpanel = (ButtonPanel) getWidget("buttons");        
         message.setText("done");
         
         TableWidget provideNamesTable = (TableWidget) getWidget("providersTable");
@@ -60,10 +63,10 @@ public class Provider extends AppScreenForm{
         removeContactButton.addClickListener(this);
         removeContactButton.changeState(AppButton.DISABLED);
         
-        /*ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
-        /provAddressTable.setProviderForm(this);
-        /provAddressTable.disableRows = true;
+        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddTable.setAutoAdd(false);
         
+        /*        
         randomTree = (ScreenPagedTree) widgets.get("notesTree");
         vp = (VerticalPanel)randomTree.getParent();
         randomTree.controller.setTreeListener(this);
@@ -73,6 +76,7 @@ public class Provider extends AppScreenForm{
       
          ScrollPanel scrollableView = (ScrollPanel)randomTree.controller.getScrollableView("100%", new Integer(intH).toString()+"px");              
          vp.add(scrollableView);*/     
+        loadDropdowns();
         super.afterDraw(success);
     }
       
@@ -84,6 +88,10 @@ public class Provider extends AppScreenForm{
         
         StringField subject = (StringField)rpc.getField("usersSubject");  
         subject.setValue("");
+        
+        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddTable.setAutoAdd(true);
+        
         super.up(state);      
     }
     
@@ -94,7 +102,9 @@ public class Provider extends AppScreenForm{
           
           loadNotes(notesModel);
           shownotes = false;
-      } 
+      }
+      TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+      provAddTable.setAutoAdd(false);      
        super.abort(state); 
     }
     
@@ -105,12 +115,13 @@ public class Provider extends AppScreenForm{
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
         
-        ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
-        provAddressTable.disableRows = false;
-        
-        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-        
+                
+        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
         vp.clear();
+        
+        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddTable.setAutoAdd(true);
+        
         super.add(state);      
     }
     
@@ -120,10 +131,7 @@ public class Provider extends AppScreenForm{
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
         //removeContactButton.setEnabled(true);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
-        removeContactButton.changeState(AppButton.UNPRESSED);
-        
-        ProviderAddressesTable  provAddressTable = (ProviderAddressesTable)((TableWidget) getWidget("providerAddressTable")).controller.manager; 
-        provAddressTable.disableRows = false;
+        removeContactButton.changeState(AppButton.UNPRESSED);        
         
         shownotes = true;
     }
@@ -132,6 +140,7 @@ public class Provider extends AppScreenForm{
       VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
       vp.clear();
       shownotes = true;
+      
       super.query(state);
     }
        
@@ -189,8 +198,7 @@ public class Provider extends AppScreenForm{
             getProviders("y", sender);
         } else if (sender == widgets.get("z")) {
             getProviders("z", sender);
-        }else if (sender == getWidget("removeAddressButton")) {            
-            //Window.alert("remove row");
+        }else if (sender == getWidget("removeAddressButton")) {                     
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
             int selectedRow = provAddTable.controller.selected;
             if (selectedRow > -1
@@ -243,17 +251,13 @@ public class Provider extends AppScreenForm{
         // the data
         if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
             TableWidget contacts = (TableWidget) getWidget("providerAddressTable");
-            contacts.controller.model.deleteRow(contacts.controller.model
-                    .numRows() - 1);
+            //if(contacts.controller.model.numRows()>0)
+            // contacts.controller.model.deleteRow(contacts.controller.model.numRows() - 1);
             contacts.controller.reset();
         }
         super.onTabSelected(sources, index);
     }    
-    
-    public void onTreeItemStateChanged(TreeItem item) {      
-     
-       
-    }
+        
     
     public void afterFetch(boolean success) {
         
@@ -267,9 +271,7 @@ public class Provider extends AppScreenForm{
     }
     
     public void commitAdd(){
-        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
-        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");                 
-        loadNotes(notesModel);
+        
         super.commitAdd();      
         
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
@@ -278,19 +280,28 @@ public class Provider extends AppScreenForm{
         removeContactButton.changeState(AppButton.DISABLED);
     }
     
-    public void commitUpdate(){
-        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
-        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
-        
-        loadNotes(notesModel);
-        super.commitUpdate();
-        //Window.alert("commitUpdate");         
-        
-        
+    public void commitUpdate(){        
+        super.commitUpdate();                  
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
        // removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
+    }
+    
+    public void afterCommitUpdate(boolean success){
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
+        
+        loadNotes(notesModel);
+        super.afterCommitUpdate(success);
+    }
+    
+    public void afterCommitAdd(boolean success){
+        FormRPC displayRPC = (FormRPC) this.forms.get("display");        
+        DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
+        
+        loadNotes(notesModel);
+        super.afterCommitAdd(success);
     }
 
     private void loadNotes(DataModel notesModel){       
@@ -334,6 +345,65 @@ public class Provider extends AppScreenForm{
                  } 
               }
                  
-           
+    private void loadDropdowns(){
+        
+        screenService.getInitialModel("providerType", new AsyncCallback(){
+            public void onSuccess(Object result){
+                DataModel typeDataModel = (DataModel)result;
+                ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
+                ScreenAutoDropdown queryType = displayType.getQueryWidget();
+                
+                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDataModel);
+                ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDataModel);
+                                       
+            }
+            public void onFailure(Throwable caught){
+                Window.alert(caught.getMessage());
+            }
+         });
+ 
+        //load state dropdowns
+        screenService.getInitialModel("state", new AsyncCallback(){
+               public void onSuccess(Object result){
+                   DataModel stateDataModel = (DataModel)result;                   
+                   
+                   ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+                   ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
+                   
+                   TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                                controller.editors[5];
+                   displayContactState.setModel(stateDataModel);
+                   
+                   TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
+                        controller.editors[5];
+                   queryContactState.setModel(stateDataModel);
+               }
+               public void onFailure(Throwable caught){
+                   Window.alert(caught.getMessage());
+               }
+            });
+        
+        //load country dropdowns
+        screenService.getInitialModel("country", new AsyncCallback(){
+               public void onSuccess(Object result){
+                   DataModel countryDataModel = (DataModel)result;                   
+                   
+                   ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+                   ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
+                                      
+                   
+                   TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                                controller.editors[6];
+                   displayContactCountry.setModel(countryDataModel);
+                   
+                   TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
+                        controller.editors[6];
+                   queryContactCountry.setModel(countryDataModel);
+               }
+               public void onFailure(Throwable caught){
+                   Window.alert(caught.getMessage());
+               }
+            });
+    } 
     
 }
