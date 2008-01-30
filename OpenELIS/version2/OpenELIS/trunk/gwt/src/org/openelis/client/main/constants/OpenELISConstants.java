@@ -9,6 +9,8 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String queryExpiredException();
     String lastPageException();
     String endingQueryException();
+    String storageUnitDeleteException();
+    String storageLocDeleteException();
     
     //button panel
     String abort();
