@@ -167,4 +167,9 @@ public interface OpenELISConstants extends ConstantsWithLookup {
     String note();
     String subject();
     String newNote();
+    
+    //dictionary form
+    String dictSystemNameError();
+    String dictEntryError();
+    String dictNoResults();
 }
