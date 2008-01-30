@@ -1,6 +1,7 @@
 package org.openelis.client.supply.screen.storageUnit;
 
 import org.openelis.gwt.client.screen.AppScreenForm;
+import org.openelis.gwt.client.screen.ScreenAutoDropdown;
 import org.openelis.gwt.client.screen.ScreenTextBox;
 import org.openelis.gwt.client.widget.AppButton;
 import org.openelis.gwt.client.widget.AutoCompleteDropdown;
@@ -8,8 +9,11 @@ import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
 import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -109,6 +113,8 @@ public class StorageUnitScreen extends AppScreenForm{
 		bpanel.setButtonState("prev", AppButton.DISABLED);
 		bpanel.setButtonState("next", AppButton.DISABLED);
 		bpanel.setButtonState("delete", AppButton.DISABLED);
+		
+		loadDropdowns();
 	}
 	
 	public void afterCommitDelete(boolean success) {
@@ -176,5 +182,23 @@ public class StorageUnitScreen extends AppScreenForm{
 			selected.removeStyleName("current");
 		selected = sender;
 		return sender;
+	}
+	
+private void loadDropdowns(){
+		
+		//load category dropdowns
+		screenService.getInitialModel("category", new AsyncCallback(){
+	           public void onSuccess(Object result){
+	               DataModel catDataModel = (DataModel)result;
+	               ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("category");
+	               ScreenAutoDropdown queryCat = displayCat.getQueryWidget();
+	               
+	               ((AutoCompleteDropdown)displayCat.getWidget()).setModel(catDataModel);
+	               ((AutoCompleteDropdown)queryCat.getWidget()).setModel(catDataModel);
+	           }
+	           public void onFailure(Throwable caught){
+	        	   Window.alert(caught.getMessage());
+	           }
+	        });
 	}
 }

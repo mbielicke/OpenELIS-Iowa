@@ -632,80 +632,19 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
   <string key="orgName" max="40" required="true"/>
   <string key="streetAddress" max="30" required="true"/>
   <string key="multUnit" max="30" required="false" value="test"/>
-  <string key="city" max="30" required="true"/>
+  <string key="city" max="30" rkeyequired="true"/>
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
   <check key="isActive" required="false"/>
 
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <!--<string key="parentOrgText" required="false" max="40"/>-->
   <number key="parentOrgId" type="integer" required="false"/> 
   <table key="contactsTable"/>
   <model key="notesModel"/>
   <number key="id" required="false" type="integer"/>
   <string key="stateId" required="true"/>
-  <!--<option key="state" multi="false" required="false">
-			<item value=" "> </item>
-			<item value="AL">AL</item>
-			<item value="AK">AK</item>
-			<item value="AZ">AZ</item>
-			<item value="AR">AR</item>
-			<item value="CA">CA</item>
-			<item value="CO">CO</item>
-			<item value="CT">CT</item>
-			<item value="DE">DE</item>
-			<item value="FL">FL</item>
-			<item value="GA">GA</item>
-			<item value="HI">HI</item>
-			<item value="ID">ID</item>
-			<item value="IL">IL</item>
-			<item value="IN">IN</item>
-			<item value="IA">IA</item>
-			<item value="KS">KS</item>
-			<item value="KY">KY</item>
-			<item value="LA">LA</item>
-			<item value="ME">ME</item>
-			<item value="MD">MD</item>
-			<item value="MA">MA</item>
-			<item value="MI">MI</item>
-			<item value="MN">MN</item>
-			<item value="MS">MS</item>
-			<item value="MO">MO</item>
-			<item value="MT">MT</item>
-			<item value="NE">NE</item>
-			<item value="NV">NV</item>
-			<item value="NJ">NJ</item>
-			<item value="NH">NH</item>
-			<item value="NM">NM</item>
-			<item value="NY">NY</item>
-			<item value="NC">NC</item>
-			<item value="ND">ND</item>
-			<item value="OH">OH</item>
-			<item value="OK">OK</item>
-			<item value="OR">OR</item>
-			<item value="PA">PA</item>
-			<item value="RI">RI</item>
-			<item value="SC">SC</item>
-			<item value="SD">SD</item>
-			<item value="TN">TN</item>
-			<item value="TX">TX</item>
-			<item value="UT">UT</item>
-			<item value="VT">VT</item>
-			<item value="VA">VA</item>
-			<item value="WA">WA</item>
-			<item value="WV">WV</item>
-			<item value="WI">WI</item>
-			<item value="WY">WY</item>	
-		</option>-->
-		<string key="countryId" required="true"/>
-		<!--<option key="country" multi="false" required="false">
-		 	<item value=" "> </item>
-		 	<item value="AAAA">AAAA</item>
-    		<item value="BBBB">BBBB</item>
-    		<item value="CCCC">CCCC</item>
-			<item value="United States">UNITED STATES</item>
-		</option>-->
+  <string key="countryId" required="true"/>
 	</rpc>
 	<rpc key="query">
   <queryNumber key="orgId" type="integer"/>
@@ -717,79 +656,16 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
   <queryString key="zipCode"/>
   <queryString key="action"/>
   <queryString key="parentOrg"/>
-  <!--<queryOption key="isActive" type="string" multi="true">
-  	<item value=" "> </item>
-  	<item value="Y">Y</item>
-  	<item value="N">N</item>
-  </queryOption>-->
   <queryString key="usersSubject"/>
   <queryString key="usersNote"/>
   <table key="contactsTable"/>
   <tree key="notesTree"/>
   <queryNumber key="id" type="integer"/>
   <collection key="state" type="string" required="false"/>
+  <model key="stateModel"/>
   <collection key="country" type="string" required="false"/>
+  <model key="countryModel"/>
   <collection key="isActive" type="string" required="false"/>
-<!--  <queryOption key="state" multi="true" type="string">
-			<item value=" "> </item>
-			<item value="AL">AL</item>
-			<item value="AK">AK</item>
-			<item value="AZ">AZ</item>
-			<item value="AR">AR</item>
-			<item value="CA">CA</item>
-			<item value="CO">CO</item>
-			<item value="CT">CT</item>
-			<item value="DE">DE</item>
-			<item value="FL">FL</item>
-			<item value="GA">GA</item>
-			<item value="HI">HI</item>
-			<item value="ID">ID</item>
-			<item value="IL">IL</item>
-			<item value="IN">IN</item>
-			<item value="IA">IA</item>
-			<item value="KS">KS</item>
-			<item value="KY">KY</item>
-			<item value="LA">LA</item>
-			<item value="ME">ME</item>
-			<item value="MD">MD</item>
-			<item value="MA">MA</item>
-			<item value="MI">MI</item>
-			<item value="MN">MN</item>
-			<item value="MS">MS</item>
-			<item value="MO">MO</item>
-			<item value="MT">MT</item>
-			<item value="NE">NE</item>
-			<item value="NV">NV</item>
-			<item value="NJ">NJ</item>
-			<item value="NH">NH</item>
-			<item value="NM">NM</item>
-			<item value="NY">NY</item>
-			<item value="NC">NC</item>
-			<item value="ND">ND</item>
-			<item value="OH">OH</item>
-			<item value="OK">OK</item>
-			<item value="OR">OR</item>
-			<item value="PA">PA</item>
-			<item value="RI">RI</item>
-			<item value="SC">SC</item>
-			<item value="SD">SD</item>
-			<item value="TN">TN</item>
-			<item value="TX">TX</item>
-			<item value="UT">UT</item>
-			<item value="VT">VT</item>
-			<item value="VA">VA</item>
-			<item value="WA">WA</item>
-			<item value="WV">WV</item>
-			<item value="WI">WI</item>
-			<item value="WY">WY</item>	
-		</queryOption>-->
-		<!--<queryOption key="country" multi="true" type="string">
-		 	<item value=" "> </item>
-			<item value="United States">UNITED STATES</item>
-    		<item value="AAAA">AAAA</item>
-    		<item value="BBBB">BBBB</item>
-    		<item value="CCCC">CCCC</item>
-		</queryOption>-->
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="orgName"/>

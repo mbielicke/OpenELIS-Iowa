@@ -1,5 +1,6 @@
 package org.openelis.server;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -215,8 +217,28 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 	}
 
 	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
+//		remote interface to call the storage location bean
+		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
+		
+		try {
+			remote.deleteStorageLoc((Integer)key.getObject(0).getValue());
+			
+		} catch (Exception e) {
+			if(e instanceof RPCDeleteException){
+				throw new RPCDeleteException(openElisConstants.getString("storageLocDeleteException"));
+			}else
+			throw new RPCException(e.getMessage());
+		}	
+		
+		rpcReturn.setFieldValue("id", null);
+		rpcReturn.setFieldValue("isAvailable", null);
+		rpcReturn.setFieldValue("location", null);
+		rpcReturn.setFieldValue("name", null);
+		rpcReturn.setFieldValue("parentStorageId", null);
+		rpcReturn.setFieldValue("sortOrderId", null);
+		rpcReturn.setFieldValue("storageUnitId", null);
+		
+		return rpcReturn;
 	}
 
 	public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -332,7 +354,51 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 
 		try{
 			int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
-			
+//			lookup by id...should only bring back 1 result
+			List autoCompleteList = remote.autoCompleteLookupById(id);
+			if(autoCompleteList.size() > 0){
+				Object[] result = (Object[]) autoCompleteList.get(0);
+//				id
+				Integer slId = (Integer)result[0];
+				//desc
+				String desc = (String)result[1];
+				//category
+				String category = (String)result[2];
+				//is singular
+				String isSingular = (String)result[3];	
+				
+				DataSet data = new DataSet();
+				//hidden id
+				NumberObject idObject = new NumberObject();
+				idObject.setType("integer");
+				idObject.setValue(slId);
+				data.addObject(idObject);
+				//columns
+				StringObject idStringObject = new StringObject();
+				idStringObject.setValue(String.valueOf(slId));
+				data.addObject(idStringObject);
+				StringObject descObject = new StringObject();
+				descObject.setValue(desc);
+				data.addObject(descObject);
+				StringObject categoryObject = new StringObject();
+				categoryObject.setValue(category);
+				data.addObject(categoryObject);
+				StringObject isSingularObject = new StringObject();
+				isSingularObject.setValue(isSingular);
+				data.addObject(isSingularObject);
+				
+				//display text
+				StringObject displayObject = new StringObject();
+				displayObject.setValue(desc);
+				data.addObject(displayObject);
+				//selected flag
+				StringObject selectedFlag = new StringObject();
+				selectedFlag.setValue("N");
+				data.addObject(selectedFlag);
+				
+				//add the dataset to the datamodel
+				dataModel.add(data);
+			}			
 		}catch(NumberFormatException e){
 			//it isnt an id
 			//lookup by name
@@ -393,6 +459,46 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 
 		try{
 			int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
+			
+//			lookup by id...should only bring back 1 result
+			List autoCompleteList = remote.autoCompleteLookupById(id);
+			if(autoCompleteList.size() > 0){
+				Object[] result = (Object[]) autoCompleteList.get(0);
+//				id
+				Integer pslId = (Integer)result[0];
+				//name
+				String name = (String)result[1];
+				//location
+				String location = (String)result[2];
+				
+				DataSet data = new DataSet();
+//				hidden id
+				NumberObject idObject = new NumberObject();
+				idObject.setType("integer");
+				idObject.setValue(pslId);
+				data.addObject(idObject);
+				//columns
+				StringObject idStringObject = new StringObject();
+				idStringObject.setValue(String.valueOf(pslId));
+				data.addObject(idStringObject);
+				StringObject nameObject = new StringObject();
+				nameObject.setValue(name.trim());
+				data.addObject(nameObject);
+				StringObject locationObject = new StringObject();
+				locationObject.setValue(location.trim());
+				data.addObject(locationObject);
+				//display text
+				StringObject displayObject = new StringObject();
+				displayObject.setValue(name.trim());
+				data.addObject(displayObject);
+				//selected flag
+				StringObject selectedFlag = new StringObject();
+				selectedFlag.setValue("N");
+				data.addObject(selectedFlag);
+				
+				//add the dataset to the datamodel
+				dataModel.add(data);
+			}
 			
 		}catch(NumberFormatException e){
 			//it isnt an id

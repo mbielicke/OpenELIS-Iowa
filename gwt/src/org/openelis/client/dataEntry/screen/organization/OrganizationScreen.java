@@ -3,12 +3,16 @@ package org.openelis.client.dataEntry.screen.organization;
 import org.openelis.gwt.client.screen.AppScreen;
 import org.openelis.gwt.client.screen.AppScreenForm;
 import org.openelis.gwt.client.screen.ScreenAToZPanel;
+import org.openelis.gwt.client.screen.ScreenAutoDropdown;
 import org.openelis.gwt.client.screen.ScreenTablePanel;
 import org.openelis.gwt.client.screen.ScreenTableWidget;
 import org.openelis.gwt.client.screen.ScreenTextBox;
 import org.openelis.gwt.client.widget.AppButton;
+import org.openelis.gwt.client.widget.AutoCompleteDropdown;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
+import org.openelis.gwt.client.widget.table.TableAuto;
+import org.openelis.gwt.client.widget.table.TableAutoDropdown;
 import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
@@ -19,6 +23,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
@@ -165,6 +171,8 @@ public class OrganizationScreen extends AppScreenForm {
 		
 		bpanel.setButtonState("prev", AppButton.DISABLED);
 		bpanel.setButtonState("next", AppButton.DISABLED);
+		
+		loadDropdowns();		
 	}
 
 	public void afterFetch(boolean success) {
@@ -202,6 +210,8 @@ public class OrganizationScreen extends AppScreenForm {
 	// button panel action methods
 	public void add(int state) {
 		super.add(state);
+		
+		//FIXME need to load the model for the dropdown
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
 
@@ -368,5 +378,81 @@ public class OrganizationScreen extends AppScreenForm {
 			
 			i++;
 		}
+	}
+	
+	private void loadDropdowns(){
+		
+		//load state dropdowns
+		screenService.getInitialModel("state", new AsyncCallback(){
+	           public void onSuccess(Object result){
+	               DataModel stateDataModel = (DataModel)result;
+	               ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
+	               ScreenAutoDropdown queryState = displayState.getQueryWidget();
+	               
+	               ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDataModel);
+	               ((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDataModel);
+	               
+	               ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
+	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	               
+	               TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+	               																				controller.editors[5];
+	               displayContactState.setModel(stateDataModel);
+	               
+	               TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+						controller.editors[5];
+	               queryContactState.setModel(stateDataModel);
+	           }
+	           public void onFailure(Throwable caught){
+	        	   Window.alert(caught.getMessage());
+	           }
+	        });
+		
+		//load country dropdowns
+		screenService.getInitialModel("country", new AsyncCallback(){
+	           public void onSuccess(Object result){
+	        	   DataModel countryDataModel = (DataModel)result;
+	               ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
+	               ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
+	               
+	               ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
+	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	               
+	               ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDataModel);
+	               ((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDataModel);
+	               
+	               TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+	               																				controller.editors[12];
+	               displayContactCountry.setModel(countryDataModel);
+	               
+	               TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+						controller.editors[12];
+	               queryContactCountry.setModel(countryDataModel);
+	           }
+	           public void onFailure(Throwable caught){
+	        	   Window.alert(caught.getMessage());
+	           }
+	        });
+		
+		//load contact type dropdowns
+		screenService.getInitialModel("contactType", new AsyncCallback(){
+	           public void onSuccess(Object result){
+	        	   DataModel contactTypeDataModel = (DataModel)result;
+	        	   
+	        	   ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
+	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	        	   
+	        	   TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+																controller.editors[0];
+	        	   displayContactType.setModel(contactTypeDataModel);
+
+	        	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+	        	   											controller.editors[0];
+	        	   queryContactType.setModel(contactTypeDataModel);
+	           }
+	           public void onFailure(Throwable caught){
+	        	   Window.alert(caught.getMessage());
+	           }
+	        });
 	}
 }

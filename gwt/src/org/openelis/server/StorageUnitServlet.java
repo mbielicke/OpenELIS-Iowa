@@ -1,6 +1,5 @@
 package org.openelis.server;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +13,7 @@ import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
@@ -208,8 +208,11 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 		try {
 			remote.deleteStorageUnit((Integer)key.getObject(0).getValue());
 			
-		} catch (RemoteException e) {
-			throw new RPCException(e.getMessage());
+		} catch (Exception e) {
+			if(e instanceof RPCDeleteException){
+				throw new RPCDeleteException(openElisConstants.getString("storageUnitDeleteException"));
+			}else
+				throw new RPCException(e.getMessage());
 		}	
 		
 		rpcReturn.setFieldValue("id", null);
