@@ -1,0 +1,6 @@
+<module>
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='org.openelis.OpenELIS'/>
+	<source path="test"/>
+
+</module>
