@@ -115,7 +115,7 @@ public class OpenELIS implements EntryPoint {
 	RootPanel.get("main").add(new org.openelis.client.main.screen.openelis.OpenELIS());
   }
   
-  private void setWidgetMap() {
+  public void setWidgetMap() {
       WidgetMap map = new WidgetMap();
       map.addWidget(WidgetMap.PANEL_VERTICAL, new ScreenVertical());
       map.addWidget(WidgetMap.PANEL_HORIZONTAL, new ScreenHorizontal());
