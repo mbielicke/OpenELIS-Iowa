@@ -56,8 +56,9 @@ public class DictionaryServlet extends AppServlet implements
     private String systemUserId = "";
     
 
-    private UTFResource openElisConstants = UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
-                                                                new Locale((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
+                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
     public String getXML() throws RPCException {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"); 
