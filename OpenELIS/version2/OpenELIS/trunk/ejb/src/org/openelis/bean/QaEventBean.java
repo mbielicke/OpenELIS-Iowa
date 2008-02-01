@@ -106,7 +106,7 @@ public class QaEventBean implements QaEventRemote{
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct q.id, q.name from QaEvent q where 1=1 " );
+        sb.append("select distinct q.id, q.name,t.name,m.name from QaEvent q left join q.testLink t left join t.methodLink m where 1=1 " );
         if(fields.containsKey("name"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "q.name"));
         if(fields.containsKey("sequence"))
@@ -126,7 +126,7 @@ public class QaEventBean implements QaEventRemote{
             sb.append(QueryBuilder.getQuery((CollectionField)fields.get("billable"), "q.isBillable"));
         
         
-        Query query = manager.createQuery(sb.toString()+" order by q.name");
+        Query query = manager.createQuery(sb.toString()+" order by q.name, t.name, m.name");
         
         if(first > -1 && max > -1)
             query.setMaxResults(first+max);
