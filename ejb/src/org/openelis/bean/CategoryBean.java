@@ -114,10 +114,11 @@ public class CategoryBean implements CategoryRemote {
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("desc"), "c.description"));       
         //if(fields.containsKey("secName"))
            // sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("secName"), "c.section"));
-        if(fields.containsKey("secName") && ((ArrayList)((CollectionField)fields.get("secName")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("secName")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("secName")).getValue()).get(0))))
-                      sb.append(QueryBuilder.getQuery((CollectionField)fields.get("secName"), "c.section"));     
+        if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
+                        !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
+                      sb.append(QueryBuilder.getQuery((CollectionField)fields.get("section"), "c.section"));     
         
+        System.out.println("section *******************"+ ((CollectionField)fields.get("section")).getValue());
         //if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
                       //  !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
             //sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "d.isActive"));
@@ -152,9 +153,9 @@ public class CategoryBean implements CategoryRemote {
             QueryBuilder.setParameters((QueryStringField)fields.get("desc"), "c.description",query);  
         //if(fields.containsKey("secName"))
             //QueryBuilder.setParameters((QueryOptionField)fields.get("secName"), "c.section",query);
-        if(fields.containsKey("secName")&& ((ArrayList)((CollectionField)fields.get("secName")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("secName")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("secName")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("secName"), "c.section",query);
+        if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
+                        !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
+            QueryBuilder.setParameters((CollectionField)fields.get("section"), "c.section",query); 
         
         
         //if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
@@ -169,11 +170,9 @@ public class CategoryBean implements CategoryRemote {
             QueryBuilder.setParameters((QueryStringField)fields.get("abbreviation"), "d.localAbbrev",query);
         if(fields.containsKey("entry")&& ((QueryStringField)fields.get("entry")).getComparator() != null)
             QueryBuilder.setParameters((QueryStringField)fields.get("entry"), "d.entry",query);
-        //if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
-           // QueryBuilder.setParameters((QueryStringField)fields.get("relatedEntry"), "relEntry.entry",query);
-        if(fields.containsKey("relatedEntry")&& ((ArrayList)((CollectionField)fields.get("relatedEntry")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("relatedEntry")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("relatedEntry")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("relatedEntry"), "d.relatedEntryKey",query);
+        if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("relatedEntry"), "relEntry.entry",query);
+        
         
         List returnList = GetPage.getPage(query.getResultList(), first, max);
         if(returnList == null)
