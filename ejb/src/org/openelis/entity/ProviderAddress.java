@@ -49,6 +49,7 @@ public class ProviderAddress implements Auditable, Cloneable {
   @JoinColumn(name = "address", insertable = false, updatable = false)
   private Address provAddress;
   
+  
   @Transient
   private ProviderAddress original;
 
