@@ -204,7 +204,7 @@
 									  	<option key="secName" multi= "false" required= "false" onChange= "this"/>
 									  </widget>-->
 									  <widget>
-										<autoDropdown cat="section" key="secName" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
+										<autoDropdown cat="section" key="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -214,8 +214,8 @@
 													</autoFields>
 										</autoDropdown>
 													<query>
-													<!--<option/>-->
-												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
+													
+												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" >
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -226,10 +226,7 @@
 										</autoDropdown>
 												</query>
 										</widget>
-								      <!--<widget>
-								 			<html key="lookupParentOrganizationHtml" onclick="this">&lt;img src=&quot;Images/lookupButtonIcon.png&quot;&gt;</html>
-									  </widget>	-->									  
-                                <!-- </panel> -->								   						
+								     							   						
 								</row>	
 								<row>
 									<widget halign="right">
@@ -336,14 +333,14 @@
 	 <string key="name" max="50" required="true"/>
 	 <string key="desc" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <number key="secNameId" type="integer" required="false"/>
+     <number key="sectionId" type="integer" required="false"/>
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
 	 <queryString key="systemName"/>
 	 <queryString key="name"/>
 	 <queryString key="desc"/>
-	 <collection key="secName" type="integer"/>
+	 <collection key="section" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
       <queryString key="systemName"/>
