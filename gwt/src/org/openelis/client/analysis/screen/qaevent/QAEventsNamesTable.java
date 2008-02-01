@@ -80,6 +80,8 @@ public class QAEventsNamesTable implements TableManager {
             TableRow tRow = controller.model.createRow();
             
             tRow.getColumn(0).setDataObject(row.getObject(1));
+            tRow.getColumn(1).setDataObject(row.getObject(2));
+            tRow.getColumn(2).setDataObject(row.getObject(3));
             controller.model.addRow(tRow);
         }
         if(qaEventForm.modelWidget.getPage() > 0)
