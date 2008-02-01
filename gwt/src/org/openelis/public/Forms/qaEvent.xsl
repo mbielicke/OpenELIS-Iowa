@@ -106,18 +106,22 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </panel>
     </xsl:if>
     
-    <panel layout= "vertical" width = "175px" xsi:type= "Panel" >
+    <panel layout= "vertical" width = "250" xsi:type= "Panel" >
       <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable"  serviceUrl = "QAEventServlet"  title="{resource:getString($constants,'qaEvents')}">
-       <headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
-							<widths>150</widths>
+       <headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"test")'/>,<xsl:value-of select='resource:getString($constants,"method")'/></headers>
+							<widths>100,65,65</widths>
 							<editors>
-								<label/>								
+								<label/>
+								<label/>	
+								<label/>									
 							</editors>
 							<fields>
+								<string/>
+								<string/>
 								<string/>								
 							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
+							<sorts>false,false,false</sorts>
+							<filters>false,false,false</filters>
      </table>
     </panel>
    </panel>
