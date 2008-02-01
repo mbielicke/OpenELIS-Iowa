@@ -331,7 +331,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             screenService.getInitialModel("section", new AsyncCallback(){
                    public void onSuccess(Object result){
                        DataModel stateDataModel = (DataModel)result;
-                       ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("secName");
+                       ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
                        ScreenAutoDropdown querySection = displaySection.getQueryWidget();
                        
                        ((AutoCompleteDropdown)displaySection.getWidget()).setModel(stateDataModel);
