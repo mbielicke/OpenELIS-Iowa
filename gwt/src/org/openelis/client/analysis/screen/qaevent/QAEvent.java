@@ -2,6 +2,7 @@ package org.openelis.client.analysis.screen.qaevent;
 
 import org.openelis.gwt.client.screen.AppScreenForm;
 import org.openelis.gwt.client.screen.ScreenAutoDropdown;
+import org.openelis.gwt.client.widget.AppButton;
 import org.openelis.gwt.client.widget.AutoCompleteDropdown;
 import org.openelis.gwt.client.widget.ButtonPanel;
 import org.openelis.gwt.client.widget.FormInt;
@@ -49,10 +50,17 @@ import com.google.gwt.user.client.ui.Widget;
                TableWidget qaEventsTable = (TableWidget)getWidget("qaEventsTable");
                modelWidget.addChangeListener(qaEventsTable.controller); 
                
+               //String arr[] = {"Name,Test,Method"}; 
+               
+               //qaEventsTable.setHeaders(arr);
                ((QAEventsNamesTable)qaEventsTable.controller.manager).setQaEventForm(this);
                
                loadDropdowns();
-               super.afterDraw(success);            
+               super.afterDraw(success);        
+               
+               bpanel.setButtonState("prev", AppButton.DISABLED);
+               bpanel.setButtonState("next", AppButton.DISABLED);
+            
         }
          
          public void onClick(Widget sender){
