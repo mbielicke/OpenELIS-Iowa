@@ -169,12 +169,14 @@ public class ProviderBean implements ProviderRemote {
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("streetAddress"), "a.streetAddress"));
                 if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"), "a.city"));
-                if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 && 
-                     !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
-                 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"), "a.state"));
+                if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
+                   !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
+                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"), "a.state"));                                   
+
                 if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
-                      !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"), "a.country"));  
+                      !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size()== 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
+                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"), "a.country"));                                     
+ 
                 if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"), "a.zipCode"));
                 if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
@@ -189,8 +191,8 @@ public class ProviderBean implements ProviderRemote {
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("email"), "a.email"));
                 if(fields.containsKey("usersSubject"))
                  sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("usersSubject"),"n.subject"));
+                                
                 
-               
         Query query = manager.createQuery(sb.toString()+" order by p.lastName, p.firstName ");
         
 //      if(first > -1)
