@@ -256,11 +256,11 @@ public class ProviderServlet extends AppServlet implements
             
             if(provAddTable != null){    
                 System.out.println("provAddTable != null");
-                fields.put("location",(QueryStringField)provAddTable.getRow(0).getColumn(0));
+                fields.put("location",(QueryStringField)provAddTable.getRow(0).getColumn(0));                                                    
                 fields.put("externalId",(QueryStringField)provAddTable.getRow(0).getColumn(1));
                 fields.put("multiUnit",(QueryStringField)provAddTable.getRow(0).getColumn(2));
                 fields.put("streetAddress",(QueryStringField)provAddTable.getRow(0).getColumn(3));                
-                fields.put("city",(QueryStringField)provAddTable.getRow(0).getColumn(4));
+                fields.put("city",(QueryStringField)provAddTable.getRow(0).getColumn(4));                                                                                       
                 fields.put("state",(CollectionField)provAddTable.getRow(0).getColumn(5));
                 fields.put("country",(CollectionField)provAddTable.getRow(0).getColumn(6));
                 fields.put("zipCode",(QueryStringField)provAddTable.getRow(0).getColumn(7));
