@@ -80,7 +80,7 @@ public class DictionaryServlet extends AppServlet implements
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
                 
         
-        categoryDO.setSection((Integer)rpcSend.getFieldValue("secNameId"));
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("sectionId"));
         
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
@@ -140,7 +140,7 @@ public class DictionaryServlet extends AppServlet implements
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
-         rpcReturn.setFieldValue("secNameId",categoryDO.getSection()); 
+         rpcReturn.setFieldValue("sectionId",categoryDO.getSection()); 
                   
          
         // fillSectionOption(sectionOpt ,categoryDO);
@@ -293,7 +293,7 @@ public class DictionaryServlet extends AppServlet implements
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-        categoryDO.setSection((Integer)rpcSend.getFieldValue("secNameId"));        
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("sectionId"));        
         /*OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");        
                
          /if(!sectionOpt.getValue().equals(""))
@@ -368,7 +368,7 @@ public class DictionaryServlet extends AppServlet implements
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
-         rpcReturn.setFieldValue("secNameId",categoryDO.getSection()); 
+         rpcReturn.setFieldValue("sectionId",categoryDO.getSection()); 
          
          //fillSectionOption(sectionOpt ,categoryDO);
          
@@ -391,7 +391,7 @@ public class DictionaryServlet extends AppServlet implements
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        rpcReturn.setFieldValue("secNameId",catDO.getSection());    
+        rpcReturn.setFieldValue("sectionId",catDO.getSection());    
                 
                                    
         List addressList = remote.getDictionaryEntries(categoryId);
