@@ -63,7 +63,7 @@ public class Provider implements Auditable, Cloneable {
   private String npi;             
   
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id")
+  @JoinColumn(name = "provider")
   private Collection<ProviderAddress> providerAddress;
   
   @OneToMany(fetch = FetchType.LAZY)
