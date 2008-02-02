@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.openelis.client.supply.screen.storage.StorageLocationServletInt;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.gwt.client.services.AppScreenFormServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
@@ -23,6 +22,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.modules.supply.client.storage.StorageLocationServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
@@ -40,7 +40,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 	
 	private String systemUserId = "";
 	
-	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.client.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
 					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 

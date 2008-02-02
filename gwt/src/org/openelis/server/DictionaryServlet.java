@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.openelis.client.utilities.screen.dictionary.DictionaryServletInt;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryEntryTableRowDO;
@@ -33,6 +32,7 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.modules.utilities.client.dictionary.DictionaryServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -56,7 +56,7 @@ public class DictionaryServlet extends AppServlet implements
     private String systemUserId = "";
     
 
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.client.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                                                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 

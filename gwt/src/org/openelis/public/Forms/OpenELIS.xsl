@@ -15,7 +15,7 @@
 
   <xsl:template match="doc">
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.client.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
 		<panel height="100%" layout="vertical" style="AppBackground" width="100%" xsi:type="Panel">

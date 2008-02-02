@@ -1,12 +1,12 @@
 package org.openelis.server;
 
-import org.openelis.client.dataEntry.screen.organizeFavorites.OrganizeFavoritesScreenInt;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.modules.dataEntry.client.organizeFavorites.OrganizeFavoritesScreenInt;
 import org.openelis.server.constants.Constants;
 
 public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavoritesScreenInt {
