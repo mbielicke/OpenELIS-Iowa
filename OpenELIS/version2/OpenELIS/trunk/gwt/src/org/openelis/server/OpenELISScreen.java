@@ -1,9 +1,9 @@
 package org.openelis.server;
 
-import org.openelis.client.main.screen.openelis.OpenELISScreenInt;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.modules.main.client.openelis.OpenELISScreenInt;
 import org.openelis.server.constants.Constants;
 
 public class OpenELISScreen extends AppServlet implements OpenELISScreenInt {

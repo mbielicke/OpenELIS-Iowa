@@ -1,7 +1,7 @@
 package org.openelis.test;
 
-import org.openelis.client.dataEntry.screen.Provider.TestProvider;
-import org.openelis.client.dataEntry.screen.organization.TestOrganization;
+import org.openelis.junit.client.TestOrganization;
+import org.openelis.junit.client.TestProvider;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -15,7 +15,7 @@
 
   <xsl:template match="doc">
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.client.main.constants.OpenELISConstants',locale:new(string($language)))"/>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.client.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Provider" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd">
 	<display>
 		<panel height="200px" layout="vertical" width="350px" xsi:type="Panel">

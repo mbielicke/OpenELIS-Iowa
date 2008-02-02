@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.openelis.client.analysis.screen.qaevent.QAEventServletInt;
 import org.openelis.domain.QaEventDO;
 import org.openelis.gwt.client.services.AppScreenServiceInt;
 import org.openelis.gwt.client.services.AutoCompleteServiceInt;
@@ -24,6 +23,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.modules.analysis.client.qaevent.QAEventServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -44,7 +44,7 @@ public class QAEventServlet extends AppServlet implements
     private static final int leftTableRowsPerPage = 20;
     private String systemUserId = "";
     
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.client.main.constants.OpenELISConstants",
+    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.client.constants.OpenELISConstants",
                                            new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                            ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
