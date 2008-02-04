@@ -14,8 +14,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -95,6 +98,9 @@ public class Test implements Auditable, Cloneable {
   @Transient
   private Test original;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "method",insertable = false, updatable = false)
+  private Method methodLink;
   
   public Integer getId() {
     return id;
@@ -459,5 +465,11 @@ public class Test implements Auditable, Cloneable {
   public String getTableName() {
     return "test";
   }
+public Method getMethodLink() {
+    return methodLink;
+}
+public void setMethodLink(Method methodLink) {
+    this.methodLink = methodLink;
+}
   
 }   
