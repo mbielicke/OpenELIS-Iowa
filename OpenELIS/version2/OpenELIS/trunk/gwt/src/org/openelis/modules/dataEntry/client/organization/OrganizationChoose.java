@@ -1,7 +1,7 @@
 package org.openelis.modules.dataEntry.client.organization;
 
-import org.openelis.gwt.client.screen.Screen;
-import org.openelis.gwt.client.widget.PopupWindow;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.widget.PopupWindow;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;

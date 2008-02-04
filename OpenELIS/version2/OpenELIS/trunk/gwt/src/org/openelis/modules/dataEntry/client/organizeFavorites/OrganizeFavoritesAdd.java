@@ -1,13 +1,13 @@
 package org.openelis.modules.dataEntry.client.organizeFavorites;
 
-import org.openelis.gwt.client.screen.ScreenForm;
-import org.openelis.gwt.client.screen.ScreenTableWidget;
-import org.openelis.gwt.client.widget.ButtonPanel;
-import org.openelis.gwt.client.widget.PopupWindow;
-import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.ScreenForm;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.PopupWindow;
+import org.openelis.gwt.widget.table.TableWidget;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;

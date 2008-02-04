@@ -1,23 +1,23 @@
 package org.openelis.modules.dataEntry.client.organization;
 
-import org.openelis.gwt.client.screen.AppScreen;
-import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.screen.ScreenAToZPanel;
-import org.openelis.gwt.client.screen.ScreenAutoDropdown;
-import org.openelis.gwt.client.screen.ScreenTablePanel;
-import org.openelis.gwt.client.screen.ScreenTableWidget;
-import org.openelis.gwt.client.screen.ScreenTextBox;
-import org.openelis.gwt.client.widget.AppButton;
-import org.openelis.gwt.client.widget.AutoCompleteDropdown;
-import org.openelis.gwt.client.widget.ButtonPanel;
-import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.table.TableAuto;
-import org.openelis.gwt.client.widget.table.TableAutoDropdown;
-import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.gwt.screen.AppScreenForm;
+import org.openelis.gwt.screen.ScreenAToZPanel;
+import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTablePanel;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.TableAuto;
+import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;

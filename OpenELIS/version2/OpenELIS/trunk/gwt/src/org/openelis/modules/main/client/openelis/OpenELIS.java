@@ -1,13 +1,13 @@
 package org.openelis.modules.main.client.openelis;
 
-import org.openelis.gwt.client.screen.AppScreen;
-import org.openelis.gwt.client.screen.ScreenLabel;
-import org.openelis.gwt.client.screen.ScreenMenuPanel;
-import org.openelis.gwt.client.screen.ScreenMenuPopupPanel;
-import org.openelis.gwt.client.screen.ScreenTablePanel;
-import org.openelis.gwt.client.screen.ScreenVertical;
-import org.openelis.gwt.client.screen.ScreenWidget;
-import org.openelis.gwt.client.widget.WindowBrowser;
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.gwt.screen.ScreenLabel;
+import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenMenuPopupPanel;
+import org.openelis.gwt.screen.ScreenTablePanel;
+import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.screen.ScreenWidget;
+import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.analysis.client.qaevent.QAEvent;
 import org.openelis.modules.dataEntry.client.Provider.Provider;
 import org.openelis.modules.dataEntry.client.organization.OrganizationScreen;
