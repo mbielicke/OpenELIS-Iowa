@@ -6,28 +6,21 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.AppScreenForm;
-import org.openelis.gwt.screen.ScreenAToZPanel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableAuto;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -262,8 +255,11 @@ public class OrganizationScreen extends AppScreenForm {
 		int rowSelected = orgNameTM.controller.selected;
 
 		// set the update button if needed
-		if (rowSelected != -1)
-			bpanel.setButtonState("update", AppButton.UNPRESSED);
+		if (rowSelected == -1){
+			bpanel.setButtonState("update", AppButton.DISABLED);
+			bpanel.setButtonState("prev", AppButton.DISABLED);
+			bpanel.setButtonState("next", AppButton.DISABLED);
+		}
 	}
 
 	public void afterUpdate(boolean success) {
@@ -331,6 +327,26 @@ public class OrganizationScreen extends AppScreenForm {
 		}
 		super.commit(state);
 	}
+	
+	protected void doReset() {
+		//we need to reset the dropdowns
+		//clear the state dropdown
+		((AutoCompleteDropdown)getWidget("state")).reset();
+		//clear the country dropdown
+		((AutoCompleteDropdown)getWidget("country")).reset();
+		
+		 ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
+		TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+		controller.editors[0];
+		displayContactType.editor.reset();
+		TableAutoDropdown displayState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+		controller.editors[5];
+		displayState.editor.reset();
+		TableAutoDropdown displayCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+		controller.editors[12];
+		displayCountry.editor.reset();
+		super.doReset();
+	}
 
 	protected Widget setStyleNameOnButton(Widget sender) {
 		sender.addStyleName("current");
@@ -390,18 +406,18 @@ public class OrganizationScreen extends AppScreenForm {
 	               ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
 	               ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDataModel);
-	               ((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDataModel);
+	               ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDataModel.getInstance());
 	               
 	               ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
 	               
 	               TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[5];
-	               displayContactState.setModel(stateDataModel);
+	               displayContactState.setModel((DataModel)stateDataModel.getInstance());
 	               
 	               TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[5];
-	               queryContactState.setModel(stateDataModel);
+	               queryContactState.setModel((DataModel)stateDataModel.getInstance());
 	           }
 	           public void onFailure(Throwable caught){
 	        	   Window.alert(caught.getMessage());
@@ -419,15 +435,15 @@ public class OrganizationScreen extends AppScreenForm {
 	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
 	               
 	               ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDataModel);
-	               ((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDataModel);
+	               ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDataModel.getInstance());
 	               
 	               TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
-	               displayContactCountry.setModel(countryDataModel);
+	               displayContactCountry.setModel((DataModel)countryDataModel.getInstance());
 	               
 	               TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[12];
-	               queryContactCountry.setModel(countryDataModel);
+	               queryContactCountry.setModel((DataModel)countryDataModel.getInstance());
 	           }
 	           public void onFailure(Throwable caught){
 	        	   Window.alert(caught.getMessage());
@@ -448,7 +464,7 @@ public class OrganizationScreen extends AppScreenForm {
 
 	        	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 	        	   											controller.editors[0];
-	        	   queryContactType.setModel(contactTypeDataModel);
+	        	   queryContactType.setModel((DataModel)contactTypeDataModel.getInstance());
 	           }
 	           public void onFailure(Throwable caught){
 	        	   Window.alert(caught.getMessage());
