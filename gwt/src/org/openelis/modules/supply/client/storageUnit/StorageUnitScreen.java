@@ -1,7 +1,5 @@
 package org.openelis.modules.supply.client.storageUnit;
 
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -10,6 +8,8 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -184,7 +184,7 @@ public class StorageUnitScreen extends AppScreenForm{
 		return sender;
 	}
 	
-private void loadDropdowns(){
+	private void loadDropdowns(){
 		
 		//load category dropdowns
 		screenService.getInitialModel("category", new AsyncCallback(){

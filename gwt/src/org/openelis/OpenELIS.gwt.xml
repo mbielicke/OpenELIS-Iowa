@@ -1,4 +1,5 @@
 <module>
+
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
 	<inherits name="com.google.gwt.xml.XML"/>
@@ -9,22 +10,23 @@
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.utilities.Utilities"/>
     <inherits name="org.openelis.modules.dataEntry.DataEntry"/>
+     <inherits name="org.openelis.modules.supply.Supply"/>
     <inherits name="org.openelis.modules.analysis.Analysis"/>
-    <inherits name="org.openelis.modules.supply.Supply"/>
-    <!-- Uncomment when running JUnit test -->
-    <!-- <inherits name="org.openelis.junit.JUnit"/> -->
+    
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
-      
+ 
+    <servlet path='/DictionaryServlet' class='org.openelis.server.DictionaryServlet'/>     
     <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
     <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
     <servlet path='/OrganizationServlet' class='org.openelis.server.OrganizationServlet'/>  
-    <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>      
-    <servlet path='/StorageLocationServlet' class='org.openelis.server.StorageLocationServlet'/>  
+    <servlet path='/OrganizeFavoritesScreen' class='org.openelis.server.OrganizeFavoritesScreen'/>
     <servlet path='/ProviderServlet' class='org.openelis.server.ProviderServlet'/>
-    <servlet path='/DictionaryServlet' class='org.openelis.server.DictionaryServlet'/>
     <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>  
-    <servlet path='/StorageUnitServlet' class='org.openelis.server.StorageUnitServlet'/>  
+    <servlet path='/StandardNoteServlet' class='org.openelis.server.StandardNoteServlet'/>        
+    <servlet path='/StorageLocationServlet' class='org.openelis.server.StorageLocationServlet'/>  
+    <servlet path='/StorageUnitServlet' class='org.openelis.server.StorageUnitServlet'/> 
+  
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->

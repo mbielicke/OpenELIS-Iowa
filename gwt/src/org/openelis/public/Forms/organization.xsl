@@ -315,7 +315,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
 												<widget>
 													<!--<option key="state" tab="zipCode,city"/>-->
-													<autoDropdown cat="state" key="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" tab="country,city">
+													<autoDropdown cat="state" key="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" tab="zipCode,city">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
 														<label/>
@@ -326,7 +326,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 													</autoDropdown>
 													<query>
 													<!--<option tab="country,city"/>-->
-													<autoDropdown cat="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="country,city">
+													<autoDropdown cat="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="zipCode,city">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
 														<label/>
@@ -450,7 +450,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" key="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" type="integer">
+											<autoDropdown cat="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" type="integer">
 											<autoWidths>90</autoWidths>
 											<autoEditors>
 												<label/>
@@ -463,7 +463,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="contactState" key="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" type="string">
+											<autoDropdown cat="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -478,7 +478,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<autoDropdown cat="contactCountry" key="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" type="string">
+											<autoDropdown cat="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
@@ -517,7 +517,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" key="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" multiSelect="true" type="integer">
+											<autoDropdown cat="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" multiSelect="true" type="integer">
 											<autoWidths>90</autoWidths>
 											<autoEditors>
 												<label/>
@@ -530,7 +530,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="contactState" key="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" multiSelect="true" type="string">
+											<autoDropdown cat="contactState" case="upper" serviceUrl="OrganizationServlet" width="40px" fromModel="true" dropdown="true" multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -545,7 +545,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-										 	<autoDropdown cat="contactCountry" key="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" multiSelect="true" type="string">
+										 	<autoDropdown cat="contactCountry" case="upper" serviceUrl="OrganizationServlet" width="110px" fromModel="true" dropdown="true" multiSelect="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
