@@ -1,20 +1,14 @@
 package org.openelis.server;
 
-import java.util.Locale;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.google.gwt.i18n.client.ConstantsWithLookup;
-
-import javax.servlet.http.HttpSession;
 
 public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceInt {                  
 
@@ -73,6 +67,24 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("text", "Provider");
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftProvider");
+            elem.setAttribute("style", "ListSubItem");
+            elem.setAttribute("onClick", "this");
+            elem.setAttribute("hover", "Hover");
+            root.appendChild(elem);
+            
+            elem = doc.createElement("menulabel");
+            elem.setAttribute("text", "QA Events");
+            elem.setAttribute("constant", "true");
+            elem.setAttribute("key", "favLeftqaEvents");
+            elem.setAttribute("style", "ListSubItem");
+            elem.setAttribute("onClick", "this");
+            elem.setAttribute("hover", "Hover");
+            root.appendChild(elem);
+            
+            elem = doc.createElement("menulabel");
+            elem.setAttribute("text", "Standard Note");
+            elem.setAttribute("constant", "true");
+            elem.setAttribute("key", "favLeftStandardNote");
             elem.setAttribute("style", "ListSubItem");
             elem.setAttribute("onClick", "this");
             elem.setAttribute("hover", "Hover");

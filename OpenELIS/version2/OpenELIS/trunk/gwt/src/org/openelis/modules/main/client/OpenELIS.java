@@ -20,7 +20,6 @@ import org.openelis.gwt.screen.ScreenAppMessage;
 import org.openelis.gwt.screen.ScreenAuto;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenBase;
-import org.openelis.gwt.screen.ScreenButton;
 import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
@@ -71,8 +70,6 @@ import org.openelis.modules.dataEntry.client.organization.OrganizationContactsTa
 import org.openelis.modules.dataEntry.client.organization.OrganizationNameTable;
 import org.openelis.modules.main.client.constants.OpenELISConstants;
 import org.openelis.modules.main.client.service.OpenELISService;
-import org.openelis.modules.supply.client.storage.StorageNameTable;
-import org.openelis.modules.supply.client.storageUnit.StorageUnitDescTable;
 import org.openelis.modules.utilities.client.dictionary.CategorySystemNamesTable;
 import org.openelis.modules.utilities.client.dictionary.DictionaryEntriesTable;
 
