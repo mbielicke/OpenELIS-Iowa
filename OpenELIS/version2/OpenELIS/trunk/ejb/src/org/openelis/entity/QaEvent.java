@@ -16,9 +16,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -28,7 +28,7 @@ import org.openelis.utils.Auditable;
 @Entity
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
-@NamedQueries({@NamedQuery(name = "getQaEventNameRowsByLetter", query = "select q.id,q.name " + "from QaEvent q , Test t, Method m where q.name like :letter order by q.name"),
+@NamedQueries({@NamedQuery(name = "getQaEventNameRowsByLetter", query = "select q.id,q.name " + "from QaEvent q  where q.name like :letter order by q.name"),
                @NamedQuery(name = "getQaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.test,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
                "  from QaEvent q where q.id = :id"),
                @NamedQuery(name = "getTestNames", query = "select distinct t.id, t.name, m.name " + "  from Test t, Method m where t.method  = m.id order by t.name, m.name")})
@@ -62,8 +62,8 @@ public class QaEvent implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test",insertable = false, updatable = false)
-  private Test testLink;
-
+  private Test testLink; 
+  
   @Transient
   private QaEvent original;
 
