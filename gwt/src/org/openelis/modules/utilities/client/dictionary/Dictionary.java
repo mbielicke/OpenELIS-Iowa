@@ -2,19 +2,19 @@ package org.openelis.modules.utilities.client.dictionary;
 
 
 
-import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.screen.ScreenAutoDropdown;
-import org.openelis.gwt.client.widget.AppButton;
-import org.openelis.gwt.client.widget.AutoCompleteDropdown;
-import org.openelis.gwt.client.widget.ButtonPanel;
-import org.openelis.gwt.client.widget.FormInt;
-import org.openelis.gwt.client.widget.PopupWindow;
-import org.openelis.gwt.client.widget.table.TableController;
-import org.openelis.gwt.client.widget.table.TableWidget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.AppScreenForm;
+import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.PopupWindow;
+import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;

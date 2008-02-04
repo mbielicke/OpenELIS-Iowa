@@ -1,6 +1,6 @@
 package org.openelis.modules.supply.client.storageUnit;
 
-import org.openelis.gwt.client.services.AppScreenFormServiceIntAsync;
+import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

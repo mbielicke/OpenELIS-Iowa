@@ -1,8 +1,8 @@
 package org.openelis.modules.dataEntry.client.organization;
 
-import org.openelis.gwt.client.services.AppScreenFormServiceIntAsync;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

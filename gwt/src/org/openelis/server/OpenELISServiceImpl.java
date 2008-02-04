@@ -3,7 +3,7 @@ package org.openelis.server;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.openelis.gwt.client.screen.AppScreen;
+import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.server.constants.UTFResource;

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.StorageLocationDO;
-import org.openelis.gwt.client.services.AppScreenFormServiceInt;
-import org.openelis.gwt.client.services.AutoCompleteServiceInt;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
@@ -22,6 +20,8 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.modules.supply.client.storage.StorageLocationServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;

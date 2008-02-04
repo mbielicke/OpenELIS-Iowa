@@ -1,7 +1,7 @@
 package org.openelis.modules.dataEntry.client.organizeFavorites;
 
-import org.openelis.gwt.client.screen.AppScreenForm;
-import org.openelis.gwt.client.widget.ButtonPanel;
+import org.openelis.gwt.screen.AppScreenForm;
+import org.openelis.gwt.widget.ButtonPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;

@@ -1,8 +1,8 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
-import org.openelis.gwt.client.widget.table.TableController;
-import org.openelis.gwt.client.widget.table.TableManager;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableManager;
 
 public class ProviderAddressesTable implements TableManager {
 

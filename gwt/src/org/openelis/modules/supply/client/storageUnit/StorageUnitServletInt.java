@@ -1,7 +1,7 @@
 package org.openelis.modules.supply.client.storageUnit;
 
-import org.openelis.gwt.client.services.AppScreenFormServiceInt;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
 
 public interface StorageUnitServletInt extends AppScreenFormServiceInt {
 
