@@ -148,8 +148,7 @@ public class StorageUnitBean implements StorageUnitRemote{
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        } finally {
-        }        
+        }      
     }
 
 	public void deleteStorageUnit(Integer storageUnitId) throws Exception {
