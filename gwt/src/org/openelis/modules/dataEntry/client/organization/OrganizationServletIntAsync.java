@@ -1,14 +1,12 @@
 package org.openelis.modules.dataEntry.client.organization;
 
+import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface OrganizationServletIntAsync extends AppScreenFormServiceIntAsync {
-
-	//public void getInitialModel(TableModel model, AsyncCallback callback);
 	
 	public void getOrganizationByLetter(String letter, TableModel tableModel, FormRPC letterRPC, AsyncCallback callback);
 	
