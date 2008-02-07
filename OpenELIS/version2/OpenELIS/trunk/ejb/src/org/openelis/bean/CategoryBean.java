@@ -117,8 +117,7 @@ public class CategoryBean implements CategoryRemote {
         if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
                       sb.append(QueryBuilder.getQuery((CollectionField)fields.get("section"), "c.section"));     
-        
-        System.out.println("section *******************"+ ((CollectionField)fields.get("section")).getValue());
+                
         //if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
                       //  !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
             //sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "d.isActive"));
