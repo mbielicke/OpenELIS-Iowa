@@ -221,51 +221,62 @@
 
           <buttonPanel key="buttons">
             <appButton action="query" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
               <widget>
                 <text>Query</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
  <appButton action="prev" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
               <widget>
                 <text>Previous</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
  <appButton action="next" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="NextButtonImage"/>
               <widget>
                 <text>Next</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
             <appButton action="add" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="AddButtonImage"/>
               <widget>
                 <text>Add</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="update" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="UpdateButtonImage"/>
               <widget>
                 <text>Update</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
             <appButton action="commit">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
               <widget>
                 <text>Commit</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="abort">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
               <widget>
                 <text>Abort</text>
               </widget>
+              </panel>
             </appButton>
           </buttonPanel>
 				</widget>
