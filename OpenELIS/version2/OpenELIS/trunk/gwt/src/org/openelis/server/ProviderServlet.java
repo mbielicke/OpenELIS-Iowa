@@ -210,29 +210,19 @@ public class ProviderServlet extends AppServlet implements
 
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject();
-            //StringObject lname = new StringObject();
-            //StringObject fname = new StringObject();
-            StringObject name = new StringObject();
+            NumberObject id = new NumberObject();            
+            StringObject lname = new StringObject();
+            StringObject fname = new StringObject();
             id.setType("integer");
-            //lname.setValue(lnameResult);
-            if(fnameResult !=null){
-             //fname.setValue(", "+fnameResult);
-               if(!(fnameResult.trim().equals(""))) 
-                name.setValue(lnameResult+","+fnameResult);
-               else {
-                   name.setValue(lnameResult);       
-               }
-            }
-            else {
-                name.setValue(lnameResult);       
-            }
+             lname.setValue(lnameResult);
+             fname.setValue(fnameResult);
+            
             id.setValue(idResult);
             
             row.addObject(id);          
-            //row.addObject(lname);
-            //row.addObject(fname);
-            row.addObject(name);
+            row.addObject(lname);
+            row.addObject(fname);
+            
             model.add(row);
             i++;
          }
@@ -296,25 +286,17 @@ public class ProviderServlet extends AppServlet implements
                 NumberObject id = new NumberObject();
                 //StringObject lname = new StringObject();
                 //StringObject fname = new StringObject();
-                StringObject name = new StringObject();
+                StringObject lname = new StringObject();
+                StringObject fname = new StringObject();
                 id.setType("integer");
-                //lname.setValue(lnameResult);
-                if(fnameResult !=null){                    
-                   if(!(fnameResult.trim().equals(""))){
-                     name.setValue(lnameResult+","+fnameResult);
-                   }else {
-                       name.setValue(lnameResult);   
-                   }
-                }
-                else {
-                    name.setValue(lnameResult);       
-                }
+                 lname.setValue(lnameResult);
+                 fname.setValue(fnameResult);
+                
                 id.setValue(idResult);
                 
-                row.addObject(id);          
-                //row.addObject(lname);
-                //row.addObject(fname);
-                row.addObject(name);
+                row.addObject(id);                  
+                row.addObject(lname);
+                row.addObject(fname);
                 model.add(row);
 
             } 
