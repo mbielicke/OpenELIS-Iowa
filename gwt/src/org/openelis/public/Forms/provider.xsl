@@ -108,16 +108,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     
     <panel layout= "vertical" width = "175px" xsi:type= "Panel" >
       <table maxRows = "20" rows = "0" manager= "ProviderNamesTable" serviceUrl= "ProviderServlet" width= "auto" key = "providersTable" title="{resource:getString($constants,'providers')}">
-       <headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
-							<widths>150</widths>
+       <headers><xsl:value-of select='resource:getString($constants,"lastName")'/>,<xsl:value-of select='resource:getString($constants,"firstName")'/></headers>
+							<widths>75,75</widths>
 							<editors>
+								<label/>
 								<label/>								
 							</editors>
 							<fields>
-								<string/>								
+								<string/>	
+								<string/>							
 							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
+							<sorts>false,false</sorts>
+							<filters>false,false</filters>
      </table>
     </panel>
    </panel>
