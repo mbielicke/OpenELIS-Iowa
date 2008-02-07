@@ -62,6 +62,7 @@ public class ProviderNamesTable implements TableManager {
             TableRow tRow = controller.model.createRow();
             
             tRow.getColumn(0).setDataObject(row.getObject(1));
+            tRow.getColumn(1).setDataObject(row.getObject(2));
             controller.model.addRow(tRow);
         }
         if(providerForm.modelWidget.getPage() > 0)
