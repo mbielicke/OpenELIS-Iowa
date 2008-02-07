@@ -124,23 +124,32 @@ public class QAEventServlet extends AppServlet implements
              Integer idResult = (Integer)result[0];
              //qaEvent name
              String nameResult = (String)result[1];
-             
+             String tnameResult = (String)result[2];
+             String mnameResult = (String)result[3];
 
              DataSet row = new DataSet();
              
              NumberObject id = new NumberObject();
 
-             StringObject name = new StringObject();
+             StringObject qaname = new StringObject();
+             StringObject tname = new StringObject();
+             StringObject mname = new StringObject();
              id.setType("integer");
              //lname.setValue(lnameResult);
              id.setValue(idResult);
-             
-             name.setValue(nameResult);                                            
+             //if(tnameResult!=null && mnameResult!=null){
+              //name.setValue(nameResult+" , "+tnameResult+" , "+mnameResult);                
+             //}else {
+                 qaname.setValue(nameResult);  
+                 tname.setValue(tnameResult);
+                 mname.setValue(mnameResult);
+             //} 
              row.addObject(id);          
              //row.addObject(lname);
              //row.addObject(fname);
-             row.addObject(name);
-             model.add(row);
+             row.addObject(qaname);
+             row.addObject(tname);
+             row.addObject(mname);
              i++;
           }
          //} 
