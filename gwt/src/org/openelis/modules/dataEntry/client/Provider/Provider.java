@@ -278,6 +278,9 @@ public class Provider extends AppScreenForm{
         //removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
+        
+        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddTable.setAutoAdd(false);      
     }
     
     public void commitUpdate(){        
@@ -286,6 +289,9 @@ public class Provider extends AppScreenForm{
        // removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
+        
+        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddTable.setAutoAdd(false);      
     }
     
     public void afterCommitUpdate(boolean success){
