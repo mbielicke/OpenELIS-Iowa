@@ -32,13 +32,13 @@ public interface CategoryRemote {
         
     public List getMatchingEntries(String entry,int maxResults);
     
-    public Integer getEntryIdForSystemName(String systemName);
+    public Integer getEntryIdForSystemName(String systemName) throws Exception;
     
-    public Integer getEntryIdForEntry(String entry);
+    public Integer getEntryIdForEntry(String entry) throws Exception;
     
     public Integer getCategoryId(String systemName); 
     
     public List getDropdownValues(Integer categoryId);
     
-    public Object[] autoCompleteLookupById(Integer id);
+    public Object[] autoCompleteLookupById(Integer id)throws Exception;
 }
