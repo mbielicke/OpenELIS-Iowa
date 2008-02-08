@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
      
      private TextArea reportingText = null;
      
-     private boolean textEdited = false;
+     
      
      private Widget selected;
      public QAEvent(){
@@ -118,18 +118,17 @@ import com.google.gwt.user.client.ui.Widget;
                  getQAEvents("z", sender);
              }
               if(sender == getWidget("reportingText")){
-                if(bpanel.state == FormInt.ADD){
+               /* if(bpanel.state == FormInt.ADD){
                  if(reportingText.getText().equals("<Click here to enter reporting text>")){    
                    textEdited = true;
                    reportingText = (TextArea)sender;
                    reportingText.setText("");
                  } 
-                }   
+                } */  
               }
          }
          
-         public void commitAdd(){
-             Window.alert(new Boolean(textEdited).toString());                        
+         public void commitAdd(){                        
                 // Window.alert("super");                                 
                  super.commitAdd();             
                         
@@ -137,8 +136,8 @@ import com.google.gwt.user.client.ui.Widget;
          
          public void add(int state){                                  
              super.add(state);
-             reportingText.setText("<Click here to enter reporting text>");
-             reportingText.selectAll();       
+             //reportingText.setText("<Click here to enter reporting text>");
+            // reportingText.selectAll();       
          }
          
          private void getQAEvents(String letter, Widget sender) {
@@ -166,6 +165,15 @@ import com.google.gwt.user.client.ui.Widget;
         
          
         public boolean validate(){
+           boolean textEdited = true;  
+           if(reportingText.getText()!= null){
+              if(reportingText.getText().trim().equals("")){
+                  textEdited = false;   
+              } 
+           }else{
+               textEdited = false; 
+           }
+           
             if(!textEdited){
                 StringField repText = (StringField)rpc.getField("reportingText");  
                 repText.addError("Reporting text must be specified for a QA Event");                      
