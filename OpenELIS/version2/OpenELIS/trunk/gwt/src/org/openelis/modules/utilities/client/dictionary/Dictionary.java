@@ -31,6 +31,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     private static ServiceDefTarget target = (ServiceDefTarget) screenService;
     private TableWidget dictEntryTable  = null;
     public PopupWindow window;
+    private boolean errorInForm = false;
+    private boolean sysEntryUnique = true; 
     
     public Dictionary(){
         super();        
@@ -98,19 +100,32 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     }
     
     public void commitAdd(){
-      
+      if(!errorInForm){      
         super.commitAdd();
          AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
-         removeEntryButton.changeState(AppButton.DISABLED);            
-                
+         removeEntryButton.changeState(AppButton.DISABLED);  
+         
+         TableController provAddTable = (TableController)(dictEntryTable.controller);
+         provAddTable.setAutoAdd(false);
+      }     
+      else {
+          Window.alert("Please correct the errors first");
+      }        
     }
     
     public void commitUpdate(){
      
-         super.commitUpdate();
-        AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
-        removeEntryButton.changeState(AppButton.DISABLED);            
-        
+        if(!errorInForm){         
+            super.commitUpdate();
+            AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+            removeEntryButton.changeState(AppButton.DISABLED);  
+            
+            TableController provAddTable = (TableController)(dictEntryTable.controller);
+            provAddTable.setAutoAdd(false);
+          }     
+          else {
+              Window.alert("Please correct the errors first");
+          }
              
     }
     
@@ -271,9 +286,17 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                     }
                       
                   if(printErrorMessage){
-                      showError("sysNameExists"); 
-                     }                                          
-                   }                 
+                      errorInForm = true;
+                      showMessage("sysNameExists"); 
+                     }
+                  else{
+                      if(sysEntryUnique) {
+                          errorInForm = false;
+                          showMessage("noErrors");
+                      } 
+                   }
+                 }
+                
                     public void onFailure(Throwable caught) {
                         Window.alert(caught.getMessage());
                     }
@@ -289,6 +312,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                         if(entryId !=null){  
                          if(!entryId.equals(result)) {                       
                              printErrorMessage = true;
+                             
                          }
                         }else{
                             printErrorMessage = true;                        
@@ -296,11 +320,16 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                       }
                     
                     if(printErrorMessage){
-                        showError("entryExists");
+                        errorInForm = true;
+                        showMessage("entryExists");
                     }
-                    //else{
-                      //  message.setText("Update fields, then press Commit");
-                   // }                      
+                    else{
+                       if(sysEntryUnique) {
+                        errorInForm = false;
+                        showMessage("noErrors");
+                       } 
+                    }
+                                          
                     
                                                     
                    }                 
@@ -310,24 +339,47 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                  });
         }
                               
-        public void showError(String errorType){
-           if(errorType.equals("sysNameExists")){
+        public void showMessage(String messageType){
+           if(messageType.equals("sysNameExists")){
                message.setText(constants.getString("dictSystemNameError"));
            }
-           if(errorType.equals("entryExists")){
+           if(messageType.equals("entryExists")){
                message.setText(constants.getString("dictEntryError"));
            }
-           if(errorType.equals("sysNameUnique")){
+           if(messageType.equals("sysNameUnique")){
                message.setText("System names for Dictionary must be unique");
+               errorInForm = true;
+               sysEntryUnique = false;
            }
-           if(errorType.equals("entryUnique")){
+           if(messageType.equals("entryUnique")){
                message.setText("Entry text for Dictionary must be unique");
+               errorInForm = true;
+               sysEntryUnique = false;
            }
+           if(messageType.equals("entryBlank")){
+               message.setText("Entry text for Dictionary must not be blank");
+               errorInForm = true;               
+           }
+           if(messageType.equals("systemNameBlank")){
+               message.setText("System names for Dictionary must not be blank");
+               errorInForm = true;               
+           }
+           if(messageType.equals("noErrors")){
+              if(bpanel.state == FormInt.UPDATE){ 
+                  message.setText(constants.getString("updateFieldsPressCommit"));
+              }
+              if(bpanel.state == FormInt.ADD){ 
+                  message.setText(constants.getString("enterInformationPressCommit"));
+              }
+              errorInForm = false;
+              sysEntryUnique = true;               
+           }
+           
         }
         
         private void loadDropdowns(){
             
-            //load state dropdowns
+        
             screenService.getInitialModel("section", new AsyncCallback(){
                    public void onSuccess(Object result){
                        DataModel stateDataModel = (DataModel)result;
