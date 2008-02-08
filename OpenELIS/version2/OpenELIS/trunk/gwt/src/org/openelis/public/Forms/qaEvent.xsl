@@ -25,86 +25,186 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    <panel layout= "horizontal" xsi:type= "Panel" spacing= "0">
     <xsl:if test="string($language)='en'">
      <panel layout= "vertical" xsi:type= "Panel" spacing = "0"> 
-      <widget> 
-       <html key= "a" onclick= "this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html> 
-      </widget>
       <widget>
-       <html key= "b" onclick= "this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html> 
-      </widget>
-      <widget>
-        <html key= "c" onclick= "this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "d" onclick= "this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "e" onclick= "this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key = "f" onclick = "this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "g" onclick = "this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "h" onclick = "this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "i" onclick = "this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "j" onclick = "this">&lt;a  class='navIndex'&gt;J&lt;/a&gt;</html>
-      </widget>
-      <widget>
-        <html key= "k" onclick = "this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "l" onclick= "this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "m" onclick= "this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "n" onclick= "this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "o" onclick= "this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "p" onclick= "this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "q" onclick= "this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "r" onclick= "this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "s" onclick= "this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "t" onclick= "this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "u" onclick= "this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "v" onclick= "this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "w" onclick= "this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "x" onclick= "this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "y" onclick= "this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
-      </widget>
-      <widget>
-       <html key= "z" onclick= "this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
-      </widget>
-    </panel>
-    </xsl:if>
+            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+          </widget>
+          </panel>
+          <panel layout="vertical" xsi:type="Panel" spacing="0">
+          <widget>
+            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
+          </widget>
+          </panel>
+
+		</xsl:if>
+		<xsl:if test="string($language)='cn'">
+
+		</xsl:if>	
+		<xsl:if test="string($language)='fa'">
+
+		</xsl:if>
+		<xsl:if test="string($language)='sp'">
+			<panel layout="vertical" xsi:type="Panel" cellpadding="0" cellspacing="0">
+			<widget>
+            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+          </widget>
+           <widget>
+            <html key="ch" onclick="this">&lt;a class='navIndex'&gt;CH&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="ll" onclick="this">&lt;a class='navIndex'&gt;LL&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="ñ" onclick="this">&lt;a class='navIndex'&gt;Ñ&lt;/a&gt;</html>
+          </widget>          
+          <widget>
+            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
+          </widget>
+          <widget>
+            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
+          </widget>
+          </panel>
+		</xsl:if>
     
     <panel layout= "vertical" width = "250" xsi:type= "Panel" >
       <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable"  serviceUrl = "QAEventServlet"  title="{resource:getString($constants,'qaEvents')}">
@@ -186,13 +286,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      <widget width= "210px"> 
       <textbox key = "name" case = "lower" />
      </widget>
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
-     </widget>
-     <widget>
-      <textbox key= "sequence"  width= "50px"/>
-     </widget>
-     </row>
+     </row>     
      <row>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
@@ -233,8 +327,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												    </autoItems> 
 										          </autoDropdown>
 												 </query>
-										</widget>          
-
+										</widget>  
+										        
+     </row>
+     <row>
      <widget>
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
@@ -264,8 +360,9 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 										          </autoDropdown>
 												 </query>
 										</widget>
-										
-            
+	  </row>		
+	  						
+      <row>           
       <widget>
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"qae_Billable")'/>:</text>
         </widget>
@@ -288,13 +385,28 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 										          </autoDropdown>
          </query>
        </widget>
-									          
-    </row>                              					                         
-   </panel>
-       <panel layout= "vertical" height = "20px" xsi:type = "Panel"/>            
-       <widget halign = "center">
-		  <textarea width="500px" height="200px" case="mixed" key="reportingText"/>
-	   </widget>                      
+      </row> 
+      <row>
+       
+     <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
+     </widget>
+     <widget>
+      <textbox key= "sequence"  width= "50px"/>
+     </widget>    
+     </row>
+			
+	   <row>
+	    <widget>
+		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
+		</widget>
+	    <widget halign = "center">
+		  <textarea width="300px" height="200px" case="mixed" key="reportingText"/>
+	    </widget> 
+	   </row>								          
+                                 					                         
+   </panel>            
+                            
 						
   </panel>
  </panel>
