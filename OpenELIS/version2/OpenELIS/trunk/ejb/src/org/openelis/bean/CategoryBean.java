@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -276,33 +277,37 @@ public class CategoryBean implements CategoryRemote {
            entryList = (List)query.getResultList();
        }catch(Exception ex){
            ex.printStackTrace();
-           return null;
+          
        }     
        return entryList;
     }
 
-    public Integer getEntryIdForSystemName(String systemName){
+    public Integer getEntryIdForSystemName(String systemName)throws Exception{
         Query query = manager.createNamedQuery("getEntryIdForSystemName");  
         query.setParameter("systemName", systemName);
         Integer entryId = null;
         try{ 
           entryId = (Integer)query.getSingleResult();
-        }catch(Exception ex){
-            ex.printStackTrace();
+        }catch(NoResultException ex){
             return null;
-        }     
+        } catch(Exception ex){
+            ex.printStackTrace();
+            throw ex;
+        }    
         return entryId;
     } 
     
-    public Integer getEntryIdForEntry(String entry){
+    public Integer getEntryIdForEntry(String entry)throws Exception{
         Query query = manager.createNamedQuery("getEntryIdForEntry");  
         query.setParameter("entry", entry);
         Integer entryId = null;
         try{ 
           entryId = (Integer)query.getSingleResult();
-        }catch(Exception ex){
-            ex.printStackTrace();
+        }catch(NoResultException ex){
             return null;
+        } catch(Exception ex){
+            ex.printStackTrace();
+            throw ex;
         }     
         return entryId;
     } 
@@ -312,18 +317,24 @@ public class CategoryBean implements CategoryRemote {
         query.setParameter("systemName", systemName);
         Integer categoryId = null;
         try{ 
-            categoryId = (Integer)query.getSingleResult();
-        }catch(Exception ex){
+            categoryId = (Integer)query.getSingleResult();        
+        } catch(Exception ex){
             ex.printStackTrace();
-            return null;
-        }     
+            
+        }   
         return categoryId;
     }
     
-    public Object[] autoCompleteLookupById(Integer id){
-        
+    public Object[] autoCompleteLookupById(Integer id)throws Exception{
+      try{  
         Query query  = manager.createNamedQuery("getEntryAutoCompleteById");
         query.setParameter("id",id);
         return (Object[])query.getSingleResult();
+      }catch(NoResultException ex){
+          return null;
+      } catch(Exception ex){
+          throw ex;
+      }
+      
     }               
 }
