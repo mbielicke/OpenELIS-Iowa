@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryEntryTableRowDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
@@ -409,8 +408,8 @@ public class DictionaryServlet extends AppServlet implements
              dictEntryModel.reset();
              
              for(int iter = 0;iter < contactsList.size();iter++) {
-                 DictionaryEntryTableRowDO addressRow  = (DictionaryEntryTableRowDO)contactsList.get(iter);
-                 DictionaryDO dictDO = addressRow.getDictionaryDO();
+                 DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
+                 //DictionaryDO dictDO = addressRow.getDictionaryDO();
 
                     TableRow row = dictEntryModel.createRow();
                     NumberField id = new NumberField();
@@ -488,17 +487,25 @@ public class DictionaryServlet extends AppServlet implements
     
            
     
-    public Integer getEntryIdForSystemName(String systemName){
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer entryId = remote.getEntryIdForSystemName(systemName);        
-        return entryId;
-    }
-    
-    public Integer getEntryIdForEntry(String entry){
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer entryId = remote.getEntryIdForEntry(entry);        
-        return entryId;
-    }
+    public Integer getEntryIdForSystemName(String systemName)throws Exception{
+        try{
+          CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+          Integer entryId = remote.getEntryIdForSystemName(systemName);        
+          return entryId;
+        }catch(Exception ex){
+            throw ex;
+        } 
+      }
+      
+      public Integer getEntryIdForEntry(String entry)throws Exception{
+         try{ 
+          CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+          Integer entryId = remote.getEntryIdForEntry(entry);        
+          return entryId;
+         }catch(Exception ex){
+             throw ex;
+         }
+      }
        
 
     public DataModel getDisplay(String cat, DataModel model, AbstractField value) {     
@@ -507,27 +514,29 @@ public class DictionaryServlet extends AppServlet implements
       try{
         if(cat.equals("relatedEntry")){
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Object[] result  = (Object[])remote.autoCompleteLookupById((Integer)value.getValue()); 
         
-        Object[] result  = (Object[])remote.autoCompleteLookupById((Integer)value.getValue());        
-        Integer dictId = (Integer)result[0];
-        String entry = (String)result[1];
-        DataSet data = new DataSet();
+        if(result !=null){              
+         Integer dictId = (Integer)result[0];
+         String entry = (String)result[1];
+         DataSet data = new DataSet();
         
-        NumberObject id = new NumberObject();
-        id.setType("integer");
-        id.setValue(dictId);
-        StringObject nameObject = new StringObject();
-        nameObject.setValue(entry.trim());
+         NumberObject id = new NumberObject();
+         id.setType("integer");
+         id.setValue(dictId);
+         StringObject nameObject = new StringObject();
+         nameObject.setValue(entry.trim());
         
         //StringObject displayObject = new StringObject();
         //displayObject.setValue(entry.trim());
         
-        data.addObject(id);        
-        data.addObject(nameObject);
+         data.addObject(id);        
+         data.addObject(nameObject);
         
         
-        dataModel.add(data);
-       }
+         dataModel.add(data);
+        }
+       }  
       }catch(Exception ex){
           ex.printStackTrace();
       } 
