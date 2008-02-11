@@ -74,7 +74,34 @@ public class ProviderServlet extends AppServlet implements
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return fetch(key, rpcReturn);
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        Integer providerId = (Integer)key.getObject(0).getValue();
+        
+        
+        ProviderDO provDO = new ProviderDO();
+         try{
+          provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId);
+          }catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("providerId", provDO.getId());
+        rpcReturn.setFieldValue("lastName",provDO.getLastName());
+        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
+        rpcReturn.setFieldValue("npi",provDO.getNpi());        
+        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
+        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
+        
+        List addressList = remote.getProviderAddresses(providerId);
+        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
+        
+        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
+        //rpcReturn.setFieldValue("notesTree", treeModel);
+
+        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        
+        return rpcReturn;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -137,8 +164,7 @@ public class ProviderServlet extends AppServlet implements
         
         Integer providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
         
-        ProviderDO provDO = remote.getProvider(providerId,false);
-        //set the fields in the RPC
+        ProviderDO provDO = remote.getProvider(providerId);
         rpcReturn.setFieldValue("providerId", provDO.getId());
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
@@ -389,7 +415,7 @@ public class ProviderServlet extends AppServlet implements
         
         remote.updateProvider(providerDO, providerNote, provAddDOList);
         
-        ProviderDO provDO = remote.getProvider((Integer)providerId.getValue(),false);
+        ProviderDO provDO = remote.getProvider((Integer)providerId.getValue());
         //set the fields in the RPC
         rpcReturn.setFieldValue("providerId", provDO.getId());
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
@@ -421,7 +447,7 @@ public class ProviderServlet extends AppServlet implements
         Integer providerId = (Integer)key.getObject(0).getValue();
         
         
-        ProviderDO provDO = (ProviderDO)remote.getProvider(providerId,false);        
+        ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
 //      set the fields in the RPC
         rpcReturn.setFieldValue("providerId", provDO.getId());
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
@@ -443,7 +469,34 @@ public class ProviderServlet extends AppServlet implements
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return fetch(key, rpcReturn);
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        Integer providerId = (Integer)key.getObject(0).getValue();
+        
+        
+        ProviderDO provDO = new ProviderDO();
+         try{
+          provDO =  (ProviderDO)remote.getProviderAndLock(providerId);
+         }catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("providerId", provDO.getId());
+        rpcReturn.setFieldValue("lastName",provDO.getLastName());
+        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
+        rpcReturn.setFieldValue("npi",provDO.getNpi());        
+        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
+        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
+        
+        List addressList = remote.getProviderAddresses(providerId);
+        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
+        
+        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
+        //rpcReturn.setFieldValue("notesTree", treeModel);
+
+        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        
+        return rpcReturn;
     }    
     
     
