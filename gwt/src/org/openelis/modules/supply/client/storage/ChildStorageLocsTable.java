@@ -1,18 +1,18 @@
-package org.openelis.modules.dataEntry.client.organization;
+package org.openelis.modules.supply.client.storage;
 
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
-public class OrganizationContactsTable implements TableManager {
-	private OrganizationScreen userForm;
+public class ChildStorageLocsTable implements TableManager {
+    private StorageLocationScreen userForm;
     public boolean disableRows = false;
     
-    public void setOrganizationForm(OrganizationScreen form) {
+    public void setStorageForm(StorageLocationScreen form) {
         userForm = form;
-    }
-    
+    }  
+
     public boolean canSelect(int row, TableController controller) {        
     	if(userForm.bpanel.state == FormInt.ADD || userForm.bpanel.state == FormInt.UPDATE)           
             return true;
@@ -28,10 +28,11 @@ public class OrganizationContactsTable implements TableManager {
     }
 
     public boolean canDelete(int row, TableController controller) {
-    	return true;
-    }
+            return true;
+      }
 
-    public boolean action(int row, int col, TableController controller) {  
+    public boolean action(int row, int col, TableController controller) {
+        
         return false;
     }
 

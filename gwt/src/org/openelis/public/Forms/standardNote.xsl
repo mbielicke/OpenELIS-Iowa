@@ -205,7 +205,7 @@
           </widget>
           </panel>
 		</xsl:if>
-				<table manager="StandardNoteTable" width="auto" style="ScreenLeftTable" key="StandardNoteTable" maxRows="10" title="{resource:getString($constants,'notes')}">
+				<table manager="StandardNoteNameTable" width="auto" style="ScreenLeftTable" key="StandardNoteTable" maxRows="10" title="{resource:getString($constants,'notes')}">
 				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>
@@ -365,7 +365,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
  	<queryNumber key="id" type="integer" required="false"/>
  	<queryString key="name" type="string" required="false"/>
   	<queryString key="description" required="true"/>
-  	<collection key="type" type="string" required="false"/>
+  	<collection key="type" type="integer" required="false"/>
 	<queryString key="text" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">

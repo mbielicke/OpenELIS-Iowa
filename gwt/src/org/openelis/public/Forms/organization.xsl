@@ -622,9 +622,18 @@
 										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
 										</widget>
 										</row>
+				<row>
+									<widget colspan="2">
+									<appButton action="standardNote" onclick="this" key="standardNoteButton">
+						              <widget>
+                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+							              </widget>
+						            </appButton>
+						            </widget>
+										</row>
 								</panel> 
 
-							<panel key="notesPanel" valign="top" layout="vertical" width="100%" xsi:type="Panel">
+							<panel key="notesPanel" valign="top" onclick="this" layout="vertical" width="100%" xsi:type="Panel">
 							
 							</panel>	
 							
