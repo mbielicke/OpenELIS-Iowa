@@ -1,6 +1,5 @@
 package org.openelis.server;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,10 +13,17 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -57,8 +63,14 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
 		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
 		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
+		//rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
 		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
+        
+//		load the children
+        List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
+        //need to build the children table now...
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
         
 		return rpcReturn;  
 	}
@@ -67,17 +79,32 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 //		remote interface to call the storageLocation bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
-
+		List storageLocationChildren = new ArrayList();
+		
 //		build the storage unit DO from the form
 		newStorageLocDO.setIsAvailable(((Boolean) rpcSend.getFieldValue("isAvailable")?"Y":"N"));
 		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue("location")).trim());
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue("name")).trim());
 		newStorageLocDO.setParentStorageLocation((Integer)rpcSend.getFieldValue("parentStorageId"));
-		newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
+		//newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
 		newStorageLocDO.setStorageUnit((Integer)rpcSend.getFieldValue("storageUnitId"));
 		
+//		child locs info
+		TableModel childTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();
+		System.out.println("TABLE SIZE: "+childTable.numRows());
+		for(int i=0; i<childTable.numRows(); i++){
+			StorageLocationDO childDO = new StorageLocationDO();
+			TableRow row = childTable.getRow(i);
+			childDO.setName(((String)((StringField)row.getColumn(0)).getValue()).trim());
+			childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
+			childDO.setStorageUnit((Integer)((NumberField)row.getColumn(2)).getValue());
+			childDO.setIsAvailable(((Boolean)((CheckField)row.getColumn(3)).getValue()?"Y":"N"));
+			
+			storageLocationChildren.add(childDO);
+		}
+				
 		//send the changes to the database
-		Integer storageLocId = (Integer)remote.updateStorageLoc(newStorageLocDO);
+		Integer storageLocId = (Integer)remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
 		
 //		lookup the changes from the database and build the rpc
 		StorageLocationDO storageDO = remote.getStorageLoc(storageLocId,false);
@@ -88,9 +115,14 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		rpcReturn.setFieldValue("location", storageDO.getLocation().trim());
 		rpcReturn.setFieldValue("name", storageDO.getName().trim());
 		rpcReturn.setFieldValue("parentStorageId", storageDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("sortOrderId", storageDO.getSortOrder());
+		//rpcReturn.setFieldValue("sortOrderId", storageDO.getSortOrder());
 		rpcReturn.setFieldValue("storageUnitId", storageDO.getStorageUnit());
 		
+//		load the children
+        List childrenList = remote.getStorageLocChildren(storageLocId,false);
+        //need to build the children table now...
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
 		return rpcReturn;
 	}
 
@@ -143,6 +175,18 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 			
 			HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
 			
+//			children table
+			TableModel childrenTable = null;
+			if(rpcSend.getField("childStorageLocsTable") != null)
+				childrenTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();		
+			
+			if(childrenTable != null){
+				fields.put("childName",(QueryStringField)childrenTable.getRow(0).getColumn(0));
+				fields.put("childLocation",(QueryStringField)childrenTable.getRow(0).getColumn(1));
+				fields.put("childStorageUnit",(QueryStringField)childrenTable.getRow(0).getColumn(2));
+				fields.put("childIsAvailable",(CollectionField)childrenTable.getRow(0).getColumn(3));
+			}
+			
 			List storageLocNames = new ArrayList();
 			try{
 				storageLocNames = remote.query(fields,0,leftTableRowsPerPage);
@@ -188,18 +232,39 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
-
+		List storageLocationChildren = new ArrayList();
+		
 		//build the DO from the form
 		newStorageLocDO.setId((Integer)rpcSend.getFieldValue("id"));
 		newStorageLocDO.setIsAvailable(((Boolean) rpcSend.getFieldValue("isAvailable")?"Y":"N"));
 		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue("location")).trim());
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue("name")).trim());
 		newStorageLocDO.setParentStorageLocation((Integer)rpcSend.getFieldValue("parentStorageId"));
-		newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
+		//newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
 		newStorageLocDO.setStorageUnit((Integer)rpcSend.getFieldValue("storageUnitId"));
 
+//		children info
+		TableModel childTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();
+		for(int i=0; i<childTable.numRows(); i++){
+			StorageLocationDO childDO = new StorageLocationDO();
+			TableRow row = childTable.getRow(i);
+			
+			//contact data
+			NumberField id = (NumberField)row.getHidden("id");
+			
+			if(id != null)
+				childDO.setId((Integer)id.getValue());
+			
+			childDO.setName(((String)((StringField)row.getColumn(0)).getValue()).trim());
+			childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
+			childDO.setStorageUnit((Integer)((NumberField)row.getColumn(2)).getValue());
+			childDO.setIsAvailable(((Boolean)((CheckField)row.getColumn(3)).getValue()?"Y":"N"));
+				
+			storageLocationChildren.add(childDO);	
+		}
+		
 //		send the changes to the database
-		remote.updateStorageLoc(newStorageLocDO);
+		remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
 		
 		//lookup the changes from the database and build the rpc
 		StorageLocationDO storageLocDO = remote.getStorageLoc(newStorageLocDO.getId(),false);
@@ -210,9 +275,15 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
 		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
 		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
+		//rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
 		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
 		
+//		load the children
+        List childrenList = remote.getStorageLocChildren(storageLocDO.getId(),false);
+        //need to build the children table now...
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+        
 		return rpcReturn;
 	}
 
@@ -235,8 +306,9 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		rpcReturn.setFieldValue("location", null);
 		rpcReturn.setFieldValue("name", null);
 		rpcReturn.setFieldValue("parentStorageId", null);
-		rpcReturn.setFieldValue("sortOrderId", null);
+		//rpcReturn.setFieldValue("sortOrderId", null);
 		rpcReturn.setFieldValue("storageUnitId", null);
+		rpcReturn.setFieldValue("childStorageLocsTable", null);
 		
 		return rpcReturn;
 	}
@@ -253,9 +325,15 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
 		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
 		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
 		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
 		
+//		load the children
+        List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
+        //need to build the children table now...
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+
+        
 		return rpcReturn;
 	}
 
@@ -280,13 +358,14 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 	private DataModel getStorageUnitDisplay(Integer value){
 		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
-		List autoCompleteList = remote.autoCompleteLookupById(value);
-		
-		Object[] result = (Object[]) autoCompleteList.get(0);
+		Object[] result  = (Object[])remote.autoCompleteLookupById(value); 
+
 		//id
 		Integer suId = (Integer)result[0];
 		//desc
 		String desc = (String)result[1];
+		if(desc != null)
+			desc = desc.trim();
 		
 		DataModel model = new DataModel();
 		DataSet data = new DataSet();
@@ -295,26 +374,28 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		id.setType("integer");
 		id.setValue(suId);
 		StringObject nameObject = new StringObject();
-		nameObject.setValue(desc.trim());
+		nameObject.setValue(desc);
 		
 		data.addObject(id);
 		data.addObject(nameObject);
 		
 		model.add(data);
-
+		
 		return model;		
 	}
 	
 	private DataModel getParentStorageLocDisplay(Integer value){
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-		
-		List autoCompleteList = remote.autoCompleteLookupById(value);
-		
-		Object[] result = (Object[]) autoCompleteList.get(0);
+
+		Object[] result  = (Object[])remote.autoCompleteLookupById(value); 
+	
 		//id
 		Integer suId = (Integer)result[0];
 		//name
 		String name = (String)result[1];
+		
+		if(name != null)
+			name = name.trim();
 		
 		DataModel model = new DataModel();
 		DataSet data = new DataSet();
@@ -323,7 +404,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		id.setType("integer");
 		id.setValue(suId);
 		StringObject nameObject = new StringObject();
-		nameObject.setValue(name.trim());
+		nameObject.setValue(name);
 		
 		data.addObject(id);
 		data.addObject(nameObject);
@@ -355,17 +436,22 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		try{
 			int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
 //			lookup by id...should only bring back 1 result
-			List autoCompleteList = remote.autoCompleteLookupById(id);
-			if(autoCompleteList.size() > 0){
-				Object[] result = (Object[]) autoCompleteList.get(0);
+			Object[] result  = (Object[])remote.autoCompleteLookupById(id); 
+			if(result[0] != null){
 //				id
 				Integer slId = (Integer)result[0];
 				//desc
 				String desc = (String)result[1];
+				if(desc != null)
+					desc = desc.trim();
 				//category
 				String category = (String)result[2];
+				if(category != null)
+					category = category.trim();
 				//is singular
-				String isSingular = (String)result[3];	
+				String isSingular = (String)result[3];
+				if(isSingular != null)
+					isSingular = isSingular.trim();
 				
 				DataSet data = new DataSet();
 				//hidden id
@@ -412,10 +498,16 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 				Integer id = (Integer)result[0];
 				//desc
 				String desc = (String)result[1];
+				if(desc != null)
+					desc = desc.trim();
 				//category
 				String category = (String)result[2];
+				if(category != null)
+					category = category.trim();
 				//is singular
-				String isSingular = (String)result[3];	
+				String isSingular = (String)result[3];
+				if(isSingular != null)
+					isSingular = isSingular.trim();
 				
 				DataSet data = new DataSet();
 				//hidden id
@@ -428,17 +520,17 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 				idStringObject.setValue(String.valueOf(id));
 				data.addObject(idStringObject);
 				StringObject descObject = new StringObject();
-				descObject.setValue(desc.trim());
+				descObject.setValue(desc);
 				data.addObject(descObject);
 				StringObject categoryObject = new StringObject();
-				categoryObject.setValue(category.trim());
+				categoryObject.setValue(category);
 				data.addObject(categoryObject);
 				StringObject isSingularObject = new StringObject();
-				isSingularObject.setValue(isSingular.trim());
+				isSingularObject.setValue(isSingular);
 				data.addObject(isSingularObject);
 				//display text
 				StringObject displayObject = new StringObject();
-				displayObject.setValue(desc.trim());
+				displayObject.setValue(desc);
 				data.addObject(displayObject);
 				//selected flag
 				StringObject selectedFlag = new StringObject();
@@ -461,9 +553,8 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 			int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
 			
 //			lookup by id...should only bring back 1 result
-			List autoCompleteList = remote.autoCompleteLookupById(id);
-			if(autoCompleteList.size() > 0){
-				Object[] result = (Object[]) autoCompleteList.get(0);
+			Object[] result  = (Object[])remote.autoCompleteLookupById(id); 
+			if(result[0] != null){
 //				id
 				Integer pslId = (Integer)result[0];
 				//name
@@ -547,5 +638,37 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 			
 		}
 		return dataModel;
-	}	
+	}
+	
+	public TableModel fillChildrenTable(TableModel childModel, List childrenList){
+		try 
+        {
+			childModel.reset();
+			
+			for(int iter = 0;iter < childrenList.size();iter++) {
+				StorageLocationDO slDO = (StorageLocationDO)childrenList.get(iter);
+
+	               TableRow row = childModel.createRow();
+	               
+	               NumberField id = new NumberField();
+	               id.setType("integer");
+	               id.setValue(slDO.getId());
+	               
+	               row.addHidden("id", id);
+	               row.getColumn(0).setValue(slDO.getName());
+	               row.getColumn(1).setValue(slDO.getLocation());
+	               row.getColumn(2).setValue(slDO.getStorageUnit());
+	               row.getColumn(3).setValue(slDO.getIsAvailable());
+	                
+	               childModel.addRow(row);
+	       } 
+			
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }		
+		
+		return childModel;
+	}
 }

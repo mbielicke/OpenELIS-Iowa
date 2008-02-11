@@ -43,13 +43,12 @@ public class StandardNoteScreen extends AppScreenForm {
 		bpanel = (ButtonPanel) getWidget("buttons");
 
 //		 get storage unit table and set the managers form
-		//TableWidget storageTable = (TableWidget) getWidget("storageLocsTable");
-		//modelWidget.addChangeListener(storageTable.controller);
+		TableWidget standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
+		modelWidget.addChangeListener(standardNoteTable.controller);
 
 		message.setText("done");
 
-		//((StorageNameTable) storageTable.controller.manager)
-		//		.setStorageForm(this);
+		((StandardNoteNameTable) standardNoteTable.controller.manager).setStandardNoteForm(this);
 
 		super.afterDraw(success);
 		

@@ -3,11 +3,13 @@ package org.openelis.modules.supply.client.storage;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenBase;
+import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.dataEntry.client.organization.OrganizationContactsTable;
 import org.openelis.modules.supply.client.storageUnit.StorageUnitDescTable;
 
 import com.google.gwt.core.client.GWT;
@@ -107,7 +109,11 @@ public class StorageLocationScreen extends AppScreenForm{
 
 		message.setText("done");
 
+		TableWidget storageChildTable = (TableWidget) getWidget("childStorageLocsTable");
+		
 		((StorageNameTable) storageTable.controller.manager)
+				.setStorageForm(this);
+		((ChildStorageLocsTable) storageChildTable.controller.manager)
 				.setStorageForm(this);
 
 		super.afterDraw(success);
@@ -128,6 +134,12 @@ public class StorageLocationScreen extends AppScreenForm{
 		
 //		 unselect the row from the table
 		((TableWidget) getWidget("storageLocsTable")).controller.unselect(-1);
+		
+		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
+		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
+		childTableManager.disableRows = false;
+		childTable.controller.setAutoAdd(true);
+		childTable.controller.addRow();
 	}
 	
 	public void query(int state) {
@@ -147,8 +159,24 @@ public class StorageLocationScreen extends AppScreenForm{
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
 		name.setFocus(true);
+		
+		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
+		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
+		childTableManager.disableRows = false;
+		childTable.controller.setAutoAdd(true);
+		childTable.controller.addRow();
 	}
 	
+	public void abort(int state) {
+		super.abort(state);
+		
+		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
+		childTable.controller.setAutoAdd(false);
+		
+		//if add delete the last row
+		if (state == FormInt.UPDATE || state == FormInt.ADD)
+			childTable.controller.deleteRow(childTable.controller.model.numRows() - 1);
+	}
 	private void getStorageLocs(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
@@ -165,6 +193,26 @@ public class StorageLocationScreen extends AppScreenForm{
 
 			setStyleNameOnButton(sender);
 		}
+	}
+	
+	public void afterCommitUpdate(boolean success) {
+		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("childStorageLocsTable")).controller.manager;
+		orgContactsTable.disableRows = true;
+		TableWidget contactTable = (TableWidget) getWidget("childStorageLocsTable");
+		contactTable.controller.setAutoAdd(false);
+		
+		super.afterCommitUpdate(success);
+	}
+	
+	public void commit(int state) {
+		if (state == FormInt.QUERY) {
+			((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
+					.get("childStorageLocsTable")).getQueryWidget()).getWidget()).controller
+					.unselect(-1);
+		} else {
+			((TableWidget) getWidget("childStorageLocsTable")).controller.unselect(-1);
+		}
+		super.commit(state);
 	}
 	
 	protected Widget setStyleNameOnButton(Widget sender) {

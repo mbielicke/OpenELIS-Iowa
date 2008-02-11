@@ -10,6 +10,7 @@ import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
@@ -26,6 +27,7 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StandardNoteRemote;
+import org.openelis.remote.StorageLocationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
@@ -88,8 +90,26 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 	}
 
 	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
+//		remote interface to call the standard note bean
+		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
+		
+		try {
+			remote.deleteStandardNote((Integer)key.getObject(0).getValue());
+			
+		} catch (Exception e) {
+			//if(e instanceof RPCDeleteException){
+			//	throw new RPCDeleteException(openElisConstants.getString("storageLocDeleteException"));
+			//}else
+			throw new RPCException(e.getMessage());
+		}	
+		
+		rpcReturn.setFieldValue("id", null);
+		rpcReturn.setFieldValue("description", null);
+		rpcReturn.setFieldValue("name", null);
+		rpcReturn.setFieldValue("text", null);
+		rpcReturn.setFieldValue("typeId", null);
+		
+		return rpcReturn;
 	}
 
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {

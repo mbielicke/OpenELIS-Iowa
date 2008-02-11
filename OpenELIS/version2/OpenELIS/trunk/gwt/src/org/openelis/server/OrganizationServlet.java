@@ -410,10 +410,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		
 //		System.out.println("in contacts");
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getObject(0).getValue(),false);
-		
-		if(rpcReturn.getFieldValue("stateModel") == null && rpcReturn.getFieldValue("countryModel") == null){
-			//load the 
-		}
+
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("orgId", organizationDO.getOrganizationId());
 		rpcReturn.setFieldValue("orgName",organizationDO.getName());
@@ -427,17 +424,15 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		rpcReturn.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
-		//get the filled out DO object
-		//if(rpc.getFieldValue("action").equals("contacts")){		
-	        //load the contacts
-	        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
-	        //need to build the contacts table now...
-	        TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-	        rpcReturn.setFieldValue("contactsTable",rmodel);
-		//}
-	        //load the notes
-	        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-	        rpcReturn.setFieldValue("notesModel", notesModel);
+        //load the contacts
+        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
+        //need to build the contacts table now...
+        TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
+        rpcReturn.setFieldValue("contactsTable",rmodel);
+
+        //load the notes
+	    DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+	    rpcReturn.setFieldValue("notesModel", notesModel);
         
       return rpcReturn;  
 	}

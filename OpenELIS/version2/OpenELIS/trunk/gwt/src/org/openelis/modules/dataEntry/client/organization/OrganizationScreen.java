@@ -15,6 +15,7 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
@@ -128,6 +129,8 @@ public class OrganizationScreen extends AppScreenForm {
 				row.addHidden("deleteFlag", deleteFlag);
 			}
 
+		}else if(sender == getWidget("standardNoteButton")){
+			new StandardNotePickerScreen();
 		}
 	}
 
@@ -139,8 +142,12 @@ public class OrganizationScreen extends AppScreenForm {
 		orgContactsTable.disableRows = true;
 
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.addClickListener(this);
+		//removeContactButton.addClickListener(this);
 		removeContactButton.changeState(AppButton.DISABLED);
+		
+		//AppButton standardNoteButton = (AppButton) getWidget("standardNoteButton");
+		//standardNoteButton.addClickListener(this);
+		//standardNoteButton.changeState(AppButton.DISABLED);
 
 		TableWidget orgNameTable = (TableWidget) getWidget("organizationsTable");
 		modelWidget.addChangeListener(orgNameTable.controller);
@@ -191,12 +198,12 @@ public class OrganizationScreen extends AppScreenForm {
 		tabSelectedIndex = index;
 		// we need to do a org contacts table reset so that it will always show
 		// the data
-		if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
+		/*if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
 			TableWidget contacts = (TableWidget) getWidget("contactsTable");
 			contacts.controller.model.deleteRow(contacts.controller.model
 					.numRows() - 1);
 			contacts.controller.reset();
-		}
+		}*/
 		super.onTabSelected(sources, index);
 	}
 
@@ -233,8 +240,10 @@ public class OrganizationScreen extends AppScreenForm {
 
 	public void abort(int state) {
 		TableWidget orgContacts = (TableWidget) getWidget("contactsTable");
+		orgContacts.controller.setAutoAdd(false);
+		
 		// need to remove the extra table row on update
-		if (bpanel.getState() == FormInt.UPDATE)
+		if (state == FormInt.UPDATE || state == FormInt.ADD)
 			orgContacts.controller.model.deleteRow(orgContacts.controller.model
 					.numRows() - 1);
 
@@ -243,12 +252,9 @@ public class OrganizationScreen extends AppScreenForm {
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
 		orgContactsTable.disableRows = true;
 		orgContacts.controller.unselect(-1);
-
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.DISABLED);
 		
-		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
-		contactTable.controller.setAutoAdd(false);
+		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+		removeContactButton.changeState(AppButton.DISABLED);	
 
 		// need to get the org name table model
 		TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");

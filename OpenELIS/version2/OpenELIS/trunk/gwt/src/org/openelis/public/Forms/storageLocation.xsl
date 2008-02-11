@@ -219,7 +219,7 @@
 				</table>
 				</panel>
 				</aToZ>
-			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
+			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<widget>
 					
 
@@ -280,9 +280,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
             </appButton>
           </buttonPanel>
 				</widget>
-				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
-					<deck>
-					<panel layout="vertical" width="600px" xsi:type="Panel">
+					<panel layout="vertical" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
@@ -292,7 +290,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="id" width="75px" tab="orgName,isActive"/>
+										<textbox key="id" width="75px" tab="name,isAvailable"/>
 									</widget>
 								</row>
 								<row>								
@@ -300,13 +298,13 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="name" width="150px" tab="multUnit,orgName"/>
+										<textbox case="upper" key="name" width="150px" tab="sortOrder,isAvailable"/>
 									</widget>
-									<widget>
+									<!--<<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"sortOrder")'/>:</text>
 									</widget>
-									<widget>
-										<autoDropdown key="sortOrder" cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" tab="contactsTable,parentOrg">
+									widget>
+										<autoDropdown key="sortOrder" cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" tab="location,name">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
 														<label/>
@@ -322,7 +320,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 													</autoItems>
 													</autoDropdown>
 										<query>
-										<autoDropdown cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" multiSelect="true" tab="contactsTable,parentOrg">
+										<autoDropdown cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" multiSelect="true" tab="location,name">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
 														<label/>
@@ -338,20 +336,20 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 													</autoItems>
 													</autoDropdown>
 										</query>
-									</widget>		
+									</widget>	-->	
 								</row>
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="location" width="225px" tab="multUnit,orgName"/>
+										<textbox case="upper" key="location" width="225px" tab="parentStorage,sortOrder"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="parentStorageLoc" case="upper" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="isActive,country">
+									<auto cat="parentStorageLoc" case="upper" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
 										<autoHeaders>Id,Name,Location</autoHeaders>
 										<autoWidths>50,120,150</autoWidths>
 										<autoEditors>
@@ -366,7 +364,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="upper" width="150px" tab="multUnit,orgName"/>
+										<textbox case="upper" width="150px" tab="storageUnit,location"/>
 										</query>
 									</widget>	
 								</row>
@@ -375,7 +373,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isActive,country">
+									<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -392,14 +390,14 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="upper" width="150px" tab="multUnit,orgName"/>
+										<textbox case="upper" width="150px" tab="isAvailable,parentStorage"/>
 										</query>
 									</widget>	
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isAvailable" tab="contactsTable,parentOrg"/>
+										<check key="isAvailable" tab="name,storageUnit"/>
 										<query>
 											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="contactsTable,parentOrg">
 													<autoWidths>19</autoWidths>
@@ -418,9 +416,88 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										</query>
 									</widget>
 								</row>
+								<row>
+								<panel layout="vertical" height="15px" xsi:type="Panel"/>
+								</row>
+								<row>
+								<widget  colspan="4" halign="center">
+							<table width="567px" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="">
+										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
+										<widths>130,200,115,80</widths>
+										<editors>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" width="150px" type="integer">
+										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
+										<autoWidths>50,160,80,45</autoWidths>
+										<autoEditors>
+											<label/>
+											<label/>
+											<label/>
+											<label/>
+										</autoEditors>
+										<autoFields>
+											<string/>
+											<string/>
+											<string/>
+											<string/>
+										</autoFields>
+										</auto>
+											<check/>
+										</editors>
+										<fields>
+											<string/>
+											<string/>
+											<number type="integer">0</number>
+											<check/>											
+										</fields>
+										<sorts>true,true,true,true</sorts>
+										<filters>false,false ,false,false</filters>
+										<colAligns>left,left,left,left</colAligns>
+									</table>
+									<query>
+									<table width="567px" maxRows="1" rows="1" title="">
+										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
+										<widths>130,200,115,80</widths>
+										<editors>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<textbox case="upper"/>
+											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="64px" type="string" multiSelect="true">
+													<autoWidths>64</autoWidths>
+													<autoEditors>
+														<label/>
+													</autoEditors>
+													<autoFields>
+														<string/>
+													</autoFields>
+													<autoItems>
+													<item value=""> </item>
+													<item value="Y">Y</item>
+													<item value="N">N</item>
+													</autoItems>
+													</autoDropdown>
+										</editors>
+										<fields>
+											<queryString/>
+											<queryString/>
+											<queryString/>
+											<collection type="string"/>		
+										</fields>
+										<sorts>true,true,true,true</sorts>
+										<filters>false,false ,false,false</filters>
+										<colAligns>left,left,left,left</colAligns>
+									</table>
+									</query>
+							</widget>
+								</row>
 							</panel>
-				</panel>
-					</deck> 
+							<!--<panel layout="vertical" height="15px" xsi:type="Panel"/>
+						<panel layout="vertical" width="100%" xsi:type="Panel">
+							
+							</panel>-->
 				</panel>
 			</panel>
 		</panel>
@@ -429,10 +506,11 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 	<number key="id" required="false" type="integer"/>
     <string key="name" max="20" required="true"/>
     <number key="storageUnitId" type="integer" required="false"/> 
-    <number key="sortOrderId" required="true" type="integer"/>
+   <!-- <number key="sortOrderId" required="true" type="integer"/>-->
     <string key="location" max="80" required="true"/>
     <number key="parentStorageId" type="integer" required="false"/>
     <check key="isAvailable" required="false"/>
+    <table key="childStorageLocsTable"/>
 	</rpc>
 	
 	<rpc key="query">
@@ -441,8 +519,9 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
     <queryString key="location"/>
     <queryString key="storageUnit"/>
     <queryString key="parentStorage"/>  
-    <collection key="sortOrder" type="integer" required="false"/>
+    <!--<collection key="sortOrder" type="integer" required="false"/>-->
     <collection key="isAvailable" type="string" required="false"/>
+    <table key="childStorageLocsTable"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="name"/>
