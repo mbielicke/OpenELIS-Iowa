@@ -13,7 +13,11 @@ public interface QaEventRemote {
     public List getQaEventNameListByLetter(String letter, int startPos, int maxResults);
    
     // method to return QaEvent 
-    public QaEventDO getQaEvent(Integer qaEventId, boolean unlock);
+    public QaEventDO getQaEvent(Integer qaEventId);
+    
+    public QaEventDO getQaEventAndUnlock(Integer qaEventId);
+    
+    public QaEventDO getQaEventAndLock(Integer qaEventId)throws Exception;
     
     //  update initial call for QaEvent
     public QaEventDO getQaEventUpdate(Integer id) throws Exception;
