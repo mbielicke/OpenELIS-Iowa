@@ -13,10 +13,13 @@ public interface OrganizationRemote {
 	public List getOrganizationNameListByLetter(String letter, int startPos, int maxResults);
 	
 	//method to return org name, address
-	public OrganizationAddressDO getOrganizationAddress(Integer organizationId, boolean unlock);
+	public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
+	
+	//method to unlock entity and return org name, address
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId);
 	
 	//update initial call for org
-	public OrganizationAddressDO getOrganizationAddressUpdate(Integer id) throws Exception;
+	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
 	
 	//commit a change to org, or insert a new org
 	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts);
