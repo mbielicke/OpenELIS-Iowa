@@ -64,8 +64,27 @@ public class DictionaryServlet extends AppServlet implements
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return fetch(key, rpcReturn);
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer categoryId = (Integer)key.getObject(0).getValue();
+//      System.out.println("in contacts");
+        CategoryDO catDO = new CategoryDO();
+         try{
+            catDO = remote.getCategoryAndUnlock(categoryId);
+         }catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("categoryId", catDO.getId());
+        rpcReturn.setFieldValue("systemName",catDO.getSystemName());
+        rpcReturn.setFieldValue("name",catDO.getName());
+        rpcReturn.setFieldValue("desc",catDO.getDescription());    
+        rpcReturn.setFieldValue("sectionId",catDO.getSection());    
+                
+                                   
+        List addressList = remote.getDictionaryEntries(categoryId);
+        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        
+        return rpcReturn;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
@@ -132,9 +151,14 @@ public class DictionaryServlet extends AppServlet implements
          }
         } 
         
-        Integer categoryId = remote.updateCategory(categoryDO, dictDOList);        
-        
-         categoryDO = remote.getCategory((Integer)categoryId, false);
+        Integer categoryId = null;
+       try{
+          categoryId = remote.updateCategory(categoryDO, dictDOList);        
+       }catch(Exception ex){
+           throw new RPCException(ex.getMessage());
+       }
+       
+         categoryDO = remote.getCategory((Integer)categoryId);
          rpcReturn.setFieldValue("categoryId", categoryId);
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
@@ -361,9 +385,14 @@ public class DictionaryServlet extends AppServlet implements
              }
           }
         
-         remote.updateCategory(categoryDO, dictDOList);
          
-         categoryDO = remote.getCategory((Integer)categoryId.getValue(), false);
+         try{
+             remote.updateCategory(categoryDO, dictDOList);       
+         }catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }
+         
+         categoryDO = remote.getCategory((Integer)categoryId.getValue());
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
@@ -384,7 +413,7 @@ public class DictionaryServlet extends AppServlet implements
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = (Integer)key.getObject(0).getValue();
 //      System.out.println("in contacts");
-        CategoryDO catDO = remote.getCategory(categoryId,false);
+        CategoryDO catDO = remote.getCategory(categoryId);
 //      set the fields in the RPC
         rpcReturn.setFieldValue("categoryId", catDO.getId());
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
@@ -400,7 +429,27 @@ public class DictionaryServlet extends AppServlet implements
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return fetch(key, rpcReturn);
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer categoryId = (Integer)key.getObject(0).getValue();
+//      System.out.println("in contacts");
+        CategoryDO catDO = new CategoryDO();
+         try{
+            catDO = remote.getCategoryAndLock(categoryId);
+         }catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("categoryId", catDO.getId());
+        rpcReturn.setFieldValue("systemName",catDO.getSystemName());
+        rpcReturn.setFieldValue("name",catDO.getName());
+        rpcReturn.setFieldValue("desc",catDO.getDescription());    
+        rpcReturn.setFieldValue("sectionId",catDO.getSection());    
+                
+                                   
+        List addressList = remote.getDictionaryEntries(categoryId);
+        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        
+        return rpcReturn;
     }
 
     public TableModel fillDictEntryTable(TableModel dictEntryModel, List contactsList){        
