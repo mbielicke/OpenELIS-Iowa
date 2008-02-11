@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -184,10 +185,16 @@ public class StorageUnitBean implements StorageUnitRemote{
 		return query.getResultList();
 	}
 
-	public List autoCompleteLookupById(Integer id) {
-		Query query = null;
-		query = manager.createNamedQuery("getStorageUnitAutoCompleteById");
-		query.setParameter("id",id);
-		return query.getResultList();
+	public Object[] autoCompleteLookupById(Integer id) {
+		Query query  = manager.createNamedQuery("getStorageUnitAutoCompleteById");
+        query.setParameter("id",id);
+        try{
+        	return (Object[])query.getSingleResult();
+        	
+        }catch(NoResultException e){
+        	//if we hit this exception we want to return an empty array for our servlet
+        	Object[] returnArray = new Object[3];
+        	return returnArray;
+        }
 	}	 
 }

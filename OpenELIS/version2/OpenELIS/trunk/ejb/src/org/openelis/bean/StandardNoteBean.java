@@ -55,8 +55,18 @@ public class StandardNoteBean implements StandardNoteRemote{
     }
 
 	public void deleteStandardNote(Integer standardNoteId) throws Exception {
-		// TODO Auto-generated method stub
+		manager.setFlushMode(FlushModeType.COMMIT);
+		StandardNote standardNote = null;
 		
+		//we delete it
+		try {
+			standardNote = manager.find(StandardNote.class, standardNoteId);
+            	if(standardNote != null)
+            		manager.remove(standardNote);
+            	
+		} catch (Exception e) {
+            e.printStackTrace();
+        }			
 	}
 
 	public StandardNoteDO getStandardNote(Integer standardNoteId, boolean unlock) {
