@@ -42,8 +42,6 @@ public class OrganizationBean implements OrganizationRemote {
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-    //private String className = this.getClass().getName();
-   // private Logger log = Logger.getLogger(className);
     
 	@EJB
 	private SystemUserUtilLocal sysUser;
@@ -64,13 +62,20 @@ public class OrganizationBean implements OrganizationRemote {
         }
     }
     
-	public OrganizationAddressDO getOrganizationAddress(Integer organizationId, boolean unlock) {
-		if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "organization");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),organizationId);
-        }
-		
+	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
+		Query query = manager.createNamedQuery("getOrganizationAndAddress");
+		query.setParameter("id", organizationId);
+		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
+
+        return orgAddressContacts;
+	}
+	
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) {
+		//unlock the entity
+        Query unlockQuery = manager.createNamedQuery("getTableId");
+        unlockQuery.setParameter("name", "organization");
+        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),organizationId);
+       		
 		Query query = manager.createNamedQuery("getOrganizationAndAddress");
 		query.setParameter("id", organizationId);
 		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
@@ -79,11 +84,12 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 	
 	@RolesAllowed("organization-update")
-    public OrganizationAddressDO getOrganizationAddressUpdate(Integer id) throws Exception{
+    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
-        lockBean.getLock((Integer)query.getSingleResult(),id); 
-        return getOrganizationAddress(id, false);
+        lockBean.getLock((Integer)query.getSingleResult(),organizationId);
+        
+        return getOrganizationAddress(organizationId);
     }
 	
 	@RolesAllowed("organization-update")
