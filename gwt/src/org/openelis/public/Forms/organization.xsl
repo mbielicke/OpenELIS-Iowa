@@ -25,82 +25,186 @@
 				 <xsl:if test="string($language)='en'">
 			<panel layout="vertical" xsi:type="Panel" spacing="0" style="AtoZ">
 				<widget>
-            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+            <appButton key="a" action="a" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>A</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+            <appButton key="b" action="b" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>B</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+            <appButton key="c" action="c" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>C</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+            <appButton key="d" action="d" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>D</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+            <appButton key="e" action="e" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>E</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+            <appButton key="f" action="f" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>F</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+            <appButton key="g" action="g" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>G</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+            <appButton key="h" action="h" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>H</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+            <appButton key="i" action="i" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>I</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+            <appButton key="j" action="j" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>J</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+            <appButton key="k" action="k" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>K</text>
+              </widget>
+            </appButton>            
           </widget>
           <widget>
-            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+            <appButton key="l" action="l" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>L</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+            <appButton key="m" action="m" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>M</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
+            <appButton key="n" action="n" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>N</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
+            <appButton key="o" action="o" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>O</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
+            <appButton key="p" action="p" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>P</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
+            <appButton key="q" action="q" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Q</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
+            <appButton key="r" action="r" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>R</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
+            <appButton key="s" action="s" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>S</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
+            <appButton key="t" action="t" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>T</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
+            <appButton key="u" action="u" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>U</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
+            <appButton key="v" action="v" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>V</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
+            <appButton key="w" action="w" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>W</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
+            <appButton key="x" action="x" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>X</text>
+              </widget>
+            </appButton>		  
           </widget>
           <widget>
-            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
+            <appButton key="y" action="y" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Y</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
+            <appButton key="z" action="z" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Z</text>
+              </widget>
+            </appButton>
           </widget>
           </panel>
 		</xsl:if>
@@ -201,8 +305,8 @@
           </widget>
           </panel>
 		</xsl:if>
-				<table manager="OrganizationNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="21" title="{resource:getString($constants,'organizations')}">
-				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
+				<table manager="OrganizationNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="21" title="Name">
+				<!--<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>-->
 							<widths>175</widths>
 							<editors>
 								<label/>
@@ -230,7 +334,7 @@
             </appButton>
  <appButton action="prev" toggle="true">
               <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
+              <panel xsi:type="Absolute" layout="absolute" style="PreviousButtonImage"/>
               <widget>
                 <text>Previous</text>
               </widget>
@@ -278,6 +382,7 @@
               </widget>
               </panel>
             </appButton>
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonSpacer"/>
           </buttonPanel>
 				</widget>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
