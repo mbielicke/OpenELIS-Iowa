@@ -81,6 +81,11 @@
     <servlet-name>StandardNoteServlet</servlet-name>
     <servlet-class>org.openelis.server.StandardNoteServlet</servlet-class>
   </servlet>
+  
+    <servlet>
+    <servlet-name>StandardNotePickerServlet</servlet-name>
+    <servlet-class>org.openelis.server.StandardNotePickerServlet</servlet-class>
+  </servlet>
   <!-- inmsp Servlet Mappings-->
     
 <servlet-mapping>
@@ -136,6 +141,11 @@
     <servlet-mapping>
     <servlet-name>StandardNoteServlet</servlet-name>
     <url-pattern>/StandardNoteServlet</url-pattern>
+  </servlet-mapping>
+  
+      <servlet-mapping>
+    <servlet-name>StandardNotePickerServlet</servlet-name>
+    <url-pattern>/StandardNotePickerServlet</url-pattern>
   </servlet-mapping>
     
   <session-config>
