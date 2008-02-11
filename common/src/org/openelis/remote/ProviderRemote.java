@@ -15,10 +15,11 @@ public interface ProviderRemote {
     public List getProviderNameListByLetter(String letter, int startPos, int maxResults);
     
     //  method to return provider 
-    public ProviderDO getProvider(Integer providerId, boolean unlock);
+    public ProviderDO getProvider(Integer providerId);
+        
+    public ProviderDO getProviderAndUnlock(Integer providerId);
     
-    //update initial call for provider
-    public ProviderDO getProviderUpdate(Integer id) throws Exception;
+    public ProviderDO getProviderAndLock(Integer providerId)throws Exception;
     
     //commit a change to provider, or insert a new provider
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses);
