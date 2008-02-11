@@ -138,7 +138,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         
         TableController provAddTable = (TableController)(dictEntryTable.controller);
         provAddTable.setAutoAdd(false);
-        
+        errorInForm = false;
         super.abort(state);
        }catch(Exception ex){
            Window.alert("abort "+ex.getMessage());
@@ -378,8 +378,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         }
         
         private void loadDropdowns(){
-            
-        
+
             screenService.getInitialModel("section", new AsyncCallback(){
                    public void onSuccess(Object result){
                        DataModel stateDataModel = (DataModel)result;
