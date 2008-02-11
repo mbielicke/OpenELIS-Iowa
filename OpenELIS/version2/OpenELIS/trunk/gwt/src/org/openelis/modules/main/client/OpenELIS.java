@@ -70,8 +70,11 @@ import org.openelis.modules.dataEntry.client.organization.OrganizationContactsTa
 import org.openelis.modules.dataEntry.client.organization.OrganizationNameTable;
 import org.openelis.modules.main.client.constants.OpenELISConstants;
 import org.openelis.modules.main.client.service.OpenELISService;
+import org.openelis.modules.supply.client.storage.ChildStorageLocsTable;
+import org.openelis.modules.supply.client.storageUnit.StorageUnitDescTable;
 import org.openelis.modules.utilities.client.dictionary.CategorySystemNamesTable;
 import org.openelis.modules.utilities.client.dictionary.DictionaryEntriesTable;
+import org.openelis.modules.utilities.client.standardNote.StandardNoteNameTable;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -181,7 +184,7 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("AppConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
       map.addWidget("OpenELISService",OpenELISService.getInstance());
       map.addWidget("OrganizationNameTable", new OrganizationNameTable());
-
+      map.addWidget("StandardNoteNameTable", new StandardNoteNameTable());
       map.addWidget("OrganizationContactsTable", new OrganizationContactsTable());
       map.addWidget("ProviderNamesTable", new ProviderNamesTable());
       map.addWidget("ProviderAddressesTable", new ProviderAddressesTable());
@@ -190,6 +193,8 @@ public class OpenELIS implements EntryPoint {
       map.addWidget("appButton", new ScreenAppButton());
       map.addWidget("DictionaryEntriesTable", new DictionaryEntriesTable());
       map.addWidget("QAEventsNamesTable", new QAEventsNamesTable()); 
+      map.addWidget("StorageUnitDescTable", new StorageUnitDescTable());
+      map.addWidget("ChildStorageLocsTable", new ChildStorageLocsTable());
       map.addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown()); 
 	  ScreenBase.setWidgetMap(map);
   }
