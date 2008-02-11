@@ -49,8 +49,25 @@ public class QAEventServlet extends AppServlet implements
                                            ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
+        Integer qaEventId = (Integer)key.getObject(0).getValue();
+//      System.out.println("in contacts");
+        QaEventDO qaeDO = new QaEventDO();
+         try{
+          qaeDO = remote.getQaEventAndUnlock(qaEventId);
+         } catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("qaeId", qaeDO.getId());
+        rpcReturn.setFieldValue("name",qaeDO.getName());
+        rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
+        rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
+        rpcReturn.setFieldValue("description",qaeDO.getDescription());
+        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
+        rpcReturn.setFieldValue("testId",qaeDO.getTest());
+        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        return rpcReturn;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -71,7 +88,7 @@ public class QAEventServlet extends AppServlet implements
         
         Integer qaeId = remote.updateQaEvent(qaeDO);
         
-        qaeDO = remote.getQaEvent((Integer)qaeId,false);
+        qaeDO = remote.getQaEvent((Integer)qaeId);
         rpcReturn.setFieldValue("qaeId", qaeId);
         rpcReturn.setFieldValue("name",qaeDO.getName());
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
@@ -239,7 +256,7 @@ public class QAEventServlet extends AppServlet implements
         
         remote.updateQaEvent(qaeDO);
         
-        qaeDO = remote.getQaEvent((Integer)qaeId.getValue(),false);
+        qaeDO = remote.getQaEvent((Integer)qaeId.getValue());
         rpcReturn.setFieldValue("qaeId", qaeDO.getId());
         rpcReturn.setFieldValue("name",qaeDO.getName());
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
@@ -257,7 +274,7 @@ public class QAEventServlet extends AppServlet implements
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
         Integer categoryId = (Integer)key.getObject(0).getValue();
 //      System.out.println("in contacts");
-        QaEventDO qaeDO = remote.getQaEvent(categoryId,false);
+        QaEventDO qaeDO = remote.getQaEvent(categoryId);
 //      set the fields in the RPC
         rpcReturn.setFieldValue("qaeId", qaeDO.getId());
         rpcReturn.setFieldValue("name",qaeDO.getName());
@@ -271,8 +288,25 @@ public class QAEventServlet extends AppServlet implements
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return fetch( key, rpcReturn); 
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
+        Integer qaEventId = (Integer)key.getObject(0).getValue();
+//      System.out.println("in contacts");
+        QaEventDO qaeDO = new QaEventDO();
+         try{
+          qaeDO = remote.getQaEventAndLock(qaEventId);
+         } catch(Exception ex){
+             throw new RPCException(ex.getMessage());
+         }  
+//      set the fields in the RPC
+        rpcReturn.setFieldValue("qaeId", qaeDO.getId());
+        rpcReturn.setFieldValue("name",qaeDO.getName());
+        rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
+        rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
+        rpcReturn.setFieldValue("description",qaeDO.getDescription());
+        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
+        rpcReturn.setFieldValue("testId",qaeDO.getTest());
+        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        return rpcReturn;
     }
 
     public String getXML() throws RPCException {
