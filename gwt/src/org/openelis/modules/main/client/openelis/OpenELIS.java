@@ -12,6 +12,7 @@ import org.openelis.modules.analysis.client.qaevent.QAEvent;
 import org.openelis.modules.dataEntry.client.Provider.Provider;
 import org.openelis.modules.dataEntry.client.organization.OrganizationScreen;
 import org.openelis.modules.dataEntry.client.organizeFavorites.OrganizeFavorites;
+import org.openelis.modules.utilities.client.standardNote.StandardNoteScreen;
 import org.openelis.modules.main.client.service.OpenELISService;
 import org.openelis.modules.supply.client.storage.StorageLocationScreen;
 import org.openelis.modules.supply.client.storageUnit.StorageUnitScreen;
@@ -528,7 +529,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("utilities"),(ScreenLabel) widgets.get("standardNoteLabel"));
         	//we need to do the standard note action
-        	//FIXME code the standard note action
+        	browser.addScreen(new StandardNoteScreen(), "Standard Note", openElisConstants.getString("standardNote"),openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("systemVariableIcon")) || (item == widgets.get("systemVariableLabel")) || (item == widgets.get("systemVariableDescription")) || 
         		(item == widgets.get("favTopSystemVariable")) || (item == widgets.get("favLeftSystemVariable"))){
 //        	if the utilities is open we need to close it

@@ -24,6 +24,7 @@
     <servlet path='/ProviderServlet' class='org.openelis.server.ProviderServlet'/>
     <servlet path='/QAEventServlet' class='org.openelis.server.QAEventServlet'/>  
     <servlet path='/StandardNoteServlet' class='org.openelis.server.StandardNoteServlet'/>        
+    <servlet path='/StandardNotePickerServlet' class='org.openelis.server.StandardNotePickerServlet'/>        
     <servlet path='/StorageLocationServlet' class='org.openelis.server.StorageLocationServlet'/>  
     <servlet path='/StorageUnitServlet' class='org.openelis.server.StorageUnitServlet'/> 
   
