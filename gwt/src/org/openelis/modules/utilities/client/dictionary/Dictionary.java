@@ -32,7 +32,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     private TableWidget dictEntryTable  = null;
     public PopupWindow window;
     private boolean errorInForm = false;
-    private boolean sysEntryUnique = true; 
+    private boolean sysEntryUnique = true;    
     
     public Dictionary(){
         super();        
@@ -100,7 +100,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     }
     
     public void commitAdd(){
-      if(!errorInForm){      
+      if(!errorInForm){    
+          dictEntryTable.controller.unselect(-1);  
         super.commitAdd();
          AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
          removeEntryButton.changeState(AppButton.DISABLED);  
@@ -115,7 +116,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     
     public void commitUpdate(){
      
-        if(!errorInForm){         
+        if(!errorInForm){ 
+            dictEntryTable.controller.unselect(-1);            
             super.commitUpdate();
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
