@@ -13,7 +13,13 @@ public interface StandardNoteRemote {
 	public Integer updateStandardNote(StandardNoteDO standardNoteDO);
 	
 	//method to return a whole standard note
-	public StandardNoteDO getStandardNote(Integer standardNoteId, boolean unlock);
+	public StandardNoteDO getStandardNote(Integer standardNoteId);
+	
+	//method to unlock and return a whole standard note
+	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId);
+	
+	//method to lock and return a whole standard note
+	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception;
 	
 	 //method to query for standard notes
 	 public List query(HashMap fields, int first, int max) throws Exception;

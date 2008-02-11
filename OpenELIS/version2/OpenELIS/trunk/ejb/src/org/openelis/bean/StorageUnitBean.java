@@ -106,19 +106,25 @@ public class StorageUnitBean implements StorageUnitRemote{
 		StorageUnit storageUnit = null;
 		
 		try {
+//			organization reference table id
+        	Query query = manager.createNamedQuery("getTableId");
+            query.setParameter("name", "storage_unit");
+            Integer storageUnitReferenceId = (Integer)query.getSingleResult();
+            
             if (unitDO.getId() == null)
             	storageUnit = new StorageUnit();
             else
             	storageUnit = manager.find(StorageUnit.class, unitDO.getId());
             
-         storageUnit.setCategory(unitDO.getCategory());
-         storageUnit.setDescription(unitDO.getDescription());
-         storageUnit.setIsSingular(unitDO.getIsSingular());
+            storageUnit.setCategory(unitDO.getCategory());
+            storageUnit.setDescription(unitDO.getDescription());
+            storageUnit.setIsSingular(unitDO.getIsSingular());
          
-         if (storageUnit.getId() == null) {
+            if (storageUnit.getId() == null) {
 	        	manager.persist(storageUnit);
-         }
+            }
          
+            lockBean.giveUpLock(storageUnitReferenceId,storageUnit.getId()); 
 		} catch (Exception e) {
             //log.error(e.getMessage());
             e.printStackTrace();
@@ -127,18 +133,29 @@ public class StorageUnitBean implements StorageUnitRemote{
 		return storageUnit.getId();
 	}
 
-	public StorageUnitDO getStorageUnit(Integer StorageUnitId, boolean unlock) {
-		if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "storage_unit");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),StorageUnitId);
-        }
-		
+	public StorageUnitDO getStorageUnit(Integer StorageUnitId) {
 		Query query = manager.createNamedQuery("getStorageUnit");
 		query.setParameter("id", StorageUnitId);
 		StorageUnitDO storageUnitRecord = (StorageUnitDO) query.getResultList().get(0);// getting first storage unit record
 
         return storageUnitRecord;
+	}
+	
+	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId) throws Exception{
+		Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_unit");
+        lockBean.getLock((Integer)query.getSingleResult(),StorageUnitId);
+        
+        return getStorageUnit(StorageUnitId);
+		
+	}
+	
+	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId) {
+        Query unlockQuery = manager.createNamedQuery("getTableId");
+        unlockQuery.setParameter("name", "storage_unit");
+        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),StorageUnitId);
+		
+        return getStorageUnit(StorageUnitId);
 	}
 
 	public Integer getSystemUserId(){

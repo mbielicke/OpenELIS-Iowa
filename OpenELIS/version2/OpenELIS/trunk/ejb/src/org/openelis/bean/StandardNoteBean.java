@@ -69,20 +69,30 @@ public class StandardNoteBean implements StandardNoteRemote{
         }			
 	}
 
-	public StandardNoteDO getStandardNote(Integer standardNoteId, boolean unlock) {
-		if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "storage_unit");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),standardNoteId);
-        }
-		
+	public StandardNoteDO getStandardNote(Integer standardNoteId) {		
 		Query query = manager.createNamedQuery("getStandardNote");
 		query.setParameter("id", standardNoteId);
 		StandardNoteDO standardNoteRecord = (StandardNoteDO) query.getResultList().get(0);// getting first storage unit record
 
         return standardNoteRecord;
 	}
-
+	
+	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception{
+		Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "standard_note");
+        lockBean.getLock((Integer)query.getSingleResult(),standardNoteId);
+        
+        return getStandardNote(standardNoteId);
+	}
+	
+	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "standard_note");
+        lockBean.giveUpLock((Integer)query.getSingleResult(),standardNoteId);
+		
+		return getStandardNote(standardNoteId);
+	}
+	
 	public Integer getSystemUserId() {
 		try {
             SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
@@ -143,6 +153,11 @@ public class StandardNoteBean implements StandardNoteRemote{
 		StandardNote standardNote = null;
 		
 		try {
+//			organization reference table id
+        	Query query = manager.createNamedQuery("getTableId");
+            query.setParameter("name", "standard_note");
+            Integer standardNoteReferenceId = (Integer)query.getSingleResult();
+            
             if (standardNoteDO.getId() == null)
             	standardNote = new StandardNote();
             else
@@ -157,6 +172,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	        	manager.persist(standardNote);
          }
          
+         lockBean.giveUpLock(standardNoteReferenceId,standardNote.getId()); 
 		} catch (Exception e) {
             e.printStackTrace();
         }

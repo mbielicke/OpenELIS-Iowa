@@ -76,11 +76,7 @@ public class OrganizationBean implements OrganizationRemote {
         unlockQuery.setParameter("name", "organization");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),organizationId);
        		
-		Query query = manager.createNamedQuery("getOrganizationAndAddress");
-		query.setParameter("id", organizationId);
-		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
-
-        return orgAddressContacts;
+        return getOrganizationAddress(organizationId);
 	}
 	
 	@RolesAllowed("organization-update")

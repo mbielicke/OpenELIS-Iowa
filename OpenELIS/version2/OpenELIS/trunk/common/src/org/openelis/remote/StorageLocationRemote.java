@@ -13,7 +13,13 @@ public interface StorageLocationRemote {
 	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren);
 	
 	//method to return a whole storage loc
-	public StorageLocationDO getStorageLoc(Integer StorageId, boolean unlock);
+	public StorageLocationDO getStorageLoc(Integer StorageId);
+	
+	//method to return a whole storage loc
+	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId);
+	
+//	method to return a whole storage loc
+	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception;
 	
 	//method to return a child storage locs
 	public List getStorageLocChildren(Integer StorageId, boolean unlock);

@@ -104,18 +104,28 @@ public class StorageLocationBean implements StorageLocationRemote{
         }			
 	}
 
-	public StorageLocationDO getStorageLoc(Integer StorageId, boolean unlock) {
-		if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "storage_location");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),StorageId);
-        }
-		
+	public StorageLocationDO getStorageLoc(Integer StorageId) {
 		Query query = manager.createNamedQuery("getStorageLocation");
 		query.setParameter("id", StorageId);
 		StorageLocationDO storageLocRecord = (StorageLocationDO) query.getResultList().get(0);// getting first storage location record
 
         return storageLocRecord;
+	}
+	
+	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception{
+		Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_location");
+        lockBean.getLock((Integer)query.getSingleResult(),StorageId);
+        
+        return getStorageLoc(StorageId);       
+	}
+	
+	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_location");
+        lockBean.giveUpLock((Integer)query.getSingleResult(),StorageId);
+        
+        return getStorageLoc(StorageId);
 	}
 
 	public Integer getSystemUserId() {
