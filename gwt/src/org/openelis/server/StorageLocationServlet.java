@@ -55,7 +55,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
 		
-		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)key.getObject(0).getValue(),true);
+		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)key.getObject(0).getValue());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageLocDO.getId());
@@ -107,7 +107,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		Integer storageLocId = (Integer)remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
 		
 //		lookup the changes from the database and build the rpc
-		StorageLocationDO storageDO = remote.getStorageLoc(storageLocId,false);
+		StorageLocationDO storageDO = remote.getStorageLoc(storageLocId);
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageDO.getId());
@@ -267,7 +267,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 		remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
 		
 		//lookup the changes from the database and build the rpc
-		StorageLocationDO storageLocDO = remote.getStorageLoc(newStorageLocDO.getId(),false);
+		StorageLocationDO storageLocDO = remote.getStorageLoc(newStorageLocDO.getId());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageLocDO.getId());
@@ -317,7 +317,7 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
-		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)key.getObject(0).getValue(),false);
+		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)key.getObject(0).getValue());
 		
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageLocDO.getId());
@@ -338,7 +338,31 @@ public class StorageLocationServlet extends AppServlet implements AppScreenFormS
 	}
 
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-		return fetch(key, rpcReturn);
+//		remote interface to call the storage loc bean
+		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
+		StorageLocationDO storageLocDO = new StorageLocationDO();
+		
+		try{
+			storageLocDO = remote.getStorageLocAndLock((Integer)key.getObject(0).getValue());
+		}catch(Exception e){
+			throw new RPCException(e.getMessage());
+		}
+		
+//		set the fields in the RPC
+		rpcReturn.setFieldValue("id", storageLocDO.getId());
+		rpcReturn.setFieldValue("isAvailable", "Y".equals(storageLocDO.getIsAvailable().trim()));
+		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
+		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
+		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
+		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
+		
+//		load the children
+        List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
+        //need to build the children table now...
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+
+		return rpcReturn;
 	}
 
 	public String getXML() throws RPCException {

@@ -49,7 +49,7 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
 		
-		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)key.getObject(0).getValue(),true);
+		StorageUnitDO storageUnitDO = remote.getStorageUnitAndUnlock((Integer)key.getObject(0).getValue());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageUnitDO.getId());
@@ -74,7 +74,7 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 		Integer storageUnitId = (Integer)remote.updateStorageUnit(newStorageUnitDO);
 		
 //		lookup the changes from the database and build the rpc
-		StorageUnitDO storageDO = remote.getStorageUnit(storageUnitId,false);
+		StorageUnitDO storageDO = remote.getStorageUnit(storageUnitId);
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageDO.getId());
@@ -190,7 +190,7 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 		remote.updateStorageUnit(newStorageUnitDO);
 		
 		//lookup the changes from the database and build the rpc
-		StorageUnitDO storageUnitDO = remote.getStorageUnit(newStorageUnitDO.getId(),false);
+		StorageUnitDO storageUnitDO = remote.getStorageUnit(newStorageUnitDO.getId());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageUnitDO.getId());
@@ -227,7 +227,7 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 //		remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
-		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)key.getObject(0).getValue(),false);
+		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)key.getObject(0).getValue());
 		
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", storageUnitDO.getId());
@@ -239,7 +239,23 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 	}
 
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-		return fetch(key, rpcReturn);
+//		remote interface to call the storage unit bean
+		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
+		
+		StorageUnitDO storageUnitDO = new StorageUnitDO();
+		try{
+			storageUnitDO = remote.getStorageUnitAndLock((Integer)key.getObject(0).getValue());
+		}catch(Exception e){
+			throw new RPCException(e.getMessage());
+		}
+		
+//		set the fields in the RPC
+		rpcReturn.setFieldValue("id", storageUnitDO.getId());
+		rpcReturn.setFieldValue("categoryId", storageUnitDO.getCategory().trim());
+		rpcReturn.setFieldValue("description", storageUnitDO.getDescription().trim());
+		rpcReturn.setFieldValue("isSingular", ("Y".equals(storageUnitDO.getIsSingular())));
+		
+		return rpcReturn;
 	}
 
 	public String getXML() throws RPCException {

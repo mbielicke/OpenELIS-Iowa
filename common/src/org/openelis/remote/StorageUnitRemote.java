@@ -13,7 +13,13 @@ public interface StorageUnitRemote {
 	public Integer updateStorageUnit(StorageUnitDO unitDO);
 	
 	//method to return a whole storage unit
-	public StorageUnitDO getStorageUnit(Integer StorageUnitId, boolean unlock);
+	public StorageUnitDO getStorageUnit(Integer StorageUnitId);
+	
+	//method to return a whole storage unit and lock it
+	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId) throws Exception;
+	
+	//method to return a whole storage unit and unlock it
+	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId);
 	
 	 //method to query for storage units
 	 public List query(HashMap fields, int first, int max) throws Exception;

@@ -10,7 +10,6 @@ import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
-import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
@@ -27,7 +26,6 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StandardNoteRemote;
-import org.openelis.remote.StorageLocationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
@@ -50,7 +48,7 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getObject(0).getValue(),true);
+		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getObject(0).getValue());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", standardNoteDO.getId());
@@ -77,7 +75,7 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 		Integer standardNoteId = (Integer)remote.updateStandardNote(newStandardNoteDO);
 		
 //		lookup the changes from the database and build the rpc
-		StandardNoteDO standardNoteDO = remote.getStandardNote(standardNoteId,false);
+		StandardNoteDO standardNoteDO = remote.getStandardNote(standardNoteId);
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", standardNoteDO.getId());
@@ -218,7 +216,7 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 		remote.updateStandardNote(newStandardNoteDO);
 		
 		//lookup the changes from the database and build the rpc
-		StandardNoteDO standardNoteDO = remote.getStandardNote(newStandardNoteDO.getId(),false);
+		StandardNoteDO standardNoteDO = remote.getStandardNote(newStandardNoteDO.getId());
 
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", standardNoteDO.getId());
@@ -234,7 +232,7 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getObject(0).getValue(),false);
+		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getObject(0).getValue());
 		
 //		set the fields in the RPC
 		rpcReturn.setFieldValue("id", standardNoteDO.getId());
@@ -247,7 +245,24 @@ public class StandardNoteServlet  extends AppServlet implements AppScreenFormSer
 	}
 
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-		return fetch(key, rpcReturn);
+//		remote interface to call the standard note bean
+		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
+		StandardNoteDO standardNoteDO = new StandardNoteDO();
+		
+		try{
+			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getObject(0).getValue());
+		}catch(Exception e){
+			throw new RPCException(e.getMessage());
+		}
+		
+//		set the fields in the RPC
+		rpcReturn.setFieldValue("id", standardNoteDO.getId());
+		rpcReturn.setFieldValue("description", standardNoteDO.getDescription().trim());
+		rpcReturn.setFieldValue("name", standardNoteDO.getName().trim());
+		rpcReturn.setFieldValue("text", standardNoteDO.getText().trim());
+		rpcReturn.setFieldValue("typeId", standardNoteDO.getType());
+		
+		return rpcReturn;
 	}
 
 	public String getXML() throws RPCException {

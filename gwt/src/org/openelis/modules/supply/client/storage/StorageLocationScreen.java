@@ -196,10 +196,10 @@ public class StorageLocationScreen extends AppScreenForm{
 	}
 	
 	public void afterCommitUpdate(boolean success) {
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("childStorageLocsTable")).controller.manager;
-		orgContactsTable.disableRows = true;
-		TableWidget contactTable = (TableWidget) getWidget("childStorageLocsTable");
-		contactTable.controller.setAutoAdd(false);
+		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) ((TableWidget) getWidget("childStorageLocsTable")).controller.manager;
+		childTableManager.disableRows = true;
+		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
+		childTable.controller.setAutoAdd(false);
 		
 		super.afterCommitUpdate(success);
 	}
