@@ -52,12 +52,10 @@ public class QaEventBean implements QaEventRemote{
         }
     }
     
-    public QaEventDO getQaEvent(Integer qaEventId, boolean unlock) {
-        if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "qaevent");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),qaEventId);            
-        }
+    public QaEventDO getQaEvent(Integer qaEventId) {
+        
+             
+        
         Query query = manager.createNamedQuery("getQaEvent");
         query.setParameter("id", qaEventId);
         QaEventDO qaEvent = (QaEventDO) query.getSingleResult();
@@ -185,6 +183,23 @@ public class QaEventBean implements QaEventRemote{
                 
         lockBean.giveUpLock(qaEventReferenceId,qaEvent.getId()); 
         return qaEvent.getId();
+    }
+
+
+    public QaEventDO getQaEventAndLock(Integer qaEventId) throws Exception {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "qaevent");
+        lockBean.getLock((Integer)query.getSingleResult(),qaEventId);
+        
+        return getQaEvent(qaEventId);
+    }
+
+    public QaEventDO getQaEventAndUnlock(Integer qaEventId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "qaevent");
+        lockBean.giveUpLock((Integer)query.getSingleResult(),qaEventId);           
+        
+        return getQaEvent(qaEventId);
     }
  
 }
