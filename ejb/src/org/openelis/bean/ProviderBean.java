@@ -62,17 +62,12 @@ public class ProviderBean implements ProviderRemote {
         }
     }
     
-    public ProviderDO getProvider(Integer providerId, boolean unlock) {
-        if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "provider");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),providerId);            
-        }
+    public ProviderDO getProvider(Integer providerId) {                 
         
         Query query = manager.createNamedQuery("getProvider");
         query.setParameter("id", providerId);
         ProviderDO provider = (ProviderDO) query.getSingleResult();// getting provider 
-        System.out.println(provider);
+
         return provider;
     }
 
@@ -118,10 +113,6 @@ public class ProviderBean implements ProviderRemote {
         return provNotes;
     }
 
-    public ProviderDO getProviderUpdate(Integer id) throws Exception {
-        
-        return null;
-    }
 
     public Integer getSystemUserId(){
         try {
@@ -384,5 +375,23 @@ public class ProviderBean implements ProviderRemote {
 
        return provNotes;
     }
+
+
+
+    public ProviderDO getProviderAndLock(Integer providerId) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "provider");
+        lockBean.getLock((Integer)query.getSingleResult(),providerId);         
+        return getProvider(providerId);
+    }
+
+    public ProviderDO getProviderAndUnlock(Integer providerId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "provider");
+        lockBean.giveUpLock((Integer)query.getSingleResult(),providerId);
+        return getProvider(providerId);
+    }
+
+    
 
 }
