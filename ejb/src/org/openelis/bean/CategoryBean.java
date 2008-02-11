@@ -56,12 +56,7 @@ public class CategoryBean implements CategoryRemote {
         }
     }
 
-    public CategoryDO getCategory(Integer categoryId, boolean unlock) {
-        if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "category");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),categoryId);            
-        }
+    public CategoryDO getCategory(Integer categoryId) {        
         
         Query query = manager.createNamedQuery("getCategory");
         query.setParameter("id", categoryId);
@@ -85,11 +80,7 @@ public class CategoryBean implements CategoryRemote {
         
         return catList;
     }
-
-    public CategoryDO getCategoryUpdate(Integer id) throws Exception {
-        
-        return null;
-    }
+ 
 
     public Integer getSystemUserId() {
         try {
@@ -183,13 +174,15 @@ public class CategoryBean implements CategoryRemote {
             
     }
 
-    public Integer updateCategory(CategoryDO categoryDO, List dictEntries) {
+    public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception {
+        Category category  = null;
+       try{ 
         manager.setFlushMode(FlushModeType.COMMIT);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
         Integer categoryReferenceId = (Integer)query.getSingleResult();
         
-        Category category  = null;
+        
         
         if (categoryDO.getId() == null){
             category = new Category();
@@ -207,6 +200,7 @@ public class CategoryBean implements CategoryRemote {
             manager.persist(category);
         }
         
+        ArrayList<String> entries = new ArrayList<String>();        
         for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
             DictionaryDO dictDO = (DictionaryDO)iter.next();
             Dictionary dictionary = null;
@@ -215,14 +209,12 @@ public class CategoryBean implements CategoryRemote {
              }else{
                   dictionary  = manager.find(Dictionary.class,dictDO.getId());
                  }
-             
-             System.out.println("dictionary "+dictionary);
+                         
              boolean update = false;
              if(dictDO.getDelete()!=null){ 
                if(dictDO.getDelete()&& (dictionary.getId() != null)){
                  //delete the dictionary entry from the database                    
-                    manager.remove(dictionary);
-                    System.out.println("removed dictionary");
+                    manager.remove(dictionary);                    
                }else{
                    update = true;
                }
@@ -230,14 +222,20 @@ public class CategoryBean implements CategoryRemote {
                    update = true;
              }
              
+             if(!entries.contains(dictDO.getEntry())){
+              entries.add(dictDO.getEntry());
+             }else{
+                 throw new Exception("Entry names for a category must be unique");
+             } 
+             
              if(update){
                  dictionary.setCategory(category.getId());
                  dictionary.setEntry(dictDO.getEntry());
                  dictionary.setIsActive(dictDO.getIsActive());
                  dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                 dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());
+                 dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());                 
                  dictionary.setSystemName(dictDO.getSystemName());    
-             
+                                                                                
               if(dictionary.getId()==null){
                 manager.persist(dictionary);
               }
@@ -246,6 +244,9 @@ public class CategoryBean implements CategoryRemote {
         }
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
+       }catch(Exception ex){           
+           throw ex;        
+       }
         return  category.getId();
     }
 
@@ -336,5 +337,22 @@ public class CategoryBean implements CategoryRemote {
           throw ex;
       }
       
+    }
+
+    public CategoryDO getCategoryAndLock(Integer categoryId)throws Exception {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "category");
+        lockBean.getLock((Integer)query.getSingleResult(),categoryId);
+        
+        return getCategory(categoryId);
+    }
+
+    public CategoryDO getCategoryAndUnlock(Integer categoryId) {
+        
+        Query unlockQuery = manager.createNamedQuery("getTableId");
+        unlockQuery.setParameter("name", "category");
+        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),categoryId);
+        
+        return getCategory(categoryId);
     }               
 }
