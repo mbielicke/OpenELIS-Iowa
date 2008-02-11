@@ -107,7 +107,6 @@ public class OrganizationBean implements OrganizationRemote {
                 organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
             //send the address to the update address bean
-            System.out.println(addressBean);
             Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
             
             //update organization

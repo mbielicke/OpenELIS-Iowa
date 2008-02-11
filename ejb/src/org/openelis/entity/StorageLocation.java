@@ -26,6 +26,8 @@ import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "getStorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
 " s.location,s.parentStorageLocation,s.storageUnit,s.isAvailable) from StorageLocation s where s.id = :id"),
+@NamedQuery(name = "getStorageLocationChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+" s.location,s.parentStorageLocation,s.storageUnit,s.isAvailable) from StorageLocation s where s.parentStorageLocation = :id"),
 @NamedQuery(name = "getStorageLocationByParentId", query = "select s.id " +
 							 " from StorageLocation s where s.parentStorageLocation = :id"),
 @NamedQuery(name = "getStorageLocationByStorageUnitId", query = "select s.id " +
