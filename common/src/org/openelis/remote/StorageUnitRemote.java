@@ -25,7 +25,7 @@ public interface StorageUnitRemote {
 	 public List autoCompleteLookupByDescription(String desc, int maxResults);
 	 
 	 //auto complete lookup
-	 public List autoCompleteLookupById(Integer id);
+	 public Object[] autoCompleteLookupById(Integer id);
 	 
 	 public void deleteStorageUnit(Integer StorageUnitId) throws Exception;
 
