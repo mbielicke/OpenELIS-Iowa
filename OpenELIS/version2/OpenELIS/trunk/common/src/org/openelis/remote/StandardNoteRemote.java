@@ -21,6 +21,9 @@ public interface StandardNoteRemote {
 	//method to lock and return a whole standard note
 	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception;
 	
+	//method to return a whole standard note by type
+	public List getStandardNoteByType(Integer standardNoteType);
+	
 	 //method to query for standard notes
 	 public List query(HashMap fields, int first, int max) throws Exception;
 	 
