@@ -298,58 +298,21 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="name" width="150px" tab="sortOrder,isAvailable"/>
+										<textbox case="mixed" key="name" width="150px" max="20" tab="sortOrder,isAvailable"/>
 									</widget>
-									<!--<<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"sortOrder")'/>:</text>
-									</widget>
-									widget>
-										<autoDropdown key="sortOrder" cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" tab="location,name">
-													<autoWidths>40</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value="0"> </item>
-													<item value="1">ASC</item>
-													<item value="2">DESC</item>
-
-													</autoItems>
-													</autoDropdown>
-										<query>
-										<autoDropdown cat="sortOrder" case="upper" serviceUrl="StorageLocationServlet" width="61px" dropdown="true" type="integer" multiSelect="true" tab="location,name">
-													<autoWidths>40</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value="0"> </item>
-													<item value="1">ASC</item>
-													<item value="2">DESC</item>
-
-													</autoItems>
-													</autoDropdown>
-										</query>
-									</widget>	-->	
 								</row>
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="location" width="225px" tab="parentStorage,sortOrder"/>
+										<textbox case="mixed" key="location" max="80" width="225px" tab="parentStorage,sortOrder"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="parentStorageLoc" case="upper" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
+									<auto cat="parentStorageLoc" case="mixed" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
 										<autoHeaders>Id,Name,Location</autoHeaders>
 										<autoWidths>50,120,150</autoWidths>
 										<autoEditors>
@@ -364,7 +327,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="upper" width="150px" tab="storageUnit,location"/>
+										<textbox case="mixed" width="150px" tab="storageUnit,location"/>
 										</query>
 									</widget>	
 								</row>
@@ -373,7 +336,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
+									<auto cat="storageUnit" case="mixed" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -390,7 +353,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="upper" width="150px" tab="isAvailable,parentStorage"/>
+										<textbox case="mixed" width="150px" tab="isAvailable,parentStorage"/>
 										</query>
 									</widget>	
 									<widget>
@@ -426,9 +389,9 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
 										<editors>
-											<textbox case="upper"/>
-											<textbox case="upper"/>
-											<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" width="150px" type="integer">
+											<textbox case="mixed" max="20"/>
+											<textbox case="mixed" max="80"/>
+											<auto cat="storageUnit" case="mixed" serviceUrl="StorageLocationServlet" width="150px" type="integer">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -462,9 +425,9 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
 										<editors>
-											<textbox case="upper"/>
-											<textbox case="upper"/>
-											<textbox case="upper"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
 											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="64px" type="string" multiSelect="true">
 													<autoWidths>64</autoWidths>
 													<autoEditors>
