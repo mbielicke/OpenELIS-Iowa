@@ -6,5 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface StandardNotePickerServletIntAsync extends AppScreenFormServiceIntAsync{
 
-	public void getTreeModel(Integer key, boolean topLevel, AsyncCallback callback);
+	public void getTreeModel(AsyncCallback callback);
+	
+	public void getTreeModelSecondLevel(int id, AsyncCallback callback);
 }

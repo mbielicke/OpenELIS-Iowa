@@ -5,5 +5,7 @@ import org.openelis.gwt.widget.pagedtree.TreeModel;
 
 public interface StandardNotePickerServletInt extends AppScreenFormServiceInt {
 
-	public TreeModel getTreeModel(Integer key, boolean topLevel);
+	public TreeModel getTreeModel();
+	
+	public String getTreeModelSecondLevel(int id);
 }

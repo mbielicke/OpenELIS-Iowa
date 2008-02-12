@@ -21,7 +21,8 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "getStandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.id = :id")})
+@NamedQueries({@NamedQuery(name = "getStandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.id = :id"),
+	           @NamedQuery(name = "getStandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.type = :type")})
 			   											 
 @Entity
 @Table(name="standard_note")

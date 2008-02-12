@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -178,6 +179,13 @@ public class StandardNoteBean implements StandardNoteRemote{
         }
             
 		return standardNote.getId();
+	}
+
+	public List getStandardNoteByType(Integer standardNoteType) {
+		Query query = manager.createNamedQuery("getStandardNoteByType");
+		query.setParameter("type", standardNoteType);
+		
+        return query.getResultList();
 	}
 
 }

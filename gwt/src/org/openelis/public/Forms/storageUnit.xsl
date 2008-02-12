@@ -303,7 +303,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="category" cat="category" case="upper" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="contactsTable,parentOrg">
+										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="contactsTable,parentOrg">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -313,7 +313,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="category" case="upper" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="contactsTable,parentOrg">
+										<autoDropdown cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="contactsTable,parentOrg">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -330,7 +330,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="description" width="300px" tab="multUnit,orgName"/>
+										<textbox case="mixed" key="description" max="60" width="300px" tab="multUnit,orgName"/>
 									</widget>
 								</row>
 								<row>
@@ -367,7 +367,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 	<rpc key="display">
   	<number key="id" type="integer" required="false"/>
   	<string key="categoryId" required="true"/>
-  	<string key="description" required="true"/>
+  	<string key="description" max="60" required="true"/>
   	<check key="isSingular" required="false"/>
 	</rpc>
 	<rpc key="query">

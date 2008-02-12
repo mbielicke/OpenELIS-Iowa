@@ -300,7 +300,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="name" width="155px" tab="description,id"/>
+										<textbox case="mixed" key="name" width="155px" max="20" tab="description,id"/>
 									</widget>
 								</row>
 								<row>								
@@ -308,7 +308,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="description" width="300px" tab="type,name"/>
+										<textbox case="mixed" key="description" width="300px" max="60" tab="type,name"/>
 									</widget>
 								</row>
 								<row>								
@@ -316,7 +316,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="type" cat="type" case="upper" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
+										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>
@@ -326,7 +326,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="type" case="upper" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
+										<autoDropdown cat="type" case="mixed" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>
@@ -343,7 +343,7 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea case="upper" key="text" width="300px" height="180px" tab="id,type"/>
+										<textarea key="text" width="300px" height="180px" tab="id,type"/>
 									</widget>
 								</row>
 								
@@ -356,8 +356,8 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 	</display>
 	<rpc key="display">
   	<number key="id" type="integer" required="false"/>
-  	<string key="name" required="true"/>
-  	<string key="description" required="true"/>
+  	<string key="name" required="true" max="20"/>
+  	<string key="description" required="true" max="60"/>
   	<number key="typeId" type="integer" required="true"/>
   	<string key="text" required="true"/>
 	</rpc>
