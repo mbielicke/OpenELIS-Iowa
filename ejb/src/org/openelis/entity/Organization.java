@@ -44,7 +44,7 @@ import org.w3c.dom.Element;
 			   @NamedQuery(name = "getOrganizationAutoCompleteById", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
 					   "  from Organization o where o.id = :id"),
 			   @NamedQuery(name = "getOrganizationAutoCompleteByName", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
-					   "  from Organization o where UPPER(o.name) like :name")})
+					   "  from Organization o where UPPER(o.name) like :name order by o.name")})
                                                                   
 @Entity
 @Table(name="organization")
