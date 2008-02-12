@@ -405,13 +405,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="orgName" width="225px" tab="multUnit,orgName"/>
+										<textbox case="upper" key="orgName" width="225px" max="40" tab="multUnit,orgName"/>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="city" width="212px" tab="state,streetAddress"/>
+											<textbox case="upper" key="city" width="212px" max="30" tab="state,streetAddress"/>
 										</widget>		
 									</row>
 									<row>
@@ -423,14 +423,13 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="multUnit" width="212px" tab="streetAddress,orgName"/>
+											<textbox case="upper" key="multUnit" width="212px" max="30" tab="streetAddress,orgName"/>
 										</widget>
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
 										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
 												<widget>
-													<!--<option key="state" tab="zipCode,city"/>-->
 													<autoDropdown cat="state" key="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" tab="zipCode,city">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
@@ -441,7 +440,6 @@
 													</autoFields>
 													</autoDropdown>
 													<query>
-													<!--<option tab="country,city"/>-->
 													<autoDropdown cat="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="zipCode,city">
 													<autoWidths>40</autoWidths>
 													<autoEditors>
@@ -460,7 +458,6 @@
 												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
 												<widget>
 													<maskedbox key="zipCode" width="70" mask="99999-9999" tab="country,state"/>
-													<!--<textbox case="upper" key="zipCode" width="70" tab="country,state"/> -->
 												</widget>
 									</panel>									
 									</row>									
@@ -469,13 +466,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/>:</text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="streetAddress" width="212px" tab="city,multUnit"/>
+											<textbox case="upper" key="streetAddress" width="212px" max="30" tab="city,multUnit"/>
 										</widget>	
 											<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget>
-												<autoDropdown cat="country" key="country" case="upper" serviceUrl="OrganizationServlet" width="196px" dropdown="true" fromModel="true" type="string" tab="parentOrg,zipCode">
+												<autoDropdown cat="country" key="country" case="mixed" serviceUrl="OrganizationServlet" width="196px" dropdown="true" fromModel="true" type="string" tab="parentOrg,zipCode">
 													<autoWidths>175</autoWidths>
 													<autoEditors>
 														<label/>
@@ -485,7 +482,7 @@
 													</autoFields>
 												</autoDropdown>
 											<query>
-													<autoDropdown cat="country" case="upper" serviceUrl="OrganizationServlet" width="196px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="parentOrg,zipCode">
+													<autoDropdown cat="country" case="mixed" serviceUrl="OrganizationServlet" width="196px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="parentOrg,zipCode">
 													<autoWidths>175</autoWidths>
 													<autoEditors>
 														<label/>
@@ -546,7 +543,6 @@
 													<item value="N">N</item>
 													</autoItems>
 													</autoDropdown>
-										<!--<option tab="contactsTable,parentOrg"/>-->
 										</query>
 										</widget>
 								</row>
@@ -566,7 +562,7 @@
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" case="upper" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" type="integer">
+											<autoDropdown cat="contactType" case="mixed" serviceUrl="OrganizationServlet" width="90px" fromModel="true" dropdown="true" type="integer">
 											<autoWidths>90</autoWidths>
 											<autoEditors>
 												<label/>
@@ -716,25 +712,23 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="510px" max="60"/>
-										</widget>
-										</row>
-										<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
+										<textbox case="mixed" key="usersSubject" width="405px" max="60"/>
 										</widget>
 										<widget>
-										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
-										</widget>
-										</row>
-				<row>
-									<widget colspan="2">
-									<appButton action="standardNote" onclick="this" key="standardNoteButton">
+										<appButton action="standardNote" onclick="this" key="standardNoteButton">
 						              <widget>
                 						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
 							              </widget>
 						            </appButton>
 						            </widget>
+										</row>
+										<row>
+										<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
+										</widget>
+										<widget colspan="2">
+										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
+										</widget>
 										</row>
 								</panel> 
 
