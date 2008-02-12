@@ -1,15 +1,14 @@
 package org.openelis.server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -18,7 +17,11 @@ import org.openelis.gwt.widget.pagedtree.TreeModelItem;
 import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerServletInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.util.XMLUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class StandardNotePickerServlet extends AppServlet implements AppScreenFormServiceInt, 
 StandardNotePickerServletInt{
@@ -64,8 +67,7 @@ StandardNotePickerServletInt{
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
 	}
 	
-	public TreeModel getTreeModel(Integer key, boolean topLevel){
-		//////////////////////////
+	public TreeModel getTreeModel(){
 		CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 		TreeModel treeModel = new TreeModel();
 		
@@ -93,6 +95,35 @@ StandardNotePickerServletInt{
 		}		
 		
        return treeModel;
+	}
+
+	public String getTreeModelSecondLevel(int type) {
+		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
+		List list = remote.getStandardNoteByType(type);
+	        
+	     try {
+	    	 Iterator itr = list.iterator();
+	            
+	         Document doc = XMLUtil.createNew("tree");
+	         while(itr.hasNext()){
+				 StandardNoteDO standardNoteDO = (StandardNoteDO) itr.next();
+				 
+				 Element root = doc.getDocumentElement();
+				 root.setAttribute("key", "menuList");
+				 root.setAttribute("height", "100%");
+				 root.setAttribute("vertical","true");           
+				      
+				  Element elem = doc.createElement("label");
+				  elem.setAttribute("text", standardNoteDO.getName()+" : "+standardNoteDO.getDescription()); 
+				  elem.setAttribute("value", standardNoteDO.getText()); 
+				  
+				  root.appendChild(elem); 
+	         }
+			             
+			 return XMLUtil.toString(doc);
+		}catch(Exception e){
+			return "";
+		}
 	}
 
 }

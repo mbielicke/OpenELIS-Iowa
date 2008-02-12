@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "getStorageUnit", query = "select new org.openelis.domain.StorageUnitDO(s.id,s.category,s.description,s.isSingular) from StorageUnit s where s.id = :id"),
 			   @NamedQuery(name = "getStorageUnitAutoCompleteByDesc", query = "select s.id, s.description, s.category, s.isSingular " +
-					   											 " from StorageUnit s where s.description like :desc"),
+					   											 " from StorageUnit s where UPPER(s.description) like :desc"),
 			   @NamedQuery(name = "getStorageUnitAutoCompleteById", query = "select s.id, s.description, s.category, s.isSingular " +
 					   											 " from StorageUnit s where s.id = :id")})
 @Entity

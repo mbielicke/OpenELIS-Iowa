@@ -818,7 +818,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 		}catch(NumberFormatException e){
 			//it isnt an id
 			//lookup by name
-			List autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
+			List autoCompleteList = remote.autoCompleteLookupByName(match.toUpperCase()+"%", 10);
 			Iterator itr = autoCompleteList.iterator();
 			
 			while(itr.hasNext()){
