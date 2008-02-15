@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.CategoryDO;
-import org.openelis.domain.CategoryTableRowDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
