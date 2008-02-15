@@ -113,8 +113,8 @@ public class DictionaryServlet extends AppServlet implements
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-         if(sysName!=null && entry!=null){
-           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
+         if(entry!=null){
+           if((!entry.trim().equals("")))  {
                doloop =true;
            } 
           }
@@ -338,8 +338,8 @@ public class DictionaryServlet extends AppServlet implements
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-         if(sysName!=null && entry!=null){
-           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
+         if(entry!=null){
+           if((!entry.trim().equals("")))  {
                doloop =true;
            } 
           }
