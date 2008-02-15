@@ -6,9 +6,9 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
-
 
 
 public class DictionaryEntriesTable implements TableManager {
@@ -17,9 +17,10 @@ public class DictionaryEntriesTable implements TableManager {
     private TableRow relEntryRow = null; 
     private ArrayList systemNamesList = new ArrayList();  
     private ArrayList entryList = new ArrayList(); 
-    private boolean noSysNameError = true;
-    private boolean noEntryError = true;
-
+    //private boolean noSysNameError = true;
+    //private boolean noEntryError = true;
+      
+    public TableController thiscontroller = null;
 
     public void setDictionaryForm(Dictionary dictionaryForm) {
         this.dictionaryForm = dictionaryForm;
@@ -53,63 +54,109 @@ public class DictionaryEntriesTable implements TableManager {
         return false;
     }
 
-    public void finishedEditing(int row, int col, TableController controller) {        
+    public void finishedEditing(int row, int col, TableController controller) { 
         
-        if(col == 1){         
-            TableRow tableRow =  controller.model.getRow(row);
-            StringField field = (StringField)tableRow.getColumn(col);   
-            String systemName = (String)field.getValue();
-            NumberField idField = (NumberField)tableRow.getHidden("id");  
-            Integer id  = null;
-            if(idField!=null){
-             id  = (Integer)idField.getValue();
-            } 
-            boolean valuePresent = true;
-            if(systemName != null){
-              if(!systemName.trim().equals("")){
-               dictionaryForm.checkSystemName(id,systemName.trim());
-               existsInList("systemName",systemName.trim());
-              }else{
-                  valuePresent = false;
-              }            
-             }else{
-                 valuePresent = false;
-             }
-            
-            if(!valuePresent){
-                dictionaryForm.showMessage("systemNameBlank") ;
-            }            
-          }      
-         if(col == 3){            
-            TableRow tableRow =  controller.model.getRow(row);
-            StringField field = (StringField)tableRow.getColumn(col);   
-            String entry = (String)field.getValue();
-            NumberField idField = (NumberField)tableRow.getHidden("id");         
-            Integer id  = null;
-            if(idField!=null){
-             id  = (Integer)idField.getValue();
-            }          
-            boolean valuePresent = true;
-            if(entry != null){
-              if(!entry.trim().equals("")){
-               dictionaryForm.checkEntry(id,entry.trim());
-               existsInList("entry",entry.trim());
-              }else{
-                  valuePresent = false;
-              }            
-             }else{
-                 valuePresent = false;
-             }
-            
-            if(!valuePresent){
-                dictionaryForm.showMessage("entryBlank") ;
-            } 
+        TableRow tableRow =  controller.model.getRow(row);
+        Integer id  = null;
+        NumberField idField = (NumberField)tableRow.getHidden("id");  
+        if(idField!=null){
+         id  = (Integer)idField.getValue();
+        } 
+        
+       if(col ==1){
+        StringField snfield = (StringField)controller.model.getFieldAt(row, 1);               
+        String systemName = (String)snfield.getValue();
+        //Window.alert("id "+ id + " systemName "+systemName);
+        if(systemName != null){
+          if(!systemName.trim().equals("")){
+              dictionaryForm.checkSystemName(id,systemName.trim(), row);  
+              //Window.alert("testing validation");
+          
+           /*if(sysNameExists){               
+           //existsInList("systemName",systemName.trim());                 
+            snfield.addError(dictionaryForm.constants.getString("dictSystemNameError"));
+            ((TableCellInputWidget)controller.view.table.getWidget(row,1)).drawErrors();
+            //   Window.alert(dictionaryForm.constants.getString("dictSystemNameError"));
+          }*/
+            //else{
+            //  ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,1)).clearErrors();
+             
+          //}
            
-          } 
-         
-        if(col == 1 && (row == controller.model.numRows()-1)){          
-          controller.addRow();  
+          // if(!(systemNamesList.contains(systemName.trim()))){
+           //    systemNamesList.add(systemName.trim());
+           //}   
+          if(row < systemNamesList.size()){ 
+           if(!(systemNamesList.get(row).equals(systemName))){
+             if(checkInList("systemName",systemName.trim(), row)){
+                //Window.alert("System names for Dictionary must be unique");
+                snfield.addError("System names for Dictionary must be unique");
+                ((TableCellInputWidget)controller.view.table.getWidget(row,1)).drawErrors();
+             }
+            } 
+           }else{
+              if(checkInList("systemName",systemName.trim(), row)){
+                  snfield.addError("System names for Dictionary must be unique");
+                  ((TableCellInputWidget)controller.view.table.getWidget(row,1)).drawErrors();
+              }
+           } 
          }
+        }
+       // if(!valuePresent){
+           // dictionaryForm.showMessage("systemNameBlank") ;
+            
+        //} 
+    }
+            
+        if(col==3){
+         StringField efield = (StringField)controller.model.getFieldAt(row, 3); 
+         String entry = (String)efield.getValue();                
+       
+         if(entry != null){
+          if(!entry.trim().equals("")){
+              dictionaryForm.checkEntry(id,entry.trim(), row);
+              //Window.alert("testing validation");
+           /*if(entryExists){
+                   
+            //efield.addError(dictionaryForm.constants.getString("dictEntryError"));
+            //((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+               //Window.alert(dictionaryForm.constants.getString("dictEntryError"));
+           }*/
+           
+           //else{
+               //((TableCellInputWidget)controller.view.table.getWidget(row,3)).clearErrors();
+           //} 
+          //if(!(entryList.contains(entry.trim()))){
+              // entryList.add(entry.trim());
+            //} 
+          if(row < entryList.size()){               
+           if(!(entryList.get(row).equals(entry))){
+              if(checkInList("entry",entry.trim(), row)){
+                   //Window.alert("Entry text for Dictionary must be unique");  
+                  efield.addError("Entry text for Dictionary must be unique");
+                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+               }
+            } 
+           }
+           else{
+              if(checkInList("entry",entry.trim(), row)){
+                  efield.addError("Entry text for Dictionary must be unique");
+                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();   
+              }
+           }
+          } 
+        
+        //if(!valuePresent){
+            //dictionaryForm.showMessage("entryBlank") ;
+       // } 
+         }
+        }
+        //sysNameExists = false;
+        //entryExists = false;
+        if((col == 1 || col == 3) && (row == controller.model.numRows()-1)){          
+           controller.addRow();  
+          }
+        
      }
 
     public void getNextPage(TableController controller) {
@@ -148,36 +195,80 @@ public class DictionaryEntriesTable implements TableManager {
         systemNamesList.clear();   
         entryList.clear();
     }
+      
     
-    public void existsInList(String listName, String text){
+    public boolean checkInList(String listName,String text,int row){
+      boolean duplicate =  false;      
        if(listName.equals("systemName")){
-          if(systemNamesList.contains(text)){
-              dictionaryForm.showMessage("sysNameUnique");
-              noSysNameError = false;
-          }else{
-              systemNamesList.add(text);
-              noSysNameError = true;
-             if(noEntryError){ 
-              dictionaryForm.showMessage("noErrors");
-             }else{
-               dictionaryForm.showMessage("entryUnique");
-             } 
-          } 
-       }
-       if(listName.equals("entry")){
-           if(entryList.contains(text)){
-               dictionaryForm.showMessage("entryUnique");
-               noEntryError = false;
-           }else{
-               entryList.add(text);  
-               noEntryError = true;
-               if(noSysNameError){
-                dictionaryForm.showMessage("noErrors");
-               }else{
-                   dictionaryForm.showMessage("sysNameUnique"); 
-               } 
+           if(systemNamesList.contains(text)){
+               
+               duplicate = true;
            } 
-        }    
+          if(!duplicate){
+             if(row < systemNamesList.size()){
+                 systemNamesList.add(row,text) ; 
+             }else{
+                 systemNamesList.add(text);
+             } 
+          }
+        /* int size = systemNamesList.size();
+         if(size>1){  
+          for(int iter = 0; iter < size ;iter++){
+            String sysName = (String)systemNamesList.get(iter);
+             for(int iterNext = iter+1 ; iterNext < size; iterNext++){
+                String sysNameNext = (String)systemNamesList.get(iterNext);
+                if(sysName.equals(sysNameNext)){
+                   // dictionaryForm.showMessage("sysNameUnique");
+                    Window.alert("duplicate system names");
+                    //noSysNameError = false;   
+                    return;
+                }
+             }
+           }
+         }*/
+          //noSysNameError = true;              
+         // if(noEntryError)
+         //     dictionaryForm.sysNameEntryUnique(true);   
+        }
+        if(listName.equals("entry")){          
+           if(entryList.contains(text)){               
+               duplicate = true; 
+           }            
+           if(!duplicate){
+               if(row < entryList.size()){
+                   entryList.add(row,text) ; 
+               }else{
+                   entryList.add(text);  
+               } 
+            }
+           /* int size = entryList.size();
+            if(size >1){
+             for(int iter = 0; iter < size;iter++){
+              String entry = (String)entryList.get(iter);
+               for(int iterNext = iter+1 ; iterNext < size; iterNext++){
+                  String entryNext = (String)entryList.get(iterNext);
+                  if(entry.equals(entryNext)){
+                      //dictionaryForm.showMessage("entryUnique");
+                      Window.alert("duplicate entries");
+                      //noEntryError = false;  
+                      return;
+                  }
+               }
+             } 
+            }*/  
+            //noEntryError = true;
+            //if(noSysNameError)
+             //   dictionaryForm.sysNameEntryUnique(true);       
+         }
+        return duplicate;
+       }
+    
+    public void createLists(){        
+       for(int iter =0; iter < thiscontroller.model.numRows(); iter++){
+           systemNamesList.add(thiscontroller.model.getRow(iter).getColumn(1).getValue()) ;
+           entryList.add(thiscontroller.model.getRow(iter).getColumn(3).getValue()) ;                   
+       }
     }
     
 }
+

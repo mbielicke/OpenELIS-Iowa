@@ -96,4 +96,9 @@ public class CategorySystemNamesTable implements TableManager {
         this.dictionaryForm = dictionaryForm;
     }
 
+    public void validateRow(int row, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
