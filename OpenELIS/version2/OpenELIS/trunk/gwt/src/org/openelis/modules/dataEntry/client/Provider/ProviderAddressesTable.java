@@ -80,4 +80,9 @@ public class ProviderAddressesTable implements TableManager {
         //this.providerForm = providerForm;
     }
 
+    public void validateRow(int row, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

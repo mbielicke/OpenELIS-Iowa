@@ -99,4 +99,9 @@ public class ProviderNamesTable implements TableManager {
         
     }
 
+    public void validateRow(int row, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
