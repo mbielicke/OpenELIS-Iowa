@@ -135,13 +135,19 @@ public class DictionaryEntriesTable implements TableManager {
                    //Window.alert("Entry text for Dictionary must be unique");  
                   efield.addError("Entry text for Dictionary must be unique");
                   ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+                  dictionaryForm.setSysNameUnique(false); 
+               }else{
+                   dictionaryForm.setSysNameUnique(true);
                }
             } 
            }
            else{
               if(checkInList("entry",entry.trim(), row)){
                   efield.addError("Entry text for Dictionary must be unique");
-                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();   
+                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+                  dictionaryForm.setEntryUnique(false); 
+              }else{
+                  dictionaryForm.setEntryUnique(true);
               }
            }
           } 
