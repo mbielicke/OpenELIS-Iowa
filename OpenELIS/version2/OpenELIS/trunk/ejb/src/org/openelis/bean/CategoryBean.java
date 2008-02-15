@@ -65,21 +65,6 @@ public class CategoryBean implements CategoryRemote {
         return category;
     }
 
-    public List getCategoryNameListByLetter(String letter,
-                                            int startPos,
-                                            int maxResults) {
-        Query query = manager.createNamedQuery("getCategorySysNameRowsByLetter");
-        query.setParameter("letter", letter);
-        
-        if(maxResults > 0){
-            query.setFirstResult(startPos);
-            query.setMaxResults(maxResults);
-        }
-        
-        List<CategoryTableRowDO> catList = query.getResultList();// getting a list of organizations
-        
-        return catList;
-    }
  
 
     public Integer getSystemUserId() {
@@ -97,11 +82,12 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct c.id, c.systemName from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
+        sb.append("select distinct c.id, c.name from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
         if(fields.containsKey("systemName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("systemName"), "c.systemName"));
         if(fields.containsKey("name"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "c.name"));
+         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "c.name"));               
+        
         if(fields.containsKey("desc"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("desc"), "c.description"));       
         //if(fields.containsKey("secName"))
@@ -128,7 +114,7 @@ public class CategoryBean implements CategoryRemote {
        
         
 
-        Query query = manager.createQuery(sb.toString()+" order by c.systemName");
+        Query query = manager.createQuery(sb.toString()+" order by c.name");
         
 //      if(first > -1)
     	// query.setFirstResult(first);
@@ -200,6 +186,8 @@ public class CategoryBean implements CategoryRemote {
             manager.persist(category);
         }
         
+        ArrayList<String> systemNames = new ArrayList<String>();
+        
         ArrayList<String> entries = new ArrayList<String>();        
         for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
             DictionaryDO dictDO = (DictionaryDO)iter.next();
@@ -222,11 +210,38 @@ public class CategoryBean implements CategoryRemote {
                    update = true;
              }
              
-             if(!entries.contains(dictDO.getEntry())){
-              entries.add(dictDO.getEntry());
+            if(dictDO.getEntry()!=null){
+             if(!dictDO.getEntry().trim().equals("")){   
+              if(!entries.contains(dictDO.getEntry())){
+                entries.add(dictDO.getEntry());
+               }else{
+                  throw new Exception("Entry texts for a category must be unique");
+               } 
              }else{
-                 throw new Exception("Entry names for a category must be unique");
-             } 
+                 throw new Exception("Entry text must not be blank");
+             }              
+            }else{
+                throw new Exception("Entry text must not be blank");
+            }  
+             
+             if(dictDO.getSystemName()!=null){
+              if(!dictDO.getSystemName().trim().equals("")){   
+               if(!systemNames.contains(dictDO.getSystemName())){
+                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForSystemName");
+                 catIdQuery.setParameter("systemName", dictDO.getSystemName());                
+                 Integer catId = (Integer)catIdQuery.getSingleResult();
+                                  
+                  if(catId != null){
+                      if(!catId.equals(category.getId())){
+                          throw new Exception("The system name "+dictDO.getSystemName()+" belongs to another category."); 
+                      }
+                  }
+                 systemNames.add(dictDO.getSystemName());
+                 }else{
+                  throw new Exception("System names must be unique");
+                 }
+              }
+             }
              
              if(update){
                  dictionary.setCategory(category.getId());
@@ -243,7 +258,11 @@ public class CategoryBean implements CategoryRemote {
              
         }
         
+        entries = null;
+        systemNames = null;
+        
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
+        
        }catch(Exception ex){           
            throw ex;        
        }
@@ -269,9 +288,7 @@ public class CategoryBean implements CategoryRemote {
     public List getMatchingEntries(String entry, int maxResults){
        Query query = manager.createNamedQuery("getMatchingEntries");  
        query.setParameter("entry", entry);       
-       query.setMaxResults(maxResults);
-       
-       System.out.println("entry "+ "\""+entry+"\"");
+       query.setMaxResults(maxResults);       
        
        List entryList = null;
        try{ 
