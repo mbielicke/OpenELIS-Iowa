@@ -108,7 +108,7 @@
     
     <panel layout= "vertical" width = "175px" xsi:type= "Panel" >
       <table maxRows = "20" rows = "0" width= "auto" key = "categoryTable" serviceUrl= "DictionaryServlet" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'dic_Categories')}">
-       <headers><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></headers>
+       <headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>150</widths>
 							<editors>
 								<label/>								
@@ -266,9 +266,9 @@
 								</editors>
 								<fields>
 									<check/>																		
-									<string/>									
+									<string />									
 									<string/>
-									<string/>
+									<string required = "true"/>
 									<number type="integer">0</number>									
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
@@ -334,6 +334,7 @@
 	 <string key="desc" max="60" required="false"/>
      <table key="dictEntTable"/>	 
      <number key="sectionId" type="integer" required="false"/>
+     <!--<string key = "resetErrors" required = "false">true</string>-->
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
@@ -343,7 +344,7 @@
 	 <collection key="section" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-      <queryString key="systemName"/>
+      <queryString key="name"/>
     </rpc>
 </screen>
 </xsl:template>
