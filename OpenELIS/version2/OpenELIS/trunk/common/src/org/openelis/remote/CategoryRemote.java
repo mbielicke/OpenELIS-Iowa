@@ -9,8 +9,6 @@ import org.openelis.domain.CategoryDO;
 
 @Remote
 public interface CategoryRemote {
-    //  method to return list of category ids and system names by the letter they start with
-    public List getCategoryNameListByLetter(String letter, int startPos, int maxResults);
     
     //  method to return category without performing locking
     public CategoryDO getCategory(Integer categoryId);
