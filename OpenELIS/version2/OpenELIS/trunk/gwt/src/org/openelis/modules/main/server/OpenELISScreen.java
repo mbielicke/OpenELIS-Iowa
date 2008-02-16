@@ -1,4 +1,4 @@
-package org.openelis.server;
+package org.openelis.modules.main.server;
 
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.AppServlet;

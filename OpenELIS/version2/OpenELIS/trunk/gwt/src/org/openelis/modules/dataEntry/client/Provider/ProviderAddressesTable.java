@@ -85,4 +85,9 @@ public class ProviderAddressesTable implements TableManager {
         
     }
 
+    public void setMultiple(int row, int col, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

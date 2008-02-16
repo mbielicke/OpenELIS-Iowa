@@ -104,4 +104,9 @@ public class ProviderNamesTable implements TableManager {
         
     }
 
+    public void setMultiple(int row, int col, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

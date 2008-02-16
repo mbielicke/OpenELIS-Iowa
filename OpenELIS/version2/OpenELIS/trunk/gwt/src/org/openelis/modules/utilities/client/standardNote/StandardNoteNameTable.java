@@ -95,5 +95,10 @@ public class StandardNoteNameTable implements TableManager {
 		controller.model.totalPages = 3;
 		
 		controller.loadModel(controller.model);
-	}  
+	}
+
+    public void setMultiple(int row, int col, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }  
 }

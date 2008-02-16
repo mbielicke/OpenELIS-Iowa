@@ -1,3 +1,5 @@
 <module>
-
+    <servlet path='/OrganizationServlet' class='org.openelis.modules.dataEntry.server.OrganizationServlet'/>  
+    <servlet path='/OrganizeFavoritesScreen' class='org.openelis.modules.dataEntry.server.OrganizeFavoritesScreen'/>
+    <servlet path='/ProviderServlet' class='org.openelis.server.modules.dataEntry.ProviderServlet'/>
 </module>

@@ -275,6 +275,11 @@ public class DictionaryEntriesTable implements TableManager {
            entryList.add(thiscontroller.model.getRow(iter).getColumn(3).getValue()) ;                   
        }
     }
+
+    public void setMultiple(int row, int col, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
 

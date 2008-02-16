@@ -97,7 +97,7 @@ public class QAEventsNamesTable implements TableManager {
 
     }
 
-    public void validateRow(int row, TableController controller) {
+    public void setMultiple(int row, int col, TableController controller) {
         // TODO Auto-generated method stub
         
     }
