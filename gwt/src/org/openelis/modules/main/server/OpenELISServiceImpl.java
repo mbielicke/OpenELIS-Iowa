@@ -1,4 +1,4 @@
-package org.openelis.server;
+package org.openelis.modules.main.server;
 
 import javax.servlet.http.HttpSession;
 

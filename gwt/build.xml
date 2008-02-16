@@ -34,6 +34,14 @@ Builds the a servlet warfile.
 	   	       <include name="edu/uiowa/uhl/security/remote/*.class"/>
 	   	    </fileset>
 	   	  </jar>
+	  	<jar jarfile="build/openelis-common.jar">
+	  	    <fileset dir="../OpenELIS-Common/bin">
+	  	       <include name="org/openelis/domain/*.class"/>
+	  	       <include name="org/openelis/remote/*.class"/>
+	  	       <include name="org/openelis/local/*.class"/>
+	  	       <include name="org/openelis/util/*.class"/>
+	  	    </fileset>
+	    </jar>
 	   	  <delete file="${build.dir}/openelis.war" />
 	      <war destfile="${build.dir}/openelis.war"
 	           webxml="${meta.dir}/openelis-web.xml">
@@ -51,7 +59,7 @@ Builds the a servlet warfile.
 	      	  	       includes="gwt-servlet.jar"/>
 	      	  <lib dir="../OpenELIS-Lib"
 	      	           includes="openelis-lib.jar"/>
-	      	   <lib dir="../OpenELIS-common"
+	      	   <lib dir="build"
 	      	           includes="openelis-common.jar"/>
 	      	  <lib dir="build"
 	      	           includes="elissecurity.jar"/>

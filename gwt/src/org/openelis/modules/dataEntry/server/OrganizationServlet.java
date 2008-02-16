@@ -1,4 +1,4 @@
-package org.openelis.server;
+package org.openelis.modules.dataEntry.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;

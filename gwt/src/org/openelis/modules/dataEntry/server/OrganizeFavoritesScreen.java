@@ -1,4 +1,4 @@
-package org.openelis.server;
+package org.openelis.modules.dataEntry.server;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;

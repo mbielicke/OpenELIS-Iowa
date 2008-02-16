@@ -28,63 +28,63 @@
 
   <servlet>
     <servlet-name>OpenELISService</servlet-name>
-    <servlet-class>org.openelis.server.OpenELISServiceImpl</servlet-class>
+    <servlet-class>org.openelis.modules.main.server.OpenELISServiceImpl</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   
   <servlet>
     <servlet-name>OpenELISScreen</servlet-name>
-    <servlet-class>org.openelis.server.OpenELISScreen</servlet-class>
+    <servlet-class>org.openelis.modules.main.server.OpenELISScreen</servlet-class>
   </servlet>
   
   <servlet>
     <servlet-name>OrganizationServlet</servlet-name>
-    <servlet-class>org.openelis.server.OrganizationServlet</servlet-class>
+    <servlet-class>org.openelis.modules.dataEntry.server.OrganizationServlet</servlet-class>
   </servlet>
     
   <servlet>
     <servlet-name>OrganizeFavoritesScreen</servlet-name>
-    <servlet-class>org.openelis.server.OrganizeFavoritesScreen</servlet-class>
+    <servlet-class>org.openelis.modules.dataEntry.server.OrganizeFavoritesScreen</servlet-class>
   </servlet>
 
   <servlet>
     <servlet-name>ProviderServlet</servlet-name>
-    <servlet-class>org.openelis.server.ProviderServlet</servlet-class>
+    <servlet-class>org.openelis.modules.dataEntry.server.ProviderServlet</servlet-class>
   </servlet>  
   
   <servlet>
     <servlet-name>DictionaryServlet</servlet-name>
-    <servlet-class>org.openelis.server.DictionaryServlet</servlet-class>
+    <servlet-class>org.openelis.modules.utilities.server.DictionaryServlet</servlet-class>
   </servlet>
   
   <servlet>
     <servlet-name>QAEventServlet</servlet-name>
-    <servlet-class>org.openelis.server.QAEventServlet</servlet-class>
+    <servlet-class>org.openelis.modules.analysis.server.QAEventServlet</servlet-class>
   </servlet>
  
  <servlet>
     <servlet-name>StorageServlet</servlet-name>
-    <servlet-class>org.openelis.server.StorageServlet</servlet-class>
+    <servlet-class>org.openelis.modules.supply.server.StorageServlet</servlet-class>
   </servlet>
 
   <servlet>
     <servlet-name>StorageLocationServlet</servlet-name>
-    <servlet-class>org.openelis.server.StorageLocationServlet</servlet-class>
+    <servlet-class>org.openelis.modules.supply.server.StorageLocationServlet</servlet-class>
   </servlet>
 
     <servlet>
     <servlet-name>StorageUnitServlet</servlet-name>
-    <servlet-class>org.openelis.server.StorageUnitServlet</servlet-class>
+    <servlet-class>org.openelis.modules.supply.server.StorageUnitServlet</servlet-class>
   </servlet>
   
   <servlet>
     <servlet-name>StandardNoteServlet</servlet-name>
-    <servlet-class>org.openelis.server.StandardNoteServlet</servlet-class>
+    <servlet-class>org.openelis.modules.utilities.server.StandardNoteServlet</servlet-class>
   </servlet>
   
     <servlet>
     <servlet-name>StandardNotePickerServlet</servlet-name>
-    <servlet-class>org.openelis.server.StandardNotePickerServlet</servlet-class>
+    <servlet-class>org.openelis.modules.utilities.server.StandardNotePickerServlet</servlet-class>
   </servlet>
   <!-- inmsp Servlet Mappings-->
     

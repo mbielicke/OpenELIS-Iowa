@@ -59,4 +59,9 @@ public class ChildStorageLocsTable implements TableManager {
 	public void getPreviousPage(TableController controller) {}
 
 	public void setModel(TableController controller, DataModel model) {}
+
+    public void setMultiple(int row, int col, TableController controller) {
+        // TODO Auto-generated method stub
+        
+    }
 }
