@@ -107,6 +107,17 @@ public class Provider extends AppScreenForm{
       TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
       provAddTable.setAutoAdd(false);      
        super.abort(state); 
+       
+      // need to get the provider name table model
+       TableWidget catNameTM = (TableWidget) getWidget("providersTable");
+       int rowSelected = catNameTM.controller.selected;               
+
+       // set the update button if needed
+       if (rowSelected == -1){
+           bpanel.setButtonState("update", AppButton.DISABLED);
+           bpanel.setButtonState("prev", AppButton.DISABLED);
+           bpanel.setButtonState("next", AppButton.DISABLED);
+       }
     }
     
     public void add(int state){        
@@ -128,6 +139,9 @@ public class Provider extends AppScreenForm{
 //      set focus to the last name field
 		TextBox lastName = (TextBox)getWidget("lastName");
 		lastName.setFocus(true);
+        
+        TableWidget catNameTM = (TableWidget) getWidget("providersTable");
+        catNameTM.controller.unselect(-1);
     }
     
     public void afterUpdate(boolean success) {
