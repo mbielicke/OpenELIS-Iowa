@@ -211,7 +211,7 @@
     </panel>
     </xsl:if>
    
-      <table maxRows = "19" rows = "0" width= "auto" key = "categoryTable" serviceUrl= "DictionaryServlet" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'dic_SystemName')}">
+      <table maxRows = "19" rows = "0" width= "auto" key = "categoryTable" serviceUrl= "DictionaryServlet" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'name')}">
 							<widths>150</widths>
 							<editors>
 								<label/>								
@@ -227,7 +227,7 @@
   
   
 				<!-- end left table -->
-				<panel layout="vertical" spacing="0" width="500px" xsi:type="Panel">
+				<panel layout="vertical" spacing="0" xsi:type="Panel">
 <panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
 					<widget>						
 						<buttonPanel key="buttons">
@@ -293,10 +293,10 @@
           </buttonPanel>						
 					</widget>
 					</panel>
-					<panel layout="horizontal" spacing="0" width="200px" xsi:type="Panel">
-						<panel layout="vertical" spacing="0" width="200px" xsi:type="Panel">
+					<panel layout="horizontal" spacing="0"  xsi:type="Panel">
+						<panel layout="vertical" spacing="0"  xsi:type="Panel">
 							<!-- first vertical panel for org fields -->
-							<panel key="secMod" layout="table" style="Form" width="200px" xsi:type="Table">																							
+							<panel key="secMod" layout="table" style="Form"  xsi:type="Table">																							
 								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
@@ -318,11 +318,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"section")'/></text>
 									 </widget>
 									 
-									 <!--<panel layout="horizontal" spacing="5" width="150px" xsi:type="Panel">-->
-									  <!--<widget>
-									  	<textbox case="mixed" key="secName"/>
-									  	<option key="secName" multi= "false" required= "false" onChange= "this"/>
-									  </widget>-->
+									 
 									  <widget>
 										<autoDropdown cat="section" key="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
 													<autoWidths>80</autoWidths>
@@ -372,8 +368,7 @@
 									<check/>									
 									<textbox/>									
 									<textbox/>									
-									<textbox/>	
-									<!--<textbox/>-->
+									<textbox/>										
 									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="DictionaryServlet" width="100px" popupHeight="50px"  type="integer">
 												<autoWidths>100</autoWidths>
 												<autoEditors>
@@ -434,8 +429,7 @@
 							</table>
 						  </query>						  
 						</widget>
-						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>						
-		                <!--<button halign= "right" action = "this" onclick = "this" key= "removeEntryButton" style= "ScreenButtonPanel" html= "&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt;{resource:getString($constants,'removeRow')}"/>	-->
+						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>								                
 		                <widget halign = "right">
                             <appButton  action="remove" key = "removeEntryButton">
                             <panel xsi:type="Panel" layout="horizontal">
@@ -456,8 +450,7 @@
 	 <string key="name" max="50" required="true"/>
 	 <string key="desc" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <number key="sectionId" type="integer" required="false"/>
-     <!--<string key = "resetErrors" required = "false">true</string>-->
+     <number key="sectionId" type="integer" required="false"/>     
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
