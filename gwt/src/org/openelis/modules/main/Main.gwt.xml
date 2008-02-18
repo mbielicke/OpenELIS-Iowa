@@ -1,4 +1,4 @@
 <module>
-    <servlet path='/OpenELISService' class='org.openelis.server.OpenELISServiceImpl'/>  
-    <servlet path='/OpenELISScreen' class='org.openelis.server.OpenELISScreen'/>  
+    <servlet path='/OpenELISService' class='org.openelis.modules.main.server.OpenELISServiceImpl'/>  
+    <servlet path='/OpenELISScreen' class='org.openelis.modules.main.server.OpenELISScreen'/>  
 </module>
