@@ -117,16 +117,7 @@ import com.google.gwt.user.client.ui.Widget;
                  getQAEvents("y", sender);
              } else if (sender == getWidget("z")) {
                  getQAEvents("z", sender);
-             }
-              if(sender == getWidget("reportingText")){
-               /* if(bpanel.state == FormInt.ADD){
-                 if(reportingText.getText().equals("<Click here to enter reporting text>")){    
-                   textEdited = true;
-                   reportingText = (TextArea)sender;
-                   reportingText.setText("");
-                 } 
-                } */  
-              }
+             }              
          }
          
         public void query(int state) {
@@ -135,22 +126,30 @@ import com.google.gwt.user.client.ui.Widget;
 //        	set focus to the name field
     		TextBox name = (TextBox)getWidget("name");
     		name.setFocus(true);
-        }
+        }                 
          
-         public void commitAdd(){                        
-                // Window.alert("super");                                 
-                 super.commitAdd();             
-                        
+         public void abort(int state){
+             super.abort(state);
+             // need to get the provider name table model
+             TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
+             int rowSelected = catNameTM.controller.selected;               
+
+             // set the update button if needed
+             if (rowSelected == -1){
+                 bpanel.setButtonState("update", AppButton.DISABLED);
+                 bpanel.setButtonState("prev", AppButton.DISABLED);
+                 bpanel.setButtonState("next", AppButton.DISABLED);
+             }
+                          
          }
          
          public void add(int state){                                  
-             super.add(state);
-             //reportingText.setText("<Click here to enter reporting text>");
-            // reportingText.selectAll(); 
-             
-//         	set focus to the name field
+             super.add(state);             
      		TextBox name = (TextBox)getWidget("name");
      		name.setFocus(true);
+            
+            TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
+            catNameTM.controller.unselect(-1);
          }
          
         public void afterUpdate(boolean success) {
