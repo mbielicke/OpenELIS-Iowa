@@ -927,139 +927,84 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:0" text="{resource:getString($constants,'project')}"/>
+								<label key="favTopDictionary" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:0" text="{resource:getString($constants,'dictionary')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:1" text="{resource:getString($constants,'analyte')}"/>
+								<label key="favTopOrganization" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:1" text="{resource:getString($constants,'organization')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:2" text="{resource:getString($constants,'method')}"/>
+								<label key="favTopOrganizeFavorites" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:2" text="{resource:getString($constants,'organizeFavorites')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:3" text="{resource:getString($constants,'methodPanel')}"/>
+								<label key="favTopProvider" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:3" text="{resource:getString($constants,'provider')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:4" text="{resource:getString($constants,'order')}"/>
+								<label key="favTopqaEvents" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:4" text="{resource:getString($constants,'qaEvents')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:5" text="{resource:getString($constants,'storage')}"/>
+								<label key="favTopStandardNote" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:5" text="{resource:getString($constants,'standardNote')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:6" text="{resource:getString($constants,'report2')}"/>
+								<label key="favTopStorage" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:6" text="{resource:getString($constants,'storage')}"/>
 							</widget>
 						</panel>
 					</row>
-									<row style="topMenuPanel">
+					<row style="topMenuPanel">
 						<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
 						</panel>
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
 							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:7" text="{resource:getString($constants,'fastSampleLogin')}"/>
-							</widget>
-						</panel>
-					</row>
-									<row style="topMenuPanel">
-						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
-						<!-- title and description -->
-						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
-							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:8" text="{resource:getString($constants,'organization')}"/>
-							</widget>
-						</panel>
-					</row>
-									<row style="topMenuPanel">
-						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
-						<!-- title and description -->
-						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
-							<widget>
-								<label key="cut" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:9" text="{resource:getString($constants,'sampleLogin')}"/>
-							</widget>
-						</panel>
-					</row>
-									<row style="topMenuPanel">
-						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
-						<!-- title and description -->
-						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
-							<widget>
-								<label key="dictionary" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:10" text="{resource:getString($constants,'dictionary')}"/>
-							</widget>
-						</panel>
-					</row>
-									<row style="topMenuPanel">
-						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
-						<!-- title and description -->
-						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
-							<widget>
-								<label key="systemVariable" style="topMenuPanelTitle" mouse="this" value="favoritesPanelTable:11" text="{resource:getString($constants,'systemVariable')}"/>
-							</widget>
-						</panel>
-					</row>
-									<row style="topMenuPanel">
-						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
-						<!-- title and description -->
-						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="125px">
-							<widget>
-								<label key="organizeFavoritesLabel" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:12" text="{resource:getString($constants,'organizeFavorites')}"/>
+								<label key="favTopStorageUnit" style="topMenuPanelTitle" onClick="this" mouse="this" value="favoritesPanelTable:7" text="{resource:getString($constants,'storageUnit')}"/>
 							</widget>
 						</panel>
 					</row>

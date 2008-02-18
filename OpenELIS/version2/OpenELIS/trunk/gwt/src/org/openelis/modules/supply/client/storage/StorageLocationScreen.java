@@ -174,6 +174,18 @@ public class StorageLocationScreen extends AppScreenForm{
 		//if add delete the last row
 		if (state == FormInt.UPDATE || state == FormInt.ADD)
 			childTable.controller.deleteRow(childTable.controller.model.numRows() - 1);
+		
+//		 need to get the storage locs table
+		TableWidget StorageLocsTable = (TableWidget) getWidget("storageLocsTable");
+		int rowSelected = StorageLocsTable.controller.selected;
+
+		// set the update button if needed
+		if (rowSelected == -1){
+			bpanel.setButtonState("update", AppButton.DISABLED);
+			bpanel.setButtonState("prev", AppButton.DISABLED);
+			bpanel.setButtonState("next", AppButton.DISABLED);
+			bpanel.setButtonState("delete", AppButton.DISABLED);
+		}
 	}
 	private void getStorageLocs(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display

@@ -538,7 +538,8 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	closeTopMenuPanel(pn,(Label) getWidget("utilities"),(ScreenLabel) widgets.get("systemVariableLabel"));
         	//we need to do the system variable action
         	//FIXME code the system variable action
-        }else if(item == widgets.get("organizeFavoritesLeft") || item == widgets.get("organizeFavoritesLabel")){
+        }else if(item == widgets.get("organizeFavoritesLeft") || item == widgets.get("organizeFavoritesLabel") || 
+        		item == widgets.get("favTopOrganizeFavorites")){
 //        	if the favorites is open we need to close it
         	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("favoritesPanel");        	
   

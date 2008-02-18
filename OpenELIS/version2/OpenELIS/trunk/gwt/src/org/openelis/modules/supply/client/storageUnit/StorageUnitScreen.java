@@ -158,6 +158,22 @@ public class StorageUnitScreen extends AppScreenForm{
 		cat.setFocus(true);
 	}
 	
+	public void abort(int state) {
+		super.abort(state);
+		
+//		 need to get the storage unit table
+		TableWidget StorageUnitTable = (TableWidget) getWidget("StorageUnitTable");
+		int rowSelected = StorageUnitTable.controller.selected;
+
+		// set the update button if needed
+		if (rowSelected == -1){
+			bpanel.setButtonState("update", AppButton.DISABLED);
+			bpanel.setButtonState("prev", AppButton.DISABLED);
+			bpanel.setButtonState("next", AppButton.DISABLED);
+			bpanel.setButtonState("delete", AppButton.DISABLED);
+		}
+	}
+	
 	private void getStorageUnits(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
