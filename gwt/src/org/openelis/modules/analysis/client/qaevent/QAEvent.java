@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
  public class QAEvent extends AppScreenForm {
@@ -64,57 +65,57 @@ import com.google.gwt.user.client.ui.Widget;
         }
          
          public void onClick(Widget sender){
-             if (sender == widgets.get("a")) {
+             if (sender == getWidget("a")) {
                  getQAEvents("a", sender);
-             } else if (sender == widgets.get("b")) {
+             } else if (sender == getWidget("b")) {
                  getQAEvents("b", sender);
-             } else if (sender == widgets.get("c")) {
+             } else if (sender == getWidget("c")) {
                  getQAEvents("c", sender);
-             } else if (sender == widgets.get("d")) {
+             } else if (sender == getWidget("d")) {
                  getQAEvents("d", sender);
-             } else if (sender == widgets.get("e")) {
+             } else if (sender == getWidget("e")) {
                  getQAEvents("e", sender);
-             } else if (sender == widgets.get("f")) {
+             } else if (sender == getWidget("f")) {
                  getQAEvents("f", sender);
-             } else if (sender == widgets.get("g")) {
+             } else if (sender == getWidget("g")) {
                  getQAEvents("g", sender);
-             } else if (sender == widgets.get("h")) {
+             } else if (sender == getWidget("h")) {
                  getQAEvents("h", sender);
-             } else if (sender == widgets.get("i")) {
+             } else if (sender == getWidget("i")) {
                  getQAEvents("i", sender);
-             } else if (sender == widgets.get("j")) {
+             } else if (sender == getWidget("j")) {
                  getQAEvents("j", sender);
-             } else if (sender == widgets.get("k")) {
+             } else if (sender == getWidget("k")) {
                  getQAEvents("k", sender);
-             } else if (sender == widgets.get("l")) {
+             } else if (sender == getWidget("l")) {
                  getQAEvents("l", sender);
-             } else if (sender == widgets.get("m")) {
+             } else if (sender == getWidget("m")) {
                  getQAEvents("m", sender);
-             } else if (sender == widgets.get("n")) {
+             } else if (sender == getWidget("n")) {
                  getQAEvents("n", sender);
-             } else if (sender == widgets.get("o")) {
+             } else if (sender == getWidget("o")) {
                  getQAEvents("o", sender);
-             } else if (sender == widgets.get("p")) {
+             } else if (sender == getWidget("p")) {
                  getQAEvents("p", sender);
-             } else if (sender == widgets.get("q")) {
+             } else if (sender == getWidget("q")) {
                  getQAEvents("q", sender);
-             } else if (sender == widgets.get("r")) {
+             } else if (sender == getWidget("r")) {
                  getQAEvents("r", sender);
-             } else if (sender == widgets.get("s")) {
+             } else if (sender == getWidget("s")) {
                  getQAEvents("s", sender);
-             } else if (sender == widgets.get("t")) {
+             } else if (sender == getWidget("t")) {
                  getQAEvents("t", sender);
-             } else if (sender == widgets.get("u")) {
+             } else if (sender == getWidget("u")) {
                  getQAEvents("u", sender);
-             } else if (sender == widgets.get("v")) {
+             } else if (sender == getWidget("v")) {
                  getQAEvents("v", sender);
-             } else if (sender == widgets.get("w")) {
+             } else if (sender == getWidget("w")) {
                  getQAEvents("w", sender);
-             } else if (sender == widgets.get("x")) {
+             } else if (sender == getWidget("x")) {
                  getQAEvents("x", sender);
-             } else if (sender == widgets.get("y")) {
+             } else if (sender == getWidget("y")) {
                  getQAEvents("y", sender);
-             } else if (sender == widgets.get("z")) {
+             } else if (sender == getWidget("z")) {
                  getQAEvents("z", sender);
              }
               if(sender == getWidget("reportingText")){
@@ -128,6 +129,14 @@ import com.google.gwt.user.client.ui.Widget;
               }
          }
          
+        public void query(int state) {
+        	super.query(state);
+        	
+//        	set focus to the name field
+    		TextBox name = (TextBox)getWidget("name");
+    		name.setFocus(true);
+        }
+         
          public void commitAdd(){                        
                 // Window.alert("super");                                 
                  super.commitAdd();             
@@ -137,8 +146,20 @@ import com.google.gwt.user.client.ui.Widget;
          public void add(int state){                                  
              super.add(state);
              //reportingText.setText("<Click here to enter reporting text>");
-            // reportingText.selectAll();       
+            // reportingText.selectAll(); 
+             
+//         	set focus to the name field
+     		TextBox name = (TextBox)getWidget("name");
+     		name.setFocus(true);
          }
+         
+        public void afterUpdate(boolean success) {
+        	super.afterUpdate(success);
+        	
+//        	set focus to the name field
+    		TextBox name = (TextBox)getWidget("name");
+    		name.setFocus(true);
+        }
          
          private void getQAEvents(String letter, Widget sender) {
              // we only want to allow them to select a letter if they are in display

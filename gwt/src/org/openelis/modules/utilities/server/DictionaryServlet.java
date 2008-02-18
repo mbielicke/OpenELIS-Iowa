@@ -51,7 +51,7 @@ public class DictionaryServlet extends AppServlet implements
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 20;
+    private static final int leftTableRowsPerPage = 19;
     private String systemUserId = "";
     
 
@@ -113,8 +113,8 @@ public class DictionaryServlet extends AppServlet implements
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-         if(entry!=null){
-           if((!entry.trim().equals("")))  {
+         if(sysName!=null && entry!=null){
+           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
                doloop =true;
            } 
           }
@@ -338,8 +338,8 @@ public class DictionaryServlet extends AppServlet implements
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-         if(entry!=null){
-           if((!entry.trim().equals("")))  {
+         if(sysName!=null && entry!=null){
+           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
                doloop =true;
            } 
           }

@@ -22,6 +22,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -100,6 +101,10 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         
         //Button removeEntryButton = (Button) getWidget("removeEntryButton");
         //removeEntryButton.setEnabled(true);
+        
+		//set focus to the name field
+		TextBox name = (TextBox)getWidget("name");
+		name.setFocus(true);
     }
     
     public void commitAdd(){
@@ -159,58 +164,57 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     }
     
     public void onClick(Widget sender){
-        if (sender == widgets.get("a")) {
+        if (sender == getWidget("a")) {
             getCategories("a", sender);
-        } else if (sender == widgets.get("b")) {
+        } else if (sender == getWidget("b")) {
             getCategories("b", sender);
-        } else if (sender == widgets.get("c")) {
+        } else if (sender == getWidget("c")) {
             getCategories("c", sender);
-        } else if (sender == widgets.get("d")) {
+        } else if (sender == getWidget("d")) {
             getCategories("d", sender);
-        } else if (sender == widgets.get("e")) {
+        } else if (sender == getWidget("e")) {
             getCategories("e", sender);
-        } else if (sender == widgets.get("f")) {
+        } else if (sender == getWidget("f")) {
             getCategories("f", sender);
-        } else if (sender == widgets.get("g")) {
+        } else if (sender == getWidget("g")) {
             getCategories("g", sender);
-        } else if (sender == widgets.get("h")) {
+        } else if (sender == getWidget("h")) {
             getCategories("h", sender);
-        } else if (sender == widgets.get("i")) {
+        } else if (sender == getWidget("i")) {
             getCategories("i", sender);
-        } else if (sender == widgets.get("j")) {
+        } else if (sender == getWidget("j")) {
             getCategories("j", sender);
-        } else if (sender == widgets.get("k")) {
+        } else if (sender == getWidget("k")) {
             getCategories("k", sender);
-        } else if (sender == widgets.get("l")) {
+        } else if (sender == getWidget("l")) {
             getCategories("l", sender);
-        } else if (sender == widgets.get("m")) {
+        } else if (sender == getWidget("m")) {
             getCategories("m", sender);
-        } else if (sender == widgets.get("n")) {
+        } else if (sender == getWidget("n")) {
             getCategories("n", sender);
-        } else if (sender == widgets.get("o")) {
+        } else if (sender == getWidget("o")) {
             getCategories("o", sender);
-            setStyleNameOnButton(sender);
-        } else if (sender == widgets.get("p")) {
+        } else if (sender == getWidget("p")) {
             getCategories("p", sender);
-        } else if (sender == widgets.get("q")) {
+        } else if (sender == getWidget("q")) {
             getCategories("q", sender);
-        } else if (sender == widgets.get("r")) {
+        } else if (sender == getWidget("r")) {
             getCategories("r", sender);
-        } else if (sender == widgets.get("s")) {
+        } else if (sender == getWidget("s")) {
             getCategories("s", sender);
-        } else if (sender == widgets.get("t")) {
+        } else if (sender == getWidget("t")) {
             getCategories("t", sender);
-        } else if (sender == widgets.get("u")) {
+        } else if (sender == getWidget("u")) {
             getCategories("u", sender);
-        } else if (sender == widgets.get("v")) {
+        } else if (sender == getWidget("v")) {
             getCategories("v", sender);
-        } else if (sender == widgets.get("w")) {
+        } else if (sender == getWidget("w")) {
             getCategories("w", sender);
-        } else if (sender == widgets.get("x")) {
+        } else if (sender == getWidget("x")) {
             getCategories("x", sender);
-        } else if (sender == widgets.get("y")) {
+        } else if (sender == getWidget("y")) {
             getCategories("y", sender);
-        } else if (sender == widgets.get("z")) {
+        } else if (sender == getWidget("z")) {
             getCategories("z", sender);
         }else if (sender == widgets.get("removeEntryButton")) {   
             
@@ -273,10 +277,18 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.UNPRESSED);  
+            
+//          set focus to the name field
+    		TextBox name = (TextBox)getWidget("name");
+    		name.setFocus(true);
         }
         
         public void query(int state){             
-            super.query(state);                                                                   
+            super.query(state);
+            
+    		//set focus to the name field
+    		TextBox name = (TextBox)getWidget("name");
+    		name.setFocus(true);
         }
         
         

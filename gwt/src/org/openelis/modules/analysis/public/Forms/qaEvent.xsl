@@ -16,97 +16,200 @@
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.client.constants.OpenELISConstants',locale:new(string($language)))"/>
-<screen id= "QAEvents" serviceUrl= "OpenElisService"
-xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd"
-xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
+<screen id= "QAEvents" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <panel layout= "horizontal" width = "400px" spacing= "0" padding= "0" xsi:type= "Panel">  
-  <aToZ height= "425px" width = "auto" key= "hideablePanel" visible= "false" onclick= "this">
-   <panel layout= "horizontal" xsi:type= "Panel" spacing= "0">
+ <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
+  <aToZ height= "425px" width = "100%" key= "hideablePanel" visible= "false" onclick= "this">
+   <panel layout= "horizontal" style="ScreenLeftPanel" xsi:type= "Panel" spacing= "0">
     <xsl:if test="string($language)='en'">
-     <panel layout= "vertical" xsi:type= "Panel" spacing = "0"> 
+    <panel layout="horizontal" xsi:type="Panel" spacing="0" padding="0" style="AtoZ">
+     <panel layout="vertical" xsi:type="Panel" spacing="0">
       <widget>
-            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
+            <appButton key="a" action="a" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>A</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
+            <appButton key="b" action="b" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>B</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
+            <appButton key="c" action="c" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>C</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
+            <appButton key="d" action="d" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>D</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
+            <appButton key="e" action="e" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>E</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
+            <appButton key="f" action="f" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>F</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
+            <appButton key="g" action="g" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>G</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
+            <appButton key="h" action="h" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>H</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
+            <appButton key="i" action="i" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>I</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
+            <appButton key="j" action="j" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>J</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
+            <appButton key="k" action="k" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>K</text>
+              </widget>
+            </appButton>            
           </widget>
           <widget>
-            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
+            <appButton key="l" action="l" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>L</text>
+              </widget>
+            </appButton>
           </widget>
           <widget>
-            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
+            <appButton key="m" action="m" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>M</text>
+              </widget>
+            </appButton>
+            </widget>
+          </panel>
+         <panel layout="vertical" xsi:type="Panel" spacing="0">
+          <widget>
+            <appButton key="n" action="n" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>N</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="o" action="o" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>O</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="p" action="p" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>P</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="q" action="q" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Q</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="r" action="r" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>R</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="s" action="s" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>S</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="t" action="t" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>T</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="u" action="u" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>U</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="v" action="v" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>V</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="w" action="w" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>W</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="x" action="x" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>X</text>
+              </widget>
+            </appButton>		  
+          </widget>
+          <widget>
+            <appButton key="y" action="y" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Y</text>
+              </widget>
+            </appButton>
+          </widget>
+          <widget>
+            <appButton key="z" action="z" toggle="true" alwaysEnabled="true" onclick="this">
+              <widget>
+                <text>Z</text>
+              </widget>
+            </appButton>
           </widget>
           </panel>
-          <panel layout="vertical" xsi:type="Panel" spacing="0">
-          <widget>
-            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
-          </widget>
-          </panel>
-
+</panel>
 		</xsl:if>
 		<xsl:if test="string($language)='cn'">
 
@@ -115,99 +218,9 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 
 		</xsl:if>
 		<xsl:if test="string($language)='sp'">
-			<panel layout="vertical" xsi:type="Panel" cellpadding="0" cellspacing="0">
-			<widget>
-            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
-          </widget>
-           <widget>
-            <html key="ch" onclick="this">&lt;a class='navIndex'&gt;CH&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="ll" onclick="this">&lt;a class='navIndex'&gt;LL&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="ñ" onclick="this">&lt;a class='navIndex'&gt;Ñ&lt;/a&gt;</html>
-          </widget>          
-          <widget>
-            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
-          </widget>
-          </panel>
+		
 		</xsl:if>
-    
-    <panel layout= "vertical" width = "250" xsi:type= "Panel" >
-      <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable"  serviceUrl = "QAEventServlet"  title="{resource:getString($constants,'qaEvents')}">
+      <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable"  serviceUrl = "QAEventServlet"  title="">
        <headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"test")'/>,<xsl:value-of select='resource:getString($constants,"method")'/></headers>
 							<widths>100,65,65</widths>
 							<editors>
@@ -223,59 +236,75 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							<sorts>false,false,false</sorts>
 							<filters>false,false,false</filters>
      </table>
-    </panel>
    </panel>
   </aToZ>
   
   <panel layout= "vertical" xsi:type = "Panel">
-   <panel layout= "vertical" spacing= "2" xsi:type= "Panel">
-    <widget halign="center">						
+   	<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+    <widget>						
 		<buttonPanel key="buttons">
-            <appButton action="query" toggle="true">
+      <appButton action="query" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
+                <text>Query</text>
               </widget>
-            </appButton>            
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="previous">
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"previous")'/></text>
-              </widget>
+              </panel>
             </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="next">
+ <appButton action="prev" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="PreviousButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"next")'/></text>
+                <text>Previous</text>
               </widget>
+              </panel>
             </appButton>
+ <appButton action="next" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="NextButtonImage"/>
+              <widget>
+                <text>Next</text>
+              </widget>
+              </panel>
+            </appButton>
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
             <appButton action="add" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="AddButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"add")'/></text>
+                <text>Add</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="update" toggle="true">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="UpdateButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"update")'/></text>
+                <text>Update</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
             <appButton action="commit">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"commit")'/></text>
+                <text>Commit</text>
               </widget>
+              </panel>
             </appButton>
-            <html>&lt;div style="width:1px;height:20px;background:grey"/&gt;</html>
             <appButton action="abort">
+              <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
               <widget>
-                <text><xsl:value-of select='resource:getString($constants,"abort")'/></text>
+                <text>Abort</text>
               </widget>
+              </panel>
             </appButton>
-            
-          </buttonPanel>
-						
+            <panel xsi:type="Absolute" layout="absolute" style="ButtonSpacer"/>
+          </buttonPanel>						
 	</widget>
-	    
+					
    </panel>
    
   <panel key = "qafields" layout= "table" width= "450px"   style="FormBorderless" xsi:type= "Table">

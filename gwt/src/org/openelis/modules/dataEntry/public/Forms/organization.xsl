@@ -17,8 +17,8 @@
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.client.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display focus="orgName">
-		<panel layout="horizontal" spacing="0" padding="0" xsi:type="Panel">
+	<display>
+		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
 				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" onclick="this">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
@@ -215,97 +215,9 @@
 
 		</xsl:if>
 		<xsl:if test="string($language)='sp'">
-			<panel layout="vertical" xsi:type="Panel" cellpadding="0" cellspacing="0">
-			<widget>
-            <html key="a" onclick="this">&lt;a class='navIndex'&gt;A&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="b" onclick="this">&lt;a class='navIndex'&gt;B&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="c" onclick="this">&lt;a class='navIndex'&gt;C&lt;/a&gt;</html>
-          </widget>
-           <widget>
-            <html key="ch" onclick="this">&lt;a class='navIndex'&gt;CH&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="d" onclick="this">&lt;a class='navIndex'&gt;D&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="e" onclick="this">&lt;a class='navIndex'&gt;E&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="f" onclick="this">&lt;a class='navIndex'&gt;F&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="g" onclick="this">&lt;a class='navIndex'&gt;G&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="h" onclick="this">&lt;a class='navIndex'&gt;H&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="i" onclick="this">&lt;a class='navIndex'&gt;I&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="j" onclick="this">&lt;a class='navIndex'&gt;J&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="k" onclick="this">&lt;a class='navIndex'&gt;K&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="l" onclick="this">&lt;a class='navIndex'&gt;L&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="ll" onclick="this">&lt;a class='navIndex'&gt;LL&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="m" onclick="this">&lt;a class='navIndex'&gt;M&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="n" onclick="this">&lt;a class='navIndex'&gt;N&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="ñ" onclick="this">&lt;a class='navIndex'&gt;Ñ&lt;/a&gt;</html>
-          </widget>          
-          <widget>
-            <html key="o" onclick="this">&lt;a class='navIndex'&gt;O&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="p" onclick="this">&lt;a class='navIndex'&gt;P&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="q" onclick="this">&lt;a class='navIndex'&gt;Q&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="r" onclick="this">&lt;a class='navIndex'&gt;R&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="s" onclick="this">&lt;a class='navIndex'&gt;S&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="t" onclick="this">&lt;a class='navIndex'&gt;T&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="u" onclick="this">&lt;a class='navIndex'&gt;U&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="v" onclick="this">&lt;a class='navIndex'&gt;V&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="w" onclick="this">&lt;a class='navIndex'&gt;W&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="x" onclick="this">&lt;a class='navIndex'&gt;X&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="y" onclick="this">&lt;a class='navIndex'&gt;Y&lt;/a&gt;</html>
-          </widget>
-          <widget>
-            <html key="z" onclick="this">&lt;a class='navIndex'&gt;Z&lt;/a&gt;</html>
-          </widget>
-          </panel>
+			
 		</xsl:if>
-				<table manager="OrganizationNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="21" title="Name">
+				<table manager="OrganizationNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="19" title="Name">
 				<!--<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>-->
 							<widths>175</widths>
 							<editors>
@@ -320,9 +232,8 @@
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
-				<widget>
-					
-
+		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+		<widget>
           <buttonPanel key="buttons">
             <appButton action="query" toggle="true">
               <panel xsi:type="Panel" layout="horizontal">
@@ -385,6 +296,7 @@
             <panel xsi:type="Absolute" layout="absolute" style="ButtonSpacer"/>
           </buttonPanel>
 				</widget>
+				</panel>
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
 					<panel layout="vertical" width="600px" xsi:type="Panel">
@@ -406,7 +318,7 @@
 										</widget>
 										<widget>
 										<textbox case="upper" key="orgName" width="225px" max="40" tab="multUnit,orgName"/>
-										</widget>
+										</widget>text
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
@@ -553,7 +465,7 @@
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
 							<widget valign="top">
-								<table width="567px" key="contactsTable" manager="OrganizationContactsTable" maxRows="7" title="">
+								<table width="567px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -601,8 +513,8 @@
 											</autoDropdown>
 										</editors>
 										<fields>
-											<number type="integer">0</number>
-											<string/>
+											<number type="integer" required="true">0</number>
+											<string required="true"/>
 											<string/>
 											<string/>
 											<string/>
@@ -620,7 +532,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="567px" rows="1" title="" maxRows="7">
+									<table width="567px" rows="1" title="" maxRows="8">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -688,13 +600,15 @@
 									</table>
 									</query>
 								</widget>
-								<panel layout="horizontal" xsi:type="Panel" height="5px"/>
-																<!--&lt;img src=&quot;Images/deleteButtonIcon.png&quot;&gt; -->
-									<widget halign="right">
+
+									<widget halign="right" style="WhiteContentPanel">
 									<appButton action="removeContact" onclick="this" key="removeContactButton">
+									<panel xsi:type="Panel" layout="horizontal">
+              						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
 						              <widget>
                 						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
 							              </widget>
+							              </panel>
 						            </appButton>
 						            </widget>
 							</panel>
@@ -704,21 +618,22 @@
 					<!-- start TAB 2 -->
 					<tab key="noteTab" text="{resource:getString($constants,'note')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
-
-									<panel layout="vertical" height="3px" xsi:type="Panel"/>
 							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="405px" max="60"/>
+										<textbox case="mixed" key="usersSubject" width="400px" max="60"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton">
+										<panel xsi:type="Panel" layout="horizontal">
+              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
 						              <widget>
                 						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
 							              </widget>
+							              </panel>
 						            </appButton>
 						            </widget>
 										</row>
@@ -732,7 +647,7 @@
 										</row>
 								</panel> 
 
-							<panel key="notesPanel" valign="top" onclick="this" layout="vertical" width="100%" xsi:type="Panel">
+							<panel key="notesPanel" style="orgNotesPanel" valign="top" onclick="this" layout="vertical" xsi:type="Panel">
 							
 							</panel>	
 							

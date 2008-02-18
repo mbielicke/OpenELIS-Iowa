@@ -38,59 +38,59 @@ public class StorageUnitScreen extends AppScreenForm{
 	}
 	
 	public void onClick(Widget sender) {
-		if (sender == widgets.get("#")) {
+		if (sender == getWidget("#")) {
 			getStorageUnits("#", sender);
-		} else if (sender == widgets.get("a")) {
+		} else if (sender == getWidget("a")) {
 			getStorageUnits("a", sender);
-		} else if (sender == widgets.get("b")) {
+		} else if (sender == getWidget("b")) {
 			getStorageUnits("b", sender);
-		} else if (sender == widgets.get("c")) {
+		} else if (sender == getWidget("c")) {
 			getStorageUnits("c", sender);
-		} else if (sender == widgets.get("d")) {
+		} else if (sender == getWidget("d")) {
 			getStorageUnits("d", sender);
-		} else if (sender == widgets.get("e")) {
+		} else if (sender == getWidget("e")) {
 			getStorageUnits("e", sender);
-		} else if (sender == widgets.get("f")) {
+		} else if (sender == getWidget("f")) {
 			getStorageUnits("f", sender);
-		} else if (sender == widgets.get("g")) {
+		} else if (sender == getWidget("g")) {
 			getStorageUnits("g", sender);
-		} else if (sender == widgets.get("h")) {
+		} else if (sender == getWidget("h")) {
 			getStorageUnits("h", sender);
-		} else if (sender == widgets.get("i")) {
+		} else if (sender == getWidget("i")) {
 			getStorageUnits("i", sender);
-		} else if (sender == widgets.get("j")) {
+		} else if (sender == getWidget("j")) {
 			getStorageUnits("j", sender);
-		} else if (sender == widgets.get("k")) {
+		} else if (sender == getWidget("k")) {
 			getStorageUnits("k", sender);
-		} else if (sender == widgets.get("l")) {
+		} else if (sender == getWidget("l")) {
 			getStorageUnits("l", sender);
-		} else if (sender == widgets.get("m")) {
+		} else if (sender == getWidget("m")) {
 			getStorageUnits("m", sender);
-		} else if (sender == widgets.get("n")) {
+		} else if (sender == getWidget("n")) {
 			getStorageUnits("n", sender);
-		} else if (sender == widgets.get("o")) {
+		} else if (sender == getWidget("o")) {
 			getStorageUnits("o", sender);
-		} else if (sender == widgets.get("p")) {
+		} else if (sender == getWidget("p")) {
 			getStorageUnits("p", sender);
-		} else if (sender == widgets.get("q")) {
+		} else if (sender == getWidget("q")) {
 			getStorageUnits("q", sender);
-		} else if (sender == widgets.get("r")) {
+		} else if (sender == getWidget("r")) {
 			getStorageUnits("r", sender);
-		} else if (sender == widgets.get("s")) {
+		} else if (sender == getWidget("s")) {
 			getStorageUnits("s", sender);
-		} else if (sender == widgets.get("t")) {
+		} else if (sender == getWidget("t")) {
 			getStorageUnits("t", sender);
-		} else if (sender == widgets.get("u")) {
+		} else if (sender == getWidget("u")) {
 			getStorageUnits("u", sender);
-		} else if (sender == widgets.get("v")) {
+		} else if (sender == getWidget("v")) {
 			getStorageUnits("v", sender);
-		} else if (sender == widgets.get("w")) {
+		} else if (sender == getWidget("w")) {
 			getStorageUnits("w", sender);
-		} else if (sender == widgets.get("x")) {
+		} else if (sender == getWidget("x")) {
 			getStorageUnits("x", sender);
-		} else if (sender == widgets.get("y")) {
+		} else if (sender == getWidget("y")) {
 			getStorageUnits("y", sender);
-		} else if (sender == widgets.get("z")) {
+		} else if (sender == getWidget("z")) {
 			getStorageUnits("z", sender);
 		}
 	}
