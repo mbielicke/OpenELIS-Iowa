@@ -166,8 +166,7 @@ public class CategoryBean implements CategoryRemote {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
         Integer categoryReferenceId = (Integer)query.getSingleResult();
-        
-        
+                
         
         if (categoryDO.getId() == null){
             category = new Category();
@@ -227,12 +226,19 @@ public class CategoryBean implements CategoryRemote {
               if(!dictDO.getSystemName().trim().equals("")){   
                if(!systemNames.contains(dictDO.getSystemName())){
                  Query catIdQuery  = manager.createNamedQuery("getCategoryIdForSystemName");
-                 catIdQuery.setParameter("systemName", dictDO.getSystemName());                
-                 Integer catId = (Integer)catIdQuery.getSingleResult();
-                                  
+                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
+                 Integer catId = null;
+                 try{
+                     catId = (Integer)catIdQuery.getSingleResult();
+                 }catch(NoResultException ex){                     
+                     ex.printStackTrace();
+                 }catch(Exception ex){
+                     throw ex;
+                 }
+                 
                   if(catId != null){
                       if(!catId.equals(category.getId())){
-                          throw new Exception("The system name "+dictDO.getSystemName()+" belongs to another category."); 
+                          throw new Exception("System name belongs to another category: "+dictDO.getSystemName()); 
                       }
                   }
                  systemNames.add(dictDO.getSystemName());
@@ -262,7 +268,8 @@ public class CategoryBean implements CategoryRemote {
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
         
-       }catch(Exception ex){           
+       }catch(Exception ex){ 
+           ex.printStackTrace();
            throw ex;        
        }
         return  category.getId();
