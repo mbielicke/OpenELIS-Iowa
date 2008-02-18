@@ -115,8 +115,7 @@
               </widget>
             </appButton>
             </widget>
-          </panel>
-         <panel layout="vertical" xsi:type="Panel" spacing="0">
+          
           <widget>
             <appButton key="n" action="n" toggle="true" alwaysEnabled="true" onclick="this">
               <widget>
