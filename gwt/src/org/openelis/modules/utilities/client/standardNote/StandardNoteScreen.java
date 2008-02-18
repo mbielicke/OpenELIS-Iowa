@@ -175,6 +175,22 @@ public class StandardNoteScreen extends AppScreenForm {
 		name.setFocus(true);
 	}
 	
+	public void abort(int state) {
+		super.abort(state);
+		
+//		 need to get the standard Note table
+		TableWidget standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
+		int rowSelected = standardNoteTable.controller.selected;
+
+		// set the update button if needed
+		if (rowSelected == -1){
+			bpanel.setButtonState("update", AppButton.DISABLED);
+			bpanel.setButtonState("prev", AppButton.DISABLED);
+			bpanel.setButtonState("next", AppButton.DISABLED);
+			bpanel.setButtonState("delete", AppButton.DISABLED);
+		}
+	}
+	
 	protected Widget setStyleNameOnButton(Widget sender) {
 		sender.addStyleName("current");
 		if (selected != null)
