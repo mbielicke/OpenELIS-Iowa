@@ -158,6 +158,17 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         sysUnique = true;
         entryUnique = true;
         super.abort(state);
+        
+       //  need to get the category name table model
+        TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
+        int rowSelected = catNameTM.controller.selected;               
+
+        // set the update button if needed
+        if (rowSelected == -1){
+            bpanel.setButtonState("update", AppButton.DISABLED);
+            bpanel.setButtonState("prev", AppButton.DISABLED);
+            bpanel.setButtonState("next", AppButton.DISABLED);
+        }
        }catch(Exception ex){
            Window.alert(ex.getMessage());
        }
@@ -278,9 +289,13 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.UNPRESSED);  
             
-//          set focus to the name field
+           // set focus to the name field
     		TextBox name = (TextBox)getWidget("name");
     		name.setFocus(true);
+            
+            TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
+             catNameTM.controller.unselect(-1);               
+           
         }
         
         public void query(int state){             
@@ -373,44 +388,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
            // return entryExists;
         }
             
-                              
-        public void showMessage(String messageType){
-            if(messageType.equals("sysNameExists")){
-                message.setText(constants.getString("dictSystemNameError"));
-            }
-            if(messageType.equals("entryExists")){
-                message.setText(constants.getString("dictEntryError"));
-            }
-            if(messageType.equals("sysNameUnique")){
-                message.setText("System names for Dictionary must be unique");
-                //errorInForm = true;
-                //sysEntryUnique = false;
-            }
-            if(messageType.equals("entryUnique")){
-                message.setText("Entry text for Dictionary must be unique");
-                //errorInForm = true;
-               // sysEntryUnique = false;
-            }
-            if(messageType.equals("entryBlank")){
-                message.setText("Entry text for Dictionary must not be blank");
-                //errorInForm = true;               
-            }
-            if(messageType.equals("systemNameBlank")){
-                message.setText("System names for Dictionary must not be blank");
-               // errorInForm = true;               
-            }
-            if(messageType.equals("noErrors")){
-               if(bpanel.state == FormInt.UPDATE){ 
-                   message.setText(constants.getString("updateFieldsPressCommit"));
-               }
-               if(bpanel.state == FormInt.ADD){ 
-                   message.setText(constants.getString("enterInformationPressCommit"));
-               }
-               //errorInForm = false;
-               //sysEntryUnique = true;               
-            }
-            
-         }
+                                      
         
         
         private void loadDropdowns(){
@@ -447,7 +425,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
              } 
          }
                              
-         public boolean validate(){
+        public boolean validate(){
               boolean entryExists = false;
               boolean sysNameExists = false;
            for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
