@@ -1,7 +1,6 @@
 package org.openelis.modules.dataEntry.client.organizeFavorites;
 
 import org.openelis.gwt.screen.AppScreenForm;
-import org.openelis.gwt.widget.ButtonPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -29,7 +28,7 @@ public class OrganizeFavorites extends AppScreenForm {
     }
 
 	public void afterDraw(boolean sucess) {  	
-        	bpanel = (ButtonPanel)getWidget("buttons");
+    //    	bpanel = (ButtonPanel)getWidget("buttons");
         	//bpanel.enable("cb", true);
         	message.setText("done");
         	//super.afterDraw(sucess);

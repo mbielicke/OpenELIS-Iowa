@@ -24,9 +24,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -131,7 +130,7 @@ public class OrganizationScreen extends AppScreenForm {
 			}
 
 		}else if(sender == getWidget("standardNoteButton")){
-			new StandardNotePickerScreen();
+			new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
 		}
 	}
 
@@ -195,19 +194,6 @@ public class OrganizationScreen extends AppScreenForm {
 		}
 	}
 
-	public void onTabSelected(SourcesTabEvents sources, int index) {
-		tabSelectedIndex = index;
-		// we need to do a org contacts table reset so that it will always show
-		// the data
-		/*if (index == 0 && bpanel.getState() == FormInt.DISPLAY) {
-			TableWidget contacts = (TableWidget) getWidget("contactsTable");
-			contacts.controller.model.deleteRow(contacts.controller.model
-					.numRows() - 1);
-			contacts.controller.reset();
-		}*/
-		super.onTabSelected(sources, index);
-	}
-
 	// button panel action methods
 	public void add(int state) {
 		super.add(state);
@@ -244,9 +230,9 @@ public class OrganizationScreen extends AppScreenForm {
 		orgContacts.controller.setAutoAdd(false);
 		
 		// need to remove the extra table row on update
-		if (state == FormInt.UPDATE || state == FormInt.ADD)
-			orgContacts.controller.model.deleteRow(orgContacts.controller.model
-					.numRows() - 1);
+		//if (state == FormInt.UPDATE || state == FormInt.ADD)
+		//	orgContacts.controller.model.deleteRow(orgContacts.controller.model
+		//			.numRows() - 1);
 
 		super.abort(state);
 

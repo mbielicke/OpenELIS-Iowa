@@ -51,7 +51,7 @@ public class OrganizationServlet extends AppServlet implements AppScreenFormServ
 	 * 
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
-	private static final int leftTableRowsPerPage = 21;
+	private static final int leftTableRowsPerPage = 19;
 
 	private TableModel model; 
 	private String systemUserId = "";

@@ -273,6 +273,7 @@ public class StorageUnitServlet extends AppServlet implements AppScreenFormServi
 
 		if(cat.equals("category")){
 			id = remote.getCategoryId("storage_unit_category");
+			//id = remote.getCategoryId("test");
 		}
 
 		List entries = new ArrayList();

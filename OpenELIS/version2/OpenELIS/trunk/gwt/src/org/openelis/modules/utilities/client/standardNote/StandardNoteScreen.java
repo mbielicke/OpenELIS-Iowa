@@ -60,57 +60,57 @@ public class StandardNoteScreen extends AppScreenForm {
 	}
 	
 	public void onClick(Widget sender) {
-		if (sender == widgets.get("a")) {
+		if (sender == getWidget("a")) {
 			getStandardNotes("a", sender);
-		} else if (sender == widgets.get("b")) {
+		} else if (sender == getWidget("b")) {
 			getStandardNotes("b", sender);
-		} else if (sender == widgets.get("c")) {
+		} else if (sender == getWidget("c")) {
 			getStandardNotes("c", sender);
-		} else if (sender == widgets.get("d")) {
+		} else if (sender == getWidget("d")) {
 			getStandardNotes("d", sender);
-		} else if (sender == widgets.get("e")) {
+		} else if (sender == getWidget("e")) {
 			getStandardNotes("e", sender);
-		} else if (sender == widgets.get("f")) {
+		} else if (sender == getWidget("f")) {
 			getStandardNotes("f", sender);
-		} else if (sender == widgets.get("g")) {
+		} else if (sender == getWidget("g")) {
 			getStandardNotes("g", sender);
-		} else if (sender == widgets.get("h")) {
+		} else if (sender == getWidget("h")) {
 			getStandardNotes("h", sender);
-		} else if (sender == widgets.get("i")) {
+		} else if (sender == getWidget("i")) {
 			getStandardNotes("i", sender);
-		} else if (sender == widgets.get("j")) {
+		} else if (sender == getWidget("j")) {
 			getStandardNotes("j", sender);
-		} else if (sender == widgets.get("k")) {
+		} else if (sender == getWidget("k")) {
 			getStandardNotes("k", sender);
-		} else if (sender == widgets.get("l")) {
+		} else if (sender == getWidget("l")) {
 			getStandardNotes("l", sender);
-		} else if (sender == widgets.get("m")) {
+		} else if (sender == getWidget("m")) {
 			getStandardNotes("m", sender);
-		} else if (sender == widgets.get("n")) {
+		} else if (sender == getWidget("n")) {
 			getStandardNotes("n", sender);
-		} else if (sender == widgets.get("o")) {
+		} else if (sender == getWidget("o")) {
 			getStandardNotes("o", sender);
-		} else if (sender == widgets.get("p")) {
+		} else if (sender == getWidget("p")) {
 			getStandardNotes("p", sender);
-		} else if (sender == widgets.get("q")) {
+		} else if (sender == getWidget("q")) {
 			getStandardNotes("q", sender);
-		} else if (sender == widgets.get("r")) {
+		} else if (sender == getWidget("r")) {
 			getStandardNotes("r", sender);
-		} else if (sender == widgets.get("s")) {
+		} else if (sender == getWidget("s")) {
 			getStandardNotes("s", sender);
-		} else if (sender == widgets.get("t")) {
+		} else if (sender == getWidget("t")) {
 			getStandardNotes("t", sender);
-		} else if (sender == widgets.get("u")) {
+		} else if (sender == getWidget("u")) {
 			getStandardNotes("u", sender);
-		} else if (sender == widgets.get("v")) {
+		} else if (sender == getWidget("v")) {
 			getStandardNotes("v", sender);
-		} else if (sender == widgets.get("w")) {
+		} else if (sender == getWidget("w")) {
 			getStandardNotes("w", sender);
-		} else if (sender == widgets.get("x")) {
+		} else if (sender == getWidget("x")) {
 			getStandardNotes("x", sender);
-		} else if (sender == widgets.get("y")) {
+		} else if (sender == getWidget("y")) {
 			getStandardNotes("y", sender);
-		} else if (sender == widgets.get("z")) {
+		} else if (sender == getWidget("z")) {
 			getStandardNotes("z", sender);
 		}
 	}
@@ -136,6 +136,10 @@ public class StandardNoteScreen extends AppScreenForm {
 		//users cant query by text so disable it
 		ScreenTextArea textArea = (ScreenTextArea)widgets.get("text");
 		textArea.enable(false);
+		
+		//set focus to the id field
+		TextBox id = (TextBox)getWidget("id");
+		id.setFocus(true);
 	}
 	
 	public void commitQuery(FormRPC rpcQuery) {

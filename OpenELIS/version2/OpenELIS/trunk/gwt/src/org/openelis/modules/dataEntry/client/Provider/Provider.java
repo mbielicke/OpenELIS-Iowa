@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -122,7 +123,11 @@ public class Provider extends AppScreenForm{
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddTable.setAutoAdd(true);
         
-        super.add(state);      
+        super.add(state);     
+        
+//      set focus to the last name field
+		TextBox lastName = (TextBox)getWidget("lastName");
+		lastName.setFocus(true);
     }
     
     public void afterUpdate(boolean success) {
@@ -134,6 +139,10 @@ public class Provider extends AppScreenForm{
         removeContactButton.changeState(AppButton.UNPRESSED);        
         
         shownotes = true;
+        
+//      set focus to the last name field
+		TextBox lastName = (TextBox)getWidget("lastName");
+		lastName.setFocus(true);
     }
     
     public void query(int state){
@@ -142,61 +151,65 @@ public class Provider extends AppScreenForm{
       shownotes = true;
       
       super.query(state);
+      
+//    set focus to the last name field
+		TextBox lastName = (TextBox)getWidget("lastName");
+		lastName.setFocus(true);
     }
        
     
     public void onClick(Widget sender) {
-        if (sender == widgets.get("a")) {
+        if (sender == getWidget("a")) {
             getProviders("a", sender);
-        } else if (sender == widgets.get("b")) {
+        } else if (sender == getWidget("b")) {
             getProviders("b", sender);
-        } else if (sender == widgets.get("c")) {
+        } else if (sender == getWidget("c")) {
             getProviders("c", sender);
-        } else if (sender == widgets.get("d")) {
+        } else if (sender == getWidget("d")) {
             getProviders("d", sender);
-        } else if (sender == widgets.get("e")) {
+        } else if (sender == getWidget("e")) {
             getProviders("e", sender);
-        } else if (sender == widgets.get("f")) {
+        } else if (sender == getWidget("f")) {
             getProviders("f", sender);
-        } else if (sender == widgets.get("g")) {
+        } else if (sender == getWidget("g")) {
             getProviders("g", sender);
-        } else if (sender == widgets.get("h")) {
+        } else if (sender == getWidget("h")) {
             getProviders("h", sender);
-        } else if (sender == widgets.get("i")) {
+        } else if (sender == getWidget("i")) {
             getProviders("i", sender);
-        } else if (sender == widgets.get("j")) {
+        } else if (sender == getWidget("j")) {
             getProviders("j", sender);
-        } else if (sender == widgets.get("k")) {
+        } else if (sender == getWidget("k")) {
             getProviders("k", sender);
-        } else if (sender == widgets.get("l")) {
+        } else if (sender == getWidget("l")) {
             getProviders("l", sender);
-        } else if (sender == widgets.get("m")) {
+        } else if (sender == getWidget("m")) {
             getProviders("m", sender);
-        } else if (sender == widgets.get("n")) {
+        } else if (sender == getWidget("n")) {
             getProviders("n", sender);
-        } else if (sender == widgets.get("o")) {
+        } else if (sender == getWidget("o")) {
             getProviders("o", sender);
-        } else if (sender == widgets.get("p")) {
+        } else if (sender == getWidget("p")) {
             getProviders("p", sender);
-        } else if (sender == widgets.get("q")) {
+        } else if (sender == getWidget("q")) {
             getProviders("q", sender);
-        } else if (sender == widgets.get("r")) {
+        } else if (sender == getWidget("r")) {
             getProviders("r", sender);
-        } else if (sender == widgets.get("s")) {
+        } else if (sender == getWidget("s")) {
             getProviders("s", sender);
-        } else if (sender == widgets.get("t")) {
+        } else if (sender == getWidget("t")) {
             getProviders("t", sender);
-        } else if (sender == widgets.get("u")) {
+        } else if (sender == getWidget("u")) {
             getProviders("u", sender);
-        } else if (sender == widgets.get("v")) {
+        } else if (sender == getWidget("v")) {
             getProviders("v", sender);
-        } else if (sender == widgets.get("w")) {
+        } else if (sender == getWidget("w")) {
             getProviders("w", sender);
-        } else if (sender == widgets.get("x")) {
+        } else if (sender == getWidget("x")) {
             getProviders("x", sender);
-        } else if (sender == widgets.get("y")) {
+        } else if (sender == getWidget("y")) {
             getProviders("y", sender);
-        } else if (sender == widgets.get("z")) {
+        } else if (sender == getWidget("z")) {
             getProviders("z", sender);
         }else if (sender == getWidget("removeAddressButton")) {                     
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");

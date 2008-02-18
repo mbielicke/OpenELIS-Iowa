@@ -35,10 +35,10 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
             </appButton>
           </buttonPanel>
 				</widget>
-				<widget>
+				<panel key="treeContainer" layout="vertical" height="250px" width="320px" overflow="auto" xsi:type="Panel">
 				<!--tree-->
-				<pagedTree key="noteTree" vertical="true" width="300px" height="250px" itemsPerPage="1000" title=""/>
-				</widget>
+				<pagedTree key="noteTree" vertical="true" itemsPerPage="1000" title=""/>
+				</panel>
 				<panel layout="horizontal" xsi:type="Panel" spacing="10">
 				<widget>
 				<!-- text area-->

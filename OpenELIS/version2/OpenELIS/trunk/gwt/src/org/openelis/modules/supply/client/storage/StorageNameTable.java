@@ -86,8 +86,13 @@ public class StorageNameTable implements TableManager {
 		controller.loadModel(controller.model);
 	}
 
-    public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }  
+	public void validateRow(int row, TableController controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setMultiple(int row, int col, TableController controller) {
+		// TODO Auto-generated method stub
+		
+	}  
 }

@@ -60,8 +60,13 @@ public class ChildStorageLocsTable implements TableManager {
 
 	public void setModel(TableController controller, DataModel model) {}
 
-    public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
+	public void validateRow(int row, TableController controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setMultiple(int row, int col, TableController controller) {
+		// TODO Auto-generated method stub
+		
+	}
 }
