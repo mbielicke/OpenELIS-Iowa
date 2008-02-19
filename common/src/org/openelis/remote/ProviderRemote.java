@@ -11,9 +11,6 @@ import org.openelis.domain.ProviderDO;
 @Remote
 public interface ProviderRemote {
     
-    //  method to return list of provider ids and provider names by the letter they start with
-    public List getProviderNameListByLetter(String letter, int startPos, int maxResults);
-    
     //  method to return provider 
     public ProviderDO getProvider(Integer providerId);
         
@@ -22,7 +19,7 @@ public interface ProviderRemote {
     public ProviderDO getProviderAndLock(Integer providerId)throws Exception;
     
     //commit a change to provider, or insert a new provider
-    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses);
+    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses) throws Exception;
     
     //method to return just notes
     public List getProviderNotes(Integer providerId, boolean topLevel);
