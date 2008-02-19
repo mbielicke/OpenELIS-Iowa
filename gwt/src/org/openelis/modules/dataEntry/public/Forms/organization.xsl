@@ -665,8 +665,8 @@
   <number key="addressId" required="false" type="integer"/>
   <string key="orgName" max="40" required="true"/>
   <string key="streetAddress" max="30" required="true"/>
-  <string key="multUnit" max="30" required="false" value="test"/>
-  <string key="city" max="30" rkeyequired="true"/>
+  <string key="multUnit" max="30" required="false"/>
+  <string key="city" max="30" required="true"/>
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
   <check key="isActive" required="false"/>
