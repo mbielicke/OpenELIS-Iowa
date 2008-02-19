@@ -10,7 +10,6 @@ import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
-import com.google.gwt.user.client.Window;
 
 
 public class DictionaryEntriesTable implements TableManager {
@@ -18,11 +17,7 @@ public class DictionaryEntriesTable implements TableManager {
     private Dictionary dictionaryForm = null;
     private TableRow relEntryRow = null; 
     private ArrayList systemNamesList = new ArrayList();  
-    private ArrayList entryList = new ArrayList(); 
-    //private boolean noSysNameError = true;
-    //private boolean noEntryError = true;
-      
-    public TableController thiscontroller = null;
+    private ArrayList entryList = new ArrayList();          
 
     public void setDictionaryForm(Dictionary dictionaryForm) {
         this.dictionaryForm = dictionaryForm;
@@ -68,7 +63,7 @@ public class DictionaryEntriesTable implements TableManager {
        if(col ==1){
         StringField snfield = (StringField)controller.model.getFieldAt(row, 1);               
         String systemName = (String)snfield.getValue();
-        //Window.alert("id "+ id + " systemName "+systemName);
+        
         if(systemName != null){
           if(!systemName.trim().equals("")){
               dictionaryForm.checkSystemName(id,systemName.trim(), row);  
@@ -76,15 +71,15 @@ public class DictionaryEntriesTable implements TableManager {
           if(row < systemNamesList.size()){ 
            if(!(systemNamesList.get(row).equals(systemName))){
              if(checkInList("systemName",systemName.trim(), row)){
-                //Window.alert("System names for Dictionary must be unique");
+                
                 snfield.addError("System names for Dictionary must be unique");
-                ((TableCellInputWidget)controller.view.table.getWidget(row,1)).drawErrors();
+                ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,1)).drawErrors();
              }
             } 
            }else{
               if(checkInList("systemName",systemName.trim(), row)){
                   snfield.addError("System names for Dictionary must be unique");
-                  ((TableCellInputWidget)controller.view.table.getWidget(row,1)).drawErrors();
+                  ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,1)).drawErrors();
               }
            } 
          }
@@ -101,10 +96,9 @@ public class DictionaryEntriesTable implements TableManager {
                
           if(row < entryList.size()){               
            if(!(entryList.get(row).equals(entry))){
-              if(checkInList("entry",entry.trim(), row)){
-                   //Window.alert("Entry text for Dictionary must be unique");  
+              if(checkInList("entry",entry.trim(), row)){                   
                   efield.addError("Entry text for Dictionary must be unique");
-                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+                  ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,3)).drawErrors();
                   dictionaryForm.setSysNameUnique(false); 
                }else{
                    dictionaryForm.setSysNameUnique(true);
@@ -114,7 +108,7 @@ public class DictionaryEntriesTable implements TableManager {
            else{
               if(checkInList("entry",entry.trim(), row)){
                   efield.addError("Entry text for Dictionary must be unique");
-                  ((TableCellInputWidget)controller.view.table.getWidget(row,3)).drawErrors();
+                  ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,3)).drawErrors();
                   dictionaryForm.setEntryUnique(false); 
               }else{
                   dictionaryForm.setEntryUnique(true);
@@ -173,9 +167,7 @@ public class DictionaryEntriesTable implements TableManager {
       boolean duplicate =  false;      
        if(listName.equals("systemName")){
            if(systemNamesList.contains(text)){  
-             if(row < systemNamesList.size()){  
-                 Window.alert("text "+ "\""+text+"\""+ " data "+ "\""+systemNamesList.get(row)+"\"");
-                  Window.alert(new Integer(systemNamesList.indexOf(text)).toString());                 
+             if(row < systemNamesList.size()){                   
               if(!text.equals(systemNamesList.get(row))){  
                 duplicate = true;
               }  
@@ -216,17 +208,18 @@ public class DictionaryEntriesTable implements TableManager {
         return duplicate;
        }
     
-    public void createLists(){        
-       for(int iter =0; iter < thiscontroller.model.numRows(); iter++){
-           systemNamesList.add(thiscontroller.model.getRow(iter).getColumn(1).getValue()) ;
-           entryList.add(thiscontroller.model.getRow(iter).getColumn(3).getValue()) ;                   
+    public void createLists(TableController controller){        
+       for(int iter =0; iter < controller.model.numRows(); iter++){
+           systemNamesList.add(controller.model.getRow(iter).getColumn(1).getValue()) ;
+           entryList.add(controller.model.getRow(iter).getColumn(3).getValue()) ;                   
        }
     }
 
     public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub        
     }
+    
+    
     
 }
 

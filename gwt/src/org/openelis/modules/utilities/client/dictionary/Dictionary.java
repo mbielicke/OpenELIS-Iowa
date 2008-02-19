@@ -14,7 +14,6 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.PopupWindow;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
-import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
 
 import com.google.gwt.core.client.GWT;
@@ -63,9 +62,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         
         dictEntryTable = (TableWidget)getWidget("dictEntTable");
         ((DictionaryEntriesTable) dictEntryTable.controller.manager).setDictionaryForm(this);
-        
-        TableController provAddTable = (TableController)(dictEntryTable.controller);
-        provAddTable.setAutoAdd(false);
+                
+        dictEntryTable.controller.setAutoAdd(false);
         
         //Button removeEntryButton = (Button) getWidget("removeEntryButton");
         //removeEntryButton.setEnabled(false);
@@ -75,21 +73,17 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         
         super.afterDraw(success);
         loadDropdowns();
-      // }catch(Exception ex){
-       //    ex.printStackTrace();
-       //    Window.alert(ex.getMessage());
-      // } 
+      
     }
     
     public void up(int state){
-        
-        TableController provAddTable = (TableController)(dictEntryTable.controller);
-        provAddTable.setAutoAdd(true);
+                
+        dictEntryTable.controller.setAutoAdd(true);
         
         DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
         dictEntManager.resetLists();
-        dictEntManager.thiscontroller = dictEntryTable.controller;
-        dictEntManager.createLists();
+        //dictEntManager.thiscontroller = dictEntryTable.controller;
+        dictEntManager.createLists(dictEntryTable.controller);
         super.up(state);
     }
     
@@ -97,10 +91,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         super.afterUpdate(success);
         
         AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
-        removeEntryButton.changeState(AppButton.UNPRESSED);          
-        
-        //Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        //removeEntryButton.setEnabled(true);
+        removeEntryButton.changeState(AppButton.UNPRESSED);                          
         
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
@@ -108,53 +99,36 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     }
     
     public void commitAdd(){
-       
-        
-      //if((!entryExists) && (!sysNameExists) && sysEntryUnique){    
+
           dictEntryTable.controller.unselect(-1);  
-          //entryExists = false;
-          //sysNameExists = false;
-          //sysEntryUnique = true;          
+                 
           super.commitAdd();
          AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
-         removeEntryButton.changeState(AppButton.DISABLED);  
-         TableController provAddTable = (TableController)(dictEntryTable.controller);
-         provAddTable.setAutoAdd(false);
-      //}     
-      //else {
-       //   Window.alert("Please correct the errors first");
-      //}        
+         removeEntryButton.changeState(AppButton.DISABLED); 
+         
+         
+         dictEntryTable.controller.setAutoAdd(false);             
     }
     
     public void commitUpdate(){        
-       // if((!entryExists) && (!sysNameExists) && sysEntryUnique){ 
-            dictEntryTable.controller.unselect(-1);     
-           // entryExists = false;
-           // sysNameExists = false;
-           // sysEntryUnique = true;            
+        
+            dictEntryTable.controller.unselect(-1);                           
             super.commitUpdate();
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
-            TableController provAddTable = (TableController)(dictEntryTable.controller);
-            provAddTable.setAutoAdd(false);
-          //}     
-          //else {
-          //    Window.alert("Please correct the errors first");
-         // }
+                        
+            dictEntryTable.controller.setAutoAdd(false);
+          
              
     }
     
     public void abort(int state){
         AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
         removeEntryButton.changeState(AppButton.DISABLED);     
-       try{ 
-       // Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        //removeEntryButton.setEnabled(false);
+       try{        
+                
+        dictEntryTable.controller.setAutoAdd(false);
         
-        TableController provAddTable = (TableController)(dictEntryTable.controller);
-        provAddTable.setAutoAdd(false);
-        //entryExists = false;
-        //sysNameExists = false;
         sysUnique = true;
         entryUnique = true;
         super.abort(state);
@@ -275,9 +249,8 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             return sender;
         }
         
-       public void add(int state){                       
-           TableController dictEntController = (TableController)(dictEntryTable.controller);
-           dictEntController.setAutoAdd(true);           
+       public void add(int state){                                  
+           dictEntryTable.controller.setAutoAdd(true);           
           
            DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
            dictEntManager.resetLists();
@@ -304,6 +277,9 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     		//set focus to the name field
     		TextBox name = (TextBox)getWidget("name");
     		name.setFocus(true);
+            
+            AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
+            removeEntryButton.changeState(AppButton.DISABLED);  
         }
         
         
@@ -325,31 +301,18 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                       }  
                     }       
                       
-                    if(hasError){
-                        //Window.alert("result "+ result+ " entryId "+ entryId);
-                        //((DictionaryEntriesTable) dictEntryTable.controller.manager).sysNameExists = true;
+                    if(hasError){                        
                         StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 1);
                         snfield.addError(constants.getString("dictSystemNameError"));
-                        ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,1)).drawErrors();
-                        //sysNameExists = true;
-                    }else{
-                        //sysNameExists = false; 
-                        //((DictionaryEntriesTable) dictEntryTable.controller.manager).sysNameExists = false; 
-                    }
-                      
-                      //showMessage("sysNameExists"); 
-
-                    //  if(sysEntryUnique) {                          
-                          //showMessage("noErrors");
-                     // } 
+                        ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,1)).drawErrors();                        
+                    }                                           
      
-                 }
-                
+                 }                
                     public void onFailure(Throwable caught) {
                         Window.alert(caught.getMessage());
                     }
                  });            
-            //return sysNameExists;
+            
         }
         
         public void checkEntry(Integer id,String entry, int row){
@@ -371,21 +334,18 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                       }                                                                                                   
                                   
                     if(hasError){
-                        //((DictionaryEntriesTable) dictEntryTable.controller.manager).entryExists = true;
+                        
                         StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 3); 
                         efield.addError(constants.getString("dictEntryError"));
                         ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,3)).drawErrors();
-                       // entryExists = true;
-                    }else{
-                        //((DictionaryEntriesTable) dictEntryTable.controller.manager).entryExists = false; 
-                       // entryExists = false;
+                       
                     }
                    }                 
                     public void onFailure(Throwable caught) {
                         Window.alert(caught.getMessage());
                     }
                  });          
-           // return entryExists;
+           
         }
             
                                       
@@ -426,21 +386,27 @@ public class Dictionary extends AppScreenForm implements MouseListener{
          }
                              
         public boolean validate(){
-              boolean entryExists = false;
-              boolean sysNameExists = false;
+              //boolean entryExists = false;
+              //boolean sysNameExists = false;
+              
+              boolean entryError = false;
+              boolean sysNameError = false;
            for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
                StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 1);
                StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);
                
                if(!(efield.getErrors().length==0)){
-                   entryExists = true;                   
+                  // entryExists = true;       
+                   entryError = true; 
                }
                if(!(snfield.getErrors().length==0)){
-                   sysNameExists = true;                   
+                  // sysNameExists = true;       
+                   sysNameError = true;
                }
            }  
            
-            if(sysNameExists || entryExists || (!sysUnique) || (!entryUnique)){
+            //if(sysNameExists || entryExists || (!sysUnique) || (!entryUnique)){
+             if(entryError || sysNameError){ 
                 return false;
             } 
             else {
