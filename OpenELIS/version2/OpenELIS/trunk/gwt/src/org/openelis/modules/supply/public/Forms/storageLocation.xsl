@@ -448,7 +448,7 @@
 										<colAligns>left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="525px" maxRows="1" rows="1" title="">
+									<table width="525px" maxRows="7" rows="1" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
