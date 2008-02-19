@@ -400,7 +400,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed"/>		 
 		</editors>
 		 <fields>
-		  <string/>
+		  <string required = "true"/>
 		  <string/>
 		  <string/>
 		  <string/>
@@ -537,14 +537,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							  
 <rpc key= "display">	
   <number key="providerId" type="integer" required="false"/>				
-  <string key="lastName" max="30" required="false"/>
+  <string key="lastName" max="30" required="true"/>
   <string key="firstName" max="20" required="false"/> 
   <string key="npi" max="20" required="false"/>
   <string key="middleName" max="20" required="false"/>	
   <table key="providerAddressTable"/>						      		       
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <number key="providerTypeId" type="integer" required="false"/>
+  <number key="providerTypeId" type="integer" />
   <model key = "notesModel"/>
 </rpc>
 					   
@@ -557,7 +557,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="usersSubject" />
   <queryString key="usersNote" />                           
   <table key="providerAddressTable"/>
-  <collection key="providerType" type="integer" required="false"/>	   
+  <collection key="providerType" type="integer" />	   
     
 </rpc>
 
