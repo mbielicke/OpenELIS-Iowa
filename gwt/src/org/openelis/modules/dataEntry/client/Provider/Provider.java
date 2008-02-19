@@ -1,7 +1,10 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
+import java.util.List;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.AppScreenForm;
@@ -169,6 +172,9 @@ public class Provider extends AppScreenForm{
 //    set focus to the last name field
 		TextBox lastName = (TextBox)getWidget("lastName");
 		lastName.setFocus(true);
+        
+         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+         removeContactButton.changeState(AppButton.DISABLED);
     }
        
     
@@ -298,7 +304,8 @@ public class Provider extends AppScreenForm{
     }
     
     public void commitAdd(){
-        
+        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.unselect(-1);
         super.commitAdd();      
         
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
@@ -306,19 +313,22 @@ public class Provider extends AppScreenForm{
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
-        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddTable.setAutoAdd(false);      
+        
+        provAddController.setAutoAdd(false);      
     }
     
-    public void commitUpdate(){        
+    public void commitUpdate(){ 
+        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.unselect(-1);
+        
         super.commitUpdate();                  
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
        // removeContactButton.setEnabled(false);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
-        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddTable.setAutoAdd(false);      
+        
+        provAddController.setAutoAdd(false);      
     }
     
     public void afterCommitUpdate(boolean success){
@@ -438,5 +448,31 @@ public class Provider extends AppScreenForm{
                }
             });
     } 
+    
+   public boolean validate(){
+       TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+       provAddController.unselect(-1);
+       boolean noLocErrors =  true;
+       
+       for(int iter = 0; iter < provAddController.model.numRows(); iter++){
+           StringField snfield = (StringField)provAddController.model.getFieldAt(iter, 0);         
+                      
+           if(!(snfield.getErrors().length==0)){
+               noLocErrors = false;                   
+           }
+       }  
+       
+       if(!noLocErrors){
+           return false;
+       }
+       
+       AutoCompleteDropdown displayType = (AutoCompleteDropdown)getWidget("providerType");
+        if(displayType.value == null){
+           NumberField typeField = (NumberField)rpc.getField("providerTypeId");
+           typeField.addError("Field is required");
+          return false; 
+        }
+       return true; 
+   }
     
 }
