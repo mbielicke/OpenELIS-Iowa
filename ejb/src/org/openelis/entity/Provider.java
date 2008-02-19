@@ -25,13 +25,12 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-@NamedQueries({@NamedQuery(name = "getProviderNameRowsByLetter", query = "select new org.openelis.domain.ProviderTableRowDO(p.id,p.lastName,p.firstName) " + "from Provider p where p.lastName like :letter order by lastName,firstName"),
-               @NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
                                "  from Provider p, Dictionary d where d.id = p.type and p.id = :id"),
                @NamedQuery(name = "getProviderAddresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.provider, " +
                                            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
-                                           " a.cellPhone, a.faxPhone, a.email, a.country)"+" from Provider p, ProviderAddress pa, Address a "+
-                                           " where pa.provider = p.id and pa.address = a.id and p.id = :id order by pa.location"),
+                                           " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.provAddress a "+
+                                           " where pa.provider = :id order by pa.location"),
                @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='provider_type' and d.category = c.id"),
                @NamedQuery(name = "getProviderNotesTopLevel", query = "select n.id,n.systemUser,n.text, n.timestamp, n.subject " + 
                        "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id"),
@@ -63,7 +62,7 @@ public class Provider implements Auditable, Cloneable {
   private String npi;             
   
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "provider")
+  @JoinColumn(name = "provider",insertable = false, updatable = false)
   private Collection<ProviderAddress> providerAddress;
   
   @OneToMany(fetch = FetchType.LAZY)
