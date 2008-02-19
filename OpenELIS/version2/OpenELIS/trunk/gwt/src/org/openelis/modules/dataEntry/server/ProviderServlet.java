@@ -1,6 +1,5 @@
 package org.openelis.modules.dataEntry.server;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,8 +31,6 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenServiceInt;
-import org.openelis.gwt.widget.pagedtree.TreeModel;
-import org.openelis.gwt.widget.pagedtree.TreeModelItem;
 import org.openelis.modules.dataEntry.client.Provider.ProviderServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -44,9 +41,6 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -161,9 +155,13 @@ public class ProviderServlet extends AppServlet implements
         providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
         providerNote.setIsExternal("Y");
                 
-        
-        Integer providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
-        
+        Integer providerId =null;
+        try{
+            providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        }
+         
         ProviderDO provDO = remote.getProvider(providerId);
         rpcReturn.setFieldValue("providerId", provDO.getId());
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
@@ -413,7 +411,11 @@ public class ProviderServlet extends AppServlet implements
         providerNote.setIsExternal("Y");
                 
         
-        remote.updateProvider(providerDO, providerNote, provAddDOList);
+        try{
+            remote.updateProvider(providerDO, providerNote, provAddDOList);        
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        }
         
         ProviderDO provDO = remote.getProvider((Integer)providerId.getValue());
         //set the fields in the RPC
@@ -543,81 +545,7 @@ public class ProviderServlet extends AppServlet implements
         return addressModel;  
     }
 
-    public TreeModel getNoteTreeModel(Integer key, boolean topLevel){
-        //remote interface to call the organization bean
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-
-        List notesList = remote.getProviderNotes(key,topLevel);
-        
-        TreeModel treeModel = new TreeModel();
-        Iterator itr = notesList.iterator();
-        while(itr.hasNext()){
-            Object[] result = (Object[])itr.next();
-            //id
-            Integer id = (Integer)result[0];
-            //date
-            Timestamp date = (Timestamp)result[1];
-            //subject
-            String subject = (String)result[2];
-            
-            TreeModelItem treeModelItem = new TreeModelItem();
-            treeModelItem.setText(date.toString()+" / "+subject);
-            treeModelItem.setUserObject(id.toString());
-            
-            treeModelItem.setHasDummyChild(true);
-            
-            treeModel.addItem(treeModelItem);
-        }
-       
-       return treeModel;
-    }
     
-    public String getNoteTreeSecondLevelXml(String key, boolean topLevel){
-        //remote interface to call the organization bean
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-
-        List notesList = remote.getProviderNotes(Integer.valueOf(key),topLevel);
-        
-        try {
-            Iterator itr = notesList.iterator();
-            
-            //int i=0;
-            Document doc = XMLUtil.createNew("tree");
-            while(itr.hasNext()){
-            Object[] result = (Object[])itr.next(); 
-            //id
-            //Integer id = (Integer) result[0];
-            //user
-            Integer userId = (Integer) result[1];
-            //body
-            String body = (String) result[2];
-            
-            SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
-            SystemUserDO user = securityRemote.getSystemUser(userId,false);
-            
-            Element root = doc.getDocumentElement();
-            root.setAttribute("key", "menuList");
-            root.setAttribute("height", "100%");
-            root.setAttribute("vertical","true");           
-                 
-             Element elem = doc.createElement("label");
-             elem.setAttribute("text", "Author: "+ user.getLastName()+", "+user.getFirstName()); 
-             
-             Element elem2 = doc.createElement("label");
-             elem2.setAttribute("text", body); 
-                                                                      
-             root.appendChild(elem); 
-             root.appendChild(elem2);
-            }
-             
-            //}                       
-            return XMLUtil.toString(doc);
-        }catch(Exception e){
-            //log.error(e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
         // TODO Auto-generated method stub
