@@ -466,12 +466,6 @@ public class Provider extends AppScreenForm{
            return false;
        }
        
-       AutoCompleteDropdown displayType = (AutoCompleteDropdown)getWidget("providerType");
-        if(displayType.value == null){
-           NumberField typeField = (NumberField)rpc.getField("providerTypeId");
-           typeField.addError("Field is required");
-          return false; 
-        }
        return true; 
    }
     
