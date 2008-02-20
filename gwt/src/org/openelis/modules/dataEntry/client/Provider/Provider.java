@@ -1,7 +1,5 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
-import java.util.List;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
@@ -17,6 +15,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -25,6 +24,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -67,9 +67,12 @@ public class Provider extends AppScreenForm{
         removeContactButton.addClickListener(this);
         removeContactButton.changeState(AppButton.DISABLED);
         
+        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNote.changeState(AppButton.DISABLED);
+        
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddTable.setAutoAdd(false);
-        
+                
         /*        
         randomTree = (ScreenPagedTree) widgets.get("notesTree");
         vp = (VerticalPanel)randomTree.getParent();
@@ -82,6 +85,9 @@ public class Provider extends AppScreenForm{
          vp.add(scrollableView);*/     
         loadDropdowns();
         super.afterDraw(success);
+        
+        bpanel.setButtonState("prev", AppButton.DISABLED);
+        bpanel.setButtonState("next", AppButton.DISABLED);
     }
       
    
@@ -130,7 +136,9 @@ public class Provider extends AppScreenForm{
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
         
-                
+        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNote.changeState(AppButton.UNPRESSED);
+        
         VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
         vp.clear();
         
@@ -153,7 +161,10 @@ public class Provider extends AppScreenForm{
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
         //removeContactButton.setEnabled(true);
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
-        removeContactButton.changeState(AppButton.UNPRESSED);        
+        removeContactButton.changeState(AppButton.UNPRESSED);
+        
+        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNote.changeState(AppButton.UNPRESSED);
         
         shownotes = true;
         
@@ -175,6 +186,9 @@ public class Provider extends AppScreenForm{
         
          AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
          removeContactButton.changeState(AppButton.DISABLED);
+         
+         AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+         standardNote.changeState(AppButton.DISABLED);
     }
        
     
@@ -251,7 +265,9 @@ public class Provider extends AppScreenForm{
 
                 row.addHidden("deleteFlag", deleteFlag);
             }  
-        }
+        }else if(sender == getWidget("standardNoteButton")){
+            new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
+        }        
     }
         
     
@@ -313,6 +329,8 @@ public class Provider extends AppScreenForm{
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
+        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNote.changeState(AppButton.DISABLED);
         
         provAddController.setAutoAdd(false);      
     }
@@ -327,7 +345,9 @@ public class Provider extends AppScreenForm{
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
-        
+        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNote.changeState(AppButton.DISABLED);
+                
         provAddController.setAutoAdd(false);      
     }
     
