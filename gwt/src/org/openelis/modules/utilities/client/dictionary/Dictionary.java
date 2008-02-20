@@ -31,9 +31,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     
     private static ServiceDefTarget target = (ServiceDefTarget) screenService;
     private TableWidget dictEntryTable  = null;
-    public PopupWindow window;
-    private boolean sysUnique = true;
-    private boolean entryUnique = true;  
+    public PopupWindow window; 
     
     public Dictionary(){
         super();        
@@ -69,9 +67,13 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         //removeEntryButton.setEnabled(false);
         AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");        
         removeEntryButton.addClickListener(this);
-        removeEntryButton.changeState(AppButton.DISABLED);                      
+        removeEntryButton.changeState(AppButton.DISABLED);                                     
         
         super.afterDraw(success);
+        
+        bpanel.setButtonState("prev", AppButton.DISABLED);
+        bpanel.setButtonState("next", AppButton.DISABLED);
+        
         loadDropdowns();
       
     }
@@ -129,8 +131,6 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                 
         dictEntryTable.controller.setAutoAdd(false);
         
-        sysUnique = true;
-        entryUnique = true;
         super.abort(state);
         
        //  need to get the category name table model
@@ -368,22 +368,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                    }
                 });
         }
-        
-         public void setSysNameUnique(boolean unique){
-             if(unique){
-                 sysUnique = true;
-             }else{
-                 sysUnique = false;
-             } 
-         }
-         
-         public void setEntryUnique(boolean unique){
-             if(unique){
-                 entryUnique = true;
-             }else{
-                 entryUnique = false;
-             } 
-         }
+                 
                              
         public boolean validate(){
               //boolean entryExists = false;

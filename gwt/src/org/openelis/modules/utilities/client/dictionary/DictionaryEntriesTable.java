@@ -34,6 +34,9 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
+       //if(col == 0 && (row == controller.model.numRows()-1)){          
+         //  controller.addRow();  
+      // }                 
         return true;
     }
 
@@ -84,7 +87,7 @@ public class DictionaryEntriesTable implements TableManager {
            } 
          }
         }       
-    }
+       }
             
         if(col==3){
          StringField efield = (StringField)controller.model.getFieldAt(row, 3); 
@@ -99,9 +102,7 @@ public class DictionaryEntriesTable implements TableManager {
               if(checkInList("entry",entry.trim(), row)){                   
                   efield.addError("Entry text for Dictionary must be unique");
                   ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,3)).drawErrors();
-                  dictionaryForm.setSysNameUnique(false); 
-               }else{
-                   dictionaryForm.setSysNameUnique(true);
+                  
                }
             } 
            }
@@ -109,19 +110,18 @@ public class DictionaryEntriesTable implements TableManager {
               if(checkInList("entry",entry.trim(), row)){
                   efield.addError("Entry text for Dictionary must be unique");
                   ((TableCellInputWidget)controller.view.table.getWidget(row-controller.start,3)).drawErrors();
-                  dictionaryForm.setEntryUnique(false); 
-              }else{
-                  dictionaryForm.setEntryUnique(true);
-              }
+                  
+             }
            }
-          } 
-        
-        
+          }                
          }
-        }        
+        }     
+        
+        
         if((col == 1 || col == 3) && (row == controller.model.numRows()-1)){          
            controller.addRow();  
-          }
+        }
+        
         
      }
 
