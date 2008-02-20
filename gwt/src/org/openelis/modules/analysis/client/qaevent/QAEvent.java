@@ -43,10 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
      
          public void afterDraw(boolean success) {                  
                bpanel = (ButtonPanel) getWidget("buttons");        
-               message.setText("done");  
-               reportingText = (TextArea)getWidget("reportingText");
-               //reportingText.setText("");               
-               reportingText.addClickListener(this);
+               message.setText("done");                 
                
                TableWidget qaEventsTable = (TableWidget)getWidget("qaEventsTable");
                modelWidget.addChangeListener(qaEventsTable.controller); 
