@@ -552,8 +552,7 @@ public class ProviderServlet extends AppServlet implements
         return null;
     }
 
-    public DataModel getInitialModel(String cat) {
-        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+    public DataModel getInitialModel(String cat) {        
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
@@ -567,8 +566,7 @@ public class ProviderServlet extends AppServlet implements
         }else if(cat.equals("country")){
             id = catRemote.getCategoryId("country");            
         }
-        
-        System.out.println("cat "+ cat +" id "+ id);
+                
         if(id >-1){
             entries = catRemote.getDropdownValues(id);
             DataSet blankset = new DataSet();           
