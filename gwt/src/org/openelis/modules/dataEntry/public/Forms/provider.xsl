@@ -363,7 +363,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		 <widths>115,130,130,130,130,50,100,100,90,90,90,150,145</widths>
+		 <widths>115,130,130,130,130,50,130,100,90,90,90,150,145</widths>
 		 <editors>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
@@ -381,7 +381,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<autoItems>												 																																			
 												</autoItems>
 											</autoDropdown>		  
-		    <autoDropdown cat="country" key="country" case="upper" serviceUrl="ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+		    <autoDropdown cat="country" key="country" case="mixed" serviceUrl="ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
@@ -426,14 +426,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		  <widths>115,130,130,130,130,50,68,100,90,90,90,150,145</widths>
+		  <widths>115,130,130,130,130,50,130,100,90,90,90,150,145</widths>
 		  <editors>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="ProviderServlet" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
+		  <autoDropdown cat="state" key="state" case = "upper" serviceUrl="ProviderServlet" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -444,7 +444,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<autoItems>												 																																			
 												</autoItems>
 											</autoDropdown>
-		  <autoDropdown cat="country" key="country" case="upper" serviceUrl="ProviderServlet" width="110px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
+		  <autoDropdown cat="country" key="country" case = "mixed" serviceUrl="ProviderServlet" width="110px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
