@@ -356,7 +356,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
-        <table width= "auto" maxRows = "9" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
+        <table width= "550px" maxRows = "9" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
          <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -419,7 +419,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <table width= "auto" maxRows = "9" rows = "1" title= " ">
+	     <table width= "550px" maxRows = "9" rows = "1" title = "">
           <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -506,15 +506,25 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="400px"/>
+										<textbox case="mixed" key="usersSubject" width="400px" max="60"/>
 										</widget>
+										<widget>
+										<appButton action="standardNote" onclick="this" key="standardNoteButton">
+										<panel xsi:type="Panel" layout="horizontal">
+              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+						              <widget>
+                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+							              </widget>
+							              </panel>
+						            </appButton>
+						            </widget>
 										</row>
 										<row>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
-										<widget>
-										<textarea width="400px" height="50px" case="mixed" key="usersNote"/>
+										<widget colspan="2">
+										<textarea width="510px" height="50px" case="mixed" key="usersNote"/>
 										</widget>
 										</row>
 								</panel> 
@@ -544,7 +554,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <table key="providerAddressTable"/>						      		       
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <number key="providerTypeId" type="integer" />
+  <number key="providerTypeId" type="integer" required = "true"/>
   <model key = "notesModel"/>
 </rpc>
 					   
