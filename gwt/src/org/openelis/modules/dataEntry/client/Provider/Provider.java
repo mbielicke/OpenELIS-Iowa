@@ -2,7 +2,6 @@ package org.openelis.modules.dataEntry.client.Provider;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.AppScreenForm;
@@ -365,6 +364,14 @@ public class Provider extends AppScreenForm{
         
         loadNotes(notesModel);
         super.afterCommitAdd(success);
+    }
+    
+    
+    public void commitQuery(FormRPC rpcQuery){
+        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.unselect(-1);
+        
+        super.commitQuery(rpcQuery);
     }
 
     private void loadNotes(DataModel notesModel){       
