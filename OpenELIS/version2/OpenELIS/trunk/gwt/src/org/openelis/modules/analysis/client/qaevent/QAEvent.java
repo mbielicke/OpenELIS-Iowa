@@ -2,7 +2,6 @@ package org.openelis.modules.analysis.client.qaevent;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AppButton;
@@ -15,7 +14,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -24,8 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
      .create(QAEventServletInt.class);
      
      private static ServiceDefTarget target = (ServiceDefTarget) screenService; 
-     
-     private TextArea reportingText = null;
+          
      
      
      
@@ -180,24 +177,7 @@ import com.google.gwt.user.client.ui.Widget;
              return sender;
          }
         
-         
-        public boolean validate(){
-           boolean textEdited = true;  
-           if(reportingText.getText()!= null){
-              if(reportingText.getText().trim().equals("")){
-                  textEdited = false;   
-              } 
-           }else{
-               textEdited = false; 
-           }
-           
-            if(!textEdited){
-                StringField repText = (StringField)rpc.getField("reportingText");  
-                repText.addError("Reporting text must be specified for a QA Event");                      
-              return false;
-            }
-            return true;
-        }
+                 
         
      private void loadDropdowns(){
             
