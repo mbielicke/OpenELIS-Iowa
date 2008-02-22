@@ -147,7 +147,7 @@
 										</autoDropdown>
 													<query>
 													
-												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" >
+												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" tab="systemName,desc">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>

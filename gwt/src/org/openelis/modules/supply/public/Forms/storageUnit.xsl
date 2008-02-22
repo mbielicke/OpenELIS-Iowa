@@ -144,7 +144,7 @@
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true">
+										<autoDropdown cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="description,id">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -171,7 +171,7 @@
 									<widget>
 										<check key="isSingular" tab="id,description"/>
 										<query>
-											<autoDropdown cat="isSingular" case="upper" serviceUrl="StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="category,description">
+											<autoDropdown cat="isSingular" case="upper" serviceUrl="StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,description">
 													<autoWidths>19</autoWidths>
 													<autoEditors>
 														<label/>

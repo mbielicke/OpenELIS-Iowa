@@ -149,7 +149,7 @@
 												    </autoItems> 													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" >
+												  <autoDropdown cat="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -181,7 +181,7 @@
 												     </autoItems>													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" >
+												  <autoDropdown cat="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>
@@ -203,7 +203,7 @@
         <widget>
          <check key= "billable" tab="sequence,test"/>
          <query>
-         <autoDropdown cat="billable" serviceUrl= "QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" >
+         <autoDropdown cat="billable" serviceUrl= "QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" tab="sequence,test">
 													<autoWidths>10</autoWidths>
 													<autoEditors>
 														<label/>
