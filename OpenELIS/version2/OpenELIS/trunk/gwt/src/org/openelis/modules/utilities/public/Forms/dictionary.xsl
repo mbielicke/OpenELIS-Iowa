@@ -147,7 +147,7 @@
 										</autoDropdown>
 													<query>
 													
-												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" tab="systemName,desc">
+												  <autoDropdown cat="section" case="lower" serviceUrl="DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" >
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -213,7 +213,7 @@
 								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
 								<widths>65,95,75,110,100</widths>
 								<editors>									
-									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="DictionaryServlet" width="40px" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
+									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="DictionaryServlet" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -221,11 +221,11 @@
 												<autoFields>
 													<string/>
 												</autoFields>
-												<autoItems>
-												 <item value= " "> </item>
+												<!--<autoItems>
+												 <item value= ""> </item>
 									             <item value= "Y">Y</item>														
 									             <item value= "N">N</item>													 																																			
-												</autoItems>
+												</autoItems>-->
 										</autoDropdown>																
 									<textbox/>									
 									<textbox/>									
@@ -233,7 +233,7 @@
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>									
-									<collection/>										
+									<collection type = "string"/>										
 									<queryString/>									
 									<queryString/>
 									<queryString/>
@@ -247,7 +247,7 @@
 						</widget>
 						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>								                
 		                <widget halign = "right">
-                            <appButton  action="remove" key = "removeEntryButton">
+                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton">
                             <panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
                               <widget>
