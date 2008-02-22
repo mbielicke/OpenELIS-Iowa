@@ -107,20 +107,12 @@ public class DictionaryServlet extends AppServlet implements
         
         for(int iter = 0; iter < dictEntryTable.numRows(); iter++){
          TableRow row = dictEntryTable.getRow(iter);
-         DictionaryDO dictDO = new DictionaryDO();
-         boolean doloop = false;
+         DictionaryDO dictDO = new DictionaryDO();       
          
-         String sysName = (String)((StringField)row.getColumn(1)).getValue();
-         String entry = (String)((StringField)row.getColumn(3)).getValue();
-         
-         if(sysName!=null && entry!=null){
-           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
-               doloop =true;
-           } 
-          }
-         
-          if(doloop){   
-                          
+                              
+           String sysName = (String)((StringField)row.getColumn(1)).getValue();
+           String entry = (String)((StringField)row.getColumn(3)).getValue();       
+              
            dictDO.setSystemName(sysName);
            dictDO.setEntry(entry);         
            //NumberField id = (NumberField)row.getHidden("id");
@@ -148,7 +140,7 @@ public class DictionaryServlet extends AppServlet implements
                     
           
           dictDOList.add(dictDO);
-         }
+         
         } 
         
         Integer categoryId = null;
@@ -333,18 +325,11 @@ public class DictionaryServlet extends AppServlet implements
          TableRow row = dictEntryTable.getRow(iter);
          DictionaryDO dictDO = new DictionaryDO();
          
-         boolean doloop = false;
+        
          
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-         if(sysName!=null && entry!=null){
-           if((!sysName.trim().equals(""))&&(!entry.trim().equals("")))  {
-               doloop =true;
-           } 
-          }
-         
-          if(doloop){   
            dictDO.setSystemName(sysName);
            dictDO.setEntry(entry);
                   
@@ -381,8 +366,7 @@ public class DictionaryServlet extends AppServlet implements
              }   
              dictDO.setCategory((Integer)categoryId.getValue());         
              dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());         
-             dictDOList.add(dictDO);
-             }
+             dictDOList.add(dictDO);             
           }
         
          
@@ -602,10 +586,18 @@ public class DictionaryServlet extends AppServlet implements
         blankStringId.setValue("");
         blankset.addObject(blankStringId);
         
-        NumberObject blankNumberId = new NumberObject();
-        blankNumberId.setType("integer");
-        blankNumberId.setValue(new Integer(0));
-        blankset.addObject(blankNumberId);
+        if(cat.equals("section")){
+         NumberObject blankNumberId = new NumberObject();
+         blankNumberId.setType("integer");
+         blankNumberId.setValue(new Integer(0));
+         blankset.addObject(blankNumberId);
+        }
+        if(cat.equals("isActive")){
+            StringObject blankStringObj = new StringObject();
+           
+            blankStringObj.setValue("");
+            blankset.addObject(blankStringObj);
+           }
         
         blankSelected.setValue(new Boolean(false));
         blankset.addObject(blankSelected);
@@ -660,7 +652,42 @@ public class DictionaryServlet extends AppServlet implements
            }                
            
           }
-        }       
+        }
+        if(cat.equals("isActive")){
+            DataSet set = new DataSet();
+            //Object[] result = (Object[]) entries.get(i);
+            //id
+            
+            
+            StringObject textObject = new StringObject();
+            //StringObject stringId = new StringObject();
+            StringObject stringId = new StringObject();
+            BooleanObject selected = new BooleanObject();
+            
+            textObject.setValue("Y");
+            set.addObject(textObject);
+            
+            stringId.setValue("Y");
+            set.addObject(stringId);
+                
+            selected.setValue(new Boolean(false));
+            set.addObject(selected); 
+            model.add(set);
+            
+            set = new DataSet();
+            textObject = new StringObject();
+            textObject.setValue("N");
+            set.addObject(textObject);
+                          
+            stringId = new StringObject();
+            stringId.setValue("N");
+            set.addObject(stringId);
+            
+            selected.setValue(new Boolean(false));
+            set.addObject(selected);
+            
+            model.add(set); 
+          }
         return model;
     }
 
