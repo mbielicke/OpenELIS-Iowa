@@ -8,11 +8,13 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.PopupWindow;
+import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableWidget;
 
@@ -114,7 +116,17 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     
     public void commitUpdate(){        
         
-            dictEntryTable.controller.unselect(-1);                           
+            dictEntryTable.controller.unselect(-1);   
+            
+           /* for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
+               StringField field = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);   
+                Window.alert((String)field.getValue());
+             TableRow row = dictEntryTable.controller.model.getRow(iter);
+              if(row.getHidden("deleteFlag")!=null){
+                Window.alert((String)row.getHidden("deleteFlag").getValue())  ;
+              }
+            }*/
+            
             super.commitUpdate();
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
@@ -201,7 +213,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             getCategories("y", sender);
         } else if (sender == getWidget("z")) {
             getCategories("z", sender);
-        }else if (sender == widgets.get("removeEntryButton")) {   
+        }else if (sender == getWidget("removeEntryButton")) {   
             
             TableWidget dictEntTable = (TableWidget) getWidget("dictEntTable");
             int selectedRow = dictEntTable.controller.selected;
@@ -367,6 +379,24 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                        Window.alert(caught.getMessage());
                    }
                 });
+            
+            screenService.getInitialModel("isActive", new AsyncCallback(){
+                public void onSuccess(Object result){
+                    DataModel activeDataModel = (DataModel)result;                   
+                    
+                    ScreenTableWidget displayEntryTable = (ScreenTableWidget)widgets.get("dictEntTable");
+                    ScreenTableWidget queryEntryTable = (ScreenTableWidget)displayEntryTable.getQueryWidget();
+                                      
+                    
+                    TableAutoDropdown queryContactActive = (TableAutoDropdown)((TableWidget)queryEntryTable.getWidget()).
+                         controller.editors[0];
+                    queryContactActive.setModel(activeDataModel);
+                }
+                public void onFailure(Throwable caught){
+                    Window.alert(caught.getMessage());
+                }
+             });
+            
         }
                  
                              
