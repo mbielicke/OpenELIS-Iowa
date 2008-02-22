@@ -33,14 +33,16 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        //if(providerForm.bpanel.state == FormInt.ADD || providerForm.bpanel.state == FormInt.UPDATE)           
-            return true;
-        //return false;
+        //if(providerForm.bpanel.state == FormInt.ADD || providerForm.bpanel.state == FormInt.UPDATE)      
+        if(disableRows){
+            return false;
+        } 
+        return true;
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-        if (col == 0 && row == controller.model.numRows() - 1) {
-            return true;
+       if (col == 0 && row == controller.model.numRows() - 1) {
+           return true;
         }   
         
         return false;
