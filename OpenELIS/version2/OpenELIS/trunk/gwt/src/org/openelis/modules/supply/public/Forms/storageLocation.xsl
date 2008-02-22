@@ -131,7 +131,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" width="150px" max="20" tab="location,isAvailable"/>
+										<textbox case="mixed" key="name" width="150px" max="20" tab="location,id"/>
 									</widget>
 								</row>
 								<row>								
@@ -139,7 +139,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="location" max="80" width="195px" tab="parentStorage,sortOrder"/>
+										<textbox case="mixed" key="location" max="80" width="195px" tab="parentStorage,name"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
@@ -193,9 +193,9 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isAvailable" tab="name,storageUnit"/>
+										<check key="isAvailable" tab="id,storageUnit"/>
 										<query>
-											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="contactsTable,parentOrg">
+											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,storageUnit">
 													<autoWidths>19</autoWidths>
 													<autoEditors>
 														<label/>

@@ -132,7 +132,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 													</autoFields>
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"  multiSelect="true" fromModel="true" type="integer" >
+												  <autoDropdown cat="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"  multiSelect="true" fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
