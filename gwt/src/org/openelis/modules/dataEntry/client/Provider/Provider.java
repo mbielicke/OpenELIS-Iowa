@@ -71,7 +71,9 @@ public class Provider extends AppScreenForm{
         
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddTable.setAutoAdd(false);
-                
+        
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        proAddManager.disableRows = true;
         /*        
         randomTree = (ScreenPagedTree) widgets.get("notesTree");
         vp = (VerticalPanel)randomTree.getParent();
@@ -101,6 +103,8 @@ public class Provider extends AppScreenForm{
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddTable.setAutoAdd(true);
         
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        proAddManager.disableRows = false;
         super.up(state);      
     }
     
@@ -114,6 +118,9 @@ public class Provider extends AppScreenForm{
       }
       TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
       provAddTable.setAutoAdd(false);      
+      
+      ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+      proAddManager.disableRows = true;
        super.abort(state); 
        
       // need to get the provider name table model
@@ -144,6 +151,8 @@ public class Provider extends AppScreenForm{
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddTable.setAutoAdd(true);
         
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        proAddManager.disableRows = false;
         super.add(state);     
         
 //      set focus to the last name field
@@ -321,6 +330,7 @@ public class Provider extends AppScreenForm{
     public void commitAdd(){
         TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);
+        
         super.commitAdd();      
         
         //Button removeContactButton = (Button) getWidget("removeAddressButton");
@@ -338,6 +348,11 @@ public class Provider extends AppScreenForm{
         TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);
         
+        /*for(int iter = 0; iter < provAddController.model.numRows(); iter++){
+          StringField field = (StringField)provAddController.model.getFieldAt(iter, 0);   
+          Window.alert((String)field.getValue());
+        }*/
+        
         super.commitUpdate();                  
        // Button removeContactButton = (Button) getWidget("removeAddressButton");
        // removeContactButton.setEnabled(false);
@@ -353,9 +368,9 @@ public class Provider extends AppScreenForm{
     public void afterCommitUpdate(boolean success){
         FormRPC displayRPC = (FormRPC) this.forms.get("display");        
         DataModel notesModel = (DataModel)displayRPC.getFieldValue("notesModel");         
-        
+                                         
         loadNotes(notesModel);
-        super.afterCommitUpdate(success);
+        super.afterCommitUpdate(success);               
     }
     
     public void afterCommitAdd(boolean success){
