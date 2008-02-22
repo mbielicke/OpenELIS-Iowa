@@ -4,7 +4,7 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-                
+                <xsl:import href="aToZTwoColumns.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
   </xalan:component>
@@ -23,204 +23,9 @@
 				<aToZ height="325px" width="100%" key="hideablePanel" visible="false" onclick="this">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
-					    <panel layout="horizontal" xsi:type="Panel" spacing="0" padding="0" style="AtoZ">
-			<panel layout="vertical" xsi:type="Panel" spacing="0">
-				<widget>
-            <appButton key="a" action="a" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>A</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="b" action="b" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>B</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="c" action="c" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>C</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="d" action="d" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>D</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="e" action="e" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>E</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="f" action="f" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>F</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="g" action="g" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>G</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="h" action="h" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>H</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="i" action="i" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>I</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="j" action="j" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>J</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="k" action="k" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>K</text>
-              </widget>
-            </appButton>            
-          </widget>
-          <widget>
-            <appButton key="l" action="l" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>L</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="m" action="m" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>M</text>
-              </widget>
-            </appButton>
-          </widget>
-          </panel>
-          <panel layout="vertical" xsi:type="Panel" spacing="0">
-         <widget>
-            <appButton key="n" action="n" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>N</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="o" action="o" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>O</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="p" action="p" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>P</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="q" action="q" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>Q</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="r" action="r" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>R</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="s" action="s" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>S</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="t" action="t" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>T</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="u" action="u" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>U</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="v" action="v" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>V</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="w" action="w" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>W</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="x" action="x" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>X</text>
-              </widget>
-            </appButton>		  
-          </widget>
-          <widget>
-            <appButton key="y" action="y" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>Y</text>
-              </widget>
-            </appButton>
-          </widget>
-          <widget>
-            <appButton key="z" action="z" toggle="true" alwaysEnabled="true" onclick="this">
-              <widget>
-                <text>Z</text>
-              </widget>
-            </appButton>
-          </widget>
-          </panel>
-          </panel>
+			<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
-		<xsl:if test="string($language)='cn'">
-
-		</xsl:if>	
-		<xsl:if test="string($language)='fa'">
-
-		</xsl:if>
-		<xsl:if test="string($language)='sp'">
-			
-		</xsl:if>
+		
 				<table manager="StorageNameTable" width="auto" style="ScreenLeftTable" key="storageLocsTable" maxRows="10" title="{resource:getString($constants,'name')}">
 							<widths>175</widths>
 							<editors>
@@ -309,7 +114,7 @@
 				</widget>
 				</panel>
 					<panel layout="vertical" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
+							<panel key="secMod2" layout="table" style="FormBorderless" xsi:type="Table">
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 								</row>
@@ -326,7 +131,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" width="150px" max="20" tab="sortOrder,isAvailable"/>
+										<textbox case="mixed" key="name" width="150px" max="20" tab="location,isAvailable"/>
 									</widget>
 								</row>
 								<row>								
@@ -334,13 +139,13 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="location" max="80" width="225px" tab="parentStorage,sortOrder"/>
+										<textbox case="mixed" key="location" max="80" width="195px" tab="parentStorage,sortOrder"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="parentStorageLoc" case="mixed" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
+									<auto cat="parentStorageLoc" case="upper" serviceUrl="StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
 										<autoHeaders>Id,Name,Location</autoHeaders>
 										<autoWidths>50,120,150</autoWidths>
 										<autoEditors>
@@ -355,7 +160,7 @@
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="mixed" width="150px" tab="storageUnit,location"/>
+										<textbox case="upper" width="150px" tab="storageUnit,location"/>
 										</query>
 									</widget>	
 								</row>
@@ -364,7 +169,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="storageUnit" case="mixed" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
+									<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -381,7 +186,7 @@
 										</autoFields>
 										</auto>
 										<query>
-										<textbox case="mixed" width="150px" tab="isAvailable,parentStorage"/>
+										<textbox case="upper" width="150px" tab="isAvailable,parentStorage"/>
 										</query>
 									</widget>	
 									<widget>
@@ -412,14 +217,14 @@
 								</row>
 								<row>
 								<widget  colspan="4" halign="center">
-							<table width="525px" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="">
+							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
 										<editors>
 											<textbox case="mixed" max="20"/>
 											<textbox case="mixed" max="80"/>
-											<auto cat="storageUnit" case="mixed" serviceUrl="StorageLocationServlet" width="150px" type="integer">
+											<auto cat="storageUnit" case="upper" serviceUrl="StorageLocationServlet" width="150px" type="integer">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -448,14 +253,14 @@
 										<colAligns>left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="525px" maxRows="7" rows="1" title="">
+									<table width="auto" maxRows="7" rows="1" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
 										<editors>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<textbox case="mixed"/>
+											<textbox case="upper"/>
 											<autoDropdown cat="isAvailable" case="upper" serviceUrl="StorageLocationServlet" width="64px" type="string" multiSelect="true">
 													<autoWidths>64</autoWidths>
 													<autoEditors>

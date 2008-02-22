@@ -19,22 +19,6 @@
 <screen id="StandardNotePicker" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="vertical" spacing="0" width="300px" xsi:type="Panel">
-				<widget>
-          <buttonPanel key="buttons">
-            <appButton action="commit">
-              <widget>
-                <text>Ok</text>
-              </widget>
-            </appButton>
-            <html>&lt;div
-style="width:1px;height:20px;background:grey"/&gt;</html>
-            <appButton action="abort">
-              <widget>
-                <text>Cancel</text>
-              </widget>
-            </appButton>
-          </buttonPanel>
-				</widget>
 				<panel key="treeContainer" layout="vertical" height="250px" width="320px" overflow="auto" xsi:type="Panel">
 				<!--tree-->
 				<pagedTree key="noteTree" vertical="true" itemsPerPage="1000" title=""/>
@@ -45,6 +29,27 @@ style="width:1px;height:20px;background:grey"/&gt;</html>
 				<textarea key="noteText" width="300px" height="200px"/>
 				</widget>
 				</panel>
+				
+				<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+          <buttonPanel key="buttons">
+            <appButton action="commit">
+            <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
+              <widget>
+                <text>Commit</text>
+              </widget>
+              </panel>
+            </appButton>
+            <appButton action="abort">
+            <panel xsi:type="Panel" layout="horizontal">
+              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
+              <widget>
+                <text>Abort</text>
+              </widget>
+              </panel>
+            </appButton>
+          </buttonPanel>
+		</panel>
 			</panel>
 	</display>
 	<rpc key="display">
