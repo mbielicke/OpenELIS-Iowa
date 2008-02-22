@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 @NamedQuery(name = "getStorageLocationByStorageUnitId", query = "select s.id " +
 							 " from StorageLocation s where s.storageUnit = :id"),
 @NamedQuery(name = "getStorageLocationAutoCompleteByName", query = "select s.id, s.name, s.location " +
-							 " from StorageLocation s where UPPER(s.name) like :name order by s.name"),
+							 " from StorageLocation s where s.name like :name order by s.name"),
 @NamedQuery(name = "getStorageLocationAutoCompleteById", query = "select s.id, s.name, s.location " +
 							 " from StorageLocation s where s.id = :id")})
 							 
