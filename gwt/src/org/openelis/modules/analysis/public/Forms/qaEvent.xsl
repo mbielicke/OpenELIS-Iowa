@@ -118,7 +118,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget width= "210px"> 
-      <textbox key = "name" case = "lower" />
+      <textbox key = "name" case = "lower" tab="description,reportingText"/>
      </widget>
      </row>     
      <row>     
@@ -126,7 +126,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "description" width= "200px"/>
+      <textbox case= "mixed"   key= "description" width= "200px" tab="qaEventType,name"/>
      </widget>     
     </row>
      <row>
@@ -134,7 +134,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="100px" fromModel="true"  type="integer" >
+										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="100px" fromModel="true"  type="integer" tab="test,description">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -169,7 +169,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="test" key="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"   type="integer" >
+										<autoDropdown cat="test" key="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>
@@ -201,7 +201,7 @@
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"qae_Billable")'/>:</text>
         </widget>
         <widget>
-         <check key= "billable"/>
+         <check key= "billable" tab="sequence,test"/>
          <query>
          <autoDropdown cat="billable" serviceUrl= "QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" >
 													<autoWidths>10</autoWidths>
@@ -226,7 +226,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "sequence"  width= "50px"/>
+      <textbox key= "sequence"  width= "50px" tab="reportingText,billable"/>
      </widget>    
      </row>
 			
@@ -235,7 +235,7 @@
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="300px" height="200px" case="mixed" key="reportingText"/>
+		  <textarea width="300px" height="200px" case="mixed" key="reportingText" tab="name,sequence"/>
 	    </widget> 
 	   </row>								          
                                  					                         

@@ -134,7 +134,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="description,isSingular">
+										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="description,id">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -169,7 +169,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isSingular" tab="contactsTable,parentOrg"/>
+										<check key="isSingular" tab="id,description"/>
 										<query>
 											<autoDropdown cat="isSingular" case="upper" serviceUrl="StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="category,description">
 													<autoWidths>19</autoWidths>
