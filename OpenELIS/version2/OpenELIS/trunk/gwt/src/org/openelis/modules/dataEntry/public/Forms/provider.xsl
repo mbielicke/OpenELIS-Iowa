@@ -116,13 +116,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
-      <textbox key = "lastName" case = "upper" />
+      <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
      </widget>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
      <widget>
-										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"   fromModel="true" type="integer" >
+										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="ProviderServlet" width="80px"   fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -149,13 +149,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
      </widget>
      <widget>
-      <textbox key= "firstName" case = "upper"   width= "150px"/>
+      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
      </widget>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_NPI")'/></text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "npi" width= "80px"/>
+      <textbox case= "mixed"   key= "npi" width= "80px" tab="lastName,providerType"/>
      </widget>
     </row>
     <row>
@@ -163,7 +163,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
-      <textbox key= "middleName" case = "upper" width= "150px"/>
+      <textbox key= "middleName" case = "upper" width= "150px" tab="providerType,firstName"/>
      </widget>
     </row>
    </panel>

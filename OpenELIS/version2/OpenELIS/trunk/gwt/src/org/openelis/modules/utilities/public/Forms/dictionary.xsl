@@ -118,7 +118,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name"/>
+										<textbox case="mixed" key="name" tab="desc,systemName"/>
 									</widget>
 								</row>
 								<row>
@@ -126,7 +126,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="desc" width="300px"/>
+										<textbox case="mixed" key="desc" width="300px" tab="section,name"/>
 									</widget>
 								</row>
 								<row>								
@@ -136,7 +136,7 @@
 									 
 									 
 									  <widget>
-										<autoDropdown cat="section" key="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" >
+										<autoDropdown cat="section" key="section" case="lower" serviceUrl="DictionaryServlet" width="100px"   fromModel="true" type="integer" tab="systemName,desc">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -165,7 +165,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="systemName"/>
+										<textbox case="mixed" key="systemName" tab="name,section"/>
 									</widget>
 								</row>						  
 							</panel>
