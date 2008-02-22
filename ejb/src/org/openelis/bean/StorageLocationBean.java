@@ -253,10 +253,8 @@ public class StorageLocationBean implements StorageLocationRemote{
          
 //       update children
          int i=0;
-         System.out.println("********************SIZE: "+storageLocationChildren.size()+"**************************");
          for (Iterator childrenItr = storageLocationChildren.iterator(); childrenItr.hasNext();) {
         	 StorageLocationDO childDO = (StorageLocationDO) childrenItr.next();
-        	 System.out.println("************************["+childDO+"]********************");
         	 StorageLocation childStorageLoc = null;
 	            
 	            if (childDO.getId() == null)
@@ -272,7 +270,6 @@ public class StorageLocationBean implements StorageLocationRemote{
 	            //}else{
 	            childStorageLoc.setSortOrder(i);
 	            childStorageLoc.setName(childDO.getName());
-	            System.out.println("*********************NAME: ["+childDO.getName()+"]*************************");
 	            childStorageLoc.setLocation(childDO.getLocation());
 	            childStorageLoc.setParentStorageLocation(storageLocation.getId());
 	            childStorageLoc.setStorageUnit(childDO.getStorageUnit());
