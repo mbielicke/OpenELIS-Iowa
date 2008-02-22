@@ -6,6 +6,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
@@ -45,8 +46,11 @@ public class DictionaryEntriesTable implements TableManager {
         return false;
     }
 
-    public boolean canSelect(int row, TableController controller) {       
+    public boolean canSelect(int row, TableController controller) {   
+       if(dictionaryForm.bpanel.state == FormInt.ADD || dictionaryForm.bpanel.state == FormInt.UPDATE) 
         return true;
+       
+       return false;
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
