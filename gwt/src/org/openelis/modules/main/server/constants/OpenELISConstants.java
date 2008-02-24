@@ -1,4 +1,4 @@
-package org.openelis.modules.main.client.constants;
+package org.openelis.modules.main.server.constants;
 
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 

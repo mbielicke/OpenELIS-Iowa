@@ -44,7 +44,7 @@ public class QAEventServlet extends AppServlet implements
     private static final int leftTableRowsPerPage = 20;
     private String systemUserId = "";
     
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.client.constants.OpenELISConstants",
+    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                            new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                            ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 

@@ -19,11 +19,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class StorageLocationScreen extends AppScreenForm{
     
-    {
-        ScreenBase.getWidgetMap().addWidget("StorageNameTable", new StorageNameTable());
-        ScreenBase.getWidgetMap().addWidget("StorageUnitDescTable", new StorageUnitDescTable());
-    }
-    
 	private static StorageLocationServletIntAsync screenService = (StorageLocationServletIntAsync) GWT
 	.create(StorageLocationServletInt.class);
 	

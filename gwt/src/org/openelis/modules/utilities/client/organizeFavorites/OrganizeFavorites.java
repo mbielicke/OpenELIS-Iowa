@@ -1,4 +1,4 @@
-package org.openelis.modules.dataEntry.client.organizeFavorites;
+package org.openelis.modules.utilities.client.organizeFavorites;
 
 import org.openelis.gwt.screen.AppScreenForm;
 
