@@ -3,16 +3,17 @@
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
 	<inherits name="com.google.gwt.xml.XML"/>
-    <inherits name="com.google.gwt.i18n.I18N"/>
+    <!--<inherits name="com.google.gwt.i18n.I18N"/> -->
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.utilities.Utilities"/>
     <inherits name="org.openelis.modules.dataEntry.DataEntry"/>
+    <!--
     <inherits name="org.openelis.modules.supply.Supply"/>
     <inherits name="org.openelis.modules.analysis.Analysis"/>
-    
+    -->
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
  

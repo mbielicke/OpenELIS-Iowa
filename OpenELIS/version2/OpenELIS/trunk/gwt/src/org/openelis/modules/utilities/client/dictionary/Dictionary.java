@@ -315,7 +315,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                       
                     if(hasError){                        
                         StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 1);
-                        snfield.addError(constants.getString("dictSystemNameError"));
+                       // snfield.addError(constants.getString("dictSystemNameError"));
                         ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,1)).drawErrors();                        
                     }                                           
      
@@ -348,7 +348,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                     if(hasError){
                         
                         StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 3); 
-                        efield.addError(constants.getString("dictEntryError"));
+                        //efield.addError(constants.getString("dictEntryError"));
                         ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,3)).drawErrors();
                        
                     }

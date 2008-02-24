@@ -8,18 +8,9 @@ import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.modules.analysis.client.qaevent.QAEvent;
-import org.openelis.modules.dataEntry.client.Provider.Provider;
-import org.openelis.modules.dataEntry.client.organization.OrganizationScreen;
-import org.openelis.modules.dataEntry.client.organizeFavorites.OrganizeFavorites;
-import org.openelis.modules.utilities.client.standardNote.StandardNoteScreen;
 import org.openelis.modules.main.client.service.OpenELISService;
-import org.openelis.modules.supply.client.storage.StorageLocationScreen;
-import org.openelis.modules.supply.client.storageUnit.StorageUnitScreen;
-import org.openelis.modules.utilities.client.dictionary.Dictionary;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.ConstantsWithLookup;
+//import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -33,9 +24,12 @@ import com.google.gwt.user.client.ui.Widget;
 public class OpenELIS extends AppScreen implements PopupListener {
 	
 	//private OpenELISConstants openElisConstants = null;
-	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
+	//public static ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
 	private static OpenELISScreenIntAsync screenService = (OpenELISScreenIntAsync)GWT.create(OpenELISScreenInt.class);
     private static ServiceDefTarget target = (ServiceDefTarget)screenService;
+    
+    public static String modules;
+    public static WindowBrowser browser;
     
 	public OpenELIS() {	    
         super();
@@ -50,7 +44,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	//set the constants so we can use it later
            // setOpenElisConstants((OpenELISConstants) constants);
             
-        	WindowBrowser browser = (WindowBrowser)getWidget("browser");
+        	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
         	
         	//load left menu
@@ -354,7 +348,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("analysisManagement"),(ScreenLabel) widgets.get("qaEventsLabel"));
         	//we need to do the qa events action
-            browser.addScreen(new QAEvent(), openElisConstants.getString("qaEvents"), "QAEvents", openElisConstants.getString("loadingMessage"));
+            //browser.addScreen(new QAEvent(), openElisConstants.getString("qaEvents"), "QAEvents", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("resultsIcon")) || (item == widgets.get("resultsLabel")) || (item == widgets.get("resultsDescription")) || 
         		(item == widgets.get("favTopResults")) || (item == widgets.get("favLeftResults"))){
 //        	if the edit analysis management is open we need to close it
@@ -418,7 +412,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("supplyManagement"),(ScreenLabel) widgets.get("storageLabel"));
         	//we need to do the storage action
-        	browser.addScreen(new StorageLocationScreen(), openElisConstants.getString("storage"), "Storage", openElisConstants.getString("loadingMessage"));
+        	
         }else if((item == widgets.get("storageUnitIcon")) || (item == widgets.get("storageUnitLabel")) || (item == widgets.get("storageUnitDescription")) || 
         		(item == widgets.get("favTopStorageUnit")) || (item == widgets.get("favLeftStorageUnit"))){
 //        	if the supply management is open we need to close it
@@ -426,7 +420,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("supplyManagement"),(ScreenLabel) widgets.get("storageUnitLabel"));
         	//we need to do the storage unit action
-        	browser.addScreen(new StorageUnitScreen(), openElisConstants.getString("storageUnit"), "Storage", openElisConstants.getString("loadingMessage"));
+        	
         }else if((item == widgets.get("fastSampleLoginIcon")) || (item == widgets.get("fastSampleLoginLabel")) || (item == widgets.get("fastSampleLoginDescription")) || 
         		(item == widgets.get("favTopFastSampleLogin")) || (item == widgets.get("favLeftFastSampleLogin"))){
 //        	if the data entry is open we need to close it
@@ -441,9 +435,6 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("dataEntryPanel");        	
   
         	closeTopMenuPanel(pn,(Label) getWidget("dataEntry"),(ScreenLabel) widgets.get("organizationLabel"));
-        	
-        	//we need to do the organization action        	openElisConstants.loadingMessage()
-        	browser.addScreen(new OrganizationScreen(), openElisConstants.getString("organization"), "Organization", openElisConstants.getString("loadingMessage"));
         }else if((item == widgets.get("patientIcon")) || (item == widgets.get("patientLabel")) || (item == widgets.get("patientDescription")) || 
         		(item == widgets.get("favTopPatient")) || (item == widgets.get("favLeftPatient"))){
 //        	if the data entry is open we need to close it
@@ -464,8 +455,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("dataEntryPanel");        	
   
         	closeTopMenuPanel(pn,(Label) getWidget("dataEntry"),(ScreenLabel) widgets.get("providerLabel"));
-        	//we need to do the provider action
-            browser.addScreen(new Provider(), openElisConstants.getString("provider"), "Provider", openElisConstants.getString("loadingMessage"));
+           
         }else if((item == widgets.get("sampleLoginIcon")) || (item == widgets.get("sampleLoginLabel")) || (item == widgets.get("sampleLoginDescription")) || 
         		(item == widgets.get("favTopSampleLogin")) || (item == widgets.get("favLeftSampleLogin"))){
 //        	if the data entry is open we need to close it
@@ -489,7 +479,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("utilities"),(ScreenLabel) widgets.get("dictionaryLabel"));
         	//we need to do the dictionary action
-            browser.addScreen(new Dictionary(), openElisConstants.getString("dictionary"), "Dictionary", openElisConstants.getString("loadingMessage"));
+            
         }else if((item == widgets.get("labelIcon")) || (item == widgets.get("labelLabel")) || (item == widgets.get("labelDescription")) || 
         		(item == widgets.get("favTopLabel")) || (item == widgets.get("favLeftLabel"))){
 //        	if the utilities is open we need to close it
@@ -529,7 +519,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("utilities"),(ScreenLabel) widgets.get("standardNoteLabel"));
         	//we need to do the standard note action
-        	browser.addScreen(new StandardNoteScreen(), "Standard Note", openElisConstants.getString("standardNote"),openElisConstants.getString("loadingMessage"));
+        	
         }else if((item == widgets.get("systemVariableIcon")) || (item == widgets.get("systemVariableLabel")) || (item == widgets.get("systemVariableDescription")) || 
         		(item == widgets.get("favTopSystemVariable")) || (item == widgets.get("favLeftSystemVariable"))){
 //        	if the utilities is open we need to close it
@@ -545,7 +535,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
   
         	closeTopMenuPanel(pn,(Label) getWidget("favorites"),(ScreenLabel) widgets.get("organizeFavoritesLabel"));
         	//we need to do the system variable action
-        	browser.addScreen(new OrganizeFavorites(), "Organize Favorites", openElisConstants.getString("organizeFavorites"),openElisConstants.getString("loadingMessage"));
+        	
         }else if((item == widgets.get("closeCurrentWindowLabel")) || 
         		(item == widgets.get("favTopCloseCurrentWindow")) || (item == widgets.get("favLeftCloseCurrentWindow"))){
 //        	if the window is open we need to close it

@@ -15,7 +15,7 @@
 
   <xsl:template match="doc">
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.client.constants.OpenELISConstants',locale:new(string($language)))"/>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
 		<panel height="100%" layout="vertical" style="AppBackground" width="100%" xsi:type="Panel">
@@ -302,7 +302,7 @@
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="qaEventsIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="analysisManagmentPanelTable:3">&#160;</html>
+								<html key="qaEventsIcon" onclick="AnylisisModule,this" mouse="this" style="topMenuPanelIcon" value="analysisManagmentPanelTable:3">&#160;</html>
 							</widget>
 							<!--  spacer -->
 						<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -310,10 +310,10 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="qaEventsLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="analysisManagmentPanelTable:3" text="{resource:getString($constants,'qaEvents')}"/>
+								<label key="qaEventsLabel" onClick="AnalysisModule,this" style="topMenuPanelTitle" mouse="this" value="analysisManagmentPanelTable:3" text="{resource:getString($constants,'qaEvents')}"/>
 							</widget>
 							<widget>
-								<label key="qaEventsDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="analysisManagmentPanelTable:3" text="{resource:getString($constants,'qaEventsDescription')}"/>
+								<label key="qaEventsDescription" wordwrap="true" onClick="AnalysisModule,this" style="topMenuPanelDesc" mouse="this" value="analysisManagmentPanelTable:3" text="{resource:getString($constants,'qaEventsDescription')}"/>
 						</widget>
 						</panel>
 					</row>
@@ -413,7 +413,7 @@
 				<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="instrumentIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:0">&#160;</html>
+								<html key="instrumentIcon" onclick="this,SupplyModule" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:0">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -421,17 +421,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="instrumentLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:0" text="{resource:getString($constants,'instrument')}"/>
+								<label key="instrumentLabel" onClick="this,SupplyModule" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:0" text="{resource:getString($constants,'instrument')}"/>
 							</widget>
 							<widget>
-								<label key="instrumentDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:0" text="{resource:getString($constants,'instrumentDescription')}"/>
+								<label key="instrumentDescription" wordwrap="true,SupplyModule" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:0" text="{resource:getString($constants,'instrumentDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="inventoryIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:1">&#160;</html>
+								<html key="inventoryIcon" onclick="this,SupplyModule" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:1">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -439,17 +439,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="inventoryLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:1" text="{resource:getString($constants,'inventory')}"/>
+								<label key="inventoryLabel" onClick="this,SupplyModule" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:1" text="{resource:getString($constants,'inventory')}"/>
 							</widget>
 							<widget>
-								<label key="inventoryDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:1" text="{resource:getString($constants,'inventoryDescription')}"/>
+								<label key="inventoryDescription" wordwrap="true" onClick="this,SupplyModule" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:1" text="{resource:getString($constants,'inventoryDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="orderIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:2">&lt;img src=&quot;Images/cart.png&quot;&gt;</html>
+								<html key="orderIcon" onclick="this,SupplyModule" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:2">&lt;img src=&quot;Images/cart.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -457,17 +457,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="orderLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:2" text="{resource:getString($constants,'order')}"/>
+								<label key="orderLabel" onClick="this,SupplyModule" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:2" text="{resource:getString($constants,'order')}"/>
 							</widget>
 							<widget>
-								<label key="orderDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:2" text="{resource:getString($constants,'orderDescription')}"/>
+								<label key="orderDescription" wordwrap="true" onClick="this,SupplyModule" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:2" text="{resource:getString($constants,'orderDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="storageIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:3">&lt;img src=&quot;Images/box.png&quot;&gt;</html>
+								<html key="storageIcon" onclick="this,SupplyModule" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:3">&lt;img src=&quot;Images/box.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -475,17 +475,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="storageLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:3" text="{resource:getString($constants,'storage')}"/>
+								<label key="storageLabel" onClick="this,SupplyModule" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:3" text="{resource:getString($constants,'storage')}"/>
 							</widget>
 							<widget>
-								<label key="storageDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:3" text="{resource:getString($constants,'storageDescription')}"/>
+								<label key="storageDescription" wordwrap="true" onClick="this,SupplyModule" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:3" text="{resource:getString($constants,'storageDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="storageUnitIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:4">&#160;</html>
+								<html key="storageUnitIcon" onclick="this,SupplyModule" mouse="this" style="topMenuPanelIcon" value="supplyManagementPanelTable:4">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -493,10 +493,10 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="storageUnitLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnit')}"/>
+								<label key="storageUnitLabel" onClick="this,SupplyModule" style="topMenuPanelTitle" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnit')}"/>
 							</widget>
 							<widget>
-								<label key="storageUnitDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnitDescription')}"/>
+								<label key="storageUnitDescription" wordwrap="true" onClick="this,SupplyModule" style="topMenuPanelDesc" mouse="this" value="supplyManagementPanelTable:4" text="{resource:getString($constants,'storageUnitDescription')}"/>
 						</widget>
 						</panel>
 					</row>
@@ -509,7 +509,7 @@
 				<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="fastSampleLoginIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:0">&#160;</html>
+								<html key="fastSampleLoginIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:0">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -517,17 +517,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="fastSampleLoginLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:0" text="{resource:getString($constants,'fastSampleLogin')}"/>
+								<label key="fastSampleLoginLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:0" text="{resource:getString($constants,'fastSampleLogin')}"/>
 							</widget>
 							<widget>
-								<label key="fastSampleLoginDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:0" text="{resource:getString($constants,'fastSampleLoginDescription')}"/>
+								<label key="fastSampleLoginDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:0" text="{resource:getString($constants,'fastSampleLoginDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="organizationIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:1">&lt;img src=&quot;Images/house.png&quot;&gt;</html>
+								<html key="organizationIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:1">&lt;img src=&quot;Images/house.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -535,17 +535,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="organizationLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:1" text="{resource:getString($constants,'organization')}"/>
+								<label key="organizationLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:1" text="{resource:getString($constants,'organization')}"/>
 							</widget>
 							<widget>
-								<label key="organizationDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:1" text="{resource:getString($constants,'organizationDescription')}"/>
+								<label key="organizationDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:1" text="{resource:getString($constants,'organizationDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="patientIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:2">&lt;img src=&quot;Images/user_red.png&quot;&gt;</html>
+								<html key="patientIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:2">&lt;img src=&quot;Images/user_red.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -553,17 +553,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="patientLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:2" text="{resource:getString($constants,'patient')}"/>
+								<label key="patientLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:2" text="{resource:getString($constants,'patient')}"/>
 							</widget>
 							<widget>
-								<label key="patientDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:2" text="{resource:getString($constants,'patientDescription')}"/>
+								<label key="patientDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:2" text="{resource:getString($constants,'patientDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="personIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:3">&lt;img src=&quot;Images/user.png&quot;&gt;</html>
+								<html key="personIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:3">&lt;img src=&quot;Images/user.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -571,17 +571,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="personLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:3" text="{resource:getString($constants,'person')}"/>
+								<label key="personLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:3" text="{resource:getString($constants,'person')}"/>
 							</widget>
 							<widget>
-								<label key="personDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:3" text="{resource:getString($constants,'personDescription')}"/>
+								<label key="personDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:3" text="{resource:getString($constants,'personDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="providerIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:4">&lt;img src=&quot;Images/user_suit.png&quot;&gt;</html>
+								<html key="providerIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:4">&lt;img src=&quot;Images/user_suit.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -589,17 +589,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="providerLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:4" text="{resource:getString($constants,'provider')}"/>
+								<label key="providerLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:4" text="{resource:getString($constants,'provider')}"/>
 							</widget>
 							<widget>
-								<label key="providerDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:4" text="{resource:getString($constants,'providerDescription')}"/>
+								<label key="providerDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:4" text="{resource:getString($constants,'providerDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="sampleLoginIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:5">&#160;</html>
+								<html key="sampleLoginIcon" onclick="this,DataEntryModule" mouse="this" style="topMenuPanelIcon" value="dataEntryPanelTable:5">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -607,10 +607,10 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="sampleLoginLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:5" text="{resource:getString($constants,'sampleLogin')}"/>
+								<label key="sampleLoginLabel" onClick="this,DataEntryModule" style="topMenuPanelTitle" mouse="this" value="dataEntryPanelTable:5" text="{resource:getString($constants,'sampleLogin')}"/>
 							</widget>
 							<widget>
-								<label key="sampleLoginDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:5" text="{resource:getString($constants,'sampleLoginDescription')}"/>
+								<label key="sampleLoginDescription" wordwrap="true" onClick="this,DataEntryModule" style="topMenuPanelDesc" mouse="this" value="dataEntryPanelTable:5" text="{resource:getString($constants,'sampleLoginDescription')}"/>
 						</widget>
 						</panel>
 					</row>
@@ -773,7 +773,7 @@
 				<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="auxiliaryIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:0">&#160;</html>
+								<html key="auxiliaryIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:0">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -781,17 +781,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="auxiliaryLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:0" text="{resource:getString($constants,'auxiliary')}"/>
+								<label key="auxiliaryLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:0" text="{resource:getString($constants,'auxiliary')}"/>
 							</widget>
 							<widget>
-								<label key="auxiliaryDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:0" text="{resource:getString($constants,'auxiliaryDescription')}"/>
+								<label key="auxiliaryDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:0" text="{resource:getString($constants,'auxiliaryDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="dictionaryIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:1">&lt;img src=&quot;Images/book.png&quot;&gt;</html>
+								<html key="dictionaryIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:1">&lt;img src=&quot;Images/book.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -799,17 +799,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="dictionaryLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:1" text="{resource:getString($constants,'dictionary')}"/>
+								<label key="dictionaryLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:1" text="{resource:getString($constants,'dictionary')}"/>
 							</widget>
 							<widget>
-								<label key="dictionaryDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:1" text="{resource:getString($constants,'dictionaryDescription')}"/>
+								<label key="dictionaryDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:1" text="{resource:getString($constants,'dictionaryDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="labelIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:2">&#160;</html>
+								<html key="labelIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:2">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -817,17 +817,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="labelLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:2" text="{resource:getString($constants,'label')}"/>
+								<label key="labelLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:2" text="{resource:getString($constants,'label')}"/>
 							</widget>
 							<widget>
-								<label key="labelDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:2" text="{resource:getString($constants,'labelDescription')}"/>
+								<label key="labelDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:2" text="{resource:getString($constants,'labelDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 									<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="referenceTableIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:3">&lt;img src=&quot;Images/table.png&quot;&gt;</html>
+								<html key="referenceTableIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:3">&lt;img src=&quot;Images/table.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -835,17 +835,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="referenceTableLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:3" text="{resource:getString($constants,'referenceTable')}"/>
+								<label key="referenceTableLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:3" text="{resource:getString($constants,'referenceTable')}"/>
 							</widget>
 							<widget>
-								<label key="referenceTableDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:3" text="{resource:getString($constants,'referenceTableDescription')}"/>
+								<label key="referenceTableDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:3" text="{resource:getString($constants,'referenceTableDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="scriptletIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:4">&lt;img src=&quot;Images/script.png&quot;&gt;</html>
+								<html key="scriptletIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:4">&lt;img src=&quot;Images/script.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -853,17 +853,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="scriptletLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:4" text="{resource:getString($constants,'scriptlet')}"/>
+								<label key="scriptletLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:4" text="{resource:getString($constants,'scriptlet')}"/>
 							</widget>
 							<widget>
-								<label key="scriptletDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:4" text="{resource:getString($constants,'scriptletDescription')}"/>
+								<label key="scriptletDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:4" text="{resource:getString($constants,'scriptletDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="sectionIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:5">&#160;</html>
+								<html key="sectionIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:5">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -871,17 +871,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="sectionLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:5" text="{resource:getString($constants,'section')}"/>
+								<label key="sectionLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:5" text="{resource:getString($constants,'section')}"/>
 							</widget>
 							<widget>
-								<label key="sectionDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:5" text="{resource:getString($constants,'sectionDescription')}"/>
+								<label key="sectionDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:5" text="{resource:getString($constants,'sectionDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="standardNoteIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:6">&lt;img src=&quot;Images/note.png&quot;&gt;</html>
+								<html key="standardNoteIcon" onclick="this,UtilitiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:6">&lt;img src=&quot;Images/note.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -889,17 +889,17 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="standardNoteLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:6" text="{resource:getString($constants,'standardNote')}"/>
+								<label key="standardNoteLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:6" text="{resource:getString($constants,'standardNote')}"/>
 							</widget>
 							<widget>
-								<label key="standardNoteDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:6" text="{resource:getString($constants,'standardNoteDescription')}"/>
+								<label key="standardNoteDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:6" text="{resource:getString($constants,'standardNoteDescription')}"/>
 						</widget>
 						</panel>
 					</row>
 					<row style="topMenuPanel">
 						<!--icon-->
 							<widget valign="middle" style="topMenuPanelIconPanel">
-								<html key="systemVariableIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:7">&#160;</html>
+								<html key="systemVariableIcon" onclick="this,UtiltiesModule" mouse="this" style="topMenuPanelIcon" value="utilitiesPanelTable:7">&#160;</html>
 							</widget>
 						<!--  spacer -->
 					<panel layout="horizontal" width="3px" xsi:type="Panel">
@@ -907,10 +907,10 @@
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
-								<label key="systemVariableLabel" onClick="this" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:7" text="{resource:getString($constants,'systemVariable')}"/>
+								<label key="systemVariableLabel" onClick="this,UtilitiesModule" style="topMenuPanelTitle" mouse="this" value="utilitiesPanelTable:7" text="{resource:getString($constants,'systemVariable')}"/>
 							</widget>
 							<widget>
-								<label key="systemVariableDescription" wordwrap="true" onClick="this" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:7" text="{resource:getString($constants,'systemVariableDescription')}"/>
+								<label key="systemVariableDescription" wordwrap="true" onClick="this,UtilitiesModule" style="topMenuPanelDesc" mouse="this" value="utilitiesPanelTable:7" text="{resource:getString($constants,'systemVariableDescription')}"/>
 						</widget>
 						</panel>
 					</row>

@@ -1,3 +1,4 @@
 <module>
   <servlet path='/QAEventServlet' class='org.openelis.modules.analysis.server.QAEventServlet'/> 
+  <entry-point class="org.openelis.modules.analysis.client.Analysis"/>
 </module>

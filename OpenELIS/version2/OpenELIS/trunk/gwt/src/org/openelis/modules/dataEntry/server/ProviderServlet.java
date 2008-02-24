@@ -59,7 +59,7 @@ public class ProviderServlet extends AppServlet implements
     private String systemUserId = "";
     
 
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.client.constants.OpenELISConstants",
+    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                                                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
     
