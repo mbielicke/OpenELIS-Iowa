@@ -27,9 +27,11 @@ public class Supply implements AppModule {
 
     public void onClick(Widget sender) {
         String key = ((ScreenWidget)sender).key;
-        if(key.equals("storageIcon") || key.equals("storageLabel") || key.equals("storageDescription"))
+        if(key.equals("storageIcon") || key.equals("storageLabel") || key.equals("storageDescription") || 
+        		key.equals("favLeftStorage"))
             OpenELIS.browser.addScreen(new StorageLocationScreen(), "Storage Location", "Storage", "Loading");
-        if(key.equals("storageUnitIcon") || key.equals("storageUnitLabel") || key.equals("storageUnitDescription"))
+        if(key.equals("storageUnitIcon") || key.equals("storageUnitLabel") || key.equals("storageUnitDescription") || 
+        		key.equals("favLeftStorageUnit"))
             OpenELIS.browser.addScreen(new StorageUnitScreen(), "Storage Unit", "Storage", "Loading");
     }
 

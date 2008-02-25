@@ -29,12 +29,12 @@ public class Utilities implements AppModule {
 
     public void onClick(Widget sender) {
         String key = ((ScreenWidget)sender).key;
-        if(key.equals("dictionaryIcon") || key.equals("dictionaryLabel") || key.equals("dictionaryDescription"))
+        if(key.equals("dictionaryIcon") || key.equals("dictionaryLabel") || key.equals("dictionaryDescription") || 
+        		key.equals("favLeftDictionary"))
             OpenELIS.browser.addScreen(new Dictionary(), "Dictionary", "Dictionary", "Loading");
-        if(key.equals("standardNoteIcon") || key.equals("standardNoteLabel") || key.equals("standardNoteDescription"))
+        if(key.equals("standardNoteIcon") || key.equals("standardNoteLabel") || key.equals("standardNoteDescription") || key.equals("favLeftStandardNote"))
             OpenELIS.browser.addScreen(new StandardNoteScreen(), "Standard Note", "Standard Note","Loading");
-        if(key.equals("organizeFavoritesLeft") || key.equals("organizeFavoritesLabel"))
+        if(key.equals("organizeFavoritesLeft") || key.equals("organizeFavoritesLabel") || key.equals("organizeFavoritesLeft"))
             OpenELIS.browser.addScreen(new OrganizeFavorites(), "Organize Favorites", "Organize Favorites","Loading");
     }
-
 }

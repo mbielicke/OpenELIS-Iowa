@@ -27,7 +27,9 @@ public class Analysis implements AppModule {
     }
 
     public void onClick(Widget sender) {
-        if(((ScreenWidget)sender).key.equals("qaEventsIcon") || ((ScreenWidget)sender).key.equals("qaEventsLabel") || ((ScreenWidget)sender).key.equals("qaEventsDescription")) 
+    	String key = ((ScreenWidget)sender).key;
+        if(key.equals("qaEventsIcon") || key.equals("qaEventsLabel") || key.equals("qaEventsDescription") || 
+        		key.equals("favLeftqaEvents")) 
             OpenELIS.browser.addScreen(new QAEvent(), "QA Events", "QAEvents", "Loading");
         
     }

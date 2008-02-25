@@ -28,9 +28,11 @@ public class DataEntry implements AppModule {
 
     public void onClick(Widget sender) {
         String key = ((ScreenWidget)sender).key;
-        if(key.equals("organizationIcon") || key.equals("organizationLabel") || key.equals("organizationDescription"))  
+        if(key.equals("organizationIcon") || key.equals("organizationLabel") || key.equals("organizationDescription") || 
+        		key.equals("favLeftOrganization"))  
             OpenELIS.browser.addScreen(new OrganizationScreen(), "Organization", "Organization", "Loading");
-        if(key.equals("providerIcon") || key.equals("providerLabel") || key.equals("providerDescription"))  
+        if(key.equals("providerIcon") || key.equals("providerLabel") || key.equals("providerDescription") || 
+        		key.equals("favLeftProvider"))  
             OpenELIS.browser.addScreen(new Provider(), "Provider", "Provider", "Loading");
         
     }
