@@ -110,8 +110,8 @@
 						<html key="logoutIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="filePanelTable:0">&lt;img src=&quot;Images/application_delete.png&quot;&gt;</html>
 					</widget>
 					<!--  spacer -->
-					<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+					<!--<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -134,8 +134,8 @@
 						<html key="cutIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="editPanelTable:0">&lt;img src=&quot;Images/cut_red.png&quot;&gt;</html>
 					</widget>
 						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+						<!--<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -151,8 +151,8 @@
 						<html key="copyIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="editPanelTable:1">&lt;img src=&quot;Images/page_white_copy.png&quot;&gt;</html>
 					</widget>
 						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+						<!--<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -168,8 +168,8 @@
 						<html key="pasteIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="editPanelTable:2">&lt;img src=&quot;Images/paste_plain.png&quot;&gt;</html>
 					</widget>
 					<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+					<!--	<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -191,8 +191,8 @@
 								<html key="projectIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="sampleManagementPanelTable:0">&#160;</html>
 							</widget>
 						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+						<!--<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -209,8 +209,8 @@
 								<html key="releaseIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="sampleManagementPanelTable:1">&#160;</html>
 							</widget>
 						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+						<!--<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>
@@ -227,8 +227,8 @@
 								<html key="sampleLookupIcon" onclick="this" mouse="this" style="topMenuPanelIcon" value="sampleManagementPanelTable:2">&lt;img src=&quot;Images/find.png&quot;&gt;</html>
 							</widget>
 						<!--  spacer -->
-						<panel layout="horizontal" width="3px" xsi:type="Panel">
-						</panel>
+					<!--	<panel layout="horizontal" width="3px" xsi:type="Panel">
+						</panel>-->
 						<!-- title and description -->
 						<panel layout="vertical" xsi:type="Panel" style="topMenuPanelItemMiddle" width="180px">
 							<widget>

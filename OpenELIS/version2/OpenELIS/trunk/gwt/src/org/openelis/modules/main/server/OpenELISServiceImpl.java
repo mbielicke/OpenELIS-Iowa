@@ -41,7 +41,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftDictionary");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,UtilitiesModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -50,7 +50,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftOrganization");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,DataEntryModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -59,7 +59,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "organizeFavoritesLeft");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,UtilitiesModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -68,7 +68,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftProvider");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,DataEntryModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -77,7 +77,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftqaEvents");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,AnalysisModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -86,7 +86,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftStandardNote");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,UtilitiesModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -95,7 +95,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftStorage");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,SupplyModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
             
@@ -104,7 +104,7 @@ public class OpenELISServiceImpl extends AppServlet implements OpenELISServiceIn
             elem.setAttribute("constant", "true");
             elem.setAttribute("key", "favLeftStorageUnit");
             elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
+            elem.setAttribute("onClick", "this,SupplyModule");
             elem.setAttribute("hover", "Hover");
             root.appendChild(elem);
                     
