@@ -21,7 +21,7 @@
 		<panel layout="vertical" spacing="0" width="300px" xsi:type="Panel">
 				<panel key="treeContainer" layout="vertical" height="250px" width="320px" overflow="auto" xsi:type="Panel">
 				<!--tree-->
-				<pagedTree key="noteTree" vertical="true" itemsPerPage="1000" title=""/>
+				<pagedTree key="noteTree" vertical="true" height = "200px" width = "300px" itemsPerPage="1000" title=""/>
 				</panel>
 				<panel layout="horizontal" xsi:type="Panel" spacing="10">
 				<widget>
