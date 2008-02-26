@@ -4,7 +4,9 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-               <xsl:import href="aToZTwoColumns.xsl"/> 
+<xsl:import href="aToZTwoColumns.xsl"/> 
+<xsl:import href="buttonPanel.xsl"/>
+
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
   </xalan:component>
@@ -40,80 +42,11 @@
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="515px" xsi:type="Panel">
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
-				<widget>
-          <buttonPanel key="buttons">
-            <appButton action="query" toggle="true">
-             <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
-              <widget>
-                <text>Query</text>
-              </widget>
-              </panel>
-            </appButton>
- <appButton action="prev" toggle="true">
-  <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="PreviousButtonImage"/>
-              <widget>
-                <text>Previous</text>
-              </widget>
-              </panel>
-            </appButton>
- <appButton action="next" toggle="true">
-  <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="NextButtonImage"/>
-              <widget>
-                <text>Next</text>
-              </widget>
-              </panel>
-            </appButton>
-              <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
-            <appButton action="add" toggle="true">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="AddButtonImage"/>
-              <widget>
-                <text>Add</text>
-              </widget>
-              </panel>
-            </appButton>
-            <appButton action="update" toggle="true">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="UpdateButtonImage"/>
-              <widget>
-                <text>Update</text>
-              </widget>
-              </panel>
-            </appButton>
-
- <appButton action="delete" toggle="true">
- <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="DeleteButtonImage"/>
-              <widget>
-                <text>Delete</text>
-              </widget>
-              </panel>
-            </appButton>
-  <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
-            <appButton action="commit">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
-              <widget>
-                <text>Commit</text>
-              </widget>
-              </panel>
-            </appButton>
-            <appButton action="abort">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
-              <widget>
-                <text>Abort</text>
-              </widget>
-              </panel>
-            </appButton>
-          </buttonPanel>
-				</widget>
-				</panel>
-          
+			<!--button panel code-->
+			<xsl:call-template name="buttonPanelTemplate">
+				<xsl:with-param name="buttonsParam">qpn|aud|cb</xsl:with-param>
+			</xsl:call-template>
+	          
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
 					<panel layout="vertical" width="400px" xsi:type="Panel">

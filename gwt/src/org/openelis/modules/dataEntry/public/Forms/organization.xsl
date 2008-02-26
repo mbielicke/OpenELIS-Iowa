@@ -4,7 +4,9 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-  <xsl:import href="aToZOneColumn.xsl"/>
+<xsl:import href="aToZOneColumn.xsl"/>
+<xsl:import href="buttonPanel.xsl"/>
+
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
   </xalan:component>
@@ -39,71 +41,11 @@
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" width="600px" xsi:type="Panel">
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
-		<widget>
-          <buttonPanel key="buttons">
-            <appButton action="query" toggle="true">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
-              </widget>
-              </panel>
-            </appButton>
- <appButton action="prev" toggle="true">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="PreviousButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"previous")'/></text>
-              </widget>
-              </panel>
-            </appButton>
- <appButton action="next" toggle="true">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="NextButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"next")'/></text>
-              </widget>
-              </panel>
-            </appButton>
-            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
-            <appButton action="add" toggle="true">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="AddButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"add")'/></text>
-              </widget>
-              </panel>
-            </appButton>
-            <appButton action="update" toggle="true">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="UpdateButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"update")'/></text>
-              </widget>
-              </panel>
-            </appButton>
-            <panel xsi:type="Absolute" layout="absolute" style="ButtonDivider"/>
-            <appButton action="commit">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"commit")'/></text>
-              </widget>
-              </panel>
-            </appButton>
-            <appButton action="abort">
-              <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
-              <widget>
-                <text><xsl:value-of select='resource:getString($constants,"abort")'/></text>
-              </widget>
-              </panel>
-            </appButton>
-            <panel xsi:type="Absolute" layout="absolute" style="ButtonSpacer"/>
-          </buttonPanel>
-				</widget>
-				</panel>
+		<!--button panel code-->
+		<xsl:call-template name="buttonPanelTemplate">
+		<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
+		</xsl:call-template>
+
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
 					<panel layout="vertical" width="600px" xsi:type="Panel">
