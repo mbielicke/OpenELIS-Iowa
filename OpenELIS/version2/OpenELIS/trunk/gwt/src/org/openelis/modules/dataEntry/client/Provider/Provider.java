@@ -201,59 +201,11 @@ public class Provider extends AppScreenForm{
        
     
     public void onClick(Widget sender) {
-        if (sender == getWidget("a")) {
-            getProviders("a", sender);
-        } else if (sender == getWidget("b")) {
-            getProviders("b", sender);
-        } else if (sender == getWidget("c")) {
-            getProviders("c", sender);
-        } else if (sender == getWidget("d")) {
-            getProviders("d", sender);
-        } else if (sender == getWidget("e")) {
-            getProviders("e", sender);
-        } else if (sender == getWidget("f")) {
-            getProviders("f", sender);
-        } else if (sender == getWidget("g")) {
-            getProviders("g", sender);
-        } else if (sender == getWidget("h")) {
-            getProviders("h", sender);
-        } else if (sender == getWidget("i")) {
-            getProviders("i", sender);
-        } else if (sender == getWidget("j")) {
-            getProviders("j", sender);
-        } else if (sender == getWidget("k")) {
-            getProviders("k", sender);
-        } else if (sender == getWidget("l")) {
-            getProviders("l", sender);
-        } else if (sender == getWidget("m")) {
-            getProviders("m", sender);
-        } else if (sender == getWidget("n")) {
-            getProviders("n", sender);
-        } else if (sender == getWidget("o")) {
-            getProviders("o", sender);
-        } else if (sender == getWidget("p")) {
-            getProviders("p", sender);
-        } else if (sender == getWidget("q")) {
-            getProviders("q", sender);
-        } else if (sender == getWidget("r")) {
-            getProviders("r", sender);
-        } else if (sender == getWidget("s")) {
-            getProviders("s", sender);
-        } else if (sender == getWidget("t")) {
-            getProviders("t", sender);
-        } else if (sender == getWidget("u")) {
-            getProviders("u", sender);
-        } else if (sender == getWidget("v")) {
-            getProviders("v", sender);
-        } else if (sender == getWidget("w")) {
-            getProviders("w", sender);
-        } else if (sender == getWidget("x")) {
-            getProviders("x", sender);
-        } else if (sender == getWidget("y")) {
-            getProviders("y", sender);
-        } else if (sender == getWidget("z")) {
-            getProviders("z", sender);
-        }else if (sender == getWidget("removeAddressButton")) {                     
+    	String action = ((AppButton)sender).action;
+		if(action.startsWith("query:")){
+			getProviders(action.substring(6, action.length()), sender);
+			
+		} else if (action.equals("removeRow")) {                     
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
             int selectedRow = provAddTable.controller.selected;
             if (selectedRow > -1
@@ -273,7 +225,7 @@ public class Provider extends AppScreenForm{
 
                 row.addHidden("deleteFlag", deleteFlag);
             }  
-        }else if(sender == getWidget("standardNoteButton")){
+        }else if(action.equals("standardNote")){
             new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
         }        
     }

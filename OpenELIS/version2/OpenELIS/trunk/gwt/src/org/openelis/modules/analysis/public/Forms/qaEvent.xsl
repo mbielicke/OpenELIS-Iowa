@@ -19,7 +19,7 @@
 <screen id= "QAEvents" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height= "425px" width = "100%" key= "hideablePanel" visible= "false" onclick= "this">
+  <aToZ height= "425px" width = "100%" key= "hideablePanel" visible= "false">
    <panel layout= "horizontal" style="ScreenLeftPanel" xsi:type= "Panel" spacing= "0">
     <xsl:if test="string($language)='en'">
      	<xsl:call-template name="aToZLeftPanelButtons"/>

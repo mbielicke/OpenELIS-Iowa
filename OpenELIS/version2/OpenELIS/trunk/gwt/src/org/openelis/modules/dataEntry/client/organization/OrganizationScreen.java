@@ -57,59 +57,11 @@ public class OrganizationScreen extends AppScreenForm {
 	}
 
 	public void onClick(Widget sender) {
-		if (sender == getWidget("a")) {
-			getOrganizations("a", sender);
-		} else if (sender == getWidget("b")) {
-			getOrganizations("b", sender);
-		} else if (sender == getWidget("c")) {
-			getOrganizations("c", sender);
-		} else if (sender == getWidget("d")) {
-			getOrganizations("d", sender);
-		} else if (sender == getWidget("e")) {
-			getOrganizations("e", sender);
-		} else if (sender == getWidget("f")) {
-			getOrganizations("f", sender);
-		} else if (sender == getWidget("g")) {
-			getOrganizations("g", sender);
-		} else if (sender == getWidget("h")) {
-			getOrganizations("h", sender);
-		} else if (sender == getWidget("i")) {
-			getOrganizations("i", sender);
-		} else if (sender == getWidget("j")) {
-			getOrganizations("j", sender);
-		} else if (sender == getWidget("k")) {
-			getOrganizations("k", sender);
-		} else if (sender == getWidget("l")) {
-			getOrganizations("l", sender);
-		} else if (sender == getWidget("m")) {
-			getOrganizations("m", sender);
-		} else if (sender == getWidget("n")) {
-			getOrganizations("n", sender);
-		} else if (sender == getWidget("o")) {
-			getOrganizations("o", sender);
-		} else if (sender == getWidget("p")) {
-			getOrganizations("p", sender);
-		} else if (sender == getWidget("q")) {
-			getOrganizations("q", sender);
-		} else if (sender == getWidget("r")) {
-			getOrganizations("r", sender);
-		} else if (sender == getWidget("s")) {
-			getOrganizations("s", sender);
-		} else if (sender == getWidget("t")) {
-			getOrganizations("t", sender);
-		} else if (sender == getWidget("u")) {
-			getOrganizations("u", sender);
-		} else if (sender == getWidget("v")) {
-			getOrganizations("v", sender);
-		} else if (sender == getWidget("w")) {
-			getOrganizations("w", sender);
-		} else if (sender == getWidget("x")) {
-			getOrganizations("x", sender);
-		} else if (sender == getWidget("y")) {
-			getOrganizations("y", sender);
-		} else if (sender == getWidget("z")) {
-			getOrganizations("z", sender);
-		} else if (sender == getWidget("removeContactButton")) {
+		String action = ((AppButton)sender).action;
+		if(action.startsWith("query:")){
+			getOrganizations(action.substring(6, action.length()), sender);
+			
+		} else if (action.equals("removeRow")) {
 			TableWidget orgContactsTable = (TableWidget) getWidget("contactsTable");
 			int selectedRow = orgContactsTable.controller.selected;
 			if (selectedRow > -1
@@ -129,7 +81,7 @@ public class OrganizationScreen extends AppScreenForm {
 				row.addHidden("deleteFlag", deleteFlag);
 			}
 
-		}else if(sender == getWidget("standardNoteButton")){
+		}else if(action.equals("standardNote")){
 			new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
 		}
 	}

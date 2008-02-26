@@ -20,7 +20,7 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="325px" width="100%" key="hideablePanel" visible="false" onclick="this">
+				<aToZ height="325px" width="100%" key="hideablePanel" visible="false">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
 			<xsl:call-template name="aToZLeftPanelButtons"/>

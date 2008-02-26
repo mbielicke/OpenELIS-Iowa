@@ -161,59 +161,11 @@ public class Dictionary extends AppScreenForm implements MouseListener{
     }
     
     public void onClick(Widget sender){
-        if (sender == getWidget("a")) {
-            getCategories("a", sender);
-        } else if (sender == getWidget("b")) {
-            getCategories("b", sender);
-        } else if (sender == getWidget("c")) {
-            getCategories("c", sender);
-        } else if (sender == getWidget("d")) {
-            getCategories("d", sender);
-        } else if (sender == getWidget("e")) {
-            getCategories("e", sender);
-        } else if (sender == getWidget("f")) {
-            getCategories("f", sender);
-        } else if (sender == getWidget("g")) {
-            getCategories("g", sender);
-        } else if (sender == getWidget("h")) {
-            getCategories("h", sender);
-        } else if (sender == getWidget("i")) {
-            getCategories("i", sender);
-        } else if (sender == getWidget("j")) {
-            getCategories("j", sender);
-        } else if (sender == getWidget("k")) {
-            getCategories("k", sender);
-        } else if (sender == getWidget("l")) {
-            getCategories("l", sender);
-        } else if (sender == getWidget("m")) {
-            getCategories("m", sender);
-        } else if (sender == getWidget("n")) {
-            getCategories("n", sender);
-        } else if (sender == getWidget("o")) {
-            getCategories("o", sender);
-        } else if (sender == getWidget("p")) {
-            getCategories("p", sender);
-        } else if (sender == getWidget("q")) {
-            getCategories("q", sender);
-        } else if (sender == getWidget("r")) {
-            getCategories("r", sender);
-        } else if (sender == getWidget("s")) {
-            getCategories("s", sender);
-        } else if (sender == getWidget("t")) {
-            getCategories("t", sender);
-        } else if (sender == getWidget("u")) {
-            getCategories("u", sender);
-        } else if (sender == getWidget("v")) {
-            getCategories("v", sender);
-        } else if (sender == getWidget("w")) {
-            getCategories("w", sender);
-        } else if (sender == getWidget("x")) {
-            getCategories("x", sender);
-        } else if (sender == getWidget("y")) {
-            getCategories("y", sender);
-        } else if (sender == getWidget("z")) {
-            getCategories("z", sender);
-        }else if (sender == getWidget("removeEntryButton")) {   
+    	String action = ((AppButton)sender).action;
+		if(action.startsWith("query:")){
+			getCategories(action.substring(6, action.length()), sender);
+			
+		}else if (action.equals("removeEntry")) {   
             
             TableWidget dictEntTable = (TableWidget) getWidget("dictEntTable");
             int selectedRow = dictEntTable.controller.selected;

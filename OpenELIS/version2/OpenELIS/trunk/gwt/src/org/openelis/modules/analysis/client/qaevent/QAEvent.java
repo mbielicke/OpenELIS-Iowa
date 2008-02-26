@@ -59,59 +59,11 @@ import com.google.gwt.user.client.ui.Widget;
         }
          
          public void onClick(Widget sender){
-             if (sender == getWidget("a")) {
-                 getQAEvents("a", sender);
-             } else if (sender == getWidget("b")) {
-                 getQAEvents("b", sender);
-             } else if (sender == getWidget("c")) {
-                 getQAEvents("c", sender);
-             } else if (sender == getWidget("d")) {
-                 getQAEvents("d", sender);
-             } else if (sender == getWidget("e")) {
-                 getQAEvents("e", sender);
-             } else if (sender == getWidget("f")) {
-                 getQAEvents("f", sender);
-             } else if (sender == getWidget("g")) {
-                 getQAEvents("g", sender);
-             } else if (sender == getWidget("h")) {
-                 getQAEvents("h", sender);
-             } else if (sender == getWidget("i")) {
-                 getQAEvents("i", sender);
-             } else if (sender == getWidget("j")) {
-                 getQAEvents("j", sender);
-             } else if (sender == getWidget("k")) {
-                 getQAEvents("k", sender);
-             } else if (sender == getWidget("l")) {
-                 getQAEvents("l", sender);
-             } else if (sender == getWidget("m")) {
-                 getQAEvents("m", sender);
-             } else if (sender == getWidget("n")) {
-                 getQAEvents("n", sender);
-             } else if (sender == getWidget("o")) {
-                 getQAEvents("o", sender);
-             } else if (sender == getWidget("p")) {
-                 getQAEvents("p", sender);
-             } else if (sender == getWidget("q")) {
-                 getQAEvents("q", sender);
-             } else if (sender == getWidget("r")) {
-                 getQAEvents("r", sender);
-             } else if (sender == getWidget("s")) {
-                 getQAEvents("s", sender);
-             } else if (sender == getWidget("t")) {
-                 getQAEvents("t", sender);
-             } else if (sender == getWidget("u")) {
-                 getQAEvents("u", sender);
-             } else if (sender == getWidget("v")) {
-                 getQAEvents("v", sender);
-             } else if (sender == getWidget("w")) {
-                 getQAEvents("w", sender);
-             } else if (sender == getWidget("x")) {
-                 getQAEvents("x", sender);
-             } else if (sender == getWidget("y")) {
-                 getQAEvents("y", sender);
-             } else if (sender == getWidget("z")) {
-                 getQAEvents("z", sender);
-             }              
+        	 String action = ((AppButton)sender).action;
+     		if(action.startsWith("query:")){
+     			getQAEvents(action.substring(6, action.length()), sender);
+     			
+     		} 
          }
          
         public void query(int state) {

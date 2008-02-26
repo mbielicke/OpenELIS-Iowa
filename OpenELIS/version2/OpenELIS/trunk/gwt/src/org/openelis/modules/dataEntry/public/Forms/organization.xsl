@@ -20,7 +20,7 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" onclick="this">
+				<aToZ height="425px" width="100%" key="hideablePanel" visible="false">
 				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
 				 <xsl:if test="string($language)='en'">
 				<xsl:call-template name="aToZLeftPanelButtons"/>		
@@ -46,7 +46,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="QueryButtonImage"/>
               <widget>
-                <text>Query</text>
+                <text><xsl:value-of select='resource:getString($constants,"query")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -54,7 +54,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="PreviousButtonImage"/>
               <widget>
-                <text>Previous</text>
+                <text><xsl:value-of select='resource:getString($constants,"previous")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -62,7 +62,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="NextButtonImage"/>
               <widget>
-                <text>Next</text>
+                <text><xsl:value-of select='resource:getString($constants,"next")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -71,7 +71,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="AddButtonImage"/>
               <widget>
-                <text>Add</text>
+                <text><xsl:value-of select='resource:getString($constants,"add")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -79,7 +79,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="UpdateButtonImage"/>
               <widget>
-                <text>Update</text>
+                <text><xsl:value-of select='resource:getString($constants,"update")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -88,7 +88,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
               <widget>
-                <text>Commit</text>
+                <text><xsl:value-of select='resource:getString($constants,"commit")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -96,7 +96,7 @@
               <panel xsi:type="Panel" layout="horizontal">
               <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
               <widget>
-                <text>Abort</text>
+                <text><xsl:value-of select='resource:getString($constants,"abort")'/></text>
               </widget>
               </panel>
             </appButton>
@@ -129,7 +129,7 @@
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
-										<widget>
+										<widget colspan="3">
 											<textbox case="upper" key="city" width="212px" max="30" tab="state,streetAddress"/>
 										</widget>		
 									</row>
@@ -147,7 +147,7 @@
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
-										<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">
+										<!--<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">-->
 												<widget>
 													<autoDropdown cat="state" key="state" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" fromModel="true" tab="zipCode,city">
 													<autoWidths>40</autoWidths>
@@ -170,15 +170,15 @@
 													</autoDropdown>
 												</query>
 												</widget>
-									<panel layout="horizontal" width="24px" xsi:type="Panel"/>
+									<!--<panel layout="horizontal" width="24px" xsi:type="Panel"/>-->
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 												</widget>
-												<panel layout="horizontal" width="2px" xsi:type="Panel"/>
+												<!--<panel layout="horizontal" width="2px" xsi:type="Panel"/>-->
 												<widget>
 													<maskedbox key="zipCode" width="70" mask="99999-9999" tab="country,state"/>
 												</widget>
-									</panel>									
+									<!--</panel>									-->
 									</row>									
 									<row>
 										<widget>
@@ -190,7 +190,7 @@
 											<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
-										<widget>
+										<widget colspan="3">
 												<autoDropdown cat="country" key="country" case="mixed" serviceUrl="OrganizationServlet" width="196px" dropdown="true" fromModel="true" type="string" tab="parentOrg,zipCode">
 													<autoWidths>175</autoWidths>
 													<autoEditors>
@@ -245,7 +245,7 @@
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
-										<widget>
+										<widget colspan="3">
 											<check key="isActive" tab="contactsTable,parentOrg"/>
 											<query>
 											<autoDropdown cat="isActive" case="upper" serviceUrl="OrganizationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="contactsTable,parentOrg">
@@ -267,10 +267,10 @@
 								</row>
 								</panel>
 <!-- tabbed panel needs to go here -->
-				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" width="600px" xsi:type="Tab">
+				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
-							<panel layout="vertical" spacing="0" padding="0" width="600px" xsi:type="Panel">
+							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
 							<widget valign="top">
 								<table width="567px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -409,7 +409,7 @@
 								</widget>
 
 									<widget halign="right" style="WhiteContentPanel">
-									<appButton action="removeContact" onclick="this" key="removeContactButton">
+									<appButton action="removeRow" onclick="this" style="Button" key="removeContactButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
 						              <widget>
