@@ -109,7 +109,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    </panel>
    
    <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
-    <panel height= "200px" key= "orgTabPanel" halign= "center" layout= "tab" width= "600px" xsi:type= "Tab">
+    <panel height= "200px" key= "provTabPanel" halign= "center" layout= "tab" width= "600px" xsi:type= "Tab">
      <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
