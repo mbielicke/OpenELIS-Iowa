@@ -44,10 +44,7 @@ import com.google.gwt.user.client.ui.Widget;
                
                TableWidget qaEventsTable = (TableWidget)getWidget("qaEventsTable");
                modelWidget.addChangeListener(qaEventsTable.controller); 
-               
-               //String arr[] = {"Name,Test,Method"}; 
-               
-               //qaEventsTable.setHeaders(arr);
+                              
                ((QAEventsNamesTable)qaEventsTable.controller.manager).setQaEventForm(this);
                
                loadDropdowns();
