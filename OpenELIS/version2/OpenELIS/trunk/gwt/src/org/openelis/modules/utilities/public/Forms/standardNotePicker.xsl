@@ -4,6 +4,7 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
+<xsl:import href="buttonPanel.xsl"/>
                 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
@@ -30,26 +31,10 @@
 				</widget>
 				</panel>
 				
-				<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
-          <buttonPanel key="buttons">
-            <appButton action="commit">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="CommitButtonImage"/>
-              <widget>
-                <text>Commit</text>
-              </widget>
-              </panel>
-            </appButton>
-            <appButton action="abort">
-            <panel xsi:type="Panel" layout="horizontal">
-              <panel xsi:type="Absolute" layout="absolute" style="AbortButtonImage"/>
-              <widget>
-                <text>Abort</text>
-              </widget>
-              </panel>
-            </appButton>
-          </buttonPanel>
-		</panel>
+				<!--button panel code-->
+			<xsl:call-template name="buttonPanelTemplate">
+				<xsl:with-param name="buttonsParam">cb</xsl:with-param>
+			</xsl:call-template>
 			</panel>
 	</display>
 	<rpc key="display">
