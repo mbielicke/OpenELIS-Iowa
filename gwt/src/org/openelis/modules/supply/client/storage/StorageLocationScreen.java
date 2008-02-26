@@ -37,58 +37,10 @@ public class StorageLocationScreen extends AppScreenForm{
 	}
 	
 	public void onClick(Widget sender) {
-		if (sender == getWidget("a")) {
-			getStorageLocs("a", sender);
-		} else if (sender == getWidget("b")) {
-			getStorageLocs("b", sender);
-		} else if (sender == getWidget("c")) {
-			getStorageLocs("c", sender);
-		} else if (sender == getWidget("d")) {
-			getStorageLocs("d", sender);
-		} else if (sender == getWidget("e")) {
-			getStorageLocs("e", sender);
-		} else if (sender == getWidget("f")) {
-			getStorageLocs("f", sender);
-		} else if (sender == getWidget("g")) {
-			getStorageLocs("g", sender);
-		} else if (sender == getWidget("h")) {
-			getStorageLocs("h", sender);
-		} else if (sender == getWidget("i")) {
-			getStorageLocs("i", sender);
-		} else if (sender == getWidget("j")) {
-			getStorageLocs("j", sender);
-		} else if (sender == getWidget("k")) {
-			getStorageLocs("k", sender);
-		} else if (sender == getWidget("l")) {
-			getStorageLocs("l", sender);
-		} else if (sender == getWidget("m")) {
-			getStorageLocs("m", sender);
-		} else if (sender == getWidget("n")) {
-			getStorageLocs("n", sender);
-		} else if (sender == getWidget("o")) {
-			getStorageLocs("o", sender);
-		} else if (sender == getWidget("p")) {
-			getStorageLocs("p", sender);
-		} else if (sender == getWidget("q")) {
-			getStorageLocs("q", sender);
-		} else if (sender == getWidget("r")) {
-			getStorageLocs("r", sender);
-		} else if (sender == getWidget("s")) {
-			getStorageLocs("s", sender);
-		} else if (sender == getWidget("t")) {
-			getStorageLocs("t", sender);
-		} else if (sender == getWidget("u")) {
-			getStorageLocs("u", sender);
-		} else if (sender == getWidget("v")) {
-			getStorageLocs("v", sender);
-		} else if (sender == getWidget("w")) {
-			getStorageLocs("w", sender);
-		} else if (sender == getWidget("x")) {
-			getStorageLocs("x", sender);
-		} else if (sender == getWidget("y")) {
-			getStorageLocs("y", sender);
-		} else if (sender == getWidget("z")) {
-			getStorageLocs("z", sender);
+		String action = ((AppButton)sender).action;
+		if(action.startsWith("query:")){
+			getStorageLocs(action.substring(6, action.length()), sender);
+			
 		}
 	}
 	

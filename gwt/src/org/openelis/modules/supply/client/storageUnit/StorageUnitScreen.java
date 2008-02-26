@@ -38,60 +38,10 @@ public class StorageUnitScreen extends AppScreenForm{
 	}
 	
 	public void onClick(Widget sender) {
-		if (sender == getWidget("#")) {
-			getStorageUnits("#", sender);
-		} else if (sender == getWidget("a")) {
-			getStorageUnits("a", sender);
-		} else if (sender == getWidget("b")) {
-			getStorageUnits("b", sender);
-		} else if (sender == getWidget("c")) {
-			getStorageUnits("c", sender);
-		} else if (sender == getWidget("d")) {
-			getStorageUnits("d", sender);
-		} else if (sender == getWidget("e")) {
-			getStorageUnits("e", sender);
-		} else if (sender == getWidget("f")) {
-			getStorageUnits("f", sender);
-		} else if (sender == getWidget("g")) {
-			getStorageUnits("g", sender);
-		} else if (sender == getWidget("h")) {
-			getStorageUnits("h", sender);
-		} else if (sender == getWidget("i")) {
-			getStorageUnits("i", sender);
-		} else if (sender == getWidget("j")) {
-			getStorageUnits("j", sender);
-		} else if (sender == getWidget("k")) {
-			getStorageUnits("k", sender);
-		} else if (sender == getWidget("l")) {
-			getStorageUnits("l", sender);
-		} else if (sender == getWidget("m")) {
-			getStorageUnits("m", sender);
-		} else if (sender == getWidget("n")) {
-			getStorageUnits("n", sender);
-		} else if (sender == getWidget("o")) {
-			getStorageUnits("o", sender);
-		} else if (sender == getWidget("p")) {
-			getStorageUnits("p", sender);
-		} else if (sender == getWidget("q")) {
-			getStorageUnits("q", sender);
-		} else if (sender == getWidget("r")) {
-			getStorageUnits("r", sender);
-		} else if (sender == getWidget("s")) {
-			getStorageUnits("s", sender);
-		} else if (sender == getWidget("t")) {
-			getStorageUnits("t", sender);
-		} else if (sender == getWidget("u")) {
-			getStorageUnits("u", sender);
-		} else if (sender == getWidget("v")) {
-			getStorageUnits("v", sender);
-		} else if (sender == getWidget("w")) {
-			getStorageUnits("w", sender);
-		} else if (sender == getWidget("x")) {
-			getStorageUnits("x", sender);
-		} else if (sender == getWidget("y")) {
-			getStorageUnits("y", sender);
-		} else if (sender == getWidget("z")) {
-			getStorageUnits("z", sender);
+		String action = ((AppButton)sender).action;
+		if(action.startsWith("query:")){
+			getStorageUnits(action.substring(6, action.length()), sender);
+			
 		}
 	}
 	
