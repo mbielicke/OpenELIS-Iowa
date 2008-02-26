@@ -57,7 +57,7 @@ public class ProviderServlet extends AppServlet implements
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 20;
     private String systemUserId = "";
-    
+
 
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -86,14 +86,11 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
         rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
         
-        List addressList = remote.getProviderAddresses(providerId);
-        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-        
-        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
-        //rpcReturn.setFieldValue("notesTree", treeModel);
+        //List addressList = remote.getProviderAddresses(providerId);
+        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));              
 
-        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
         
         return rpcReturn;
     }
@@ -163,7 +160,7 @@ public class ProviderServlet extends AppServlet implements
         }
          
         ProviderDO provDO = remote.getProvider(providerId);
-        rpcReturn.setFieldValue("providerId", provDO.getId());
+        rpcReturn.setFieldValue("providerId", provDO.getId());        
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
@@ -171,18 +168,11 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
                 
         
-        List addressList = remote.getProviderAddresses(providerId);
-        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-                    
+        //List addressList = remote.getProviderAddresses(providerId);
+        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));                                                  
         
-        //TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
-        //rpcReturn.setFieldValue("notesTree", treeModel);
-        
-        rpcReturn.setFieldValue("usersSubject", null);
-        rpcReturn.setFieldValue("usersNote", null);
-        
-        DataModel notesModel = getNotesModel(provDO.getId());
-        rpcReturn.setFieldValue("notesModel", notesModel);
+       // DataModel notesModel = getNotesModel(provDO.getId());
+        //rpcReturn.setFieldValue("notesModel", notesModel);
         
         return rpcReturn;
     }
@@ -307,9 +297,7 @@ public class ProviderServlet extends AppServlet implements
 
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject();
-                //StringObject lname = new StringObject();
-                //StringObject fname = new StringObject();
+                NumberObject id = new NumberObject();                
                 StringObject lname = new StringObject();
                 StringObject fname = new StringObject();
                 id.setType("integer");
@@ -427,17 +415,11 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
                 
         
-        List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
-        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-        
-        //TreeModel treeModel = getNoteTreeModel(provDO.getId(), true);
-        //rpcReturn.setFieldValue("notesTree", treeModel);
-        
-        rpcReturn.setFieldValue("usersSubject", null);
-        rpcReturn.setFieldValue("usersNote", null);
+        //List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
+        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));                               
                
-        DataModel notesModel = getNotesModel(provDO.getId());
-        rpcReturn.setFieldValue("notesModel", notesModel);
+        //DataModel notesModel = getNotesModel(provDO.getId());
+        //rpcReturn.setFieldValue("notesModel", notesModel);
         
         return rpcReturn;
     }
@@ -447,8 +429,7 @@ public class ProviderServlet extends AppServlet implements
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         Integer providerId = (Integer)key.getObject(0).getValue();
-        
-        
+                
         ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
 //      set the fields in the RPC
         rpcReturn.setFieldValue("providerId", provDO.getId());
@@ -458,14 +439,12 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
         rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
         
-        List addressList = remote.getProviderAddresses(providerId);
-        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-        
-        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
-        //rpcReturn.setFieldValue("notesTree", treeModel);
+        //List addressList = remote.getProviderAddresses(providerId);
+        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
+                
 
-        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
         
         return rpcReturn;
     }
@@ -489,14 +468,11 @@ public class ProviderServlet extends AppServlet implements
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
         rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
         
-        List addressList = remote.getProviderAddresses(providerId);
-        rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-        
-        //TreeModel treeModel = getNoteTreeModel((Integer)key.getObject(0).getValue(), true);       
-        //rpcReturn.setFieldValue("notesTree", treeModel);
+        //List addressList = remote.getProviderAddresses(providerId);
+        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));               
 
-        DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
         
         return rpcReturn;
     }    
@@ -631,14 +607,14 @@ public class ProviderServlet extends AppServlet implements
         return model;
     }
     
-    public DataModel getNotesModel(Integer key){
+    public DataModel getNotesModel(Integer key, DataModel notesModel){
         //remote interface to call the organization bean
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
         List notesList = remote.getProviderNotes(key);
         
-        DataModel notesModel = new DataModel();        
+         notesModel = new DataModel();        
         Iterator itr = notesList.iterator();
         while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
@@ -675,4 +651,14 @@ public class ProviderServlet extends AppServlet implements
         // TODO Auto-generated method stub
         return null;
     }
+    
+    public TableModel getAddressModel(Integer providerId,TableModel model){
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        List addressList = remote.getProviderAddresses(providerId);
+        return fillAddressTable(model,addressList);                  
+    }
+    
+     
+    
+    
 }
