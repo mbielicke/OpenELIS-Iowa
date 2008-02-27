@@ -27,127 +27,17 @@
   <!-- OpenELISServlets Servlets -->
 
   <servlet>
-    <servlet-name>OpenELISService</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.OpenELISServiceImpl</servlet-class>
+    <servlet-name>OpenELISServlet</servlet-name>
+    <servlet-class>org.openelis.modules.main.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   
-  <servlet>
-    <servlet-name>OpenELISScreen</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.OpenELISScreen</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>OrganizationServlet</servlet-name>
-    <servlet-class>org.openelis.modules.dataEntry.server.OrganizationServlet</servlet-class>
-  </servlet>
-    
-  <servlet>
-    <servlet-name>OrganizeFavoritesScreen</servlet-name>
-    <servlet-class>org.openelis.modules.dataEntry.server.OrganizeFavoritesScreen</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>ProviderServlet</servlet-name>
-    <servlet-class>org.openelis.modules.dataEntry.server.ProviderServlet</servlet-class>
-  </servlet>  
-  
-  <servlet>
-    <servlet-name>DictionaryServlet</servlet-name>
-    <servlet-class>org.openelis.modules.utilities.server.DictionaryServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>QAEventServlet</servlet-name>
-    <servlet-class>org.openelis.modules.analysis.server.QAEventServlet</servlet-class>
-  </servlet>
- 
- <servlet>
-    <servlet-name>StorageServlet</servlet-name>
-    <servlet-class>org.openelis.modules.supply.server.StorageServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>StorageLocationServlet</servlet-name>
-    <servlet-class>org.openelis.modules.supply.server.StorageLocationServlet</servlet-class>
-  </servlet>
-
-    <servlet>
-    <servlet-name>StorageUnitServlet</servlet-name>
-    <servlet-class>org.openelis.modules.supply.server.StorageUnitServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>StandardNoteServlet</servlet-name>
-    <servlet-class>org.openelis.modules.utilities.server.StandardNoteServlet</servlet-class>
-  </servlet>
-  
-    <servlet>
-    <servlet-name>StandardNotePickerServlet</servlet-name>
-    <servlet-class>org.openelis.modules.utilities.server.StandardNotePickerServlet</servlet-class>
-  </servlet>
-  <!-- inmsp Servlet Mappings-->
-    
-<servlet-mapping>
-    <servlet-name>OpenELISScreen</servlet-name>
-    <url-pattern>/OpenELISScreen</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>OrganizationServlet</servlet-name>
-    <url-pattern>/OrganizationServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>StorageLocationServlet</servlet-name>
-    <url-pattern>/StorageLocationServlet</url-pattern>
-  </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>OrganizeFavoritesScreen</servlet-name>
-    <url-pattern>/OrganizeFavoritesScreen</url-pattern>
+    <servlet-name>OpenELISServlet</servlet-name>
+    <url-pattern>/OpenELISServlet</url-pattern>
   </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>OpenELISService</servlet-name>
-    <url-pattern>/OpenELISService</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>ProviderServlet</servlet-name>
-    <url-pattern>/ProviderServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>DictionaryServlet</servlet-name>
-    <url-pattern>/DictionaryServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>QAEventServlet</servlet-name>
-    <url-pattern>/QAEventServlet</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>StorageServlet</servlet-name>
-    <url-pattern>/StorageServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>StorageUnitServlet</servlet-name>
-    <url-pattern>/StorageUnitServlet</url-pattern>
-  </servlet-mapping>
-  
-    <servlet-mapping>
-    <servlet-name>StandardNoteServlet</servlet-name>
-    <url-pattern>/StandardNoteServlet</url-pattern>
-  </servlet-mapping>
-  
-      <servlet-mapping>
-    <servlet-name>StandardNotePickerServlet</servlet-name>
-    <url-pattern>/StandardNotePickerServlet</url-pattern>
-  </servlet-mapping>
-    
+      
   <session-config>
     <session-timeout>300</session-timeout>
   </session-config>

@@ -6,7 +6,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -17,34 +16,21 @@ import org.openelis.gwt.widget.PopupWindow;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableWidget;
-
-import com.google.gwt.core.client.GWT;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 
-public class Dictionary extends AppScreenForm implements MouseListener{
-    private static DictionaryServletIntAsync screenService = (DictionaryServletIntAsync) GWT
-    .create(DictionaryServletInt.class);
-    
-    private static ServiceDefTarget target = (ServiceDefTarget) screenService;
+public class Dictionary extends OpenELISScreenForm implements MouseListener{
+
     private TableWidget dictEntryTable  = null;
     public PopupWindow window; 
     
     public Dictionary(){
-        super();        
-       
-        String base = GWT.getModuleBaseURL();
-        base += "DictionaryServlet";        
-        target.setServiceEntryPoint(base);
-        service = screenService;
-        formService = screenService;        
-        getXML(); 
-      
+        super("org.openelis.modules.utilities.server.DictionaryServlet");        
     }
     
     private Widget selected;
@@ -252,7 +238,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             final Integer entryId = id; 
             //sysNameExists = false;
             final int trow = row;
-            screenService.getEntryIdForSystemName(systemName, new AsyncCallback() {
+            screenService.getObject(systemName, null, new AsyncCallback() {
                 boolean hasError = false;
                 public void onSuccess(Object result) {                                         
                     if(result != null){
@@ -283,7 +269,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
             final Integer entryId = id; 
             final int trow = row;
             // entryExists = false;
-            screenService.getEntryIdForEntry(entry, new AsyncCallback() {
+            screenService.getObject(entry, null, new AsyncCallback() {
                 boolean hasError = false;
                 public void onSuccess(Object result) {
                    
@@ -317,7 +303,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
         
         private void loadDropdowns(){
 
-            screenService.getInitialModel("section", new AsyncCallback(){
+            screenService.getObject("section", null, new AsyncCallback(){
                    public void onSuccess(Object result){
                        DataModel stateDataModel = (DataModel)result;
                        ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
@@ -332,7 +318,7 @@ public class Dictionary extends AppScreenForm implements MouseListener{
                    }
                 });
             
-            screenService.getInitialModel("isActive", new AsyncCallback(){
+            screenService.getObject("isActive", null, new AsyncCallback(){
                 public void onSuccess(Object result){
                     DataModel activeDataModel = (DataModel)result;                   
                     

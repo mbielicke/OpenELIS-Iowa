@@ -1,43 +1,31 @@
 package org.openelis.modules.utilities.client.standardNotePicker;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
+
 import org.openelis.gwt.common.data.PagedTreeField;
-import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.PopupWindow;
 import org.openelis.gwt.widget.pagedtree.TreeModel;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StandardNotePickerScreen extends AppScreenForm implements TreeListener{
+public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener{
 
-	private static StandardNotePickerServletIntAsync screenService = (StandardNotePickerServletIntAsync) GWT
-	.create(StandardNotePickerServletInt.class);
-	
-	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
 	PopupWindow window;
 	public TextArea noteTextArea;
 	
 	public StandardNotePickerScreen(TextArea noteTextArea) {
-		super();
-		String base = GWT.getModuleBaseURL();
-		base += "StandardNotePickerServlet";
-		target.setServiceEntryPoint(base);
-		service = screenService;
-		formService = screenService;
-		this.noteTextArea = noteTextArea;
-		
-		getXML();
+		super("org.openelis.modules.utilities.server.StandardNotePickerServlet");
+		this.noteTextArea = noteTextArea;		
 	}
 	
 	public void afterDraw(boolean sucess) {
@@ -67,7 +55,7 @@ public class StandardNotePickerScreen extends AppScreenForm implements TreeListe
         vp.clear();
         //vp.remove(tree);
         vp.add(loadingHtml);
-        screenService.getTreeModel(new AsyncCallback(){
+        screenService.getObject("method" , null, new AsyncCallback(){
             public void onSuccess(Object result){
             	vp.clear();
             	vp.add(tree);
@@ -105,7 +93,7 @@ public class StandardNotePickerScreen extends AppScreenForm implements TreeListe
 	        loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
 			finalTreeItem.addItem(loadingHtml);
 //			need async request to xml for 2nd layer
-			screenService.getTreeModelSecondLevel(id,new AsyncCallback(){
+			screenService.getObject("id", null, new AsyncCallback(){
 	            public void onSuccess(Object result){
 	               finalTreeItem.removeItems();
 	               tree.controller.model.addTextChildItems(finalTreeItem, (String)result);	           

@@ -1,6 +1,12 @@
 package org.openelis.modules.supply.client.storageUnit;
 
-import org.openelis.gwt.screen.AppScreenForm;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
@@ -8,33 +14,14 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class StorageUnitScreen extends AppScreenForm{
-
-	private static StorageUnitServletIntAsync screenService = (StorageUnitServletIntAsync) GWT
-	.create(StorageUnitServletInt.class);
-	
-	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
+public class StorageUnitScreen extends OpenELISScreenForm {
 
 	private Widget selected;
 	
 	public StorageUnitScreen() {
-		super();
-		String base = GWT.getModuleBaseURL();
-		base += "StorageUnitServlet";
-		target.setServiceEntryPoint(base);
-		service = screenService;
-		formService = screenService;
-		getXML();
+		super("org.openelis.modules.supply.server.StorageUnitServlet");
 	}
 	
 	public void onClick(Widget sender) {

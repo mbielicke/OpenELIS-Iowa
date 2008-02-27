@@ -2,40 +2,25 @@ package org.openelis.modules.analysis.client.qaevent;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.screen.AppScreenForm;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
-
-import com.google.gwt.core.client.GWT;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
- public class QAEvent extends AppScreenForm {
-     private static QAEventServletIntAsync screenService = (QAEventServletIntAsync) GWT
-     .create(QAEventServletInt.class);
-     
-     private static ServiceDefTarget target = (ServiceDefTarget) screenService; 
-          
-     
-     
-     
+ public class QAEvent extends OpenELISScreenForm {
+
      private Widget selected;
+
      public QAEvent(){
-         super();          
-         String base = GWT.getModuleBaseURL();
-         base += "QAEventServlet";        
-         target.setServiceEntryPoint(base);
-         service = screenService;
-         formService = screenService;        
-         getXML();          
-         
+         super("org.openelis.modules.analysis.server.QAEventServlet");                   
      }
      
          public void afterDraw(boolean success) {                  
@@ -131,6 +116,9 @@ import com.google.gwt.user.client.ui.Widget;
      private void loadDropdowns(){
             
             //load state dropdowns
+            StringObject cat = new StringObject();
+            cat.setValue("qaEventType");
+            
             screenService.getInitialModel("qaEventType", new AsyncCallback(){
                    public void onSuccess(Object result){
                        DataModel typeDataModel = (DataModel)result;
@@ -146,7 +134,7 @@ import com.google.gwt.user.client.ui.Widget;
                    }
                 });
             
-            screenService.getInitialModel("test", new AsyncCallback(){
+            screenService.getInitialModel("test",  new AsyncCallback(){
                 public void onSuccess(Object result){
                     DataModel testDataModel = (DataModel)result;
                     ScreenAutoDropdown displayTest = (ScreenAutoDropdown)widgets.get("test");

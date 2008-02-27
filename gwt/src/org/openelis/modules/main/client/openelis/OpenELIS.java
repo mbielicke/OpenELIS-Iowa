@@ -8,7 +8,9 @@ import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.modules.main.client.service.OpenELISService;
+import org.openelis.modules.main.client.service.OpenELISServiceInt;
+import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
+
 import com.google.gwt.core.client.GWT;
 //import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
@@ -25,8 +27,8 @@ public class OpenELIS extends AppScreen implements PopupListener {
 	
 	//private OpenELISConstants openElisConstants = null;
 	//public static ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen.getWidgetMap().get("AppConstants");
-	private static OpenELISScreenIntAsync screenService = (OpenELISScreenIntAsync)GWT.create(OpenELISScreenInt.class);
-    private static ServiceDefTarget target = (ServiceDefTarget)screenService;
+	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
+    public static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
     public static String modules;
     public static WindowBrowser browser;
@@ -34,7 +36,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
 	public OpenELIS() {	    
         super();
         String base = GWT.getModuleBaseURL();
-        base += "OpenELISScreen";
+        base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreen";
         target.setServiceEntryPoint(base);
         service = screenService;
         getXML();
@@ -48,7 +50,7 @@ public class OpenELIS extends AppScreen implements PopupListener {
         	browser.setBrowserHeight();
         	
         	//load left menu
-            OpenELISService.getInstance().getMenuList(new AsyncCallback() {
+            screenService.getMenuList(new AsyncCallback() {
                 public void onSuccess(Object result) {
                     try {
                         ((ScreenMenuPanel)widgets.get("menuList")).load((String)result);

@@ -1,27 +1,7 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.AppScreenForm;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableController;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
-
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -31,12 +11,27 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Provider extends AppScreenForm{    
-    
-    private static ProviderServletIntAsync screenService = (ProviderServletIntAsync) GWT
-    .create(ProviderServletInt.class);
-    
-    private static ServiceDefTarget target = (ServiceDefTarget) screenService;
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
+
+public class Provider extends OpenELISScreenForm {
 
     private Widget selected;
     private boolean loadNotes = true;
@@ -44,13 +39,7 @@ public class Provider extends AppScreenForm{
       
    
     public Provider(){
-        super();
-        String base = GWT.getModuleBaseURL();
-        base += "ProviderServlet";
-        target.setServiceEntryPoint(base);
-        service = screenService;
-        formService = screenService;        
-        getXML();
+        super("org.openelis.modules.dataEntry.server.ProviderServlet");
     }
     
     public void afterDraw(boolean success) {
@@ -558,8 +547,12 @@ public class Provider extends AppScreenForm{
         
        if(getModel){ 
         //Window.alert("fillNotesModel");
-        //rpc.setFieldValue("notesModel", null); 
-        screenService.getNotesModel(providerId, new DataModel(), new AsyncCallback(){
+        //rpc.setFieldValue("notesModel", null);
+         NumberObject provId = new NumberObject();
+         provId.setType("integer");
+         provId.setValue(providerId);
+         DataObject[] args = new DataObject[] {provId, (DataObject)new DataModel()};
+        screenService.getObject("getNotesModel", args, new AsyncCallback(){
            public void onSuccess(Object result){               
                rpc.setFieldValue("notesModel", (DataModel)result); 
                loadNotes((DataModel)result);
@@ -591,11 +584,16 @@ public class Provider extends AppScreenForm{
        //model.reset(); 
        //Window.alert("fillAddressModel");         
           //Integer providerId = (Integer)rpc.getFieldValue("providerId");
-       //Window.alert(providerId.toString());
-       screenService.getAddressModel(providerId, provAddController.model , new AsyncCallback(){
+          NumberObject provId = new NumberObject();
+          provId.setType("integer");
+          provId.setValue(providerId);
+          TableField tf = new TableField();
+          tf.setValue(provAddController.model);
+          DataObject[] args = new DataObject[] {provId, tf};
+       screenService.getObject("getAddressModel", args , new AsyncCallback(){
            public void onSuccess(Object result){
                TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-               provAddController.setModel((TableModel)result);
+               provAddController.setModel((TableModel)((TableField)result).getValue());
            }
           
            public void onFailure(Throwable caught){

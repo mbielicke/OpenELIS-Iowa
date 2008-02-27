@@ -1,5 +1,3 @@
 <module>
-    <servlet path='/StorageLocationServlet' class='org.openelis.modules.supply.server.StorageLocationServlet'/>  
-    <servlet path='/StorageUnitServlet' class='org.openelis.modules.supply.server.StorageUnitServlet'/> 
     <entry-point class="org.openelis.modules.supply.client.Supply"/>
 </module>

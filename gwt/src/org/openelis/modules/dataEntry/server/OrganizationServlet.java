@@ -30,7 +30,6 @@ import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.modules.dataEntry.client.organization.OrganizationServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -43,8 +42,7 @@ import org.openelis.util.SessionManager;
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
-public class OrganizationServlet extends AppServlet implements AppScreenFormServiceInt, 
-															  OrganizationServletInt,
+public class OrganizationServlet implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {
 
 	/**

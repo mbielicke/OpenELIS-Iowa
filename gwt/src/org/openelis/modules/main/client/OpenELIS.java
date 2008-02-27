@@ -20,7 +20,8 @@ import org.openelis.gwt.screen.ScreenAppButton;
 import org.openelis.gwt.screen.ScreenAppMessage;
 import org.openelis.gwt.screen.ScreenAuto;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenBase;import org.openelis.gwt.screen.ScreenButtonPanel;
+import org.openelis.gwt.screen.ScreenBase;
+import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenDeck;
@@ -64,10 +65,8 @@ import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableOption;
 import org.openelis.gwt.widget.table.TableTextBox;
 //import org.openelis.modules.main.client.constants.OpenELISConstants;
-import org.openelis.modules.main.client.service.OpenELISService;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -77,9 +76,6 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class OpenELIS implements EntryPoint {
-    {
-        OpenELISService.init();
-    }
   /**
    * This is the entry point method.
    */
@@ -87,7 +83,7 @@ public class OpenELIS implements EntryPoint {
 	  setWidgetMap();
       Window.addWindowCloseListener(new WindowCloseListener() {
           public String onWindowClosing() {
-               OpenELISService.getInstance().logout(new AsyncCallback() {
+               org.openelis.modules.main.client.openelis.OpenELIS.screenService.logout(new AsyncCallback() {
                     public void onSuccess(Object result) {
                     }
                           
@@ -167,7 +163,6 @@ public class OpenELIS implements EntryPoint {
       ScreenBase.getWidgetMap().addWidget("titledPanel", new ScreenTitledPanel());
       ScreenBase.getWidgetMap().addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
       //ScreenBase.getWidgetMap().addWidget("AppConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
-      ScreenBase.getWidgetMap().addWidget("OpenELISService",OpenELISService.getInstance());
       ScreenBase.getWidgetMap().addWidget("pagedTree", new ScreenPagedTree());    
       ScreenBase.getWidgetMap().addWidget("appButton", new ScreenAppButton());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown());

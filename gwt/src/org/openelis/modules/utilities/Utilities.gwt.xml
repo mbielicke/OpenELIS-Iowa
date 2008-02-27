@@ -1,6 +1,3 @@
 <module>
-    <servlet path='/DictionaryServlet' class='org.openelis.modules.utilities.server.DictionaryServlet'/>
-    <servlet path='/StandardNoteServlet' class='org.openelis.modules.utilities.server.StandardNoteServlet'/>        
-    <servlet path='/StandardNotePickerServlet' class='org.openelis.modules.utilities.server.StandardNotePickerServlet'/>   
     <entry-point class="org.openelis.modules.utilities.client.Utilities"/>
 </module>

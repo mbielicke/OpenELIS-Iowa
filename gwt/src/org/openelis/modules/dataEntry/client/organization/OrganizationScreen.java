@@ -4,8 +4,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -15,13 +13,10 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -30,30 +25,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 
-public class OrganizationScreen extends AppScreenForm {
-
-	private ConstantsWithLookup openElisConstants = (ConstantsWithLookup) AppScreen
-			.getWidgetMap().get("AppConstants");
-
-	private static OrganizationServletIntAsync screenService = (OrganizationServletIntAsync) GWT
-			.create(OrganizationServletInt.class);
-
-	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
-
-	private int tabSelectedIndex = 0;
+public class OrganizationScreen extends OpenELISScreenForm {
 
 	private Widget selected;
 
 	Document xml = null;
 
 	public OrganizationScreen() {
-		super();
-		String base = GWT.getModuleBaseURL();
-		base += "OrganizationServlet";
-		target.setServiceEntryPoint(base);
-		service = screenService;
-		formService = screenService;
-		getXML();
+		super("org.openelis.modules.dataEntry.server.OrganizationServlet");
 	}
 
 	public void onClick(Widget sender) {

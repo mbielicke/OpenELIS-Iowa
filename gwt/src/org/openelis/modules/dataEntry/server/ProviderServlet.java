@@ -1,55 +1,47 @@
 package org.openelis.modules.dataEntry.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.NumberField;
-
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.StringField;
-
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenServiceInt;
-import org.openelis.modules.dataEntry.client.Provider.ProviderServletInt;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
-
 import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
-
-public class ProviderServlet extends AppServlet implements
-                                               AppScreenServiceInt,
-                                               ProviderServletInt{
+public class ProviderServlet implements AppScreenFormServiceInt{
 
     /**
      * 
@@ -607,12 +599,12 @@ public class ProviderServlet extends AppServlet implements
         return model;
     }
     
-    public DataModel getNotesModel(Integer key, DataModel notesModel){
+    public DataModel getNotesModel(NumberObject key, DataModel notesModel){
         //remote interface to call the organization bean
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
-        List notesList = remote.getProviderNotes(key);
+        List notesList = remote.getProviderNotes((Integer)key.getValue());
         
          notesModel = new DataModel();        
         Iterator itr = notesList.iterator();
@@ -652,10 +644,11 @@ public class ProviderServlet extends AppServlet implements
         return null;
     }
     
-    public TableModel getAddressModel(Integer providerId,TableModel model){
+    public TableField getAddressModel(NumberObject providerId,TableField model){
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        List addressList = remote.getProviderAddresses(providerId);
-        return fillAddressTable(model,addressList);                  
+        List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
+        model.setValue(fillAddressTable((TableModel)model.getValue(),addressList));
+        return model;
     }
     
      

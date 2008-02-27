@@ -4,12 +4,11 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.modules.utilities.client.organizeFavorites.OrganizeFavoritesScreenInt;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.server.constants.Constants;
 
-public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavoritesScreenInt {
+public class OrganizeFavoritesScreen implements AppScreenFormServiceInt {
 
 	/**
 	 * 
@@ -54,4 +53,9 @@ public class OrganizeFavoritesScreen extends AppServlet implements OrganizeFavor
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public DataModel getInitialModel(String cat) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
