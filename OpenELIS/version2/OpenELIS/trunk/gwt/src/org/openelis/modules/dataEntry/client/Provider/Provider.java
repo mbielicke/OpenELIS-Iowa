@@ -22,6 +22,7 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -54,7 +55,7 @@ public class Provider extends OpenELISScreenForm {
         
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.addClickListener(this);
-        removeContactButton.changeState(AppButton.DISABLED);
+        removeContactButton.changeState(AppButton.DISABLED);              
         
         AppButton standardNote = (AppButton) getWidget("standardNoteButton");
         standardNote.changeState(AppButton.DISABLED);
@@ -78,6 +79,8 @@ public class Provider extends OpenELISScreenForm {
         
     public void up(int state) {          
         
+        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+        provId.enable(false);
         
         StringField note = (StringField)rpc.getField("usersNote");  
         note.setValue("");
@@ -139,6 +142,10 @@ public class Provider extends OpenELISScreenForm {
     public void add(int state){                       
         
         key.setObject(0, null);
+        
+        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+        provId.enable(false);
+        
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
         
@@ -207,8 +214,8 @@ public class Provider extends OpenELISScreenForm {
       super.query(state);
       
 //    set focus to the last name field
-		TextBox lastName = (TextBox)getWidget("lastName");
-		lastName.setFocus(true);
+		TextBox providerId = (TextBox)getWidget("providerId");
+        providerId.setFocus(true);
         
          AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
          removeContactButton.changeState(AppButton.DISABLED);
