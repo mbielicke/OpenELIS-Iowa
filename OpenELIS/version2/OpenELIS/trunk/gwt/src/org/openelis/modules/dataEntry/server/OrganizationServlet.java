@@ -19,11 +19,13 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.AppServlet;
@@ -34,6 +36,7 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
@@ -167,9 +170,9 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		//get the filled out DO object
 	//	if(rpc.getFieldValue("action").equals("contacts")){		
 	        //load the contacts
-	        List contactsList = remote.getOrganizationContacts(orgId);
+	       // List contactsList = remote.getOrganizationContacts(orgId);
 	        //need to build the contacts table now...
-	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
+	       // rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
 	        
 	//	}
 		
@@ -381,16 +384,16 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		//get the filled out DO object
 		//if(rpc.getFieldValue("action").equals("contacts")){		
 	        //load the contacts
-	        List contactsList = remote.getOrganizationContacts(orgId);
+	        //List contactsList = remote.getOrganizationContacts(orgId);
 	        //need to build the contacts table now...
-	        rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
+	        //rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
 	        
 	        //load the notes
-	        rpcReturn.setFieldValue("usersSubject", null);
-	        rpcReturn.setFieldValue("usersNote", null);
+	        //rpcReturn.setFieldValue("usersSubject", null);
+	        //rpcReturn.setFieldValue("usersNote", null);
 	        
-	        DataModel notesModel = getNotesModel(orgId);
-	        rpcReturn.setFieldValue("notesModel", notesModel);
+	        //DataModel notesModel = getNotesModel(orgId);
+	        //rpcReturn.setFieldValue("notesModel", notesModel);
 	        
 		//}
 		
@@ -423,57 +426,58 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
         //load the contacts
-        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
+        //List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
         //need to build the contacts table now...
-        TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-        rpcReturn.setFieldValue("contactsTable",rmodel);
+        //TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
+        //pcReturn.setFieldValue("contactsTable",rmodel);
 
         //load the notes
-	    DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-	    rpcReturn.setFieldValue("notesModel", notesModel);
+	    //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+	    //rpcReturn.setFieldValue("notesModel", notesModel);
         
       return rpcReturn;  
 	}
 	
-	public DataModel getNotesModel(Integer key){
-		//remote interface to call the organization bean
-		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+    public ModelField getNotesModel(NumberObject key){
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 
-		//gets the whole notes list now
-		List notesList = remote.getOrganizationNotes(key);
-		
-		DataModel notesModel = new DataModel();
-		Iterator itr = notesList.iterator();
-		while(itr.hasNext()){
-			Object[] result = (Object[])itr.next();
-			//id
-			Integer id = (Integer)result[0];
-			//user id
-			Integer userId = (Integer)result[1];
-			//body
-			String body = (String)result[2];
-			//date
-			Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
-			//subject
-			String subject = (String)result[4];
-			
-			DataSet set = new DataSet();
-			StringObject subjectLine = new StringObject();
-			StringObject bodyLine = new StringObject();
-			
-			SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
-			SystemUserDO user = securityRemote.getSystemUser(userId,false);
-			
-			subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
-			bodyLine.setValue(body);
-			
-			set.addObject(subjectLine);
-			set.addObject(bodyLine);
-			notesModel.add(set);
-		}
-       
-       return notesModel;
-	}
+        //gets the whole notes list now
+        List notesList = remote.getOrganizationNotes((Integer)key.getValue());
+        
+        ModelField modelField = new ModelField();   
+        DataModel notesModel = new DataModel();
+        Iterator itr = notesList.iterator();
+        while(itr.hasNext()){           
+            Object[] result = (Object[])itr.next();
+                        
+            //user id
+            Integer userId = (Integer)result[1];
+            //body
+            String body = (String)result[2];
+            //date
+            Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
+            //subject
+            String subject = (String)result[4];
+                        
+            
+            DataSet set = new DataSet();
+            StringObject subjectLine = new StringObject();
+            StringObject bodyLine = new StringObject();
+            
+            SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
+            SystemUserDO user = securityRemote.getSystemUser(userId,false);
+            
+            subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
+            bodyLine.setValue(body);
+            
+            set.addObject(subjectLine);
+            set.addObject(bodyLine);
+            notesModel.add(set);            
+        }
+       modelField.setValue(notesModel);
+       return modelField;
+    }
 	
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
 //		remote interface to call the organization bean
@@ -500,14 +504,14 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
         //load the contacts
-        List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
+        //List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
         //need to build the contacts table now...
-        TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-        rpcReturn.setFieldValue("contactsTable",rmodel);
+        //TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
+        //rpcReturn.setFieldValue("contactsTable",rmodel);
 
         //load the notes
-	    DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-	    rpcReturn.setFieldValue("notesModel", notesModel);
+	    //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
+	    //rpcReturn.setFieldValue("notesModel", notesModel);
         
 	    return rpcReturn;  
 	}
@@ -868,6 +872,13 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		
 		return dataModel;		
 	}
+    
+    public TableField getContactsModel(NumberObject orgId,TableField model){
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        List contactsList = remote.getOrganizationContacts((Integer)orgId.getValue());
+        model.setValue(fillContactsTable((TableModel)model.getValue(),contactsList));
+        return model;
+    }
 	
 	//???
 	public String getTip(AbstractField key) throws RPCException {
