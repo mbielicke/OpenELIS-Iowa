@@ -15,6 +15,7 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -599,14 +600,15 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         return model;
     }
     
-    public DataModel getNotesModel(NumberObject key, DataModel notesModel){
+    public ModelField getNotesModel(NumberObject key){
         //remote interface to call the organization bean
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
         List notesList = remote.getProviderNotes((Integer)key.getValue());
         
-         notesModel = new DataModel();        
+        ModelField modelField = new ModelField();   
+        DataModel notesModel = new DataModel();
         Iterator itr = notesList.iterator();
         while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
@@ -633,10 +635,10 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             
             set.addObject(subjectLine);
             set.addObject(bodyLine);
-            notesModel.add(set);
+            notesModel.add(set);            
         }
-       
-       return notesModel;
+       modelField.setValue(notesModel);
+       return modelField;
     }
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
