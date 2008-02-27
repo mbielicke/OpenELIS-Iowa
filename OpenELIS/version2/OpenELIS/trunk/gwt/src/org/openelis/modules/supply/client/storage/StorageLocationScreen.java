@@ -1,39 +1,23 @@
 package org.openelis.modules.supply.client.storage;
 
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.screen.AppScreenForm;
-import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.modules.dataEntry.client.organization.OrganizationContactsTable;
-import org.openelis.modules.supply.client.storageUnit.StorageUnitDescTable;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class StorageLocationScreen extends AppScreenForm{
-    
-	private static StorageLocationServletIntAsync screenService = (StorageLocationServletIntAsync) GWT
-	.create(StorageLocationServletInt.class);
-	
-	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
+public class StorageLocationScreen extends OpenELISScreenForm {
 	
 	private Widget selected;
 	
 	public StorageLocationScreen() {
-		super();
-		String base = GWT.getModuleBaseURL();
-		base += "StorageLocationServlet";
-		target.setServiceEntryPoint(base);
-		service = screenService;
-		formService = screenService;
-		getXML();
+		super("org.openelis.modules.supply.server.StorageLocationServlet");
 	}
 	
 	public void onClick(Widget sender) {

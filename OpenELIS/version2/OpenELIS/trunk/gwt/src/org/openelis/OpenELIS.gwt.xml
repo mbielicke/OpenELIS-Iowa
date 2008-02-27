@@ -12,7 +12,7 @@
     <inherits name="org.openelis.modules.dataEntry.DataEntry"/>
     <inherits name="org.openelis.modules.supply.Supply"/>
     <inherits name="org.openelis.modules.analysis.Analysis"/>
-    
+ 
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
  

@@ -24,11 +24,9 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.modules.supply.client.storage.StorageLocationServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
@@ -37,8 +35,8 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 
-public class StorageLocationServlet extends AppServlet implements AppScreenFormServiceInt, 
-														  StorageLocationServletInt,
+public class StorageLocationServlet implements AppScreenFormServiceInt, 
+														  
 														  AutoCompleteServiceInt{
 
 	private static final long serialVersionUID = -7614978840440946815L;

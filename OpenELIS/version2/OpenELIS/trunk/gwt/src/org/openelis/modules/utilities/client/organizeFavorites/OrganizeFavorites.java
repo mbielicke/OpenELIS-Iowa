@@ -1,24 +1,13 @@
 package org.openelis.modules.utilities.client.organizeFavorites;
 
-import org.openelis.gwt.screen.AppScreenForm;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OrganizeFavorites extends AppScreenForm {
+public class OrganizeFavorites extends OpenELISScreenForm {
 	
-	private static OrganizeFavoritesScreenIntAsync screenService = (OrganizeFavoritesScreenIntAsync)GWT.create(OrganizeFavoritesScreenInt.class);
-    private static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
 	public OrganizeFavorites() {
-        super();
-        String base = GWT.getModuleBaseURL();
-        base += "OrganizeFavoritesScreen";
-        target.setServiceEntryPoint(base);
-        service = screenService;
-        formService = screenService;
-        getXML();
+        super("org.openelis.modules.utilities.server.OrganizeFavoritesScreen");
     }
 	
 	public void onClick(Widget sender) {

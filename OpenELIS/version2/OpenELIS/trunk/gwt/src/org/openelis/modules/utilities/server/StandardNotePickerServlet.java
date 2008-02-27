@@ -9,12 +9,10 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.widget.pagedtree.TreeModel;
 import org.openelis.gwt.widget.pagedtree.TreeModelItem;
-import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerServletInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StandardNoteRemote;
@@ -23,8 +21,7 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class StandardNotePickerServlet extends AppServlet implements AppScreenFormServiceInt, 
-StandardNotePickerServletInt{
+public class StandardNotePickerServlet implements AppScreenFormServiceInt {
 
 	private static final long serialVersionUID = -2489317407834940845L;
 
@@ -125,5 +122,10 @@ StandardNotePickerServletInt{
 			return "";
 		}
 	}
+
+    public DataModel getInitialModel(String cat) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

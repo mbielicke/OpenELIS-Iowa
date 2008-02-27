@@ -1,6 +1,12 @@
 package org.openelis.modules.utilities.client.standardNote;
 
-import org.openelis.gwt.screen.AppScreenForm;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -9,33 +15,14 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+public class StandardNoteScreen extends OpenELISScreenForm {
 
-public class StandardNoteScreen extends AppScreenForm {
-
-	private static StandardNoteServletIntAsync screenService = (StandardNoteServletIntAsync) GWT
-	.create(StandardNoteServletInt.class);
-	
-	private static ServiceDefTarget target = (ServiceDefTarget) screenService;
-	
 	private Widget selected;
 	
 	public StandardNoteScreen() {
-		super();
-		String base = GWT.getModuleBaseURL();
-		base += "StandardNoteServlet";
-		target.setServiceEntryPoint(base);
-		service = screenService;
-		formService = screenService;
-		getXML();
+		super("org.openelis.modules.utilities.server.StandardNoteServlet");
 	}
 	
 	public void afterDraw(boolean success) {

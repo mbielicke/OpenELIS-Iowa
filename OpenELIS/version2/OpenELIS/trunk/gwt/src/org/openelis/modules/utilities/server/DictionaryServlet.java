@@ -27,11 +27,9 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenServiceInt;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.modules.utilities.client.dictionary.DictionaryServletInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -42,10 +40,8 @@ import org.openelis.util.SessionManager;
 import edu.uiowa.uhl.security.domain.SectionIdNameDO;
 import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
-public class DictionaryServlet extends AppServlet implements
-                                                 AppScreenServiceInt,
-                                                 DictionaryServletInt,
-                                                 AutoCompleteServiceInt{
+public class DictionaryServlet implements AppScreenFormServiceInt,
+                                           AutoCompleteServiceInt{
 
     /**
      * 
