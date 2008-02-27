@@ -138,7 +138,7 @@
 	  						
       <row>           
       <widget>
-        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"qae_Billable")'/>:</text>
+        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
         </widget>
         <widget>
          <check key= "billable" tab="sequence,test"/>
