@@ -53,10 +53,24 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    <panel key= "secMod" layout= "table" width= "450px" style= "Form" xsi:type= "Table">
     <row>
      <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
+     </widget>
+     <widget width= "50px"> 
+      <textbox key = "providerId"  tab="firstName,npi"/>
+     </widget>
+     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
       <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
+     </widget>     
+    </row>
+    <row>
+     <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
+     </widget>
+     <widget>
+      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
      </widget>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
@@ -86,35 +100,27 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
     <row>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
-     </widget>
-     <widget>
-      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
-     </widget>
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"provider_NPI")'/></text>
-     </widget>
-     <widget>
-      <textbox case= "mixed"   key= "npi" width= "80px" tab="lastName,providerType"/>
-     </widget>
-    </row>
-    <row>
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
       <textbox key= "middleName" case = "upper" width= "150px" tab="providerType,firstName"/>
+     </widget>
+     <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/></text>
+     </widget>
+     <widget>
+      <textbox case= "mixed"   key= "npi" width= "80px" tab="lastName,providerType"/>
      </widget>
     </row>
    </panel>
    
    <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
     <panel height= "200px" key= "provTabPanel" halign= "center" layout= "tab" width= "600px" xsi:type= "Tab">
-     <tab key= "tab1" text= "{resource:getString($constants,'provider_Locations')}">      
+     <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
         <table width= "550px" maxRows = "9" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
-         <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+         <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
@@ -177,7 +183,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 	    </table>
 	    <query>
 	     <table width= "550px" maxRows = "9" rows = "1" title = "">
-          <headers><xsl:value-of select='resource:getString($constants,"provider_Location")'/>,<xsl:value-of select='resource:getString($constants,"provider_ExternalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
