@@ -177,7 +177,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 	// button panel action methods
 	public void add(int state) {
+       if(key!=null) 
         key.setObject(0, null);
+       
 		super.add(state);
 		
 		//FIXME need to load the model for the dropdown
