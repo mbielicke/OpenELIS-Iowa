@@ -2,6 +2,8 @@ package org.openelis.modules.analysis.client.qaevent;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AppButton;
@@ -116,12 +118,14 @@ import com.google.gwt.user.client.ui.Widget;
      private void loadDropdowns(){
             
             //load state dropdowns
-            StringObject cat = new StringObject();
-            cat.setValue("qaEventType");
+            StringObject catObj = new StringObject();
+            catObj.setValue("qaEventType");
+            DataObject[] args = new DataObject[] {catObj};            
             
-            screenService.getInitialModel("qaEventType", new AsyncCallback(){
+            screenService.getObject("getModelField", args, new AsyncCallback(){
                    public void onSuccess(Object result){
-                       DataModel typeDataModel = (DataModel)result;
+                       ModelField field = (ModelField)result;
+                       DataModel typeDataModel = (DataModel)field.getValue();
                        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("qaEventType");
                        ScreenAutoDropdown queryType = displayType.getQueryWidget();
                        
@@ -134,9 +138,14 @@ import com.google.gwt.user.client.ui.Widget;
                    }
                 });
             
-            screenService.getInitialModel("test",  new AsyncCallback(){
+            catObj = new StringObject();
+            catObj.setValue("test");
+            args = new DataObject[] {catObj};
+            
+            screenService.getObject("getModelField", args, new AsyncCallback(){
                 public void onSuccess(Object result){
-                    DataModel testDataModel = (DataModel)result;
+                    ModelField field = (ModelField)result;
+                    DataModel testDataModel = (DataModel)field.getValue();
                     ScreenAutoDropdown displayTest = (ScreenAutoDropdown)widgets.get("test");
                     ScreenAutoDropdown queryTest = displayTest.getQueryWidget();
                     
