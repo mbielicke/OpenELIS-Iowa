@@ -48,22 +48,23 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    	<!--button panel code-->
 	<xsl:call-template name="buttonPanelTemplate">
 		<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
-	</xsl:call-template>
+	</xsl:call-template>	
    
+   <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
    <panel key= "secMod" layout= "table" width= "450px" style= "Form" xsi:type= "Table">
     <row>
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
-     </widget>
-     <widget width= "50px"> 
-      <textbox key = "providerId"  tab="firstName,npi"/>
-     </widget>
-     <widget>
+    <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
       <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
-     </widget>     
+     </widget>
+     <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
+     </widget>
+     <widget> 
+      <textbox  width= "50px" key = "providerId"  tab="providerType,middleName"/>
+     </widget>          
     </row>
     <row>
      <widget>
