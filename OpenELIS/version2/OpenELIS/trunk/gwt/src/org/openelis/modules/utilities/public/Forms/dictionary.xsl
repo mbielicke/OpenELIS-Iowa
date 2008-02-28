@@ -51,6 +51,7 @@
 						<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
 				</xsl:call-template>
 		
+		          <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
 					<panel layout="horizontal" spacing="0"  xsi:type="Panel">
 						<panel layout="vertical" spacing="0"  xsi:type="Panel">
 							<!-- first vertical panel for org fields -->
