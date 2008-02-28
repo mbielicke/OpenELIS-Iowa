@@ -17,6 +17,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
@@ -77,10 +78,7 @@ public class Provider extends OpenELISScreenForm {
       
    
         
-    public void up(int state) {          
-        
-        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
-        provId.enable(false);
+    public void up(int state) {                        
         
         StringField note = (StringField)rpc.getField("usersNote");  
         note.setValue("");
@@ -109,9 +107,10 @@ public class Provider extends OpenELISScreenForm {
        loadTable = true;
        loadNotes = true;                
       
+      
        TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-       int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
-                           
+       int selectedTab = noteTab.getTabBar().getSelectedTab();     
+                            
        if(selectedTab == 0 && loadTable){     
          //load the table  
           fillAddressModel();
@@ -126,10 +125,13 @@ public class Provider extends OpenELISScreenForm {
           loadNotes = false;
 
        }
-       
+             
       // need to get the provider name table model
        TableWidget catNameTM = (TableWidget) getWidget("providersTable");
-       int rowSelected = catNameTM.controller.selected;               
+       int rowSelected = -1;
+       if(catNameTM.controller!=null){
+           rowSelected = catNameTM.controller.selected;
+       } 
 
        // set the update button if needed
        if (rowSelected == -1){
@@ -140,11 +142,9 @@ public class Provider extends OpenELISScreenForm {
     }
     
     public void add(int state){                       
-        
+       if(key!=null) 
         key.setObject(0, null);
-        
-        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
-        provId.enable(false);
+                
         
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
@@ -161,6 +161,9 @@ public class Provider extends OpenELISScreenForm {
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
         proAddManager.disableRows = false;
         super.add(state);     
+        
+        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+        provId.enable(false);
         
 //      set focus to the last name field
 		TextBox lastName = (TextBox)getWidget("lastName");
@@ -179,6 +182,9 @@ public class Provider extends OpenELISScreenForm {
         
         AppButton standardNote = (AppButton) getWidget("standardNoteButton");
         standardNote.changeState(AppButton.UNPRESSED);
+        
+        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+        provId.enable(false);
         
      // this code is for the event of the update mode being enabled 
         loadTable = true;
@@ -214,8 +220,8 @@ public class Provider extends OpenELISScreenForm {
       super.query(state);
       
 //    set focus to the last name field
-		TextBox providerId = (TextBox)getWidget("providerId");
-        providerId.setFocus(true);
+		TextBox lastName = (TextBox)getWidget("lastName");
+        lastName.setFocus(true);
         
          AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
          removeContactButton.changeState(AppButton.DISABLED);
@@ -473,10 +479,14 @@ public class Provider extends OpenELISScreenForm {
     
                  
     private void loadDropdowns(){
+        StringObject catObj = new StringObject();
+        catObj.setValue("providerType");
+        DataObject[] args = new DataObject[] {catObj}; 
         
-        screenService.getInitialModel("providerType", new AsyncCallback(){
+        screenService.getObject("getModelField",args, new AsyncCallback(){
             public void onSuccess(Object result){
-                DataModel typeDataModel = (DataModel)result;
+                ModelField field = (ModelField)result;
+                DataModel typeDataModel = (DataModel)field.getValue(); 
                 ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
                 ScreenAutoDropdown queryType = displayType.getQueryWidget();
                 
@@ -489,10 +499,15 @@ public class Provider extends OpenELISScreenForm {
             }
          });
  
+        catObj = new StringObject();
+        catObj.setValue("state");
+        args = new DataObject[] {catObj}; 
+        
         //load state dropdowns
-        screenService.getInitialModel("state", new AsyncCallback(){
+        screenService.getObject("getModelField",args, new AsyncCallback(){
                public void onSuccess(Object result){
-                   DataModel stateDataModel = (DataModel)result;                   
+                   ModelField field = (ModelField)result;
+                   DataModel stateDataModel = (DataModel)field.getValue();                  
                    
                    ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
                    ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
@@ -509,11 +524,15 @@ public class Provider extends OpenELISScreenForm {
                    Window.alert(caught.getMessage());
                }
             });
-        
+
+        catObj = new StringObject();
+        catObj.setValue("country");
+        args = new DataObject[] {catObj};
         //load country dropdowns
-        screenService.getInitialModel("country", new AsyncCallback(){
+        screenService.getObject("getModelField",args, new AsyncCallback(){
                public void onSuccess(Object result){
-                   DataModel countryDataModel = (DataModel)result;                   
+                   ModelField field = (ModelField)result;
+                   DataModel countryDataModel = (DataModel)field.getValue();                   
                    
                    ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
                    ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
@@ -554,16 +573,17 @@ public class Provider extends OpenELISScreenForm {
    }
    
    private void fillNotesModel(){  
-      
        
        Integer providerId = null;
        boolean getModel = false;  
      
-     // access the database only if id is not null  
+     // access the database only if id is not null 
+      if(key!=null){ 
        if(key.getObject(0)!=null){        
          getModel = true;
          providerId = (Integer)key.getObject(0).getValue(); 
-        }        
+        }
+      } 
         
        if(getModel){ 
         
@@ -590,19 +610,22 @@ public class Provider extends OpenELISScreenForm {
    }
    
    private void fillAddressModel(){
-    
+              
      Integer providerId = null;
      boolean getModel = false;  
      
+     Window.alert("fillAddressModel");
      // access the database only if id is not null 
+     if(key!=null){
       if(key.getObject(0)!=null){        
        getModel = true;
        providerId = (Integer)key.getObject(0).getValue(); 
-      }      
+      }   
+     } 
      
       if(getModel){
          // reset the model so that old data goes away 
-          TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+          TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);         
           provAddController.model.reset();
         
           NumberObject provId = new NumberObject();
