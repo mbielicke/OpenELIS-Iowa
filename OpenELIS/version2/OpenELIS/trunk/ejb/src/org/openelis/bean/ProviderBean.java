@@ -24,6 +24,7 @@ import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.CollectionField;
+import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.AddressLocal;
@@ -120,6 +121,8 @@ public class ProviderBean implements ProviderRemote {
         sb.append("select distinct p.id, p.lastName, p.firstName from Provider p left join p.provNote n left join p.providerAddress pa left join pa.provAddress a where " +
                 " (n.referenceTable = "+providerReferenceId+" or n.referenceTable is null) "
                 );
+        if(fields.containsKey("providerId"))
+            sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("providerId"), "p.id"));
         if(fields.containsKey("lastName"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("lastName"), "p.lastName"));
         if(fields.containsKey("firstName"))
@@ -174,7 +177,8 @@ public class ProviderBean implements ProviderRemote {
         if(first > -1 && max > -1)
         	query.setMaxResults(first+max);
         
-      
+        if(fields.containsKey("providerId"))
+            QueryBuilder.setParameters((QueryNumberField)fields.get("providerId"), "p.id",query);
         if(fields.containsKey("lastName"))
             QueryBuilder.setParameters((QueryStringField)fields.get("lastName"), "p.lastName",query);
         if(fields.containsKey("firstName"))
@@ -303,6 +307,7 @@ public class ProviderBean implements ProviderRemote {
                   }
                   
                   String location = provAddDO.getLocation();                                  
+                  System.out.println("location "+ location);
                   
                   if(!location.trim().equals("")){ 
                     provAdd.setExternalId(provAddDO.getExternalId());
@@ -319,7 +324,7 @@ public class ProviderBean implements ProviderRemote {
                 } 
               
             }
-                                    
+                             
             //update note
             Note note = null;
             //we need to make sure the note is filled out...
