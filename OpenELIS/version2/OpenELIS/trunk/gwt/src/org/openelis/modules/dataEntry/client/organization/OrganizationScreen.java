@@ -558,10 +558,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
         boolean getModel = false;
          
          // access the database only if id is not null  
+         if(key!=null){
            if(key.getObject(0)!=null){        
              getModel = true;
              orgId = (Integer)key.getObject(0).getValue(); 
             }        
+          } 
             
            if(getModel){ 
             
@@ -593,10 +595,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
          boolean getModel = false;  
          
          // access the database only if id is not null 
+         if(key!=null){
           if(key.getObject(0)!=null){        
            getModel = true;
            orgId = (Integer)key.getObject(0).getValue(); 
           }      
+         } 
          
           if(getModel){
              // reset the model so that old data goes away 
