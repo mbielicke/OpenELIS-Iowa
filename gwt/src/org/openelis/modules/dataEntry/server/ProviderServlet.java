@@ -653,7 +653,12 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         return model;
     }
     
-     
+    public ModelField getModelField(StringObject cat) {
+        ModelField modelField = new ModelField();
+        DataModel model = getInitialModel((String)cat.getValue());
+        modelField.setValue(model);
+        return modelField;
+    }   
     
     
 }
