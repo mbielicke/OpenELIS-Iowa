@@ -104,7 +104,7 @@
 								</row>	
 								<row>
 									<widget halign="right">
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dic_SystemName")'/></text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
 									</widget>
 									<widget>
 										<textbox case="mixed" key="systemName" tab="name,section"/>
@@ -118,9 +118,9 @@
 						<!-- start TAB 1 data table -->
 						<widget>
 							<table maxRows = "6" rows = "0" width = "450px" manager = "DictionaryEntriesTable" key="dictEntTable"  title="">
-								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
-								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
-								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
+								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
+								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
+								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>45,95,75,110,120</widths>
 								<editors>
 									<check/>									
@@ -150,9 +150,9 @@
 							</table>
 						  <query>
 						   	<table width = "450px" maxRows = "5" rows="1" title="">
-								<headers><xsl:value-of select='resource:getString($constants,"dic_Active")'/>,<xsl:value-of select='resource:getString($constants,"dic_SystemName")'/>,
-								         <xsl:value-of select='resource:getString($constants,"dic_Abbr")'/>, <xsl:value-of select='resource:getString($constants,"dic_Entry")'/>,
-								         <xsl:value-of select='resource:getString($constants,"dic_RelEntry")'/></headers>
+								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
+								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
+								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>65,95,75,110,100</widths>
 								<editors>									
 									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="DictionaryServlet" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
