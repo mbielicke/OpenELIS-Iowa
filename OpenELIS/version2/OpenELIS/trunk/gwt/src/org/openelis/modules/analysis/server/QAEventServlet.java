@@ -16,6 +16,7 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -416,6 +417,13 @@ public class QAEventServlet implements
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public ModelField getModelField(StringObject cat) {
+        ModelField modelField = new ModelField();
+        DataModel model = getInitialModel((String)cat.getValue());
+        modelField.setValue(model);
+        return modelField;
     }
 
 }

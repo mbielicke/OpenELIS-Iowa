@@ -52,6 +52,7 @@
 		<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
 	</xsl:call-template>
    
+  <panel layout= "vertical" height = "5px" xsi:type= "Panel"/> 
   <panel key = "qafields" layout= "table" width= "450px"   style="FormBorderless" xsi:type= "Table">
     <row>
      <widget>
