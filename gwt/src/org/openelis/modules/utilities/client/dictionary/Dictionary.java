@@ -4,7 +4,10 @@ package org.openelis.modules.utilities.client.dictionary;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -12,7 +15,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.PopupWindow;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -27,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class Dictionary extends OpenELISScreenForm implements MouseListener{
 
     private TableWidget dictEntryTable  = null;
-    public PopupWindow window; 
     
     public Dictionary(){
         super("org.openelis.modules.utilities.server.DictionaryServlet");        
@@ -302,10 +303,14 @@ public class Dictionary extends OpenELISScreenForm implements MouseListener{
         
         
         private void loadDropdowns(){
-
-            screenService.getObject("section", null, new AsyncCallback(){
+           StringObject catObj = new StringObject();
+            catObj.setValue("section");
+            DataObject[] args = new DataObject[] {catObj}; 
+            
+            screenService.getObject("getModelField", args, new AsyncCallback(){
                    public void onSuccess(Object result){
-                       DataModel stateDataModel = (DataModel)result;
+                       ModelField field = (ModelField)result;
+                       DataModel stateDataModel = (DataModel)field.getValue();
                        ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
                        ScreenAutoDropdown querySection = displaySection.getQueryWidget();
                        
@@ -318,9 +323,14 @@ public class Dictionary extends OpenELISScreenForm implements MouseListener{
                    }
                 });
             
-            screenService.getObject("isActive", null, new AsyncCallback(){
+            catObj = new StringObject();
+            catObj.setValue("isActive");
+            args = new DataObject[] {catObj}; 
+            
+            screenService.getObject("getModelField", args, new AsyncCallback(){
                 public void onSuccess(Object result){
-                    DataModel activeDataModel = (DataModel)result;                   
+                    ModelField field = (ModelField)result;
+                    DataModel activeDataModel = (DataModel)field.getValue();                   
                     
                     ScreenTableWidget displayEntryTable = (ScreenTableWidget)widgets.get("dictEntTable");
                     ScreenTableWidget queryEntryTable = (ScreenTableWidget)displayEntryTable.getQueryWidget();
@@ -338,9 +348,7 @@ public class Dictionary extends OpenELISScreenForm implements MouseListener{
         }
                  
                              
-        public boolean validate(){
-              //boolean entryExists = false;
-              //boolean sysNameExists = false;
+        public boolean validate(){              
               
               boolean entryError = false;
               boolean sysNameError = false;
@@ -358,8 +366,7 @@ public class Dictionary extends OpenELISScreenForm implements MouseListener{
                }
            }  
            
-            //if(sysNameExists || entryExists || (!sysUnique) || (!entryUnique)){
-             if(entryError || sysNameError){ 
+            if(entryError || sysNameError){ 
                 return false;
             } 
             else {

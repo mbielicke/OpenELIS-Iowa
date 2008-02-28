@@ -18,6 +18,7 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.OptionField;
@@ -572,7 +573,8 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         return dataModel;
     }
 
-    public DataModel getInitialModel(String cat) {        
+    public DataModel getInitialModel(String cat) { 
+         
         DataModel model = new DataModel();
         DataSet blankset = new DataSet();
         
@@ -645,16 +647,14 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                 
                 model.add(set);                
               //}             
-           }                
-           
+           }                           
           }
         }
         if(cat.equals("isActive")){
             DataSet set = new DataSet();
             //Object[] result = (Object[]) entries.get(i);
             //id
-            
-            
+                        
             StringObject textObject = new StringObject();
             //StringObject stringId = new StringObject();
             StringObject stringId = new StringObject();
@@ -685,6 +685,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
             model.add(set); 
           }
         return model;
+        
     }
 
     public DataModel getMatches(String cat, DataModel model, String match) {        
@@ -729,6 +730,11 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         return null;
     }
 
-    
+    public ModelField getModelField(StringObject cat) {
+        ModelField modelField = new ModelField();
+        DataModel model = getInitialModel((String)cat.getValue());
+        modelField.setValue(model);
+        return modelField;
+    } 
     
 }
