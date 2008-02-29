@@ -39,7 +39,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     private Widget selected;
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadTable = true; // tells whether table tab is to be filled with data
-      
+    //private TableController provAddController = null;  
    
     public ProviderScreen(){
         super("org.openelis.modules.dataEntry.server.ProviderServlet");
@@ -69,9 +69,7 @@ public class ProviderScreen extends OpenELISScreenForm {
            
         loadDropdowns();
         super.afterDraw(success);
-        
-        
-        
+                       
         bpanel.setButtonState("prev", AppButton.DISABLED);
         bpanel.setButtonState("next", AppButton.DISABLED);
     }
@@ -105,26 +103,10 @@ public class ProviderScreen extends OpenELISScreenForm {
        super.abort(state); 
        
        loadTable = true;
-       loadNotes = true;                
-      
-      
-       TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-       int selectedTab = noteTab.getTabBar().getSelectedTab();     
-                            
-       if(selectedTab == 0 && loadTable){     
-         //load the table  
-          fillAddressModel();
-         // don't load it again unless the mode changes or a new fetch is done  
-          loadTable = false;
-       }
-      
-       else if(selectedTab == 1 && loadNotes){
-         //load the notes model          
-          fillNotesModel();
-       // don't load it again unless the mode changes or a new fetch is done  
-          loadNotes = false;
-
-       }
+       loadNotes = true;          
+       clearTabs();
+       loadTabs();
+       
              
       // need to get the provider name table model
        TableWidget catNameTM = (TableWidget) getWidget("providersTable");
@@ -166,8 +148,8 @@ public class ProviderScreen extends OpenELISScreenForm {
         provId.enable(false);
         
 //      set focus to the last name field
-		TextBox lastName = (TextBox)getWidget("lastName");
-		lastName.setFocus(true);
+        TextBox lastName = (TextBox)getWidget("lastName");
+        lastName.setFocus(true);
         
         TableWidget catNameTM = (TableWidget) getWidget("providersTable");
         catNameTM.controller.unselect(-1);
@@ -189,27 +171,14 @@ public class ProviderScreen extends OpenELISScreenForm {
      // this code is for the event of the update mode being enabled 
         loadTable = true;
         loadNotes = true;                
-       
-       TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-       int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
-                            
-       if(selectedTab == 0 && loadTable){
-           // load the table  
-           fillAddressModel();
-          // on't load it again unless the mode changes or a new fetch is done   
-           loadTable = false;
-       }
-       
-       else if(selectedTab == 1 && loadNotes){
-      //         load the notes model          
-           fillNotesModel();
-        // don't load it again unless the mode changes or a new fetch is done  
-           loadNotes = false;
-         
-       }
+        
+        clearTabs();
+        
+        loadTabs();
+        
 //      set focus to the last name field
-		TextBox lastName = (TextBox)getWidget("lastName");
-		lastName.setFocus(true);
+        TextBox lastName = (TextBox)getWidget("lastName");
+        lastName.setFocus(true);
     }
     
     public void query(int state){
@@ -220,8 +189,8 @@ public class ProviderScreen extends OpenELISScreenForm {
       super.query(state);
       
 //    set focus to the last name field
-		TextBox lastName = (TextBox)getWidget("lastName");
-        lastName.setFocus(true);
+        TextBox provId = (TextBox)getWidget("providerId");
+        provId.setFocus(true);
         
          AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
          removeContactButton.changeState(AppButton.DISABLED);
@@ -232,33 +201,29 @@ public class ProviderScreen extends OpenELISScreenForm {
        
     public void fetch(){                 
         super.fetch();                
-       // every time a fetch is done, data in both tabs should be loaded afresh
+        // add whole lazy load code here
+    }
+    
+    public void afterFetch(boolean success){
+      
+//      every time a fetch is done, data in both tabs should be loaded afresh
         loadTable = true;
         loadNotes = true;                
         
-        TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
+        clearTabs();
         
-        // if it's the table tab and it hasn't already filled with data for the current fetch, fill it 
-        if(selectedTab == 0 && loadTable){
-
-            fillAddressModel();
-
-            loadTable = false;
-        }
-        // if it's the notes tab and it hasn't already filled with data for the current fetch, fill it         
-        else if(selectedTab == 1 && loadNotes){
-            fillNotesModel();
-            loadNotes = false;            
-        } 
+        loadTabs();
+        
+       super.afterFetch(success); 
     }
     
+    
     public void onClick(Widget sender) {
-    	String action = ((AppButton)sender).action;
-		if(action.startsWith("query:")){
-			getProviders(action.substring(6, action.length()), sender);
-			
-		} else if (action.equals("removeRow")) {                     
+        String action = ((AppButton)sender).action;
+        if(action.startsWith("query:")){
+            getProviders(action.substring(6, action.length()), sender);
+            
+        } else if (action.equals("removeRow")) {                     
             TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
             int selectedRow = provAddTable.controller.selected;
             if (selectedRow > -1
@@ -365,28 +330,12 @@ public class ProviderScreen extends OpenELISScreenForm {
         loadTable = true;
         loadNotes = true;
         
-        //Window.alert("commitUpdate");
-        TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();
-                             
-        if(selectedTab == 0 && loadTable){
-            loadTable = false;        
-            fillAddressModel();
-        }
+        clearTabs();
         
-        else if(selectedTab == 1 && loadNotes){
-            fillNotesModel();
-            loadNotes = false;
-            
-         // the note subject and body fields need to be refeshed after every successful commit   
-           TextBox subjectBox = (TextBox)getWidget("usersSubject");           
-            subjectBox.setText("");            
-           TextArea noteArea = (TextArea)getWidget("usersNote");
-           noteArea.setText("");
-           
-           rpc.setFieldValue("usersSubject", null);
-           rpc.setFieldValue("usersNote", null);
-        }
+        loadTabs();
+        
+      // the note subject and body fields need to be refeshed after every successful commit
+        clearNotesFields();
         super.afterCommitUpdate(success);     
         
     }
@@ -403,26 +352,12 @@ public class ProviderScreen extends OpenELISScreenForm {
         provId.setType("integer");
         provId.setValue(providerId);
         key.setObject(0, provId);
-                     
-        TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();
-                                     
-        if(selectedTab == 0 && loadTable){
-            loadTable = false;        
-            fillAddressModel();
-        }
         
-        else if(selectedTab == 1 && loadNotes){            
-            fillNotesModel();
-            loadNotes = false;
-            // the note subject and body fields need to be refeshed after every successful commit 
-           TextBox subjectBox = (TextBox)getWidget("usersSubject");           
-            subjectBox.setText("");
-           TextArea noteArea = (TextArea)getWidget("usersNote");
-           noteArea.setText("");           
-           rpc.setFieldValue("usersSubject", null);
-           rpc.setFieldValue("usersNote", null);
-        } 
+        clearTabs();
+                     
+        loadTabs();
+        
+        clearNotesFields();
         
         super.afterCommitAdd(success);         
     }
@@ -613,8 +548,7 @@ public class ProviderScreen extends OpenELISScreenForm {
               
      Integer providerId = null;
      boolean getModel = false;  
-     
-     Window.alert("fillAddressModel");
+          
      // access the database only if id is not null 
      if(key!=null){
       if(key.getObject(0)!=null){        
@@ -626,8 +560,7 @@ public class ProviderScreen extends OpenELISScreenForm {
       if(getModel){
          // reset the model so that old data goes away 
           TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);         
-          provAddController.model.reset();
-        
+          //provAddController.model.reset();        
           NumberObject provId = new NumberObject();
           provId.setType("integer");
           provId.setValue(providerId);
@@ -640,8 +573,11 @@ public class ProviderScreen extends OpenELISScreenForm {
        screenService.getObject("getAddressModel", args , new AsyncCallback(){
            public void onSuccess(Object result){
                // get the table model and load it in the table 
+               rpc.setFieldValue("providerAddressTable",(TableModel)((TableField)result).getValue());
                TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-               provAddController.setModel((TableModel)((TableField)result).getValue());
+               provAddController.setModel((TableModel)((TableField)result).getValue());                             
+              
+               //Window.alert("fillAddressModel");
            }
           
            public void onFailure(Throwable caught){
@@ -650,5 +586,46 @@ public class ProviderScreen extends OpenELISScreenForm {
        });
       } 
    }
-    
+   
+   private void clearNotesFields(){
+    //     the note subject and body fields need to be refeshed after every successful commit 
+       TextBox subjectBox = (TextBox)getWidget("usersSubject");           
+       subjectBox.setText("");
+      TextArea noteArea = (TextArea)getWidget("usersNote");
+      noteArea.setText("");           
+      rpc.setFieldValue("usersSubject", null);
+      rpc.setFieldValue("usersNote", null);  
+   }
+   
+   private void loadTabs(){
+       TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
+       int selectedTab = noteTab.getTabBar().getSelectedTab();     
+                            
+       if(selectedTab == 0 && loadTable){     
+         //load the table  
+          fillAddressModel();
+         // don't load it again unless the mode changes or a new fetch is done  
+          loadTable = false;
+       }
+      
+       else if(selectedTab == 1 && loadNotes){
+         //load the notes model          
+          fillNotesModel();
+       // don't load it again unless the mode changes or a new fetch is done  
+          loadNotes = false;
+
+       }
+   }
+   
+   private void clearTabs(){
+       TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);         
+       provAddController.model.reset(); 
+       provAddController.setModel(provAddController.model);
+       rpc.setFieldValue("providerAddressTable",provAddController.model);
+       
+       VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+       vp.clear();
+       rpc.setFieldValue("notesModel", new DataModel());
+   }
+   
 }
