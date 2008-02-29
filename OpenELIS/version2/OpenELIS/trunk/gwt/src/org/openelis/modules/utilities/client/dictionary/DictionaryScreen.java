@@ -26,11 +26,11 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 
-public class Dictionary extends OpenELISScreenForm implements MouseListener{
+public class DictionaryScreen extends OpenELISScreenForm implements MouseListener{
 
     private TableWidget dictEntryTable  = null;
     
-    public Dictionary(){
+    public DictionaryScreen(){
         super("org.openelis.modules.utilities.server.DictionaryServlet");        
     }
     

@@ -3,7 +3,7 @@ package org.openelis.junit.client;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Timer;
 
-import org.openelis.modules.dataEntry.client.Provider.Provider;
+import org.openelis.modules.dataEntry.client.Provider.ProviderScreen;
 import org.openelis.modules.main.client.OpenELIS;
 
 
@@ -24,7 +24,7 @@ public class TestProvider extends GWTTestCase {
     }
     
     public void testProviderScreen() {
-        final Provider orgScreen = new Provider();
+        final ProviderScreen orgScreen = new ProviderScreen();
         Timer timer = new Timer() {
             public void run() {
                 assertNotNull(orgScreen.forms.get("display"));

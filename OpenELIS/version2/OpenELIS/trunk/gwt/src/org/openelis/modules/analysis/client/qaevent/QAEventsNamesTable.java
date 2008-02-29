@@ -9,9 +9,9 @@ import org.openelis.gwt.widget.table.TableManager;
 
 public class QAEventsNamesTable implements TableManager {
 
-    private QAEvent qaEventForm = null;
+    private QAEventScreen qaEventForm = null;
     
-    public void setQaEventForm(QAEvent qaEventForm) {
+    public void setQaEventForm(QAEventScreen qaEventForm) {
         this.qaEventForm = qaEventForm;
     }
 

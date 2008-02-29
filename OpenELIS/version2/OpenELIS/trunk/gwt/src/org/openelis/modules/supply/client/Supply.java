@@ -26,13 +26,36 @@ public class Supply implements AppModule {
     }
 
     public void onClick(Widget sender) {
-        String key = ((ScreenWidget)sender).key;
-        if(key.equals("storageIcon") || key.equals("storageLabel") || key.equals("storageDescription") || 
-        		key.equals("favLeftStorage"))
-            OpenELIS.browser.addScreen(new StorageLocationScreen(), "Storage Location", "Storage", "Loading");
-        if(key.equals("storageUnitIcon") || key.equals("storageUnitLabel") || key.equals("storageUnitDescription") || 
-        		key.equals("favLeftStorageUnit"))
-            OpenELIS.browser.addScreen(new StorageUnitScreen(), "Storage Unit", "Storage", "Loading");
+        
     }
+
+	public void onMouseDown(Widget sender, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseEnter(Widget sender) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseLeave(Widget sender) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseMove(Widget sender, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseUp(Widget sender, int x, int y) {
+		String key = ((ScreenWidget)sender).key;
+        if(key.equals("storageRow") || key.equals("favStorageRow") || key.equals("favLeftStorageRow"))
+            OpenELIS.browser.addScreen(new StorageLocationScreen(), "Storage Location", "Storage", "Loading");
+        
+        if(key.equals("storageUnitRow") || key.equals("favStorageUnitRow") || key.equals("favLeftStorageUnitRow"))
+            OpenELIS.browser.addScreen(new StorageUnitScreen(), "Storage Unit", "Storage", "Loading");		
+	}
 
 }

@@ -7,6 +7,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
@@ -65,8 +68,6 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	
 	public void add(int state) {
 		super.add(state);
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		AutoCompleteDropdown cat = (AutoCompleteDropdown)getWidget("category");
@@ -79,16 +80,13 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	public void query(int state) {
 		super.query(state);
 		
-		//set focus to the id field
-		TextBox id = (TextBox)getWidget("id");
-		id.setFocus(true);
+		//set focus to the name field
+		TextBox name = (TextBox)getWidget("name");
+		name.setFocus(true);
 	}
 	
 	public void afterUpdate(boolean success) {
 		super.afterUpdate(success);
-		
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		AutoCompleteDropdown cat = (AutoCompleteDropdown)getWidget("category");
@@ -138,11 +136,14 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
+		StringObject argObj = new StringObject();
+		argObj.setValue("category");
+		DataObject[] args = new DataObject[] {argObj};
 		
-		//load category dropdowns
-		screenService.getInitialModel("category", new AsyncCallback(){
+//		load category dropdowns
+		screenService.getObject("getModelField", args, new AsyncCallback(){
 	           public void onSuccess(Object result){
-	               DataModel catDataModel = (DataModel)result;
+	               DataModel catDataModel = (DataModel)((ModelField)result).getValue();
 	               ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("category");
 	               ScreenAutoDropdown queryCat = displayCat.getQueryWidget();
 	               

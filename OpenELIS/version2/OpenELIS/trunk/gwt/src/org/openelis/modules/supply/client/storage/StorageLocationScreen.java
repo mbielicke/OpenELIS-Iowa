@@ -54,8 +54,6 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	
 	public void add(int state) {
 		super.add(state);
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
@@ -74,16 +72,13 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	public void query(int state) {
 		super.query(state);
 		
-		//set focus to the id field
-		TextBox id = (TextBox)getWidget("id");
-		id.setFocus(true);
+		//set focus to the name field
+		TextBox name = (TextBox)getWidget("name");
+		name.setFocus(true);
 	}
 	
 	public void afterUpdate(boolean success) {
 		super.afterUpdate(success);
-		
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");

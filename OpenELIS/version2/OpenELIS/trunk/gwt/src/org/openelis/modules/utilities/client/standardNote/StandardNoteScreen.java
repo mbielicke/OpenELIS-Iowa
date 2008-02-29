@@ -7,6 +7,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -76,9 +79,9 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		ScreenTextArea textArea = (ScreenTextArea)widgets.get("text");
 		textArea.enable(false);
 		
-		//set focus to the id field
-		TextBox id = (TextBox)getWidget("id");
-		id.setFocus(true);
+		//set focus to the name field
+		TextBox name = (TextBox)getWidget("name");
+		name.setFocus(true);
 	}
 	
 	public void commitQuery(FormRPC rpcQuery) {
@@ -91,9 +94,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	
 	public void add(int state) {
 		super.add(state);
-		
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
@@ -105,9 +105,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	
 	public void afterUpdate(boolean success) {
 		super.afterUpdate(success);
-		
-		ScreenTextBox id = (ScreenTextBox) widgets.get("id");
-		id.enable(false);
 
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
@@ -139,11 +136,14 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
+		StringObject argObj = new StringObject();
+		argObj.setValue("type");
+		DataObject[] args = new DataObject[] {argObj};
 		
-		//load category dropdowns
-		screenService.getInitialModel("type", new AsyncCallback(){
+//		load category dropdowns
+		screenService.getObject("getModelField", args, new AsyncCallback(){
 	           public void onSuccess(Object result){
-	               DataModel typeDataModel = (DataModel)result;
+	               DataModel typeDataModel = (DataModel)((ModelField)result).getValue();
 	               ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("type");
 	               ScreenAutoDropdown queryType = displayType.getQueryWidget();
 	               

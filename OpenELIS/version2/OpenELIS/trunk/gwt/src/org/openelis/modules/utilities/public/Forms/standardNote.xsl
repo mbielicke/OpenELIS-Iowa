@@ -54,14 +54,6 @@
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
-									</widget>
-									<widget>
-										<textbox key="id" width="75px" tab="name,text"/>
-									</widget>
-								</row>
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
@@ -83,7 +75,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
+										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>
@@ -93,7 +85,7 @@
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="type" case="mixed" serviceUrl="StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
+										<autoDropdown cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>

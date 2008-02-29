@@ -34,14 +34,14 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
 
-public class Provider extends OpenELISScreenForm {
+public class ProviderScreen extends OpenELISScreenForm {
 
     private Widget selected;
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadTable = true; // tells whether table tab is to be filled with data
       
    
-    public Provider(){
+    public ProviderScreen(){
         super("org.openelis.modules.dataEntry.server.ProviderServlet");
     }
     
