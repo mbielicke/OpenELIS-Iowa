@@ -136,31 +136,16 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
     public void fetch(){
         super.fetch();
-        // every time a fetch is done, data in both tabs should be loaded afresh
-        loadTable = true;
-        loadNotes = true;                
         
-        TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
-        
-        // if it's the table tab and it hasn't already filled with data for the current fetch, fill it 
-        if(selectedTab == 0 && loadTable){
-
-            fillContactsModel();
-
-            loadTable = false;
-        }
-        // if it's the notes tab and it hasn't already filled with data for the current fetch, fill it         
-        else if(selectedTab == 1 && loadNotes){
-            fillNotesModel();
-            loadNotes = false;            
-        } 
     }
     
 	public void afterFetch(boolean success) {
-		super.afterFetch(success);
-		
-		//loadNotes();
+//    every time a fetch is done, data in both tabs should be loaded afresh
+        loadTable = true;
+        loadNotes = true;                
+        clearTabs();
+        loadTabs();
+		super.afterFetch(success);       
 	}
 	private void getOrganizations(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
@@ -219,24 +204,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
                         
         loadTable = true;
         loadNotes = true;                
-          
-           TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
-           int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
-                               
-           if(selectedTab == 0 && loadTable){     
-             //load the table  
-               fillContactsModel();
-             // don't load it again unless the mode changes or a new fetch is done  
-              loadTable = false;
-           }
-          
-           else if(selectedTab == 1 && loadNotes){
-             //load the notes model          
-              fillNotesModel();
-           // don't load it again unless the mode changes or a new fetch is done  
-              loadNotes = false;
-
-           }
+        clearTabs(); 
+        loadTabs();
    
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
 		orgContactsTable.disableRows = true;
@@ -263,24 +232,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
         // this code is for the event of the update mode being enabled 
         loadTable = true;
         loadNotes = true;                
-       
-       TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
-       int selectedTab = noteTab.getTabBar().getSelectedTab();                                    
-                            
-       if(selectedTab == 0 && loadTable){
-           // load the table  
-           fillContactsModel();
-          // on't load it again unless the mode changes or a new fetch is done   
-           loadTable = false;
-       }
-       
-       else if(selectedTab == 1 && loadNotes){
-      //         load the notes model          
-           fillNotesModel();
-        // don't load it again unless the mode changes or a new fetch is done  
-           loadNotes = false;
-         
-       }
+        clearTabs();
+        loadTabs();
 
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
@@ -311,26 +264,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
         orgIdObj.setType("integer");
         orgIdObj.setValue(orgId);
         key.setObject(0, orgIdObj);
-                     
-        TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();
-                                     
-        if(selectedTab == 0 && loadTable){
-            loadTable = false;        
-            fillContactsModel();
-        }
         
-        else if(selectedTab == 1 && loadNotes){            
-            fillNotesModel();
-            loadNotes = false;
-            // the note subject and body fields need to be refeshed after every successful commit 
-           TextBox subjectBox = (TextBox)getWidget("usersSubject");           
-            subjectBox.setText("");
-           TextArea noteArea = (TextArea)getWidget("usersNote");
-           noteArea.setText("");           
-           rpc.setFieldValue("usersSubject", null);
-           rpc.setFieldValue("usersNote", null);
-        } 
+        clearTabs();             
+        loadTabs(); 
+        
+        clearNotesFields();
         
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
 		removeContactButton.changeState(AppButton.UNPRESSED);
@@ -357,29 +295,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
         
         loadTable = true;
         loadNotes = true;
+        clearTabs();              
+        loadTabs();               
         
-        //Window.alert("commitUpdate");
-        TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
-        int selectedTab = noteTab.getTabBar().getSelectedTab();
-                             
-        if(selectedTab == 0 && loadTable){
-            loadTable = false;        
-            fillContactsModel();
-        }
-        
-        else if(selectedTab == 1 && loadNotes){
-            fillNotesModel();
-            loadNotes = false;
-            
-         // the note subject and body fields need to be refeshed after every successful commit   
-           TextBox subjectBox = (TextBox)getWidget("usersSubject");           
-            subjectBox.setText("");            
-           TextArea noteArea = (TextArea)getWidget("usersNote");
-           noteArea.setText("");
-           
-           rpc.setFieldValue("usersSubject", null);
-           rpc.setFieldValue("usersNote", null);
-        }
+//      the note subject and body fields need to be refeshed after every successful commit   
+        clearNotesFields();
         
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
@@ -617,7 +537,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
           if(getModel){
              // reset the model so that old data goes away 
               TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
-              orgContactController.model.reset();
+              //orgContactController.model.reset();
             
               NumberObject orgIdObj = new NumberObject();
               orgIdObj.setType("integer");
@@ -631,14 +551,56 @@ public class OrganizationScreen extends OpenELISScreenForm {
            screenService.getObject("getContactsModel", args , new AsyncCallback(){
                public void onSuccess(Object result){
                    // get the table model and load it in the table 
+                   rpc.setFieldValue("contactsTable",(TableModel)((TableField)result).getValue());
                    TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
                    orgContactController.setModel((TableModel)((TableField)result).getValue());
                }
               
                public void onFailure(Throwable caught){
-                   Window.alert("fill contact "+caught.getMessage());
+                   Window.alert(caught.getMessage());
                }
            });
           } 
        }
+       
+       private void clearNotesFields(){
+           //     the note subject and body fields need to be refeshed after every successful commit 
+              TextBox subjectBox = (TextBox)getWidget("usersSubject");           
+              subjectBox.setText("");
+             TextArea noteArea = (TextArea)getWidget("usersNote");
+             noteArea.setText("");           
+             rpc.setFieldValue("usersSubject", null);
+             rpc.setFieldValue("usersNote", null);  
+          }
+          
+          private void loadTabs(){
+              TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
+              int selectedTab = noteTab.getTabBar().getSelectedTab();     
+                                   
+              if(selectedTab == 0 && loadTable){     
+                //load the table  
+                  fillContactsModel();
+                // don't load it again unless the mode changes or a new fetch is done  
+                 loadTable = false;
+              }
+             
+              else if(selectedTab == 1 && loadNotes){
+                //load the notes model          
+                 fillNotesModel();
+              // don't load it again unless the mode changes or a new fetch is done  
+                 loadNotes = false;
+
+              }
+          }  
+          
+          private void clearTabs(){
+              TableController provAddController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);         
+              provAddController.model.reset(); 
+              provAddController.setModel(provAddController.model);
+              rpc.setFieldValue("contactsTable",provAddController.model);
+              
+              VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+              vp.clear();
+              rpc.setFieldValue("notesModel", new DataModel());
+          } 
 }

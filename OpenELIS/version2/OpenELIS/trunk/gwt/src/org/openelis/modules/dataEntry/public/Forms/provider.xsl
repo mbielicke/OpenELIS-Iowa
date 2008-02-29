@@ -54,17 +54,17 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    <panel key= "secMod" layout= "table" width= "450px" style= "Form" xsi:type= "Table">
     <row>
     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
-     </widget>
-     <widget width= "210px"> 
-      <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
-     </widget>
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
      </widget>
      <widget> 
-      <textbox  width= "50px" key = "providerId"  tab="providerType,middleName"/>
-     </widget>          
+      <textbox  width= "50px" key = "providerId"  tab="lastName,npi"/>
+     </widget>      
+    <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
+     </widget>
+     <widget width= "210px"> 
+      <textbox key = "lastName" case = "upper" tab="providerType,providerId"/>
+     </widget>         
     </row>
     <row>
      <widget>
