@@ -11,7 +11,6 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -111,8 +110,6 @@ public class StandardNoteBean implements StandardNoteRemote{
         sb.append("select distinct s.id,s.name " + "from StandardNote s where 1=1 ");
         
         //***append the abstract fields to the string buffer
-        if(fields.containsKey("id"))
-        	sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("id"), "s.id"));
 		if(fields.containsKey("name"))
 			sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name"));
 		if(fields.containsKey("description"))
@@ -129,8 +126,6 @@ public class StandardNoteBean implements StandardNoteRemote{
        	 query.setMaxResults(first+max);
         
 //      ***set the parameters in the query
-        if(fields.containsKey("id"))
-        	QueryBuilder.setParameters((QueryNumberField)fields.get("id"), "s.id", query);
 		if(fields.containsKey("name"))
 			QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
 		if(fields.containsKey("description"))

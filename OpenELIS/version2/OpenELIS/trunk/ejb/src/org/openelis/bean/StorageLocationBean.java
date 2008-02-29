@@ -16,9 +16,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.StorageLocationDO;
-import org.openelis.entity.OrganizationContact;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCDeleteException;
@@ -159,8 +157,6 @@ public class StorageLocationBean implements StorageLocationRemote{
         sb.append("select distinct s.id,s.name " + "from StorageLocation s where 1=1 ");
         
         //***append the abstract fields to the string buffer
-        if(fields.containsKey("id"))
-        	sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("id"), "s.id"));
         if(fields.containsKey("name"))
         	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name"));
         if(fields.containsKey("location"))
@@ -193,8 +189,6 @@ public class StorageLocationBean implements StorageLocationRemote{
         	 query.setMaxResults(first+max);
          
 //       ***set the parameters in the query
-         if(fields.containsKey("id"))
-        	 QueryBuilder.setParameters((QueryNumberField)fields.get("id"), "s.id", query);
          if(fields.containsKey("name"))
         	 QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
          if(fields.containsKey("location"))
