@@ -20,7 +20,6 @@ import org.openelis.entity.StorageUnit;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.remote.StorageUnitRemote;
@@ -61,8 +60,6 @@ public class StorageUnitBean implements StorageUnitRemote{
         
         sb.append("select distinct s.id,s.description " + "from StorageUnit s where 1=1 ");
          //***append the abstract fields to the string buffer
-        if(fields.containsKey("id"))
-        	sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("id"), "s.id"));
         if(fields.containsKey("category") && ((ArrayList)((CollectionField)fields.get("category")).getValue()).size()>0 &&
        		 !(((ArrayList)((CollectionField)fields.get("category")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("category")).getValue()).get(0))))
         	sb.append(QueryBuilder.getQuery((CollectionField)fields.get("category"), "s.category"));
@@ -81,8 +78,6 @@ public class StorageUnitBean implements StorageUnitRemote{
         	 query.setMaxResults(first+max);
          
 //       ***set the parameters in the query
-         if(fields.containsKey("id"))
-        	 QueryBuilder.setParameters((QueryNumberField)fields.get("id"), "s.id", query);
          if(fields.containsKey("category") && ((ArrayList)((CollectionField)fields.get("category")).getValue()).size()>0 &&
         		 !(((ArrayList)((CollectionField)fields.get("category")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("category")).getValue()).get(0))))
         	 QueryBuilder.setParameters((CollectionField)fields.get("category"), "s.category", query);
