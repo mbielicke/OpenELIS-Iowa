@@ -84,9 +84,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
         removeEntryButton.changeState(AppButton.UNPRESSED);                          
         
-		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
-		name.setFocus(true);
+        //set focus to the name field
+        TextBox name = (TextBox)getWidget("name");
+        name.setFocus(true);
     }
     
     public void commitAdd(){
@@ -148,11 +148,11 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
     }
     
     public void onClick(Widget sender){
-    	String action = ((AppButton)sender).action;
-		if(action.startsWith("query:")){
-			getCategories(action.substring(6, action.length()), sender);
-			
-		}else if (action.equals("removeEntry")) {   
+        String action = ((AppButton)sender).action;
+        if(action.startsWith("query:")){
+            getCategories(action.substring(6, action.length()), sender);
+            
+        }else if (action.equals("removeEntry")) {   
             
             TableWidget dictEntTable = (TableWidget) getWidget("dictEntTable");
             int selectedRow = dictEntTable.controller.selected;
@@ -214,8 +214,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
             removeEntryButton.changeState(AppButton.UNPRESSED);  
             
            // set focus to the name field
-    		TextBox name = (TextBox)getWidget("name");
-    		name.setFocus(true);
+            TextBox name = (TextBox)getWidget("name");
+            name.setFocus(true);
             
             TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
              catNameTM.controller.unselect(-1);               
@@ -225,9 +225,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         public void query(int state){             
             super.query(state);
             
-    		//set focus to the name field
-    		TextBox name = (TextBox)getWidget("name");
-    		name.setFocus(true);
+            //set focus to the name field
+            TextBox name = (TextBox)getWidget("name");
+            name.setFocus(true);
             
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
