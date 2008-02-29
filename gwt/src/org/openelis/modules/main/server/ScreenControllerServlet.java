@@ -1,55 +1,62 @@
 package org.openelis.modules.main.server;
 
+import org.openelis.gwt.common.Filter;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.services.TableServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+
 import javax.servlet.http.HttpSession;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, TableServiceInt {
 
     private static final long serialVersionUID = 1L;
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return getService().abort(key, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).abort(key, rpcReturn);
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        return getService().commitAdd(rpcSend, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).commitAdd(rpcSend, rpcReturn);
     }
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return getService().commitDelete(key, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).commitDelete(key, rpcReturn);
     }
 
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        return getService().commitQuery(rpcSend, model);
+        return ((AppScreenFormServiceInt)getService()).commitQuery(rpcSend, model);
     }
 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        return getService().commitUpdate(rpcSend, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).commitUpdate(rpcSend, rpcReturn);
     }
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return getService().fetch(key, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).fetch(key, rpcReturn);
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return getService().fetchForUpdate(key, rpcReturn);
+        return ((AppScreenFormServiceInt)getService()).fetchForUpdate(key, rpcReturn);
     }
 
     public String getXML() throws RPCException {
-        return getService().getXML();
+        return ((AppScreenFormServiceInt)getService()).getXML();
     }
     
     public DataObject getObject(String method, DataObject[] args) throws RPCException {
-        AppScreenFormServiceInt service = getService();
+        AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
             params = new Class[args.length];
@@ -66,9 +73,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         
     }
     
-    private AppScreenFormServiceInt getService() throws RPCException {
+    private RemoteService getService() throws RPCException {
         try {
-            return (AppScreenFormServiceInt)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
+            return (RemoteService) Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
             e.printStackTrace();
             throw new RPCException(e.getMessage());
@@ -101,7 +108,49 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
     }
 
     public DataModel getInitialModel(String cat) throws RPCException {
-        return getService().getInitialModel(cat);
+        return ((AppScreenFormServiceInt)getService()).getInitialModel(cat);
     }
-    
+
+    //auto complete service methods
+	public DataModel getDisplay(String cat, DataModel model, AbstractField value) throws RPCException{
+		return ((AutoCompleteServiceInt)getService()).getDisplay(cat,model,value);
+	}
+
+	public DataModel getMatches(String cat, DataModel model, String match) throws RPCException{
+		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match);
+	}
+
+	//table service methods
+	public TableModel filter(int col, Filter[] filters, int index, int selected) throws RPCException {
+		return ((TableServiceInt)getService()).filter(col, filters, index, selected);
+	}
+
+	public Filter[] getFilter(int col) {
+		try{
+			return ((TableServiceInt)getService()).getFilter(col);
+		}catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+	}
+
+	public TableModel getModel(TableModel model) throws RPCException {
+		return ((TableServiceInt)getService()).getModel(model);
+	}
+
+	public TableModel getPage(int page, int selected) throws RPCException {
+		return ((TableServiceInt)getService()).getPage(page, selected);
+	}
+
+	public String getTip(AbstractField key) throws RPCException {
+		return ((TableServiceInt)getService()).getTip(key);
+	}
+
+	public TableModel saveModel(TableModel model) throws RPCException {
+		return ((TableServiceInt)getService()).saveModel(model);
+	}
+
+	public TableModel sort(int col, boolean down, int index, int selected) throws RPCException {
+		return ((TableServiceInt)getService()).sort(col, down, index, selected);
+	}    
 }

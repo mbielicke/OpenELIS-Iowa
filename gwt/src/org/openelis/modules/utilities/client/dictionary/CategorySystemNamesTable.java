@@ -9,7 +9,7 @@ import org.openelis.gwt.widget.table.TableManager;
 
 public class CategorySystemNamesTable implements TableManager {
     
-    private Dictionary dictionaryForm = null;
+    private DictionaryScreen dictionaryForm = null;
 
     public boolean action(int row, int col, TableController controller) {       
         return true;
@@ -88,11 +88,11 @@ public class CategorySystemNamesTable implements TableManager {
         controller.reset();
     }
 
-    public Dictionary getDictionaryForm() {
+    public DictionaryScreen getDictionaryForm() {
         return dictionaryForm;
     }
 
-    public void setDictionaryForm(Dictionary dictionaryForm) {
+    public void setDictionaryForm(DictionaryScreen dictionaryForm) {
         this.dictionaryForm = dictionaryForm;
     }
 

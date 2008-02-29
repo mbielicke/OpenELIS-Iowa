@@ -78,7 +78,7 @@ public class ProviderAddressesTable implements TableManager {
 
     }
 
-    public void setProviderForm(Provider providerForm) {
+    public void setProviderForm(ProviderScreen providerForm) {
         //this.providerForm = providerForm;
     }
 

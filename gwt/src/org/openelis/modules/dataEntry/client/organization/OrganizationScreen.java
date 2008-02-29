@@ -6,6 +6,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
@@ -475,11 +476,14 @@ public class OrganizationScreen extends OpenELISScreenForm {
     
 	
 	private void loadDropdowns(){
+		StringObject argObj = new StringObject();
+		argObj.setValue("state");
+		DataObject[] args = new DataObject[] {argObj};
 		
-		//load state dropdowns
-		screenService.getInitialModel("state", new AsyncCallback(){
+		//load state dropdowns 
+		screenService.getObject("getModelField", args, new AsyncCallback(){
 	           public void onSuccess(Object result){
-	               DataModel stateDataModel = (DataModel)result;
+	               DataModel stateDataModel = (DataModel)((ModelField)result).getValue();
 	               ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
 	               ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
@@ -502,10 +506,14 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	           }
 	        });
 		
-		//load country dropdowns
-		screenService.getInitialModel("country", new AsyncCallback(){
+		argObj = new StringObject();
+		argObj.setValue("country");
+		args = new DataObject[] {argObj};
+		
+		//load state dropdowns 
+		screenService.getObject("getModelField", args, new AsyncCallback(){
 	           public void onSuccess(Object result){
-	        	   DataModel countryDataModel = (DataModel)result;
+	        	   DataModel countryDataModel = (DataModel)((ModelField)result).getValue();
 	               ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
 	               ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
@@ -528,10 +536,14 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	           }
 	        });
 		
-		//load contact type dropdowns
-		screenService.getInitialModel("contactType", new AsyncCallback(){
+		argObj = new StringObject();
+		argObj.setValue("contactType");
+		args = new DataObject[] {argObj};
+		
+//		load contact type dropdowns
+		screenService.getObject("getModelField", args, new AsyncCallback(){
 	           public void onSuccess(Object result){
-	        	   DataModel contactTypeDataModel = (DataModel)result;
+	        	   DataModel contactTypeDataModel = (DataModel)((ModelField)result).getValue();
 	        	   
 	        	   ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();

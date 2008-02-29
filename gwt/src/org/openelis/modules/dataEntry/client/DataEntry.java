@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenWidget;
-import org.openelis.modules.dataEntry.client.Provider.Provider;
+import org.openelis.modules.dataEntry.client.Provider.ProviderScreen;
 import org.openelis.modules.dataEntry.client.Provider.ProviderAddressesTable;
 import org.openelis.modules.dataEntry.client.Provider.ProviderNamesTable;
 import org.openelis.modules.dataEntry.client.organization.OrganizationContactsTable;
@@ -27,14 +27,36 @@ public class DataEntry implements AppModule {
     }
 
     public void onClick(Widget sender) {
-        String key = ((ScreenWidget)sender).key;
-        if(key.equals("organizationIcon") || key.equals("organizationLabel") || key.equals("organizationDescription") || 
-        		key.equals("favLeftOrganization"))  
-            OpenELIS.browser.addScreen(new OrganizationScreen(), "Organization", "Organization", "Loading");
-        if(key.equals("providerIcon") || key.equals("providerLabel") || key.equals("providerDescription") || 
-        		key.equals("favLeftProvider"))  
-            OpenELIS.browser.addScreen(new Provider(), "Provider", "Provider", "Loading");
         
     }
+
+	public void onMouseDown(Widget sender, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseEnter(Widget sender) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseLeave(Widget sender) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseMove(Widget sender, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onMouseUp(Widget sender, int x, int y) {
+		 String key = ((ScreenWidget)sender).key;
+	     if(key.equals("organizationRow") || key.equals("favOrganizationRow") || key.equals("favLeftOrganizationRow"))  
+	            OpenELIS.browser.addScreen(new OrganizationScreen(), "Organization", "Organization", "Loading");
+	     
+	     if(key.equals("providerRow") || key.equals("favProvideryRow") || key.equals("favLeftProviderRow"))  
+	    	 	OpenELIS.browser.addScreen(new ProviderScreen(), "Provider", "Provider", "Loading");		
+	}
 
 }

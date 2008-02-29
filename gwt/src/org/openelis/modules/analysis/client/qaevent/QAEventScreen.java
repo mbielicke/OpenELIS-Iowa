@@ -17,11 +17,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
- public class QAEvent extends OpenELISScreenForm {
+ public class QAEventScreen extends OpenELISScreenForm {
 
      private Widget selected;
 
-     public QAEvent(){
+     public QAEventScreen(){
          super("org.openelis.modules.analysis.server.QAEventServlet");                   
      }
      

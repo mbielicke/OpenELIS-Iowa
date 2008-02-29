@@ -10,7 +10,7 @@ import org.openelis.gwt.widget.table.TableManager;
 
 
 public class ProviderNamesTable implements TableManager {
-    private Provider providerForm;
+    private ProviderScreen providerForm;
         
      
     public boolean action(int row, int col, TableController controller) {
@@ -90,7 +90,7 @@ public class ProviderNamesTable implements TableManager {
         
     }
 
-    public void setProviderForm(Provider providerForm) {
+    public void setProviderForm(ProviderScreen providerForm) {
         this.providerForm = providerForm;
     }
 

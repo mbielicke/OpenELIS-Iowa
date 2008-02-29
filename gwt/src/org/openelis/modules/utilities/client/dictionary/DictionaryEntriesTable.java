@@ -15,12 +15,12 @@ import org.openelis.gwt.widget.table.TableManager;
 
 public class DictionaryEntriesTable implements TableManager {
     
-    private Dictionary dictionaryForm = null;
+    private DictionaryScreen dictionaryForm = null;
     private TableRow relEntryRow = null; 
     private ArrayList systemNamesList = new ArrayList();  
     private ArrayList entryList = new ArrayList();          
 
-    public void setDictionaryForm(Dictionary dictionaryForm) {
+    public void setDictionaryForm(DictionaryScreen dictionaryForm) {
         this.dictionaryForm = dictionaryForm;
     }
 

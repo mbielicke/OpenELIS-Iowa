@@ -27,7 +27,7 @@
      	<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
 		
-      <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable"  serviceUrl = "QAEventServlet"  title="">
+      <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable" title="">
        <headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"test")'/>,<xsl:value-of select='resource:getString($constants,"method")'/></headers>
 							<widths>100,65,65</widths>
 							<editors>
@@ -75,7 +75,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="100px" fromModel="true"  type="integer" tab="test,description">
+										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed"  width="100px" fromModel="true"  type="integer" tab="test,description">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -90,7 +90,7 @@
 												    </autoItems> 													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="qaEventType" serviceUrl= "QAEventServlet" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
+												  <autoDropdown cat="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -110,7 +110,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="test" key="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
+										<autoDropdown cat="test" key="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>
@@ -122,7 +122,7 @@
 												     </autoItems>													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="test" serviceUrl= "QAEventServlet" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
+												  <autoDropdown cat="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>
@@ -144,7 +144,7 @@
         <widget>
          <check key= "billable" tab="sequence,test"/>
          <query>
-         <autoDropdown cat="billable" serviceUrl= "QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" tab="sequence,test">
+         <autoDropdown cat="billable" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" tab="sequence,test">
 													<autoWidths>10</autoWidths>
 													<autoEditors>
 														<label/>

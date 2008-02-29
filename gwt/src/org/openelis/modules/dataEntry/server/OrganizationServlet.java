@@ -884,4 +884,11 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	public String getTip(AbstractField key) throws RPCException {
 		return null;
 	}
+	
+	public ModelField getModelField(StringObject cat) {
+        ModelField modelField = new ModelField();
+        DataModel model = getInitialModel((String)cat.getValue());
+        modelField.setValue(model);
+        return modelField;
+    } 
 }

@@ -64,90 +64,409 @@ public class OpenELISScreen implements OpenELISServiceInt {
     public String getMenuList() {
         try {
         //  System.out.println((SessionManager.getSession().getAttribute("locale") == null ? "en" : (String)SessionManager.getSession().getAttribute("locale")));
-            Document doc = XMLUtil.createNew("list");
+            Document doc = XMLUtil.createNew("panel");
             Element root = doc.getDocumentElement();
-            root.setAttribute("key", "menuList");
+            root.setAttribute("key", "projectRow");
+            root.setAttribute("layout", "table");
+            //root.setAttribute("xsi:type", "Table");
+            root.setAttribute("style", "TopMenuRowContainer");
+            root.setAttribute("hover", "Hover");
+            root.setAttribute("mouse", "this");
+            
             root.setAttribute("height", "100%");
             root.setAttribute("vertical","true");
             
-            //sample management section
-            Element elem = doc.createElement("label");
-            elem.setAttribute("text", "Favorites");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("style", "ListHeader");
-            root.appendChild(elem);
+            //dictionary
+            Element mainPanel = doc.createElement("panel");
+            Element rowNode = doc.createElement("row");
+            Element iconWidgetNode = doc.createElement("widget");
+            Element iconNode = doc.createElement("html");
+            Element middleWidgetNode = doc.createElement("widget");
+            Element textPanelNode = doc.createElement("panel");
+            Element titleWidgetNode = doc.createElement("widget");
+            Element titleNode = doc.createElement("label");
+            Element descWidgetNode = doc.createElement("widget");
+            Element descNode = doc.createElement("label");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Dictionary");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftDictionary");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            mainPanel.setAttribute("key", "favLeftDictionaryRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,UtilitiesModule");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Organization");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftOrganization");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Organize Favorites...");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "organizeFavoritesLeft");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            iconNode.setAttribute("key", "dictionaryIcon");
+            iconNode.setAttribute("style", "DictionaryIcon");
+            //iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode("<div/>"));
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Provider");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftProvider");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "QA Events");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftqaEvents");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "dictionaryLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Dictionary");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Standard Note");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftStandardNote");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            descNode.setAttribute("key", "dictionaryDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Storage");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftStorage");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
             
-            elem = doc.createElement("menulabel");
-            elem.setAttribute("text", "Storage Unit");
-            elem.setAttribute("constant", "true");
-            elem.setAttribute("key", "favLeftStorageUnit");
-            elem.setAttribute("style", "ListSubItem");
-            elem.setAttribute("onClick", "this");
-            elem.setAttribute("hover", "Hover");
-            root.appendChild(elem);
+            //organization
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftOrganizationRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,DataEntryModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "organizationIcon");
+            iconNode.setAttribute("style", "organizationIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "organizationLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Organization");
+            
+            descNode.setAttribute("key", "organizationDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+            
+//          organize favorites
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftOrganizeFavoritesRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "organizeFavoritesIcon");
+            iconNode.setAttribute("style", "organizeFavoritesIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "organizeFavoritesLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Organize Favorites");
+            
+            descNode.setAttribute("key", "organizeFavoritesDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+            
+//          provider
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftProviderRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,DataEntryModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "providerIcon");
+            iconNode.setAttribute("style", "providerIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "providerLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Provider");
+            
+            descNode.setAttribute("key", "providerDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+			
+//          qa events
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftQaEventsRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,AnalysisModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "qaEventsIcon");
+            iconNode.setAttribute("style", "qaEventsIconIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "qaEventsLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "QA Events");
+            
+            descNode.setAttribute("key", "qaEventsDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+            
+//          standard note
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftStandardNoteRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,UtilitiesModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "standardNoteIcon");
+            iconNode.setAttribute("style", "standardNoteIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "standardNoteLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Standard Note");
+            
+            descNode.setAttribute("key", "standardNoteDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+            
+//          storage loc
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftStorageRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,SupplyModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "storageIcon");
+            iconNode.setAttribute("style", "storageIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "storageLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Storage");
+            
+            descNode.setAttribute("key", "storageDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
+            
+//          storage unit
+            mainPanel = doc.createElement("panel");
+            rowNode = doc.createElement("row");
+            iconWidgetNode = doc.createElement("widget");
+            iconNode = doc.createElement("html");
+            middleWidgetNode = doc.createElement("widget");
+            textPanelNode = doc.createElement("panel");
+            titleWidgetNode = doc.createElement("widget");
+            titleNode = doc.createElement("label");
+            descWidgetNode = doc.createElement("widget");
+            descNode = doc.createElement("label");
+            
+            mainPanel.setAttribute("key", "favLeftStorageUnitRow");
+            mainPanel.setAttribute("layout", "table");
+            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("hover", "Hover");
+            mainPanel.setAttribute("mouse", "this,SupplyModule");
+            
+            iconWidgetNode.setAttribute("style", "topMenuIcon");
+            
+            iconNode.setAttribute("key", "storageUnitIcon");
+            iconNode.setAttribute("style", "storageUnitIcon");
+            iconNode.setAttribute("xml:Space", "preserve");
+            iconNode.appendChild(doc.createTextNode(" "));
+            
+            middleWidgetNode.setAttribute("style", "topMenuItemMiddle");
+            
+            textPanelNode.setAttribute("layout", "vertical");
+              
+            titleNode.setAttribute("key", "storageUnitLabel");
+            titleNode.setAttribute("style", "topMenuItemTitle");
+            titleNode.setAttribute("text", "Storage Unit");
+            
+            descNode.setAttribute("key", "storageUnitDescription");
+            descNode.setAttribute("wordwrap", "true");
+            descNode.setAttribute("style", "topMenuitemDesc");
+            descNode.setAttribute("text", "");
+            
+            mainPanel.appendChild(rowNode);
+            rowNode.appendChild(iconWidgetNode);
+            iconWidgetNode.appendChild(iconNode);
+            rowNode.appendChild(middleWidgetNode);
+            middleWidgetNode.appendChild(textPanelNode);
+            textPanelNode.appendChild(titleWidgetNode);
+            titleWidgetNode.appendChild(titleNode);
+            textPanelNode.appendChild(descWidgetNode);
+            descWidgetNode.appendChild(descNode);
+            root.appendChild(mainPanel);
                     
             return XMLUtil.toString(doc);
         }catch(Exception e){
