@@ -43,19 +43,19 @@ import com.google.gwt.user.client.ui.Widget;
         }
          
          public void onClick(Widget sender){
-        	 String action = ((AppButton)sender).action;
-     		if(action.startsWith("query:")){
-     			getQAEvents(action.substring(6, action.length()), sender);
-     			
-     		} 
+             String action = ((AppButton)sender).action;
+            if(action.startsWith("query:")){
+                getQAEvents(action.substring(6, action.length()), sender);
+                
+            } 
          }
          
         public void query(int state) {
-        	super.query(state);
-        	
-//        	set focus to the name field
-    		TextBox name = (TextBox)getWidget("name");
-    		name.setFocus(true);
+            super.query(state);
+            
+//          set focus to the name field
+            TextBox name = (TextBox)getWidget("name");
+            name.setFocus(true);
         }                 
          
          public void abort(int state){
@@ -75,19 +75,19 @@ import com.google.gwt.user.client.ui.Widget;
          
          public void add(int state){                                  
              super.add(state);             
-     		TextBox name = (TextBox)getWidget("name");
-     		name.setFocus(true);
+            TextBox name = (TextBox)getWidget("name");
+            name.setFocus(true);
             
             TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
             catNameTM.controller.unselect(-1);
          }
          
         public void afterUpdate(boolean success) {
-        	super.afterUpdate(success);
-        	
-//        	set focus to the name field
-    		TextBox name = (TextBox)getWidget("name");
-    		name.setFocus(true);
+            super.afterUpdate(success);
+            
+//          set focus to the name field
+            TextBox name = (TextBox)getWidget("name");
+            name.setFocus(true);
         }
          
          private void getQAEvents(String letter, Widget sender) {
