@@ -50,29 +50,23 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
 	</xsl:call-template>	
    
-   <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
-   <panel key= "secMod" layout= "table" style= "Form" xsi:type= "Table">
+   <panel layout= "vertical"  height = "5px" xsi:type= "Panel"/>
+   <panel key= "secMod" width = "450px" layout= "table"  style= "Form" xsi:type= "Table">
     <row>
     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
      </widget>
      <widget> 
       <textbox  width= "50px" key = "providerId"  tab="lastName,npi"/>
-     </widget>      
-    <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
-     </widget>
-     <widget> 
-      <textbox key = "lastName" case = "upper" tab="providerType,providerId"/>
-     </widget>         
+     </widget>                 
     </row>
     <row>
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
+      <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
-     <widget>
-      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
-     </widget>
+     <widget width= "210px"> 
+      <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
+     </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
@@ -101,11 +95,11 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
     <row>
      <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
      </widget>
      <widget>
-      <textbox key= "middleName" case = "upper" width= "150px" tab="providerType,firstName"/>
-     </widget>
+      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
+     </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/></text>
      </widget>
@@ -113,10 +107,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <textbox case= "mixed"   key= "npi" width= "80px" tab="lastName,providerType"/>
      </widget>
     </row>
+    <row>
+     <widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
+     </widget>
+     <widget>
+      <textbox key= "middleName" case = "upper" width= "150px" tab="providerType,firstName"/>
+     </widget>
+    </row>
    </panel>
    
    <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
-    <panel height= "200px" key= "provTabPanel" halign= "center" layout= "tab" width= "600px" xsi:type= "Tab">
+    <panel height= "200px" key= "provTabPanel" halign= "center" layout= "tab" width = "600px"  xsi:type= "Tab">
      <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
@@ -247,7 +249,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 	    </table>
 	    </query>
 	  </widget>			
-	  <widget halign="right" style="WhiteContentPanel">
+	  <widget halign="left" style="WhiteContentPanel">
 									<appButton action="removeRow" onclick="this" key="removeAddressButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
@@ -261,10 +263,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   </tab>
   
   <tab key="noteTab" text="{resource:getString($constants,'note')}">
-						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
+						<panel key="secMod3" layout="vertical"  height="164px" spacing="0" padding="0" xsi:type="Panel">
 
 									<panel layout="vertical" height="3px" xsi:type="Panel"/>
-							<panel key="noteFormPanel" layout="table" style="Form" width="160px" xsi:type="Table" padding="0" spacing="0">
+							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
@@ -294,7 +296,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 								</panel> 
 
 							<panel layout="vertical" height="2px" xsi:type="Panel"/>
-							<panel key="notesPanel" valign="top" layout="vertical" width="100%" xsi:type="Panel"/>	
+							<panel key="notesPanel" valign="top" layout="vertical"  xsi:type="Panel"/>	
 							 <!--<widget valign="top">
                  
 							  <pagedTree key="notesTree" vertical="true" width="400px" height="100px" itemsPerPage="1000" title="Provider Notes"/>
