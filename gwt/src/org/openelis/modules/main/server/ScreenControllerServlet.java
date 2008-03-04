@@ -114,10 +114,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
     public String getMenuList() throws RPCException {
         return ((OpenELISServiceInt)getService()).getMenuList();
     }
-
-    public DataModel getInitialModel(String cat) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).getInitialModel(cat);
-    }
+    
 
     //auto complete service methods
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) throws RPCException{
