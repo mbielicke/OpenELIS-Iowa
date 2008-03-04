@@ -69,7 +69,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             root.setAttribute("key", "projectRow");
             root.setAttribute("layout", "table");
             //root.setAttribute("xsi:type", "Table");
-            root.setAttribute("style", "TopMenuRowContainer");
+            root.setAttribute("style", "FavMenuRowContainer");
             root.setAttribute("hover", "Hover");
             root.setAttribute("mouse", "this");
             
@@ -90,7 +90,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftDictionaryRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,UtilitiesModule");
             
@@ -139,7 +139,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftOrganizationRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,DataEntryModule");
             
@@ -188,7 +188,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftOrganizeFavoritesRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this");
             
@@ -237,7 +237,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftProviderRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,DataEntryModule");
             
@@ -286,7 +286,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftQaEventsRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,AnalysisModule");
             
@@ -335,7 +335,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftStandardNoteRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,UtilitiesModule");
             
@@ -382,9 +382,9 @@ public class OpenELISScreen implements OpenELISServiceInt {
             descWidgetNode = doc.createElement("widget");
             descNode = doc.createElement("label");
             
-            mainPanel.setAttribute("key", "favLeftStorageRow");
+            mainPanel.setAttribute("key", "favLeftStorageLocationRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,SupplyModule");
             
@@ -401,7 +401,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
               
             titleNode.setAttribute("key", "storageLabel");
             titleNode.setAttribute("style", "topMenuItemTitle");
-            titleNode.setAttribute("text", "Storage");
+            titleNode.setAttribute("text", "Storage Location");
             
             descNode.setAttribute("key", "storageDescription");
             descNode.setAttribute("wordwrap", "true");
@@ -433,7 +433,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             
             mainPanel.setAttribute("key", "favLeftStorageUnitRow");
             mainPanel.setAttribute("layout", "table");
-            mainPanel.setAttribute("style", "TopMenuRowContainer");
+            mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
             mainPanel.setAttribute("mouse", "this,SupplyModule");
             

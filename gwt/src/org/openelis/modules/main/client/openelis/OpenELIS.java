@@ -121,118 +121,87 @@ public class OpenELIS extends AppScreen implements PopupListener, MouseListener 
     	WindowBrowser browser = (WindowBrowser)getWidget("browser");
     	
     	//top menu actions
-    	/*if(item == widgets.get("file")){
+    	if(item == widgets.get("application")){
         	//set the selected css element on the menu bar
-	  ((Widget)widgets.get("file")).addStyleName("Selected");
+	  ((Widget)widgets.get("application")).addStyleName("Selected");
     		//getWidget("file").removeStyleName("topMenuBarItem");
     		//getWidget("file").addStyleName("topMenuBarItemSelected");
     		
         	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("filePanel");        	
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("file").getAbsoluteLeft(),(getWidget("file").getAbsoluteTop()+getWidget("file").getOffsetHeight()));
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("applicationPanel");        	
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("application").getAbsoluteLeft(),(getWidget("application").getAbsoluteTop()+getWidget("application").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else */
-    	if(item == widgets.get("edit")){
+        }else if(item == widgets.get("edit")){
 //        	set the selected css element on the menu bar
         	((Widget)widgets.get("edit")).addStyleName("Selected");
     		//getWidget("edit").removeStyleName("topMenuBarItem");
     		//getWidget("edit").addStyleName("topMenuBarItemSelected");
     		
-        	//open the file menu panel
+        	//open the edit menu panel
         	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("editPanel");
         	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("edit").getAbsoluteLeft(),(getWidget("edit").getAbsoluteTop()+getWidget("edit").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("sampleManagement")){
+        }else if(item == widgets.get("sample")){
 //        	set the selected css element on the menu bar
     		//getWidget("sampleManagement").removeStyleName("topMenuBarItem");
-        	((Widget)widgets.get("sampleManagement")).addStyleName("Selected");
+        	((Widget)widgets.get("sample")).addStyleName("Selected");
     		//getWidget("sampleManagement").addStyleName("topMenuBarItemSelected");
     		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("sampleManagementPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("sampleManagement").getAbsoluteLeft(),(getWidget("sampleManagement").getAbsoluteTop()+getWidget("sampleManagement").getOffsetHeight()));
+        	//open the sample menu panel
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("samplePanel");
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("sample").getAbsoluteLeft(),(getWidget("sample").getAbsoluteTop()+getWidget("sample").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("analysisManagement")){
+        }else if(item == widgets.get("analysis")){
 //        	set the selected css element on the menu bar
-        	((Widget)widgets.get("analysisManagement")).addStyleName("Selected");
+        	((Widget)widgets.get("analysis")).addStyleName("Selected");
     		//getWidget("analysisManagement").removeStyleName("topMenuBarItem");
     		//getWidget("analysisManagement").addStyleName("topMenuBarItemSelected");
     		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("analysisManagementPanel");     	
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("analysisManagement").getAbsoluteLeft(),(getWidget("analysisManagement").getAbsoluteTop()+getWidget("analysisManagement").getOffsetHeight()));
+        	//open the analysis menu panel
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("analysisPanel");     	
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("analysis").getAbsoluteLeft(),(getWidget("analysis").getAbsoluteTop()+getWidget("analysis").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("supplyManagement")){
+        }else if(item == widgets.get("inventoryOrder")){
 //        	set the selected css element on the menu bar
-        	((Widget)widgets.get("supplyManagement")).addStyleName("Selected");
+        	((Widget)widgets.get("inventoryOrder")).addStyleName("Selected");
     		//getWidget("supplyManagement").removeStyleName("topMenuBarItem");
     		//getWidget("supplyManagement").addStyleName("topMenuBarItemSelected");
     		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("supplyManagementPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("supplyManagement").getAbsoluteLeft(),(getWidget("supplyManagement").getAbsoluteTop()+getWidget("supplyManagement").getOffsetHeight()));
+        	//open the Inventory Order menu panel
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("inventoryOrderPanel");
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("inventoryOrder").getAbsoluteLeft(),(getWidget("inventoryOrder").getAbsoluteTop()+getWidget("inventoryOrder").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("reports")){
+        }else if(item == widgets.get("instrument")){
 //        	set the selected css element on the menu bar
-        	((Widget)widgets.get("reports")).addStyleName("Selected");
+        	((Widget)widgets.get("instrument")).addStyleName("Selected");
     		//getWidget("reports").removeStyleName("topMenuBarItem");
     		//getWidget("reports").addStyleName("topMenuBarItemSelected");
     		
         	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportsPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reports").getAbsoluteLeft(),(getWidget("reports").getAbsoluteTop()+getWidget("reports").getOffsetHeight()));
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("instrumentPanel");
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("instrument").getAbsoluteLeft(),(getWidget("instrument").getAbsoluteTop()+getWidget("instrument").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("dataEntry")){
+        }else if(item == widgets.get("maintenance")){
 //        	set the selected css element on the menu bar
-        	((Widget)widgets.get("dataEntry")).addStyleName("Selected");
+        	((Widget)widgets.get("maintenance")).addStyleName("Selected");
     		//getWidget("dataEntry").removeStyleName("topMenuBarItem");
     		//getWidget("dataEntry").addStyleName("topMenuBarItemSelected");
     		
         	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("dataEntryPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("dataEntry").getAbsoluteLeft(),(getWidget("dataEntry").getAbsoluteTop()+getWidget("dataEntry").getOffsetHeight()));
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("maintenancePanel");
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("maintenance").getAbsoluteLeft(),(getWidget("maintenance").getAbsoluteTop()+getWidget("maintenance").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("utilities")){
+        }else if(item == widgets.get("report")){
 //        	set the selected css element on the menu bar
-        	((Widget)widgets.get("utilities")).addStyleName("Selected");
+        	((Widget)widgets.get("report")).addStyleName("Selected");
     		//getWidget("utilities").removeStyleName("topMenuBarItem");
     		//getWidget("utilities").addStyleName("topMenuBarItemSelected");
     		
         	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("utilitiesPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("utilities").getAbsoluteLeft(),(getWidget("utilities").getAbsoluteTop()+getWidget("utilities").getOffsetHeight()));
+        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportPanel");
+        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("report").getAbsoluteLeft(),(getWidget("report").getAbsoluteTop()+getWidget("report").getOffsetHeight()));
         	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("favorites")){
-//        	set the selected css element on the menu bar
-        	((Widget)widgets.get("favorites")).addStyleName("Selected");
-    		//getWidget("favorites").removeStyleName("topMenuBarItem");
-    		//getWidget("favorites").addStyleName("topMenuBarItemSelected");
-    		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("favoritesPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("favorites").getAbsoluteLeft(),(getWidget("favorites").getAbsoluteTop()+getWidget("favorites").getOffsetHeight()));
-        	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("window")){
-//        	set the selected css element on the menu bar
-        	((Widget)widgets.get("window")).addStyleName("Selected");
-    		//getWidget("window").removeStyleName("topMenuBarItem");
-    		//getWidget("window").addStyleName("topMenuBarItemSelected");
-    		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("windowPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("window").getAbsoluteLeft(),(getWidget("window").getAbsoluteTop()+getWidget("window").getOffsetHeight()));
-        	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("help")){
-//        	set the selected css element on the menu bar
-        	((Widget)widgets.get("help")).addStyleName("Selected");
-    		//getWidget("help").removeStyleName("topMenuBarItem");
-    		//getWidget("help").addStyleName("topMenuBarItemSelected");
-    		
-        	//open the file menu panel
-        	ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("helpPanel");
-        	((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("help").getAbsoluteLeft(),(getWidget("help").getAbsoluteTop()+getWidget("help").getOffsetHeight()));
-        	((PopupPanel)pn.popupPanel).show();
-        }else if(item == widgets.get("showLeftMenu")) {
+       }else if(item == widgets.get("showLeftMenu")) {
         	CheckBox check = (CheckBox) getWidget("showLeftMenu");
         	
         	ScreenVertical vp = (ScreenVertical) widgets.get("leftMenuPanel");
@@ -269,103 +238,103 @@ public class OpenELIS extends AppScreen implements PopupListener, MouseListener 
     }
     
     public void onMouseUp(Widget sender, int x, int y) {
-    	 super.onMouseUp(sender, x, y);
+    	 if(sender == widgets.get("preferenceRow") || /*sender == widgets.get("favoritesMenuRow") ||*/ sender == widgets.get("logoutRow"))
+    		 ((PopupPanel)((ScreenMenuPopupPanel) widgets.get("applicationPanel")).popupPanel).hide();
     	 
     	 if(sender == widgets.get("cutRow") || sender == widgets.get("copyRow") || sender == widgets.get("pasteRow"))
         	((PopupPanel)((ScreenMenuPopupPanel) widgets.get("editPanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("projectRow") || sender == widgets.get("releaseRow") || sender == widgets.get("sampleLookupRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("sampleManagementPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("fullLoginRow") || sender == widgets.get("quickEntryRow") || sender == widgets.get("secondEntryRow") || 
+    			sender == widgets.get("trackingRow") || sender == widgets.get("projectRow") || sender == widgets.get("providerRow") || sender == widgets.get("organizationRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("samplePanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("analyteRow") || sender == widgets.get("methodRow") || sender == widgets.get("methodPanelRow") || 
-    			sender == widgets.get("qaEventsRow") || sender == widgets.get("resultsRow") || sender == widgets.get("testManagementRow") ||    
-    			sender == widgets.get("testTrailerRow") || sender == widgets.get("worksheetsRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("analysisManagementPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("worksheetCreationRow") || sender == widgets.get("worksheetCompletionRow") || sender == widgets.get("addOrCancelRow") || 
+    			sender == widgets.get("reviewAndReleaseRow") || sender == widgets.get("toDoRow") || sender == widgets.get("labelForRow") ||    
+    			sender == widgets.get("storageRow") || sender == widgets.get("QCRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("analysisPanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("instrumentRow") || sender == widgets.get("inventoryRow") || sender == widgets.get("orderRow") || 
-    			sender == widgets.get("storageRow") || sender == widgets.get("storageUnitRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("supplyManagementPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("orderRow") || sender == widgets.get("inventoryRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("inventoryOrderPanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("fastSampleLoginRow") || sender == widgets.get("organizationRow") || sender == widgets.get("patientRow") || 
-    			sender == widgets.get("personRow") || sender == widgets.get("providerRow") || sender == widgets.get("sampleLoginRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("dataEntryPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("instrumentRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("instrumentPanel")).popupPanel).hide();
     		
-    	else if(sender == widgets.get("auxiliaryRow") || sender == widgets.get("dictionaryRow") || sender == widgets.get("labelRow") || 
-    			sender == widgets.get("referenceTableRow") || sender == widgets.get("scriptletRow") ||  sender == widgets.get("sectionRow") || 
-    			sender == widgets.get("standardNoteRow") || sender == widgets.get("systemVariableRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("utilitiesPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("testRow") || sender == widgets.get("methodRow") || sender == widgets.get("panelRow") || 
+    			sender == widgets.get("QAEventRow") || sender == widgets.get("labSectionRow") ||  sender == widgets.get("analyteRow") || 
+    			sender == widgets.get("dictionaryRow") || sender == widgets.get("auxiliaryPromptRow") || sender == widgets.get("barcodeLabelRow") || 
+    			sender == widgets.get("standardNoteRow") || sender == widgets.get("trailerForTestRow") || sender == widgets.get("storageUnitRow") || 
+    			sender == widgets.get("storageLocationRow") || sender == widgets.get("instrumentMaintRow") || sender == widgets.get("scriptletRow") || 
+    			sender == widgets.get("systemVariableRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("maintenancePanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("closeCurrentRow") || sender == widgets.get("closeAllRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("windowPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("finalReportRow") || sender == widgets.get("sampleDataExportRow") || sender == widgets.get("loginLabelRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("reportPanel")).popupPanel).hide();
     	
-    	else if(sender == widgets.get("indexRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("helpPanel")).popupPanel).hide();
+    	else if(sender == widgets.get("referenceRow")){
+    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportReferencePanel");
+    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
+    															(getWidget("referenceRow").getAbsoluteTop()));
+        	((PopupPanel)pn.popupPanel).show();
+    	
+    	}else if(sender == widgets.get("summaryRow")){
+    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportSummaryPanel");
+    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
+																(getWidget("summaryRow").getAbsoluteTop()));
+        	((PopupPanel)pn.popupPanel).show();
+    	}    	
     	
     	//FIXME reports logic will come in after we sit with dari else if()
 
-    	//HoverListener hl = new HoverListener();
-       // hl.onMouseLeave(sender);
+    	HoverListener hl = new HoverListener();
+        hl.onMouseLeave(sender);
+        
+        super.onMouseUp(sender, x, y);
     }
     
     public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
 
-    	/*if(sender == ((ScreenMenuPopupPanel)widgets.get("filePanel")).popupPanel){
-    		((Widget)widgets.get("file")).removeStyleName("Selected");
+    	if(sender == ((ScreenMenuPopupPanel)widgets.get("applicationPanel")).popupPanel){
+    		((Widget)widgets.get("application")).removeStyleName("Selected");
     		//getWidget("file").removeStyleName("topMenuBarItemSelected");
     		//getWidget("file").addStyleName("topMenuBarItem");
     		
-    	}else */
-    	if(sender == ((ScreenMenuPopupPanel)widgets.get("editPanel")).popupPanel){
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("editPanel")).popupPanel){
     		((Widget)widgets.get("edit")).removeStyleName("Selected");
     		//getWidget("edit").removeStyleName("topMenuBarItemSelected");
     		//getWidget("edit").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("sampleManagementPanel")).popupPanel){
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("samplePanel")).popupPanel){
     		//getWidget("sampleManagement").removeStyleName("topMenuBarItemSelected");
-    		((Widget)widgets.get("sampleManagement")).removeStyleName("Selected");
+    		((Widget)widgets.get("sample")).removeStyleName("Selected");
     		//getWidget("sampleManagement").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("analysisManagementPanel")).popupPanel){
-    		((Widget)widgets.get("analysisManagement")).removeStyleName("Selected");
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("analysisPanel")).popupPanel){
+    		((Widget)widgets.get("analysis")).removeStyleName("Selected");
     		//getWidget("analysisManagement").removeStyleName("topMenuBarItemSelected");
     		//getWidget("analysisManagement").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("supplyManagementPanel")).popupPanel){
-    		((Widget)widgets.get("supplyManagement")).removeStyleName("Selected");
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("inventoryOrderPanel")).popupPanel){
+    		((Widget)widgets.get("inventoryOrder")).removeStyleName("Selected");
     		//getWidget("supplyManagement").removeStyleName("topMenuBarItemSelected");
     		//getWidget("supplyManagement").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("reportsPanel")).popupPanel){
-    		((Widget)widgets.get("reports")).removeStyleName("Selected");
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("instrumentPanel")).popupPanel){
+    		((Widget)widgets.get("instrument")).removeStyleName("Selected");
     		//getWidget("reports").removeStyleName("topMenuBarItemSelected");
     		//getWidget("reports").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("dataEntryPanel")).popupPanel){
-    		((Widget)widgets.get("dataEntry")).removeStyleName("Selected");
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("maintenancePanel")).popupPanel){
+    		((Widget)widgets.get("maintenance")).removeStyleName("Selected");
     		//getWidget("dataEntry").removeStyleName("topMenuBarItemSelected");
     		//getWidget("dataEntry").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("utilitiesPanel")).popupPanel){
-    		((Widget)widgets.get("utilities")).removeStyleName("Selected");
+    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("reportPanel")).popupPanel){
+    		((Widget)widgets.get("report")).removeStyleName("Selected");
     		//getWidget("utilities").removeStyleName("topMenuBarItemSelected");
     		//getWidget("utilities").addStyleName("topMenuBarItem");
     		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("favoritesPanel")).popupPanel){
-    		((Widget)widgets.get("favorites")).removeStyleName("Selected");
-    		//getWidget("favorites").removeStyleName("topMenuBarItemSelected");
-    		//getWidget("favorites").addStyleName("topMenuBarItem");
-    		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("windowPanel")).popupPanel){
-    		((Widget)widgets.get("window")).removeStyleName("Selected");
-    		//getWidget("window").removeStyleName("topMenuBarItemSelected");
-    		//getWidget("window").addStyleName("topMenuBarItem");
-    		
-    	}else if(sender == ((ScreenMenuPopupPanel)widgets.get("helpPanel")).popupPanel){
-    		((Widget)widgets.get("help")).removeStyleName("Selected");
-    		//getWidget("help").removeStyleName("topMenuBarItemSelected");
-    		//getWidget("help").addStyleName("topMenuBarItem");
-    	
-    	}/*else if(((sender == ((ScreenMenuPopupPanel)widgets.get("reports1SubPanel")).popupPanel) || (sender == ((ScreenMenuPopupPanel)widgets.get("reports2SubPanel")).popupPanel))){
+    	}
+    	/*else if(((sender == ((ScreenMenuPopupPanel)widgets.get("reports1SubPanel")).popupPanel) || (sender == ((ScreenMenuPopupPanel)widgets.get("reports2SubPanel")).popupPanel))){
     	
     		*/
     		//getWidget("help").removeStyleName("topMenuBarItemSelected");

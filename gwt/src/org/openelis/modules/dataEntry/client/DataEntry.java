@@ -52,10 +52,10 @@ public class DataEntry implements AppModule {
 
 	public void onMouseUp(Widget sender, int x, int y) {
 		 String key = ((ScreenWidget)sender).key;
-	     if(key.equals("organizationRow") || key.equals("favOrganizationRow") || key.equals("favLeftOrganizationRow"))  
+	     if(key.equals("organizationRow") || key.equals("favLeftOrganizationRow"))  
 	            OpenELIS.browser.addScreen(new OrganizationScreen(), "Organization", "Organization", "Loading");
 	     
-	     if(key.equals("providerRow") || key.equals("favProvideryRow") || key.equals("favLeftProviderRow"))  
+	     if(key.equals("providerRow") || key.equals("favLeftProviderRow"))  
 	    	 	OpenELIS.browser.addScreen(new ProviderScreen(), "Provider", "Provider", "Loading");		
 	}
 
