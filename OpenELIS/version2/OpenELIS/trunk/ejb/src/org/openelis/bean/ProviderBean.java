@@ -284,12 +284,14 @@ public class ProviderBean implements ProviderRemote {
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
                 if(provAddDO.getDelete()!=null){ 
-                  if(provAddDO.getDelete()&& provAdd.getId() != null){
+                  if(provAddDO.getDelete()){
+                    if(provAdd.getId() != null){
+                  
                     //delete the contact record and the address record from the database                    
                      manager.remove(provAdd);                     
                      addressBean.deleteAddress(provAddDO.getAddressDO());
                      }
-                  else{   
+                  }else{   
                       checkForUpdate = true;
                   } 
                 }else{ 
