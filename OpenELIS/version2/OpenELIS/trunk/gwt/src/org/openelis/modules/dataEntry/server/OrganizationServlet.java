@@ -55,9 +55,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
 	private static final int leftTableRowsPerPage = 19;
-
-	private TableModel model; 
-	private String systemUserId = "";
 	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -185,7 +182,7 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		//if the rpc is null then we need to get the page
 		if(rpcSend == null){
 			//need to get the query rpc out of the cache
-	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Organization");
+	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Organization");
 
 	        if(rpc == null)
 	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -285,9 +282,9 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		}
         
         //need to save the rpc used to the encache
-        if(systemUserId.equals(""))
-        	systemUserId = remote.getSystemUserId().toString();
-        CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
+        if(SessionManager.getSession().getAttribute("systemUserId") == null)
+        	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+        CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Organization", rpcSend);
 		}
 		return model;
 	}
@@ -573,57 +570,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
         }		
 		
 		return contactsModel;
-	}
-
-	public TableModel getOrganizationByLetter(String letter, TableModel returnModel, FormRPC letterRPC) {
-		 OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-		 this.model = returnModel;
-
-		 letterRPC.setFieldValue("orgName",letter.toUpperCase()+"*");
-		 try 
-         {
-			 List organizations = new ArrayList();
-				try{
-					organizations = remote.query(letterRPC.getFieldMap(),0,leftTableRowsPerPage);
-
-			}catch(Exception e){
-				throw new RPCException(e.getMessage());
-			}
-          
-           returnModel.reset();
-           
-           	for(int i = 0;i < organizations.size();i++) {
-        	   	Object[] result = (Object[])organizations.get(i);
-				//org id
-				Integer idResult = (Integer)result[0];
-				//org name
-				String nameResult = (String)result[1];
-
-				TableRow row = new TableRow();
-				NumberField id = new NumberField();
-				StringField name = new StringField();
-				id.setType("integer");
-				name.setValue(nameResult);
-				id.setValue(idResult);
-				row.addHidden("id", id);
-			
-				row.addColumn(name);
-				returnModel.addRow(row);
-             } 
-           
-       } catch (Exception e) {
-            e.printStackTrace();
-           return null;
-       }
-		returnModel.paged = true;
-		returnModel.rowsPerPage=leftTableRowsPerPage;
-		returnModel.pageIndex=0;
-		
-//		need to save the rpc used to the encache
-		if(systemUserId.equals(""))
-        	systemUserId = remote.getSystemUserId().toString();
-        CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", letterRPC);
-       return returnModel;		
 	}
 
 	public TableModel filter(int col, Filter[] filters, int index, int selected) throws RPCException {
