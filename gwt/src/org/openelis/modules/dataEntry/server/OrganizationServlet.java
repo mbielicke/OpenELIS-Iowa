@@ -29,9 +29,14 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -44,6 +49,9 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
@@ -55,6 +63,10 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
 	private static final int leftTableRowsPerPage = 19;
+	
+	private static ModelField stateDropdownField = null;
+	private static ModelField countryDropdownField = null;
+	private static ModelField contactTypeDropdownField = null;
 	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -597,7 +609,7 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		return null;
 	}
 
-	public DataModel getInitialModel(String cat){
+	public ModelField getInitialModel(String cat){
 		int id = -1;
 		CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 		
@@ -671,8 +683,9 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 			
 			i++;
 		}		
-		
-		return returnModel;
+		ModelField modelField = new ModelField();
+		modelField.setValue(returnModel);
+		return modelField;
 	}
 	
 	//autocomplete textbox method	
@@ -841,13 +854,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	public String getTip(AbstractField key) throws RPCException {
 		return null;
 	}
-	
-	public ModelField getModelField(StringObject cat) {
-        ModelField modelField = new ModelField();
-        DataModel model = getInitialModel((String)cat.getValue());
-        modelField.setValue(model);
-        return modelField;
-    }
 
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
@@ -855,6 +861,20 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
         DataModel model = new DataModel();
         ModelField data = new ModelField();
         data.setValue(model);
-        return new DataObject[] {xml,data};
+        
+        //state dropdown
+        if(stateDropdownField == null){
+        	stateDropdownField = getInitialModel("state");
+        }
+        //country dropdown
+        if(countryDropdownField == null){
+        	countryDropdownField = getInitialModel("country");
+        	}
+        //contact type dropdown
+        if(contactTypeDropdownField == null){
+        	contactTypeDropdownField = getInitialModel("contactType");
+        }
+        
+        return new DataObject[] {xml,data,stateDropdownField,countryDropdownField,contactTypeDropdownField};
     }
 }
