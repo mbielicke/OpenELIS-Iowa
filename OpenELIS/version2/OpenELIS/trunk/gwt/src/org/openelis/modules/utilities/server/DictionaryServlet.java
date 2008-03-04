@@ -49,9 +49,9 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 19;
-    private String systemUserId = "";
-    
+    private static final int leftTableRowsPerPage = 19;   
+    private static ModelField sectionDropDown = null;
+    private static ModelField activeDropDown = null;
 
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -64,10 +64,13 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
-        return new DataObject[] {xml,data};
+        if(sectionDropDown ==null)
+            sectionDropDown = getInitialModel("section");
+           
+           if(activeDropDown ==null)
+               activeDropDown = getInitialModel("isActive");
+           
+           return new DataObject[] {xml,sectionDropDown,activeDropDown};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -136,6 +139,14 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
            else{
                dictDO.setIsActive("N");
            }   
+           
+           StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+           if(deleteFlag == null){
+             dictDO.setDelete(false);
+           }else{
+           dictDO.setDelete("Y".equals(deleteFlag.getValue()));
+          }
+           
           dictDO.setSystemName((String)((StringField)row.getColumn(1)).getValue());
           dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());
           dictDO.setEntry((String)((StringField)row.getColumn(3)).getValue());          
@@ -176,15 +187,10 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
 
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
         //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
-        if(rpcSend == null){
-           //need to get the query rpc out of the cache
-        //if(systemUserId.equals("")){
-           // systemUserId = remote.getSystemUserId().toString();
-        //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
-       // }
+        if(rpcSend == null){          
                 
         
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Category");
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category");
 
            if(rpc == null)
                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -298,9 +304,9 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                 model.add(row);
 
             } 
-        if(systemUserId.equals(""))
-          systemUserId = remote.getSystemUserId().toString();
-          CachingManager.putElement("screenQueryRpc", systemUserId+":Category", rpcSend);          
+            if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category", rpcSend);          
        }
         return model;
     }
@@ -468,7 +474,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                      row.getColumn(1).setValue(dictDO.getSystemName());
                      row.getColumn(2).setValue(dictDO.getLocalAbbrev());
                      row.getColumn(3).setValue(dictDO.getEntry());
-                     row.getColumn(4).setValue(dictDO.getRelatedEntry());                                                                                 
+                     row.getColumn(4).setValue(dictDO.getRelatedEntry());                      
                      dictEntryModel.addRow(row);
             } 
              
@@ -527,21 +533,27 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
     
            
     
-    public Integer getEntryIdForSystemName(String systemName)throws Exception{
+    public NumberField getEntryIdForSystemName(StringObject systemName)throws Exception{
         try{
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-          Integer entryId = remote.getEntryIdForSystemName(systemName);        
-          return entryId;
+          Integer entryId = remote.getEntryIdForSystemName((String)systemName.getValue());
+          NumberField idField = new NumberField();
+          idField.setType("integer");
+          idField.setValue(entryId);          
+          return idField;
         }catch(Exception ex){
             throw ex;
         } 
       }
       
-      public Integer getEntryIdForEntry(String entry)throws Exception{
+      public NumberField getEntryIdForEntry(StringObject entry)throws Exception{
          try{ 
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-          Integer entryId = remote.getEntryIdForEntry(entry);        
-          return entryId;
+          Integer entryId = remote.getEntryIdForEntry((String)entry.getValue());        
+          NumberField idField = new NumberField();
+          idField.setType("integer");
+          idField.setValue(entryId);          
+          return idField;
          }catch(Exception ex){
              throw ex;
          }
@@ -583,7 +595,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         return dataModel;
     }
 
-    public DataModel getInitialModel(String cat) { 
+    public ModelField getInitialModel(String cat) { 
          
         DataModel model = new DataModel();
         DataSet blankset = new DataSet();
@@ -694,7 +706,9 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
             
             model.add(set); 
           }
-        return model;
+        ModelField field = new ModelField();
+        field.setValue(model);
+        return field;
         
     }
 
@@ -739,12 +753,6 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         // TODO Auto-generated method stub
         return null;
     }
-
-    public ModelField getModelField(StringObject cat) {
-        ModelField modelField = new ModelField();
-        DataModel model = getInitialModel((String)cat.getValue());
-        modelField.setValue(model);
-        return modelField;
-    } 
+    
     
 }

@@ -29,7 +29,7 @@
      	<xsl:call-template name="aToZLeftPanelButtons"/>
     </xsl:if>
    
-      <table maxRows = "19" rows = "0" width= "auto" key = "categoryTable" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'name')}">
+      <table maxRows = "19" rows = "0" width= "auto" key = "categoryTable" manager = "CategorySystemNamesTable" title="{resource:getString($constants,'catName')}">
 							<widths>150</widths>
 							<editors>
 								<label/>								
@@ -58,7 +58,7 @@
 							<panel key="secMod" layout="table" style="Form"  xsi:type="Table">																							
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/></text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
 									</widget>
 									<widget>
 										<textbox case="mixed" key="name" tab="desc,systemName"/>
@@ -118,7 +118,7 @@
 					<panel layout="vertical"  spacing="5" xsi:type="Panel">
 						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "6" rows = "0" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="">
+							<table maxRows = "6" rows = "0" width = "480px" manager = "DictionaryEntriesTable" key="dictEntTable"  title="">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -150,7 +150,7 @@
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
 						  <query>
-						   	<table width = "auto" maxRows = "6" rows="1" title="">
+						   	<table width = "480px" maxRows = "5" rows="1" title="">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -189,7 +189,7 @@
 						  </query>						  
 						</widget>
 						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>								                
-		                <widget halign = "right">
+		                <widget halign = "left">
                             <appButton  action="removeEntry" onclick="this" key = "removeEntryButton">
                             <panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
