@@ -192,13 +192,12 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
             }
         }
         
-        protected Widget setStyleNameOnButton(Widget sender) {
-            sender.addStyleName("current");
-            if (selected != null)
-                selected.removeStyleName("current");
-            selected = sender;
-            return sender;
-        }
+    	protected void setStyleNameOnButton(Widget sender) {
+    		((AppButton)sender).changeState(AppButton.PRESSED);
+    		if (selected != null)
+    			((AppButton)selected).changeState(AppButton.UNPRESSED);
+    		selected = sender;
+    	}
         
        public void add(int state){                                  
            dictEntryTable.controller.setAutoAdd(true);           

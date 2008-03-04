@@ -48,7 +48,7 @@
 			</xsl:call-template>
 						
 					<panel layout="vertical" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="FormBorderless" xsi:type="Table">
+							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 								</row>

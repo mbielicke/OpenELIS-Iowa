@@ -264,13 +264,12 @@ public class ProviderScreen extends OpenELISScreenForm {
         }
     }
     
-    protected Widget setStyleNameOnButton(Widget sender) {
-        sender.addStyleName("current");
-        if (selected != null)
-            selected.removeStyleName("current");
-        selected = sender;
-        return sender;
-    }
+	protected void setStyleNameOnButton(Widget sender) {
+		((AppButton)sender).changeState(AppButton.PRESSED);
+		if (selected != null)
+			((AppButton)selected).changeState(AppButton.UNPRESSED);
+		selected = sender;
+	}
 
     public void onTabSelected(SourcesTabEvents sources, int index) {       
        //this code is for the generic situation of a tab being clicked  
@@ -548,7 +547,7 @@ public class ProviderScreen extends OpenELISScreenForm {
               
      Integer providerId = null;
      boolean getModel = false;  
-          
+     
      // access the database only if id is not null 
      if(key!=null){
       if(key.getObject(0)!=null){        

@@ -51,7 +51,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 	</xsl:call-template>	
    
    <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
-   <panel key= "secMod" layout= "table" width= "450px" style= "Form" xsi:type= "Table">
+   <panel key= "secMod" layout= "table" style= "Form" xsi:type= "Table">
     <row>
     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
@@ -62,7 +62,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
-     <widget width= "210px"> 
+     <widget> 
       <textbox key = "lastName" case = "upper" tab="providerType,providerId"/>
      </widget>         
     </row>
@@ -264,7 +264,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
 
 									<panel layout="vertical" height="3px" xsi:type="Panel"/>
-							<panel key="noteFormPanel" layout="table" style="FormBorderless" width="160px" xsi:type="Table" padding="0" spacing="0">
+							<panel key="noteFormPanel" layout="table" style="Form" width="160px" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>

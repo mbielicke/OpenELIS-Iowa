@@ -42,7 +42,7 @@
 				</table>
 				</panel>
 				</aToZ>
-			<panel layout="vertical" spacing="0" width="515px" xsi:type="Panel">
+			<panel layout="vertical" spacing="0" xsi:type="Panel">
 			<!--button panel code-->
 			<xsl:call-template name="buttonPanelTemplate">
 				<xsl:with-param name="buttonsParam">qpn|aud|cb</xsl:with-param>
@@ -50,8 +50,8 @@
 
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
-					<panel layout="vertical" width="400px" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="FormBorderless" width="225px" xsi:type="Table">
+					<panel layout="vertical" xsi:type="Panel">
+							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 								<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 								</row>
