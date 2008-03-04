@@ -5,7 +5,7 @@ package org.openelis.modules.utilities.client.dictionary;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
@@ -16,7 +16,6 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
@@ -31,7 +30,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
     private TableWidget dictEntryTable  = null;
     
     public DictionaryScreen(){
-        super("org.openelis.modules.utilities.server.DictionaryServlet",false);        
+        super("org.openelis.modules.utilities.server.DictionaryServlet",true);        
     }
     
     private Widget selected;
@@ -52,8 +51,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                 
         dictEntryTable.controller.setAutoAdd(false);
         
-        //Button removeEntryButton = (Button) getWidget("removeEntryButton");
-        //removeEntryButton.setEnabled(false);
+        
         AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");        
         removeEntryButton.addClickListener(this);
         removeEntryButton.changeState(AppButton.DISABLED);                                     
@@ -104,16 +102,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
     public void commitUpdate(){        
         
             dictEntryTable.controller.unselect(-1);   
-            
-           /* for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
-               StringField field = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);   
-                Window.alert((String)field.getValue());
-             TableRow row = dictEntryTable.controller.model.getRow(iter);
-              if(row.getHidden("deleteFlag")!=null){
-                Window.alert((String)row.getHidden("deleteFlag").getValue())  ;
-              }
-            }*/
-            
+                                   
             super.commitUpdate();
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
@@ -152,10 +141,11 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         if(action.startsWith("query:")){
             getCategories(action.substring(6, action.length()), sender);
             
-        }else if (action.equals("removeEntry")) {   
+        }else if (action.equals("removeEntry")) {               
             
             TableWidget dictEntTable = (TableWidget) getWidget("dictEntTable");
             int selectedRow = dictEntTable.controller.selected;
+                        
             if (selectedRow > -1
                     && dictEntTable.controller.model.numRows() > 1) {
                 TableRow row = dictEntTable.controller.model
@@ -205,9 +195,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
            DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
            dictEntManager.resetLists();
            
-           super.add(state);                                  
-            //Button removeEntryButton = (Button) getWidget("removeEntryButton");
-           // removeEntryButton.setEnabled(true);
+           super.add(state);                                              
             
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.UNPRESSED);  
@@ -236,25 +224,31 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         
         public void checkSystemName(Integer id,String systemName, int row){
             final Integer entryId = id; 
-            //sysNameExists = false;
+            
             final int trow = row;
-            screenService.getObject(systemName, null, new AsyncCallback() {
+            StringObject sysNameObj = new StringObject();
+            sysNameObj.setValue(systemName);
+            
+            DataObject[] args = {sysNameObj};
+            screenService.getObject("getEntryIdForSystemName", args, new AsyncCallback() {
                 boolean hasError = false;
-                public void onSuccess(Object result) {                                         
-                    if(result != null){
+                public void onSuccess(Object result) {                      
+                    NumberField idField  = (NumberField)result;
+                    Integer retId = (Integer)idField.getValue();
+                    if(retId != null){
                       if(entryId !=null){                           
-                       if(!entryId.equals(result)) {                            
+                       if(!entryId.equals(retId)) {                            
                            hasError = true;                            
                        }
                       }else{
                           hasError = true;                    
                       }  
-                    }       
-                      
-                    if(hasError){                        
-                        StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 1);
-                       // snfield.addError(constants.getString("dictSystemNameError"));
-                        ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,1)).drawErrors();                        
+                    }                                                
+                    
+                    if(hasError){                                                
+                        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
+                        String dictSystemNameError = "An entry with this System Name already exists in the database.Please choose some other name";
+                        dictEntManager.showError(trow, 1, dictEntryTable.controller, dictSystemNameError);
                     }                                           
      
                  }                
@@ -267,15 +261,20 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         
         public void checkEntry(Integer id,String entry, int row){
             final Integer entryId = id; 
-            final int trow = row;
-            // entryExists = false;
-            screenService.getObject(entry, null, new AsyncCallback() {
+            final int trow = row;       
+            StringObject entryObj = new StringObject();
+            entryObj.setValue(entry);
+            
+            DataObject[] args = {entryObj};
+            
+            screenService.getObject("getEntryIdForEntry", args, new AsyncCallback() {
                 boolean hasError = false;
                 public void onSuccess(Object result) {
-                   
-                    if(result != null){
+                    NumberField idField  = (NumberField)result;
+                    Integer retId = (Integer)idField.getValue();
+                    if(retId != null){
                         if(entryId !=null){                              
-                         if(!entryId.equals(result)) {                       
+                         if(!entryId.equals(retId)) {                       
                              hasError = true;                            
                          }
                         }else{
@@ -283,12 +282,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                         }  
                       }                                                                                                   
                                   
-                    if(hasError){
-                        
-                        StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(trow, 3); 
-                        //efield.addError(constants.getString("dictEntryError"));
-                        ((TableCellInputWidget)dictEntryTable.controller.view.table.getWidget(trow,3)).drawErrors();
-                       
+                    if(hasError){                                               
+                        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
+                        String dictEntryError = "An entry with this Entry text already exists in the database.Please choose some other text";
+                        dictEntManager.showError(trow, 3, dictEntryTable.controller, dictEntryError); 
                     }
                    }                 
                     public void onFailure(Throwable caught) {
@@ -301,48 +298,26 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                                       
         
         
-        private void loadDropdowns(){
-           StringObject catObj = new StringObject();
-            catObj.setValue("section");
-            DataObject[] args = new DataObject[] {catObj}; 
+        private void loadDropdowns(){           
             
-            screenService.getObject("getModelField", args, new AsyncCallback(){
-                   public void onSuccess(Object result){
-                       ModelField field = (ModelField)result;
-                       DataModel stateDataModel = (DataModel)field.getValue();
+            DataModel sectionDropDown = initData[0];
+            DataModel activeDropDown = initData[1];
+            
                        ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
                        ScreenAutoDropdown querySection = displaySection.getQueryWidget();
                        
-                       ((AutoCompleteDropdown)displaySection.getWidget()).setModel(stateDataModel);
-                       ((AutoCompleteDropdown)querySection.getWidget()).setModel(stateDataModel);
+                       ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
+                       ((AutoCompleteDropdown)querySection.getWidget()).setModel(sectionDropDown);
                                               
-                   }
-                   public void onFailure(Throwable caught){
-                       Window.alert(caught.getMessage());
-                   }
-                });
-            
-            catObj = new StringObject();
-            catObj.setValue("isActive");
-            args = new DataObject[] {catObj}; 
-            
-            screenService.getObject("getModelField", args, new AsyncCallback(){
-                public void onSuccess(Object result){
-                    ModelField field = (ModelField)result;
-                    DataModel activeDataModel = (DataModel)field.getValue();                   
-                    
+                   
                     ScreenTableWidget displayEntryTable = (ScreenTableWidget)widgets.get("dictEntTable");
                     ScreenTableWidget queryEntryTable = (ScreenTableWidget)displayEntryTable.getQueryWidget();
                                       
                     
                     TableAutoDropdown queryContactActive = (TableAutoDropdown)((TableWidget)queryEntryTable.getWidget()).
                          controller.editors[0];
-                    queryContactActive.setModel(activeDataModel);
-                }
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                }
-             });
+                    queryContactActive.setModel(activeDropDown);
+                
             
         }
                  
