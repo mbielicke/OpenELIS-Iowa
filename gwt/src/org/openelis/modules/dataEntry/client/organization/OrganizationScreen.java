@@ -3,6 +3,8 @@ package org.openelis.modules.dataEntry.client.organization;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -260,7 +262,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
         NumberObject orgIdObj = new NumberObject();
         orgIdObj.setType("integer");
         orgIdObj.setValue(orgId);
-        key.setObject(0, orgIdObj);
+        
+        // done because key is set to null in AppScreenForm for the add operation 
+        if(key ==null){  
+         key = new DataSet();
+         key.addObject(orgIdObj);
+        }
+        else{
+            key.setObject(0,orgIdObj);
+        }
         
         clearTabs();             
         loadTabs(); 
@@ -414,8 +424,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
             }        
           } 
             
-           if(getModel){ 
-            
+           if(getModel){               
              NumberObject orgIdObj = new NumberObject();
              orgIdObj.setType("integer");
              orgIdObj.setValue(orgId);
@@ -451,7 +460,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
           }      
          } 
          
-          if(getModel){
+          if(getModel){              
              // reset the model so that old data goes away 
               TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
               //orgContactController.model.reset();
