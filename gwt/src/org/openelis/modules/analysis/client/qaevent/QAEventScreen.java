@@ -2,9 +2,6 @@ package org.openelis.modules.analysis.client.qaevent;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -12,8 +9,6 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -22,7 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
      private Widget selected;
 
      public QAEventScreen(){
-         super("org.openelis.modules.analysis.server.QAEventServlet",false);                   
+         super("org.openelis.modules.analysis.server.QAEventServlet",true);                   
      }
      
          public void afterDraw(boolean success) {                  
@@ -114,46 +109,26 @@ import com.google.gwt.user.client.ui.Widget;
         
      private void loadDropdowns(){
             
-            //load state dropdowns
-            StringObject catObj = new StringObject();
-            catObj.setValue("qaEventType");
-            DataObject[] args = new DataObject[] {catObj};            
-            
-            screenService.getObject("getModelField", args, new AsyncCallback(){
-                   public void onSuccess(Object result){
-                       ModelField field = (ModelField)result;
-                       DataModel typeDataModel = (DataModel)field.getValue();
+            //load type and test dropdowns
+                        
+            DataModel qaEventTypeDropDown = initData[0];
+            DataModel testDropDown = initData[1];
+
                        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("qaEventType");
                        ScreenAutoDropdown queryType = displayType.getQueryWidget();
                        
-                       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDataModel);
-                       ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDataModel);
+                       ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
+                       ((AutoCompleteDropdown)queryType.getWidget()).setModel(qaEventTypeDropDown);
                                               
-                   }
-                   public void onFailure(Throwable caught){
-                       Window.alert(caught.getMessage());
-                   }
-                });
-            
-            catObj = new StringObject();
-            catObj.setValue("test");
-            args = new DataObject[] {catObj};
-            
-            screenService.getObject("getModelField", args, new AsyncCallback(){
-                public void onSuccess(Object result){
-                    ModelField field = (ModelField)result;
-                    DataModel testDataModel = (DataModel)field.getValue();
+                                         
                     ScreenAutoDropdown displayTest = (ScreenAutoDropdown)widgets.get("test");
                     ScreenAutoDropdown queryTest = displayTest.getQueryWidget();
                     
-                    ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDataModel);
-                    ((AutoCompleteDropdown)queryTest.getWidget()).setModel(testDataModel);
+                    ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
+                    ((AutoCompleteDropdown)queryTest.getWidget()).setModel(testDropDown);
                                            
                 }
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                }
-             });
-        } 
+                
+         
                   
  }
