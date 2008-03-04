@@ -3,7 +3,6 @@ package org.openelis.modules.dataEntry.client.organization;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -41,7 +40,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
     private boolean loadTable = true; // tells whether table tab is to be filled with data
 
 	public OrganizationScreen() {
-		super("org.openelis.modules.dataEntry.server.OrganizationServlet",false);
+		super("org.openelis.modules.dataEntry.server.OrganizationServlet",true);
 	}
 
 	public void onClick(Widget sender) {
@@ -351,96 +350,59 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		StringObject argObj = new StringObject();
-		argObj.setValue("state");
-		DataObject[] args = new DataObject[] {argObj};
-		
-		//load state dropdowns 
-		screenService.getObject("getModelField", args, new AsyncCallback(){
-	           public void onSuccess(Object result){
-	               DataModel stateDataModel = (DataModel)((ModelField)result).getValue();
-	               ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
-	               ScreenAutoDropdown queryState = displayState.getQueryWidget();
+		//load the state dropdowns
+		DataModel stateDropdownModel = initData[1];
+	
+		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
+	    ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
-	               ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDataModel);
-	               ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDataModel.getInstance());
+	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdownModel);
+	    ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDropdownModel.getInstance());
 	               
-	               ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
-	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
+	    ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
 	               
-	               TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
-	               																				controller.editors[5];
-	               displayContactState.setModel((DataModel)stateDataModel.getInstance());
+	    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+	              																				controller.editors[5];
+	    displayContactState.setModel((DataModel)stateDropdownModel.getInstance());
 	               
-	               TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+	    TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[5];
-	               queryContactState.setModel((DataModel)stateDataModel.getInstance());
-	           }
-	           public void onFailure(Throwable caught){
-	        	   Window.alert(caught.getMessage());
-	           }
-	        });
+	    queryContactState.setModel((DataModel)stateDropdownModel.getInstance());
+	     
+	     
+		//load the country dropdowns
+		DataModel countryDropdownModel = initData[2];
 		
-		argObj = new StringObject();
-		argObj.setValue("country");
-		args = new DataObject[] {argObj};
-		
-		//load state dropdowns 
-		screenService.getObject("getModelField", args, new AsyncCallback(){
-	           public void onSuccess(Object result){
-	        	   DataModel countryDataModel = (DataModel)((ModelField)result).getValue();
-	               ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
-	               ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
+	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
+	    ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
-	               ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
-	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdownModel);
+	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDropdownModel.getInstance());
 	               
-	               ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDataModel);
-	               ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDataModel.getInstance());
-	               
-	               TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
-	               displayContactCountry.setModel((DataModel)countryDataModel.getInstance());
+	    displayContactCountry.setModel((DataModel)countryDropdownModel.getInstance());
 	               
-	               TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[12];
-	               queryContactCountry.setModel((DataModel)countryDataModel.getInstance());
-	           }
-	           public void onFailure(Throwable caught){
-	        	   Window.alert(caught.getMessage());
-	           }
-	        });
-		
-		argObj = new StringObject();
-		argObj.setValue("contactType");
-		args = new DataObject[] {argObj};
-		
-//		load contact type dropdowns
-		screenService.getObject("getModelField", args, new AsyncCallback(){
-	           public void onSuccess(Object result){
-	        	   DataModel contactTypeDataModel = (DataModel)((ModelField)result).getValue();
+	    queryContactCountry.setModel((DataModel)countryDropdownModel.getInstance());
+	    
+	    
+		//load the contact type dropdowns
+		DataModel contactTypeDropdownModel = initData[3];
 	        	   
-	        	   ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
-	               ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
-	        	   
-	        	   TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
+  	   TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 																controller.editors[0];
-	        	   displayContactType.setModel(contactTypeDataModel);
+   	   displayContactType.setModel(contactTypeDropdownModel);
 
-	        	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
+   	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 	        	   											controller.editors[0];
-	        	   queryContactType.setModel((DataModel)contactTypeDataModel.getInstance());
-	           }
-	           public void onFailure(Throwable caught){
-	        	   Window.alert(caught.getMessage());
-	           }
-	        });
+  	   queryContactType.setModel((DataModel)contactTypeDropdownModel.getInstance());
 	}
     
     
-    private void fillNotesModel(){  
-          
-           
+    private void fillNotesModel(){            
         Integer orgId = null;
         boolean getModel = false;
          
@@ -466,8 +428,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
             	   ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
                  // get the datamodel, load it in the notes panel and set the value in the rpc
             	   String xmlString = (String) ((StringObject)result).getValue();
-                   vp.load(xmlString);
-                   
+                   vp.load(xmlString);                   
                }
                
                public void onFailure(Throwable caught){
