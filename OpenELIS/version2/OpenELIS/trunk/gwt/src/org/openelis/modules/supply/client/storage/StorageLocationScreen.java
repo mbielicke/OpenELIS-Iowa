@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -17,7 +16,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StorageLocationScreen() {
-		super("org.openelis.modules.supply.server.StorageLocationServlet");
+		super("org.openelis.modules.supply.server.StorageLocationServlet",false);
 	}
 	
 	public void onClick(Widget sender) {

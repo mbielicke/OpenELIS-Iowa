@@ -12,7 +12,6 @@ import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -25,7 +24,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StandardNoteScreen() {
-		super("org.openelis.modules.utilities.server.StandardNoteServlet");
+		super("org.openelis.modules.utilities.server.StandardNoteServlet",false);
 	}
 	
 	public void afterDraw(boolean success) {

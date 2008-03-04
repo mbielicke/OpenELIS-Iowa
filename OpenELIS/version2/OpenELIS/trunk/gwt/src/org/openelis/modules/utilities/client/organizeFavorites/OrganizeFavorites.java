@@ -7,7 +7,7 @@ public class OrganizeFavorites extends OpenELISScreenForm {
 	
     
 	public OrganizeFavorites() {
-        super("org.openelis.modules.utilities.server.OrganizeFavoritesScreen");
+        super("org.openelis.modules.utilities.server.OrganizeFavoritesScreen",false);
     }
 	
 	public void onClick(Widget sender) {

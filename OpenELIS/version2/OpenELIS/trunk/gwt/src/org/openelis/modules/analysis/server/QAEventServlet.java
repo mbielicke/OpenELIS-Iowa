@@ -15,6 +15,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
@@ -424,6 +425,15 @@ public class QAEventServlet implements
         DataModel model = getInitialModel((String)cat.getValue());
         modelField.setValue(model);
         return modelField;
+    }
+
+    public DataObject[] getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));
+        DataModel model = new DataModel();
+        ModelField data = new ModelField();
+        data.setValue(model);
+        return new DataObject[] {xml,data};
     }
 
 }

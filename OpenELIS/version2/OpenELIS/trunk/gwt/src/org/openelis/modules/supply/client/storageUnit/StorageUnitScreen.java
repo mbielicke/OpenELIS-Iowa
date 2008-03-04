@@ -11,7 +11,6 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -24,7 +23,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StorageUnitScreen() {
-		super("org.openelis.modules.supply.server.StorageUnitServlet");
+		super("org.openelis.modules.supply.server.StorageUnitServlet",false);
 	}
 	
 	public void onClick(Widget sender) {
