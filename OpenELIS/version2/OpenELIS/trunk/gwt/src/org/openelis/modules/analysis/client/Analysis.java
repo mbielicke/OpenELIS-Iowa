@@ -37,7 +37,7 @@ public class Analysis implements AppModule {
     
     public void onMouseUp(Widget sender, int x, int y) {
     	String key = ((ScreenWidget)sender).key;
-        if(key.equals("qaEventsRow") || key.equals("favQaEventsRow") || key.equals("favLeftQaEventsRow")) 
+        if(key.equals("QAEventRow") || key.equals("favLeftQaEventsRow")) 
             OpenELIS.browser.addScreen(new QAEventScreen(), "QA Events", "QAEvents", "Loading");
     	
     }

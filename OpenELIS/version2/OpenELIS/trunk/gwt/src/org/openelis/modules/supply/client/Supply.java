@@ -51,10 +51,10 @@ public class Supply implements AppModule {
 
 	public void onMouseUp(Widget sender, int x, int y) {
 		String key = ((ScreenWidget)sender).key;
-        if(key.equals("storageRow") || key.equals("favStorageRow") || key.equals("favLeftStorageRow"))
+        if(key.equals("storageLocationRow") || key.equals("favLeftStorageLocationRow"))
             OpenELIS.browser.addScreen(new StorageLocationScreen(), "Storage Location", "Storage", "Loading");
         
-        if(key.equals("storageUnitRow") || key.equals("favStorageUnitRow") || key.equals("favLeftStorageUnitRow"))
+        if(key.equals("storageUnitRow") || key.equals("favLeftStorageUnitRow"))
             OpenELIS.browser.addScreen(new StorageUnitScreen(), "Storage Unit", "Storage", "Loading");		
 	}
 

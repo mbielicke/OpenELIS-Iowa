@@ -53,10 +53,10 @@ public class Utilities implements AppModule {
 
 	public void onMouseUp(Widget sender, int x, int y) {
 		String key = ((ScreenWidget)sender).key;
-        if(key.equals("dictionaryRow") || key.equals("favDictionaryRow") || key.equals("favLeftDictionaryRow")) 
+        if(key.equals("dictionaryRow") || key.equals("favLeftDictionaryRow")) 
             OpenELIS.browser.addScreen(new DictionaryScreen(), "Dictionary", "Dictionary", "Loading");
         
-        if(key.equals("standardNoteRow") || key.equals("favStandardNoteRow") || key.equals("favLeftStandardNoteRow"))
+        if(key.equals("standardNoteRow") || key.equals("favLeftStandardNoteRow"))
             OpenELIS.browser.addScreen(new StandardNoteScreen(), "Standard Note", "Standard Note","Loading");
         
         if(key.equals("organizeFavoritesLeft") || key.equals("organizeFavoritesLabel") || key.equals("organizeFavoritesLeft"))
