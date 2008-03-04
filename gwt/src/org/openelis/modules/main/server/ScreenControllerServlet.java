@@ -7,12 +7,16 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.gwt.services.TableServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
+import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -53,6 +57,10 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
 
     public String getXML() throws RPCException {
         return ((AppScreenFormServiceInt)getService()).getXML();
+    }
+
+    public DataObject[] getXMLData() throws RPCException {
+        return ((AppScreenFormServiceInt)getService()).getXMLData();
     }
     
     public DataObject getObject(String method, DataObject[] args) throws RPCException {

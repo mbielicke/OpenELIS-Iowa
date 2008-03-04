@@ -31,7 +31,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
     private TableWidget dictEntryTable  = null;
     
     public DictionaryScreen(){
-        super("org.openelis.modules.utilities.server.DictionaryServlet");        
+        super("org.openelis.modules.utilities.server.DictionaryServlet",false);        
     }
     
     private Widget selected;

@@ -13,14 +13,17 @@ public class OpenELISScreenForm extends AppScreenForm {
     .create(OpenELISServiceInt.class);
     protected ServiceDefTarget target = (ServiceDefTarget) screenService; 
          
-    public OpenELISScreenForm(String serviceClass){
+    public OpenELISScreenForm(String serviceClass, boolean withData){
         super();          
         String base = GWT.getModuleBaseURL();
         base += "OpenELISServlet?service="+serviceClass;        
         target.setServiceEntryPoint(base);
         service = screenService;
-        formService = screenService;        
-        getXML();          
+        formService = screenService;
+        if(withData)
+            getXMLData();
+        else
+            getXML();          
         
     }
 }

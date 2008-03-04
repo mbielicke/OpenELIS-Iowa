@@ -5,6 +5,8 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -20,6 +22,15 @@ public class OpenELISScreen implements OpenELISServiceInt {
     public String getXML() throws RPCException {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl");
 	}
+    
+    public DataObject[] getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
+        DataModel model = new DataModel();
+        ModelField data = new ModelField();
+        data.setValue(model);
+        return new DataObject[] {xml,data};
+    }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub

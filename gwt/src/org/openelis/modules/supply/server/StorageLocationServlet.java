@@ -16,7 +16,9 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -367,6 +369,15 @@ public class StorageLocationServlet implements AppScreenFormServiceInt,
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl");
 	}
 
+    public DataObject[] getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl"));
+        DataModel model = new DataModel();
+        ModelField data = new ModelField();
+        data.setValue(model);
+        return new DataObject[] {xml,data};
+    }
+    
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
 		if(cat.equals("storageUnit"))
 			return getStorageUnitDisplay((Integer)value.getValue());

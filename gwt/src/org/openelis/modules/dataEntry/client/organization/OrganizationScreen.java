@@ -41,7 +41,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
     private boolean loadTable = true; // tells whether table tab is to be filled with data
 
 	public OrganizationScreen() {
-		super("org.openelis.modules.dataEntry.server.OrganizationServlet");
+		super("org.openelis.modules.dataEntry.server.OrganizationServlet",false);
 	}
 
 	public void onClick(Widget sender) {

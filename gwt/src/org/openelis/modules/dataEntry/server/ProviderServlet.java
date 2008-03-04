@@ -14,6 +14,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
@@ -58,6 +59,15 @@ public class ProviderServlet implements AppScreenFormServiceInt{
     
     public String getXML() throws RPCException {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");        
+    }
+    
+    public DataObject[] getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
+        DataModel model = new DataModel();
+        ModelField data = new ModelField();
+        data.setValue(model);
+        return new DataObject[] {xml,data};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
