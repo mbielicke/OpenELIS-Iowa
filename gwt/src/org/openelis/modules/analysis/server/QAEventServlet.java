@@ -41,12 +41,13 @@ public class QAEventServlet implements
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 20;
-    private String systemUserId = "";
+    private static final int leftTableRowsPerPage = 19;
+    private static ModelField qaTypeDropDown = null;
+    private static ModelField testDropDown = null;
     
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
-                                           new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
-                                           ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
+                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
@@ -102,15 +103,10 @@ public class QAEventServlet implements
     }
 
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        if(rpcSend == null){
-            //need to get the query rpc out of the cache
-         //if(systemUserId.equals("")){
-            // systemUserId = remote.getSystemUserId().toString();
-         //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
-        // }
+        if(rpcSend == null){           
                 
          
-             FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":QaEvent");
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":QaEvent");
 
             if(rpc == null)
                 throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -229,9 +225,9 @@ public class QAEventServlet implements
                  model.add(row);
 
              } 
-         if(systemUserId.equals(""))
-           systemUserId = remote.getSystemUserId().toString();
-           CachingManager.putElement("screenQueryRpc", systemUserId+":QaEvent", rpcSend);          
+             if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":QaEvent", rpcSend);          
         }
          return model;
     }
@@ -318,7 +314,7 @@ public class QAEventServlet implements
         return null;
     }
 
-    public DataModel getInitialModel(String cat) {
+    public ModelField getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
@@ -406,8 +402,10 @@ public class QAEventServlet implements
             model.add(set);
             
          }
-       // }        
-        return model;
+       ModelField field = new ModelField();
+       field.setValue(model);
+        // }        
+        return field;
     }
 
     public DataModel getMatches(String cat, DataModel model, String match) {
@@ -419,21 +417,18 @@ public class QAEventServlet implements
         // TODO Auto-generated method stub
         return null;
     }
-    
-    public ModelField getModelField(StringObject cat) {
-        ModelField modelField = new ModelField();
-        DataModel model = getInitialModel((String)cat.getValue());
-        modelField.setValue(model);
-        return modelField;
-    }
+        
 
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
-        return new DataObject[] {xml,data};
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));        
+        if(qaTypeDropDown ==null)
+         qaTypeDropDown = getInitialModel("qaEventType");
+        
+        if(testDropDown ==null)
+            testDropDown = getInitialModel("test");
+        
+        return new DataObject[] {xml,qaTypeDropDown,testDropDown};
     }
 
 }
