@@ -49,10 +49,12 @@ public class ProviderServlet implements AppScreenFormServiceInt{
      * 
      */
     private static final long serialVersionUID = 0L;
-    private static final int leftTableRowsPerPage = 20;
-    private String systemUserId = "";
-
-
+    private static final int leftTableRowsPerPage = 19;
+    
+    private static ModelField providerTypeDropDown= null;
+    private static ModelField stateDropDown= null;
+    private static ModelField countryDropDown= null;
+        
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                                                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
@@ -64,10 +66,17 @@ public class ProviderServlet implements AppScreenFormServiceInt{
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
-        return new DataObject[] {xml,data};
+        
+        if(providerTypeDropDown ==null)
+            providerTypeDropDown = getInitialModel("providerType");
+           
+         if(stateDropDown == null)
+             stateDropDown = getInitialModel("state");
+         
+         if(countryDropDown == null)
+             countryDropDown = getInitialModel("country");
+           
+           return new DataObject[] {xml,providerTypeDropDown,stateDropDown,countryDropDown};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -111,6 +120,8 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
         providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
         
+        
+        
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
@@ -134,7 +145,15 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             
            // if(addId != null){              
            //  provAddDO.getAddressDO().setId((Integer)addId.getValue());             
-          //  } 
+           StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            if(deleteFlag == null){
+                provAddDO.setDelete(false);
+            }else{
+                provAddDO.setDelete("Y".equals(deleteFlag.getValue()));
+            }
+            //if the user created the row and clicked the remove button before commit...
+            //we dont need to do anything with that row
+            
             
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
@@ -183,14 +202,9 @@ public class ProviderServlet implements AppScreenFormServiceInt{
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
         //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
         if(rpcSend == null){
-           //need to get the query rpc out of the cache
-        //if(systemUserId.equals("")){
-           // systemUserId = remote.getSystemUserId().toString();
-        //CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);
-       // }
-               
-        
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":Provider");
+           //need to get the query rpc out of the cache        
+                       
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider");
 
            if(rpc == null)
                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -243,10 +257,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             model.add(row);
             i++;
          }
-        //} 
-        //if(systemUserId.equals("")){
-            //systemUserId = remote.getSystemUserId().toString();
-        //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
+        
                 
         return model;   
         } else{
@@ -315,9 +326,9 @@ public class ProviderServlet implements AppScreenFormServiceInt{
                 model.add(row);
 
             } 
-        if(systemUserId.equals(""))
-          systemUserId = remote.getSystemUserId().toString();
-          CachingManager.putElement("screenQueryRpc", systemUserId+":Provider", rpcSend);          
+            if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider", rpcSend);         
        }
         return model;
     }      
@@ -392,10 +403,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             provAddDOList.add(provAddDO);   
            } 
         }
-                 
-        
-        System.out.println("new note's subject : "+(String)rpcSend.getFieldValue("usersSubject"));
-        System.out.println("new note's body : "+(String)rpcSend.getFieldValue("usersNote"));
+                                
         
         providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
         providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
@@ -531,7 +539,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         return null;
     }
 
-    public DataModel getInitialModel(String cat) {        
+    public ModelField getInitialModel(String cat) {        
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
@@ -607,7 +615,10 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             
          }
         }        
-        return model;
+        
+        ModelField field = new ModelField();
+        field.setValue(model);
+        return field;
     }
     
     public ModelField getNotesModel(NumberObject key){
@@ -662,13 +673,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         model.setValue(fillAddressTable((TableModel)model.getValue(),addressList));
         return model;
     }
-    
-    public ModelField getModelField(StringObject cat) {
-        ModelField modelField = new ModelField();
-        DataModel model = getInitialModel((String)cat.getValue());
-        modelField.setValue(model);
-        return modelField;
-    }   
+        
     
     
 }

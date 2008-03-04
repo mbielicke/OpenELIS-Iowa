@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -42,7 +43,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     //private TableController provAddController = null;  
    
     public ProviderScreen(){
-        super("org.openelis.modules.dataEntry.server.ProviderServlet",false);
+        super("org.openelis.modules.dataEntry.server.ProviderServlet",true);
     }
     
     public void afterDraw(boolean success) {
@@ -346,17 +347,30 @@ public class ProviderScreen extends OpenELISScreenForm {
         loadTable = true;
         loadNotes = true;
         
+        //Window.alert("afterCommitAdd");
+        
         Integer providerId = (Integer)rpc.getFieldValue("providerId");
         NumberObject provId = new NumberObject();
         provId.setType("integer");
         provId.setValue(providerId);
-        key.setObject(0, provId);
+        //Window.alert(new Boolean(key == null).toString());
         
+        //done because key is set to null in AppScreenForm for the add operation 
+        if(key ==null){  
+         key = new DataSet();
+         key.addObject(provId);
+        }
+        else{
+            key.setObject(0,provId);
+        }
         clearTabs();
-                     
+         
+        //
         loadTabs();
         
+        
         clearNotesFields();
+       
         
         super.afterCommitAdd(success);         
     }
@@ -413,77 +427,39 @@ public class ProviderScreen extends OpenELISScreenForm {
     
                  
     private void loadDropdowns(){
-        StringObject catObj = new StringObject();
-        catObj.setValue("providerType");
-        DataObject[] args = new DataObject[] {catObj}; 
         
-        screenService.getObject("getModelField",args, new AsyncCallback(){
-            public void onSuccess(Object result){
-                ModelField field = (ModelField)result;
-                DataModel typeDataModel = (DataModel)field.getValue(); 
+        DataModel typeDropDown = initData[0];
+        DataModel stateDropDown = initData[1];
+        DataModel countryDropDown = initData[2];
+                
                 ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
                 ScreenAutoDropdown queryType = displayType.getQueryWidget();
                 
-                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDataModel);
-                ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDataModel);
+                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);
+                ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDropDown);
                                        
-            }
-            public void onFailure(Throwable caught){
-                Window.alert(caught.getMessage());
-            }
-         });
- 
-        catObj = new StringObject();
-        catObj.setValue("state");
-        args = new DataObject[] {catObj}; 
-        
-        //load state dropdowns
-        screenService.getObject("getModelField",args, new AsyncCallback(){
-               public void onSuccess(Object result){
-                   ModelField field = (ModelField)result;
-                   DataModel stateDataModel = (DataModel)field.getValue();                  
+                    
                    
                    ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
                    ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
                    
                    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
                                                                                                 controller.editors[5];
-                   displayContactState.setModel(stateDataModel);
+                   displayContactState.setModel(stateDropDown);
                    
                    TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
                         controller.editors[5];
-                   queryContactState.setModel(stateDataModel);
-               }
-               public void onFailure(Throwable caught){
-                   Window.alert(caught.getMessage());
-               }
-            });
-
-        catObj = new StringObject();
-        catObj.setValue("country");
-        args = new DataObject[] {catObj};
-        //load country dropdowns
-        screenService.getObject("getModelField",args, new AsyncCallback(){
-               public void onSuccess(Object result){
-                   ModelField field = (ModelField)result;
-                   DataModel countryDataModel = (DataModel)field.getValue();                   
-                   
-                   ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-                   ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
-                                      
+                   queryContactState.setModel(stateDropDown);
+                                                                                              
                    
                    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
                                                                                                 controller.editors[6];
-                   displayContactCountry.setModel(countryDataModel);
+                   displayContactCountry.setModel(countryDropDown);
                    
                    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
                         controller.editors[6];
-                   queryContactCountry.setModel(countryDataModel);
-               }
-               public void onFailure(Throwable caught){
-                   Window.alert(caught.getMessage());
-               }
-            });
+                   queryContactCountry.setModel(countryDropDown);
+               
     } 
     
    public boolean validate(){
