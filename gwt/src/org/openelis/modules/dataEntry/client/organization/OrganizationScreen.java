@@ -13,6 +13,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -22,23 +23,20 @@ import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
 
 public class OrganizationScreen extends OpenELISScreenForm {
 
 	private Widget selected;
 
-	Document xml = null;
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadTable = true; // tells whether table tab is to be filled with data
 
@@ -135,7 +133,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	}
 
     public void fetch(){
-        super.fetch();
+        super.fetch();               
         
     }
     
@@ -178,7 +176,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		contactTable.controller.setAutoAdd(true);
 		contactTable.controller.addRow();
 		
-		VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+		AbsolutePanel vp = (AbsolutePanel) getWidget("notesPanel");
 		//we need to remove anything in the notes tab if it exists
 		vp.clear();
 		
@@ -345,55 +343,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		super.doReset();
 	}
 
-	protected Widget setStyleNameOnButton(Widget sender) {
-		sender.addStyleName("current");
+	protected void setStyleNameOnButton(Widget sender) {
+		((AppButton)sender).changeState(AppButton.PRESSED);
 		if (selected != null)
-			selected.removeStyleName("current");
+			((AppButton)selected).changeState(AppButton.UNPRESSED);
 		selected = sender;
-		return sender;
 	}
-	
-    private void loadNotes(DataModel notesModel){       
-        
-        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-                  
-                  //we need to remove anything in the notes tab if it exists
-                  vp.clear();
-                  int i=0;
-                  if(notesModel != null){ 
-                      
-                    while(i<notesModel.size()){
-                      HorizontalPanel subjectPanel = new HorizontalPanel();
-                      HorizontalPanel spacerPanel = new HorizontalPanel();
-                      HorizontalPanel bodyPanel = new HorizontalPanel();
-                      
-                      Label subjectLabel = new Label();
-                      Label bodyLabel = new Label();
-                      
-                      vp.add(subjectPanel);
-                      vp.add(bodyPanel);
-                      subjectPanel.add(subjectLabel);
-                      bodyPanel.add(spacerPanel);
-                      bodyPanel.add(bodyLabel);           
-                      
-                      spacerPanel.setWidth("25px");
-                      subjectPanel.setWidth("100%");
-                      bodyPanel.setWidth("100%");
-                      
-                      subjectLabel.addStyleName("NotesText");
-                      bodyLabel.addStyleName("NotesText");
-                      
-                      subjectLabel.setWordWrap(true);
-                      bodyLabel.setWordWrap(true);
-                      
-                      subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
-                      bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
-                      
-                      i++;
-                  }
-                 } 
-              }
-    
 	
 	private void loadDropdowns(){
 		StringObject argObj = new StringObject();
@@ -508,10 +463,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
              
             screenService.getObject("getNotesModel", args, new AsyncCallback(){
                public void onSuccess(Object result){    
-                 // get the datamodel, load it in the notes panel and set the value in the rpc  
-                   ModelField modelField = (ModelField)result;
-                   rpc.setFieldValue("notesModel", (DataModel)modelField.getValue()); 
-                   loadNotes((DataModel)modelField.getValue());
+            	   ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
+                 // get the datamodel, load it in the notes panel and set the value in the rpc
+            	   String xmlString = (String) ((StringObject)result).getValue();
+                   vp.load(xmlString);
+                   
                }
                
                public void onFailure(Throwable caught){
@@ -599,8 +555,5 @@ public class OrganizationScreen extends OpenELISScreenForm {
               provAddController.setModel(provAddController.model);
               rpc.setFieldValue("contactsTable",provAddController.model);
               
-              VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-              vp.clear();
-              rpc.setFieldValue("notesModel", new DataModel());
           } 
 }

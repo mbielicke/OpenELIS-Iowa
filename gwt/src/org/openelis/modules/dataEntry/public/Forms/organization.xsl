@@ -49,7 +49,7 @@
 				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
 					<deck>
 					<panel layout="vertical" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="FormBorderless" xsi:type="Table">
+							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 							<row>
 									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
 							</row>
@@ -367,13 +367,13 @@
 					<!-- start TAB 2 -->
 					<tab key="noteTab" text="{resource:getString($constants,'note')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
-							<panel key="noteFormPanel" layout="table" style="FormBorderless" xsi:type="Table" padding="0" spacing="0">
+							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">
 										<row>
 										<widget>
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="390px" max="60"/>
+										<textbox case="mixed" key="usersSubject" width="405px" max="60"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -391,15 +391,23 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="500px" height="50px" case="mixed" key="usersNote"/>
+										<textarea width="524px" height="50px" case="mixed" key="usersNote"/>
 										</widget>
 										</row>
-								</panel> 
-
-							<panel key="notesPanel" style="orgNotesPanel" valign="top" onclick="this" layout="vertical" xsi:type="Panel">
-							
-							</panel>	
-							
+								 
+							<row>
+								<widget>
+								<html key="spacer" xml:space="preserve"> </html>
+								</widget>
+								<widget colspan="2">
+								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="127px" width="524px" layout="vertical" overflow="auto" xsi:type="Panel">
+								
+								</panel>
+								</panel>
+								</widget>
+							</row>
+						</panel>
 						</panel>
 					</tab>
 				</panel>
@@ -424,7 +432,6 @@
   <string key="usersNote" required="false"/>
   <number key="parentOrgId" type="integer" required="true"/> 
   <table key="contactsTable"/>
-  <model key="notesModel"/>
   <number key="id" required="false" type="integer"/>
   <string key="stateId" required="true"/>
   <string key="countryId" required="true"/>
@@ -442,7 +449,6 @@
   <queryString key="usersSubject"/>
   <queryString key="usersNote"/>
   <table key="contactsTable"/>
-  <tree key="notesTree"/>
   <queryNumber key="id" type="integer"/>
   <collection key="state" type="string" required="false"/>
   <model key="stateModel"/>

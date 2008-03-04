@@ -127,12 +127,11 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		}
 	}
 	
-	protected Widget setStyleNameOnButton(Widget sender) {
-		sender.addStyleName("current");
+	protected void setStyleNameOnButton(Widget sender) {
+		((AppButton)sender).changeState(AppButton.PRESSED);
 		if (selected != null)
-			selected.removeStyleName("current");
+			((AppButton)selected).changeState(AppButton.UNPRESSED);
 		selected = sender;
-		return sender;
 	}
 	
 	private void loadDropdowns(){

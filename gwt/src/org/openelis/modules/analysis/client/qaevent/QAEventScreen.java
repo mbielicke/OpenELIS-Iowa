@@ -105,15 +105,12 @@ import com.google.gwt.user.client.ui.Widget;
              }
          }
          
-         protected Widget setStyleNameOnButton(Widget sender) {
-             sender.addStyleName("current");
-             if (selected != null)
-                 selected.removeStyleName("current");
-             selected = sender;
-             return sender;
-         }
-        
-                 
+     	protected void setStyleNameOnButton(Widget sender) {
+    		((AppButton)sender).changeState(AppButton.PRESSED);
+    		if (selected != null)
+    			((AppButton)selected).changeState(AppButton.UNPRESSED);
+    		selected = sender;
+    	}                
         
      private void loadDropdowns(){
             

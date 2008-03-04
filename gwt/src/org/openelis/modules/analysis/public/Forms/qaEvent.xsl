@@ -53,12 +53,12 @@
 	</xsl:call-template>
    
   <panel layout= "vertical" height = "5px" xsi:type= "Panel"/> 
-  <panel key = "qafields" layout= "table" width= "450px"   style="FormBorderless" xsi:type= "Table">
+  <panel key = "qafields" layout= "table" style="Form" xsi:type= "Table">
     <row>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
-     <widget width= "210px"> 
+     <widget> 
       <textbox key = "name" case = "lower" tab="description,reportingText"/>
      </widget>
      </row>     

@@ -28,7 +28,6 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -36,11 +35,13 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
+import org.openelis.util.XMLUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
@@ -381,22 +382,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
-		//get the filled out DO object
-		//if(rpc.getFieldValue("action").equals("contacts")){		
-	        //load the contacts
-	        //List contactsList = remote.getOrganizationContacts(orgId);
-	        //need to build the contacts table now...
-	        //rpcReturn.setFieldValue("contactsTable",fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList));
-	        
-	        //load the notes
-	        //rpcReturn.setFieldValue("usersSubject", null);
-	        //rpcReturn.setFieldValue("usersNote", null);
-	        
-	        //DataModel notesModel = getNotesModel(orgId);
-	        //rpcReturn.setFieldValue("notesModel", notesModel);
-	        
-		//}
-		
 		return rpcReturn;
 	}
 
@@ -424,30 +409,23 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("stateId",organizationDO.getAddressDO().getState());
 		rpcReturn.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
-		
-        //load the contacts
-        //List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
-        //need to build the contacts table now...
-        //TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-        //pcReturn.setFieldValue("contactsTable",rmodel);
-
-        //load the notes
-	    //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-	    //rpcReturn.setFieldValue("notesModel", notesModel);
         
       return rpcReturn;  
 	}
 	
-    public ModelField getNotesModel(NumberObject key){
+    public StringObject getNotesModel(NumberObject key){
         //remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 
         //gets the whole notes list now
         List notesList = remote.getOrganizationNotes((Integer)key.getValue());
         
-        ModelField modelField = new ModelField();   
-        DataModel notesModel = new DataModel();
         Iterator itr = notesList.iterator();
+        try{
+        Document doc = XMLUtil.createNew("panel");
+		Element root = (Element) doc.getDocumentElement();
+		root.setAttribute("key", "notePanel");   
+		int i=0;
         while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
                         
@@ -461,22 +439,68 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
             String subject = (String)result[4];
                         
             
-            DataSet set = new DataSet();
-            StringObject subjectLine = new StringObject();
-            StringObject bodyLine = new StringObject();
-            
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
             SystemUserDO user = securityRemote.getSystemUser(userId,false);
             
-            subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
-            bodyLine.setValue(body);
-            
-            set.addObject(subjectLine);
-            set.addObject(bodyLine);
-            notesModel.add(set);            
+            String userName = user.getLoginName().trim();  
+
+        	 Element mainRowPanel = (Element) doc.createElement("panel");
+        	 Element topRowPanel = (Element) doc.createElement("panel");
+        	 Element titleWidgetTag = (Element) doc.createElement("widget");
+        	 Element titleText = (Element) doc.createElement("text");
+        	 Element authorWidgetTag = (Element) doc.createElement("widget");
+        	 Element authorPanel = (Element) doc.createElement("panel");
+        	 Element dateText = (Element) doc.createElement("text");
+        	 Element authorText = (Element) doc.createElement("text");
+        	 Element bodyWidgetTag = (Element) doc.createElement("widget");
+        	 Element bodytextTag = (Element) doc.createElement("text");
+        	 
+        	 mainRowPanel.setAttribute("key", "note"+i);
+        	 if(i % 2 == 1){
+                 mainRowPanel.setAttribute("style", "AltTableRow");
+             }else{
+            	 mainRowPanel.setAttribute("style", "TableRow");
+             }
+        	 mainRowPanel.setAttribute("layout", "vertical");
+        	 mainRowPanel.setAttribute("width", "507px");
+        	 
+        	 topRowPanel.setAttribute("layout", "horizontal");
+        	 topRowPanel.setAttribute("width", "507px");
+        	 titleText.setAttribute("key", "note"+i+"Title");
+        	 titleText.setAttribute("style", "notesSubjectText");
+        	 titleText.appendChild(doc.createTextNode(subject));
+        	 authorWidgetTag.setAttribute("halign", "right");
+        	 authorPanel.setAttribute("layout", "vertical");
+        	 dateText.setAttribute("key", "note"+i+"Date");
+        	 dateText.appendChild(doc.createTextNode(date.toString()));
+        	 authorText.setAttribute("key", "note"+i+"Author");
+        	 authorText.appendChild(doc.createTextNode("by "+userName));
+        	 bodytextTag.setAttribute("key", "note"+i+"Body");
+        	 bodytextTag.appendChild(doc.createTextNode(body));
+        	 
+        	 root.appendChild(mainRowPanel);
+        	 mainRowPanel.appendChild(topRowPanel);
+        	 mainRowPanel.appendChild(bodyWidgetTag);
+        	 topRowPanel.appendChild(titleWidgetTag);
+        	 topRowPanel.appendChild(authorWidgetTag);
+        	 titleWidgetTag.appendChild(titleText);
+        	 authorWidgetTag.appendChild(authorPanel);
+        	 authorPanel.appendChild(dateText);
+        	 authorPanel.appendChild(authorText);
+        	 bodyWidgetTag.appendChild(bodytextTag);
+          
+          i++;
+      }
+
+        StringObject returnObject = new StringObject();
+        returnObject.setValue(XMLUtil.toString(doc));
+        
+        return returnObject;
+    	
+        }catch(Exception e){
+        	System.out.println(e.getMessage());
         }
-       modelField.setValue(notesModel);
-       return modelField;
+        return null;
     }
 	
 	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -502,16 +526,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("stateId",organizationDO.getAddressDO().getState());
 		rpcReturn.setFieldValue("countryId",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
-		
-        //load the contacts
-        //List contactsList = remote.getOrganizationContacts((Integer)key.getObject(0).getValue());
-        //need to build the contacts table now...
-        //TableModel rmodel = (TableModel)fillContactsTable((TableModel)rpcReturn.getField("contactsTable").getValue(),contactsList);
-        //rpcReturn.setFieldValue("contactsTable",rmodel);
-
-        //load the notes
-	    //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-	    //rpcReturn.setFieldValue("notesModel", notesModel);
         
 	    return rpcReturn;  
 	}
@@ -647,11 +661,7 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		}else if(cat.equals("contactType")){
 			id = remote.getCategoryId("contact_type");
 		}
-		/*else if(cat.equals("contactState")){
-			id = remote.getCategoryId("state");
-		}else if(cat.equals("contactCountry")){
-			id = remote.getCategoryId("country");			
-		}*/
+		
 		List entries = new ArrayList();
 		if(id > -1)
 			entries = remote.getDropdownValues(id);
