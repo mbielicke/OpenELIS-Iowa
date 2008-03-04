@@ -198,9 +198,11 @@ public class CategoryBean implements CategoryRemote {
                          
              boolean update = false;
              if(dictDO.getDelete()!=null){ 
-               if(dictDO.getDelete()&& (dictionary.getId() != null)){
+               if(dictDO.getDelete()){
+                   if (dictionary.getId() != null){
                  //delete the dictionary entry from the database                    
-                    manager.remove(dictionary);                    
+                    manager.remove(dictionary);     
+                   }
                }else{
                    update = true;
                }
@@ -248,7 +250,7 @@ public class CategoryBean implements CategoryRemote {
               }
              }
              
-             if(update){
+             if(update){                 
                  dictionary.setCategory(category.getId());
                  dictionary.setEntry(dictDO.getEntry());
                  dictionary.setIsActive(dictDO.getIsActive());
@@ -256,7 +258,7 @@ public class CategoryBean implements CategoryRemote {
                  dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());                 
                  dictionary.setSystemName(dictDO.getSystemName());    
                                                                                 
-              if(dictionary.getId()==null){
+              if(dictionary.getId()==null){                  
                 manager.persist(dictionary);
               }
              }
