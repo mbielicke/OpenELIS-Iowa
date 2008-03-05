@@ -5,7 +5,9 @@ package org.openelis.modules.utilities.client.dictionary;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
@@ -94,9 +96,26 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
           super.commitAdd();
          AppButton removeEntryButton = (AppButton) widgets.get("removeEntryButton");
          removeEntryButton.changeState(AppButton.DISABLED); 
-         
+                                   
          
          dictEntryTable.controller.setAutoAdd(false);             
+    }
+    
+    public void afterCommitAdd(boolean success){
+        Integer categoryId = (Integer)rpc.getFieldValue("categoryId");
+        NumberObject categoryIdObj = new NumberObject();
+        categoryIdObj.setType("integer");
+        categoryIdObj.setValue(categoryId);           
+        
+        //done because key is set to null in AppScreenForm for the add operation 
+        if(key ==null){  
+         key = new DataSet();
+         key.addObject(categoryIdObj);
+        }
+        else{
+            key.setObject(0,categoryIdObj);
+        }
+         super.afterCommitAdd(success);
     }
     
     public void commitUpdate(){        
