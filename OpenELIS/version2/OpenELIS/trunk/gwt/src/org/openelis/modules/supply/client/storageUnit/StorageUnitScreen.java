@@ -23,7 +23,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StorageUnitScreen() {
-		super("org.openelis.modules.supply.server.StorageUnitServlet",false);
+		super("org.openelis.modules.supply.server.StorageUnitServlet",true);
 	}
 	
 	public void onClick(Widget sender) {
@@ -134,23 +134,12 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		StringObject argObj = new StringObject();
-		argObj.setValue("category");
-		DataObject[] args = new DataObject[] {argObj};
+		DataModel storageUnitCategoryDropdown = (DataModel)initData[0];
 		
-//		load category dropdowns
-		screenService.getObject("getModelField", args, new AsyncCallback(){
-	           public void onSuccess(Object result){
-	               DataModel catDataModel = (DataModel)((ModelField)result).getValue();
-	               ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("category");
-	               ScreenAutoDropdown queryCat = displayCat.getQueryWidget();
+	    ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("category");
+	    ScreenAutoDropdown queryCat = displayCat.getQueryWidget();
 	               
-	               ((AutoCompleteDropdown)displayCat.getWidget()).setModel(catDataModel);
-	               ((AutoCompleteDropdown)queryCat.getWidget()).setModel(catDataModel);
-	           }
-	           public void onFailure(Throwable caught){
-	        	   Window.alert(caught.getMessage());
-	           }
-	        });
+	    ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
+	    ((AutoCompleteDropdown)queryCat.getWidget()).setModel(storageUnitCategoryDropdown);
 	}
 }

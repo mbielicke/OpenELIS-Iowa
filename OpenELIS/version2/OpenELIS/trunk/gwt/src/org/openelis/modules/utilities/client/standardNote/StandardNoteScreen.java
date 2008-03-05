@@ -24,7 +24,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StandardNoteScreen() {
-		super("org.openelis.modules.utilities.server.StandardNoteServlet",false);
+		super("org.openelis.modules.utilities.server.StandardNoteServlet",true);
 	}
 	
 	public void afterDraw(boolean success) {
@@ -134,24 +134,14 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		StringObject argObj = new StringObject();
-		argObj.setValue("type");
-		DataObject[] args = new DataObject[] {argObj};
+		DataModel standardNoteTypeDropdown = (DataModel) initData[0];
 		
-//		load category dropdowns
-		screenService.getObject("getModelField", args, new AsyncCallback(){
-	           public void onSuccess(Object result){
-	               DataModel typeDataModel = (DataModel)((ModelField)result).getValue();
-	               ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("type");
-	               ScreenAutoDropdown queryType = displayType.getQueryWidget();
+//		load standard note type dropdowns
+        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("type");
+        ScreenAutoDropdown queryType = displayType.getQueryWidget();
 	               
-	               ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDataModel);
-	               ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDataModel);
-	           }
-	           public void onFailure(Throwable caught){
-	        	   Window.alert(caught.getMessage());
-	           }
-	        });
+       ((AutoCompleteDropdown)displayType.getWidget()).setModel(standardNoteTypeDropdown);
+       ((AutoCompleteDropdown)queryType.getWidget()).setModel(standardNoteTypeDropdown);
 	}
 	
 }

@@ -37,8 +37,6 @@ public class StorageUnitServlet implements AppScreenFormServiceInt,
 	private static final long serialVersionUID = -7614978840440946815L;
 	private static final int leftTableRowsPerPage = 10;
 	
-	private String systemUserId = "";
-	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
 					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
@@ -88,7 +86,7 @@ public class StorageUnitServlet implements AppScreenFormServiceInt,
 //		if the rpc is null then we need to get the page
 		if(rpcSend == null){
 //			need to get the query rpc out of the cache
-	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":StorageUnit");
+	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageUnit");
 
 	        if(rpc == null)
 	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -166,9 +164,9 @@ public class StorageUnitServlet implements AppScreenFormServiceInt,
 		}
         
         //need to save the rpc used to the encache
-        if(systemUserId.equals(""))
-        	systemUserId = remote.getSystemUserId().toString();
-        CachingManager.putElement("screenQueryRpc", systemUserId+":StorageUnit", rpcSend);
+        if(SessionManager.getSession().getAttribute("systemUserId") == null)
+        	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+        CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageUnit", rpcSend);
 		}
 		
 		return model;
@@ -264,10 +262,16 @@ public class StorageUnitServlet implements AppScreenFormServiceInt,
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageUnit.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
-        return new DataObject[] {xml,data};
+        
+        DataModel storageUnitCategoryDropdownField = (DataModel)CachingManager.getElement("InitialData", "storageUnitCategoryDropdown");
+        
+        //storage unit category dropdown
+        if(storageUnitCategoryDropdownField == null){
+        	storageUnitCategoryDropdownField = getInitialModel("category");
+        	CachingManager.putElement("InitialData", "storageUnitCategoryDropdown", storageUnitCategoryDropdownField);
+        }
+        
+        return new DataObject[] {xml,storageUnitCategoryDropdownField};
     }
 
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
