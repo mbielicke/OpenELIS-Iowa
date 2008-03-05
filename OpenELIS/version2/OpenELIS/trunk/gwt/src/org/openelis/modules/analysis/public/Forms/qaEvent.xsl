@@ -195,7 +195,7 @@
  <check key= "billable" required = "false" />
  <string key="reportingText" required = "true" />
  <number key="testId" type="integer" required = "false" />
- <number key="qaEventTypeId" type="integer" required = "false" />
+ <number key="qaEventTypeId" type="integer" required = "true" />
 </rpc>
 					   
 <rpc key= "query">     

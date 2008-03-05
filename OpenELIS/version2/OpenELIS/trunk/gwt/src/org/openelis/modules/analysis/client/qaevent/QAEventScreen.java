@@ -2,6 +2,8 @@ package org.openelis.modules.analysis.client.qaevent;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -33,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
                super.afterDraw(success);        
                
                bpanel.setButtonState("prev", AppButton.DISABLED);
-               bpanel.setButtonState("next", AppButton.DISABLED);
+               bpanel.setButtonState("next", AppButton.DISABLED);               
             
         }
          
@@ -130,5 +132,21 @@ import com.google.gwt.user.client.ui.Widget;
                 }
                 
          
-                  
+       public void afterCommitAdd(boolean success){
+           Integer qaeId = (Integer)rpc.getFieldValue("qaeId");
+           NumberObject qaeIdObj = new NumberObject();
+           qaeIdObj.setType("integer");
+           qaeIdObj.setValue(qaeId);           
+           
+           //done because key is set to null in AppScreenForm for the add operation 
+           if(key ==null){  
+            key = new DataSet();
+            key.addObject(qaeIdObj);
+           }
+           else{
+               key.setObject(0,qaeIdObj);
+           }
+           
+           super.afterCommitAdd(success);
+       }           
  }
