@@ -1,30 +1,20 @@
 package org.openelis.modules.main.client.openelis;
 
-import java.util.Iterator;
-
 import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.ScreenLabel;
-import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMenuPopupPanel;
-import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.HoverListener;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
 import com.google.gwt.core.client.GWT;
-//import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DelegatingClickListenerCollection;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -216,9 +206,50 @@ public class OpenELIS extends AppScreen implements PopupListener, MouseListener 
         		browser.setBrowserHeight();
         	}
         	
-        }else{
-        	System.out.println(widgets.get("help").toString()+" == "+item.toString());
-        }
+        }else if(item == widgets.get("preferenceRow") || /*item == widgets.get("favoritesMenuRow") ||*/ item == widgets.get("logoutRow"))
+   		 	((PopupPanel)((ScreenMenuPopupPanel) widgets.get("applicationPanel")).popupPanel).hide();
+   	 
+    	if(item == widgets.get("cutRow") || item == widgets.get("copyRow") || item == widgets.get("pasteRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("editPanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("fullLoginRow") || item == widgets.get("quickEntryRow") || item == widgets.get("secondEntryRow") || 
+   			item == widgets.get("trackingRow") || item == widgets.get("projectRow") || item == widgets.get("providerRow") || item == widgets.get("organizationRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("samplePanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("worksheetCreationRow") || item == widgets.get("worksheetCompletionRow") || item == widgets.get("addOrCancelRow") || 
+   			item == widgets.get("reviewAndReleaseRow") || item == widgets.get("toDoRow") || item == widgets.get("labelForRow") ||    
+   			item == widgets.get("storageRow") || item == widgets.get("QCRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("analysisPanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("orderRow") || item == widgets.get("inventoryRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("inventoryOrderPanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("instrumentRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("instrumentPanel")).popupPanel).hide();
+   		
+    	else if(item == widgets.get("testRow") || item == widgets.get("methodRow") || item == widgets.get("panelRow") || 
+   			item == widgets.get("QAEventRow") || item == widgets.get("labSectionRow") ||  item == widgets.get("analyteRow") || 
+   			item == widgets.get("dictionaryRow") || item == widgets.get("auxiliaryPromptRow") || item == widgets.get("barcodeLabelRow") || 
+   			item == widgets.get("standardNoteRow") || item == widgets.get("trailerForTestRow") || item == widgets.get("storageUnitRow") || 
+   			item == widgets.get("storageLocationRow") || item == widgets.get("instrumentMaintRow") || item == widgets.get("scriptletRow") || 
+   			item == widgets.get("systemVariableRow"))
+    			((PopupPanel)((ScreenMenuPopupPanel) widgets.get("maintenancePanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("finalReportRow") || item == widgets.get("sampleDataExportRow") || item == widgets.get("loginLabelRow"))
+    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("reportPanel")).popupPanel).hide();
+   	
+    	else if(item == widgets.get("referenceRow")){
+    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportReferencePanel");
+    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
+   															(getWidget("referenceRow").getAbsoluteTop()));
+    		((PopupPanel)pn.popupPanel).show();
+   	
+    	}else if(item == widgets.get("summaryRow")){
+    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportSummaryPanel");
+    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
+																(getWidget("summaryRow").getAbsoluteTop()));
+    		((PopupPanel)pn.popupPanel).show();
+    	}
     }
 
     public void onMouseEnter(Widget sender) {
@@ -238,51 +269,7 @@ public class OpenELIS extends AppScreen implements PopupListener, MouseListener 
     }
     
     public void onMouseUp(Widget sender, int x, int y) {
-    	 if(sender == widgets.get("preferenceRow") || /*sender == widgets.get("favoritesMenuRow") ||*/ sender == widgets.get("logoutRow"))
-    		 ((PopupPanel)((ScreenMenuPopupPanel) widgets.get("applicationPanel")).popupPanel).hide();
     	 
-    	 if(sender == widgets.get("cutRow") || sender == widgets.get("copyRow") || sender == widgets.get("pasteRow"))
-        	((PopupPanel)((ScreenMenuPopupPanel) widgets.get("editPanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("fullLoginRow") || sender == widgets.get("quickEntryRow") || sender == widgets.get("secondEntryRow") || 
-    			sender == widgets.get("trackingRow") || sender == widgets.get("projectRow") || sender == widgets.get("providerRow") || sender == widgets.get("organizationRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("samplePanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("worksheetCreationRow") || sender == widgets.get("worksheetCompletionRow") || sender == widgets.get("addOrCancelRow") || 
-    			sender == widgets.get("reviewAndReleaseRow") || sender == widgets.get("toDoRow") || sender == widgets.get("labelForRow") ||    
-    			sender == widgets.get("storageRow") || sender == widgets.get("QCRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("analysisPanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("orderRow") || sender == widgets.get("inventoryRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("inventoryOrderPanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("instrumentRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("instrumentPanel")).popupPanel).hide();
-    		
-    	else if(sender == widgets.get("testRow") || sender == widgets.get("methodRow") || sender == widgets.get("panelRow") || 
-    			sender == widgets.get("QAEventRow") || sender == widgets.get("labSectionRow") ||  sender == widgets.get("analyteRow") || 
-    			sender == widgets.get("dictionaryRow") || sender == widgets.get("auxiliaryPromptRow") || sender == widgets.get("barcodeLabelRow") || 
-    			sender == widgets.get("standardNoteRow") || sender == widgets.get("trailerForTestRow") || sender == widgets.get("storageUnitRow") || 
-    			sender == widgets.get("storageLocationRow") || sender == widgets.get("instrumentMaintRow") || sender == widgets.get("scriptletRow") || 
-    			sender == widgets.get("systemVariableRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("maintenancePanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("finalReportRow") || sender == widgets.get("sampleDataExportRow") || sender == widgets.get("loginLabelRow"))
-    		((PopupPanel)((ScreenMenuPopupPanel) widgets.get("reportPanel")).popupPanel).hide();
-    	
-    	else if(sender == widgets.get("referenceRow")){
-    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportReferencePanel");
-    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
-    															(getWidget("referenceRow").getAbsoluteTop()));
-        	((PopupPanel)pn.popupPanel).show();
-    	
-    	}else if(sender == widgets.get("summaryRow")){
-    		ScreenMenuPopupPanel pn = (ScreenMenuPopupPanel) widgets.get("reportSummaryPanel");
-    		((PopupPanel)pn.popupPanel).setPopupPosition(getWidget("reportPanelTable").getAbsoluteLeft()+getWidget("reportPanelTable").getOffsetWidth(),
-																(getWidget("summaryRow").getAbsoluteTop()));
-        	((PopupPanel)pn.popupPanel).show();
-    	}    	
-    	
     	//FIXME reports logic will come in after we sit with dari else if()
 
     	HoverListener hl = new HoverListener();

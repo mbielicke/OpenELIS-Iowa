@@ -26,45 +26,9 @@ public class Analysis implements AppModule {
         return "Analysis";
     }
 
-    
-   /* public void onClick(Widget sender) {
-    	String key = ((ScreenWidget)sender).key;
-        if(key.equals("qaEventsIcon") || key.equals("qaEventsLabel") || key.equals("qaEventsDescription") || 
-        		key.equals("favLeftqaEvents")) 
-            OpenELIS.browser.addScreen(new QAEvent(), "QA Events", "QAEvents", "Loading");
-        
-    }*/
-    
-    public void onMouseUp(Widget sender, int x, int y) {
-    	String key = ((ScreenWidget)sender).key;
-        if(key.equals("QAEventRow") || key.equals("favLeftQaEventsRow")) 
-            OpenELIS.browser.addScreen(new QAEventScreen(), "QA Events", "QAEvents", "Loading");
-    	
-    }
-
 	public void onClick(Widget sender) {
-		// TODO Auto-generated method stub
-		
+		String key = ((ScreenWidget)sender).key;
+        if(key.equals("QAEventRow") || key.equals("favLeftQaEventsRow")) 
+            OpenELIS.browser.addScreen(new QAEventScreen(), "QA Events", "QAEvents", "Loading");		
 	}
-
-	public void onMouseDown(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseEnter(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseLeave(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseMove(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

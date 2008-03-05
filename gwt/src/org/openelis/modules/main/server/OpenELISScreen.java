@@ -82,7 +82,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             //root.setAttribute("xsi:type", "Table");
             root.setAttribute("style", "FavMenuRowContainer");
             root.setAttribute("hover", "Hover");
-            root.setAttribute("mouse", "this");
+            root.setAttribute("onPanelClick", "this");
             
             root.setAttribute("height", "100%");
             root.setAttribute("vertical","true");
@@ -103,7 +103,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,UtilitiesModule");
+            mainPanel.setAttribute("onPanelClick", "this,UtilitiesModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -152,7 +152,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,DataEntryModule");
+            mainPanel.setAttribute("onPanelClick", "this,DataEntryModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -201,7 +201,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this");
+            mainPanel.setAttribute("onPanelClick", "this");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -250,7 +250,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,DataEntryModule");
+            mainPanel.setAttribute("onPanelClick", "this,DataEntryModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -299,7 +299,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,AnalysisModule");
+            mainPanel.setAttribute("onPanelClick", "this,AnalysisModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -348,7 +348,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,UtilitiesModule");
+            mainPanel.setAttribute("onPanelClick", "this,UtilitiesModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -397,7 +397,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,SupplyModule");
+            mainPanel.setAttribute("onPanelClick", "this,SupplyModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
@@ -446,7 +446,7 @@ public class OpenELISScreen implements OpenELISServiceInt {
             mainPanel.setAttribute("layout", "table");
             mainPanel.setAttribute("style", "FavMenuRowContainer");
             mainPanel.setAttribute("hover", "Hover");
-            mainPanel.setAttribute("mouse", "this,SupplyModule");
+            mainPanel.setAttribute("onPanelClick", "this,SupplyModule");
             
             iconWidgetNode.setAttribute("style", "topMenuIcon");
             
