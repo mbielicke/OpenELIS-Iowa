@@ -93,8 +93,8 @@
      <cache name="screens"
         maxElementsInMemory="10000"
         eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
         overflowToDisk="true"
         />
         
@@ -117,10 +117,18 @@
       <cache name="screenQueryRpc"
        maxElementsInMemory="1000000"
        eternal="false"
-       timeToIdleSeconds="300"
-       timeToLiveSeconds="600"
+       timeToIdleSeconds="86400"
+       timeToLiveSeconds="86400"
        overflowToDisk="false"
       />
+      
+       <cache name="InitialData"
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+        overflowToDisk="true"
+        />
       
       <cache name="usernameAttempts"
        maxElementsInMemory="100"

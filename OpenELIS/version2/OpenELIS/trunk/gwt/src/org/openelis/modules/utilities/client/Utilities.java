@@ -28,31 +28,7 @@ public class Utilities implements AppModule {
     }
 
     public void onClick(Widget sender) {
-        
-    }
-
-	public void onMouseDown(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseEnter(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseLeave(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseMove(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseUp(Widget sender, int x, int y) {
-		String key = ((ScreenWidget)sender).key;
+    	String key = ((ScreenWidget)sender).key;
         if(key.equals("dictionaryRow") || key.equals("favLeftDictionaryRow")) 
             OpenELIS.browser.addScreen(new DictionaryScreen(), "Dictionary", "Dictionary", "Loading");
         
@@ -61,6 +37,5 @@ public class Utilities implements AppModule {
         
         if(key.equals("organizeFavoritesLeft") || key.equals("organizeFavoritesLabel") || key.equals("organizeFavoritesLeft"))
             OpenELIS.browser.addScreen(new OrganizeFavorites(), "Organize Favorites", "Organize Favorites","Loading");
-		
-	}
+    }
 }

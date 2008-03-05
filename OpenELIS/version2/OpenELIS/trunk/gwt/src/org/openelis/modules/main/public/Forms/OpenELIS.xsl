@@ -99,7 +99,7 @@
 		<!-- application panel -->
 			<menuPopupPanel key="applicationPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="applicationPanelTable" style="topMenuContainer" layout="vertical" xsi:type="Panel" spacing="0" padding="0">
-				<panel key="preferenceRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+				<panel key="preferenceRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 					<!--icon-->
 					<widget  style="topMenuIcon">
@@ -118,7 +118,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="favoritesMenuRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+					<panel key="favoritesMenuRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 					<!--icon-->
 					<widget  style="topMenuIcon">
@@ -138,7 +138,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="logoutRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+					<panel key="logoutRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 					<!--icon-->
 					<widget  style="topMenuIcon">
@@ -162,7 +162,7 @@
 			<!-- edit panel -->
 			<menuPopupPanel key="editPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="editPanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="cutRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+				<panel key="cutRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 				<!--icon-->
 					<widget  style="topMenuIcon">
@@ -181,7 +181,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="copyRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+					<panel key="copyRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 					<!--icon-->
 					<widget  style="topMenuIcon">
@@ -200,7 +200,7 @@
 						</widget>
 					</row>
 					</panel>
-				<panel key="pasteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+				<panel key="pasteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 				<row>
 				<!--icon-->
 					<widget  style="topMenuIcon">
@@ -225,7 +225,7 @@
 			<!-- sample panel-->
 			<menuPopupPanel key="samplePanel" autoHide="true" hidden="true" popup="this">
 				<panel key="samplePanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-					<panel key="fullLoginRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" mouse="this">
+					<panel key="fullLoginRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" hover="Hover" onPanelClick="this">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -244,7 +244,7 @@
 						</widget>
 						</row>
 					</panel>
-					<panel key="quickEntryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="quickEntryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -263,7 +263,7 @@
 						</widget>
 						</row>
 					</panel>
-					<panel key="secondEntryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="secondEntryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -282,7 +282,7 @@
 						</widget>
 						</row>
 					</panel>
-					<panel key="trackingRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="trackingRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -303,7 +303,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="projectRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="projectRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -322,7 +322,7 @@
 						</widget>
 						</row>
 					</panel>
-					<panel key="providerRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,DataEntryModule" hover="Hover">
+					<panel key="providerRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,DataEntryModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -341,7 +341,7 @@
 						</widget>
 						</row>
 					</panel>
-					<panel key="organizationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,DataEntryModule" hover="Hover">
+					<panel key="organizationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,DataEntryModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -366,7 +366,7 @@
 			<!-- Analysis panel-->
 			<menuPopupPanel key="analysisPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="analysisPanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="worksheetCreationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="worksheetCreationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -385,7 +385,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="worksheetCompletionRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="worksheetCompletionRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -404,7 +404,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="addOrCancelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="addOrCancelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -423,7 +423,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="reviewAndReleaseRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,AnalysisModule" hover="Hover">
+					<panel key="reviewAndReleaseRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,AnalysisModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -442,7 +442,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="toDoRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="toDoRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -461,7 +461,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="labelForRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="labelForRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -480,7 +480,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="storageRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="storageRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -499,7 +499,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="QCRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="QCRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -524,7 +524,7 @@
 			<!-- inventory Order panel-->
 			<menuPopupPanel key="inventoryOrderPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="inventoryOrderPanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="orderRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="orderRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -543,7 +543,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="inventoryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="inventoryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -568,7 +568,7 @@
 			<!-- instrument panel-->
 			<menuPopupPanel key="instrumentPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="instrumentTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="instrumentRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="instrumentRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -592,7 +592,7 @@
 			<!-- maintenance panel-->
 			<menuPopupPanel key="maintenancePanel" autoHide="true" hidden="true" popup="this">
 				<panel key="maintenancePanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="testRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="testRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 				<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -611,7 +611,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="methodRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,UtilitiesModule" hover="Hover">
+					<panel key="methodRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,UtilitiesModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -630,7 +630,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="panelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="panelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -649,7 +649,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="QAEventRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,AnalysisModule" hover="Hover">
+					<panel key="QAEventRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,AnalysisModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -668,7 +668,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="labSectionRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="labSectionRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -689,7 +689,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="analyteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="analyteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -708,7 +708,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="dictionaryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,UtilitiesModule" hover="Hover">
+					<panel key="dictionaryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,UtilitiesModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -727,7 +727,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="auxiliaryPromptRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="auxiliaryPromptRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -748,7 +748,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="barcodeLabelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="barcodeLabelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -767,7 +767,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="standardNoteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,UtilitiesModule" hover="Hover">
+					<panel key="standardNoteRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,UtilitiesModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -786,7 +786,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="trailerForTestRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="trailerForTestRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -807,7 +807,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="storageUnitRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,SupplyModule" hover="Hover">
+					<panel key="storageUnitRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,SupplyModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -826,7 +826,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="storageLocationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,SupplyModule" hover="Hover">
+					<panel key="storageLocationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,SupplyModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -847,7 +847,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="instrumentMaintRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="instrumentMaintRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -868,7 +868,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="scriptletRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="scriptletRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -887,7 +887,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="systemVariableRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="systemVariableRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -912,7 +912,7 @@
 			<!-- report panel -->
 			<menuPopupPanel key="reportPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="reportPanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="finalReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="finalReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -931,7 +931,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="sampleDataExportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="sampleDataExportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -950,7 +950,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="loginLabelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="loginLabelRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -971,7 +971,7 @@
 					</panel>
 					<!-- horizontal spacer-->
 					<html key="spacer">&lt;hr/&gt;</html>
-					<panel key="referenceRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="referenceRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -993,7 +993,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="summaryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="summaryRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1021,7 +1021,7 @@
 			<!-- report reference popup panel -->
 			<menuPopupPanel key="reportReferencePanel" autoHide="true" hidden="true" popup="this">
 				<panel key="reportReferencePanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="organizationReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+				<panel key="organizationReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 				<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1040,7 +1040,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="testReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,DataEntryModule" hover="Hover">
+					<panel key="testReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,DataEntryModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1059,7 +1059,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="qaEventReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="qaEventReportRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1084,7 +1084,7 @@
 			<!-- report summary popup panel -->
 			<menuPopupPanel key="reportSummaryPanel" autoHide="true" hidden="true" popup="this">
 				<panel key="reportSummaryPanelTable" layout="vertical" style="topMenuContainer" xsi:type="Panel" padding="0" spacing="0">
-				<panel key="QAByOrganizationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,UtilitiesModule" hover="Hover">
+				<panel key="QAByOrganizationRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,UtilitiesModule" hover="Hover">
 				<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1103,7 +1103,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="testCountByFacilityRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,DataEntryModule" hover="Hover">
+					<panel key="testCountByFacilityRow" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,DataEntryModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1122,7 +1122,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="6" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this" hover="Hover">
+					<panel key="6" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">
@@ -1141,7 +1141,7 @@
 						</widget>
 					</row>
 					</panel>
-					<panel key="7" layout="table" xsi:type="Table" style="TopMenuRowContainer" mouse="this,DataEntryModule" hover="Hover">
+					<panel key="7" layout="table" xsi:type="Table" style="TopMenuRowContainer" onPanelClick="this,DataEntryModule" hover="Hover">
 					<row>
 						<!--icon-->
 							<widget  style="topMenuIcon">

@@ -29,14 +29,9 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -49,9 +44,6 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
@@ -63,11 +55,7 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	 */
 	private static final long serialVersionUID = -7945448239944359285L;
 	private static final int leftTableRowsPerPage = 19;
-	
-	private static ModelField stateDropdownField = null;
-	private static ModelField countryDropdownField = null;
-	private static ModelField contactTypeDropdownField = null;
-	
+    
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
 					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
@@ -396,7 +384,6 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	}
 
 	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -585,41 +572,35 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 	}
 
 	public TableModel filter(int col, Filter[] filters, int index, int selected) throws RPCException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Filter[] getFilter(int col) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TableModel getModel(TableModel model) throws RPCException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TableModel saveModel(TableModel model) throws RPCException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TableModel sort(int col, boolean down, int index, int selected) throws RPCException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public ModelField getInitialModel(String cat){
+	public DataModel getInitialModel(String cat){
 		int id = -1;
 		CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 		
-		if(cat.equals("state")){
+		if(cat.equals("state"))
 			id = remote.getCategoryId("state");
-		}else if(cat.equals("country")){
+		else if(cat.equals("country"))
 			id = remote.getCategoryId("country");
-		}else if(cat.equals("contactType")){
+		else if(cat.equals("contactType"))
 			id = remote.getCategoryId("contact_type");
-		}
 		
 		List entries = new ArrayList();
 		if(id > -1)
@@ -683,9 +664,8 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 			
 			i++;
 		}		
-		ModelField modelField = new ModelField();
-		modelField.setValue(returnModel);
-		return modelField;
+		
+		return returnModel;
 	}
 	
 	//autocomplete textbox method	
@@ -858,23 +838,27 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
+        
+        DataModel stateDropdownField = (DataModel)CachingManager.getElement("InitialData", "stateDropdown");
+        DataModel countryDropdownField = (DataModel)CachingManager.getElement("InitialData", "countryDropdown");
+        DataModel contactTypeDropdownField = (DataModel)CachingManager.getElement("InitialData", "contactTypeDropdown");
         
         //state dropdown
         if(stateDropdownField == null){
         	stateDropdownField = getInitialModel("state");
+        	CachingManager.putElement("InitialData", "stateDropdown", stateDropdownField);
         }
         //country dropdown
         if(countryDropdownField == null){
         	countryDropdownField = getInitialModel("country");
+        	CachingManager.putElement("InitialData", "countryDropdown", countryDropdownField);
         	}
         //contact type dropdown
         if(contactTypeDropdownField == null){
         	contactTypeDropdownField = getInitialModel("contactType");
+        	CachingManager.putElement("InitialData", "contactTypeDropdown", contactTypeDropdownField);
         }
         
-        return new DataObject[] {xml,data,stateDropdownField,countryDropdownField,contactTypeDropdownField};
+        return new DataObject[] {xml,stateDropdownField,countryDropdownField,contactTypeDropdownField};
     }
 }

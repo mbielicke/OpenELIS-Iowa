@@ -26,36 +26,11 @@ public class Supply implements AppModule {
     }
 
     public void onClick(Widget sender) {
-        
-    }
-
-	public void onMouseDown(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseEnter(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseLeave(Widget sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseMove(Widget sender, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onMouseUp(Widget sender, int x, int y) {
-		String key = ((ScreenWidget)sender).key;
+    	String key = ((ScreenWidget)sender).key;
         if(key.equals("storageLocationRow") || key.equals("favLeftStorageLocationRow"))
             OpenELIS.browser.addScreen(new StorageLocationScreen(), "Storage Location", "Storage", "Loading");
         
         if(key.equals("storageUnitRow") || key.equals("favLeftStorageUnitRow"))
             OpenELIS.browser.addScreen(new StorageUnitScreen(), "Storage Unit", "Storage", "Loading");		
-	}
-
+    }
 }

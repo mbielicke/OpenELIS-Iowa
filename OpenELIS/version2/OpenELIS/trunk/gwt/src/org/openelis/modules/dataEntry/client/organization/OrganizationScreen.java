@@ -41,6 +41,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadTable = true; // tells whether table tab is to be filled with data
 
+
 	public OrganizationScreen() {
 		super("org.openelis.modules.dataEntry.server.OrganizationServlet",true);
 	}
@@ -360,55 +361,56 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		//load the state dropdowns
-		DataModel stateDropdownModel = initData[1];
+		
+	    DataModel stateDropdown = (DataModel)initData[0];
+	    
+		DataModel countryDropdown = (DataModel)initData[1];
+	    
+	    DataModel contactTypeDropdown = (DataModel)initData[2];    
 	
+//	  load the state dropdowns
 		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
 	    ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
-	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdownModel);
-	    ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDropdownModel.getInstance());
+	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdown);
+	    ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDropdown.getInstance());
 	               
 	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	    ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
 	               
 	    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	              																				controller.editors[5];
-	    displayContactState.setModel((DataModel)stateDropdownModel.getInstance());
+	    displayContactState.setModel((DataModel)stateDropdown.getInstance());
 	               
 	    TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[5];
-	    queryContactState.setModel((DataModel)stateDropdownModel.getInstance());
+	    queryContactState.setModel((DataModel)stateDropdown.getInstance());
 	     
 	     
 		//load the country dropdowns
-		DataModel countryDropdownModel = initData[2];
-		
 	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
 	    ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
-	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdownModel);
-	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDropdownModel.getInstance());
+	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
+	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDropdown.getInstance());
 	               
 	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
-	    displayContactCountry.setModel((DataModel)countryDropdownModel.getInstance());
+	    displayContactCountry.setModel((DataModel)countryDropdown.getInstance());
 	               
 	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[12];
-	    queryContactCountry.setModel((DataModel)countryDropdownModel.getInstance());
+	    queryContactCountry.setModel((DataModel)countryDropdown.getInstance());
 	    
 	    
-		//load the contact type dropdowns
-		DataModel contactTypeDropdownModel = initData[3];
-	        	   
+		//load the contact type dropdowns	        	   
   	   TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 																controller.editors[0];
-   	   displayContactType.setModel(contactTypeDropdownModel);
+   	   displayContactType.setModel(contactTypeDropdown);
 
    	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 	        	   											controller.editors[0];
-  	   queryContactType.setModel((DataModel)contactTypeDropdownModel.getInstance());
+  	   queryContactType.setModel((DataModel)contactTypeDropdown.getInstance());
 	}
     
     
