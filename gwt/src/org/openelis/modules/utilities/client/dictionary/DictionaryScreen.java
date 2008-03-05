@@ -300,8 +300,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         
         private void loadDropdowns(){           
             
-            DataModel sectionDropDown = initData[0];
-            DataModel activeDropDown = initData[1];
+            DataModel sectionDropDown = (DataModel)initData[0];
+            DataModel activeDropDown = (DataModel)initData[1];
             
                        ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
                        ScreenAutoDropdown querySection = displaySection.getQueryWidget();

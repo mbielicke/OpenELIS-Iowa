@@ -50,11 +50,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
      */
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 19;
-    
-    private static ModelField providerTypeDropDown= null;
-    private static ModelField stateDropDown= null;
-    private static ModelField countryDropDown= null;
-        
+           
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                                                                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
@@ -67,16 +63,20 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
         
-        if(providerTypeDropDown ==null)
-            providerTypeDropDown = getInitialModel("providerType");
+        DataModel providerTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "providerTypeDropDown");
+        DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
+        DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
+        
+        if(providerTypeDropDownField ==null)
+            providerTypeDropDownField = getInitialModel("providerType");
            
-         if(stateDropDown == null)
-             stateDropDown = getInitialModel("state");
+         if(stateDropDownField == null)
+             stateDropDownField = getInitialModel("state");
          
-         if(countryDropDown == null)
-             countryDropDown = getInitialModel("country");
+         if(countryDropDownField == null)
+             countryDropDownField = getInitialModel("country");
            
-           return new DataObject[] {xml,providerTypeDropDown,stateDropDown,countryDropDown};
+           return new DataObject[] {xml,providerTypeDropDownField,stateDropDownField,countryDropDownField};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -539,7 +539,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         return null;
     }
 
-    public ModelField getInitialModel(String cat) {        
+    public DataModel getInitialModel(String cat) {        
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
@@ -616,9 +616,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
          }
         }        
         
-        ModelField field = new ModelField();
-        field.setValue(model);
-        return field;
+        return model;
     }
     
     public ModelField getNotesModel(NumberObject key){

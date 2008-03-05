@@ -111,8 +111,8 @@ import com.google.gwt.user.client.ui.Widget;
             
             //load type and test dropdowns
                         
-            DataModel qaEventTypeDropDown = initData[0];
-            DataModel testDropDown = initData[1];
+            DataModel qaEventTypeDropDown = (DataModel)initData[0];
+            DataModel testDropDown = (DataModel)initData[1];
 
                        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("qaEventType");
                        ScreenAutoDropdown queryType = displayType.getQueryWidget();
