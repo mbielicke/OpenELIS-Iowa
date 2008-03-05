@@ -236,17 +236,12 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                         
             sysName.setValue(sysNameResult);    
             
-            row.addObject(id);          
-            //row.addObject(lname);
-            //row.addObject(fname);
+            row.addObject(id);                      
             row.addObject(sysName);
             model.add(row);
    
          }
-        //} 
-        //if(systemUserId.equals("")){
-            //systemUserId = remote.getSystemUserId().toString();
-        //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
+        
                 
         return model;   
         } else{
@@ -268,7 +263,6 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                        
             }
             
-            //System.out.println("rpcSend "+rpcSend); 
 
             List systemNames = new ArrayList();
                 try{                                        
@@ -290,18 +284,15 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
                 
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject();
-                //StringObject lname = new StringObject();
-                //StringObject fname = new StringObject();
+                NumberObject id = new NumberObject();                
                 StringObject sysName = new StringObject();
                 id.setType("integer");
-                //lname.setValue(lnameResult);
+                
                 sysName.setValue(sysNameResult);
                 id.setValue(idResult);
                 
                 row.addObject(id);          
-                //row.addObject(lname);
-                //row.addObject(fname);
+                
                 row.addObject(sysName);
                 model.add(row);
 
@@ -324,12 +315,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
         categoryDO.setSection((Integer)rpcSend.getFieldValue("sectionId"));        
-        /*OptionField sectionOpt =  (OptionField)rpcReturn.getField("secName");        
-               
-         /if(!sectionOpt.getValue().equals(""))
-          categoryDO.setSection(new Integer((String)sectionOpt.getValue()));
         
-        System.out.println("sectionOpt.getValue() "+sectionOpt.getValue());*/
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -548,6 +534,8 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         } 
       }
       
+    // the method that returns a id of that row, if any, from the Dictionary table which stores the Entry specified by "entry" 
+    // it throws an exception if 
       public NumberField getEntryIdForEntry(StringObject entry)throws Exception{
          try{ 
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
@@ -561,7 +549,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
          }
       }
        
-
+    // the method called to initialize the autocomplete box(es) on the screen
     public DataModel getDisplay(String cat, DataModel model, AbstractField value) {     
       
       DataModel dataModel = new DataModel(); 
@@ -580,10 +568,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
          id.setValue(dictId);
          StringObject nameObject = new StringObject();
          nameObject.setValue(entry.trim());
-        
-        //StringObject displayObject = new StringObject();
-        //displayObject.setValue(entry.trim());
-        
+                
          data.addObject(id);        
          data.addObject(nameObject);
         
@@ -597,6 +582,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         return dataModel;
     }
 
+    // the method called to load the dropdowns on the screen
     public DataModel getInitialModel(String cat) { 
          
         DataModel model = new DataModel();
@@ -627,8 +613,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         model.add(blankset);
         
         if(cat.equals("section")){
-        // System.out.println("typeId "+provDO.getTypeId());
-         //System.out.println("type "+provDO.getType()); 
+        
          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
          List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
                       
@@ -712,6 +697,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         
     }
 
+   //  the method called to load the matching entries in the autocomplete box(es) on the screen
     public DataModel getMatches(String cat, DataModel model, String match) {        
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
         List entries = remote.getMatchingEntries(match+"%", 10);

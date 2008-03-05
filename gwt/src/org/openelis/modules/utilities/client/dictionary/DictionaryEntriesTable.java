@@ -6,7 +6,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
@@ -80,12 +79,14 @@ public class DictionaryEntriesTable implements TableManager {
           if(row < systemNamesList.size()){ 
            if(!(systemNamesList.get(row).equals(systemName))){
              if(checkInList("systemName",systemName.trim(), row)){                                
-                 showError(row-controller.start,1,controller,"System names for Dictionary must be unique");
+                 //showError(row-controller.start,1,controller,"System names for Dictionary must be unique");
+                 showError(row,1,controller,"System names for Dictionary must be unique");
              }
             } 
            }else{
               if(checkInList("systemName",systemName.trim(), row)){                  
-                  showError(row-controller.start,1,controller,"System names for Dictionary must be unique");
+                  //showError(row-controller.start,1,controller,"System names for Dictionary must be unique");
+                  showError(row,1,controller,"System names for Dictionary must be unique");
               }
            } 
          }
@@ -103,13 +104,14 @@ public class DictionaryEntriesTable implements TableManager {
           if(row < entryList.size()){               
            if(!(entryList.get(row).equals(entry))){
               if(checkInList("entry",entry.trim(), row)){                                     
-                  showError(row-controller.start,3,controller,"Entry text for Dictionary must be unique");
+                  //showError(row-controller.start,3,controller,"Entry text for Dictionary must be unique");
+                  showError(row,3,controller,"Entry text for Dictionary must be unique");
                }
             } 
            }
            else{
               if(checkInList("entry",entry.trim(), row)){                 
-                  showError(row-controller.start,3,controller,"Entry text for Dictionary must be unique");  
+                  showError(row,3,controller,"Entry text for Dictionary must be unique");  
              }
            }
           }                
