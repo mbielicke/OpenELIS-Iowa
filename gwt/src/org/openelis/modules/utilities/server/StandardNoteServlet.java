@@ -35,8 +35,6 @@ public class StandardNoteServlet implements AppScreenFormServiceInt,
 
 	private static final long serialVersionUID = 734713425110147476L;
 	private static final int leftTableRowsPerPage = 10;
-
-	private String systemUserId = "";
 	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -113,7 +111,7 @@ public class StandardNoteServlet implements AppScreenFormServiceInt,
 //		if the rpc is null then we need to get the page
 		if(rpcSend == null){
 //			need to get the query rpc out of the cache
-	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", systemUserId+":StandardNote");
+	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StandardNote");
 
 	        if(rpc == null)
 	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -191,9 +189,9 @@ public class StandardNoteServlet implements AppScreenFormServiceInt,
 		}
         
         //need to save the rpc used to the encache
-        if(systemUserId.equals(""))
-        	systemUserId = remote.getSystemUserId().toString();
-        CachingManager.putElement("screenQueryRpc", systemUserId+":StandardNote", rpcSend);
+        if(SessionManager.getSession().getAttribute("systemUserId") == null)
+        	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+        CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StandardNote", rpcSend);
 		}
 		
 		return model;
@@ -271,10 +269,16 @@ public class StandardNoteServlet implements AppScreenFormServiceInt,
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl"));
-        DataModel model = new DataModel();
-        ModelField data = new ModelField();
-        data.setValue(model);
-        return new DataObject[] {xml,data};
+        
+        DataModel standardNoteTypeDropdownField = (DataModel)CachingManager.getElement("InitialData", "standardNoteTypeDropdown");
+        
+        //standard note type dropdown
+        if(standardNoteTypeDropdownField == null){
+        	standardNoteTypeDropdownField = getInitialModel("type");
+        	CachingManager.putElement("InitialData", "standardNoteTypeDropdown", standardNoteTypeDropdownField);
+        }
+        
+        return new DataObject[] {xml,standardNoteTypeDropdownField};
     }
 
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
@@ -351,11 +355,4 @@ public class StandardNoteServlet implements AppScreenFormServiceInt,
 		
 		return returnModel;
 	}
-	
-	public ModelField getModelField(StringObject cat) {
-        ModelField modelField = new ModelField();
-        DataModel model = getInitialModel((String)cat.getValue());
-        modelField.setValue(model);
-        return modelField;
-    } 
 }
