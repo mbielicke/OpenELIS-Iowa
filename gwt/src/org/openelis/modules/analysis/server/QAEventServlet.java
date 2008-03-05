@@ -23,7 +23,6 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.services.AppScreenServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -41,9 +40,7 @@ public class QAEventServlet implements
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 19;
-    private static ModelField qaTypeDropDown = null;
-    private static ModelField testDropDown = null;
+    private static final int leftTableRowsPerPage = 19;  
     
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -314,7 +311,7 @@ public class QAEventServlet implements
         return null;
     }
 
-    public ModelField getInitialModel(String cat) {
+    public DataModel getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         int id = -1;
@@ -402,10 +399,9 @@ public class QAEventServlet implements
             model.add(set);
             
          }
-       ModelField field = new ModelField();
-       field.setValue(model);
+       
         // }        
-        return field;
+        return model;
     }
 
     public DataModel getMatches(String cat, DataModel model, String match) {
@@ -421,14 +417,18 @@ public class QAEventServlet implements
 
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));        
-        if(qaTypeDropDown ==null)
-         qaTypeDropDown = getInitialModel("qaEventType");
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));    
         
-        if(testDropDown ==null)
-            testDropDown = getInitialModel("test");
+        DataModel qaTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "qaTypeDropDown");
+        DataModel testDropDownField = (DataModel)CachingManager.getElement("InitialData", "testDropDown");
         
-        return new DataObject[] {xml,qaTypeDropDown,testDropDown};
+        if(qaTypeDropDownField ==null)
+            qaTypeDropDownField = getInitialModel("qaEventType");
+        
+        if(testDropDownField ==null)
+            testDropDownField = getInitialModel("test");
+        
+        return new DataObject[] {xml,qaTypeDropDownField,testDropDownField};
     }
 
 }
