@@ -18,7 +18,6 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
@@ -428,9 +427,9 @@ public class ProviderScreen extends OpenELISScreenForm {
                  
     private void loadDropdowns(){
         
-        DataModel typeDropDown = initData[0];
-        DataModel stateDropDown = initData[1];
-        DataModel countryDropDown = initData[2];
+        DataModel typeDropDown = (DataModel)initData[0];
+        DataModel stateDropDown = (DataModel)initData[1];
+        DataModel countryDropDown = (DataModel)initData[2];
                 
                 ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
                 ScreenAutoDropdown queryType = displayType.getQueryWidget();

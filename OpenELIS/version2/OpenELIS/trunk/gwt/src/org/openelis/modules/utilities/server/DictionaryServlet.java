@@ -19,7 +19,6 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.OptionField;
@@ -50,8 +49,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
      */
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;   
-    private static ModelField sectionDropDown = null;
-    private static ModelField activeDropDown = null;
+   
 
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -64,13 +62,17 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
     public DataObject[] getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
-        if(sectionDropDown ==null)
-            sectionDropDown = getInitialModel("section");
+        
+        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData", "sectionDropDown");
+        DataModel activeDropDownField = (DataModel)CachingManager.getElement("InitialData", "activeDropDown");       
+        
+        if(sectionDropDownField ==null)
+            sectionDropDownField = getInitialModel("section");
            
-           if(activeDropDown ==null)
-               activeDropDown = getInitialModel("isActive");
+           if(activeDropDownField ==null)
+               activeDropDownField = getInitialModel("isActive");
            
-           return new DataObject[] {xml,sectionDropDown,activeDropDown};
+           return new DataObject[] {xml,sectionDropDownField,activeDropDownField};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -595,7 +597,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         return dataModel;
     }
 
-    public ModelField getInitialModel(String cat) { 
+    public DataModel getInitialModel(String cat) { 
          
         DataModel model = new DataModel();
         DataSet blankset = new DataSet();
@@ -705,10 +707,8 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
             set.addObject(selected);
             
             model.add(set); 
-          }
-        ModelField field = new ModelField();
-        field.setValue(model);
-        return field;
+          }       
+        return model;
         
     }
 
