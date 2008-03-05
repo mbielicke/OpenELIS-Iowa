@@ -118,11 +118,11 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    </panel>
    
    <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
-    <panel height= "200px" key= "provTabPanel" halign= "center" layout= "tab" width = "600px"  xsi:type= "Tab">
+    <panel height= "200px" key= "provTabPanel"  halign= "center" layout= "tab"  xsi:type= "Tab">
      <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
       <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
        <widget halign= "center">
-        <table width= "550px" maxRows = "9" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
+        <table width= "550px" cellHeight = "20" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -185,7 +185,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <table width= "550px" maxRows = "9" rows = "1" title = "">
+	     <table width= "550px" maxRows = "6" rows = "1" title = "">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
