@@ -27,7 +27,7 @@
 				 <xsl:if test="string($language)='en'">
 			<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
-				<table manager="StandardNoteNameTable" width="auto" style="ScreenLeftTable" key="StandardNoteTable" maxRows="10" title="">
+				<table manager="StandardNoteNameTable" width="auto" style="ScreenLeftTable" key="StandardNoteTable" maxRows="10" title="" showError="false">
 				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
 							<widths>175</widths>
 							<editors>

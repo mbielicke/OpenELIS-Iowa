@@ -28,7 +28,7 @@
 			<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
 		
-				<table manager="StorageNameTable" width="auto" style="ScreenLeftTable" key="storageLocsTable" maxRows="10" title="{resource:getString($constants,'name')}">
+				<table manager="StorageNameTable" width="auto" style="ScreenLeftTable" key="storageLocsTable" maxRows="10" title="{resource:getString($constants,'name')}" showError="false">
 							<widths>175</widths>
 							<editors>
 								<label/>
@@ -143,7 +143,7 @@
 								</row>
 								<row>
 								<widget  colspan="4" halign="center">
-							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="">
+							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
@@ -179,7 +179,7 @@
 										<colAligns>left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="auto" maxRows="7" rows="1" title="">
+									<table width="auto" maxRows="7" rows="1" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>130,200,115,80</widths>
