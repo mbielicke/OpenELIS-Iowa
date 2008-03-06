@@ -72,6 +72,11 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
            if(activeDropDownField ==null)
                activeDropDownField = getInitialModel("isActive");
            
+           /*ConstantMap cmap = new ConstantMap();
+           HashMap<String,String> hmap = new HashMap<String, String>();
+           hmap.put("dictSystemNameError", openElisConstants.getString("dictSystemNameError"));
+           hmap.put("dictEntryError", openElisConstants.getString("dictEntryError"));
+           cmap.setValue(hmap);*/
            return new DataObject[] {xml,sectionDropDownField,activeDropDownField};
     }
 
@@ -101,10 +106,8 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        CategoryDO categoryDO = new CategoryDO();
-        //NumberField categoryId = (NumberField) rpcSend.getField("categoryId");
-        
-       // categoryDO.setId((Integer)categoryId.getValue());
+        CategoryDO categoryDO = new CategoryDO();        
+                
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
@@ -165,13 +168,14 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
         
         Integer categoryId = null;
        try{
-          categoryId = remote.updateCategory(categoryDO, dictDOList);        
-       }catch(Exception ex){
+          categoryId = remote.updateCategory(categoryDO, dictDOList);          
+       }catch(Exception ex){           
            throw new RPCException(ex.getMessage());
        }
        
-         categoryDO = remote.getCategory((Integer)categoryId);
-         rpcReturn.setFieldValue("categoryId", categoryId);
+         categoryDO = remote.getCategory((Integer)categoryId); 
+         
+         rpcReturn.setFieldValue("categoryId", categoryId);        
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
@@ -239,7 +243,7 @@ public class DictionaryServlet implements AppScreenFormServiceInt,
             row.addObject(id);                      
             row.addObject(sysName);
             model.add(row);
-   
+            i++;
          }
         
                 
