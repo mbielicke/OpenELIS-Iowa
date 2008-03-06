@@ -2,6 +2,7 @@ package org.openelis.modules.utilities.client.dictionary;
 
 
 
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class DictionaryScreen extends OpenELISScreenForm implements MouseListener{
 
     private TableWidget dictEntryTable  = null;
+    //private HashMap hmap = null;
     
     public DictionaryScreen(){
         super("org.openelis.modules.utilities.server.DictionaryServlet",true);        
@@ -58,12 +60,15 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         removeEntryButton.addClickListener(this);
         removeEntryButton.changeState(AppButton.DISABLED);                                     
         
-        super.afterDraw(success);
+        super.afterDraw(success);        
         
         bpanel.setButtonState("prev", AppButton.DISABLED);
         bpanel.setButtonState("next", AppButton.DISABLED);
         
         loadDropdowns();
+        //ConstantMap cmap = (ConstantMap)initData[3];
+        //hmap = (HashMap)cmap.getValue(); 
+        
       
     }
     
@@ -267,6 +272,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                     if(hasError){                                                
                         DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
                         String dictSystemNameError = "An entry with this System Name already exists in the database.Please choose some other name";
+                        //String dictSystemNameError = (String)(hmap.get("dictSystemNameError"));
                         dictEntManager.showError(trow, 1, dictEntryTable.controller, dictSystemNameError);
                     }                                           
      
@@ -304,6 +310,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                     if(hasError){                                               
                         DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryTable.controller.manager);
                         String dictEntryError = "An entry with this Entry text already exists in the database.Please choose some other text";
+                        //String dictEntryError = (String)(hmap.get("dictEntryError"));
                         dictEntManager.showError(trow, 3, dictEntryTable.controller, dictEntryError); 
                     }
                    }                 
@@ -348,6 +355,13 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
            for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
                StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 1);
                StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);
+                if(efield.getValue()!=null){
+                  if((efield.getValue().toString().trim().equals(""))){
+                      efield.addError("Field is required");
+                  }  
+                }else{
+                    efield.addError("Field is required");
+                }
                
                if(!(efield.getErrors().length==0)){
                   // entryExists = true;       
