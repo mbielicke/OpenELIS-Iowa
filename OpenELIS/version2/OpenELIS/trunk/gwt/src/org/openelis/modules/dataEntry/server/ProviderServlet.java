@@ -1,7 +1,10 @@
 package org.openelis.modules.dataEntry.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
@@ -16,7 +19,6 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -35,12 +37,12 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
+import org.openelis.util.XMLUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 
 public class ProviderServlet implements AppScreenFormServiceInt{
@@ -619,16 +621,19 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         return model;
     }
     
-    public ModelField getNotesModel(NumberObject key){
-        //remote interface to call the organization bean
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+    public StringObject getNotesModel(NumberObject key){
+//    	remote interface to call the provider bean
+    	ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
         List notesList = remote.getProviderNotes((Integer)key.getValue());
         
-        ModelField modelField = new ModelField();   
-        DataModel notesModel = new DataModel();
         Iterator itr = notesList.iterator();
+        try{
+        Document doc = XMLUtil.createNew("panel");
+		Element root = (Element) doc.getDocumentElement();
+		root.setAttribute("key", "notePanel");   
+		int i=0;
         while(itr.hasNext()){           
             Object[] result = (Object[])itr.next();
                         
@@ -642,22 +647,69 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             String subject = (String)result[4];
                         
             
-            DataSet set = new DataSet();
-            StringObject subjectLine = new StringObject();
-            StringObject bodyLine = new StringObject();
-            
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
             SystemUserDO user = securityRemote.getSystemUser(userId,false);
             
-            subjectLine.setValue(date+" "+user.getLoginName().trim()+": " + subject);
-            bodyLine.setValue(body);
-            
-            set.addObject(subjectLine);
-            set.addObject(bodyLine);
-            notesModel.add(set);            
+            String userName = user.getLoginName().trim();  
+
+        	 Element mainRowPanel = (Element) doc.createElement("panel");
+        	 Element topRowPanel = (Element) doc.createElement("panel");
+        	 Element titleWidgetTag = (Element) doc.createElement("widget");
+        	 Element titleText = (Element) doc.createElement("text");
+        	 Element authorWidgetTag = (Element) doc.createElement("widget");
+        	 Element authorPanel = (Element) doc.createElement("panel");
+        	 Element dateText = (Element) doc.createElement("text");
+        	 Element authorText = (Element) doc.createElement("text");
+        	 Element bodyWidgetTag = (Element) doc.createElement("widget");
+        	 Element bodytextTag = (Element) doc.createElement("text");
+        	 
+        	 mainRowPanel.setAttribute("key", "note"+i);
+        	 if(i % 2 == 1){
+                 mainRowPanel.setAttribute("style", "AltTableRow");
+             }else{
+            	 mainRowPanel.setAttribute("style", "TableRow");
+             }
+        	 mainRowPanel.setAttribute("layout", "vertical");
+        	 mainRowPanel.setAttribute("width", "507px");
+        	 
+        	 topRowPanel.setAttribute("layout", "horizontal");
+        	 topRowPanel.setAttribute("width", "507px");
+        	 titleText.setAttribute("key", "note"+i+"Title");
+        	 titleText.setAttribute("style", "notesSubjectText");
+        	 titleText.appendChild(doc.createTextNode(subject));
+        	 authorWidgetTag.setAttribute("halign", "right");
+        	 authorPanel.setAttribute("layout", "vertical");
+        	 dateText.setAttribute("key", "note"+i+"Date");
+        	 dateText.appendChild(doc.createTextNode(date.toString()));
+        	 authorText.setAttribute("key", "note"+i+"Author");
+        	 authorText.appendChild(doc.createTextNode("by "+userName));
+        	 bodytextTag.setAttribute("key", "note"+i+"Body");
+        	 bodytextTag.setAttribute("wordwrap", "true");
+        	 bodytextTag.appendChild(doc.createTextNode(body));
+        	 
+        	 root.appendChild(mainRowPanel);
+        	 mainRowPanel.appendChild(topRowPanel);
+        	 mainRowPanel.appendChild(bodyWidgetTag);
+        	 topRowPanel.appendChild(titleWidgetTag);
+        	 topRowPanel.appendChild(authorWidgetTag);
+        	 titleWidgetTag.appendChild(titleText);
+        	 authorWidgetTag.appendChild(authorPanel);
+        	 authorPanel.appendChild(dateText);
+        	 authorPanel.appendChild(authorText);
+        	 bodyWidgetTag.appendChild(bodytextTag);
+          
+          i++;
+      }
+
+        StringObject returnObject = new StringObject();
+        returnObject.setValue(XMLUtil.toString(doc));
+        
+        return returnObject;
+    	
+        }catch(Exception e){
+        	System.out.println(e.getMessage());
         }
-       modelField.setValue(notesModel);
-       return modelField;
+        return null;        
     }
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
