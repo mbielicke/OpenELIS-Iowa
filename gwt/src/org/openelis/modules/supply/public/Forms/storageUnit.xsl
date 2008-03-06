@@ -28,7 +28,7 @@
 			<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
 
-				<table manager="StorageUnitDescTable" width="auto" style="ScreenLeftTable" key="StorageUnitTable" maxRows="10" title="">
+				<table manager="StorageUnitDescTable" width="auto" style="ScreenLeftTable" key="StorageUnitTable" maxRows="10" title="" showError="false">
 				<headers><xsl:value-of select='resource:getString($constants,"description")'/></headers>
 							<widths>175</widths>
 							<editors>
