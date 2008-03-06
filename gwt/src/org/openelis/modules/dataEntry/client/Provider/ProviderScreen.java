@@ -18,12 +18,14 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -134,7 +136,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         AppButton standardNote = (AppButton) getWidget("standardNoteButton");
         standardNote.changeState(AppButton.UNPRESSED);
         
-        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
+        ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
         vp.clear();
         
         TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
@@ -182,9 +184,9 @@ public class ProviderScreen extends OpenELISScreenForm {
     }
     
     public void query(int state){
-      VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");        
-      vp.clear();
-      //shownotes = true;
+    	ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
+    	vp.clear();
+    	//shownotes = true;
       
       super.query(state);
       
@@ -382,7 +384,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         super.commitQuery(rpcQuery);
     }
 
-    private void loadNotes(DataModel notesModel){       
+    /*private void loadNotes(DataModel notesModel){       
                      
         VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
                   
@@ -421,15 +423,15 @@ public class ProviderScreen extends OpenELISScreenForm {
                       i++;
                   }
                  } 
-              }
+              }*/
     
     
                  
     private void loadDropdowns(){
         
-        DataModel typeDropDown = (DataModel)initData[0];
-        DataModel stateDropDown = (DataModel)initData[1];
-        DataModel countryDropDown = (DataModel)initData[2];
+        DataModel typeDropDown = (DataModel) initData[0];
+        DataModel stateDropDown = (DataModel) initData[1];
+        DataModel countryDropDown = (DataModel) initData[2];
                 
                 ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
                 ScreenAutoDropdown queryType = displayType.getQueryWidget();
@@ -504,11 +506,11 @@ public class ProviderScreen extends OpenELISScreenForm {
          DataObject[] args = new DataObject[] {provId}; 
          
         screenService.getObject("getNotesModel", args, new AsyncCallback(){
-           public void onSuccess(Object result){    
-             // get the datamodel, load it in the notes panel and set the value in the rpc  
-               ModelField modelField = (ModelField)result;
-               rpc.setFieldValue("notesModel", (DataModel)modelField.getValue()); 
-               loadNotes((DataModel)modelField.getValue());
+           public void onSuccess(Object result){  
+        	   ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
+               // get the datamodel, load it in the notes panel and set the value in the rpc
+          	   String xmlString = (String) ((StringObject)result).getValue();
+               vp.load(xmlString);
            }
            
            public void onFailure(Throwable caught){
@@ -597,9 +599,8 @@ public class ProviderScreen extends OpenELISScreenForm {
        provAddController.setModel(provAddController.model);
        rpc.setFieldValue("providerAddressTable",provAddController.model);
        
-       VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
+       ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
        vp.clear();
-       rpc.setFieldValue("notesModel", new DataModel());
    }
    
 }

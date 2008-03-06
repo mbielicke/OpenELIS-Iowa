@@ -473,6 +473,7 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
         	 authorText.setAttribute("key", "note"+i+"Author");
         	 authorText.appendChild(doc.createTextNode("by "+userName));
         	 bodytextTag.setAttribute("key", "note"+i+"Body");
+        	 bodytextTag.setAttribute("wordwrap", "true");
         	 bodytextTag.appendChild(doc.createTextNode(body));
         	 
         	 root.appendChild(mainRowPanel);

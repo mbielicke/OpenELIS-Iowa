@@ -178,7 +178,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		contactTable.controller.setAutoAdd(true);
 		contactTable.controller.addRow();
 		
-		AbsolutePanel vp = (AbsolutePanel) getWidget("notesPanel");
+		ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
 		//we need to remove anything in the notes tab if it exists
 		vp.clear();
 		
@@ -526,6 +526,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
               provAddController.model.reset(); 
               provAddController.setModel(provAddController.model);
               rpc.setFieldValue("contactsTable",provAddController.model);
+              
+              ScreenVertical vp = (ScreenVertical)widgets.get("notesPanel");
+              vp.clear();
               
           } 
 }
