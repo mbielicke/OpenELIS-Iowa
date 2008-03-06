@@ -2,20 +2,16 @@ package org.openelis.modules.dataEntry.client.Provider;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -469,8 +465,15 @@ public class ProviderScreen extends OpenELISScreenForm {
        boolean noLocErrors =  true;
        
        for(int iter = 0; iter < provAddController.model.numRows(); iter++){
-           StringField snfield = (StringField)provAddController.model.getFieldAt(iter, 0);         
-                      
+           StringField snfield = (StringField)provAddController.model.getFieldAt(iter, 0);  
+           
+           if(snfield.getValue()!=null){
+               if((snfield.getValue().toString().trim().equals(""))){
+                   snfield.addError("Field is required");
+               }  
+             }else{
+                 snfield.addError("Field is required");
+             }
            if(!(snfield.getErrors().length==0)){
                noLocErrors = false;                   
            }
