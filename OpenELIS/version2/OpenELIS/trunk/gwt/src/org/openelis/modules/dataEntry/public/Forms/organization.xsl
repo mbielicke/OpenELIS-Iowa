@@ -262,19 +262,19 @@
 											</autoDropdown>
 										</editors>
 										<fields>
-											<number type="integer" required="true">0</number>
+											<collection type="integer"/>
 											<string required="true"/>
 											<string/>
 											<string/>
 											<string/>
-											<string xml:space="preserve"> </string>
+											<collection type="string"/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
-											<string xml:space="preserve"> </string>
+											<collection type="string"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -433,8 +433,8 @@
   <number key="parentOrgId" type="integer" required="true"/> 
   <table key="contactsTable"/>
   <number key="id" required="false" type="integer"/>
-  <string key="stateId" required="true"/>
-  <string key="countryId" required="true"/>
+  <collection key="state" type="string" required="true"/>
+  <collection key="country" type="string" required="true"/>
 	</rpc>
 	<rpc key="query">
   <queryNumber key="orgId" type="integer"/>
