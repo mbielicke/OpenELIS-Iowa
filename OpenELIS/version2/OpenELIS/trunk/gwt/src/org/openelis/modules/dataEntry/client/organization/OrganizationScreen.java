@@ -4,7 +4,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -27,7 +26,6 @@ import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePick
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -126,12 +124,13 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		((OrganizationNameTable) orgNameTable.controller.manager)
 				.setOrganizationForm(this);
 
+        loadDropdowns();
 		super.afterDraw(success);
 		
 		bpanel.setButtonState("prev", AppButton.DISABLED);
 		bpanel.setButtonState("next", AppButton.DISABLED);
 		
-		loadDropdowns();		
+				
 	}
 
     public void fetch(){
@@ -373,18 +372,18 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	    ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdown);
-	    ((AutoCompleteDropdown)queryState.getWidget()).setModel((DataModel)stateDropdown.getInstance());
+	    ((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDropdown);
 	               
 	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	    ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
 	               
 	    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	              																				controller.editors[5];
-	    displayContactState.setModel((DataModel)stateDropdown.getInstance());
+	    displayContactState.setModel(stateDropdown);
 	               
 	    TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[5];
-	    queryContactState.setModel((DataModel)stateDropdown.getInstance());
+	    queryContactState.setModel(stateDropdown);
 	     
 	     
 		//load the country dropdowns
@@ -392,15 +391,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	    ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
-	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel((DataModel)countryDropdown.getInstance());
+	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDropdown);
 	               
 	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
-	    displayContactCountry.setModel((DataModel)countryDropdown.getInstance());
+	    displayContactCountry.setModel(countryDropdown);
 	               
 	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 						controller.editors[12];
-	    queryContactCountry.setModel((DataModel)countryDropdown.getInstance());
+	    queryContactCountry.setModel(countryDropdown);
 	    
 	    
 		//load the contact type dropdowns	        	   
@@ -410,7 +409,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
    	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
 	        	   											controller.editors[0];
-  	   queryContactType.setModel((DataModel)contactTypeDropdown.getInstance());
+  	   queryContactType.setModel(contactTypeDropdown);
 	}
     
     
