@@ -60,6 +60,7 @@ import org.openelis.gwt.widget.table.TableAuto;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCalendar;
 import org.openelis.gwt.widget.table.TableCheck;
+import org.openelis.gwt.widget.table.TableCollection;
 import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableOption;
@@ -131,6 +132,7 @@ public class OpenELIS implements EntryPoint {
       ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_TEXTBOX, new TableTextBox());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_AUTO, new TableAuto());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_AUTO_DROPDOWN, new TableAutoDropdown());
+      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_COLLECTION, new TableCollection());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.DRAGLIST, new ScreenDragList());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.LABEL, new ScreenLabel());
       ScreenBase.getWidgetMap().addWidget(WidgetMap.MENU_PANEL, new ScreenMenuPanel());
