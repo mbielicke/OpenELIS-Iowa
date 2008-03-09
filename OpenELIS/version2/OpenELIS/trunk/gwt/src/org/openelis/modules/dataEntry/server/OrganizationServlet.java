@@ -689,12 +689,12 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 		blankNumberId.setValue(new Integer(0));
 		
 		if(cat.equals("contactType"))
-			blankset.addObject(blankNumberId);
+			blankset.setKey(blankNumberId);
 		else
-			blankset.addObject(blankStringId);			
+			blankset.setKey(blankStringId);			
 		
-		blankSelected.setValue(new Boolean(false));
-		blankset.addObject(blankSelected);
+		//blankSelected.setValue(new Boolean(false));
+		//blankset.addObject(blankSelected);
 		
 		returnModel.add(blankset);
 		int i=0;
@@ -717,14 +717,14 @@ public class OrganizationServlet implements AppScreenFormServiceInt,
 			if(cat.equals("contactType")){
 				numberId.setType("integer");
 				numberId.setValue(dropdownId);
-				set.addObject(numberId);
+				set.setKey(numberId);
 			}else{
 				stringId.setValue(dropdownText);
-				set.addObject(stringId);			
+				set.setKey(stringId);			
 			}
 			
-			selected.setValue(new Boolean(false));
-			set.addObject(selected);
+			//selected.setValue(new Boolean(false));
+			//set.addObject(selected);
 			
 			returnModel.add(set);
 			
