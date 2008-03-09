@@ -31,17 +31,26 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
 
 public class OrganizationScreen extends OpenELISScreenForm {
 
 	private Widget selected;
+  
+    private static DataModel stateDropdown;
+    
+    private static DataModel countryDropdown;
+    
+    private static DataModel contactTypeDropdown; 
+    
+    private static boolean loaded = false;
 
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadTable = true; // tells whether table tab is to be filled with data
 
 
 	public OrganizationScreen() {
-		super("org.openelis.modules.dataEntry.server.OrganizationServlet",true);
+        super("org.openelis.modules.dataEntry.server.OrganizationServlet",!loaded);
 	}
 
 	public void onClick(Widget sender) {
@@ -92,7 +101,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         }    
     
 	public void afterDraw(boolean success) {
-
+        loaded = true;
 		bpanel = (ButtonPanel) getWidget("buttons");
 
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
@@ -360,12 +369,13 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		
-	    DataModel stateDropdown = (DataModel)initData[0];
+		if(stateDropdown == null){
+		    stateDropdown = (DataModel)initData[0];
 	    
-		DataModel countryDropdown = (DataModel)initData[1];
+		    countryDropdown = (DataModel)initData[1];
 	    
-	    DataModel contactTypeDropdown = (DataModel)initData[2];    
+		    contactTypeDropdown = (DataModel)initData[2];
+        }
 	
 //	  load the state dropdowns
 		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
