@@ -4,8 +4,8 @@ import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.modules.dataEntry.client.organization.OrganizationScreen;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.modules.organization.client.OrganizationScreen;
 
 
 public class TestOrganization extends GWTTestCase {
