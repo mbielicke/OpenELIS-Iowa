@@ -60,7 +60,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="description,id">
+										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.storageunit.server.StorageUnitService" width="110px" dropdown="true" type="string" fromModel="true" tab="description,id">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -70,7 +70,7 @@
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="description,id">
+										<autoDropdown cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.storageunit.server.StorageUnitService" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="description,id">
 											<autoWidths>89</autoWidths>
 											<autoEditors>
 												<label/>
@@ -97,7 +97,7 @@
 									<widget>
 										<check key="isSingular" tab="id,description"/>
 										<query>
-											<autoDropdown cat="isSingular" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,description">
+											<autoDropdown cat="isSingular" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storageunit.server.StorageUnitService" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,description">
 													<autoWidths>19</autoWidths>
 													<autoEditors>
 														<label/>

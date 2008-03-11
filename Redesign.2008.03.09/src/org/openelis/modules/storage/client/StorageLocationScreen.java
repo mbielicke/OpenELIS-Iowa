@@ -16,7 +16,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StorageLocationScreen() {
-		super("org.openelis.modules.supply.server.StorageLocationServlet",false);
+		super("org.openelis.modules.storage.server.StorageLocationService",false);
 	}
 	
 	public void onClick(Widget sender) {

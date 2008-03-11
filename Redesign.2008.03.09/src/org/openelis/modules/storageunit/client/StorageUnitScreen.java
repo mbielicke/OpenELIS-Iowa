@@ -18,7 +18,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StorageUnitScreen() {
-		super("org.openelis.modules.supply.server.StorageUnitServlet",true);
+		super("org.openelis.modules.storageunit.server.StorageUnitService",true);
 	}
 	
 	public void onClick(Widget sender) {

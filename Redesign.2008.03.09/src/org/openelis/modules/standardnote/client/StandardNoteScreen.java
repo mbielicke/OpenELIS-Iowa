@@ -24,7 +24,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private Widget selected;
 	
 	public StandardNoteScreen() {
-		super("org.openelis.modules.utilities.server.StandardNoteServlet",true);
+		super("org.openelis.modules.standardnote.server.StandardNoteService",true);
 	}
 	
 	public void afterDraw(boolean success) {

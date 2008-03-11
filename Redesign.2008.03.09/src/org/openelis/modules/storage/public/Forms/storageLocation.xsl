@@ -71,7 +71,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="parentStorageLoc" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
+									<auto cat="parentStorageLoc" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
 										<autoHeaders>Id,Name,Location</autoHeaders>
 										<autoWidths>50,120,150</autoWidths>
 										<autoEditors>
@@ -95,7 +95,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
+									<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -121,7 +121,7 @@
 									<widget>
 										<check key="isAvailable" tab="id,storageUnit"/>
 										<query>
-											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,storageUnit">
+											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,storageUnit">
 													<autoWidths>19</autoWidths>
 													<autoEditors>
 														<label/>
@@ -150,7 +150,7 @@
 										<editors>
 											<textbox case="mixed" max="20"/>
 											<textbox case="mixed" max="80"/>
-											<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="150px" type="integer">
+											<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" type="integer">
 										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
 										<autoWidths>50,160,80,45</autoWidths>
 										<autoEditors>
@@ -187,7 +187,7 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="64px" type="string" multiSelect="true">
+											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="64px" type="string" multiSelect="true">
 													<autoWidths>64</autoWidths>
 													<autoEditors>
 														<label/>

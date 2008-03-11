@@ -34,7 +34,7 @@ public class OpenELIS extends AppScreen implements PopupListener, MouseListener 
 	public OpenELIS() {	    
         super();
         String base = GWT.getModuleBaseURL();
-        base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreen";
+        base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISService";
         target.setServiceEntryPoint(base);
         service = screenService;
         getXML();

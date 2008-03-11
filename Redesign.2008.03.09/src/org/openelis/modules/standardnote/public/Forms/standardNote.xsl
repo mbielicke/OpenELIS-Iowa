@@ -75,7 +75,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
+										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.standard.server.StandardNoteService" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>
@@ -85,7 +85,7 @@
 											</autoFields>
 										</autoDropdown>
 										<query>
-										<autoDropdown cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
+										<autoDropdown cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.standard.server.StandardNoteService" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
 											<autoWidths>100</autoWidths>
 											<autoEditors>
 												<label/>

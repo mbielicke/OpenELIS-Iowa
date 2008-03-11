@@ -1,3 +1,3 @@
 <module>
-  <entry-point class="org.openelis.modules.analysis.client.Analysis"/>
+  <entry-point class="org.openelis.modules.qaevent.client.QAEventEntry"/>
 </module>

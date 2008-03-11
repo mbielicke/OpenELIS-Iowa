@@ -40,7 +40,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     //private TableController provAddController = null;  
    
     public ProviderScreen(){
-        super("org.openelis.modules.dataEntry.server.ProviderServlet",true);
+        super("org.openelis.modules.provider.server.ProviderService",true);
     }
     
     public void afterDraw(boolean success) {
