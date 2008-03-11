@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
      private Widget selected;
 
      public QAEventScreen(){
-         super("org.openelis.modules.analysis.server.QAEventServlet",true);                   
+         super("org.openelis.modules.qaevent.server.QAEventService",true);                   
      }
      
          public void afterDraw(boolean success) {                  

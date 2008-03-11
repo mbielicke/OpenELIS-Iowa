@@ -24,7 +24,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	public TextArea noteTextArea;
 	
 	public StandardNotePickerScreen(TextArea noteTextArea) {
-		super("org.openelis.modules.utilities.server.StandardNotePickerServlet",false);
+		super("org.openelis.modules.standardnote.server.StandardNotePickerService",false);
 		this.noteTextArea = noteTextArea;		
 	}
 	

@@ -15,7 +15,7 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class OpenELISScreen implements OpenELISServiceInt {
+public class OpenELISService implements OpenELISServiceInt {
    
     private static final long serialVersionUID = 1L;
 

@@ -50,7 +50,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 
 	public OrganizationScreen() {
-        super("org.openelis.modules.dataEntry.server.OrganizationServlet",!loaded);
+        super("org.openelis.modules.organization.server.OrganizationService",!loaded);
 	}
 
 	public void onClick(Widget sender) {

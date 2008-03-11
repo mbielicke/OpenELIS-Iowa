@@ -34,7 +34,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
     //private HashMap hmap = null;
     
     public DictionaryScreen(){
-        super("org.openelis.modules.utilities.server.DictionaryServlet",true);        
+        super("org.openelis.modules.dictionary.server.DictionaryService",true);        
     }
     
     private Widget selected;
