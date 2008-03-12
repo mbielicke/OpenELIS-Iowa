@@ -5,7 +5,6 @@
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>
-<xsl:import href="buttonPanel.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
@@ -42,10 +41,24 @@
 				</panel>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
-			<!--button panel code-->
-			<xsl:call-template name="buttonPanelTemplate">
-				<xsl:with-param name="buttonsParam">qpn|aud|cb</xsl:with-param>
-			</xsl:call-template>
+				<!--button panel code-->
+		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+			<widget>
+    			<buttonPanel key="buttons">
+    			<xsl:call-template name="queryButton"/>
+    			<xsl:call-template name="previousButton"/>
+    			<xsl:call-template name="nextButton"/>
+    			<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="addButton"/>
+    			<xsl:call-template name="updateButton"/>
+    			<xsl:call-template name="deleteButton"/>
+    			<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="commitButton"/>
+    			<xsl:call-template name="abortButton"/>
+				</buttonPanel>
+ 			</widget>
+		</panel>
+		<!--end button panel-->
 						
 					<panel layout="vertical" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">

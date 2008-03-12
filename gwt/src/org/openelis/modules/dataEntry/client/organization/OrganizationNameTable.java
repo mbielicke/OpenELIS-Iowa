@@ -16,7 +16,7 @@ public class OrganizationNameTable implements TableManager {
     }  
 
     public boolean canSelect(int row, TableController controller) {        
-        if(userForm.bpanel.state == FormInt.DISPLAY)           
+        if(userForm.bpanel.state == FormInt.DISPLAY || userForm.bpanel.state == FormInt.DEFAULT)           
         	userForm.modelWidget.select(row);
         return false;
     }

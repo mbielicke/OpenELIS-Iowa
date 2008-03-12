@@ -11,6 +11,7 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -33,10 +34,6 @@ import com.google.gwt.user.client.ui.Widget;
                
                loadDropdowns();
                super.afterDraw(success);        
-               
-               bpanel.setButtonState("prev", AppButton.DISABLED);
-               bpanel.setButtonState("next", AppButton.DISABLED);               
-            
         }
          
          public void onClick(Widget sender){
@@ -59,15 +56,7 @@ import com.google.gwt.user.client.ui.Widget;
              super.abort(state);
              // need to get the provider name table model
              TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
-             int rowSelected = catNameTM.controller.selected;               
-
-             // set the update button if needed
-             if (rowSelected == -1){
-                 bpanel.setButtonState("update", AppButton.DISABLED);
-                 bpanel.setButtonState("prev", AppButton.DISABLED);
-                 bpanel.setButtonState("next", AppButton.DISABLED);
-             }
-                          
+             int rowSelected = catNameTM.controller.selected;                                         
          }
          
          public void add(int state){                                  
@@ -90,7 +79,7 @@ import com.google.gwt.user.client.ui.Widget;
          private void getQAEvents(String letter, Widget sender) {
              // we only want to allow them to select a letter if they are in display
              // mode..
-             if (bpanel.getState() == FormInt.DISPLAY) {
+             if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
                  letterRPC.setFieldValue("name", letter + "*");

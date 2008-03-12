@@ -70,8 +70,8 @@
 			</panel>
 			
 			<panel height="100%" layout="horizontal" width="100%" xsi:type="Panel">
-				<panel layout="vertical" key="leftMenuPanel" xsi:type="Panel" width="150px">
-					<panel layout="table" xsi:type="Table" style="FavoritesTitlePanel" width="150px">
+				<panel layout="vertical" key="leftMenuPanel" xsi:type="Panel" width="150px" spacing="0">
+					<panel layout="table" xsi:type="Table" style="FavoritesTitlePanel" width="150px" spacing="0">
 					<row>
 						<widget>
 							<label key="headerText" text="{resource:getString($constants,'favorites')}"/>

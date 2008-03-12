@@ -4,7 +4,7 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="buttonPanel.xsl"/>
+<xsl:import href="button.xsl"/>
                 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>

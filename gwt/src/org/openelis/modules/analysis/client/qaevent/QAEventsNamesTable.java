@@ -36,7 +36,7 @@ public class QAEventsNamesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        if(qaEventForm.bpanel.state == FormInt.DISPLAY)                   
+        if(qaEventForm.bpanel.state == FormInt.DISPLAY || qaEventForm.bpanel.state == FormInt.DEFAULT)                   
             qaEventForm.modelWidget.select(row);       
         return false;
     }
