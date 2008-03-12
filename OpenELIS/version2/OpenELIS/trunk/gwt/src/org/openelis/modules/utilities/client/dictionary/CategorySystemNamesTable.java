@@ -31,7 +31,7 @@ public class CategorySystemNamesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        if(dictionaryForm.bpanel.state == FormInt.DISPLAY)                   
+        if(dictionaryForm.bpanel.state == FormInt.DISPLAY || dictionaryForm.bpanel.state == FormInt.DEFAULT)                   
             dictionaryForm.modelWidget.select(row);       
         return false;
     }

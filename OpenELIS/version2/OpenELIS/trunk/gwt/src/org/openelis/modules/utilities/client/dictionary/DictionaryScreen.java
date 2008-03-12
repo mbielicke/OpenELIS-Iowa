@@ -1,8 +1,5 @@
 package org.openelis.modules.utilities.client.dictionary;
 
-
-
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -21,6 +18,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.MouseListener;
@@ -61,9 +59,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         removeEntryButton.changeState(AppButton.DISABLED);                                     
         
         super.afterDraw(success);        
-        
-        bpanel.setButtonState("prev", AppButton.DISABLED);
-        bpanel.setButtonState("next", AppButton.DISABLED);
         
         loadDropdowns();
         //ConstantMap cmap = (ConstantMap)initData[3];
@@ -149,12 +144,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
         int rowSelected = catNameTM.controller.selected;               
 
-        // set the update button if needed
-        if (rowSelected == -1){
-            bpanel.setButtonState("update", AppButton.DISABLED);
-            bpanel.setButtonState("prev", AppButton.DISABLED);
-            bpanel.setButtonState("next", AppButton.DISABLED);
-        }
        }catch(Exception ex){
            Window.alert(ex.getMessage());
        }
@@ -195,7 +184,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         private void getCategories(String letter, Widget sender) {
             // we only want to allow them to select a letter if they are in display
             // mode..
-            if (bpanel.getState() == FormInt.DISPLAY) {
+            if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
                 FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
                 letterRPC.setFieldValue("name", letter.toUpperCase() + "*"+" | " + letter.toLowerCase() + "*");  
@@ -242,9 +231,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
             
             AppButton removeEntryButton = (AppButton) getWidget("removeEntryButton");
             removeEntryButton.changeState(AppButton.DISABLED);  
-        }
-        
-        
+        }       
         
         public void checkSystemName(Integer id,String systemName, int row){
             final Integer entryId = id; 
@@ -320,9 +307,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                  });          
            
         }
-            
-                                      
-        
         
         private void loadDropdowns(){           
             
@@ -343,10 +327,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                     TableAutoDropdown queryContactActive = (TableAutoDropdown)((TableWidget)queryEntryTable.getWidget()).
                          controller.editors[0];
                     queryContactActive.setModel(activeDropDown);
-                
             
-        }
-                 
+        }     
                              
         public boolean validate(){              
               

@@ -1,15 +1,7 @@
 package org.openelis.modules.utilities.client.standardNote;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AppButton;
@@ -18,6 +10,9 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNoteScreen extends OpenELISScreenForm {
 
@@ -41,10 +36,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 
 		super.afterDraw(success);
 		
-		bpanel.setButtonState("prev", AppButton.DISABLED);
-		bpanel.setButtonState("next", AppButton.DISABLED);
-		bpanel.setButtonState("delete", AppButton.DISABLED);
-		
 		loadDropdowns();
 	}
 	
@@ -59,7 +50,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private void getStandardNotes(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
-		if (bpanel.getState() == FormInt.DISPLAY) {
+		if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
@@ -116,14 +107,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 //		 need to get the standard Note table
 		TableWidget standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
 		int rowSelected = standardNoteTable.controller.selected;
-
-		// set the update button if needed
-		if (rowSelected == -1){
-			bpanel.setButtonState("update", AppButton.DISABLED);
-			bpanel.setButtonState("prev", AppButton.DISABLED);
-			bpanel.setButtonState("next", AppButton.DISABLED);
-			bpanel.setButtonState("delete", AppButton.DISABLED);
-		}
 	}
 	
 	protected void setStyleNameOnButton(Widget sender) {

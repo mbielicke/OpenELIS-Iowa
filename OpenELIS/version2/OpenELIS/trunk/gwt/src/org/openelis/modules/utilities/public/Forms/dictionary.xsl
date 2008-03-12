@@ -5,7 +5,6 @@
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
-<xsl:import href="buttonPanel.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
@@ -47,9 +46,22 @@
 				<!-- end left table -->
 				<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
-				<xsl:call-template name="buttonPanelTemplate">
-						<xsl:with-param name="buttonsParam">qpn|au|cb</xsl:with-param>
-				</xsl:call-template>
+		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+			<widget>
+    			<buttonPanel key="buttons">
+    			<xsl:call-template name="queryButton"/>
+    			<xsl:call-template name="previousButton"/>
+    			<xsl:call-template name="nextButton"/>
+    			<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="addButton"/>
+    			<xsl:call-template name="updateButton"/>
+    			<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="commitButton"/>
+    			<xsl:call-template name="abortButton"/>
+				</buttonPanel>
+ 			</widget>
+		</panel>
+		<!--end button panel-->
 		
 		          <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
 					<panel layout="horizontal" spacing="0"  xsi:type="Panel">

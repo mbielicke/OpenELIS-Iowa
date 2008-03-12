@@ -1,13 +1,5 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -31,6 +23,14 @@ import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePickerScreen;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ProviderScreen extends OpenELISScreenForm {
 
@@ -67,9 +67,6 @@ public class ProviderScreen extends OpenELISScreenForm {
            
         loadDropdowns();
         super.afterDraw(success);
-                       
-        bpanel.setButtonState("prev", AppButton.DISABLED);
-        bpanel.setButtonState("next", AppButton.DISABLED);
     }
       
    
@@ -112,13 +109,6 @@ public class ProviderScreen extends OpenELISScreenForm {
        if(catNameTM.controller!=null){
            rowSelected = catNameTM.controller.selected;
        } 
-
-       // set the update button if needed
-       if (rowSelected == -1){
-           bpanel.setButtonState("update", AppButton.DISABLED);
-           bpanel.setButtonState("prev", AppButton.DISABLED);
-           bpanel.setButtonState("next", AppButton.DISABLED);
-       }
     }
     
     public void add(int state){                       
@@ -250,7 +240,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     private void getProviders(String letter, Widget sender) {
         // we only want to allow them to select a letter if they are in display
         // mode..
-        if (bpanel.getState() == FormInt.DISPLAY) {
+        if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
             letterRPC.setFieldValue("lastName", letter.toUpperCase() + "*");
@@ -379,49 +369,6 @@ public class ProviderScreen extends OpenELISScreenForm {
         
         super.commitQuery(rpcQuery);
     }
-
-    /*private void loadNotes(DataModel notesModel){       
-                     
-        VerticalPanel vp = (VerticalPanel) getWidget("notesPanel");
-                  
-                  //we need to remove anything in the notes tab if it exists
-                  vp.clear();
-                  int i=0;
-                  if(notesModel != null){ 
-                      
-                    while(i<notesModel.size()){
-                      HorizontalPanel subjectPanel = new HorizontalPanel();
-                      HorizontalPanel spacerPanel = new HorizontalPanel();
-                      HorizontalPanel bodyPanel = new HorizontalPanel();
-                      
-                      Label subjectLabel = new Label();
-                      Label bodyLabel = new Label();
-                      
-                      vp.add(subjectPanel);
-                      vp.add(bodyPanel);
-                      subjectPanel.add(subjectLabel);
-                      bodyPanel.add(spacerPanel);
-                      bodyPanel.add(bodyLabel);           
-                      
-                      spacerPanel.setWidth("25px");
-                      subjectPanel.setWidth("100%");
-                      bodyPanel.setWidth("100%");
-                      
-                      subjectLabel.addStyleName("NotesText");
-                      bodyLabel.addStyleName("NotesText");
-                      
-                      subjectLabel.setWordWrap(true);
-                      bodyLabel.setWordWrap(true);
-                      
-                      subjectLabel.setText((String)notesModel.get(i).getObject(0).getValue());
-                      bodyLabel.setText((String)notesModel.get(i).getObject(1).getValue());
-                      
-                      i++;
-                  }
-                 } 
-              }*/
-    
-    
                  
     private void loadDropdowns(){
         

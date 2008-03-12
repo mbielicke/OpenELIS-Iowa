@@ -1,8 +1,5 @@
 package org.openelis.modules.supply.client.storage;
 
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -10,6 +7,9 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class StorageLocationScreen extends OpenELISScreenForm {
 	
@@ -45,10 +45,6 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 				.setStorageForm(this);
 
 		super.afterDraw(success);
-		
-		bpanel.setButtonState("prev", AppButton.DISABLED);
-		bpanel.setButtonState("next", AppButton.DISABLED);
-		bpanel.setButtonState("delete", AppButton.DISABLED);
 	}
 	
 	public void add(int state) {
@@ -104,18 +100,11 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		TableWidget StorageLocsTable = (TableWidget) getWidget("storageLocsTable");
 		int rowSelected = StorageLocsTable.controller.selected;
 
-		// set the update button if needed
-		if (rowSelected == -1){
-			bpanel.setButtonState("update", AppButton.DISABLED);
-			bpanel.setButtonState("prev", AppButton.DISABLED);
-			bpanel.setButtonState("next", AppButton.DISABLED);
-			bpanel.setButtonState("delete", AppButton.DISABLED);
-		}
 	}
 	private void getStorageLocs(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
-		if (bpanel.getState() == FormInt.DISPLAY) {
+		if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			

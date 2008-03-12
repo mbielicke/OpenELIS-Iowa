@@ -107,19 +107,13 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		orgContactsTable.disableRows = true;
 
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		//removeContactButton.addClickListener(this);
+
 		removeContactButton.changeState(AppButton.DISABLED);
-		
-		//AppButton standardNoteButton = (AppButton) getWidget("standardNoteButton");
-		//standardNoteButton.addClickListener(this);
-		//standardNoteButton.changeState(AppButton.DISABLED);
+
 
 		TableWidget orgNameTable = (TableWidget) getWidget("organizationsTable");
 		modelWidget.addChangeListener(orgNameTable.controller);
 
-		// if(constants != null)
-		// message.setText(openElisConstants.getString("loadCompleteMessage"));
-		// else
 		message.setText("done");
 
 		// get contacts table and set the managers form
@@ -133,18 +127,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 				.setOrganizationForm(this);
 
         loadDropdowns();
-		super.afterDraw(success);
-		
-		//bpanel.setButtonState("prev", AppButton.DISABLED);
-		//bpanel.setButtonState("next", AppButton.DISABLED);
-		
-				
+		super.afterDraw(success);			
 	}
-
-    public void fetch(){
-        super.fetch();               
-        
-    }
     
 	public void afterFetch(boolean success) {
 		super.afterFetch(success);    
@@ -225,13 +209,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		// need to get the org name table model
 		TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
 		int rowSelected = orgNameTM.controller.selected;
-
-		// set the update button if needed
-		//if (rowSelected == -1){
-		//	bpanel.setButtonState("update", AppButton.DISABLED);
-		//	bpanel.setButtonState("prev", AppButton.DISABLED);
-		//	bpanel.setButtonState("next", AppButton.DISABLED);
-		//}
 	}
 
 	public void afterUpdate(boolean success) {
