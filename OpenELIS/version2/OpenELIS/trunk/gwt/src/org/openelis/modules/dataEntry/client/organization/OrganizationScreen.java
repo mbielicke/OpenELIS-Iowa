@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
 
 public class OrganizationScreen extends OpenELISScreenForm {
 
@@ -136,8 +135,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
         loadDropdowns();
 		super.afterDraw(success);
 		
-		bpanel.setButtonState("prev", AppButton.DISABLED);
-		bpanel.setButtonState("next", AppButton.DISABLED);
+		//bpanel.setButtonState("prev", AppButton.DISABLED);
+		//bpanel.setButtonState("next", AppButton.DISABLED);
 		
 				
 	}
@@ -148,17 +147,18 @@ public class OrganizationScreen extends OpenELISScreenForm {
     }
     
 	public void afterFetch(boolean success) {
+		super.afterFetch(success);    
 //    every time a fetch is done, data in both tabs should be loaded afresh
         loadTable = true;
         loadNotes = true;                
         clearTabs();
         loadTabs();
-		super.afterFetch(success);       
+		   
 	}
 	private void getOrganizations(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
-		if (bpanel.getState() == FormInt.DISPLAY) {
+		if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			letterRPC.setFieldValue("orgName", letter.toUpperCase() + "*");
@@ -227,11 +227,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		int rowSelected = orgNameTM.controller.selected;
 
 		// set the update button if needed
-		if (rowSelected == -1){
-			bpanel.setButtonState("update", AppButton.DISABLED);
-			bpanel.setButtonState("prev", AppButton.DISABLED);
-			bpanel.setButtonState("next", AppButton.DISABLED);
-		}
+		//if (rowSelected == -1){
+		//	bpanel.setButtonState("update", AppButton.DISABLED);
+		//	bpanel.setButtonState("prev", AppButton.DISABLED);
+		//	bpanel.setButtonState("next", AppButton.DISABLED);
+		//}
 	}
 
 	public void afterUpdate(boolean success) {
