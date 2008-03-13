@@ -397,9 +397,12 @@ public class ProviderBean implements ProviderRemote {
         if(addressDO.getCellPhone().trim().equals("")){
             numFieldsBlank++; 
         }
-        if(addressDO.getCountry().trim().equals("")){
+        if(addressDO.getCountry()!=null){
+         if(addressDO.getCountry().trim().equals("")){
             numFieldsBlank++; 
+         }
         }
+    
         if(addressDO.getEmail().trim().equals("")){
             numFieldsBlank++; 
         }
@@ -412,9 +415,13 @@ public class ProviderBean implements ProviderRemote {
         if(addressDO.getMultipleUnit().trim().equals("")){
             numFieldsBlank++; 
         }
-        if(addressDO.getState().trim().equals("")){
+        
+        if(addressDO.getState()!=null){
+         if(addressDO.getState().trim().equals("")){
             numFieldsBlank++; 
+         }
         }
+        
         if(addressDO.getStreetAddress().trim().equals("")){
             numFieldsBlank++; 
         }
