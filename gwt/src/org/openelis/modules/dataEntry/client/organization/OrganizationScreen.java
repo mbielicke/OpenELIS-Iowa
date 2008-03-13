@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class OrganizationScreen extends OpenELISScreenForm {
@@ -45,8 +46,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
     private static boolean loaded = false;
 
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
-    private boolean loadTable = true; // tells whether table tab is to be filled with data
-
+    private boolean loadContacts = true; // tells whether contacts tab is to be filled with data
+    private ScreenVertical svp = null;
+    private boolean clearNotes = false; // tells whether notes panel is to be cleared 
+    private boolean clearContacts = false; // tells whether contacts tab is to be cleared
+    
 
 	public OrganizationScreen() {
         super("org.openelis.modules.dataEntry.server.OrganizationServlet",!loaded);
@@ -82,21 +86,25 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		}
 	}
 
-    public void onTabSelected(SourcesTabEvents sources, int index) {       
-           //this code is for the generic situation of a tab being clicked  
-            
-           // when the add  mode is enabled,loading of data from the database is not applicable    
-           if(!(bpanel.state == FormInt.ADD)){ 
-            if(index == 0 && loadTable){   
-                fillContactsModel();
-                loadTable = false;
+    public boolean onBeforeTabSelected(SourcesTabEvents sender, int index){
+           // this code is for the generic situation of a tab being clicked  
+                        
+            if(index ==0 && loadContacts){
+              if(clearContacts){
+                clearContacts();
+               } 
+              fillContactsModel();
+              loadContacts = false;
             }
             
-            else if(index == 1 && loadNotes){
-                fillNotesModel();
-                loadNotes = false;            
+            else if(index ==1 && loadNotes){
+               if(clearNotes){ 
+                clearNotes();
+               } 
+               fillNotesModel();
+               loadNotes = false;      
             }
-           } 
+            return true;
         }    
     
 	public void afterDraw(boolean success) {
@@ -131,13 +139,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	}
     
 	public void afterFetch(boolean success) {
-		super.afterFetch(success);    
-//    every time a fetch is done, data in both tabs should be loaded afresh
-        loadTable = true;
+		    
+// every time a fetch is done, data in both tabs should be loaded afresh
+      if(success){  
+        loadContacts = true;
         loadNotes = true;                
-        clearTabs();
+        
         loadTabs();
-		   
+      } 
+        super.afterFetch(success);   
 	}
 	private void getOrganizations(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
@@ -194,9 +204,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 		super.abort(state);
                         
-        loadTable = true;
+        loadContacts = true;
         loadNotes = true;                
-        clearTabs(); 
+        
         loadTabs();
    
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
@@ -213,13 +223,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 	public void afterUpdate(boolean success) {
 		super.afterUpdate(success);
-        
+       
+      if(success){ 
         // this code is for the event of the update mode being enabled 
-        loadTable = true;
+        loadContacts = true;
         loadNotes = true;                
-        clearTabs();
+        
         loadTabs();
-
+         
+       }
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
 		orgId.enable(false);
 		
@@ -240,8 +252,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	public void afterCommitAdd(boolean success) {
 //    when a new organization's data is added to the database, this code will make sure that whichever tab is open, 
           //or will be opened subsequently, will have the latest data in it
-        
-        loadTable = true;
+       if(success){ 
+        loadContacts = true;
         loadNotes = true;
         
         Integer orgId = (Integer)rpc.getFieldValue("orgId");
@@ -258,11 +270,11 @@ public class OrganizationScreen extends OpenELISScreenForm {
             key.setObject(0,orgIdObj);
         }
         
-        clearTabs();             
+                
         loadTabs(); 
         
         clearNotesFields();
-        
+       } 
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
 		removeContactButton.changeState(AppButton.UNPRESSED);
 				
@@ -285,15 +297,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	public void afterCommitUpdate(boolean success) {
         // when an organization's data is committed, after being updated, to the database, this code will make sure that whichever tab is open, 
         //or will be opened subsequently, will have the latest data in it 
-        
-        loadTable = true;
+      if(success){ 
+        loadContacts = true;
         loadNotes = true;
-        clearTabs();              
+                      
         loadTabs();               
         
-//      the note subject and body fields need to be refeshed after every successful commit   
+       //the note subject and body fields need to be refeshed after every successful commit   
         clearNotesFields();
-        
+       } 
 		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
 		orgContactsTable.disableRows = true;
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
@@ -409,8 +421,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
            if(key.getObject(0)!=null){        
              getModel = true;
              orgId = (Integer)key.getObject(0).getValue(); 
-            }        
-          } 
+           }else{
+               clearNotes = false;
+           }
+         }else{
+             clearNotes = false;
+         } 
             
            if(getModel){               
              NumberObject orgIdObj = new NumberObject();
@@ -422,10 +438,16 @@ public class OrganizationScreen extends OpenELISScreenForm {
              
             screenService.getObject("getNotesModel", args, new AsyncCallback(){
                public void onSuccess(Object result){    
-            	   ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
+            	   svp = (ScreenVertical) widgets.get("notesPanel");
                  // get the datamodel, load it in the notes panel and set the value in the rpc
             	   String xmlString = (String) ((StringObject)result).getValue();
-                   vp.load(xmlString);                   
+                   svp.load(xmlString);   
+                   
+                   if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
+                       clearNotes = true;
+                    }else {
+                        clearNotes = false;
+                    }
                }
                
                public void onFailure(Throwable caught){
@@ -445,8 +467,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
           if(key.getObject(0)!=null){        
            getModel = true;
            orgId = (Integer)key.getObject(0).getValue(); 
-          }      
-         } 
+          }else{
+              clearContacts = false;  
+            }   
+           }else {
+               clearContacts = false;
+           }  
          
           if(getModel){              
              // reset the model so that old data goes away 
@@ -468,6 +494,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
                    rpc.setFieldValue("contactsTable",(TableModel)((TableField)result).getValue());
                    TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
                    orgContactController.setModel((TableModel)((TableField)result).getValue());
+                   
+                   if(orgContactController.model.numRows()>0){      
+                       clearContacts = true;
+                   }else{
+                       clearContacts = false;
+                   } 
                }
               
                public void onFailure(Throwable caught){
@@ -491,14 +523,22 @@ public class OrganizationScreen extends OpenELISScreenForm {
               TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");        
               int selectedTab = noteTab.getTabBar().getSelectedTab();     
                                    
-              if(selectedTab == 0 && loadTable){     
+              if(selectedTab == 0 && loadContacts){
+               // if there was data previously then clear the contacts table otherwise don't   
+                if(clearContacts){ 
+                    clearContacts(); 
+                   }   
                 //load the table  
                   fillContactsModel();
                 // don't load it again unless the mode changes or a new fetch is done  
-                 loadTable = false;
+                 loadContacts = false;
               }
              
-              else if(selectedTab == 1 && loadNotes){
+             else if(selectedTab == 1 && loadNotes){
+              //if there was data previously then clear the notes panel otherwise don't    
+               if(clearNotes){
+                   clearNotes(); 
+               }   
                 //load the notes model          
                  fillNotesModel();
               // don't load it again unless the mode changes or a new fetch is done  
@@ -507,14 +547,15 @@ public class OrganizationScreen extends OpenELISScreenForm {
               }
           }  
           
-          private void clearTabs(){
-              TableController provAddController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);         
-              provAddController.model.reset(); 
-              provAddController.setModel(provAddController.model);
-              rpc.setFieldValue("contactsTable",provAddController.model);
-              
-              ScreenVertical vp = (ScreenVertical)widgets.get("notesPanel");
-              vp.clear();
-              
+          private void clearContacts(){       
+              TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);             
+              orgContactController.model.reset(); 
+              orgContactController.setModel(orgContactController.model);
+              rpc.setFieldValue("contactsTable",orgContactController.model);
+          }
+          
+          private void clearNotes(){              
+            svp = (ScreenVertical) widgets.get("notesPanel");     
+            svp.clear();          
           } 
 }
