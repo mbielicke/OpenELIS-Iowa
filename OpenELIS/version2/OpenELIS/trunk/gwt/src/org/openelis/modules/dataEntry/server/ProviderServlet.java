@@ -14,7 +14,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -69,14 +68,20 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
         DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
         
-        if(providerTypeDropDownField ==null)
+        if(providerTypeDropDownField ==null){
             providerTypeDropDownField = getInitialModel("providerType");
+            CachingManager.putElement("InitialData", "providerTypeDropDown", providerTypeDropDownField);
+        }   
            
-         if(stateDropDownField == null)
+         if(stateDropDownField == null){
              stateDropDownField = getInitialModel("state");
+             CachingManager.putElement("InitialData", "stateDropDown", stateDropDownField);
+         }  
          
-         if(countryDropDownField == null)
+         if(countryDropDownField == null){
              countryDropDownField = getInitialModel("country");
+             CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
+         }   
            
            return new DataObject[] {xml,providerTypeDropDownField,stateDropDownField,countryDropDownField};
     }
@@ -98,13 +103,21 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
         
-        //List addressList = remote.getProviderAddresses(providerId);
-        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));              
-
-        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
+        ArrayList typeList = new ArrayList();
+        //DataSet typeSet = new DataSet();
+        //StringObject typeText = new StringObject();
+        //typeText.setValue(provDO.getTypeText());
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(provDO.getTypeId());
+        typeId.setType("integer");
+        //typeSet.addObject(typeText);
+        //typeSet.addObject(typeId);
+        //typeSet.setKey(typeId);
+        //typeList.add(typeSet);
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("providerType",typeList);      
+                                      
         
         return rpcReturn;
     }
@@ -120,8 +133,12 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
-        
+        //providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
+        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("providerType");               
+        DataSet typeSet = (DataSet)typeList.get(0);
+        NumberObject typeObj  = (NumberObject)typeSet.getKey();
+        Integer typeId = (Integer)typeObj.getValue();
+        providerDO.setTypeId(typeId);
         
         
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
@@ -160,8 +177,25 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
             provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-            provAddDO.getAddressDO().setState((String)((StringField)row.getColumn(5)).getValue());
-            provAddDO.getAddressDO().setCountry((String)((StringField)row.getColumn(6)).getValue());
+            
+            ArrayList list = (ArrayList)((CollectionField)row.getColumn(5)).getValue();
+            if(list.size()>=1){
+             DataSet set = (DataSet)list.get(0);
+             StringObject stateObj  = (StringObject)set.getKey();   
+             if(stateObj !=null)
+              provAddDO.getAddressDO().setState((String)stateObj.getValue());
+            } 
+            
+            
+            list = (ArrayList)row.getColumn(6).getValue();
+            if(list.size()>=1){
+             DataSet set = (DataSet)list.get(0);
+             StringObject countryObj  = (StringObject)set.getKey();
+             if(countryObj !=null)
+               provAddDO.getAddressDO().setCountry((String)countryObj.getValue());
+            }
+            //provAddDO.getAddressDO().setCountry((String)((StringField)row.getColumn(6)).getValue());
+            
             provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
             provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
             provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
@@ -189,14 +223,20 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
-                
+        //rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());   
         
-        //List addressList = remote.getProviderAddresses(providerId);
-        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));                                                  
-        
-       // DataModel notesModel = getNotesModel(provDO.getId());
-        //rpcReturn.setFieldValue("notesModel", notesModel);
+        typeList = new ArrayList();
+        //typeSet = new DataSet();
+       //StringObject typeText = new StringObject();
+       //typeText.setValue(provDO.getTypeText());
+        typeObj = new NumberObject();
+       typeObj.setValue(provDO.getTypeId());
+       typeObj.setType("integer");
+       //typeSet.addObject(typeText);
+       //typeSet.addObject(typeObj);
+       //typeSet.setKey(typeObj);
+       typeList.add(typeObj);
+       rpcReturn.setFieldValue("providerType",typeList);
         
         return rpcReturn;
     }
@@ -346,14 +386,18 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
-                
-              
-        
-        //providerDO.setTypeId(new Integer(selItem.akey));
-        
-        //System.out.println("selected type id "+ new Integer(selItem.akey));
-        
+        //providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
+        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("providerType");               
+        DataSet typeSet = (DataSet)typeList.get(0);
+        NumberObject typeObj  = (NumberObject)typeSet.getKey();
+        if(typeObj!=null){
+         Integer typeId = (Integer)typeObj.getValue();
+         if(typeId!=null){
+          if(typeId.intValue()!=-1){ 
+           providerDO.setTypeId(typeId);
+          } 
+         }  
+        }
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
@@ -393,8 +437,21 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
             provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-            provAddDO.getAddressDO().setState((String)((StringField)row.getColumn(5)).getValue());
-            provAddDO.getAddressDO().setCountry((String)((StringField)row.getColumn(6)).getValue());
+            
+            ArrayList list = (ArrayList)((CollectionField)row.getColumn(5)).getValue();
+            DataSet set = (DataSet)list.get(0);
+            StringObject stateObj  = (StringObject)set.getKey();   
+            if(stateObj !=null)
+             provAddDO.getAddressDO().setState((String)stateObj.getValue());
+            //provAddDO.getAddressDO().setState((String)stateObj.getValue());
+            
+            list = (ArrayList)row.getColumn(6).getValue();
+             set = (DataSet)list.get(0);
+            StringObject countryObj  = (StringObject)set.getKey();
+            if(countryObj !=null)
+              provAddDO.getAddressDO().setCountry((String)countryObj.getValue());
+            
+            //provAddDO.getAddressDO().setCountry((String)((StringField)row.getColumn(6)).getValue());
             provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
             provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
             provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
@@ -425,14 +482,21 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
-                
+        //rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
         
-        //List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
-        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));                               
-               
-        //DataModel notesModel = getNotesModel(provDO.getId());
-        //rpcReturn.setFieldValue("notesModel", notesModel);
+         typeList = new ArrayList();
+         //typeSet = new DataSet();
+        //StringObject typeText = new StringObject();
+       // typeText.setValue(provDO.getTypeText());
+         typeObj = new NumberObject();
+        typeObj.setValue(provDO.getTypeId());
+        typeObj.setType("integer");
+        //typeSet.addObject(typeText);
+        typeList.add(typeObj);
+        //typeSet.setKey(typeObj);
+        //typeList.add(typeSet);
+        rpcReturn.setFieldValue("providerType",typeList);
+        
         
         return rpcReturn;
     }
@@ -449,16 +513,22 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
+        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());               
         
-        //List addressList = remote.getProviderAddresses(providerId);
-        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));
-                
-
-        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
-        
+        ArrayList typeList = new ArrayList();
+        //DataSet typeSet = new DataSet();
+        //StringObject typeText = new StringObject();
+        //typeText.setValue(provDO.getTypeText());
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(provDO.getTypeId());
+        typeId.setType("integer");
+        //typeSet.addObject(typeText);
+        //typeSet.addObject(typeId);
+        //typeSet.setKey(typeId);
+        //typeList.add(typeSet);
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("providerType",typeList);                
+                                                      
         return rpcReturn;
     }
 
@@ -479,14 +549,21 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());                
+        //rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());
         
-        //List addressList = remote.getProviderAddresses(providerId);
-        //rpcReturn.setFieldValue("providerAddressTable",fillAddressTable((TableModel)rpcReturn.getField("providerAddressTable").getValue(),addressList));               
-
-        //DataModel notesModel = getNotesModel((Integer)key.getObject(0).getValue());
-        //rpcReturn.setFieldValue("notesModel", notesModel);                                    
-        
+        ArrayList typeList = new ArrayList();
+        //DataSet typeSet = new DataSet();
+        //StringObject typeText = new StringObject();
+        //typeText.setValue(provDO.getTypeText());
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(provDO.getTypeId());
+        typeId.setType("integer");
+        //typeSet.addObject(typeText);
+        //typeSet.addObject(typeId);
+        //typeSet.setKey(typeId);
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("providerType",typeList);      
+                                                      
         return rpcReturn;
     }    
     
@@ -513,8 +590,32 @@ public class ProviderServlet implements AppScreenFormServiceInt{
                     row.getColumn(2).setValue(addressRow.getAddressDO().getMultipleUnit());
                     row.getColumn(3).setValue(addressRow.getAddressDO().getStreetAddress());
                     row.getColumn(4).setValue(addressRow.getAddressDO().getCity()); 
-                    row.getColumn(5).setValue(addressRow.getAddressDO().getState());  
-                    row.getColumn(6).setValue(addressRow.getAddressDO().getCountry());
+                    
+                    ArrayList<DataSet> stateList = new ArrayList<DataSet>();
+                    DataSet stateSet = new DataSet();
+                    StringObject stateId = new StringObject();
+                    stateId.setValue(addressRow.getAddressDO().getState());
+                    StringObject stateText = new StringObject();
+                    stateText.setValue(addressRow.getAddressDO().getState());
+                    stateSet.addObject(stateText);
+                    //stateSet.addObject(stateId);
+                    stateSet.setKey(stateId);
+                    stateList.add(stateSet);                    
+                    row.getColumn(5).setValue(stateList);
+                    
+                    ArrayList<DataSet> countryList = new ArrayList<DataSet>();
+                    DataSet countrySet = new DataSet();
+                    StringObject countryId = new StringObject();
+                    countryId.setValue(addressRow.getAddressDO().getCountry());
+                    StringObject countryText = new StringObject();
+                    countryText.setValue(addressRow.getAddressDO().getCountry());
+                    countrySet.addObject(countryText);
+                    countrySet.setKey(countryId);
+                    //countrySet.addObject(countryId);
+                    countryList.add(countrySet);                    
+                    row.getColumn(6).setValue(countryList);
+                    //row.getColumn(5).setValue(addressRow.getAddressDO().getState());  
+                    //row.getColumn(6).setValue(addressRow.getAddressDO().getCountry());
                     row.getColumn(7).setValue(addressRow.getAddressDO().getZipCode());
                     row.getColumn(8).setValue(addressRow.getAddressDO().getWorkPhone());
                     row.getColumn(9).setValue(addressRow.getAddressDO().getHomePhone());
@@ -561,21 +662,23 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
                           
-            BooleanObject blankSelected = new BooleanObject();               
+            //BooleanObject blankSelected = new BooleanObject();               
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
             NumberObject blankNumberId = new NumberObject();
             blankNumberId.setType("integer");
-            blankNumberId.setValue(new Integer(0));
+            blankNumberId.setValue(new Integer(-1));
             if(cat.equals("providerType")){
-              blankset.addObject(blankNumberId);
+              //blankset.addObject(blankNumberId);
+              blankset.setKey(blankNumberId);
             } else{
-              blankset.addObject(blankStringId);  
+              //blankset.addObject(blankStringId);
+              blankset.setKey(blankStringId);
             }            
             
-            blankSelected.setValue(new Boolean(false));
-            blankset.addObject(blankSelected);
+           // blankSelected.setValue(new Boolean(false));
+           // blankset.addObject(blankSelected);
             
             model.add(blankset);        
           
@@ -594,7 +697,7 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             StringObject textObject = new StringObject();
             
             
-            BooleanObject selected = new BooleanObject();
+            //BooleanObject selected = new BooleanObject();
             
             textObject.setValue(dropdownText);
             set.addObject(textObject);
@@ -603,15 +706,17 @@ public class ProviderServlet implements AppScreenFormServiceInt{
                 NumberObject numberId = new NumberObject();
                 numberId.setType("integer");
                 numberId.setValue(dropdownId);
-                set.addObject(numberId);
+                //set.addObject(numberId);
+                set.setKey(numberId);
             }else{
                StringObject stringId = new StringObject();
                stringId.setValue(dropdownText);
-               set.addObject(stringId);            
+               //set.addObject(stringId);
+               set.setKey(stringId);
             }
             
-            selected.setValue(new Boolean(false));
-            set.addObject(selected);
+            //selected.setValue(new Boolean(false));
+           // set.addObject(selected);
             
             model.add(set);
             
