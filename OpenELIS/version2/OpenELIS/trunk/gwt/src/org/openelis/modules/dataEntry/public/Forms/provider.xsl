@@ -183,8 +183,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <string/>
 		  <string/>
 		  <string/>
-		  <string xml:space="preserve"> </string>
-		  <string xml:space="preserve"> </string>
+		  <!--<string xml:space="preserve"> </string>
+		  <string xml:space="preserve"> </string> -->
+		  <collection/>
+		  <collection/>
 		  <string/>
 		  <string/>
 		  <string/>
@@ -334,7 +336,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <table key="providerAddressTable"/>						      		       
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <number key="providerTypeId" type="integer" required = "true"/>
+  <collection key="providerType" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
