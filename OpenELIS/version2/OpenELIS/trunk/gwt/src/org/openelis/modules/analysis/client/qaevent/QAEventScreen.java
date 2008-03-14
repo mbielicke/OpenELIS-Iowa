@@ -51,13 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
             TextBox name = (TextBox)getWidget("name");
             name.setFocus(true);
         }                 
-         
-         public void abort(int state){
-             super.abort(state);
-             // need to get the provider name table model
-             TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
-             int rowSelected = catNameTM.controller.selected;                                         
-         }
+                  
          
          public void add(int state){                                  
              super.add(state);             
@@ -82,7 +76,7 @@ import com.google.gwt.user.client.ui.Widget;
              if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-                 letterRPC.setFieldValue("name", letter + "*");
+                 letterRPC.setFieldValue("name", letter.toLowerCase() + "*");
                   
                  commitQuery(letterRPC);
                  
