@@ -104,17 +104,10 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
         
-        ArrayList typeList = new ArrayList();
-        //DataSet typeSet = new DataSet();
-        //StringObject typeText = new StringObject();
-        //typeText.setValue(provDO.getTypeText());
+        ArrayList typeList = new ArrayList();        
         NumberObject typeId = new NumberObject();
         typeId.setValue(provDO.getTypeId());
-        typeId.setType("integer");
-        //typeSet.addObject(typeText);
-        //typeSet.addObject(typeId);
-        //typeSet.setKey(typeId);
-        //typeList.add(typeSet);
+        typeId.setType("integer");        
         typeList.add(typeId);
         rpcReturn.setFieldValue("providerType",typeList);      
                                       
@@ -133,12 +126,18 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        //providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerTypeId"));
+        
         ArrayList typeList = (ArrayList)rpcSend.getFieldValue("providerType");               
         DataSet typeSet = (DataSet)typeList.get(0);
         NumberObject typeObj  = (NumberObject)typeSet.getKey();
-        Integer typeId = (Integer)typeObj.getValue();
-        providerDO.setTypeId(typeId);
+        if(typeObj!=null){
+         Integer typeId = (Integer)typeObj.getValue();
+         if(typeId!=null){
+          if(typeId.intValue()!=-1){ 
+           providerDO.setTypeId(typeId);
+          } 
+         }  
+        }
         
         
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
@@ -222,19 +221,14 @@ public class ProviderServlet implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        //rpcReturn.setFieldValue("providerTypeId",provDO.getTypeId());   
+        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());        
         
         typeList = new ArrayList();
-        //typeSet = new DataSet();
-       //StringObject typeText = new StringObject();
-       //typeText.setValue(provDO.getTypeText());
+       
         typeObj = new NumberObject();
        typeObj.setValue(provDO.getTypeId());
        typeObj.setType("integer");
-       //typeSet.addObject(typeText);
-       //typeSet.addObject(typeObj);
-       //typeSet.setKey(typeObj);
+       
        typeList.add(typeObj);
        rpcReturn.setFieldValue("providerType",typeList);
         
@@ -440,15 +434,17 @@ public class ProviderServlet implements AppScreenFormServiceInt{
             
             ArrayList list = (ArrayList)((CollectionField)row.getColumn(5)).getValue();
             DataSet set = (DataSet)list.get(0);
-            StringObject stateObj  = (StringObject)set.getKey();   
-            if(stateObj !=null)
+            StringObject stateObj  = (StringObject)set.getObject(0);               
+            //if(stateObj !=null)
              provAddDO.getAddressDO().setState((String)stateObj.getValue());
+            System.out.println("state "+(String)stateObj.getValue()); 
             //provAddDO.getAddressDO().setState((String)stateObj.getValue());
             
-            list = (ArrayList)row.getColumn(6).getValue();
+            list = (ArrayList)((CollectionField)row.getColumn(6)).getValue();
              set = (DataSet)list.get(0);
-            StringObject countryObj  = (StringObject)set.getKey();
-            if(countryObj !=null)
+            StringObject countryObj  = (StringObject)set.getObject(0);
+            //if(countryObj !=null)
+            System.out.println("country "+(String)countryObj.getValue());
               provAddDO.getAddressDO().setCountry((String)countryObj.getValue());
             
             //provAddDO.getAddressDO().setCountry((String)((StringField)row.getColumn(6)).getValue());

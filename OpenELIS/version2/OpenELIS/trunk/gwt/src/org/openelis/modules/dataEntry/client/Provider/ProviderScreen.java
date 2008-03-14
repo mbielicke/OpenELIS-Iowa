@@ -1,6 +1,9 @@
 package org.openelis.modules.dataEntry.client.Provider;
 
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -287,7 +290,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     public void commitUpdate(){ 
         TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);               
-        
+        Window.alert("commitUpdate");
         super.commitUpdate();        
         
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
@@ -400,26 +403,66 @@ public class ProviderScreen extends OpenELISScreenForm {
    public boolean validate(){
        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
        provAddController.unselect(-1);
-       boolean noLocErrors =  true;
+       boolean noErrors =  true;
        
        for(int iter = 0; iter < provAddController.model.numRows(); iter++){
-           StringField snfield = (StringField)provAddController.model.getFieldAt(iter, 0);  
+           StringField locfield = (StringField)provAddController.model.getFieldAt(iter, 0);  
+           StringField cityfield = (StringField)provAddController.model.getFieldAt(iter, 4);
+           //CollectionField stateField = (CollectionField)provAddController.model.getFieldAt(iter, 5);
+           StringField zipField = (StringField)provAddController.model.getFieldAt(iter, 7);
            
-           if(snfield.getValue()!=null){
-               if((snfield.getValue().toString().trim().equals(""))){
-                   snfield.addError("Field is required");
+           if(locfield.getValue()!=null){
+               if((locfield.getValue().toString().trim().equals(""))){
+                   locfield.addError("Field is required");
                }  
              }else{
-                 snfield.addError("Field is required");
+                 locfield.addError("Field is required");
              }
-           if(!(snfield.getErrors().length==0)){
-               noLocErrors = false;                   
+           
+           if(!(locfield.getErrors().length==0)){
+               noErrors = false;                   
            }
-       }  
-       
-       if(!noLocErrors){
+                     
+           if(cityfield.getValue()!=null){
+               if((cityfield.getValue().toString().trim().equals(""))){
+                   cityfield.addError("Field is required");
+                   noErrors = false; 
+               }  
+             }else{
+                 cityfield.addError("Field is required");
+                 noErrors = false; 
+             }
+           
+                      
+         /*  if(stateField.getValue()!=null){
+               DataSet set = (DataSet)((ArrayList)locfield.getValue()).get(0);
+               StringObject stateObj  = (StringObject)set.getObject(0);   
+               if((stateObj.getValue().toString().trim().equals(""))){
+                   stateField.addError("Field is required");
+                   noErrors = false; 
+               }  
+             }else{
+                 stateField.addError("Field is required");
+                 noErrors = false; 
+             }*/
+                      
+           
+           if(zipField.getValue()!=null){
+               if((zipField.getValue().toString().trim().equals(""))){
+                   zipField.addError("Field is required");
+                   noErrors = false; 
+               }  
+             }else{
+                 zipField.addError("Field is required");
+                 noErrors = false; 
+             }
+                     
+       }          
+              
+       if(!noErrors){           
            return false;
        }
+ 
        
        return true; 
    }
