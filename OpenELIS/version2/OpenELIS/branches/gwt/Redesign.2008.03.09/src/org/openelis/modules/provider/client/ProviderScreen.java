@@ -41,6 +41,7 @@ public class ProviderScreen extends OpenELISScreenForm {
    
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",true);
+        name="Provider";
     }
     
     public void afterDraw(boolean success) {

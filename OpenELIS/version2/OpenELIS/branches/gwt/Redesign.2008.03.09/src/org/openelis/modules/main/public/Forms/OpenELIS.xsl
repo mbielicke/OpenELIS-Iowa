@@ -367,7 +367,7 @@
 		    </menuItem>
         </menuPanel>
        </panel>
-	   <panel layout="vertical" width="100%" xsi:type="Panel">
+	   <panel layout="vertical" width="100%" xsi:type="Panel" spacing="5">
 	    	<widget>
 		    	<winbrowser key="browser" sizeToWindow="true"/>
 	    	</widget>

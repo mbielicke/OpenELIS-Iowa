@@ -51,6 +51,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 	public OrganizationScreen() {
         super("org.openelis.modules.organization.server.OrganizationService",!loaded);
+        name = "Organization";
 	}
 
 	public void onClick(Widget sender) {

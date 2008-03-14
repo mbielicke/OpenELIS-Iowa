@@ -19,6 +19,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	
 	public StorageUnitScreen() {
 		super("org.openelis.modules.storageunit.server.StorageUnitService",true);
+        name="Storage Unit";
 	}
 	
 	public void onClick(Widget sender) {
