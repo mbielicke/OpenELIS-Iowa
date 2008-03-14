@@ -7,6 +7,8 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
+import com.google.gwt.user.client.Window;
+
 public class QAEventsNamesTable implements TableManager {
 
     private QAEventScreen qaEventForm = null;
@@ -73,7 +75,7 @@ public class QAEventsNamesTable implements TableManager {
 
     }
 
-    public void setModel(TableController controller, DataModel model) {
+    public void setModel(TableController controller, DataModel model) {       
         controller.model.reset();
         for (int i = 0; i < model.size(); i++) {
             DataSet row = (DataSet)model.get(i);

@@ -32,6 +32,9 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 
+import edu.uiowa.uhl.security.domain.SectionIdNameDO;
+import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
+
 public class QAEventServlet implements
                                    AppScreenFormServiceInt,
                                    AutoCompleteServiceInt{
@@ -63,9 +66,29 @@ public class QAEventServlet implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        rpcReturn.setFieldValue("testId",qaeDO.getTest());
-        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        //rpcReturn.setFieldValue("testId",qaeDO.getTest());        
+        //rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        
+        ArrayList typeList = new ArrayList();        
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(qaeDO.getType());
+        typeId.setType("integer");        
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("qaEventType",typeList);                   
+                 
+        ArrayList testList = new ArrayList();            
+        NumberObject testId = new NumberObject();
+        if(qaeDO.getTest()!=null){
+         testId.setValue(qaeDO.getTest());
+        }else{
+            testId.setValue(new Integer(-1)); 
+        } 
+        testId.setType("integer");            
+        testList.add(testId);
+        rpcReturn.setFieldValue("test",testList);       
+        
         return rpcReturn;
+        
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -81,8 +104,30 @@ public class QAEventServlet implements
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));
-        qaeDO.setTest((Integer)rpcSend.getFieldValue("testId"));
-        qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventTypeId"));
+        
+        ArrayList testList = (ArrayList)rpcSend.getFieldValue("test");               
+        DataSet testSet = (DataSet)testList.get(0);
+        NumberObject testObj  = (NumberObject)testSet.getKey();
+        if(testObj!=null){
+         Integer testId = (Integer)testObj.getValue();
+         if(testId!=null){
+          if(testId.intValue()!=-1){ 
+              qaeDO.setTest(testId);
+          } 
+         }  
+        }
+        
+        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("qaEventType");               
+        DataSet typeSet = (DataSet)typeList.get(0);
+        NumberObject typeObj  = (NumberObject)typeSet.getKey();
+        if(typeObj!=null){
+         Integer typeId = (Integer)typeObj.getValue();
+         if(typeId!=null){
+          if(typeId.intValue()!=-1){ 
+              qaeDO.setType(typeId);
+          } 
+         }  
+        }
         
         Integer qaeId = remote.updateQaEvent(qaeDO);
         
@@ -93,8 +138,24 @@ public class QAEventServlet implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        rpcReturn.setFieldValue("testId",qaeDO.getTest());
-        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        
+        typeList = new ArrayList();        
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(qaeDO.getType());
+        typeId.setType("integer");        
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("qaEventType",typeList);  
+        
+        testList = new ArrayList();            
+        NumberObject testId = new NumberObject();
+        if(qaeDO.getTest()!=null){
+         testId.setValue(qaeDO.getTest());
+        }else{
+            testId.setValue(new Integer(-1)); 
+        }
+        testId.setType("integer");            
+        testList.add(testId);
+        rpcReturn.setFieldValue("test",testList);
         
         return rpcReturn;
     }
@@ -244,8 +305,30 @@ public class QAEventServlet implements
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));
-        qaeDO.setTest((Integer)rpcSend.getFieldValue("testId"));
-        qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventTypeId"));
+        
+        ArrayList testList = (ArrayList)rpcSend.getFieldValue("test");               
+        DataSet testSet = (DataSet)testList.get(0);
+        NumberObject testObj  = (NumberObject)testSet.getKey();
+        if(testObj!=null){
+         Integer testId = (Integer)testObj.getValue();
+         if(testId!=null){
+          if(testId.intValue()!=-1){ 
+              qaeDO.setTest(testId);
+          } 
+         }  
+        }
+        
+        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("qaEventType");               
+        DataSet typeSet = (DataSet)typeList.get(0);
+        NumberObject typeObj  = (NumberObject)typeSet.getKey();
+        if(typeObj!=null){
+         Integer typeId = (Integer)typeObj.getValue();
+         if(typeId!=null){
+          if(typeId.intValue()!=-1){ 
+              qaeDO.setType(typeId);
+          } 
+         }  
+        }
         
         remote.updateQaEvent(qaeDO);
         
@@ -256,8 +339,24 @@ public class QAEventServlet implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        rpcReturn.setFieldValue("testId",qaeDO.getTest());
-        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        
+        typeList = new ArrayList();        
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(qaeDO.getType());
+        typeId.setType("integer");        
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("qaEventType",typeList);  
+        
+        testList = new ArrayList();            
+        NumberObject testId = new NumberObject();
+        if(qaeDO.getTest()!=null){
+         testId.setValue(qaeDO.getTest());
+        }else{
+            testId.setValue(new Integer(-1)); 
+        }
+        testId.setType("integer");            
+        testList.add(testId);
+        rpcReturn.setFieldValue("test",testList);
         
         return rpcReturn;
     }
@@ -274,9 +373,29 @@ public class QAEventServlet implements
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
-        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        rpcReturn.setFieldValue("testId",qaeDO.getTest());
-        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());           
+        
+                    
+             ArrayList typeList = new ArrayList();             
+             NumberObject typeId = new NumberObject();
+              
+             typeId.setValue(qaeDO.getType());
+             typeId.setType("integer");            
+             typeList.add(typeId);
+             rpcReturn.setFieldValue("qaEventType",typeList);                   
+        
+                   
+            ArrayList testList = new ArrayList();            
+            NumberObject testId = new NumberObject();
+            if(qaeDO.getTest()!=null){
+             testId.setValue(qaeDO.getTest());
+            }else{
+                testId.setValue(new Integer(-1)); 
+            } 
+            testId.setType("integer");            
+            testList.add(testId);
+            rpcReturn.setFieldValue("test",testList);          
+            
         return rpcReturn;
     }
 
@@ -296,9 +415,25 @@ public class QAEventServlet implements
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
-        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        rpcReturn.setFieldValue("testId",qaeDO.getTest());
-        rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
+        rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());
+        
+        ArrayList typeList = new ArrayList();        
+        NumberObject typeId = new NumberObject();
+        typeId.setValue(qaeDO.getType());
+        typeId.setType("integer");        
+        typeList.add(typeId);
+        rpcReturn.setFieldValue("qaEventType",typeList);                   
+                 
+        ArrayList testList = new ArrayList();            
+        NumberObject testId = new NumberObject();
+        if(qaeDO.getTest()!=null){
+         testId.setValue(qaeDO.getTest());
+        }else{
+            testId.setValue(new Integer(-1)); 
+        } 
+        testId.setType("integer");            
+        testList.add(testId);
+        rpcReturn.setFieldValue("test",testList);       
         return rpcReturn;
     }
 
@@ -332,21 +467,21 @@ public class QAEventServlet implements
             DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
                           
-            BooleanObject blankSelected = new BooleanObject();               
+            //BooleanObject blankSelected = new BooleanObject();               
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
             NumberObject blankNumberId = new NumberObject();
             blankNumberId.setType("integer");
-            blankNumberId.setValue(new Integer(0));
+            blankNumberId.setValue(new Integer(-1));
             //if(cat.equals("providerType")){
-              blankset.addObject(blankNumberId);
+              blankset.setKey(blankNumberId);
             /*} else{
             //  blankset.addObject(blankStringId);  
             }*/            
             
-            blankSelected.setValue(new Boolean(false));
-            blankset.addObject(blankSelected);
+            //blankSelected.setValue(new Boolean(false));
+            //blankset.addObject(blankSelected);
             
             model.add(blankset);        
        // System.out.println("typeId "+provDO.getTypeId());
@@ -372,7 +507,7 @@ public class QAEventServlet implements
             StringObject textObject = new StringObject();
             
             
-            BooleanObject selected = new BooleanObject();
+            //BooleanObject selected = new BooleanObject();
             
             if(methodName!=null){
              textObject.setValue(dropDownText.trim()+" , "+methodName.trim());
@@ -386,15 +521,16 @@ public class QAEventServlet implements
                 NumberObject numberId = new NumberObject();
                 numberId.setType("integer");
                 numberId.setValue(dropdownId);
-                set.addObject(numberId);
+                //set.addObject(numberId);
+                set.setKey(numberId);
             /* }else{
                StringObject stringId = new StringObject();
                stringId.setValue(dropdownText);
                set.addObject(stringId);            
             }*/
             
-            selected.setValue(new Boolean(false));
-            set.addObject(selected);
+            //selected.setValue(new Boolean(false));
+            //set.addObject(selected);
             
             model.add(set);
             
