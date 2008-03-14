@@ -83,7 +83,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
      <widget>
-										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="80px"   fromModel="true" type="integer" tab="npi,middleName">
+										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="80px"  multiSelect="false" fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -148,7 +148,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="40px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="40px" multiSelect="false" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -182,12 +182,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <string/>
 		  <string/>
 		  <string/>
-		  <string/>
-		  <!--<string xml:space="preserve"> </string>
-		  <string xml:space="preserve"> </string> -->
-		  <collection/>
-		  <collection/>
-		  <string/>
+		  <string required = "true"/>		  
+		  <collection type="string"/>
+		  <collection type="string"/>
+		  <string required = "true"/>
 		  <string/>
 		  <string/>
 		  <string/>
