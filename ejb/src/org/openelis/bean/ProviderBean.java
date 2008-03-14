@@ -15,7 +15,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
@@ -304,9 +303,10 @@ public class ProviderBean implements ProviderRemote {
               if(checkForUpdate){
                   Integer addressId = null;                                   
                   
-                  if(updateAddress(provAddDO.getAddressDO())){ 
+                 
+                      System.out.println("updateAddress $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                       addressId =  addressBean.updateAddress(provAddDO.getAddressDO());
-                  }
+                  
                   
                   String location = provAddDO.getLocation();                                  
                   System.out.println("location "+ location);
@@ -389,53 +389,5 @@ public class ProviderBean implements ProviderRemote {
         return getProvider(providerId);
     }
 
-    private boolean updateAddress(AddressDO addressDO){
-        int numFieldsBlank = 0; 
-        if(addressDO.getCity().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getCellPhone().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getCountry()!=null){
-         if(addressDO.getCountry().trim().equals("")){
-            numFieldsBlank++; 
-         }
-        }
-    
-        if(addressDO.getEmail().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getFaxPhone().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getHomePhone().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getMultipleUnit().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        
-        if(addressDO.getState()!=null){
-         if(addressDO.getState().trim().equals("")){
-            numFieldsBlank++; 
-         }
-        }
-        
-        if(addressDO.getStreetAddress().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getWorkPhone().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        if(addressDO.getZipCode().trim().equals("")){
-            numFieldsBlank++; 
-        }
-        
-        if(numFieldsBlank < 11){
-            return true;
-        }
-       return false; 
-    }
-
+   
 }
