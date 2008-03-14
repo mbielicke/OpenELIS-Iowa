@@ -33,6 +33,7 @@ import org.openelis.gwt.screen.ScreenImage;
 import org.openelis.gwt.screen.ScreenLabel;
 import org.openelis.gwt.screen.ScreenMaskedBox;
 import org.openelis.gwt.screen.ScreenMenuBar;
+import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMenuPopupPanel;
@@ -414,13 +415,23 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {"ScreenMenuPanel",WidgetMap.MENU_PANEL},
+      ClassFactory.addClass(new String[] {"ScreenMenuPanel","menuPanel"},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
                                           return new ScreenMenuPanel();
                                       else if(args[0] instanceof Node)
                                           return new ScreenMenuPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMenuItem","menuItem"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args){
+                                      if(args == null)
+                                          return new ScreenMenuItem();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuItem((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });
