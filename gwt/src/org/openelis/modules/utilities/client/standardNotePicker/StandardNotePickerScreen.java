@@ -1,26 +1,30 @@
 package org.openelis.modules.utilities.client.standardNotePicker;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.PagedTreeField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.screen.ScreenAppButton;
+import org.openelis.gwt.screen.ScreenPagedTree;
+import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
-
-import org.openelis.gwt.common.data.PagedTreeField;
-import org.openelis.gwt.screen.ScreenPagedTree;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.PopupWindow;
-import org.openelis.gwt.widget.pagedtree.TreeModel;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener{
 
-	PopupWindow window;
+	//ScreenWindow window;
 	public TextArea noteTextArea;
 	
 	public StandardNotePickerScreen(TextArea noteTextArea) {
@@ -28,40 +32,73 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 		this.noteTextArea = noteTextArea;		
 	}
 	
+	public void onClick(Widget sender) {
+		String action = ((AppButton)sender).action;
+		if(action.equals("find")){
+			TextBox findTextBox = (TextBox)getWidget("findTextBox");
+			 String queryString = findTextBox.getText();
+			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
+			queryRPC.setFieldValue("name", queryString);
+			queryRPC.setFieldValue("description", queryString);
+
+			StringObject name = new StringObject();
+	        StringObject desc = new StringObject();
+	        name.setValue(queryString);
+	        desc.setValue(queryString);
+	        
+	       // prepare the argument list for the getObject function
+	        DataObject[] args = new DataObject[] {name,desc}; 
+	        screenService.getObject("getTreeModel" , args, new AsyncCallback(){
+	            public void onSuccess(Object result){
+	            	ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
+	            	ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
+	            	vp.clear();
+	            	vp.getPanel().add(tree);
+	                PagedTreeField treeField = (PagedTreeField)result;
+	                tree.load(treeField);
+	            }
+	            
+	            public void onFailure(Throwable caught){
+	                Window.alert(caught.getMessage());
+	            }
+	         });        
+		}
+		super.onClick(sender);
+	}
+	
 	public void afterDraw(boolean sucess) {
-        window = new PopupWindow("Choose Standard Note");
-        window.content.add(this);
-        window.content.setStyleName("Content");
-        window.setContentPanel(window.content);
         final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
         tree.controller.setTreeListener(this);
         bpanel = (ButtonPanel) getWidget("buttons");
         super.afterDraw(sucess);
         
-        bpanel.setButtonState("commit", AppButton.UNPRESSED);
-        bpanel.setButtonState("abort", AppButton.UNPRESSED);
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                window.setVisible(true);
-                window.setPopupPosition((Window.getClientWidth() - window.getOffsetWidth())/2,100);
-                window.size();
-            }
-        });
+        ScreenAppButton findButton = (ScreenAppButton)widgets.get("findButton");
+        findButton.enable(true);
+        ScreenTextBox findTextBox = (ScreenTextBox)widgets.get("findTextBox");
+        findTextBox.enable(true);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         final HTML loadingHtml = new HTML();
         loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
         vp.clear();
-        //vp.remove(tree);
-        vp.add(loadingHtml);
-        screenService.getObject("method" , null, new AsyncCallback(){
+        vp.remove(tree);
+        vp.getPanel().add(loadingHtml);
+        //add(loadingHtml);
+        
+        message.setText("done");
+        
+        StringObject name = new StringObject();
+        StringObject desc = new StringObject();
+        name.setValue("");
+        desc.setValue("");
+        
+       // prepare the argument list for the getObject function
+        DataObject[] args = new DataObject[] {name,desc}; 
+        screenService.getObject("getTreeModel" , args, new AsyncCallback(){
             public void onSuccess(Object result){
             	vp.clear();
-            	vp.add(tree);
-                ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-                PagedTreeField treeField = new PagedTreeField();
-                treeField.setValue((TreeModel)result);
+            	vp.getPanel().add(tree);
+                PagedTreeField treeField = (PagedTreeField)result;
                 tree.load(treeField);
             }
             
@@ -84,7 +121,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	
 	public void onTreeItemStateChanged(TreeItem item) {
 		try{
-			int id = Integer.parseInt((String)item.getUserObject());
+			Integer id = Integer.valueOf((String)item.getUserObject());
 			final TreeItem finalTreeItem = item;
 			finalTreeItem.removeItems();
 			
@@ -92,11 +129,25 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			final HTML loadingHtml = new HTML();
 	        loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
 			finalTreeItem.addItem(loadingHtml);
-//			need async request to xml for 2nd layer
-			screenService.getObject("id", null, new AsyncCallback(){
+			
+			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
+
+			StringObject name = new StringObject();
+	        StringObject desc = new StringObject();
+	        name.setValue(queryRPC.getFieldValue("name"));
+	        desc.setValue(queryRPC.getFieldValue("description"));
+	        
+	        NumberObject idObj = new NumberObject();
+			idObj.setType("integer");
+			idObj.setValue(id);
+	        
+	       // prepare the argument list for the getObject function
+	        DataObject[] args = new DataObject[] {idObj,name,desc}; 
+	        
+            screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback(){
 	            public void onSuccess(Object result){
 	               finalTreeItem.removeItems();
-	               tree.controller.model.addTextChildItems(finalTreeItem, (String)result);	           
+	               tree.controller.model.addTextChildItems(finalTreeItem, (String)((StringObject)result).getValue());	           
 	            }
 	            
 	            public void onFailure(Throwable caught){
