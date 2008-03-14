@@ -1,15 +1,10 @@
 package org.openelis.modules.standardnote.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AppButton;
@@ -25,6 +20,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	
 	public StandardNoteScreen() {
 		super("org.openelis.modules.standardnote.server.StandardNoteService",true);
+        name="Standard Note";
 	}
 	
 	public void afterDraw(boolean success) {

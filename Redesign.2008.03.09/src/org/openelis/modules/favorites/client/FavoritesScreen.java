@@ -8,6 +8,7 @@ public class FavoritesScreen extends OpenELISScreenForm {
     
 	public FavoritesScreen() {
         super("org.openelis.modules.favorites.server.FavoritesService",false);
+        name="Favorites";
     }
 	
 	public void onClick(Widget sender) {
