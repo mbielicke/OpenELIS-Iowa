@@ -138,11 +138,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                 
         dictEntryTable.controller.setAutoAdd(false);
         
-        super.abort(state);
-        
-       //  need to get the category name table model
-        TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
-        int rowSelected = catNameTM.controller.selected;               
+        super.abort(state);                      
 
        }catch(Exception ex){
            Window.alert(ex.getMessage());
@@ -310,23 +306,15 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         
         private void loadDropdowns(){           
             
-            DataModel sectionDropDown = (DataModel)initData[0];
-            DataModel activeDropDown = (DataModel)initData[1];
+            DataModel sectionDropDown = (DataModel)initData[0];            
             
                        ScreenAutoDropdown displaySection = (ScreenAutoDropdown)widgets.get("section");
                        ScreenAutoDropdown querySection = displaySection.getQueryWidget();
                        
                        ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
                        ((AutoCompleteDropdown)querySection.getWidget()).setModel(sectionDropDown);
-                                              
-                   
-                    ScreenTableWidget displayEntryTable = (ScreenTableWidget)widgets.get("dictEntTable");
-                    ScreenTableWidget queryEntryTable = (ScreenTableWidget)displayEntryTable.getQueryWidget();
-                                      
-                    
-                    TableAutoDropdown queryContactActive = (TableAutoDropdown)((TableWidget)queryEntryTable.getWidget()).
-                         controller.editors[0];
-                    queryContactActive.setModel(activeDropDown);
+                                                                                  
+                
             
         }     
                              
