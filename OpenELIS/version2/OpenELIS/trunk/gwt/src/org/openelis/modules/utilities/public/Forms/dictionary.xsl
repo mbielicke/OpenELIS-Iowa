@@ -91,7 +91,7 @@
 									 
 									 
 									  <widget>
-										<autoDropdown cat="section" key="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="100px"   fromModel="true" type="integer" tab="systemName,desc">
+										<autoDropdown cat="section" key="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="systemName,desc">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -140,7 +140,7 @@
 									<textbox/>									
 									<textbox/>									
 									<textbox/>										
-									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="100px" popupHeight="50px"  type="integer">
+									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" multiSelect="false" width="100px" popupHeight="50px"  type="integer">
 												<autoWidths>100</autoWidths>
 												<autoEditors>
 													<label/>
@@ -176,11 +176,11 @@
 												<autoFields>
 													<string/>
 												</autoFields>
-												<!--<autoItems>
+												<autoItems>
 												 <item value= ""> </item>
 									             <item value= "Y">Y</item>														
 									             <item value= "N">N</item>													 																																			
-												</autoItems>-->
+												</autoItems>
 										</autoDropdown>																
 									<textbox/>									
 									<textbox/>									
@@ -221,7 +221,7 @@
 	 <string key="name" max="50" required="true"/>
 	 <string key="desc" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <number key="sectionId" type="integer" required="false"/>     
+     <collection key="section" type="integer" required="false"/>     
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
