@@ -136,7 +136,7 @@
 	<rpc key="query">
  	<queryNumber key="id" type="integer" required="false"/>
  	<queryString key="name" type="string" required="false"/>
-  	<queryString key="description" required="true"/>
+  	<queryString key="description" required="false"/>
   	<collection key="type" type="integer" required="false"/>
 	<queryString key="text" required="false"/>
 	</rpc>

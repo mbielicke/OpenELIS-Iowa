@@ -14,6 +14,7 @@ import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -26,6 +27,7 @@ import org.openelis.modules.utilities.client.standardNotePicker.StandardNotePick
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -216,27 +218,9 @@ public class ProviderScreen extends OpenELISScreenForm {
             getProviders(action.substring(6, action.length()), sender);
             
         } else if (action.equals("removeRow")) {                     
-            TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
-            int selectedRow = provAddTable.controller.selected;
-            if (selectedRow > -1
-                    && provAddTable.controller.model.numRows() > 1) {
-                TableRow row = provAddTable.controller.model
-                        .getRow(selectedRow);
-                
-                row.setShow(false);
-                // delete the last row of the table because it is autoadd
-                provAddTable.controller.model
-                        .deleteRow(provAddTable.controller.model.numRows() - 1);
-                // reset the model
-                provAddTable.controller.reset();
-                // need to set the deleted flag to "Y" also
-                StringField deleteFlag = new StringField();
-                deleteFlag.setValue("Y");
-
-                row.addHidden("deleteFlag", deleteFlag);
-            }  
+        	onRemoveRowButtonClick();
         }else if(action.equals("standardNote")){
-            new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
+        	onStandardNoteButtonClick();
         }        
     }
         
@@ -573,8 +557,7 @@ public class ProviderScreen extends OpenELISScreenForm {
           loadNotes = false;
 
        }
-   }
-     
+   }     
    
    private void clearAddresses(){       
        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);             
@@ -588,4 +571,37 @@ public class ProviderScreen extends OpenELISScreenForm {
      svp.clear();          
    }
    
+   private void onStandardNoteButtonClick(){
+	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
+	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
+	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("usersNote")));
+			
+	   standardNotePopupPanel.add(pickerWindow);
+	   int left = this.getAbsoluteLeft();
+	   int top = this.getAbsoluteTop();
+	   standardNotePopupPanel.setPopupPosition(left,top);
+	   standardNotePopupPanel.show();
+    }
+    
+    private void onRemoveRowButtonClick(){
+    	 TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
+         int selectedRow = provAddTable.controller.selected;
+         if (selectedRow > -1
+                 && provAddTable.controller.model.numRows() > 1) {
+             TableRow row = provAddTable.controller.model
+                     .getRow(selectedRow);
+             
+             row.setShow(false);
+             // delete the last row of the table because it is autoadd
+             provAddTable.controller.model
+                     .deleteRow(provAddTable.controller.model.numRows() - 1);
+             // reset the model
+             provAddTable.controller.reset();
+             // need to set the deleted flag to "Y" also
+             StringField deleteFlag = new StringField();
+             deleteFlag.setValue("Y");
+
+             row.addHidden("deleteFlag", deleteFlag);
+         }  
+    }
 }

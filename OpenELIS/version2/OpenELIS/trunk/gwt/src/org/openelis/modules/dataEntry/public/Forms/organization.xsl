@@ -133,7 +133,7 @@
 													<maskedbox key="zipCode" width="70" mask="99999-9999" tab="country,state"/>
 												</widget>
 									<!--</panel>									-->
-									</row>									
+									</row>	
 									<row>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/>:</text>
