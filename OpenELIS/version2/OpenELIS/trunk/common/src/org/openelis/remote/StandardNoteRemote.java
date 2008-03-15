@@ -21,11 +21,14 @@ public interface StandardNoteRemote {
 	//method to lock and return a whole standard note
 	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception;
 	
-	//method to return a whole standard note by type
-	public List getStandardNoteByType(Integer standardNoteType);
+    //method to return a whole standard note by type
+    public List getStandardNoteByType(HashMap fields) throws Exception;
 	
 	 //method to query for standard notes
 	 public List query(HashMap fields, int first, int max) throws Exception;
+     
+     //method to query for standard notes
+     public List queryForType(HashMap fields) throws Exception;
 	 
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();
