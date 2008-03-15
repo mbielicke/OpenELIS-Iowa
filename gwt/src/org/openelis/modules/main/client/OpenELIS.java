@@ -14,20 +14,18 @@ import org.openelis.gwt.common.data.QueryOptionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenAToZPanel;
 import org.openelis.gwt.screen.ScreenAbsolute;
 import org.openelis.gwt.screen.ScreenAppButton;
-import org.openelis.gwt.screen.ScreenAppMessage;
 import org.openelis.gwt.screen.ScreenAuto;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenDeck;
 import org.openelis.gwt.screen.ScreenDragList;
 import org.openelis.gwt.screen.ScreenDragSelect;
-import org.openelis.gwt.screen.ScreenError;
 import org.openelis.gwt.screen.ScreenHTML;
 import org.openelis.gwt.screen.ScreenHorizontal;
 import org.openelis.gwt.screen.ScreenHorizontalSplit;
@@ -35,6 +33,7 @@ import org.openelis.gwt.screen.ScreenImage;
 import org.openelis.gwt.screen.ScreenLabel;
 import org.openelis.gwt.screen.ScreenMaskedBox;
 import org.openelis.gwt.screen.ScreenMenuBar;
+import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMenuPopupPanel;
@@ -65,13 +64,16 @@ import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableOption;
 import org.openelis.gwt.widget.table.TableTextBox;
+import org.openelis.gwt.screen.ScreenBase;
 //import org.openelis.modules.main.client.constants.OpenELISConstants;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.xml.client.Node;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -103,71 +105,634 @@ public class OpenELIS implements EntryPoint {
   }
   
   public void setWidgetMap() {
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_VERTICAL, new ScreenVertical());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_HORIZONTAL, new ScreenHorizontal());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_TABLE, new ScreenTablePanel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_DECK, new ScreenDeck());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_HSPLIT, new ScreenHorizontalSplit());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_ABSOLUTE, new ScreenAbsolute());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.BUTTON, new ScreenAppButton());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.BUTTON_PANEL, new ScreenButtonPanel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.CALENDAR, new ScreenCalendar());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.CHECKBOX, new ScreenCheck());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.DRAG_SELECT, new ScreenDragSelect());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.ERROR, new ScreenError());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.IMAGE, new ScreenImage());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.MASKED_BOX, new ScreenMaskedBox());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.OPTION_LIST, new ScreenOption());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RADIO_BUTTON, new ScreenRadio());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE, new ScreenTableWidget());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TEXT, new ScreenText());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TEXT_AREA, new ScreenTextArea());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TEXBOX, new ScreenTextBox());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TAB_BROWSER, new ScreenTabBrowser());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TREE, new ScreenTree());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_CALENDAR, new TableCalendar());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_LABEL, new TableLabel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_MASKED_BOX, new TableMaskedTextBox());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_OPTION_LIST, new TableOption());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_TEXTBOX, new TableTextBox());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_AUTO, new TableAuto());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_AUTO_DROPDOWN, new TableAutoDropdown());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_COLLECTION, new TableCollection());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.DRAGLIST, new ScreenDragList());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.LABEL, new ScreenLabel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.MENU_PANEL, new ScreenMenuPanel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.MENU_LABEL, new ScreenMenuLabel());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.MENU_BAR, new ScreenMenuBar());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_CHECKBOX, new CheckField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_MODEL, new ModelField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_DATE, new DateField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_NUMBER, new NumberField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_OPTION, new OptionField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_STRING, new StringField());
-      ScreenBase.getWidgetMap().addWidget("rpc-collection", new CollectionField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_TABLE, new TableField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_PAGED_TREE, new PagedTreeField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_QUERY_CHECK, new QueryCheckField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_QUERY_DATE, new QueryDateField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_QUERY_NUMBER, new QueryNumberField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_QUERY_OPTION, new QueryOptionField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.RPC_QUERY_STRING, new QueryStringField());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.TABLE_CHECKBOX, new TableCheck());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_TAB, new ScreenTab());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.PANEL_STACK, new ScreenStack());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.WINBROWSER, new ScreenWindowBrowser());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.APP_MESSAGE,new ScreenAppMessage());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.AUTO, new ScreenAuto());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.HTML, new ScreenHTML());
-      ScreenBase.getWidgetMap().addWidget("ProxyListener", new ProxyListener());
-      ScreenBase.getWidgetMap().addWidget("HoverListener", new HoverListener());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.LEFT_MENU_PANEL, new ScreenAToZPanel());
-      ScreenBase.getWidgetMap().addWidget("titledPanel", new ScreenTitledPanel());
-      ScreenBase.getWidgetMap().addWidget("menuPopupPanel", new ScreenMenuPopupPanel());
-      //ScreenBase.getWidgetMap().addWidget("AppConstants", (OpenELISConstants)GWT.create(OpenELISConstants.class));
-      ScreenBase.getWidgetMap().addWidget("pagedTree", new ScreenPagedTree());    
-      ScreenBase.getWidgetMap().addWidget("appButton", new ScreenAppButton());
-      ScreenBase.getWidgetMap().addWidget(WidgetMap.AUTO_DROPDOWN, new ScreenAutoDropdown());
+      ClassFactory.addClass(new String[] {"ScreenVertical",WidgetMap.PANEL_VERTICAL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenVertical();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenVertical((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenHorizontal",WidgetMap.PANEL_HORIZONTAL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenHorizontal();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenHorizontal((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTablePanel",WidgetMap.PANEL_TABLE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object args[]) {
+                                      if(args == null)
+                                          return new ScreenTablePanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTablePanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenDeck",WidgetMap.PANEL_DECK},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object args[]) {
+                                      if(args == null)
+                                          return new ScreenDeck();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenDeck((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenHorizontalSplit",WidgetMap.PANEL_HSPLIT},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenHorizontalSplit();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenHorizontalSplit((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenAbsolute",WidgetMap.PANEL_ABSOLUTE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenAbsolute();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenAbsolute((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenAppButton",WidgetMap.BUTTON,"appButton"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenAppButton();
+                                      else if(args[0] instanceof Node) 
+                                         return new ScreenAppButton((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenButtonPanel",WidgetMap.BUTTON_PANEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenButtonPanel();
+                                      else if(args[0] instanceof Node) 
+                                          return new ScreenButtonPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenCalendar",WidgetMap.CALENDAR},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenCalendar();
+                                      else if(args[0] instanceof Node) 
+                                          return new ScreenCalendar((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenCheck",WidgetMap.CHECKBOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenCheck();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenCheck((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenDragSelect",WidgetMap.DRAG_SELECT},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenDragSelect();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenDragSelect((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenImage",WidgetMap.IMAGE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenImage();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenImage((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMaskedBox",WidgetMap.MASKED_BOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenMaskedBox();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMaskedBox((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenOption",WidgetMap.OPTION_LIST},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenOption();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenOption((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenRadio",WidgetMap.RADIO_BUTTON},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenRadio();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenRadio((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTableWidget",WidgetMap.TABLE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTableWidget();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTableWidget((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenText",WidgetMap.TEXT},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenText();
+                                      else if(args[0] instanceof Node) 
+                                          return new ScreenText((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTextArea",WidgetMap.TEXT_AREA},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTextArea();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTextArea((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTextBox",WidgetMap.TEXBOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTextBox();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTextBox((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTabBrowser",WidgetMap.TAB_BROWSER},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTabBrowser();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTabBrowser((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTree",WidgetMap.TREE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTree();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTree((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableCalendar",WidgetMap.TABLE_CALENDAR},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableCalendar();
+                                      else if(args[0] instanceof Node)
+                                          return new TableCalendar((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableLabel",WidgetMap.TABLE_LABEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableLabel();
+                                      else if(args[0] instanceof Node)
+                                          return new TableLabel((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableMaskedTextBox",WidgetMap.TABLE_MASKED_BOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableMaskedTextBox();
+                                      else if(args[0] instanceof Node)
+                                          return new TableMaskedTextBox((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableOption",WidgetMap.TABLE_OPTION_LIST},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableOption();
+                                      else if(args[0] instanceof Node)
+                                          return new TableOption((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableTextBox",WidgetMap.TABLE_TEXTBOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableTextBox();
+                                      else if(args[0] instanceof Node)
+                                          return new TableTextBox((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableAuto",WidgetMap.TABLE_AUTO},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableAuto();
+                                      else if(args[0] instanceof Node)
+                                          return new TableAuto((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableAutoDropdown",WidgetMap.TABLE_AUTO_DROPDOWN},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableAutoDropdown();
+                                      else if(args[0] instanceof Node)
+                                          return new TableAutoDropdown((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableCollection",WidgetMap.TABLE_COLLECTION},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableCollection();
+                                      else if(args[0] instanceof Node)
+                                          return new TableCollection((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenDragList",WidgetMap.DRAGLIST},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenDragList();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenDragList((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenLabel",WidgetMap.LABEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenLabel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenLabel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMenuPanel","menuPanel"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenMenuPanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMenuItem","menuItem"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args){
+                                      if(args == null)
+                                          return new ScreenMenuItem();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuItem((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMenuLabel",WidgetMap.MENU_LABEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenMenuLabel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuLabel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenMenuBar",WidgetMap.MENU_BAR},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenMenuBar();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuBar((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"CheckField",WidgetMap.RPC_CHECKBOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new CheckField();
+                                      else if(args[0] instanceof Node)
+                                          return new CheckField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ModelField",WidgetMap.RPC_MODEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ModelField();
+                                      else if(args[0] instanceof Node)
+                                          return new ModelField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"DateField",WidgetMap.RPC_DATE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new DateField();
+                                      else if(args[0] instanceof Node)
+                                          return new DateField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"NumberField",WidgetMap.RPC_NUMBER},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new NumberField();
+                                      else if(args[0] instanceof Node)
+                                          return new NumberField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"OptionField",WidgetMap.RPC_OPTION},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new OptionField();
+                                      else if(args[0] instanceof Node)
+                                          return new OptionField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"StringField",WidgetMap.RPC_STRING},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new StringField();
+                                      else if(args[0] instanceof Node)
+                                          return new StringField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"CollectionField","rpc-collection"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new CollectionField();
+                                      else if(args[0] instanceof Node)
+                                          return new CollectionField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableField",WidgetMap.RPC_TABLE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableField();
+                                      else if (args[0] instanceof Node)
+                                          return new TableField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"PagedTreeField",WidgetMap.RPC_PAGED_TREE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new PagedTreeField();
+                                      else if (args[0] instanceof Node)
+                                          return new PagedTreeField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"QueryCheckField",WidgetMap.RPC_QUERY_CHECK},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new QueryCheckField();
+                                      else if (args[0] instanceof Node)
+                                          return new QueryCheckField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"QueryDateField",WidgetMap.RPC_QUERY_DATE},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new QueryDateField();
+                                      else if (args[0] instanceof Node)
+                                          return new QueryDateField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"QueryNumberField",WidgetMap.RPC_QUERY_NUMBER},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new QueryNumberField();
+                                      else if (args[0] instanceof Node)
+                                          return new QueryNumberField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"QueryOptionField",WidgetMap.RPC_QUERY_OPTION},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new QueryOptionField();
+                                      else if(args[0] instanceof Node)
+                                          return new QueryOptionField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"QueryStringField",WidgetMap.RPC_QUERY_STRING},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new QueryStringField();
+                                      else if (args[0] instanceof Node)
+                                          return new QueryStringField((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"TableCheck",WidgetMap.TABLE_CHECKBOX},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableCheck();
+                                      else if(args[0] instanceof Node)
+                                          return new TableCheck((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTab",WidgetMap.PANEL_TAB},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTab();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTab((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenStack",WidgetMap.PANEL_STACK},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenStack();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenStack((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenWindowBrowser",WidgetMap.WINBROWSER},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenWindowBrowser();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenWindowBrowser((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenAuto",WidgetMap.AUTO},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenAuto();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenAuto((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenHTML",WidgetMap.HTML},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenHTML();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenHTML((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ProxyListener","ProxyListener"},
+                            new ClassFactory.Factory() {
+                                  private ProxyListener listener;
+                                  public Object newInstance(Object[] args) {
+                                      if(listener == null)
+                                          listener = new ProxyListener();
+                                      return listener;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"HoverListener","HoverListener"},
+                            new ClassFactory.Factory() {
+                                  private HoverListener listener;
+                                  public Object newInstance(Object[] args) {
+                                      if(listener == null)
+                                          listener = new HoverListener();
+                                      return listener;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenAToZPanel",WidgetMap.LEFT_MENU_PANEL},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenAToZPanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenAToZPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTitledPanel","titledPanel"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTitledPanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTitledPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"menuPopupPanel","meuPopupPanel"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenMenuPopupPanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenMenuPopupPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"pagedTree","pagedTree"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenPagedTree();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenPagedTree((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenTitledPanel","titledPanel"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTitledPanel();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTitledPanel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });   
+      ClassFactory.addClass(new String[] {"ScreenAutoDropdown",WidgetMap.AUTO_DROPDOWN},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenAutoDropdown();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenAutoDropdown((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
   }
   
 }
