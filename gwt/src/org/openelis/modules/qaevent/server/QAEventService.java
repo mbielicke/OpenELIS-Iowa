@@ -66,27 +66,8 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        //rpcReturn.setFieldValue("testId",qaeDO.getTest());        
-        //rpcReturn.setFieldValue("qaEventTypeId",qaeDO.getType());
-        
-        ArrayList typeList = new ArrayList();        
-        NumberObject typeId = new NumberObject();
-        typeId.setValue(qaeDO.getType());
-        typeId.setType("integer");        
-        typeList.add(typeId);
-        rpcReturn.setFieldValue("qaEventType",typeList);                   
-                 
-        ArrayList testList = new ArrayList();            
-        NumberObject testId = new NumberObject();
-        if(qaeDO.getTest()!=null){
-         testId.setValue(qaeDO.getTest());
-        }else{
-            testId.setValue(new Integer(-1)); 
-        } 
-        testId.setType("integer");            
-        testList.add(testId);
-        rpcReturn.setFieldValue("test",testList);       
-        
+        rpcReturn.setFieldValue("test",qaeDO.getTest());        
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());
         return rpcReturn;
         
     }
@@ -138,24 +119,8 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        
-        typeList = new ArrayList();        
-        NumberObject typeId = new NumberObject();
-        typeId.setValue(qaeDO.getType());
-        typeId.setType("integer");        
-        typeList.add(typeId);
-        rpcReturn.setFieldValue("qaEventType",typeList);  
-        
-        testList = new ArrayList();            
-        NumberObject testId = new NumberObject();
-        if(qaeDO.getTest()!=null){
-         testId.setValue(qaeDO.getTest());
-        }else{
-            testId.setValue(new Integer(-1)); 
-        }
-        testId.setType("integer");            
-        testList.add(testId);
-        rpcReturn.setFieldValue("test",testList);
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());  
+        rpcReturn.setFieldValue("test",qaeDO.getTest());
         
         return rpcReturn;
     }
@@ -339,24 +304,8 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());   
-        
-        typeList = new ArrayList();        
-        NumberObject typeId = new NumberObject();
-        typeId.setValue(qaeDO.getType());
-        typeId.setType("integer");        
-        typeList.add(typeId);
-        rpcReturn.setFieldValue("qaEventType",typeList);  
-        
-        testList = new ArrayList();            
-        NumberObject testId = new NumberObject();
-        if(qaeDO.getTest()!=null){
-         testId.setValue(qaeDO.getTest());
-        }else{
-            testId.setValue(new Integer(-1)); 
-        }
-        testId.setType("integer");            
-        testList.add(testId);
-        rpcReturn.setFieldValue("test",testList);
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());  
+        rpcReturn.setFieldValue("test",qaeDO.getTest());
         
         return rpcReturn;
     }
@@ -374,27 +323,8 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());           
-        
-                    
-             ArrayList typeList = new ArrayList();             
-             NumberObject typeId = new NumberObject();
-              
-             typeId.setValue(qaeDO.getType());
-             typeId.setType("integer");            
-             typeList.add(typeId);
-             rpcReturn.setFieldValue("qaEventType",typeList);                   
-        
-                   
-            ArrayList testList = new ArrayList();            
-            NumberObject testId = new NumberObject();
-            if(qaeDO.getTest()!=null){
-             testId.setValue(qaeDO.getTest());
-            }else{
-                testId.setValue(new Integer(-1)); 
-            } 
-            testId.setType("integer");            
-            testList.add(testId);
-            rpcReturn.setFieldValue("test",testList);          
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());                   
+        rpcReturn.setFieldValue("test",qaeDO.getTest());          
             
         return rpcReturn;
     }
@@ -416,24 +346,8 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());
-        
-        ArrayList typeList = new ArrayList();        
-        NumberObject typeId = new NumberObject();
-        typeId.setValue(qaeDO.getType());
-        typeId.setType("integer");        
-        typeList.add(typeId);
-        rpcReturn.setFieldValue("qaEventType",typeList);                   
-                 
-        ArrayList testList = new ArrayList();            
-        NumberObject testId = new NumberObject();
-        if(qaeDO.getTest()!=null){
-         testId.setValue(qaeDO.getTest());
-        }else{
-            testId.setValue(new Integer(-1)); 
-        } 
-        testId.setType("integer");            
-        testList.add(testId);
-        rpcReturn.setFieldValue("test",testList);       
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());                   
+        rpcReturn.setFieldValue("test",qaeDO.getTest());       
         return rpcReturn;
     }
 
