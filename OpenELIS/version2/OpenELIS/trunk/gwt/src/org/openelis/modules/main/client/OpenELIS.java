@@ -3,6 +3,7 @@ package org.openelis.modules.main.client;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.OptionField;
@@ -732,6 +733,17 @@ public class OpenELIS implements EntryPoint {
                                           return new ScreenAutoDropdown((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
+      });
+      ClassFactory.addClass(new String[] {"DropDownField","rpc-dropdown"}, 
+                            new ClassFactory.Factory() {
+                                public Object newInstance(Object[] args) {
+                                    if(args == null)
+                                        return new DropDownField();
+                                    else if(args[0] instanceof Node)
+                                        return new DropDownField((Node)args[0]);
+                                    return null;
+                                }
+                           
       });
   }
   

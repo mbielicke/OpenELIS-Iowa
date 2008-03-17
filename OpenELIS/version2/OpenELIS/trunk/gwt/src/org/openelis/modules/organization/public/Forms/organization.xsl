@@ -274,19 +274,19 @@
 											</autoDropdown>
 										</editors>
 										<fields>
-											<collection type="integer"/>
+											<dropdown/>
 											<string required="true"/>
 											<string/>
 											<string/>
 											<string/>
-											<collection type="string"/>
+											<dropdown/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
 											<string/>
-											<collection type="string"/>
+											<dropdown/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -341,19 +341,19 @@
 											</autoDropdown>									 	
 										</editors>
 										<fields>
-											<collection type="integer"/>
+											<dropdown/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<collection type="string"/>
+											<dropdown/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<collection type="string"/>
+											<dropdown/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -445,8 +445,8 @@
   <number key="parentOrgId" type="integer" required="false"/> 
   <table key="contactsTable"/>
   <number key="id" required="false" type="integer"/>
-  <collection key="state" type="string" required="false"/>
-  <collection key="country" type="string" required="true"/>
+  <dropdown key="state" required="false"/>
+  <dropdown key="country" required="true"/>
 	</rpc>
 	<rpc key="query">
   <queryNumber key="orgId" type="integer"/>
@@ -462,11 +462,11 @@
   <queryString key="usersNote"/>
   <table key="contactsTable"/>
   <queryNumber key="id" type="integer"/>
-  <collection key="state" type="string" required="false"/>
+  <dropdown key="state" required="false"/>
   <model key="stateModel"/>
-  <collection key="country" type="string" required="false"/>
+  <dropdown key="country" required="false"/>
   <model key="countryModel"/>
-  <collection key="isActive" type="string" required="false"/>
+  <dropdown key="isActive" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="orgName"/>
