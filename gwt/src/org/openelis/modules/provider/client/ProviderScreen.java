@@ -1,9 +1,7 @@
 package org.openelis.modules.provider.client;
 
-import java.util.ArrayList;
 
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -51,7 +49,6 @@ public class ProviderScreen extends OpenELISScreenForm {
     private static DataModel stateDropDown = null;  
     private static DataModel countryDropDown = null; 
     
-    private static boolean loaded = false;
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",true);
@@ -59,7 +56,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     }
     
     public void afterDraw(boolean success) {
-        loaded = true;
+        //loaded = true;
         bpanel = (ButtonPanel) getWidget("buttons");        
         message.setText("done");
         
@@ -290,8 +287,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     public void commitUpdate(){ 
         TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddController.unselect(-1);               
-        Window.alert("commitUpdate");
+        provAddController.unselect(-1);                       
         super.commitUpdate();        
         
         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");

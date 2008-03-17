@@ -3,6 +3,8 @@ package org.openelis.modules.dictionary.client;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public class DictionaryEntry implements AppModule {
 
     public void onModuleLoad() {
@@ -31,6 +33,11 @@ public class DictionaryEntry implements AppModule {
 
     public String getModuleName() {
         return "Dictionary";
+    }
+
+    public void onClick(Widget sender) {
+        // TODO Auto-generated method stub
+        
     }
 
 
