@@ -20,6 +20,7 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -79,27 +80,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
         rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
         rpcReturn.setFieldValue("isActive",((organizationDO.getIsActive() != null && organizationDO.getIsActive().equals("Y")) ? true : false));
-        ArrayList stateList = new ArrayList();
-		DataSet stateSet = new DataSet();
-		StringObject stateText = new StringObject();
-		stateText.setValue(organizationDO.getAddressDO().getState());
-		StringObject stateId = new StringObject();
-		stateId.setValue(organizationDO.getAddressDO().getState());
-		stateSet.setKey(stateId);
-		stateSet.addObject(stateText);
-		stateList.add(stateSet);
-        rpcReturn.setFieldValue("state",stateList);
-        
-        ArrayList countryList = new ArrayList();
-		DataSet countrySet = new DataSet();
-		StringObject countryText = new StringObject();
-		countryText.setValue(organizationDO.getAddressDO().getCountry());
-		StringObject countryId = new StringObject();
-		countryId.setValue(organizationDO.getAddressDO().getCountry());
-		countrySet.setKey(countryId);
-		countrySet.addObject(countryText);
-		countryList.add(countrySet);
-        rpcReturn.setFieldValue("country",countryList);
+        rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
+        rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
         rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
         
         return rpcReturn;  
@@ -121,15 +103,15 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue("multUnit"));
 		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue("streetAddress"));
 		newOrganizationDO.getAddressDO().setCity((String)rpcSend.getFieldValue("city"));
-		if(((ArrayList)rpcSend.getFieldValue("state")).size() == 0)
+		if(rpcSend.getFieldValue("state") == null)
 			newOrganizationDO.getAddressDO().setState("");
 		else
-			newOrganizationDO.getAddressDO().setState((String)((StringObject)((DataSet)((ArrayList)rpcSend.getFieldValue("state")).get(0)).getObject(0)).getValue());
+			newOrganizationDO.getAddressDO().setState((String)rpcSend.getFieldValue("state"));
 		newOrganizationDO.getAddressDO().setZipCode((String)rpcSend.getFieldValue("zipCode"));
-		if(((ArrayList)rpcSend.getFieldValue("country")).size() == 0)
+		if(rpcSend.getFieldValue("country") == null)
 			newOrganizationDO.getAddressDO().setCountry("");
 		else
-			newOrganizationDO.getAddressDO().setCountry((String)((StringObject)((DataSet)((ArrayList)rpcSend.getFieldValue("country")).get(0)).getObject(0)).getValue());
+			newOrganizationDO.getAddressDO().setCountry((String)rpcSend.getFieldValue("country"));
 		
 		//contacts info
 		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
@@ -179,27 +161,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
         rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
         rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
-//        rpc.setFieldValue("addType","");
-        ArrayList stateList = new ArrayList();
-		DataSet stateSet = new DataSet();
-		StringObject stateText = new StringObject();
-		stateText.setValue(organizationDO.getAddressDO().getState());
-		StringObject stateId = new StringObject();
-		stateId.setValue(organizationDO.getAddressDO().getState());
-		stateSet.setKey(stateId);
-		stateSet.addObject(stateText);
-		stateList.add(stateSet);
-        rpcReturn.setFieldValue("state",stateList);
-        ArrayList countryList = new ArrayList();
-		DataSet countrySet = new DataSet();
-		StringObject countryText = new StringObject();
-		countryText.setValue(organizationDO.getAddressDO().getCountry());
-		StringObject countryId = new StringObject();
-		countryId.setValue(organizationDO.getAddressDO().getCountry());
-		countrySet.setKey(countryId);
-		countrySet.addObject(countryText);
-		countryList.add(countrySet);
-        rpcReturn.setFieldValue("country",countryList);
+        rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
+        rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
         rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 
 		return rpcReturn;
@@ -261,19 +224,19 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();		
 		
 		if(contactsTable != null){
-			fields.put("contactType",(CollectionField)contactsTable.getRow(0).getColumn(0));
+			fields.put("contactType",(DropDownField)contactsTable.getRow(0).getColumn(0));
 			fields.put("contactName",(QueryStringField)contactsTable.getRow(0).getColumn(1));
 			fields.put("contactMultUnit",(QueryStringField)contactsTable.getRow(0).getColumn(2));
 			fields.put("contactStreetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(3));
 			fields.put("contactCity",(QueryStringField)contactsTable.getRow(0).getColumn(4));
-			fields.put("contactState",(CollectionField)contactsTable.getRow(0).getColumn(5));
+			fields.put("contactState",(DropDownField)contactsTable.getRow(0).getColumn(5));
 			fields.put("contactZipCode",(QueryStringField)contactsTable.getRow(0).getColumn(6));
 			fields.put("contactWorkPhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
 			fields.put("contactHomePhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
 			fields.put("contactCellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
 			fields.put("contactFaxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(10));
 			fields.put("contactEmail",(QueryStringField)contactsTable.getRow(0).getColumn(11));
-			fields.put("contactCountry",(CollectionField)contactsTable.getRow(0).getColumn(12));
+			fields.put("contactCountry",(DropDownField)contactsTable.getRow(0).getColumn(12));
 		}
 
 		List organizationNames = new ArrayList();
@@ -335,9 +298,9 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue("multUnit"));
 		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue("streetAddress"));
 		newOrganizationDO.getAddressDO().setCity((String)rpcSend.getFieldValue("city"));
-		newOrganizationDO.getAddressDO().setState((String)((StringObject)((DataSet)((ArrayList)rpcSend.getFieldValue("state")).get(0)).getObject(0)).getValue());
+		newOrganizationDO.getAddressDO().setState((String)rpcSend.getFieldValue("state"));
 		newOrganizationDO.getAddressDO().setZipCode((String)rpcSend.getFieldValue("zipCode"));
-		newOrganizationDO.getAddressDO().setCountry((String)((StringObject)((DataSet)((ArrayList)rpcSend.getFieldValue("country")).get(0)).getObject(0)).getValue());
+		newOrganizationDO.getAddressDO().setCountry((String)rpcSend.getFieldValue("country"));
 		
 		//contacts info
 		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
@@ -365,21 +328,18 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				//contact address data
 				if(addId != null)
 				contactDO.getAddressDO().setId((Integer)addId.getValue());
-				if(((ArrayList)row.getColumn(0).getValue()).get(0) instanceof DataSet)
-					contactDO.setContactType((Integer)((NumberObject)((DataSet)((ArrayList)row.getColumn(0).getValue()).get(0)).getKey()).getValue());
-				else
-					contactDO.setContactType((Integer)((NumberObject)((ArrayList)row.getColumn(0).getValue()).get(0)).getValue());
+			    contactDO.setContactType((Integer)row.getColumn(0).getValue());
 				contactDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
 				contactDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
 				contactDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-				contactDO.getAddressDO().setState((String)((StringObject)((DataSet)((ArrayList)row.getColumn(5).getValue()).get(0)).getObject(0)).getValue());
+				contactDO.getAddressDO().setState((String)row.getColumn(5).getValue());
 				contactDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(6)).getValue());
 				contactDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(7)).getValue());
 				contactDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(8)).getValue());
 				contactDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(9)).getValue());
 				contactDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(10)).getValue());
 				contactDO.getAddressDO().setEmail((String)((StringField)row.getColumn(11)).getValue());
-				contactDO.getAddressDO().setCountry((String)((StringObject)((DataSet)((ArrayList)row.getColumn(12).getValue()).get(0)).getObject(0)).getValue());
+				contactDO.getAddressDO().setCountry((String)row.getColumn(12).getValue());
 				
 				organizationContacts.add(contactDO);	
 			}
@@ -406,26 +366,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
 		rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
 		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
-        ArrayList stateList = new ArrayList();
-		DataSet stateSet = new DataSet();
-		StringObject stateText = new StringObject();
-		stateText.setValue(organizationDO.getAddressDO().getState());
-		StringObject stateId = new StringObject();
-		stateId.setValue(organizationDO.getAddressDO().getState());
-		stateSet.setKey(stateId);
-		stateSet.addObject(stateText);
-		stateList.add(stateSet);
-		rpcReturn.setFieldValue("state",stateList);
-        ArrayList countryList = new ArrayList();
-		DataSet countrySet = new DataSet();
-		StringObject countryText = new StringObject();
-		countryText.setValue(organizationDO.getAddressDO().getCountry());
-		StringObject countryId = new StringObject();
-		countryId.setValue(organizationDO.getAddressDO().getCountry());
-		countrySet.setKey(countryId);
-		countrySet.addObject(countryText);
-		countryList.add(countrySet);
-		rpcReturn.setFieldValue("country",countryList);
+		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
 		
 		return rpcReturn;
@@ -451,26 +393,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
 		rpcReturn.setFieldValue("parentOrgId", organizationDO.getParentOrganization());
 		rpcReturn.setFieldValue("isActive",("Y".equals(organizationDO.getIsActive())));
-		ArrayList stateList = new ArrayList();
-		DataSet stateSet = new DataSet();
-		StringObject stateText = new StringObject();
-		stateText.setValue(organizationDO.getAddressDO().getState());
-		StringObject stateId = new StringObject();
-		stateId.setValue(organizationDO.getAddressDO().getState());
-		stateSet.setKey(stateId);
-		stateSet.addObject(stateText);
-		stateList.add(stateSet);
-		rpcReturn.setFieldValue("state",stateList);
-		ArrayList countryList = new ArrayList();
-		DataSet countrySet = new DataSet();
-		StringObject countryText = new StringObject();
-		countryText.setValue(organizationDO.getAddressDO().getCountry());
-		StringObject countryId = new StringObject();
-		countryId.setValue(organizationDO.getAddressDO().getCountry());
-		countrySet.setKey(countryId);
-		countrySet.addObject(countryText);
-		countryList.add(countrySet);
-		rpcReturn.setFieldValue("country",countryList);
+		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
         
       return rpcReturn;  
@@ -587,29 +511,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
 		rpcReturn.setFieldValue("parentOrgId", organizationDO.getParentOrganization());
 		rpcReturn.setFieldValue("isActive",("Y".equals(organizationDO.getIsActive())));
-		
-		ArrayList stateList = new ArrayList();
-		DataSet stateSet = new DataSet();
-		StringObject stateText = new StringObject();
-		stateText.setValue(organizationDO.getAddressDO().getState());
-		StringObject stateId = new StringObject();
-		stateId.setValue(organizationDO.getAddressDO().getState());
-		stateSet.setKey(stateId);
-		stateSet.addObject(stateText);
-		stateList.add(stateSet);
-		rpcReturn.setFieldValue("state",stateList);
-		
-		ArrayList countryList = new ArrayList();
-		DataSet countrySet = new DataSet();
-		StringObject countryText = new StringObject();
-		countryText.setValue(organizationDO.getAddressDO().getCountry());
-		StringObject countryId = new StringObject();
-		countryId.setValue(organizationDO.getAddressDO().getCountry());
-		countrySet.setKey(countryId);
-		countrySet.addObject(countryText);
-		countryList.add(countrySet);
-		rpcReturn.setFieldValue("country",countryList);
-		
+		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
         
 	    return rpcReturn;  
@@ -632,47 +535,19 @@ public class OrganizationService implements AppScreenFormServiceInt,
 	                addId.setValue(contactRow.getAddressDO().getId());
 	                row.addHidden("contactId", id);
 	                row.addHidden("addId", addId);
-	                
-	                ArrayList contactTypeList = new ArrayList();
-	                NumberObject contactTypeId = new NumberObject();
-	                contactTypeId.setType("integer");
-	                contactTypeId.setValue(contactRow.getContactType());
-	                contactTypeList.add(contactTypeId);
-	                row.getColumn(0).setValue(contactTypeList);
-	                
+	                row.getColumn(0).setValue(contactRow.getContactType());
 	                row.getColumn(1).setValue(contactRow.getName());
 	                row.getColumn(2).setValue(contactRow.getAddressDO().getMultipleUnit());
 	                row.getColumn(3).setValue(contactRow.getAddressDO().getStreetAddress());
-	                row.getColumn(4).setValue(contactRow.getAddressDO().getCity());
-	                
-	                ArrayList stateList = new ArrayList();
-	                DataSet stateSet = new DataSet();
-	                StringObject stateId = new StringObject();
-	                stateId.setValue(contactRow.getAddressDO().getState());
-	                StringObject stateText = new StringObject();
-	                stateText.setValue(contactRow.getAddressDO().getState());
-	                stateSet.setKey(stateId);
-	                stateSet.addObject(stateText);
-	                stateList.add(stateSet);	                
-	                row.getColumn(5).setValue(stateList);
-	                
+	                row.getColumn(4).setValue(contactRow.getAddressDO().getCity());          
+	                row.getColumn(5).setValue(contactRow.getAddressDO().getState());
 	                row.getColumn(6).setValue(contactRow.getAddressDO().getZipCode());
 	                row.getColumn(7).setValue(contactRow.getAddressDO().getWorkPhone());
 	                row.getColumn(8).setValue(contactRow.getAddressDO().getHomePhone());
 	                row.getColumn(9).setValue(contactRow.getAddressDO().getCellPhone());
 	                row.getColumn(10).setValue(contactRow.getAddressDO().getFaxPhone());
-	                row.getColumn(11).setValue(contactRow.getAddressDO().getEmail());
-	                
-	                ArrayList countryList = new ArrayList();
-	                DataSet countrySet = new DataSet();
-	                StringObject countryId = new StringObject();
-	                countryId.setValue(contactRow.getAddressDO().getCountry());
-	                StringObject countryText = new StringObject();
-	                countryText.setValue(contactRow.getAddressDO().getCountry());
-	                countrySet.setKey(countryId);
-	                countrySet.addObject(countryText);
-	                countryList.add(countrySet);	                
-	                row.getColumn(12).setValue(countryList);
+	                row.getColumn(11).setValue(contactRow.getAddressDO().getEmail());	                
+	                row.getColumn(12).setValue(contactRow.getAddressDO().getCountry());
 	                
 	                contactsModel.addRow(row);
 	       } 
