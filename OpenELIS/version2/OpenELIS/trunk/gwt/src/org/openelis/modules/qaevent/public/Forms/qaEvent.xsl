@@ -148,22 +148,6 @@
         </widget>
         <widget>
          <check key= "billable" tab="sequence,test"/>
-         <query>
-         <autoDropdown cat="billable" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="upper"  width="20px"  multiSelect="true"  type="string" tab="sequence,test">
-													<autoWidths>10</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>	
-													   <item value= " "> </item>
-									                   <item value= "Y">Y</item>														
-									                   <item value= "N">N</item>											       
-												    </autoItems> 
-										          </autoDropdown>
-         </query>
        </widget>
       </row> 
       <row>
@@ -197,7 +181,7 @@
  <string key="name" required = "true" />
  <number key="sequence" type="integer" required = "false" />
  <string key="description" required = "false" /> 	 
- <check key= "billable" required = "false" />
+ <string key= "billable" required = "false" />
  <string key="reportingText" required = "true" />
  <collection key="test" type="integer" required = "false" />
  <collection key="qaEventType" type="integer" required = "true" />

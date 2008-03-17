@@ -97,10 +97,10 @@ public class QAEventService implements
         
         qaeDO.setDescription((String)rpcSend.getFieldValue("description"));
         
-        CheckField billable = (CheckField)rpcSend.getField("billable");
-        Boolean billableVal = (Boolean)billable.getValue();      
+        String billable = (String)rpcSend.getFieldValue("billable");
+        //Boolean billableVal = (Boolean)billable.getValue();      
         
-        qaeDO.setIsBillable(billableVal?"Y":"N");        
+        qaeDO.setIsBillable(billable);        
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));
