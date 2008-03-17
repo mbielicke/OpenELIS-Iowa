@@ -91,7 +91,7 @@
 									 
 									 
 									  <widget>
-										<autoDropdown cat="section" key="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="systemName,desc">
+										<autoDropdown cat="section" key="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="systemName,desc">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -102,7 +102,7 @@
 										</autoDropdown>
 													<query>
 													
-												  <autoDropdown cat="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="100px" multiSelect="true"  fromModel="true" type="integer" >
+												  <autoDropdown cat="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" multiSelect="true"  fromModel="true" type="integer" >
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -140,7 +140,7 @@
 									<textbox/>									
 									<textbox/>									
 									<textbox/>										
-									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" multiSelect="false" width="100px" popupHeight="50px"  type="integer">
+									<auto cat="relatedEntry" key="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" multiSelect="false" width="100px" popupHeight="50px"  type="integer">
 												<autoWidths>100</autoWidths>
 												<autoEditors>
 													<label/>
@@ -168,7 +168,7 @@
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>65,95,75,110,100</widths>
 								<editors>									
-									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.DictionaryServlet" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
+									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -188,7 +188,7 @@
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>									
-									<collection type = "string"/>										
+									<dropdown/>										
 									<queryString/>									
 									<queryString/>
 									<queryString/>
@@ -221,14 +221,14 @@
 	 <string key="name" max="50" required="true"/>
 	 <string key="desc" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <collection key="section" type="integer" required="false"/>     
+     <dropdown key="section" type="integer" required="false"/>     
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
 	 <queryString key="systemName"/>
 	 <queryString key="name"/>
 	 <queryString key="desc"/>
-	 <collection key="section" type="integer" required="false"/>
+	 <dropdown key="section" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
       <queryString key="name"/>
