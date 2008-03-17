@@ -83,7 +83,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
      <widget>
-										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="80px"  multiSelect="false" fromModel="true" type="integer" tab="npi,middleName">
+										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="80px"  multiSelect="false" fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -93,7 +93,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 													</autoFields>
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="80px"  multiSelect="true" fromModel="true" type="integer" tab="npi,middleName">
+												  <autoDropdown cat="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="80px"  multiSelect="true" fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -148,7 +148,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="40px" multiSelect="false" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px"  popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -159,7 +159,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<autoItems>												 																																			
 												</autoItems>
 											</autoDropdown>		  
-		    <autoDropdown cat="country" key="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+		    <autoDropdown cat="country" key="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
@@ -182,9 +182,9 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <string/>
 		  <string/>
 		  <string/>
-		  <string required = "true"/>		  
-		  <collection type="string"/>
-		  <collection type="string"/>
+		  <string required = "true"/>		  		  
+		  <dropdown/>
+		  <dropdown/>
 		  <string required = "true"/>
 		  <string/>
 		  <string/>
@@ -211,27 +211,23 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case = "upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
+		  <autoDropdown cat="state" key="state" case = "upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
 												</autoEditors>
 												<autoFields>
 													<string/>
-												</autoFields>
-												<autoItems>												 																																			
-												</autoItems>
+												</autoFields>												
 											</autoDropdown>
-		  <autoDropdown cat="country" key="country" case = "mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.ProviderServlet" width="110px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
+		  <autoDropdown cat="country" key="country" case = "mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="110px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
 												<label/>
 											</autoEditors>
 											<autoFields>
 											    <string/>
-											</autoFields>
-											<autoItems>												
-											</autoItems>
+											</autoFields>											
 			</autoDropdown>		  
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -245,9 +241,9 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
-		  <queryString/>
-		  <collection type="string"/>
-		  <collection type="string"/>	    		  	
+		  <queryString/>		  
+		  <dropdown/>
+		  <dropdown/>		  	    		  	
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
@@ -334,7 +330,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <table key="providerAddressTable"/>						      		       
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <collection key="providerType" type="integer" required = "true"/>
+  <dropdown key="providerType" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
@@ -346,8 +342,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="usersSubject" />
   <queryString key="usersNote" />                           
   <table key="providerAddressTable"/>
-  <collection key="providerType" type="integer" />	   
-    
+  <dropdown key="providerType" type="integer" required = "false"/>    
 </rpc>
 
 <rpc key="queryByLetter">
