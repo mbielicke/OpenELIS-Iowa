@@ -15,10 +15,10 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.OptionField;
@@ -95,37 +95,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        //rpcReturn.setFieldValue("sectionId",catDO.getSection());
+        rpcReturn.setFieldValue("section",catDO.getSection());
         System.out.println(catDO.getSection());
-        if(catDO.getSection()!=null){
-            SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-            SectionIdNameDO section = utilRemote.getSection(catDO.getSection());
-            ArrayList<DataSet> secList = new ArrayList<DataSet>();
-            DataSet typeSet = new DataSet();
-            StringObject secText = new StringObject();
-            secText.setValue(section.getName());
-            NumberObject secId = new NumberObject();
-            secId.setValue(catDO.getSection());
-            secId.setType("integer");
-            typeSet.addObject(secText);
-            typeSet.addObject(secId);
-            typeSet.setKey(secId);
-            secList.add(typeSet);
-            rpcReturn.setFieldValue("section",secList);
-           }else{
-               ArrayList<DataSet> secList = new ArrayList<DataSet>();
-               DataSet typeSet = new DataSet();
-               StringObject secText = new StringObject();
-               secText.setValue("");
-               NumberObject secId = new NumberObject();
-               secId.setValue(null);
-               secId.setType("integer");
-               typeSet.addObject(secText);
-               typeSet.addObject(secId);
-               typeSet.setKey(secId);
-               secList.add(typeSet);
-               rpcReturn.setFieldValue("section",secList);
-           }
+        
                 
                                    
         List addressList = remote.getDictionaryEntries(categoryId);
@@ -143,18 +115,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
                 
         
-        //categoryDO.setSection((Integer)rpcSend.getFieldValue("sectionId"));
-        ArrayList secList = (ArrayList)rpcSend.getFieldValue("section");               
-        DataSet secSet = (DataSet)secList.get(0);        
-        NumberObject secObj = (NumberObject)secSet.getKey();   
-        if(secObj!=null){              
-         Integer secId = (Integer)secObj.getValue();
-         if(secId!= null){
-          if(secId.intValue()!=-1){    
-           categoryDO.setSection(secId);
-          } 
-         } 
-        }
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));       
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -219,39 +180,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
-         //rpcReturn.setFieldValue("sectionId",categoryDO.getSection()); 
-         System.out.println("section "+categoryDO.getSection());
-         if(categoryDO.getSection()!=null){
-          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-          SectionIdNameDO section = utilRemote.getSection(categoryDO.getSection());                  
-             secList = new ArrayList<DataSet>();
-             DataSet typeSet = new DataSet();
-             StringObject secText = new StringObject();
-             secText.setValue(section.getName());
-             secObj = new NumberObject();
-             secObj.setValue(categoryDO.getSection());
-             secObj.setType("integer");
-             typeSet.addObject(secText);
-             typeSet.addObject(secObj);
-             typeSet.setKey(secObj);
-             secList.add(typeSet);
-             rpcReturn.setFieldValue("section",secList);                    
-         }else {
-             secList = new ArrayList<DataSet>();
-             DataSet typeSet = new DataSet();
-             StringObject secText = new StringObject();
-             secText.setValue("");
-             secObj = new NumberObject();
-             secObj.setValue(null);
-             secObj.setType("integer");
-             typeSet.addObject(secText);
-             typeSet.addObject(secObj);
-             typeSet.setKey(secObj);
-             secList.add(typeSet);
-             rpcReturn.setFieldValue("section",secList);
-         }
-        
-         
+         rpcReturn.setFieldValue("section",categoryDO.getSection()); 
+         System.out.println("section "+categoryDO.getSection());                          
          
          List addressList = remote.getDictionaryEntries(categoryId);
          rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -327,7 +257,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();                            
             
             if(dictEntryTable != null){                   
-                fields.put("isActive",(CollectionField)dictEntryTable.getRow(0).getColumn(0));
+                fields.put("isActive",(DropDownField)dictEntryTable.getRow(0).getColumn(0));
                 fields.put("dictSystemName",(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
                 fields.put("abbreviation",(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
                 fields.put("entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
@@ -385,23 +315,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-        //categoryDO.setSection((Integer)rpcSend.getFieldValue("sectionId"));
-        ArrayList secList = (ArrayList)rpcSend.getFieldValue("section");               
-        DataSet secSet = (DataSet)secList.get(0);
-        //System.out.println("secSet Size " +secSet.size());
-        //System.out.println("secSet 0 " +secSet.getObject(0).getValue());
-       //if(secSet.size()>1){
-           // System.out.println("secSet key " +secSet.getKey());
-        //}        
-       NumberObject secObj = (NumberObject)secSet.getKey();   
-       if(secObj!=null){              
-        Integer secId = (Integer)secObj.getValue();
-        if(secId!= null){
-         if(secId.intValue()!=-1){    
-          categoryDO.setSection(secId);
-         } 
-        } 
-       }
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));        
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -465,37 +379,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
-         //rpcReturn.setFieldValue("section",categoryDO.getSection()); 
-         System.out.println(categoryDO.getSection());
-         if(categoryDO.getSection()!=null){
-           SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-           SectionIdNameDO section = utilRemote.getSection(categoryDO.getSection());              
-             secList = new ArrayList<DataSet>();
-             DataSet typeSet = new DataSet();
-             StringObject secText = new StringObject();
-             secText.setValue(section.getName());
-             secObj = new NumberObject();
-             secObj.setValue(categoryDO.getSection());
-             secObj.setType("integer");
-             typeSet.addObject(secText);
-             typeSet.addObject(secObj);
-             typeSet.setKey(secObj);
-             secList.add(typeSet);
-             rpcReturn.setFieldValue("section",secList);           
-         }else {
-             secList = new ArrayList<DataSet>();
-             DataSet typeSet = new DataSet();
-             StringObject secText = new StringObject();
-             secText.setValue("");
-             secObj = new NumberObject();
-             secObj.setValue(null);
-             secObj.setType("integer");
-             typeSet.addObject(secText);
-             typeSet.addObject(secObj);
-             typeSet.setKey(secObj);
-             secList.add(typeSet);
-             rpcReturn.setFieldValue("section",secList);
-         }        
+         rpcReturn.setFieldValue("section",categoryDO.getSection()); 
          
          List addressList = remote.getDictionaryEntries((Integer)categoryId.getValue());
          rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -516,39 +400,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        //rpcReturn.setFieldValue("section",null);    
+        rpcReturn.setFieldValue("section",catDO.getSection());    
         System.out.println("section "+catDO.getSection());
-        if(catDO.getSection()!=null){
-         SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-         SectionIdNameDO section = utilRemote.getSection(catDO.getSection());         
-          ArrayList<DataSet> secList = new ArrayList<DataSet>();
-          DataSet typeSet = new DataSet();
-          StringObject secText = new StringObject();
-          secText.setValue(section.getName());
-          NumberObject secId = new NumberObject();
-          secId.setValue(catDO.getSection());
-          secId.setType("integer");
-          typeSet.addObject(secText);
-          typeSet.addObject(secId);
-          typeSet.setKey(secId);
-          secList.add(typeSet);
-          rpcReturn.setFieldValue("section",secList);          
-        }else{
-            ArrayList<DataSet> secList = new ArrayList<DataSet>();
-            DataSet typeSet = new DataSet();
-            StringObject secText = new StringObject();
-            secText.setValue("");
-            NumberObject secId = new NumberObject();
-            secId.setValue(null);
-            secId.setType("integer");
-            typeSet.addObject(secText);
-            typeSet.addObject(secId);
-            typeSet.setKey(secId);
-            secList.add(typeSet);
-            rpcReturn.setFieldValue("section",secList);
-         }    
-        
-        
+                       
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
         
@@ -569,37 +423,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("categoryId", catDO.getId());
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
-        rpcReturn.setFieldValue("desc",catDO.getDescription()); 
-                
-        if(catDO.getSection()!=null){
-            SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-            SectionIdNameDO section = utilRemote.getSection(catDO.getSection());            
-             ArrayList<DataSet> secList = new ArrayList<DataSet>();
-             DataSet typeSet = new DataSet();
-             StringObject secText = new StringObject();
-             secText.setValue(section.getName());
-             NumberObject secId = new NumberObject();
-             secId.setValue(catDO.getSection());
-             secId.setType("integer");
-             typeSet.addObject(secText);
-             typeSet.addObject(secId);
-             typeSet.setKey(secId);
-             secList.add(typeSet);
-             rpcReturn.setFieldValue("section",secList);                
-           } else{
-               ArrayList<DataSet> secList = new ArrayList<DataSet>();
-               DataSet typeSet = new DataSet();
-               StringObject secText = new StringObject();
-               secText.setValue("");
-               NumberObject secId = new NumberObject();
-               secId.setValue(null);
-               secId.setType("integer");
-               typeSet.addObject(secText);
-               typeSet.addObject(secId);
-               typeSet.setKey(secId);
-               secList.add(typeSet);
-               rpcReturn.setFieldValue("section",secList);
-           }     
+        rpcReturn.setFieldValue("desc",catDO.getDescription());                 
+        rpcReturn.setFieldValue("section",catDO.getSection());
                                                    
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -778,9 +603,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             //blankset.addObject(blankStringObj);
             blankset.setKey(blankStringObj);
            }
-        
-        //blankSelected.setValue(new Boolean(false));
-        //blankset.addObject(blankSelected);
+                
         
         model.add(blankset);
         
