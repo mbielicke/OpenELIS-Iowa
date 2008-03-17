@@ -183,17 +183,17 @@
  <string key="description" required = "false" /> 	 
  <string key= "billable" required = "false" />
  <string key="reportingText" required = "true" />
- <collection key="test" type="integer" required = "false" />
- <collection key="qaEventType" type="integer" required = "true" />
+ <dropdown key="test" required = "false" />
+ <dropdown key="qaEventType" required = "true" />
 </rpc>
 					   
 <rpc key= "query">     
  <queryString key="name" />
  <queryNumber key="sequence" type="integer" />
  <queryString key="description"  /> 	
- <collection key="qaEventType" type="integer"/> 
- <collection key="test" type="integer"/>
- <collection key="billable" type="string"/>
+ <dropdown key="qaEventType"/> 
+ <dropdown key="test"/>
+ <queryString key="billable"/>
  <queryString key="reportingText"  />
 </rpc>
 
