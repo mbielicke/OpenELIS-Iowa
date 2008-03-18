@@ -12,12 +12,10 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -32,8 +30,6 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 
-import edu.uiowa.uhl.security.domain.SectionIdNameDO;
-import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
 public class QAEventService implements
                                    AppScreenFormServiceInt,
@@ -84,31 +80,12 @@ public class QAEventService implements
         qaeDO.setIsBillable(billable);        
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
-        qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));
+        qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));     
         
-        ArrayList testList = (ArrayList)rpcSend.getFieldValue("test");               
-        DataSet testSet = (DataSet)testList.get(0);
-        NumberObject testObj  = (NumberObject)testSet.getKey();
-        if(testObj!=null){
-         Integer testId = (Integer)testObj.getValue();
-         if(testId!=null){
-          if(testId.intValue()!=-1){ 
-              qaeDO.setTest(testId);
-          } 
-         }  
-        }
-        
-        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("qaEventType");               
-        DataSet typeSet = (DataSet)typeList.get(0);
-        NumberObject typeObj  = (NumberObject)typeSet.getKey();
-        if(typeObj!=null){
-         Integer typeId = (Integer)typeObj.getValue();
-         if(typeId!=null){
-          if(typeId.intValue()!=-1){ 
-              qaeDO.setType(typeId);
-          } 
-         }  
-        }
+        if(!(rpcSend.getFieldValue("test").equals(new Integer(-1))))
+         qaeDO.setTest((Integer)rpcSend.getFieldValue("test"));   
+        if(!(rpcSend.getFieldValue("qaEventType").equals(new Integer(-1))))
+         qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));
         
         Integer qaeId = remote.updateQaEvent(qaeDO);
         
@@ -263,38 +240,21 @@ public class QAEventService implements
         qaeDO.setId((Integer)qaeId.getValue());
         qaeDO.setDescription((String)rpcSend.getFieldValue("description"));
         
-        CheckField billable = (CheckField)rpcSend.getField("billable");
-        Boolean billableVal = (Boolean)billable.getValue();      
+        //CheckField billable = (CheckField)rpcSend.getField("billable");
+        //Boolean billableVal = (Boolean)billable.getValue();
+        qaeDO.setIsBillable((String)rpcSend.getFieldValue("billable")); 
+              
         
-        qaeDO.setIsBillable(billableVal?"Y":"N");        
+               
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
-        qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));
+        qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));    
         
-        ArrayList testList = (ArrayList)rpcSend.getFieldValue("test");               
-        DataSet testSet = (DataSet)testList.get(0);
-        NumberObject testObj  = (NumberObject)testSet.getKey();
-        if(testObj!=null){
-         Integer testId = (Integer)testObj.getValue();
-         if(testId!=null){
-          if(testId.intValue()!=-1){ 
-              qaeDO.setTest(testId);
-          } 
-         }  
-        }
-        
-        ArrayList typeList = (ArrayList)rpcSend.getFieldValue("qaEventType");               
-        DataSet typeSet = (DataSet)typeList.get(0);
-        NumberObject typeObj  = (NumberObject)typeSet.getKey();
-        if(typeObj!=null){
-         Integer typeId = (Integer)typeObj.getValue();
-         if(typeId!=null){
-          if(typeId.intValue()!=-1){ 
-              qaeDO.setType(typeId);
-          } 
-         }  
-        }
-        
+        if(!(rpcSend.getFieldValue("test").equals(new Integer(-1))))
+            qaeDO.setTest((Integer)rpcSend.getFieldValue("test"));   
+        if(!(rpcSend.getFieldValue("qaEventType").equals(new Integer(-1))))
+            qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));         
+                
         remote.updateQaEvent(qaeDO);
         
         qaeDO = remote.getQaEvent((Integer)qaeId.getValue());

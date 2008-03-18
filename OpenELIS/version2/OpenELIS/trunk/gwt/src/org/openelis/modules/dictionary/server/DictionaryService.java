@@ -95,11 +95,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        rpcReturn.setFieldValue("section",catDO.getSection());
-        System.out.println(catDO.getSection());
-        
-                
-                                   
+        rpcReturn.setFieldValue("section",catDO.getSection());                
+                                                   
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
         
@@ -161,10 +158,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
                dictDO.setRelatedEntry((Integer)relEntryId.getValue());
              }
             }
-                    
-          
-          dictDOList.add(dictDO);
-         
+                              
+          dictDOList.add(dictDO);         
         } 
         
         Integer categoryId = null;
@@ -180,8 +175,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          rpcReturn.setFieldValue("systemName", categoryDO.getSystemName());
          rpcReturn.setFieldValue("name", categoryDO.getName());
          rpcReturn.setFieldValue("desc", categoryDO.getDescription());
-         rpcReturn.setFieldValue("section",categoryDO.getSection()); 
-         System.out.println("section "+categoryDO.getSection());                          
+         rpcReturn.setFieldValue("section",categoryDO.getSection());                                   
          
          List addressList = remote.getDictionaryEntries(categoryId);
          rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -355,14 +349,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
                    dictDO.setRelatedEntry((Integer)relEntryId.getValue());
                  }
                 }
-         
-            CheckField isActive =  (CheckField)row.getColumn(0);
-             if(isActive.isChecked()){           
-               dictDO.setIsActive("Y");
-            }   
-            else{
-                dictDO.setIsActive("N");
-             }   
+                     
+              StringField isActive =  (StringField)row.getColumn(0);              
+              dictDO.setIsActive((String)isActive.getValue());
+              
              dictDO.setCategory((Integer)categoryId.getValue());         
              dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());         
              dictDOList.add(dictDO);             
@@ -400,8 +390,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        rpcReturn.setFieldValue("section",catDO.getSection());    
-        System.out.println("section "+catDO.getSection());
+        rpcReturn.setFieldValue("section",catDO.getSection());            
                        
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
