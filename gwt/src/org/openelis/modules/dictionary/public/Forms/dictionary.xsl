@@ -151,8 +151,9 @@
 									</auto>																										
 								</editors>
 								<fields>
-									<check/>																		
-									<string />									
+									<!--<check/>-->
+									<string/>
+									<string/>									
 									<string/>
 									<string required = "true"/>
 									<number type="integer">0</number>									

@@ -87,7 +87,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed"  width="100px" multiSelect="false" fromModel="true"  type="integer" tab="test,description">
+										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed"  width="100px" multiSelect="false" fromModel="true"  type="integer" tab="test,description">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -97,7 +97,7 @@
 													</autoFields>													 													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
+												  <autoDropdown cat="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
 														<label/>
@@ -115,7 +115,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="test" key="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed" multiSelect="false" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
+										<autoDropdown cat="test" key="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed" multiSelect="false" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>
@@ -127,7 +127,7 @@
 												     </autoItems>													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.analysis.server.QAEventServlet" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
+												  <autoDropdown cat="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
 													<autoWidths>130</autoWidths>
 													<autoEditors>
 														<label/>

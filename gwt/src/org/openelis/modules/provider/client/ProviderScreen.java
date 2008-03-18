@@ -5,6 +5,7 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -115,14 +116,7 @@ public class ProviderScreen extends OpenELISScreenForm {
        loadNotes = true;          
        
        loadTabs();
-       
-             
-      /* need to get the provider name table model
-       TableWidget catNameTM = (TableWidget) getWidget("providersTable");
-       int rowSelected = -1;
-       if(catNameTM.controller!=null){
-           rowSelected = catNameTM.controller.selected;
-       }*/ 
+                         
     }
     
     public void add(int state){                       
@@ -206,8 +200,8 @@ public class ProviderScreen extends OpenELISScreenForm {
        if(success){ 
         loadAddresses = true;
         loadNotes = true;                        
-        //clearTabs();        
-        loadTabs();
+            
+        loadTabs();        
        } 
        super.afterFetch(success); 
     }
@@ -405,11 +399,11 @@ public class ProviderScreen extends OpenELISScreenForm {
        for(int iter = 0; iter < provAddController.model.numRows(); iter++){
            StringField locfield = (StringField)provAddController.model.getFieldAt(iter, 0);  
            StringField cityfield = (StringField)provAddController.model.getFieldAt(iter, 4);
-           //CollectionField stateField = (CollectionField)provAddController.model.getFieldAt(iter, 5);
+           DropDownField stateField = (DropDownField)provAddController.model.getFieldAt(iter, 5);
            StringField zipField = (StringField)provAddController.model.getFieldAt(iter, 7);
            
            if(locfield.getValue()!=null){
-               if((locfield.getValue().toString().trim().equals(""))){
+               if(("").equals(locfield.getValue().toString().trim())){
                    locfield.addError("Field is required");
                }  
              }else{
@@ -421,7 +415,7 @@ public class ProviderScreen extends OpenELISScreenForm {
            }
                      
            if(cityfield.getValue()!=null){
-               if((cityfield.getValue().toString().trim().equals(""))){
+               if(("").equals(cityfield.getValue().toString().trim())){
                    cityfield.addError("Field is required");
                    noErrors = false; 
                }  
@@ -430,22 +424,14 @@ public class ProviderScreen extends OpenELISScreenForm {
                  noErrors = false; 
              }
            
-                      
-         /*  if(stateField.getValue()!=null){
-               DataSet set = (DataSet)((ArrayList)locfield.getValue()).get(0);
-               StringObject stateObj  = (StringObject)set.getObject(0);   
-               if((stateObj.getValue().toString().trim().equals(""))){
-                   stateField.addError("Field is required");
-                   noErrors = false; 
-               }  
-             }else{
-                 stateField.addError("Field is required");
-                 noErrors = false; 
-             }*/
-                      
+         if(("").equals(stateField.getValue())){
+             noErrors = false;
+             stateField.addError("Field is required");
+         }
+                     
            
            if(zipField.getValue()!=null){
-               if((zipField.getValue().toString().trim().equals(""))){
+               if(("").equals(zipField.getValue().toString().trim())){
                    zipField.addError("Field is required");
                    noErrors = false; 
                }  
