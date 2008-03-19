@@ -61,7 +61,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
         
         super.afterDraw(success);        
         
-        loadDropdowns();
+        loadDropdowns();        
         //ConstantMap cmap = (ConstantMap)initData[3];
         //hmap = (HashMap)cmap.getValue(); 
         
@@ -325,7 +325,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
               boolean sysNameError = false;
            for(int iter = 0; iter < dictEntryTable.controller.model.numRows(); iter++){
                StringField snfield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 1);
-               StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);
+               StringField efield = (StringField)dictEntryTable.controller.model.getFieldAt(iter, 3);              
                 if(efield.getValue()!=null){
                   if((efield.getValue().toString().trim().equals(""))){
                       efield.addError("Field is required");
@@ -334,12 +334,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
                     efield.addError("Field is required");
                 }
                
-               if(!(efield.getErrors().length==0)){
-                  // entryExists = true;       
+               if(!(efield.getErrors().length==0)){              
                    entryError = true; 
                }
-               if(!(snfield.getErrors().length==0)){
-                  // sysNameExists = true;       
+               if(!(snfield.getErrors().length==0)){                        
                    sysNameError = true;
                }
            }  
