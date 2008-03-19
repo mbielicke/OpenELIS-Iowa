@@ -12,7 +12,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -82,9 +81,12 @@ public class QAEventService implements
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));     
         
-        if(!(rpcSend.getFieldValue("test").equals(new Integer(-1))))
+        System.out.println("test "+ rpcSend.getFieldValue("test"));
+        System.out.println("qaEventType "+ rpcSend.getFieldValue("qaEventType"));
+        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("test")))
          qaeDO.setTest((Integer)rpcSend.getFieldValue("test"));   
-        if(!(rpcSend.getFieldValue("qaEventType").equals(new Integer(-1))))
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("qaEventType")))
          qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));
         
         Integer qaeId = remote.updateQaEvent(qaeDO);
@@ -250,9 +252,9 @@ public class QAEventService implements
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));    
         
-        if(!(rpcSend.getFieldValue("test").equals(new Integer(-1))))
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("test")))
             qaeDO.setTest((Integer)rpcSend.getFieldValue("test"));   
-        if(!(rpcSend.getFieldValue("qaEventType").equals(new Integer(-1))))
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("qaEventType")))
             qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));         
                 
         remote.updateQaEvent(qaeDO);
@@ -283,8 +285,12 @@ public class QAEventService implements
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());           
-        rpcReturn.setFieldValue("qaEventType",qaeDO.getType());                   
-        rpcReturn.setFieldValue("test",qaeDO.getTest());          
+        rpcReturn.setFieldValue("qaEventType",qaeDO.getType()); 
+        if(qaeDO.getTest()!=null){
+         rpcReturn.setFieldValue("test",qaeDO.getTest());
+        }else{
+            rpcReturn.setFieldValue("test",new Integer(-1));  
+        } 
             
         return rpcReturn;
     }
@@ -307,7 +313,11 @@ public class QAEventService implements
         rpcReturn.setFieldValue("description",qaeDO.getDescription());
         rpcReturn.setFieldValue("reportingText",qaeDO.getReportingText());
         rpcReturn.setFieldValue("qaEventType",qaeDO.getType());                   
-        rpcReturn.setFieldValue("test",qaeDO.getTest());       
+        if(qaeDO.getTest()!=null){
+            rpcReturn.setFieldValue("test",qaeDO.getTest());
+           }else{
+               rpcReturn.setFieldValue("test",new Integer(-1));  
+           }       
         return rpcReturn;
     }
 
@@ -334,8 +344,7 @@ public class QAEventService implements
             QaEventRemote qaeRemote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
             entries = qaeRemote.getTestNames();
         }
-        
-        System.out.println("cat "+ cat +" id "+ id);
+                
         //if(id >-1){
             
             DataSet blankset = new DataSet();           
@@ -349,7 +358,7 @@ public class QAEventService implements
             blankNumberId.setType("integer");
             blankNumberId.setValue(new Integer(-1));
             //if(cat.equals("providerType")){
-              blankset.setKey(blankNumberId);
+            blankset.setKey(blankNumberId);
             /*} else{
             //  blankset.addObject(blankStringId);  
             }*/            
@@ -396,15 +405,7 @@ public class QAEventService implements
                 numberId.setType("integer");
                 numberId.setValue(dropdownId);
                 //set.addObject(numberId);
-                set.setKey(numberId);
-            /* }else{
-               StringObject stringId = new StringObject();
-               stringId.setValue(dropdownText);
-               set.addObject(stringId);            
-            }*/
-            
-            //selected.setValue(new Boolean(false));
-            //set.addObject(selected);
+                set.setKey(numberId);           
             
             model.add(set);
             
