@@ -110,12 +110,14 @@ public class ProviderScreen extends OpenELISScreenForm {
       ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
       proAddManager.disableRows = true;
       
+      clearNotesFields();
        super.abort(state); 
        
        loadAddresses = true;
        loadNotes = true;          
-       
+              
        loadTabs();
+       
                          
     }
     
