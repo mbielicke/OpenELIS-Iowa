@@ -103,13 +103,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        
-        /*ArrayList typeList = new ArrayList();        
-        NumberObject typeId = new NumberObject();
-        typeId.setValue(provDO.getTypeId());
-        typeId.setType("integer");        
-        typeList.add(typeId);
-        rpcReturn.setFieldValue("providerType",typeList);*/      
+                   
                                       
         rpcReturn.setFieldValue("providerType",provDO.getTypeId()); 
         return rpcReturn;
@@ -138,13 +132,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             ProviderAddressDO provAddDO = new ProviderAddressDO();
             TableRow row = addressTable.getRow(iter);
-            
-            //NumberField provAddId = (NumberField)row.getHidden("provAddId");
-            //NumberField addId = (NumberField)row.getHidden("addId");
-            
-           // if(provAddId != null){
-           //  provAddDO.setId((Integer)(provAddId).getValue());
-           // }             
+                                     
             provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
             //provAddDO.setProvider((Integer)providerId.getValue());
@@ -165,14 +153,14 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
+            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());            
             if(!("").equals(row.getColumn(5).getValue())){
               provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
             }
             if(!("").equals(row.getColumn(6).getValue())){
              provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
             }
-            
+                        
             provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
             provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
             provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
@@ -400,13 +388,15 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());  
+            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
+            
             if(!("").equals(row.getColumn(5).getValue())){
              provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
             }
             if(!("").equals(row.getColumn(6).getValue())){
              provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
             }
+                        
             provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
             provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
             provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
@@ -518,8 +508,7 @@ public class ProviderService implements AppScreenFormServiceInt{
                     }else{
                         row.getColumn(6).setValue("");  
                     }                    
-                    System.out.println("in  "+"\""+addressRow.getAddressDO().getState()+"\""+" "+"\""+addressRow.getAddressDO().getCountry()+"\"");
-                    System.out.println("out  "+"\""+row.getColumn(5).getValue()+"\""+" "+"\""+row.getColumn(6).getValue()+"\"");                    
+                                        
                     row.getColumn(7).setValue(addressRow.getAddressDO().getZipCode());
                     row.getColumn(8).setValue(addressRow.getAddressDO().getWorkPhone());
                     row.getColumn(9).setValue(addressRow.getAddressDO().getHomePhone());
