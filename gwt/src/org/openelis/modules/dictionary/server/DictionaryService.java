@@ -15,6 +15,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -63,21 +64,17 @@ public class DictionaryService implements AppScreenFormServiceInt,
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
         
-        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData", "sectionDropDown");
-        DataModel activeDropDownField = (DataModel)CachingManager.getElement("InitialData", "activeDropDown");       
+        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData", "sectionDropDown");             
         
         if(sectionDropDownField ==null)
-            sectionDropDownField = getInitialModel("section");
-           
-           if(activeDropDownField ==null)
-               activeDropDownField = getInitialModel("isActive");
+            sectionDropDownField = getInitialModel("section");                     
            
            /*ConstantMap cmap = new ConstantMap();
            HashMap<String,String> hmap = new HashMap<String, String>();
            hmap.put("dictSystemNameError", openElisConstants.getString("dictSystemNameError"));
            hmap.put("dictEntryError", openElisConstants.getString("dictEntryError"));
            cmap.setValue(hmap);*/
-           return new DataObject[] {xml,sectionDropDownField,activeDropDownField};
+           return new DataObject[] {xml,sectionDropDownField};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -109,10 +106,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
-        categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-                
+        categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));                
         
-        categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));       
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("section")))
+            categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));       
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -183,8 +180,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
-        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {                      
         if(rpcSend == null){          
                 
         
@@ -309,7 +305,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-        categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));        
+        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("section")))
+            categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));  
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -390,7 +388,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("systemName",catDO.getSystemName());
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());    
-        rpcReturn.setFieldValue("section",catDO.getSection());            
+        if(catDO.getSection()!=null){
+            rpcReturn.setFieldValue("section",catDO.getSection());
+         }else{
+            rpcReturn.setFieldValue("section",new Integer(-1));  
+         }            
                        
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
@@ -414,7 +416,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("name",catDO.getName());
         rpcReturn.setFieldValue("desc",catDO.getDescription());                 
         rpcReturn.setFieldValue("section",catDO.getSection());
-                                                   
+        if(catDO.getSection()!=null){
+            rpcReturn.setFieldValue("section",catDO.getSection());
+           }else{
+               rpcReturn.setFieldValue("section",new Integer(-1));  
+           }                                           
         List addressList = remote.getDictionaryEntries(categoryId);
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
         
@@ -457,51 +463,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          }       
          
          return dictEntryModel;  
-     }
-    
-    public void fillSectionOption(OptionField sectionOpt ,CategoryDO catDO){
-        sectionOpt.getOptions().clear();
-        
-         SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-         List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
-         
-         if(catDO!=null){
-           if(catDO.getSection()!=null){ 
-             SectionIdNameDO section = utilRemote.getSection(catDO.getSection());
-             //if((section.getId()).equals(catDO.getSection())){
-             sectionOpt.addOption(catDO.getSection().toString(),section.getName());    
-             // } 
-             }else{   
-                 sectionOpt.addOption("0"," "); 
-             }
-           }else{   
-               sectionOpt.addOption("0"," "); 
-           }
-         
-         OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
-         if(sections!=null){               
-            List<OptionItem> optionlist = new ArrayList<OptionItem>();
-         
-          for (Iterator iter = sections.iterator(); iter.hasNext();) {
-              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();                                   
-              
-              //if the section has already been added to the drop down don't add it again
-                if(!firstItem.display.equals(sectionDO.getName())){          
-                 OptionItem item = new OptionItem();
-                 //System.out.println("section "+ sectionDO);
-                 item.akey = sectionDO.getId().toString();
-                 item.display = sectionDO.getName(); 
-                 
-                 optionlist.add(item);
-                }
-              //}             
-           } 
-         
-           for (Iterator iter = optionlist.iterator(); iter.hasNext();) {
-               sectionOpt.getOptions().add(iter.next());            
-           }
-          }
-    }
+     }        
     
            
     
@@ -584,15 +546,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          blankNumberId.setValue(-1);
          //blankset.addObject(blankNumberId);
          blankset.setKey(blankNumberId);
-        }
-        if(cat.equals("isActive")){
-            StringObject blankStringObj = new StringObject();
-           
-            blankStringObj.setValue("");
-            //blankset.addObject(blankStringObj);
-            blankset.setKey(blankStringObj);
-           }
-                
+        }                        
         
         model.add(blankset);
         
@@ -630,55 +584,13 @@ public class DictionaryService implements AppScreenFormServiceInt,
                     numberId.setType("integer");
                     numberId.setValue(dropdownId);
                     //set.addObject(numberId);
-                    set.setKey(numberId);
-               // }else{
-                  //  stringId.setValue(dropdownText);
-                  //  set.addObject(stringId);            
-               // }
-                
-                //selected.setValue(new Boolean(false));
-               // set.addObject(selected);
+                    set.setKey(numberId);              
                 
                 model.add(set);                
               //}             
            }                           
           }
-        }
-        if(cat.equals("isActive")){
-            DataSet set = new DataSet();
-            //Object[] result = (Object[]) entries.get(i);
-            //id
-                        
-            StringObject textObject = new StringObject();
-            //StringObject stringId = new StringObject();
-            StringObject stringId = new StringObject();
-            BooleanObject selected = new BooleanObject();
-            
-            textObject.setValue("Y");
-            set.addObject(textObject);
-            
-            stringId.setValue("Y");
-            set.addObject(stringId);
-                
-            selected.setValue(new Boolean(false));
-            set.addObject(selected); 
-            model.add(set);
-            
-            set = new DataSet();
-            textObject = new StringObject();
-            textObject.setValue("N");
-            set.addObject(textObject);
-                          
-            stringId = new StringObject();
-            stringId.setValue("N");
-            //set.addObject(stringId);
-            set.setKey(stringId);
-            
-            //selected.setValue(new Boolean(false));
-            //set.addObject(selected);
-            
-            model.add(set); 
-          }       
+        }        
         return model;
         
     }
