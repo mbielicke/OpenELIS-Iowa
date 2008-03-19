@@ -169,7 +169,7 @@
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>65,95,75,110,100</widths>
 								<editors>									
-									<autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
+								    <autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -182,14 +182,16 @@
 									             <item value= "Y">Y</item>														
 									             <item value= "N">N</item>													 																																			
 												</autoItems>
-										</autoDropdown>																
+										</autoDropdown>			
+									<!--<check/>-->														
 									<textbox/>									
 									<textbox/>									
 									<textbox/>										
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>									
-									<dropdown/>										
+									<dropdown/>
+									<!--<queryString/>-->										
 									<queryString/>									
 									<queryString/>
 									<queryString/>
