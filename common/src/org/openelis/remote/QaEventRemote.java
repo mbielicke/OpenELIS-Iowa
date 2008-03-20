@@ -17,13 +17,10 @@ public interface QaEventRemote {
     
     public QaEventDO getQaEventAndUnlock(Integer qaEventId);
     
-    public QaEventDO getQaEventAndLock(Integer qaEventId)throws Exception;
-    
-    //  update initial call for QaEvent
-    public QaEventDO getQaEventUpdate(Integer id) throws Exception;
+    public QaEventDO getQaEventAndLock(Integer qaEventId)throws Exception;    
      
     //  commit a change to QaEvent, or insert a new provider
-    public Integer updateQaEvent(QaEventDO qaEventDO);
+    public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception;
     
     //  method to query for QaEvent
     public List query(HashMap fields, int first, int max) throws Exception;
