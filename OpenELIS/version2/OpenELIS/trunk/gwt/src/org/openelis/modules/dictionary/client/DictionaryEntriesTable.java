@@ -3,6 +3,7 @@ package org.openelis.modules.dictionary.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
@@ -11,6 +12,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
+
 
 
 
@@ -54,8 +56,7 @@ public class DictionaryEntriesTable implements TableManager {
        return false;
     }
 
-    public boolean doAutoAdd(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
+    public boolean doAutoAdd(int row, int col, TableController controller) {              
         return false;
     }
 
@@ -139,9 +140,8 @@ public class DictionaryEntriesTable implements TableManager {
 
     }
 
-    public void rowAdded(int row, TableController controller) {
-        // TODO Auto-generated method stub
-
+    public void rowAdded(int row, TableController controller) {       
+         // TODO Auto-generated method stub
     }
 
     public void setModel(TableController controller, DataModel model) {
