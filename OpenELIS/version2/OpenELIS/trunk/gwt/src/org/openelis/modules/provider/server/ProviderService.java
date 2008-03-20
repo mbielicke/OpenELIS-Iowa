@@ -18,6 +18,7 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -135,12 +136,7 @@ public class ProviderService implements AppScreenFormServiceInt{
                                      
             provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
-            //provAddDO.setProvider((Integer)providerId.getValue());
-           
-            //System.out.println("addId "+addId); 
-            
-           // if(addId != null){              
-           //  provAddDO.getAddressDO().setId((Integer)addId.getValue());             
+                        
            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
             if(deleteFlag == null){
                 provAddDO.setDelete(false);
@@ -153,7 +149,8 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
             provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());            
+            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
+            
             if(!("").equals(row.getColumn(5).getValue())){
               provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
             }
@@ -188,15 +185,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
         rpcReturn.setFieldValue("middleName",provDO.getMiddleName());        
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId());
-        /*typeList = new ArrayList();
-       
-        typeObj = new NumberObject();
-       typeObj.setValue(provDO.getTypeId());
-       typeObj.setType("integer");
-       
-       typeList.add(typeObj);
-       rpcReturn.setFieldValue("providerType",typeList);*/
+        rpcReturn.setFieldValue("providerType",provDO.getTypeId());        
         
         return rpcReturn;
     }
@@ -281,8 +270,10 @@ public class ProviderService implements AppScreenFormServiceInt{
                 fields.put("multiUnit",(QueryStringField)provAddTable.getRow(0).getColumn(2));
                 fields.put("streetAddress",(QueryStringField)provAddTable.getRow(0).getColumn(3));                
                 fields.put("city",(QueryStringField)provAddTable.getRow(0).getColumn(4));                                                                                       
-                fields.put("state",(CollectionField)provAddTable.getRow(0).getColumn(5));
-                fields.put("country",(CollectionField)provAddTable.getRow(0).getColumn(6));
+                //fields.put("state",(CollectionField)provAddTable.getRow(0).getColumn(5));
+                fields.put("state",(DropDownField)provAddTable.getRow(0).getColumn(5));
+                fields.put("country",(DropDownField)provAddTable.getRow(0).getColumn(6));
+                //fields.put("country",(CollectionField)provAddTable.getRow(0).getColumn(6));
                 fields.put("zipCode",(QueryStringField)provAddTable.getRow(0).getColumn(7));
                 fields.put("workPhone",(QueryStringField)provAddTable.getRow(0).getColumn(8));
                 fields.put("homePhone",(QueryStringField)provAddTable.getRow(0).getColumn(9));
