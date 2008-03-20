@@ -38,7 +38,8 @@ import org.openelis.utils.Auditable;
               @NamedQuery(name = "getEntryIdForEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
               @NamedQuery(name = "getCategoryIdBySystemName", query = "select c.id from Category c where c.systemName = :systemName"),              
               @NamedQuery(name = "getEntryAutoCompleteById", query = "select d.id, d.entry from Dictionary d " +"  where d.id = :id order by d.entry"),
-              @NamedQuery(name = "getCategoryIdForSystemName", query = "select d.category from Dictionary d where d.systemName = :systemName")})
+              @NamedQuery(name = "getCategoryIdForDictSysName", query = "select d.category from Dictionary d where d.systemName = :systemName"),
+              @NamedQuery(name = "getCategoryIdForCatSysName", query = "select c.id from Category c where c.systemName = :systemName")})
                
 @Entity
 @Table(name="category")
