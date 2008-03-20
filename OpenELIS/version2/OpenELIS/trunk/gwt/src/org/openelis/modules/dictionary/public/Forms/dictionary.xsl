@@ -65,8 +65,7 @@
 		
 		          <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>
 					<panel layout="horizontal" spacing="0"  xsi:type="Panel">
-						<panel layout="vertical" spacing="0"  xsi:type="Panel">
-							<!-- first vertical panel for org fields -->
+						<panel layout="vertical" spacing="0"  xsi:type="Panel">							
 							<panel key="secMod" layout="table" style="Form"  xsi:type="Table">																							
 								<row>
 									<widget>
@@ -130,7 +129,7 @@
 					<panel layout="vertical"  spacing="5" xsi:type="Panel">
 						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "6" rows = "0" width = "480px" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
+							<table maxRows = "6" cellHeight = "20" rows = "0" width = "480px" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -152,7 +151,7 @@
 								</editors>
 								<fields>
 									<!--<check/>-->
-									<string/>
+									<string>Y</string>
 									<string/>									
 									<string/>
 									<string required = "true"/>
@@ -163,13 +162,13 @@
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
 						  <query>
-						   	<table width = "480px" maxRows = "5" rows="1" title="" showError="false">
+						   	<table width = "480px" cellHeight = "20" maxRows = "5" rows="1" title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>65,95,75,110,100</widths>
 								<editors>									
-								    <autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
+								 <!--  <autoDropdown cat="isActive" key="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="40px" fromModel = "false" popupHeight="80px" dropdown="true"  multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -182,16 +181,16 @@
 									             <item value= "Y">Y</item>														
 									             <item value= "N">N</item>													 																																			
 												</autoItems>
-										</autoDropdown>			
-									<!--<check/>-->														
+										</autoDropdown> -->			
+									<check/>														
 									<textbox/>									
 									<textbox/>									
 									<textbox/>										
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>									
-									<dropdown/>
-									<!--<queryString/>-->										
+									<!--<dropdown/> -->
+									<queryString/>										
 									<queryString/>									
 									<queryString/>
 									<queryString/>
