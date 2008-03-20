@@ -76,12 +76,7 @@ public class QaEventBean implements QaEventRemote{
         
         return qaeList;
     }
-    
-
-    public QaEventDO getQaEventUpdate(Integer id) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
+      
 
     public Integer getSystemUserId() {
         try {
@@ -154,7 +149,9 @@ public class QaEventBean implements QaEventRemote{
          return returnList;
     }
 
-    public Integer updateQaEvent(QaEventDO qaEventDO){        
+    public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
+        
+       try{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Query query = manager.createNamedQuery("getTableId");
@@ -175,7 +172,11 @@ public class QaEventBean implements QaEventRemote{
         qaEvent.setReportingSequence(qaEventDO.getReportingSequence());
         qaEvent.setReportingText(qaEventDO.getReportingText());
         qaEvent.setTest(qaEventDO.getTest());
-        qaEvent.setType(qaEventDO.getType());
+        if(qaEventDO.getType()!=null){
+         qaEvent.setType(qaEventDO.getType());
+        }else{
+            throw new Exception("Type must be specified for a QA Event"); 
+        } 
         
         if(qaEvent.getId() == null){
             manager.persist(qaEvent);
@@ -183,6 +184,10 @@ public class QaEventBean implements QaEventRemote{
                 
         lockBean.giveUpLock(qaEventReferenceId,qaEvent.getId()); 
         return qaEvent.getId();
+       }catch(Exception ex){
+           ex.printStackTrace();
+           throw ex;
+       } 
     }
 
 

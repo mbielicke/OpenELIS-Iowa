@@ -89,15 +89,11 @@ public class CategoryBean implements CategoryRemote {
         
         if(fields.containsKey("desc"))
          sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("desc"), "c.description"));       
-        //if(fields.containsKey("secName"))
-           // sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("secName"), "c.section"));
+        
         if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
                       sb.append(QueryBuilder.getQuery((CollectionField)fields.get("section"), "c.section"));     
-                
-        //if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
-                      //  !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
-            //sb.append(QueryBuilder.getQuery((QueryOptionField)fields.get("isActive"), "d.isActive"));
+                        
         
         if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
@@ -113,10 +109,7 @@ public class CategoryBean implements CategoryRemote {
        
         
 
-        Query query = manager.createQuery(sb.toString()+" order by c.name");
-        
-//      if(first > -1)
-    	// query.setFirstResult(first);
+        Query query = manager.createQuery(sb.toString()+" order by c.name");        
 
         if(first > -1 && max > -1)
         	query.setMaxResults(first+max);
@@ -126,17 +119,12 @@ public class CategoryBean implements CategoryRemote {
         if(fields.containsKey("name"))
             QueryBuilder.setParameters((QueryStringField)fields.get("name"), "c.name",query);
         if(fields.containsKey("desc"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("desc"), "c.description",query);  
-        //if(fields.containsKey("secName"))
-            //QueryBuilder.setParameters((QueryOptionField)fields.get("secName"), "c.section",query);
+            QueryBuilder.setParameters((QueryStringField)fields.get("desc"), "c.description",query);          
         if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
             QueryBuilder.setParameters((CollectionField)fields.get("section"), "c.section",query); 
         
-        
-        //if(fields.containsKey("isActive")&& ((QueryOptionField)fields.get("isActive")).getSelections().size()>0 && 
-          //              !(((QueryOptionField)fields.get("isActive")).getSelections().size() == 1 && " ".equals(((OptionItem)((QueryOptionField)fields.get("isActive")).getSelections().get(0)).display)))
-            //QueryBuilder.setParameters((QueryOptionField)fields.get("isActive"), "d.isActive",query);
+                
         if(fields.containsKey("isActive")&& ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
                QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "d.isActive",query);
@@ -154,8 +142,7 @@ public class CategoryBean implements CategoryRemote {
         if(returnList == null)
        	 throw new LastPageException();
         else
-       	 return returnList;
-        //return query.getResultList();
+       	 return returnList;        
             
     }
 
@@ -165,8 +152,7 @@ public class CategoryBean implements CategoryRemote {
         manager.setFlushMode(FlushModeType.COMMIT);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
-        Integer categoryReferenceId = (Integer)query.getSingleResult();
-                
+        Integer categoryReferenceId = (Integer)query.getSingleResult();                
         
         if (categoryDO.getId() == null){
             category = new Category();
@@ -176,6 +162,28 @@ public class CategoryBean implements CategoryRemote {
         }        
         
         category.setDescription(categoryDO.getDescription());
+        
+        if(categoryDO.getSystemName()!=null){
+         if(!("").equals(categoryDO.getSystemName().trim())){
+             Query catIdQuery  = manager.createNamedQuery("getCategoryIdForCatSysName");
+             catIdQuery.setParameter("systemName", categoryDO.getSystemName());
+             Integer catId = null;
+             try{
+                 catId = (Integer)catIdQuery.getSingleResult();
+             }catch(NoResultException ex){                     
+                 ex.printStackTrace();
+             }catch(Exception ex){
+                 throw ex;
+             }
+             
+           if(catId!=null){
+             if(!catId.equals(category.getId())){
+                 throw new Exception("Category System Name belongs to another category"); 
+             }  
+           }                                 
+         } 
+        } 
+        
         category.setSystemName(categoryDO.getSystemName());
         category.setName(categoryDO.getName());
         category.setSection(categoryDO.getSection());
@@ -211,7 +219,7 @@ public class CategoryBean implements CategoryRemote {
              }
              
             if(dictDO.getEntry()!=null){
-             if(!dictDO.getEntry().trim().equals("")){   
+             if(!("").equals(dictDO.getEntry().trim())){   
               if(!entries.contains(dictDO.getEntry())){
                 entries.add(dictDO.getEntry());
                }else{
@@ -227,7 +235,7 @@ public class CategoryBean implements CategoryRemote {
              if(dictDO.getSystemName()!=null){
               if(!dictDO.getSystemName().trim().equals("")){   
                if(!systemNames.contains(dictDO.getSystemName())){
-                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForSystemName");
+                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForDictSysName");
                  catIdQuery.setParameter("systemName", dictDO.getSystemName());
                  Integer catId = null;
                  try{
@@ -240,12 +248,12 @@ public class CategoryBean implements CategoryRemote {
                  
                   if(catId != null){
                       if(!catId.equals(category.getId())){
-                          throw new Exception("System name belongs to another category: "+dictDO.getSystemName()); 
+                          throw new Exception("Dictionary System Name belongs to another category: "+dictDO.getSystemName()); 
                       }
                   }
                  systemNames.add(dictDO.getSystemName());
                  }else{
-                  throw new Exception("System names must be unique");
+                  throw new Exception("Dictionary System Names must be unique");
                  }
               }
              }
