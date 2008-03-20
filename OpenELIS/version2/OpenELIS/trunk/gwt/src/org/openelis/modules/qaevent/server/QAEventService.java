@@ -89,7 +89,12 @@ public class QAEventService implements
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue("qaEventType")))
          qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));
         
-        Integer qaeId = remote.updateQaEvent(qaeDO);
+        Integer qaeId = null;
+        try{ 
+         qaeId = remote.updateQaEvent(qaeDO);
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        } 
         
         qaeDO = remote.getQaEvent((Integer)qaeId);
         rpcReturn.setFieldValue("qaeId", qaeId);
@@ -237,9 +242,9 @@ public class QAEventService implements
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO = new QaEventDO();
-        NumberField qaeId = (NumberField) rpcSend.getField("qaeId");
+        NumberField qaeIdField = (NumberField) rpcSend.getField("qaeId");
         
-        qaeDO.setId((Integer)qaeId.getValue());
+        qaeDO.setId((Integer)qaeIdField.getValue());
         qaeDO.setDescription((String)rpcSend.getFieldValue("description"));
         
         //CheckField billable = (CheckField)rpcSend.getField("billable");
@@ -257,9 +262,14 @@ public class QAEventService implements
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue("qaEventType")))
             qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));         
                 
-        remote.updateQaEvent(qaeDO);
+        Integer qaeId = null;
+        try{ 
+         qaeId = remote.updateQaEvent(qaeDO);
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        } 
         
-        qaeDO = remote.getQaEvent((Integer)qaeId.getValue());
+        qaeDO = remote.getQaEvent((Integer)qaeIdField.getValue());
         rpcReturn.setFieldValue("qaeId", qaeDO.getId());
         rpcReturn.setFieldValue("name",qaeDO.getName());
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
