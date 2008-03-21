@@ -94,10 +94,9 @@ public class CategoryBean implements CategoryRemote {
                         !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
                       sb.append(QueryBuilder.getQuery((CollectionField)fields.get("section"), "c.section"));     
                         
-        
-        if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
-                      sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isActive"), "d.isActive"));
+                
+        if(fields.containsKey("isActive")&& ((QueryStringField)fields.get("isActive")).getComparator() != null)
+            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("isActive"), "d.isActive"));
         if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
             sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("dictSystemName"), "d.systemName"));
         if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)
@@ -123,11 +122,9 @@ public class CategoryBean implements CategoryRemote {
         if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
                         !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
             QueryBuilder.setParameters((CollectionField)fields.get("section"), "c.section",query); 
-        
-                
-        if(fields.containsKey("isActive")&& ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "d.isActive",query);
+                        
+        if(fields.containsKey("isActive")&& ((QueryStringField)fields.get("isActive")).getComparator() != null)
+            QueryBuilder.setParameters((QueryStringField)fields.get("isActive"), "isActive",query);
         if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
             QueryBuilder.setParameters((QueryStringField)fields.get("dictSystemName"), "d.systemName",query);
         if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)

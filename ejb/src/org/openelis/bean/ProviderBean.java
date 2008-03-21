@@ -265,7 +265,11 @@ public class ProviderBean implements ProviderRemote {
             provider.setLastName(providerDO.getLastName());
             provider.setMiddleName(providerDO.getMiddleName());
             provider.setNpi(providerDO.getNpi());
-            provider.setType(providerDO.getTypeId());
+            if(providerDO.getTypeId()!=null){
+                provider.setType(providerDO.getTypeId());
+               }else{
+                   throw new Exception("Type must be specified for a provider"); 
+               }
             
             if (provider.getId() == null) {
                 manager.persist(provider);
@@ -301,15 +305,10 @@ public class ProviderBean implements ProviderRemote {
                
               
               if(checkForUpdate){
-                  Integer addressId = null;                                   
-                  
-                 
-                      System.out.println("updateAddress $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                  Integer addressId = null;                                                                                          
                       addressId =  addressBean.updateAddress(provAddDO.getAddressDO());
-                  
-                  
-                  String location = provAddDO.getLocation();                                  
-                  System.out.println("location "+ location);
+                      
+                  String location = provAddDO.getLocation();                                                    
                   
                   if(!location.trim().equals("")){ 
                     provAdd.setExternalId(provAddDO.getExternalId());
