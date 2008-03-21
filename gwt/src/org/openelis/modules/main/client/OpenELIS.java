@@ -1,5 +1,12 @@
 package org.openelis.modules.main.client;
 
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
@@ -21,6 +28,7 @@ import org.openelis.gwt.screen.ScreenAbsolute;
 import org.openelis.gwt.screen.ScreenAppButton;
 import org.openelis.gwt.screen.ScreenAuto;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
@@ -65,16 +73,6 @@ import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableOption;
 import org.openelis.gwt.widget.table.TableTextBox;
-import org.openelis.gwt.screen.ScreenBase;
-//import org.openelis.modules.main.client.constants.OpenELISConstants;
-
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowCloseListener;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.xml.client.Node;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
