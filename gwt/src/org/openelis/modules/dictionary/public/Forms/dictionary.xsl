@@ -149,10 +149,7 @@
 												</autoFields>												
 									</auto>																										
 								</editors>
-								<fields>
-									<string/>																		
-									<string />									
-									<!--<check/>-->
+								<fields>																											
 									<string>Y</string>
 									<string/>									
 									<string/>
