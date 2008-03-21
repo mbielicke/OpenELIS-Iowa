@@ -206,6 +206,12 @@ public class ProviderScreen extends OpenELISScreenForm {
         loadTabs();        
        } 
        super.afterFetch(success); 
+       
+       //if(success){ 
+           if(modelWidget.getPage()==0 && modelWidget.getSelectedIndex()==0){
+               bpanel.setButtonState("prev", AppButton.DISABLED);
+           }
+         // } 
     }
     
     

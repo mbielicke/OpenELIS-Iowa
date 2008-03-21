@@ -103,9 +103,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue("lastName",provDO.getLastName());
         rpcReturn.setFieldValue("firstName",provDO.getFirstName());
         rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-                   
-                                      
+        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());                                                        
         rpcReturn.setFieldValue("providerType",provDO.getTypeId()); 
         return rpcReturn;
     }
@@ -121,8 +119,10 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        if(!(rpcSend.getFieldValue("providerType").equals(new Integer(-1))))
-            providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerType"));        
+        
+        //System.out.println("provide type "+ rpcSend.getFieldValue("providerType"));
+        if(!new Integer(-1).equals(rpcSend.getFieldValue("providerType")))
+          providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerType"));        
         
         
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
@@ -338,7 +338,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
         providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
         
-        if(!(rpcSend.getFieldValue("providerType").equals(new Integer(-1))))
+        if(!new Integer(-1).equals(rpcSend.getFieldValue("providerType")))
          providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerType"));
         
         List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
