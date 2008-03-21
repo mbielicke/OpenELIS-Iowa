@@ -26,7 +26,7 @@
      	<xsl:call-template name="aToZLeftPanelButtons"/>
 		</xsl:if>
 		
-      <table maxRows = "20" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable" title="" showError="false">
+      <table maxRows = "19" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable" title="" showError="false">
        <headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"test")'/>,<xsl:value-of select='resource:getString($constants,"method")'/></headers>
 							<widths>100,65,65</widths>
 							<editors>
@@ -161,11 +161,11 @@
      </row>
 			
 	   <row>
-	    <widget>
+	    <widget valign = "top"> 
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="300px" height="200px" case="mixed" key="reportingText" tab="name,sequence"/>
+		  <textarea width="400px" height="200px" case="mixed" key="reportingText" tab="name,sequence"/>
 	    </widget> 
 	   </row>								          
                                  					                         

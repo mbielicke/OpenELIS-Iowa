@@ -135,9 +135,7 @@ public class QAEventService implements
          
          int i=0;
          model.clear();
-        // List providers = new ArrayList();
-         
-         //while(i < organizations.size() && i < leftTableRowsPerPage) {
+
          while(i < qaEvents.size() && i < leftTableRowsPerPage) {
              Object[] result = (Object[])qaEvents.get(i);
              //qaEvent id
@@ -170,20 +168,15 @@ public class QAEventService implements
              row.addObject(qaname);
              row.addObject(tname);
              row.addObject(mname);
+             model.add(row);
              i++;
-          }
-         //} 
-         //if(systemUserId.equals("")){
-             //systemUserId = remote.getSystemUserId().toString();
-         //CachingManager.putElement("screenQueryRpc", systemUserId+":Organization", rpcSend);
+          }         
                  
          return model;   
          } else{
              QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
              
-             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-
-             //contacts table
+             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
               
 
              List qaEventNames = new ArrayList();
@@ -198,7 +191,7 @@ public class QAEventService implements
              Iterator itraaa = qaEventNames.iterator();
              model=  new DataModel();
              while(itraaa.hasNext()){
-                 Object[] result = (Object[])(Object[])itraaa.next();
+                 Object[] result = (Object[])itraaa.next();
                  //qaEvent id
                  Integer idResult = (Integer)result[0];
                  //qaEvent name
@@ -256,11 +249,11 @@ public class QAEventService implements
         qaeDO.setName((String)rpcSend.getFieldValue("name"));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue("sequence"));
         qaeDO.setReportingText((String)rpcSend.getFieldValue("reportingText"));    
-        
+                
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue("test")))
             qaeDO.setTest((Integer)rpcSend.getFieldValue("test"));   
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue("qaEventType")))
-            qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));         
+            qaeDO.setType((Integer)rpcSend.getFieldValue("qaEventType"));        
                 
         Integer qaeId = null;
         try{ 
@@ -270,7 +263,7 @@ public class QAEventService implements
         } 
         
         qaeDO = remote.getQaEvent((Integer)qaeIdField.getValue());
-        rpcReturn.setFieldValue("qaeId", qaeDO.getId());
+        rpcReturn.setFieldValue("qaeId", qaeId);
         rpcReturn.setFieldValue("name",qaeDO.getName());
         rpcReturn.setFieldValue("sequence",qaeDO.getReportingSequence());
         rpcReturn.setFieldValue("billable",qaeDO.getIsBillable());     
