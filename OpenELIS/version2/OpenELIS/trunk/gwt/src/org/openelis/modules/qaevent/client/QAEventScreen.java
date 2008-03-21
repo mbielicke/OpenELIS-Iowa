@@ -12,6 +12,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -132,5 +133,16 @@ import com.google.gwt.user.client.ui.Widget;
            }
            
            super.afterCommitAdd(success);
-       }           
+       }
+              
+       
+       public void afterFetch(boolean success){
+           super.afterFetch(success);             
+          //if(success){ 
+           if(modelWidget.getPage()==0 && modelWidget.getSelectedIndex()==0){
+               bpanel.setButtonState("prev", AppButton.DISABLED);
+           }
+        //  }                    
+       }
+              
  }

@@ -58,14 +58,13 @@ public class QAEventsNamesTable implements TableManager {
     }
 
     public void getPage(int page) {
-        // TODO Auto-generated method stub
+        qaEventForm.modelWidget.setPage(page);
 
     }
 
     public void getPreviousPage(TableController controller) {
         qaEventForm.modelWidget.getModel().selecttLast(false);
-        qaEventForm.modelWidget.setPage(qaEventForm.modelWidget.getPage()-1);
-
+        qaEventForm.modelWidget.setPage(qaEventForm.modelWidget.getPage()-1);        
     }
 
     public void rowAdded(int row, TableController controller) {
@@ -73,8 +72,8 @@ public class QAEventsNamesTable implements TableManager {
 
     }
 
-    public void setModel(TableController controller, DataModel model) {       
-        controller.model.reset();
+    public void setModel(TableController controller, DataModel model) {         
+        controller.model.reset();        
         for (int i = 0; i < model.size(); i++) {
             DataSet row = (DataSet)model.get(i);
             TableRow tRow = controller.model.createRow();
