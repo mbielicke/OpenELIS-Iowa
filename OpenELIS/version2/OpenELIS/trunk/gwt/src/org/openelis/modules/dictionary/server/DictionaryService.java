@@ -13,17 +13,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.OptionField;
-import org.openelis.gwt.common.data.OptionItem;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -107,9 +103,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));                
-        
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("section")))
-            categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));       
+            
+       if(!new Integer(-1).equals(rpcSend.getFieldValue("section")))
+        categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));       
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         
@@ -206,15 +202,13 @@ public class DictionaryService implements AppScreenFormServiceInt,
         
         int i=0;
         model.clear();
-       // List providers = new ArrayList();
-        
-        //while(i < organizations.size() && i < leftTableRowsPerPage) {
+
         while(i < categories.size() && i < leftTableRowsPerPage) {
-            //Object[] result = (Object[])organizations.get(i);
+
             Object[] result = (Object[])categories.get(i);
-            //org id
+            //category id
             Integer idResult = (Integer)result[0];
-            //org name
+            //category name
             String sysNameResult = (String)result[1];
                         
 
@@ -232,8 +226,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             row.addObject(sysName);
             model.add(row);
             i++;
-         }
-        
+         }        
                 
         return model;   
         } else{
@@ -266,10 +259,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
             Iterator itraaa = systemNames.iterator();
             model=  new DataModel();
             while(itraaa.hasNext()){
-                Object[] result = (Object[])(Object[])itraaa.next();
-                //org id
+                Object[] result = (Object[])itraaa.next();
+                //category id
                 Integer idResult = (Integer)result[0];
-                //org name
+                //category name
                 String sysNameResult = (String)result[1];
                             
                 
@@ -305,8 +298,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setDescription((String)rpcSend.getFieldValue("desc"));
         categoryDO.setName((String)rpcSend.getFieldValue("name"));
         categoryDO.setSystemName((String)rpcSend.getFieldValue("systemName"));
-        
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue("section")))
+                
+        if(!new Integer(-1).equals(rpcSend.getFieldValue("section")))
             categoryDO.setSection((Integer)rpcSend.getFieldValue("section"));  
         
         List<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
@@ -555,9 +548,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
          List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
                       
-             
-                
-        // OptionItem firstItem =  (OptionItem)sectionOpt.getOptions().get(0);
+                                 
          if(sections!=null){
             // System.out.println("sections.size() "+ sections.size());   
           //  List<OptionItem> optionlist = new ArrayList<OptionItem>();

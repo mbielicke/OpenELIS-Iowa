@@ -230,6 +230,15 @@ public class DictionaryScreen extends OpenELISScreenForm implements MouseListene
             removeEntryButton.changeState(AppButton.DISABLED);  
         }       
         
+        public void afterFetch(boolean success){
+            super.afterFetch(success);             
+           //if(success){ 
+           if(modelWidget.getPage()==0 && modelWidget.getSelectedIndex()==0){
+                bpanel.setButtonState("prev", AppButton.DISABLED);
+           }
+           //}                     
+        }
+        
         public void checkSystemName(Integer id,String systemName, int row){
             final Integer entryId = id; 
             
