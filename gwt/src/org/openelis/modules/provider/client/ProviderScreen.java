@@ -39,12 +39,27 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ProviderScreen extends OpenELISScreenForm {
 
-    private Widget selected;
+    
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
     private boolean loadAddresses = true; // tells whether table tab is to be filled with data
     private boolean clearNotes = false; // tells whether notes panel is to be cleared 
     private boolean clearAddresses = false; // tells whether table tab is to be cleared
+    
+    private Widget selected = null;
     private ScreenVertical svp = null;
+    private AppButton removeContactButton = null;
+    private AppButton standardNoteButton = null;
+    private ScreenTextBox provId = null; 
+    private TextBox lastName = null;
+    private TextBox subjectBox = null;
+    private TextArea noteArea = null;
+    private TableController provAddController = null;
+    private TableController provideNamesController = null;
+    private TabPanel noteTab = null;    
+    private ScreenAutoDropdown displayType = null;
+    
+    private StringField note = null; 
+    private StringField subject = null;
 
     private static DataModel typeDropDown = null;
     private static DataModel stateDropDown = null;  
@@ -61,22 +76,35 @@ public class ProviderScreen extends OpenELISScreenForm {
         bpanel = (ButtonPanel) getWidget("buttons");        
         message.setText("done");
         
-        TableWidget provideNamesTable = (TableWidget) getWidget("providersTable");
-        modelWidget.addChangeListener(provideNamesTable.controller);
+        //TableWidget provideNamesTable = (TableWidget) getWidget("providersTable");
+        provideNamesController = (TableController)(((TableWidget)getWidget("providersTable")).controller);
+        modelWidget.addChangeListener(provideNamesController);
         
-        ((ProviderNamesTable) provideNamesTable.controller.manager).setProviderForm(this);               
+        ((ProviderNamesTable) provideNamesController.manager).setProviderForm(this);               
         
-        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.addClickListener(this);
         removeContactButton.changeState(AppButton.DISABLED);              
         
-        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-        standardNote.changeState(AppButton.DISABLED);
+        standardNoteButton = (AppButton) getWidget("standardNoteButton");
+        standardNoteButton.changeState(AppButton.DISABLED);
         
-        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddTable.setAutoAdd(false);
+        provId = (ScreenTextBox)widgets.get("providerId");
+        lastName = (TextBox)getWidget("lastName");
+        subjectBox = (TextBox)getWidget("usersSubject");
+        noteArea = (TextArea)getWidget("usersNote");
+        svp = (ScreenVertical) widgets.get("notesPanel");
         
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        noteTab = (TabPanel)getWidget("provTabPanel");  
+        
+        displayType = (ScreenAutoDropdown)widgets.get("providerType");
+                         
+        
+        //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.setAutoAdd(false);
+        
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = true;
            
         loadDropdowns();
@@ -87,27 +115,26 @@ public class ProviderScreen extends OpenELISScreenForm {
    
         
     public void up(int state) {                        
-        
-        StringField note = (StringField)rpc.getField("usersNote");  
+        note = (StringField)rpc.getField("usersNote");             
         note.setValue("");
-        
-        StringField subject = (StringField)rpc.getField("usersSubject");  
+                 
+        subject = (StringField)rpc.getField("usersSubject");
         subject.setValue("");
         
-        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddTable.setAutoAdd(true);
+        //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.setAutoAdd(true);
         
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = false;
         super.up(state);      
     }
     
     public void abort(int state){      
         
-      TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-      provAddTable.setAutoAdd(false);      
+      //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+      provAddController.setAutoAdd(false);      
       
-      ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+      ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
       proAddManager.disableRows = true;
       
       clearNotesFields();
@@ -126,74 +153,72 @@ public class ProviderScreen extends OpenELISScreenForm {
         key.setObject(0, null);
                 
         
-        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        //AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
         
-        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-        standardNote.changeState(AppButton.UNPRESSED);
+        //AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNoteButton.changeState(AppButton.UNPRESSED);
         
-        ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
-        vp.clear();
+        //ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
+        svp.clear();
         
-        TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddTable.setAutoAdd(true);
+        //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.setAutoAdd(true);
          
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddTable.manager;
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = false;
         super.add(state);     
         
-        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+ 
         provId.enable(false);
         
-//      set focus to the last name field
-        TextBox lastName = (TextBox)getWidget("lastName");
+        //set focus to the last name field       
         lastName.setFocus(true);
         
-        TableWidget catNameTM = (TableWidget) getWidget("providersTable");
-        catNameTM.controller.unselect(-1);
+        //TableWidget catNameTM = (TableWidget) getWidget("providersTable");
+        provideNamesController.unselect(-1);
     }
     
     public void afterUpdate(boolean success) {
         
         super.afterUpdate(success);
                 
-        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        //AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.UNPRESSED);
         
-        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-        standardNote.changeState(AppButton.UNPRESSED);
+        //AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNoteButton.changeState(AppButton.UNPRESSED);
         
-        ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
+        //ScreenTextBox provId = (ScreenTextBox)widgets.get("providerId");
         provId.enable(false);
         
        if(success){ 
      // this code is for the event of the update mode being enabled 
         loadAddresses = true;
         loadNotes = true;                
-                
         
         loadTabs();
        } 
 //      set focus to the last name field
-        TextBox lastName = (TextBox)getWidget("lastName");
+        //TextBox lastName = (TextBox)getWidget("lastName");
         lastName.setFocus(true);
     }
     
     public void query(int state){
-    	ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
-    	vp.clear();    	
+    	//ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
+    	svp.clear();    	
 
        super.query(state);
       
 //    set focus to the last name field
-        TextBox provId = (TextBox)getWidget("providerId");
+        //TextBox provId = (TextBox)getWidget("providerId");
         provId.setFocus(true);
         
-         AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+         //AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
          removeContactButton.changeState(AppButton.DISABLED);
          
-         AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-         standardNote.changeState(AppButton.DISABLED);
+         //AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+         standardNoteButton.changeState(AppButton.DISABLED);
     }
           
     
@@ -207,11 +232,11 @@ public class ProviderScreen extends OpenELISScreenForm {
        } 
        super.afterFetch(success); 
        
-       //if(success){ 
+       /*if(success){ 
            if(modelWidget.getPage()==0 && modelWidget.getSelectedIndex()==0){
                bpanel.setButtonState("prev", AppButton.DISABLED);
            }
-         // } 
+          }*/ 
     }
     
     
@@ -273,30 +298,30 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     public void commitAdd(){
                        
-        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);
                
         super.commitAdd();                              
         
-        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        //AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
-        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-        standardNote.changeState(AppButton.DISABLED);
+        //AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNoteButton.changeState(AppButton.DISABLED);
         
         provAddController.setAutoAdd(false);      
     }
     
     public void commitUpdate(){ 
-        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);                       
         super.commitUpdate();        
         
-        AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
+        //AppButton removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.changeState(AppButton.DISABLED);
         
-        AppButton standardNote = (AppButton) getWidget("standardNoteButton");
-        standardNote.changeState(AppButton.DISABLED);
+        //AppButton standardNote = (AppButton) getWidget("standardNoteButton");
+        standardNoteButton.changeState(AppButton.DISABLED);
                 
         provAddController.setAutoAdd(false);      
     }
@@ -324,16 +349,13 @@ public class ProviderScreen extends OpenELISScreenForm {
       //or will be opened subsequently, will have the latest data in it
        if(success){  
         loadAddresses = true;
-        loadNotes = true;
-        
-        //Window.alert("afterCommitAdd");
+        loadNotes = true;                
         
         Integer providerId = (Integer)rpc.getFieldValue("providerId");
         NumberObject provId = new NumberObject();
         provId.setType("integer");
         provId.setValue(providerId);
-        //Window.alert(new Boolean(key == null).toString());
-        
+                
         //done because key is set to null in AppScreenForm for the add operation 
         if(key ==null){  
          key = new DataSet();
@@ -342,9 +364,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         else{
             key.setObject(0,provId);
         }
-        //clearTabs();
-         
-        //
+        
         loadTabs();
                 
         clearNotesFields();
@@ -355,7 +375,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     
     public void commitQuery(FormRPC rpcQuery){
-        TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.unselect(-1);
         
         super.commitQuery(rpcQuery);
@@ -368,10 +388,8 @@ public class ProviderScreen extends OpenELISScreenForm {
          stateDropDown = (DataModel) initData[1];
          countryDropDown = (DataModel) initData[2];
         } 
-                
-                ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("providerType");
-                ScreenAutoDropdown queryType = displayType.getQueryWidget();
-                
+                                
+                ScreenAutoDropdown queryType = displayType.getQueryWidget();                
                 ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);
                 ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDropDown);
                                        
@@ -400,7 +418,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     } 
     
    public boolean validate(){
-       TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+       //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
        provAddController.unselect(-1);
        boolean noErrors =  true;
        
@@ -525,7 +543,7 @@ public class ProviderScreen extends OpenELISScreenForm {
      
       if(getModel){
          // reset the model so that old data goes away 
-          TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);         
+          //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);         
           //provAddController.model.reset();        
           NumberObject provId = new NumberObject();
           provId.setType("integer");
@@ -540,7 +558,7 @@ public class ProviderScreen extends OpenELISScreenForm {
            public void onSuccess(Object result){
                // get the table model and load it in the table 
                rpc.setFieldValue("providerAddressTable",(TableModel)((TableField)result).getValue());
-               TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+               //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
                provAddController.setModel((TableModel)((TableField)result).getValue());                             
                 
                if(provAddController.model.numRows()>0){      
@@ -558,17 +576,16 @@ public class ProviderScreen extends OpenELISScreenForm {
    }
    
    private void clearNotesFields(){
-    //     the note subject and body fields need to be refeshed after every successful commit 
-       TextBox subjectBox = (TextBox)getWidget("usersSubject");           
-       subjectBox.setText("");
-      TextArea noteArea = (TextArea)getWidget("usersNote");
+    //the note subject and body fields need to be refeshed after every successful commit 
+                  
+      subjectBox.setText("");
+      
       noteArea.setText("");           
       rpc.setFieldValue("usersSubject", null);
       rpc.setFieldValue("usersNote", null);  
    }
    
-   private void loadTabs(){
-       TabPanel noteTab = (TabPanel)getWidget("provTabPanel");        
+   private void loadTabs(){        
        int selectedTab = noteTab.getTabBar().getSelectedTab();     
                             
        if(selectedTab == 0 && loadAddresses){
@@ -594,14 +611,14 @@ public class ProviderScreen extends OpenELISScreenForm {
    }     
    
    private void clearAddresses(){       
-       TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);             
+       //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);             
        provAddController.model.reset(); 
        provAddController.setModel(provAddController.model);
        rpc.setFieldValue("providerAddressTable",provAddController.model);
    }
    
    private void clearNotes(){        
-     svp = (ScreenVertical) widgets.get("notesPanel");     
+     //svp = (ScreenVertical) widgets.get("notesPanel");     
      svp.clear();          
    }
    
@@ -618,19 +635,19 @@ public class ProviderScreen extends OpenELISScreenForm {
     }
     
     private void onRemoveRowButtonClick(){
-    	 TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
-         int selectedRow = provAddTable.controller.selected;
+    	 //TableWidget provAddTable = (TableWidget) getWidget("providerAddressTable");
+         int selectedRow = provAddController.selected;
          if (selectedRow > -1
-                 && provAddTable.controller.model.numRows() > 1) {
-             TableRow row = provAddTable.controller.model
+                 && provAddController.model.numRows() > 1) {
+             TableRow row = provAddController.model
                      .getRow(selectedRow);
              
              row.setShow(false);
              // delete the last row of the table because it is autoadd
-             provAddTable.controller.model
-                     .deleteRow(provAddTable.controller.model.numRows() - 1);
+             provAddController.model
+                     .deleteRow(provAddController.model.numRows() - 1);
              // reset the model
-             provAddTable.controller.reset();
+             provAddController.reset();
              // need to set the deleted flag to "Y" also
              StringField deleteFlag = new StringField();
              deleteFlag.setValue("Y");

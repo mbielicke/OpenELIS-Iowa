@@ -34,7 +34,7 @@ public class ProviderNamesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {                
-        if(providerForm.bpanel.state == FormInt.DISPLAY)                   
+        if(providerForm.bpanel.state == FormInt.DISPLAY || providerForm.bpanel.state == FormInt.DEFAULT)                   
             providerForm.modelWidget.select(row);       
         return false;
     }

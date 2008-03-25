@@ -14,7 +14,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
