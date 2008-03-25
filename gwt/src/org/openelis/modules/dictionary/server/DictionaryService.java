@@ -13,7 +13,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -46,7 +46,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
      */
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;   
-   
+    private ArrayList<String> systemNamesList = null;
+    private ArrayList<String> entryList = null;
 
     private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
                                                                 new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -128,13 +129,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
            if(relEntryId!=null){
             dictDO.setRelatedEntry((Integer)relEntryId.getValue());
            }            
-           CheckField isActive =  (CheckField)row.getColumn(0);
-           if(isActive.isChecked()){           
-              dictDO.setIsActive("Y");
-           }   
-           else{
-               dictDO.setIsActive("N");
-           }   
+           StringField isActive =  (StringField)row.getColumn(0);              
+           dictDO.setIsActive((String)isActive.getValue());   
            
            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
            if(deleteFlag == null){
@@ -424,6 +420,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
          try{
              dictEntryModel.reset();
              
+             systemNamesList = new ArrayList<String>();                                              
+             entryList = new ArrayList<String>();
+             
              for(int iter = 0;iter < contactsList.size();iter++) {
                  DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
                  //DictionaryDO dictDO = addressRow.getDictionaryDO();
@@ -441,10 +440,19 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
                      row.addHidden("relEntryId", relEntryId);
                      
-                     row.getColumn(0).setValue(dictDO.getIsActive());
+                     row.getColumn(0).setValue(dictDO.getIsActive());                                         
                      row.getColumn(1).setValue(dictDO.getSystemName());
+                     
+                     if(dictDO.getSystemName()==null){
+                         systemNamesList.add(""); 
+                     }else{
+                         systemNamesList.add(dictDO.getSystemName()); 
+                     }
+                     
                      row.getColumn(2).setValue(dictDO.getLocalAbbrev());
                      row.getColumn(3).setValue(dictDO.getEntry());
+                                          
+                     entryList.add(dictDO.getEntry());                                          
                      row.getColumn(4).setValue(dictDO.getRelatedEntry());                      
                      dictEntryModel.addRow(row);
             } 
@@ -628,6 +636,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
         // TODO Auto-generated method stub
         return null;
     }
-    
+        
     
 }
