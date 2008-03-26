@@ -78,8 +78,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
         rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
         rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-        rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
-        rpcReturn.setFieldValue("isActive",((organizationDO.getIsActive() != null && organizationDO.getIsActive().equals("Y")) ? true : false));
+        rpcReturn.setFieldValue("parentOrg",organizationDO.getParentOrganization());
+        rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
         rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
         rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
         rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
@@ -98,7 +98,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		//organization info
 		newOrganizationDO.setName((String) rpcSend.getFieldValue("orgName"));
 		newOrganizationDO.setIsActive(((Boolean) rpcSend.getFieldValue("isActive")?"Y":"N"));
-		newOrganizationDO.setParentOrganization((Integer)rpcSend.getFieldValue("parentOrgId"));
+		newOrganizationDO.setParentOrganization((Integer)rpcSend.getFieldValue("parentOrg"));
 		//organization address value
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue("multUnit"));
 		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue("streetAddress"));
@@ -159,7 +159,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
         rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
         rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-        rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
+        rpcReturn.setFieldValue("parentOrg",organizationDO.getParentOrganization());
         rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
         rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
         rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
@@ -292,7 +292,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		newOrganizationDO.setOrganizationId(orgId);
 		newOrganizationDO.setName((String) rpcSend.getFieldValue("orgName"));
 		newOrganizationDO.setIsActive(((Boolean) rpcSend.getFieldValue("isActive")?"Y":"N"));
-		newOrganizationDO.setParentOrganization((Integer) rpcSend.getFieldValue("parentOrgId"));
+		newOrganizationDO.setParentOrganization((Integer) rpcSend.getFieldValue("parentOrg"));
 		//organization address value
 		newOrganizationDO.getAddressDO().setId((Integer) rpcSend.getFieldValue("addressId"));
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue("multUnit"));
@@ -364,7 +364,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
 		rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue("parentOrgId",organizationDO.getParentOrganization());
+		rpcReturn.setFieldValue("parentOrg",organizationDO.getParentOrganization());
 		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
 		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
 		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
@@ -391,8 +391,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
 		rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue("parentOrgId", organizationDO.getParentOrganization());
-		rpcReturn.setFieldValue("isActive",("Y".equals(organizationDO.getIsActive())));
+		rpcReturn.setFieldValue("parentOrg", organizationDO.getParentOrganization());
+		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
 		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
 		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
@@ -509,8 +509,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
 		rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
 		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue("parentOrgId", organizationDO.getParentOrganization());
-		rpcReturn.setFieldValue("isActive",("Y".equals(organizationDO.getIsActive())));
+		rpcReturn.setFieldValue("parentOrg", organizationDO.getParentOrganization());
+		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
 		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
 		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
 		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
@@ -605,7 +605,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		StringObject blankStringId = new StringObject();
 		NumberObject blankNumberId = new NumberObject();
 		BooleanObject blankSelected = new BooleanObject();
-		
+        
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
 		
@@ -634,9 +634,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			StringObject stringId = new StringObject();
 			NumberObject numberId = new NumberObject();
 			BooleanObject selected = new BooleanObject();
-			
+		
 			textObject.setValue(dropdownText);
 			set.addObject(textObject);
+            
+
+            
 			
 			if(cat.equals("contactType")){
 				numberId.setType("integer");
@@ -729,7 +732,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(orgId);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
 				StringObject nameObject = new StringObject();
 				nameObject.setValue(name);
@@ -744,13 +747,6 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				stateObject.setValue(state);
 				data.addObject(stateObject);
 				//display text
-				StringObject displayObject = new StringObject();
-				displayObject.setValue(name);
-				data.addObject(displayObject);
-				//selected flag
-				StringObject selectedFlag = new StringObject();
-				selectedFlag.setValue("N");
-				data.addObject(selectedFlag);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);
@@ -781,7 +777,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(orgId);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
 				StringObject nameObject = new StringObject();
 				nameObject.setValue(name.trim());
@@ -795,14 +791,6 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				StringObject stateObject = new StringObject();
 				stateObject.setValue(state.trim());
 				data.addObject(stateObject);
-				//display text
-				StringObject displayObject = new StringObject();
-				displayObject.setValue(name.trim());
-				data.addObject(displayObject);
-				//selected flag
-				StringObject selectedFlag = new StringObject();
-				selectedFlag.setValue("N");
-				data.addObject(selectedFlag);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);

@@ -4,6 +4,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
@@ -83,7 +84,7 @@ public class StorageUnitDescTable implements TableManager {
 		controller.model.totalRows = 2;
 		controller.model.totalPages = 3;
 		
-		controller.loadModel(controller.model);
+		((EditTable)controller).loadModel(controller.model);
 	}
 
 	public void validateRow(int row, TableController controller) {

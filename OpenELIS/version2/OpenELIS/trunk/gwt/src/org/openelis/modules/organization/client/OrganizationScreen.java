@@ -19,6 +19,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -183,30 +184,27 @@ public class OrganizationScreen extends OpenELISScreenForm {
 
 		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
 	}
-
-	public void abort(int state) {
-        TableWidget orgContacts = (TableWidget) getWidget("contactsTable");
-        orgContacts.controller.setAutoAdd(false);
-          	 
-
-		super.abort(state);
-                        
+    
+    public void afterAbort(boolean success){
         loadContacts = true;
         loadNotes = true;                
         
+        TableWidget orgContacts = (TableWidget) getWidget("contactsTable");
+        orgContacts.controller.setAutoAdd(false);
+        
         loadTabs();
-   
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
-		orgContactsTable.disableRows = true;
+        
+        OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
+        orgContactsTable.disableRows = true;
         orgContacts.controller.unselect(-1);
-       		
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.DISABLED);	
+            
+        AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
+        removeContactButton.changeState(AppButton.DISABLED);    
 
-		// need to get the org name table model
-		TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
-		int rowSelected = orgNameTM.controller.selected;
-	}
+        // need to get the org name table model
+        TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
+        int rowSelected = orgNameTM.controller.selected;
+    }
 
 	public void afterUpdate(boolean success) {
 		super.afterUpdate(success);
@@ -355,10 +353,10 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	
 //	  load the state dropdowns
 		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
-	    ScreenAutoDropdown queryState = displayState.getQueryWidget();
+	    //ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdown);
-	    ((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDropdown);
+	    //((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDropdown);
 	               
 	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	    ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
@@ -374,10 +372,10 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	     
 		//load the country dropdowns
 	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
-	    ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
+	    //ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
-	    ((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDropdown);
+	    //((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDropdown);
 	               
 	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
@@ -479,8 +477,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
                public void onSuccess(Object result){
                    // get the table model and load it in the table 
                    rpc.setFieldValue("contactsTable",(TableModel)((TableField)result).getValue());
-                   TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
-                   orgContactController.setModel((TableModel)((TableField)result).getValue());
+                   EditTable orgContactController = (EditTable)(((TableWidget)getWidget("contactsTable")).controller);
+                   orgContactController.loadModel((TableModel)((TableField)result).getValue());
                    
                    if(orgContactController.model.numRows()>0){      
                        clearContacts = true;
@@ -535,7 +533,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
           }  
           
           private void clearContacts(){       
-              TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);             
+              EditTable orgContactController = (EditTable)(((TableWidget)getWidget("contactsTable")).controller);             
               orgContactController.model.reset(); 
               orgContactController.setModel(orgContactController.model);
               rpc.setFieldValue("contactsTable",orgContactController.model);
