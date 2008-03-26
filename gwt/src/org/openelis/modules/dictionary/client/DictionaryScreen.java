@@ -1,6 +1,12 @@
 package org.openelis.modules.dictionary.client;
 
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -15,23 +21,17 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm implements
                                                         MouseListener {
 
-    private TableController dictEntryController = null;
-
+    private EditTable dictEntryController = null;
     private AppButton removeEntryButton = null;
     private TextBox tname = null;
-    private TableController categoryNamesController = null;
+    private EditTable categoryNamesController = null;
 
     private ScreenAutoDropdown displaySection = null;
 
