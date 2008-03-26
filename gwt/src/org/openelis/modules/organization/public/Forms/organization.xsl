@@ -58,8 +58,6 @@
 		</panel>
 		<!--end button panel-->
 		
-				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
-					<deck>
 					<panel layout="vertical" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 							<row>
@@ -103,26 +101,9 @@
 												</widget>
 										<!--<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">-->
 												<widget>
-													<autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="40px" type="string" fromModel="true" tab="zipCode,city">
-													<autoWidths>40</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
+													<autoDropdown key="state" case="upper" width="40px" popWidth="auto" tab="zipCode,city">
+													  <widths>40</widths>
 													</autoDropdown>
-													<query>
-													<autoDropdown cat="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="40px" type="string" fromModel="true" multiSelect="true" tab="zipCode,city">
-													<autoWidths>40</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													</autoDropdown>
-												</query>
 												</widget>
 									<!--<panel layout="horizontal" width="24px" xsi:type="Panel"/>-->
 											<widget>
@@ -145,26 +126,9 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown cat="country" key="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="196px" fromModel="true" type="string" tab="parentOrg,zipCode">
-													<autoWidths>175</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
+												<autoDropdown key="country" case="mixed" width="175px" popWidth="auto" tab="parentOrg,zipCode">
+													<widths>175</widths>
 												</autoDropdown>
-											<query>
-													<autoDropdown cat="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="196px" type="string" fromModel="true" multiSelect="true" tab="parentOrg,zipCode">
-													<autoWidths>175</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													</autoDropdown>
-											</query>
 										</widget>					
 									</row>
 								<row>
@@ -175,48 +139,19 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<auto cat="parentOrg" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" key="parentOrg" width="225px" type="integer" popupHeight="150px" tab="isActive,country">
-										<autoHeaders>Name,Street,City,St</autoHeaders>
-										<autoWidths>180,110,100,20</autoWidths>
-										<autoEditors>
-											<label/>
-											<label/>
-											<label/>
-											<label/>
-										</autoEditors>
-										<autoFields>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-										</autoFields>
-										</auto>
+										<autoDropdown cat="parentOrg" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" key="parentOrg" width="225px" popWidth="225px" tab="isActive,country">
+										  <headers>Name,Street,City,St</headers>
+										  <widths>180,110,100,20</widths>
+										</autoDropdown>
 										<query>
 											<textbox case="upper" width="225px" tab="isActive,country"/>
 										</query>
 										</widget>
-
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
 											<check key="isActive" tab="contactsTable,parentOrg"/>
-											<query>
-											<autoDropdown cat="isActive" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="40px" type="string" multiSelect="true" tab="contactsTable,parentOrg">
-													<autoWidths>19</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value=""> </item>
-													<item value="Y">Y</item>
-													<item value="N">N</item>
-													</autoItems>
-													</autoDropdown>
-										</query>
 										</widget>
 								</row>
 								</panel>
@@ -235,27 +170,15 @@
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="90px" fromModel="true" type="integer">
-											<autoWidths>90</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>
+											<autoDropdown case="mixed" width="90px" popWidth="auto">
+											  <widths>90</widths>
 											</autoDropdown>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="contactState" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="40px" fromModel="true" type="string">
-												<autoWidths>40</autoWidths>
-												<autoEditors>
-													<label/>
-												</autoEditors>
-												<autoFields>
-													<string/>
-												</autoFields>
+											<autoDropdown case="upper" width="40px" popWidth="auto">
+												 <widths>40</widths>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
@@ -263,14 +186,8 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<autoDropdown cat="contactCountry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="110px" fromModel="true" type="string">
-											<autoWidths>110</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>
+											<autoDropdown case="mixed" width="110px" popWidth="auto">
+											  <widths>110</widths>
 											</autoDropdown>
 										</editors>
 										<fields>
@@ -302,27 +219,15 @@
 										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
-											<autoDropdown cat="contactType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="90px" fromModel="true" multiSelect="true" type="integer">
-											<autoWidths>90</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>
+											<autoDropdown case="mixed" width="90px" popWidth="auto" multiSelect="true">
+											  <widths>90</widths>
 											</autoDropdown>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="contactState" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="40px" fromModel="true" multiSelect="true" type="string">
-												<autoWidths>40</autoWidths>
-												<autoEditors>
-													<label/>
-												</autoEditors>
-												<autoFields>
-													<string/>
-												</autoFields>
+											<autoDropdown case="upper" width="40px" popWidth="auto" multiSelect="true" >
+												<widths>40</widths>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
@@ -330,14 +235,8 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-										 	<autoDropdown cat="contactCountry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dataEntry.server.OrganizationServlet" width="110px" fromModel="true" multiSelect="true" type="string">
-											<autoWidths>110</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>
+										 	<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect="true">
+											  <widths>110</widths>
 											</autoDropdown>									 	
 										</editors>
 										<fields>
@@ -424,8 +323,6 @@
 					</tab>
 				</panel>
 				</panel>
-					</deck> 
-				</panel>
 			</panel>
 		</panel>
 	</display>
@@ -438,11 +335,11 @@
   <string key="city" max="30" required="true"/>
   <string key="zipCode" max="10" required="true"/>
   <string key="action" max="20" required="false"/>
-  <check key="isActive" required="false"/>
+  <string key="isActive"/>
 
   <string key="usersSubject" max="60" required="false"/>
   <string key="usersNote" required="false"/>
-  <number key="parentOrgId" type="integer" required="false"/> 
+  <dropdown key="parentOrg" required="false"/> 
   <table key="contactsTable"/>
   <number key="id" required="false" type="integer"/>
   <dropdown key="state" required="false"/>

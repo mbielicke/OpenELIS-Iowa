@@ -8,10 +8,10 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
-
 
 
 
@@ -119,7 +119,7 @@ public class DictionaryEntriesTable implements TableManager {
          }
         }                    
         if((col == 1 || col == 3) && (row == controller.model.numRows()-1)){          
-           controller.addRow();  
+           ((EditTable)controller).addRow();  
         }
         
         
@@ -225,6 +225,7 @@ public class DictionaryEntriesTable implements TableManager {
         
     }
     
-        
+    
+    
 }
 

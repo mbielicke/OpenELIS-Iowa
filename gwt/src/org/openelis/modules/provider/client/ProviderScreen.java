@@ -21,6 +21,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -53,8 +54,8 @@ public class ProviderScreen extends OpenELISScreenForm {
     private TextBox lastName = null;
     private TextBox subjectBox = null;
     private TextArea noteArea = null;
-    private TableController provAddController = null;
-    private TableController provideNamesController = null;
+    private EditTable provAddController = null;
+    private EditTable provideNamesController = null;
     private TabPanel noteTab = null;    
     private ScreenAutoDropdown displayType = null;
     
@@ -77,7 +78,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         message.setText("done");
         
         //TableWidget provideNamesTable = (TableWidget) getWidget("providersTable");
-        provideNamesController = (TableController)(((TableWidget)getWidget("providersTable")).controller);
+        provideNamesController = (EditTable)(((TableWidget)getWidget("providersTable")).controller);
         modelWidget.addChangeListener(provideNamesController);
         
         ((ProviderNamesTable) provideNamesController.manager).setProviderForm(this);               
@@ -101,7 +102,7 @@ public class ProviderScreen extends OpenELISScreenForm {
                          
         
         //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.setAutoAdd(false);
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
