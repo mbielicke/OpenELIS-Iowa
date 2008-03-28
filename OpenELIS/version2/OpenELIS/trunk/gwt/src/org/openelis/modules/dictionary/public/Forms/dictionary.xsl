@@ -72,7 +72,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" tab="desc,systemName"/>
+										<textbox case="mixed" key="category.name" tab="category.description,category.systemName"/>
 									</widget>
 								</row>
 								<row>
@@ -80,7 +80,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="desc" width="300px" tab="section,name"/>
+										<textbox case="mixed" key="category.description" width="300px" tab="category.section,category.name"/>
 									</widget>
 								</row>
 								<row>								
@@ -90,7 +90,7 @@
 									 
 									 
 									  <widget>
-										<autoDropdown cat="section" key="section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="systemName,desc">
+										<autoDropdown cat="section" key="category.section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="category.systemName,category.description">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
 														<label/>
@@ -119,7 +119,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="systemName" tab="name,section"/>
+										<textbox case="mixed" key="category.systemName" tab="category.name,category.section"/>
 									</widget>
 								</row>						  
 							</panel>
@@ -202,22 +202,22 @@
 		</panel>
 	</display>
 	<rpc key = "display">
-	 <number key="categoryId" type="integer" required="false"/>	
-	 <string key="systemName" max="30" required="true"/>
-	 <string key="name" max="50" required="true"/>
-	 <string key="desc" max="60" required="false"/>
+	 <number key="category.id" type="integer" required="false"/>	
+	 <string key="category.systemName" max="30" required="true"/>
+	 <string key="category.name" max="50" required="true"/>
+	 <string key="category.description" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <dropdown key="section" type="integer" required="false"/>     
+     <dropdown key="category.section" type="integer" required="false"/>     
 	</rpc>
 	<rpc key = "query">	 
 	 <table key="dictEntTable"/>	
-	 <queryString key="systemName"/>
-	 <queryString key="name"/>
-	 <queryString key="desc"/>
-	 <dropdown key="section" type="integer" required="false"/>
+	 <queryString key="category.systemName"/>
+	 <queryString key="category.name"/>
+	 <queryString key="category.description"/>
+	 <dropdown key="category.section" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-      <queryString key="name"/>
+      <queryString key="category.name"/>
     </rpc>
 </screen>
 </xsl:template>

@@ -236,14 +236,15 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();                            
             
             if(dictEntryTable != null){                   
-                fields.put("isActive",(DropDownField)dictEntryTable.getRow(0).getColumn(0));
-                fields.put("dictSystemName",(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
-                fields.put("abbreviation",(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
-                fields.put("entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
-                fields.put("relatedEntry",(QueryStringField)dictEntryTable.getRow(0).getColumn(4));                                      
+                fields.put("dictionary.isActive",(QueryStringField)dictEntryTable.getRow(0).getColumn(0));
+                fields.put("dictionary.systemName",(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
+                fields.put("dictionary.localAbbrev",(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
+                fields.put("dictionary.entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
+                fields.put("dictionary.relatedEntry.entry",(QueryStringField)dictEntryTable.getRow(0).getColumn(4));                                      
             }
             
-
+            fields.remove("dictEntTable");
+            
             List systemNames = new ArrayList();
                 try{                                        
                     systemNames = remote.query(fields,0,leftTableRowsPerPage);                     

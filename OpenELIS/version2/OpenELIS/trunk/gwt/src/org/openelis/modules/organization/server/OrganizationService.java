@@ -223,24 +223,30 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		if(rpcSend.getField("contactsTable") != null)
 			contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();		
 		
-		if(contactsTable != null){
-			fields.put("contactType",(DropDownField)contactsTable.getRow(0).getColumn(0));
-			fields.put("contactName",(QueryStringField)contactsTable.getRow(0).getColumn(1));
-			fields.put("contactMultUnit",(QueryStringField)contactsTable.getRow(0).getColumn(2));
-			fields.put("contactStreetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(3));
-			fields.put("contactCity",(QueryStringField)contactsTable.getRow(0).getColumn(4));
-			fields.put("contactState",(DropDownField)contactsTable.getRow(0).getColumn(5));
-			fields.put("contactZipCode",(QueryStringField)contactsTable.getRow(0).getColumn(6));
-			fields.put("contactWorkPhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
-			fields.put("contactHomePhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
-			fields.put("contactCellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
-			fields.put("contactFaxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(10));
-			fields.put("contactEmail",(QueryStringField)contactsTable.getRow(0).getColumn(11));
-			fields.put("contactCountry",(DropDownField)contactsTable.getRow(0).getColumn(12));
+		if(contactsTable != null){	
+			fields.put("organizationContact.contactType",(DropDownField)contactsTable.getRow(0).getColumn(0));
+			fields.put("organizationContact.name",(QueryStringField)contactsTable.getRow(0).getColumn(1));
+			fields.put("organizationContact.address.multipleUnit",(QueryStringField)contactsTable.getRow(0).getColumn(2));
+			fields.put("organizationContact.address.streetAddress",(QueryStringField)contactsTable.getRow(0).getColumn(3));
+			fields.put("organizationContact.address.city",(QueryStringField)contactsTable.getRow(0).getColumn(4));
+			fields.put("organizationContact.address.state",(DropDownField)contactsTable.getRow(0).getColumn(5));
+			fields.put("organizationContact.address.zipCode",(QueryStringField)contactsTable.getRow(0).getColumn(6));
+			fields.put("organizationContact.address.workPhone",(QueryStringField)contactsTable.getRow(0).getColumn(7));
+			fields.put("organizationContact.address.homePhone",(QueryStringField)contactsTable.getRow(0).getColumn(8));
+			fields.put("organizationContact.address.cellPhone",(QueryStringField)contactsTable.getRow(0).getColumn(9));
+			fields.put("organizationContact.address.faxPhone",(QueryStringField)contactsTable.getRow(0).getColumn(10));
+			fields.put("organizationContact.address.email",(QueryStringField)contactsTable.getRow(0).getColumn(11));
+			fields.put("organizationContact.address.country",(DropDownField)contactsTable.getRow(0).getColumn(12));
 		}
 
+		//remove unncessary fields from the query rpc
+		fields.remove("contactsTable");
+		fields.remove("stateModel");
+		fields.remove("countryModel");
+		
 		List organizationNames = new ArrayList();
 			try{
+				
 			organizationNames = remote.query(fields,0,leftTableRowsPerPage);
 
 		}catch(Exception e){
@@ -385,17 +391,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getObject(0).getValue());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("orgId", organizationDO.getOrganizationId());
-		rpcReturn.setFieldValue("orgName",organizationDO.getName());
-		rpcReturn.setFieldValue("streetAddress",organizationDO.getAddressDO().getStreetAddress());
-		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
-		rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
-		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue("parentOrg", organizationDO.getParentOrganization());
-		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
-		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
-		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
-		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
+		rpcReturn.setFieldValue("organization.id", organizationDO.getOrganizationId());
+		rpcReturn.setFieldValue("organization.name",organizationDO.getName());
+		rpcReturn.setFieldValue("organization.address.streetAddress",organizationDO.getAddressDO().getStreetAddress());
+		rpcReturn.setFieldValue("organization.address.multipleUnit",organizationDO.getAddressDO().getMultipleUnit());
+		rpcReturn.setFieldValue("organization.address.city",organizationDO.getAddressDO().getCity());
+		rpcReturn.setFieldValue("organization.address.zipCode",organizationDO.getAddressDO().getZipCode());
+		rpcReturn.setFieldValue("organization.parentOrganizationId", organizationDO.getParentOrganization());
+		rpcReturn.setFieldValue("organization.isActive",organizationDO.getIsActive());
+		rpcReturn.setFieldValue("organization.address.state",organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue("organization.address.country",organizationDO.getAddressDO().getCountry());
+		rpcReturn.setFieldValue("organization.addressId", organizationDO.getAddressDO().getId());
         
       return rpcReturn;  
 	}
@@ -503,17 +509,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		}
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("orgId", organizationDO.getOrganizationId());
-		rpcReturn.setFieldValue("orgName",organizationDO.getName());
-		rpcReturn.setFieldValue("streetAddress",organizationDO.getAddressDO().getStreetAddress());
-		rpcReturn.setFieldValue("multUnit",organizationDO.getAddressDO().getMultipleUnit());
-		rpcReturn.setFieldValue("city",organizationDO.getAddressDO().getCity());
-		rpcReturn.setFieldValue("zipCode",organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue("parentOrg", organizationDO.getParentOrganization());
-		rpcReturn.setFieldValue("isActive",organizationDO.getIsActive());
-		rpcReturn.setFieldValue("state",organizationDO.getAddressDO().getState());
-		rpcReturn.setFieldValue("country",organizationDO.getAddressDO().getCountry());
-		rpcReturn.setFieldValue("addressId", organizationDO.getAddressDO().getId());
+		rpcReturn.setFieldValue("organization.id", organizationDO.getOrganizationId());
+		rpcReturn.setFieldValue("organization.name",organizationDO.getName());
+		rpcReturn.setFieldValue("organization.address.streetAddress",organizationDO.getAddressDO().getStreetAddress());
+		rpcReturn.setFieldValue("organization.address.multipleUnit",organizationDO.getAddressDO().getMultipleUnit());
+		rpcReturn.setFieldValue("organization.address.city",organizationDO.getAddressDO().getCity());
+		rpcReturn.setFieldValue("organization.address.zipCode",organizationDO.getAddressDO().getZipCode());
+		rpcReturn.setFieldValue("organization.parentOrganizationId", organizationDO.getParentOrganization());
+		rpcReturn.setFieldValue("organization.isActive",organizationDO.getIsActive());
+		rpcReturn.setFieldValue("organization.address.state",organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue("organization.address.country",organizationDO.getAddressDO().getCountry());
+		rpcReturn.setFieldValue("organization.addressId", organizationDO.getAddressDO().getId());
         
 	    return rpcReturn;  
 	}

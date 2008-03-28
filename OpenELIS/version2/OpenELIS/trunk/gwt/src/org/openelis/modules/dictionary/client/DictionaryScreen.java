@@ -59,12 +59,12 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
         dictEntryController.setAutoAdd(false);
 
-        tname = (TextBox)getWidget("name");
+        tname = (TextBox)getWidget("category.name");
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
         removeEntryButton.addClickListener(this);
         removeEntryButton.changeState(AppButton.DISABLED);
 
-        displaySection = (ScreenAutoDropdown)widgets.get("section");
+        displaySection = (ScreenAutoDropdown)widgets.get("category.section");
 
         super.afterDraw(success);
 
@@ -111,7 +111,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     }
 
     public void afterCommitAdd(boolean success) {
-        Integer categoryId = (Integer)rpc.getFieldValue("categoryId");
+        Integer categoryId = (Integer)rpc.getFieldValue("category.id");
         NumberObject categoryIdObj = new NumberObject();
         categoryIdObj.setType("integer");
         categoryIdObj.setValue(categoryId);
@@ -187,7 +187,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("name", letter.toUpperCase() + "*"
+            letterRPC.setFieldValue("category.name", letter.toUpperCase() + "*"
                                             + " | "
                                             + letter.toLowerCase()
                                             + "*");
