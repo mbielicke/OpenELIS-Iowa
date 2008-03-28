@@ -143,7 +143,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			letterRPC.setFieldValue("orgName", letter.toUpperCase() + "*");
+			letterRPC.setFieldValue("organization.name", letter.toUpperCase() + "*");
 
 			commitQuery(letterRPC);
 
@@ -159,7 +159,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		super.add(state);
 		
 		//FIXME need to load the model for the dropdown
-		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
+		ScreenTextBox orgId = (ScreenTextBox) widgets.get("organization.id");
 		orgId.enable(false);
 
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
@@ -173,7 +173,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		vp.clear();
 		
 		//set focus to the org name field
-		TextBox orgName = (TextBox)getWidget("orgName");
+		TextBox orgName = (TextBox)getWidget("organization.name");
 		orgName.setFocus(true);
 
 		// unselect the row from the table
@@ -217,7 +217,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         loadTabs();
          
        }
-		ScreenTextBox orgId = (ScreenTextBox) widgets.get("orgId");
+		ScreenTextBox orgId = (ScreenTextBox) widgets.get("organization.id");
 		orgId.enable(false);
 		
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
@@ -227,7 +227,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		contactTable.controller.addRow();
 		
 		//set focus to the org name field
-		TextBox orgName = (TextBox)getWidget("orgName");
+		TextBox orgName = (TextBox)getWidget("organization.name");
 		orgName.setFocus(true);
 
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
@@ -241,7 +241,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         loadContacts = true;
         loadNotes = true;
         
-        Integer orgId = (Integer)rpc.getFieldValue("orgId");
+        Integer orgId = (Integer)rpc.getFieldValue("organization.id");
         NumberObject orgIdObj = new NumberObject();
         orgIdObj.setType("integer");
         orgIdObj.setValue(orgId);
@@ -275,8 +275,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		super.query(state);
 		
 		//set focus to the org id field
-		TextBox orgName = (TextBox)getWidget("orgId");
-		orgName.setFocus(true);
+		TextBox orgId = (TextBox)getWidget("organization.id");
+		orgId.setFocus(true);
 	}
 	
 	public void afterCommitUpdate(boolean success) {
@@ -318,9 +318,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	protected void doReset() {
 		//we need to reset the dropdowns
 		//clear the state dropdown
-		((AutoCompleteDropdown)getWidget("state")).reset();
+		((AutoCompleteDropdown)getWidget("organization.address.state")).reset();
 		//clear the country dropdown
-		((AutoCompleteDropdown)getWidget("country")).reset();
+		((AutoCompleteDropdown)getWidget("organization.address.country")).reset();
 		
 		 ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 		TableAutoDropdown displayContactType = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
@@ -352,7 +352,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         }
 	
 //	  load the state dropdowns
-		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("state");
+		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("organization.address.state");
 	    //ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdown);
@@ -371,7 +371,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	     
 	     
 		//load the country dropdowns
-	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("country");
+	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("organization.address.country");
 	    //ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
@@ -496,12 +496,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
        
        private void clearNotesFields(){
            //     the note subject and body fields need to be refeshed after every successful commit 
-              TextBox subjectBox = (TextBox)getWidget("usersSubject");           
+              TextBox subjectBox = (TextBox)getWidget("note.subject");           
               subjectBox.setText("");
-             TextArea noteArea = (TextArea)getWidget("usersNote");
+             TextArea noteArea = (TextArea)getWidget("note.text");
              noteArea.setText("");           
-             rpc.setFieldValue("usersSubject", null);
-             rpc.setFieldValue("usersNote", null);  
+             rpc.setFieldValue("note.subject", null);
+             rpc.setFieldValue("note.text", null);  
           }
           
           private void loadTabs(){
@@ -547,9 +547,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
           private void onStandardNoteButtonClick(){
         	 PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
   			ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-  			pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("usersNote")));
+  			pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
   			
-  			//StandardNotePickerScreen pickerScreen = new StandardNotePickerScreen((TextArea)getWidget("usersNote"));
+  			//StandardNotePickerScreen pickerScreen = new StandardNotePickerScreen((TextArea)getWidget("organization.orgNote.text"));
   			standardNotePopupPanel.add(pickerWindow);
   			int left = this.getAbsoluteLeft();
   			int top = this.getAbsoluteTop();

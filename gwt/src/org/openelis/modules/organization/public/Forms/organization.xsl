@@ -68,7 +68,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 										</widget>
 										<widget>
-										<textbox key="orgId" width="75px" tab="orgName,isActive"/>
+										<textbox key="organization.id" width="75px" tab="organization.name,organization.isActive"/>
 										</widget>
 									</row>
 									<row>								
@@ -76,13 +76,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="orgName" width="225px" max="40" tab="multUnit,orgName"/>
+										<textbox case="upper" key="organization.name" width="225px" max="40" tab="organization.address.multipleUnit,organization.name"/>
 										</widget>text
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<textbox case="upper" key="city" width="212px" max="30" tab="state,streetAddress"/>
+											<textbox case="upper" key="organization.address.city" width="212px" max="30" tab="organization.address.state,organization.address.streetAddress"/>
 										</widget>		
 									</row>
 									<row>
@@ -94,15 +94,15 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="multUnit" width="212px" max="30" tab="streetAddress,orgName"/>
+											<textbox case="upper" key="organization.address.multipleUnit" width="212px" max="30" tab="organization.address.streetAddress,organization.name"/>
 										</widget>
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
 										<!--<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">-->
 												<widget>
-													<autoDropdown key="state" case="upper" width="40px" popWidth="auto" tab="zipCode,city">
-													  <widths>40</widths>
+													<autoDropdown key="organization.address.state" case="upper" width="40px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
+													<widths>40</widths>
 													</autoDropdown>
 												</widget>
 									<!--<panel layout="horizontal" width="24px" xsi:type="Panel"/>-->
@@ -111,7 +111,7 @@
 												</widget>
 												<!--<panel layout="horizontal" width="2px" xsi:type="Panel"/>-->
 												<widget>
-													<maskedbox key="zipCode" width="70" mask="99999-9999" tab="country,state"/>
+													<maskedbox key="organization.address.zipCode" width="70" mask="99999-9999" tab="organization.address.country,organization.address.state"/>
 												</widget>
 									<!--</panel>									-->
 									</row>	
@@ -120,13 +120,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/>:</text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="streetAddress" width="212px" max="30" tab="city,multUnit"/>
+											<textbox case="upper" key="organization.address.streetAddress" width="212px" max="30" tab="organization.address.city,organization.address.multipleUnit"/>
 										</widget>	
 											<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown key="country" case="mixed" width="175px" popWidth="auto" tab="parentOrg,zipCode">
+												<autoDropdown key="organization.address.country" case="mixed" width="175px" popWidth="auto" tab="organization.parentOrganization,organization.address.zipCode">
 													<widths>175</widths>
 												</autoDropdown>
 										</widget>					
@@ -139,19 +139,19 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" key="parentOrg" width="225px" popWidth="225px" tab="isActive,country">
-										  <headers>Name,Street,City,St</headers>
-										  <widths>180,110,100,20</widths>
+										<autoDropdown cat="parentOrg" key="organization.parentOrganizationId" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="organization.isActive,organization.address.country">
+										<headers>Name,Street,City,St</headers>
+										<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="225px" tab="isActive,country"/>
+											<textbox case="upper" width="225px" tab="organization.isActive,organization.address.country"/>
 										</query>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="isActive" tab="contactsTable,parentOrg"/>
+											<check key="organization.isActive" tab="contactsTable,organization.parentOrganizationId"/>
 										</widget>
 								</row>
 								</panel>
@@ -284,7 +284,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="405px" max="60"/>
+										<textbox case="mixed" key="note.subject" width="405px" max="60"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -302,7 +302,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="524px" height="50px" case="mixed" key="usersNote"/>
+										<textarea width="524px" height="50px" case="mixed" key="note.text"/>
 										</widget>
 										</row>
 								 
@@ -321,52 +321,47 @@
 						</panel>
 						</panel>
 					</tab>
+					
 				</panel>
 				</panel>
 			</panel>
 		</panel>
 	</display>
 	<rpc key="display">
-  <number key="orgId" type="integer" required="false"/>
-  <number key="addressId" required="false" type="integer"/>
-  <string key="orgName" max="40" required="true"/>
-  <string key="streetAddress" max="30" required="true"/>
-  <string key="multUnit" max="30" required="false"/>
-  <string key="city" max="30" required="true"/>
-  <string key="zipCode" max="10" required="true"/>
-  <string key="action" max="20" required="false"/>
-  <string key="isActive"/>
+  <number key="organization.id" type="integer" required="false"/>
+  <number key="organization.addressId" required="false" type="integer"/>
+  <string key="organization.name" max="40" required="true"/>
+  <string key="organization.address.streetAddress" max="30" required="true"/>
+  <string key="organization.address.multipleUnit" max="30" required="false"/>
+  <string key="organization.address.city" max="30" required="true"/>
+  <string key="organization.address.zipCode" max="10" required="true"/>
+  <string key="organization.isActive" required="false"/>
 
-  <string key="usersSubject" max="60" required="false"/>
-  <string key="usersNote" required="false"/>
-  <dropdown key="parentOrg" required="false"/> 
+  <string key="note.subject" max="60" required="false"/>
+  <string key="note.text" required="false"/>
+  <dropdown key="organization.parentOrganizationId" type="integer" required="false"/> 
   <table key="contactsTable"/>
-  <number key="id" required="false" type="integer"/>
-  <dropdown key="state" required="false"/>
-  <dropdown key="country" required="true"/>
+  <dropdown key="organization.address.state" required="false"/>
+  <dropdown key="organization.address.country" required="true"/>
 	</rpc>
 	<rpc key="query">
-  <queryNumber key="orgId" type="integer"/>
-  <queryNumber key="addressId" type="integer"/>
-  <queryString key="orgName"/>
-  <queryString key="streetAddress"/>
-  <queryString key="multUnit" value="query"/>
-  <queryString key="city"/>
-  <queryString key="zipCode"/>
-  <queryString key="action"/>
-  <queryString key="parentOrg"/>
-  <queryString key="usersSubject"/>
-  <queryString key="usersNote"/>
+  <queryNumber key="organization.id" type="integer"/>
+ <!-- <queryNumber key="addressId" type="integer"/>-->
+  <queryString key="organization.name"/>
+  <queryString key="organization.address.streetAddress"/>
+  <queryString key="organization.address.multipleUnit" value="query"/>
+  <queryString key="organization.address.city"/>
+  <queryString key="organization.address.zipCode"/>
+  <queryString key="organization.parentOrganizationId"/>
+  <queryString key="note.subject"/>
+  <queryString key="note.text"/>
   <table key="contactsTable"/>
-  <queryNumber key="id" type="integer"/>
-  <dropdown key="state" required="false"/>
-  <model key="stateModel"/>
-  <dropdown key="country" required="false"/>
-  <model key="countryModel"/>
-  <dropdown key="isActive" required="false"/>
+  <dropdown key="organization.address.state" required="false"/>
+  <dropdown key="organization.address.country" required="false"/>
+  <queryString key="organization.isActive" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="orgName"/>
+		<queryString key="organization.name"/>
 	</rpc>
 </screen>
   </xsl:template>
