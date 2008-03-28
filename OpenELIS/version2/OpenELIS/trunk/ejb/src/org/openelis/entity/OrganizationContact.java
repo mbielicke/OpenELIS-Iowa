@@ -46,11 +46,11 @@ public class OrganizationContact implements Auditable, Cloneable {
   private String name;             
 
   @Column(name="address")
-  private Integer address;             
+  private Integer addressId;             
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address", insertable = false, updatable = false)
-  private Address orgContactaddress;
+  private Address address;
 
   @Transient
   private OrganizationContact original;
@@ -92,13 +92,13 @@ public class OrganizationContact implements Auditable, Cloneable {
       this.name = name;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer address) {
+    if((address == null && this.addressId != null) || 
+       (address != null && !address.equals(this.addressId)))
+      this.addressId = address;
   }
 
   
@@ -141,10 +141,10 @@ public class OrganizationContact implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((address == null && original.address != null) || 
-           (address != null && !address.equals(original.address))){
+        if((addressId == null && original.addressId != null) || 
+           (addressId != null && !addressId.equals(original.addressId))){
           Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.address.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.addressId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -160,10 +160,10 @@ public class OrganizationContact implements Auditable, Cloneable {
     return "organization_contact";
   }
 public Address getAddressTable() {
-	return orgContactaddress;
+	return address;
 }
 public void setAddressTable(Address addressTable) {
-	this.orgContactaddress = addressTable;
+	this.address = addressTable;
 }
   
 }   

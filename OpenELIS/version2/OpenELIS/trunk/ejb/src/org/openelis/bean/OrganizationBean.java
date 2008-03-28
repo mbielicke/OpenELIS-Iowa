@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,13 +23,16 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.OrganizationAddressMeta;
+import org.openelis.meta.OrganizationContactAddressMeta;
+import org.openelis.meta.OrganizationContactMeta;
+import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationNoteMeta;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
+import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -112,11 +114,11 @@ public class OrganizationBean implements OrganizationRemote {
             Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
             
             //update organization
-            organization.setAddress(orgAddressId);
+            organization.setAddressId(orgAddressId);
             
             organization.setIsActive(organizationDO.getIsActive());
             organization.setName(organizationDO.getName());
-            organization.setParentOrganization(organizationDO.getParentOrganization());
+            organization.setParentOrganizationId(organizationDO.getParentOrganization());
                     
 	        if (organization.getId() == null) {
 	        	manager.persist(organization);
@@ -144,7 +146,7 @@ public class OrganizationBean implements OrganizationRemote {
 		            orgContact.setContactType(contactDO.getContactType());
 			        orgContact.setName(contactDO.getName());
 			        orgContact.setOrganization(organization.getId());
-			        orgContact.setAddress(contactAddressId);
+			        orgContact.setAddressId(contactAddressId);
 			            
 			        if (orgContact.getId() == null) {
 			            manager.persist(orgContact);
@@ -244,145 +246,48 @@ public class OrganizationBean implements OrganizationRemote {
         Integer organizationContactReferenceId = (Integer)refIdQuery.getSingleResult();
         
         StringBuffer sb = new StringBuffer();
-        
-        sb.append("select distinct o.id,o.name " + "from Organization o left join o.orgNote n " +
-        		" left join o.organizationContact oc left join oc.orgContactaddress oca" +
-				" where " +
-				" (n.referenceTable = "+organizationReferenceId+" or n.referenceTable is null) "
-        		);
-         //***append the abstract fields to the string buffer
-//       org elements
-         if(fields.containsKey("orgId"))
-        	 sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("orgId"), "o.id"));
-         if(fields.containsKey("orgName"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("orgName"), "o.name"));
-         if(fields.containsKey("streetAddress"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("streetAddress"), "o.orgAddress.streetAddress"));
-         if(fields.containsKey("multUnit"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit"));
-         if(fields.containsKey("city"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"),"o.orgAddress.city"));         
-         if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"),"o.orgAddress.state"));        
-         if(fields.containsKey("zipCode"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"),"o.orgAddress.zipCode"));         
-         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"),"o.orgAddress.country"));        
-         if(fields.containsKey("parentOrg"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentOrg"),"o.parentOrg.name")); 
-         if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isActive"), "o.isActive"));         
-         //org contact elements
-         if(fields.containsKey("contactType") && ((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactType"), "oc.contactType"));         
-         if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactName"), "oc.name"));
-         if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
-         	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactMultUnit"), "oca.multipleUnit"));
-         if(fields.containsKey("contactStreetAddress") && ((QueryStringField)fields.get("contactStreetAddress")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactStreetAddress"), "oca.streetAddress"));
-         if(fields.containsKey("contactCity") && ((QueryStringField)fields.get("contactCity")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactCity"), "oca.city"));
-         if(fields.containsKey("contactState") && ((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactState"), "oca.state"));    
-         if(fields.containsKey("contactZipCode") && ((QueryStringField)fields.get("contactZipCode")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactZipCode"), "oca.zipCode"));
-         if(fields.containsKey("contactWorkPhone") && ((QueryStringField)fields.get("contactWorkPhone")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactWorkPhone"), "oca.workPhone"));
-         if(fields.containsKey("contactHomePhone") && ((QueryStringField)fields.get("contactHomePhone")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactHomePhone"), "oca.homePhone"));
-         if(fields.containsKey("contactCellPhone") && ((QueryStringField)fields.get("contactCellPhone")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactCellPhone"), "oca.cellPhone"));
-         if(fields.containsKey("contactFaxPhone") && ((QueryStringField)fields.get("contactFaxPhone")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactFaxPhone"), "oca.faxPhone"));
-         if(fields.containsKey("contactEmail") && ((QueryStringField)fields.get("contactEmail")).getComparator() != null)
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("contactEmail"), "oca.email"));
-         if(fields.containsKey("contactCountry") && ((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).get(0))))
-        	 sb.append(QueryBuilder.getQuery((CollectionField)fields.get("contactCountry"), "oca.country"));         
-         
-         //org notes
-         if(fields.containsKey("usersSubject"))
-        	 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("usersSubject"),"n.subject"));	
-   
-         Query query = manager.createQuery(sb.toString()+" order by o.name");
-         
-        // if(first > -1)
-        	// query.setFirstResult(first);
+        QueryBuilder qb = new QueryBuilder();
+
+        OrganizationMeta orgMeta = OrganizationMeta.getInstance();
+        OrganizationAddressMeta orgAddressMeta = OrganizationAddressMeta.getInstance();
+        OrganizationContactMeta orgContactMeta = OrganizationContactMeta.getInstance();
+        OrganizationContactAddressMeta orgContactAddressMeta = OrganizationContactAddressMeta.getInstance();
+        OrganizationNoteMeta orgNoteMeta = OrganizationNoteMeta.getInstance();
+
+        qb.addMeta(new Meta[]{orgMeta, orgAddressMeta, orgContactAddressMeta, orgContactMeta, orgNoteMeta});
  
+        qb.setSelect("distinct "+orgMeta.ID+", "+orgMeta.NAME);
+        qb.addTable(orgMeta);
+
+        //this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields);      
+
+        qb.setOrderBy(orgMeta.NAME);
+        
+        if(qb.hasTable(orgContactAddressMeta.getTable()))
+        	qb.addTable(orgContactMeta);
+        
+        //TODO we need to put these values in cache to remove this from where statement
+        if(qb.hasTable(orgNoteMeta.getTable())){
+        	qb.addWhere(orgNoteMeta.REFERENCE_TABLE+" = "+organizationReferenceId+" or "+orgNoteMeta.REFERENCE_TABLE+" is null");
+        }
+        
+        sb.append(qb.getEJBQL());
+        
+         Query query = manager.createQuery(sb.toString());
+        
          if(first > -1 && max > -1)
         	 query.setMaxResults(first+max);
-             
+         
 //       ***set the parameters in the query
-//       org elements
-         if(fields.containsKey("orgId"))
-        	 QueryBuilder.setParameters((QueryNumberField)fields.get("orgId"), "o.id", query);
-         if(fields.containsKey("orgName"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("orgName"), "o.name", query);
-         if(fields.containsKey("streetAddress"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("streetAddress"), "o.orgAddress.streetAddress", query);
-         if(fields.containsKey("multUnit"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("multUnit"), "o.orgAddress.multipleUnit", query);
-         if(fields.containsKey("city"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("city"), "o.orgAddress.city", query);  
-         if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("state"), "o.orgAddress.state", query);         
-         if(fields.containsKey("zipCode"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "o.orgAddress.zipCode", query);
-         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-        	QueryBuilder.setParameters((CollectionField)fields.get("country"), "o.orgAddress.country", query); 
-         if(fields.containsKey("parentOrg"))       	 
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("parentOrg"), "o.parentOrg.name", query);        
-         if(fields.containsKey("isActive") && ((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isActive")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("isActive"), "o.isActive", query);      
-         //       org contact elements
-         if(fields.containsKey("contactType") && ((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactType")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("contactType"), "oc.contactType", query);
-         if(fields.containsKey("contactName") && ((QueryStringField)fields.get("contactName")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactName"), "oc.name", query);
-         if(fields.containsKey("contactMultUnit") && ((QueryStringField)fields.get("contactMultUnit")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactMultUnit"), "oca.multipleUnit", query);
-         if(fields.containsKey("contactStreetAddress") && ((QueryStringField)fields.get("contactStreetAddress")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactStreetAddress"), "oca.streetAddress", query);
-         if(fields.containsKey("contactCity") && ((QueryStringField)fields.get("contactCity")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactCity"), "oca.city", query);
-         if(fields.containsKey("contactState") && ((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactState")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("contactState"), "oca.state", query);
-         if(fields.containsKey("contactZipCode") && ((QueryStringField)fields.get("contactZipCode")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactZipCode"), "oca.zipCode", query);
-         if(fields.containsKey("contactWorkPhone") && ((QueryStringField)fields.get("contactWorkPhone")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactWorkPhone"), "oca.workPhone", query);
-         if(fields.containsKey("contactHomePhone") && ((QueryStringField)fields.get("contactHomePhone")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactHomePhone"), "oca.homePhone", query);
-         if(fields.containsKey("contactCellPhone") && ((QueryStringField)fields.get("contactCellPhone")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactCellPhone"), "oca.cellPhone", query);
-         if(fields.containsKey("contactFaxPhone") && ((QueryStringField)fields.get("contactFaxPhone")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactFaxPhone"), "oca.faxPhone", query);
-         if(fields.containsKey("contactEmail") && ((QueryStringField)fields.get("contactEmail")).getComparator() != null)
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("contactEmail"), "oca.email", query);
-         if(fields.containsKey("contactCountry") && ((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("contactCountry")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("contactCountry"), "oca.country", query);
-//       org notes
-         if(fields.containsKey("usersSubject"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
+         qb.setQueryParams(query);
+         
          List returnList = GetPage.getPage(query.getResultList(), first, max);
          
          if(returnList == null)
         	 throw new LastPageException();
          else
         	 return returnList;
-         //return query.getResultList();
 	}
 	
 	public List autoCompleteLookupById(Integer id){
