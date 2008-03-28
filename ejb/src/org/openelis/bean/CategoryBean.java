@@ -24,7 +24,11 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.CategoryMeta;
+import org.openelis.meta.DictionaryMeta;
+import org.openelis.meta.DictionaryRelatedEntryMeta;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -81,59 +85,35 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct c.id, c.name from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
-        if(fields.containsKey("systemName"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("systemName"), "c.systemName"));
-        if(fields.containsKey("name"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "c.name"));               
+        QueryBuilder qb = new QueryBuilder();
+        //sb.append("select distinct c.id, c.name from Category c left join c.dictionary d left join d.relatedEntryRow relEntry where 1=1 " );
         
-        if(fields.containsKey("desc"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("desc"), "c.description"));       
+        CategoryMeta categoryMeta = CategoryMeta.getInstance();
+        DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
+        DictionaryRelatedEntryMeta dicRelatedEntryMeta = DictionaryRelatedEntryMeta.getInstance();
         
-        if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
-                      sb.append(QueryBuilder.getQuery((CollectionField)fields.get("section"), "c.section"));     
-                        
-                
-        if(fields.containsKey("isActive")&& ((QueryStringField)fields.get("isActive")).getComparator() != null)
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("isActive"), "d.isActive"));
-        if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("dictSystemName"), "d.systemName"));
-        if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("abbreviation"), "d.localAbbrev"));
-        if(fields.containsKey("entry")&& ((QueryStringField)fields.get("entry")).getComparator() != null)
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("entry"), "d.entry"));
-        if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
-           sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("relatedEntry"), "relEntry.entry"));
+        qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
+        
+        qb.setSelect("distinct "+categoryMeta.ID+", "+categoryMeta.NAME);
+        qb.addTable(categoryMeta);
+        
+        //this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields);      
+
+        qb.setOrderBy(categoryMeta.NAME);
+        
+        if(qb.hasTable(dicRelatedEntryMeta.getTable()))
+        	qb.addTable(dictionaryMeta);
+        
+        sb.append(qb.getEJBQL());
+        
+        Query query = manager.createQuery(sb.toString());
        
-        
-
-        Query query = manager.createQuery(sb.toString()+" order by c.name");        
-
         if(first > -1 && max > -1)
-        	query.setMaxResults(first+max);
-           
-        if(fields.containsKey("systemName"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("systemName"), "c.systemName",query);
-        if(fields.containsKey("name"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("name"), "c.name",query);
-        if(fields.containsKey("desc"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("desc"), "c.description",query);          
-        if(fields.containsKey("section") && ((ArrayList)((CollectionField)fields.get("section")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("section")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("section")).getValue()).get(0))))
-            QueryBuilder.setParameters((CollectionField)fields.get("section"), "c.section",query); 
-                        
-        if(fields.containsKey("isActive")&& ((QueryStringField)fields.get("isActive")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("isActive"), "isActive",query);
-        if(fields.containsKey("dictSystemName")&& ((QueryStringField)fields.get("dictSystemName")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("dictSystemName"), "d.systemName",query);
-        if(fields.containsKey("abbreviation")&& ((QueryStringField)fields.get("abbreviation")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("abbreviation"), "d.localAbbrev",query);
-        if(fields.containsKey("entry")&& ((QueryStringField)fields.get("entry")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("entry"), "d.entry",query);
-        if(fields.containsKey("relatedEntry")&& ((QueryStringField)fields.get("relatedEntry")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("relatedEntry"), "relEntry.entry",query);
+       	 query.setMaxResults(first+max);
         
+//      ***set the parameters in the query
+        qb.setQueryParams(query);
         
         List returnList = GetPage.getPage(query.getResultList(), first, max);
         if(returnList == null)
@@ -260,7 +240,7 @@ public class CategoryBean implements CategoryRemote {
                  dictionary.setEntry(dictDO.getEntry());
                  dictionary.setIsActive(dictDO.getIsActive());
                  dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                 dictionary.setRelatedEntryKey(dictDO.getRelatedEntry());                 
+                 dictionary.setRelatedEntryId(dictDO.getRelatedEntry());                 
                  dictionary.setSystemName(dictDO.getSystemName());    
                                                                                 
               if(dictionary.getId()==null){                  

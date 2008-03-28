@@ -36,7 +36,7 @@ public class Dictionary implements Auditable, Cloneable {
   private Integer category;             
 
   @Column(name="related_entry")
-  private Integer relatedEntryKey;             
+  private Integer relatedEntryId;             
 
   @Column(name="system_name")
   private String systemName;             
@@ -52,7 +52,7 @@ public class Dictionary implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "related_entry",insertable = false, updatable = false)
-  private Dictionary relatedEntryRow;
+  private Dictionary relatedEntry;
   
   @Transient
   private Dictionary original;
@@ -139,10 +139,10 @@ public class Dictionary implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((relatedEntryKey == null && original.relatedEntryKey != null) || 
-           (relatedEntryKey != null && !relatedEntryKey.equals(original.relatedEntryKey))){
+        if((relatedEntryId == null && original.relatedEntryId != null) || 
+           (relatedEntryId != null && !relatedEntryId.equals(original.relatedEntryId))){
           Element elem = doc.createElement("related_entry");
-          elem.appendChild(doc.createTextNode(original.relatedEntryKey.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.relatedEntryId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -186,19 +186,19 @@ public class Dictionary implements Auditable, Cloneable {
     return "dictionary";
   }
   
-  public Integer getRelatedEntryKey() {
-    return relatedEntryKey;
+  public Integer getRelatedEntryId() {
+    return relatedEntryId;
   }
   
-  public void setRelatedEntryKey(Integer relatedEntryKey) {
-    this.relatedEntryKey = relatedEntryKey;
+  public void setRelatedEntryId(Integer relatedEntryKey) {
+    this.relatedEntryId = relatedEntryKey;
    }
   
-  public Dictionary getRelatedEntryRow() {
-    return relatedEntryRow;
+  public Dictionary getRelatedEntry() {
+    return relatedEntry;
   }
-  public void setRelatedEntryRow(Dictionary relatedEntryRow) {
-    this.relatedEntryRow = relatedEntryRow;
+  public void setRelatedEntry(Dictionary relatedEntryRow) {
+    this.relatedEntry = relatedEntryRow;
   }
   
 }   

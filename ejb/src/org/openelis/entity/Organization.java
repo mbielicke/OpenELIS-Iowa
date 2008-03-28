@@ -32,18 +32,18 @@ import org.w3c.dom.Element;
 
 
 @NamedQueries({@NamedQuery(name = "getOrganizationNameRowsByLetter", query = "select	new org.openelis.domain.OrganizationTableRowDO(o.id,o.name) " + "from Organization o where o.name like :letter order by name"),
-	           @NamedQuery(name = "getOrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganization,orgz.name,orgz.isActive,addr.id," +
+	           @NamedQuery(name = "getOrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,orgz.name,orgz.isActive,addr.id," +
 			   		              "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.country)" +                                                                              
-			                      "  from Organization orgz, Address addr where addr.id = orgz.address and orgz.id = :id"),
+			                      "  from Organization orgz, Address addr where addr.id = orgz.addressId and orgz.id = :id"),
 			   @NamedQuery(name = "getOrganizationContacts", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organization,contact.contactType,contact.name,addr.id," +
 	           		              "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)" +
 						           "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.address and " +
 						           " orgz.id = contact.organization and orgz.id = :id"),
 			   @NamedQuery(name = "getOrganizationNotesTopLevel", query = "select n.id, n.systemUser, n.text, n.timestamp, n.subject " + 
 					   "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.referenceId = :id"),
-			   @NamedQuery(name = "getOrganizationAutoCompleteById", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
+			   @NamedQuery(name = "getOrganizationAutoCompleteById", query = "select o.id, o.name, o.address.streetAddress, o.address.city, o.address.state " +
 					   "  from Organization o where o.id = :id"),
-			   @NamedQuery(name = "getOrganizationAutoCompleteByName", query = "select o.id, o.name, o.orgAddress.streetAddress, o.orgAddress.city, o.orgAddress.state " +
+			   @NamedQuery(name = "getOrganizationAutoCompleteByName", query = "select o.id, o.name, o.address.streetAddress, o.address.city, o.address.state " +
 					   "  from Organization o where o.name like :name order by o.name")})
                                                                   
 @Entity
@@ -56,8 +56,9 @@ public class Organization implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
+  //FIXME parent_organization_id
   @Column(name="parent_organization")
-  private Integer parentOrganization;             
+  private Integer parentOrganizationId;             
 
   @Column(name="name")
   private String name;             
@@ -65,8 +66,9 @@ public class Organization implements Auditable, Cloneable {
   @Column(name="is_active")
   private String isActive;             
 
+  //FIXME address_id
   @Column(name="address")
-  private Integer address;             
+  private Integer addressId;             
 
   //address table is mapped in the organizationContact entity
   @OneToMany(fetch = FetchType.LAZY)
@@ -75,15 +77,15 @@ public class Organization implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address", insertable = false, updatable = false)
-  private Address orgAddress;
+  private Address address;
   
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_organization", insertable = false, updatable = false)
-  private Organization parentOrg;
+  private Organization parentOrganization;
   
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "reference_id", insertable = false, updatable = false)
-  private Collection<Note> orgNote;
+  private Collection<Note> note;
   
   public Collection<OrganizationContact> getOrganizationContact() {
 	return organizationContact;
@@ -111,13 +113,13 @@ public class Organization implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getParentOrganization() {
-    return parentOrganization;
+  public Integer getParentOrganizationId() {
+    return parentOrganizationId;
   }
-  public void setParentOrganization(Integer parentOrganization) {
-    if((parentOrganization == null && this.parentOrganization != null) || 
-       (parentOrganization != null && !parentOrganization.equals(this.parentOrganization)))
-      this.parentOrganization = parentOrganization;
+  public void setParentOrganizationId(Integer parentOrganization) {
+    if((parentOrganization == null && this.parentOrganizationId != null) || 
+       (parentOrganization != null && !parentOrganization.equals(this.parentOrganizationId)))
+      this.parentOrganizationId = parentOrganization;
   }
 
   public String getName() {
@@ -138,13 +140,13 @@ public class Organization implements Auditable, Cloneable {
       this.isActive = isActive;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer address) {
+    if((address == null && this.addressId != null) || 
+       (address != null && !address.equals(this.addressId)))
+      this.addressId = address;
   }
 
   
@@ -166,10 +168,10 @@ public class Organization implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((parentOrganization == null && original.parentOrganization != null) || 
-           (parentOrganization != null && !parentOrganization.equals(original.parentOrganization))){
+        if((parentOrganizationId == null && original.parentOrganizationId != null) || 
+           (parentOrganizationId != null && !parentOrganizationId.equals(original.parentOrganizationId))){
           Element elem = doc.createElement("parent_organization");
-          elem.appendChild(doc.createTextNode(original.parentOrganization.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.parentOrganizationId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -187,10 +189,10 @@ public class Organization implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((address == null && original.address != null) || 
-           (address != null && !address.equals(original.address))){
+        if((addressId == null && original.addressId != null) || 
+           (addressId != null && !addressId.equals(original.addressId))){
           Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.address.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.addressId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -207,35 +209,26 @@ public class Organization implements Auditable, Cloneable {
   }
 
   public Collection<Note> getNote() {
-	return orgNote;
+	return note;
 	}
 
   public void setNote(Collection<Note> note) {
-	this.orgNote = note;
+	this.note = note;
   }
 
-  public Organization getParentOrg() {
-	return parentOrg;
+  public Organization getParentOrganization() {
+	return parentOrganization;
   }
 
-  public void setParentOrg(Organization parentOrg) {
-	this.parentOrg = parentOrg;
+  public void setParentOrganization(Organization parentOrg) {
+	this.parentOrganization = parentOrg;
   }
 
-public Address getOrgAddress() {
-	return orgAddress;
+public Address getAddress() {
+	return address;
 }
 
-public void setOrgAddress(Address orgAddress) {
-	this.orgAddress = orgAddress;
+public void setAddress(Address address) {
+	this.address = address;
 }
-
-public Collection<Note> getOrgNote() {
-	return orgNote;
-}
-
-public void setOrgNote(Collection<Note> orgNote) {
-	this.orgNote = orgNote;
-}
-
 }   
