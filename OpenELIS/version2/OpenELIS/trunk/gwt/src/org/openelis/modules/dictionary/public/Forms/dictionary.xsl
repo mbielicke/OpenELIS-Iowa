@@ -89,7 +89,7 @@
 									 </widget>
 									 
 									 
-									  <widget>
+									  <!--<widget>
 										<autoDropdown cat="section" key="category.section" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" multiSelect="false"  fromModel="false" type="integer" tab="category.systemName,category.description">
 													<autoWidths>80</autoWidths>
 													<autoEditors>
@@ -111,7 +111,12 @@
 													</autoFields>
 										</autoDropdown>
 												</query>
-										</widget>
+										</widget> -->
+										<widget>
+												   <autoDropdown cat="section" key="category.section" case="lower" width="100px" popWidth="auto" tab="category.systemName,category.description">
+													 <widths>40</widths>
+												   </autoDropdown>
+												</widget>
 								     							   						
 								</row>	
 								<row>
