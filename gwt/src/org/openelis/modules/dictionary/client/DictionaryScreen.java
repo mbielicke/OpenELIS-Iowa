@@ -17,6 +17,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -98,6 +99,17 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         tname.setFocus(true);
         //getLists();
         
+    }
+    
+    public void commit(int state) {
+        if (state == FormInt.QUERY) {
+            ((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
+                    .get("dictEntTable")).getQueryWidget()).getWidget()).controller
+                    .unselect(-1);
+        } else {
+            ((TableWidget) getWidget("dictEntTable")).controller.unselect(-1);
+        }
+        super.commit(state);
     }
 
     public void commitAdd() {
