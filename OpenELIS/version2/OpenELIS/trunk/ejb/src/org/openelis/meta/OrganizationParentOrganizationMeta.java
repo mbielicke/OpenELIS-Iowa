@@ -4,40 +4,40 @@ import java.util.HashMap;
 
 import org.openelis.util.Meta;
 
-public class CategoryMeta implements Meta{
-	private String tableName = "category";
-	private String entityName = "Category";
+public class OrganizationParentOrganizationMeta implements Meta{
+	private String tableName = "parentOrganization";
+	private String entityName = "organization.parentOrganization";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID            	= "category.id",
-     SYSTEM_NAME	= "category.systemName",
-     NAME   		= "category.name",
-     DESCRIPTION  	= "category.description",
-     SECTION		= "category.section";
+     ID               		= "parentOrganization.id",
+     PARENT_ORGANIZATION_ID	= "parentOrganization.parentOrganizationId",
+     NAME   				= "parentOrganization.name",
+     IS_ACTIVE  			= "parentOrganization.isActive",
+     ADDRESS_ID			    = "parentOrganization.addressId";
 
 	//
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, SYSTEM_NAME, NAME, DESCRIPTION, SECTION};
+	     ID, PARENT_ORGANIZATION_ID, NAME, IS_ACTIVE, ADDRESS_ID};
 	
 	private static HashMap<String,String> columnHashList;
 	
-	private static final CategoryMeta categoryMeta = new CategoryMeta();
+	private static final OrganizationParentOrganizationMeta organizationParentOrganizationMeta = new OrganizationParentOrganizationMeta();
 	
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(9), "");
+	     columnHashList.put(columnNames[i].substring(19), "");
 	}
 
-	private CategoryMeta() {
+	private OrganizationParentOrganizationMeta() {
 
 	}
 	
-	public static CategoryMeta getInstance(){
-		return categoryMeta;
+	public static OrganizationParentOrganizationMeta getInstance(){
+		return organizationParentOrganizationMeta;
 	}
 	
 	public String[] getColumnList() {
@@ -63,4 +63,5 @@ public class CategoryMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+
 }

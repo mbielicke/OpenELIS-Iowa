@@ -8,7 +8,6 @@ public class OrganizationContactAddressMeta implements Meta{
 	private String tableName = "organizationContact.address";
 	private String entityName = "organizationContact.address";
 	private boolean includeInFrom = false;
-	private boolean collection = false;
 	
 	public static final String
     ID             	= "organizationContact.address.id",
@@ -70,9 +69,5 @@ public class OrganizationContactAddressMeta implements Meta{
 		String column = columnName.substring(tableName.length()+1);
 		
 		return columnHashList.containsKey(column);
-	}
-
-	public boolean isCollection() {
-		return collection;
 	}
 }

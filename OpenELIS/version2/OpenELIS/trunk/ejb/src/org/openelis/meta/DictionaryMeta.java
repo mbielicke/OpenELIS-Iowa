@@ -8,7 +8,6 @@ public class DictionaryMeta implements Meta{
 	private String tableName = "dictionary";
 	private String entityName = "category.dictionary";
 	private boolean includeInFrom = true;
-	private boolean collection = true;
 	
 	public static final String
      ID            	= "dictionary.id",
@@ -57,10 +56,6 @@ public class DictionaryMeta implements Meta{
 	
 	public boolean includeInFrom(){
 		return includeInFrom;
-	}
-	
-	public boolean isCollection(){
-		return collection;
 	}
 	
 	public boolean hasColumn(String columnName){

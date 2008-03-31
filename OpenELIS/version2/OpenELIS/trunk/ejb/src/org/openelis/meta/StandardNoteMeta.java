@@ -4,40 +4,40 @@ import java.util.HashMap;
 
 import org.openelis.util.Meta;
 
-public class CategoryMeta implements Meta{
-	private String tableName = "category";
-	private String entityName = "Category";
+public class StandardNoteMeta implements Meta{
+	private String tableName = "standardNote";
+	private String entityName = "StandardNote";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID            	= "category.id",
-     SYSTEM_NAME	= "category.systemName",
-     NAME   		= "category.name",
-     DESCRIPTION  	= "category.description",
-     SECTION		= "category.section";
+     ID             = "standardNote.id",
+     NAME			= "standardNote.name",
+     DESCRIPTION   	= "standardNote.description",
+     TYPE  			= "standardNote.type",
+     TEXT			= "standardNote.text";
 
 	//
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, SYSTEM_NAME, NAME, DESCRIPTION, SECTION};
+	     ID, NAME, DESCRIPTION, TYPE, TEXT};
 	
 	private static HashMap<String,String> columnHashList;
 	
-	private static final CategoryMeta categoryMeta = new CategoryMeta();
+	private static final StandardNoteMeta standardNoteMeta = new StandardNoteMeta();
 	
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(9), "");
+	     columnHashList.put(columnNames[i].substring(13), "");
 	}
 
-	private CategoryMeta() {
+	private StandardNoteMeta() {
 
 	}
 	
-	public static CategoryMeta getInstance(){
-		return categoryMeta;
+	public static StandardNoteMeta getInstance(){
+		return standardNoteMeta;
 	}
 	
 	public String[] getColumnList() {
@@ -55,7 +55,7 @@ public class CategoryMeta implements Meta{
 	public boolean includeInFrom(){
 		return includeInFrom;
 	}
-	
+
 	public boolean hasColumn(String columnName){
 		if(columnName == null || !columnName.startsWith(tableName))
 			return false;
