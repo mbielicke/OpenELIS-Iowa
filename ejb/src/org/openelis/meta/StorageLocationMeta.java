@@ -4,40 +4,42 @@ import java.util.HashMap;
 
 import org.openelis.util.Meta;
 
-public class CategoryMeta implements Meta{
-	private String tableName = "category";
-	private String entityName = "Category";
+public class StorageLocationMeta implements Meta{
+	private String tableName = "storageLocation";
+	private String entityName = "StorageLocation";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID            	= "category.id",
-     SYSTEM_NAME	= "category.systemName",
-     NAME   		= "category.name",
-     DESCRIPTION  	= "category.description",
-     SECTION		= "category.section";
+     ID               			= "storageLocation.id",
+     SORT_ORDER					= "storageLocation.sortOrder",
+     NAME   					= "storageLocation.name",
+     LOCATION  					= "storageLocation.location",
+     PARENT_STORAGE_LOCATION	= "storageLocation.parentStorageLocation",
+     STORAGE_UNIT 				= "storageLocation.storageUnit",
+     IS_AVAILABLE 				= "storageLocation.isAvailable";
 
 	//
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, SYSTEM_NAME, NAME, DESCRIPTION, SECTION};
+	     ID, SORT_ORDER, NAME, LOCATION, PARENT_STORAGE_LOCATION, STORAGE_UNIT, IS_AVAILABLE};
 	
 	private static HashMap<String,String> columnHashList;
 	
-	private static final CategoryMeta categoryMeta = new CategoryMeta();
+	private static final StorageLocationMeta storageLocationMeta = new StorageLocationMeta();
 	
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(9), "");
+	     columnHashList.put(columnNames[i].substring(16), "");
 	}
 
-	private CategoryMeta() {
+	private StorageLocationMeta() {
 
 	}
 	
-	public static CategoryMeta getInstance(){
-		return categoryMeta;
+	public static StorageLocationMeta getInstance(){
+		return storageLocationMeta;
 	}
 	
 	public String[] getColumnList() {

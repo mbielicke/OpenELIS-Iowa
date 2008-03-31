@@ -8,7 +8,6 @@ public class OrganizationMeta implements Meta{
 	private String tableName = "organization";
 	private String entityName = "Organization";
 	private boolean includeInFrom = true;
-	private boolean collection = false;
 	
 	public static final String
      ID               		= "organization.id",
@@ -55,10 +54,6 @@ public class OrganizationMeta implements Meta{
 	
 	public boolean includeInFrom(){
 		return includeInFrom;
-	}
-	
-	public boolean isCollection(){
-		return collection;
 	}
 	
 	public boolean hasColumn(String columnName){
