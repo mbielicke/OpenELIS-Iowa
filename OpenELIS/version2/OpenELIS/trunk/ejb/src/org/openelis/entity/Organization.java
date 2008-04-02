@@ -32,9 +32,9 @@ import org.w3c.dom.Element;
 
 
 @NamedQueries({@NamedQuery(name = "getOrganizationNameRowsByLetter", query = "select	new org.openelis.domain.OrganizationTableRowDO(o.id,o.name) " + "from Organization o where o.name like :letter order by name"),
-	           @NamedQuery(name = "getOrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,orgz.name,orgz.isActive,addr.id," +
-			   		              "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.country)" +                                                                              
-			                      "  from Organization orgz, Address addr where addr.id = orgz.addressId and orgz.id = :id"),
+	           @NamedQuery(name = "getOrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,parentOrg.name,orgz.name,orgz.isActive,orgz.address.id," +
+			   		              "orgz.address.multipleUnit,orgz.address.streetAddress,orgz.address.city,orgz.address.state,orgz.address.zipCode,orgz.address.country)" +                                                                              
+			                      "  from Organization orgz left join orgz.parentOrganization parentOrg where orgz.id = :id"),
 			   @NamedQuery(name = "getOrganizationContacts", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organization,contact.contactType,contact.name,addr.id," +
 	           		              "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)" +
 						           "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.address and " +

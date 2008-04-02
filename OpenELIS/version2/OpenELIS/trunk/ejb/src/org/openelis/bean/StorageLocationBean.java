@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,11 +19,12 @@ import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCDeleteException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.StorageLocationMeta;
+import org.openelis.meta.StorageLocationParentMeta;
+import org.openelis.meta.StorageLocationStorageUnitMeta;
 import org.openelis.remote.StorageLocationRemote;
+import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -153,68 +153,34 @@ public class StorageLocationBean implements StorageLocationRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
         
-        sb.append("select distinct s.id,s.name " + "from StorageLocation s where 1=1 ");
+        StorageLocationMeta storageLocationMeta = StorageLocationMeta.getInstance();
+        StorageLocationParentMeta parentStorageLocationMeta = StorageLocationParentMeta.getInstance();
+        StorageLocationStorageUnitMeta storageUnitMeta = StorageLocationStorageUnitMeta.getInstance();
         
-        //***append the abstract fields to the string buffer
-        if(fields.containsKey("name"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name"));
-        if(fields.containsKey("location"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("location"), "s.location"));
-        if(fields.containsKey("parentStorage"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("parentStorage"), "s.parentStorageLocationName.name"));
-        if(fields.containsKey("storageUnit"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("storageUnit"), "s.storageUnitName.description"));
-        if(fields.containsKey("sortOrder") && ((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).size()>0 &&
-        	!(((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).get(0))))
-        	sb.append(QueryBuilder.getQuery((CollectionField)fields.get("sortOrder"), "s.sortOrder"));
-        if(fields.containsKey("isAvailable") && ((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).size()>0 &&
-        	!(((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).get(0))))
-        	sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isAvailable"), "s.isAvailable"));
+        qb.addMeta(new Meta[]{storageLocationMeta, parentStorageLocationMeta, storageUnitMeta});
         
-        //child fields
-  /*      if(fields.containsKey("childName"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("childName"), ""));
-        if(fields.containsKey("childLocation"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("childLocation"), ""));
-        if(fields.containsKey("childStorageUnit"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("childStorageUnit"), ""));
-        if(fields.containsKey("childIsAvailable") && ((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).size()>0 &&
-    	!(((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).get(0))))
-    		sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isAvailable"), ""));   */     	
-        	
-        Query query = manager.createQuery(sb.toString()+" order by s.name");
+        qb.setSelect("distinct "+storageLocationMeta.ID+", "+storageLocationMeta.NAME);
+        qb.addTable(storageLocationMeta);
         
-         if(first > -1 && max > -1)
-        	 query.setMaxResults(first+max);
-         
-//       ***set the parameters in the query
-         if(fields.containsKey("name"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
-         if(fields.containsKey("location"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("location"), "s.location", query);
-         if(fields.containsKey("parentStorage"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("parentStorage"), "s.parentStorageLocationName.name", query);
-         if(fields.containsKey("storageUnit"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("storageUnit"), "s.storageUnitName.description", query);
-         if(fields.containsKey("sortOrder") && ((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).size()>0 &&
-         	!(((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("sortOrder")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("sortOrder"), "s.sortOrder", query);
-         if(fields.containsKey("isAvailable") && ((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).size()>0 &&
-         	!(((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isAvailable")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("isAvailable"), "s.isAvailable", query);
+        //sb.append("select distinct s.id,s.name " + "from StorageLocation s where 1=1 ");
+        
+//      this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields);      
 
-         //child fields
-         /*if(fields.containsKey("childName"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("childName"), "", query);
-         if(fields.containsKey("childLocation"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("childLocation"), "", query);
-         if(fields.containsKey("childStorageUnit"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("childStorageUnit"), "", query);
-         if(fields.containsKey("childIsAvailable") && ((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).size()>0 &&
-     	!(((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("childIsAvailable")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("childIsAvailable"), "", query);*/
-         
+        qb.setOrderBy(storageLocationMeta.NAME);
+        
+        sb.append(qb.getEJBQL());
+
+        Query query = manager.createQuery(sb.toString());
+       
+        if(first > -1 && max > -1)
+       	 query.setMaxResults(first+max);
+        
+//      ***set the parameters in the query
+        qb.setQueryParams(query);
+       
          List returnList = GetPage.getPage(query.getResultList(), first, max);
          
          if(returnList == null)
@@ -236,10 +202,10 @@ public class StorageLocationBean implements StorageLocationRemote{
          storageLocation.setIsAvailable(storageDO.getIsAvailable());
          storageLocation.setLocation(storageDO.getLocation());
          storageLocation.setName(storageDO.getName());
-         storageLocation.setParentStorageLocation(storageDO.getParentStorageLocation());
+         storageLocation.setParentStorageLocationId(storageDO.getParentStorageLocationId());
          //FIXME this may need to change....
          storageLocation.setSortOrder(0);
-         storageLocation.setStorageUnit(storageDO.getStorageUnit());
+         storageLocation.setStorageUnitId(storageDO.getStorageUnitId());
          
          if (storageLocation.getId() == null) {
 	        	manager.persist(storageLocation);
@@ -265,8 +231,8 @@ public class StorageLocationBean implements StorageLocationRemote{
 	            childStorageLoc.setSortOrder(i);
 	            childStorageLoc.setName(childDO.getName());
 	            childStorageLoc.setLocation(childDO.getLocation());
-	            childStorageLoc.setParentStorageLocation(storageLocation.getId());
-	            childStorageLoc.setStorageUnit(childDO.getStorageUnit());
+	            childStorageLoc.setParentStorageLocationId(storageLocation.getId());
+	            childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());
 	            childStorageLoc.setIsAvailable(childDO.getIsAvailable());
 			            
 			    if (childStorageLoc.getId() == null) {

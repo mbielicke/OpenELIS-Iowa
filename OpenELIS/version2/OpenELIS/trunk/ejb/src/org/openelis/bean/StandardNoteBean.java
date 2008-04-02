@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,10 +16,10 @@ import javax.persistence.Query;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.StandardNoteMeta;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -106,37 +105,31 @@ public class StandardNoteBean implements StandardNoteRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-        
-        sb.append("select distinct s.id,s.name " + "from StandardNote s where 1=1 ");
-        
-        //***append the abstract fields to the string buffer
-		if(fields.containsKey("name"))
-			sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name"));
-		if(fields.containsKey("description"))
-			sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("description"), "s.description"));
-		if(fields.containsKey("type") && ((ArrayList)((CollectionField)fields.get("type")).getValue()).size()>0 &&
-	       		 !(((ArrayList)((CollectionField)fields.get("type")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("type")).getValue()).get(0))))
-			sb.append(QueryBuilder.getQuery((CollectionField)fields.get("type"), "s.type"));
-		if(fields.containsKey("text"))
-			sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("text"), "s.text"));
-				
-		Query query = manager.createQuery(sb.toString()+" order by s.name");
+		QueryBuilder qb = new QueryBuilder();
+		
+		StandardNoteMeta snMeta = StandardNoteMeta.getInstance();
+		
+		qb.addMeta(snMeta);
+		
+		qb.setSelect("distinct " + snMeta.ID + ", " + snMeta.NAME);
+		qb.addTable(snMeta);
+		
+//		this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields);      
 
+        qb.setOrderBy(snMeta.NAME);
+        
+        sb.append(qb.getEJBQL());
+        
+        Query query = manager.createQuery(sb.toString());
+       
         if(first > -1 && max > -1)
        	 query.setMaxResults(first+max);
         
 //      ***set the parameters in the query
-		if(fields.containsKey("name"))
-			QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
-		if(fields.containsKey("description"))
-			QueryBuilder.setParameters((QueryStringField)fields.get("description"), "s.description", query);
-		if(fields.containsKey("type") && ((ArrayList)((CollectionField)fields.get("type")).getValue()).size()>0 &&
-	       		 !(((ArrayList)((CollectionField)fields.get("type")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("type")).getValue()).get(0))))
-			QueryBuilder.setParameters((CollectionField)fields.get("type"), "s.type", query);
-		if(fields.containsKey("text"))
-			QueryBuilder.setParameters((QueryStringField)fields.get("text"), "s.text", query);
-		
-		List returnList = GetPage.getPage(query.getResultList(), first, max);
+        qb.setQueryParams(query);
+        
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
         
         if(returnList == null)
        	 throw new LastPageException();

@@ -8,10 +8,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -45,6 +48,10 @@ public class StandardNote implements Auditable, Cloneable {
 
   @Column(name="text")
   private String text;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type", insertable = false, updatable = false)
+  private Dictionary dictionary;
 
   @Transient
   private StandardNote original;

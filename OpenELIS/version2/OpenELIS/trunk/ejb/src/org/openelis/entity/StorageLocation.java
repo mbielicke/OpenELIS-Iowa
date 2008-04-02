@@ -25,13 +25,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "getStorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocation,s.storageUnit,s.isAvailable) from StorageLocation s where s.id = :id"),
+" s.location,s.parentStorageLocationId,p.name,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s LEFT JOIN s.parentStorageLocation p where s.id = :id"),
 @NamedQuery(name = "getStorageLocationChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocation,s.storageUnit,s.isAvailable) from StorageLocation s where s.parentStorageLocation = :id"),
+" s.location,s.parentStorageLocationId,p.name,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s LEFT JOIN s.parentStorageLocation p where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "getStorageLocationByParentId", query = "select s.id " +
-							 " from StorageLocation s where s.parentStorageLocation = :id"),
+							 " from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "getStorageLocationByStorageUnitId", query = "select s.id " +
-							 " from StorageLocation s where s.storageUnit = :id"),
+							 " from StorageLocation s where s.storageUnitId = :id"),
 @NamedQuery(name = "getStorageLocationAutoCompleteByName", query = "select s.id, s.name, s.location " +
 							 " from StorageLocation s where s.name like :name order by s.name"),
 @NamedQuery(name = "getStorageLocationAutoCompleteById", query = "select s.id, s.name, s.location " +
@@ -58,21 +58,21 @@ public class StorageLocation implements Auditable, Cloneable {
   private String location;             
 
   @Column(name="parent_storage_location")
-  private Integer parentStorageLocation;             
+  private Integer parentStorageLocationId;             
 
   @Column(name="storage_unit")
-  private Integer storageUnit;             
+  private Integer storageUnitId;             
 
   @Column(name="is_available")
   private String isAvailable;             
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
-  private StorageLocation parentStorageLocationName;
+  private StorageLocation parentStorageLocation;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
-  private StorageUnit storageUnitName;
+  private StorageUnit storageUnit;
   
   @Transient
   private StorageLocation original;
@@ -114,22 +114,22 @@ public class StorageLocation implements Auditable, Cloneable {
       this.location = location;
   }
 
-  public Integer getParentStorageLocation() {
-    return parentStorageLocation;
+  public Integer getParentStorageLocationId() {
+    return parentStorageLocationId;
   }
-  public void setParentStorageLocation(Integer parentStorageLocation) {
-    if((parentStorageLocation == null && this.parentStorageLocation != null) || 
-       (parentStorageLocation != null && !parentStorageLocation.equals(this.parentStorageLocation)))
-      this.parentStorageLocation = parentStorageLocation;
+  public void setParentStorageLocationId(Integer parentStorageLocation) {
+    if((parentStorageLocation == null && this.parentStorageLocationId != null) || 
+       (parentStorageLocation != null && !parentStorageLocation.equals(this.parentStorageLocationId)))
+      this.parentStorageLocationId = parentStorageLocation;
   }
 
-  public Integer getStorageUnit() {
-    return storageUnit;
+  public Integer getStorageUnitId() {
+    return storageUnitId;
   }
-  public void setStorageUnit(Integer storageUnit) {
-    if((storageUnit == null && this.storageUnit != null) || 
-       (storageUnit != null && !storageUnit.equals(this.storageUnit)))
-      this.storageUnit = storageUnit;
+  public void setStorageUnitId(Integer storageUnit) {
+    if((storageUnit == null && this.storageUnitId != null) || 
+       (storageUnit != null && !storageUnit.equals(this.storageUnitId)))
+      this.storageUnitId = storageUnit;
   }
 
   public String getIsAvailable() {
@@ -181,17 +181,17 @@ public class StorageLocation implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((parentStorageLocation == null && original.parentStorageLocation != null) || 
-           (parentStorageLocation != null && !parentStorageLocation.equals(original.parentStorageLocation))){
+        if((parentStorageLocationId == null && original.parentStorageLocationId != null) || 
+           (parentStorageLocationId != null && !parentStorageLocationId.equals(original.parentStorageLocationId))){
           Element elem = doc.createElement("parent_storage_location");
-          elem.appendChild(doc.createTextNode(original.parentStorageLocation.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.parentStorageLocationId.toString().trim()));
           root.appendChild(elem);
         }      
 
-        if((storageUnit == null && original.storageUnit != null) || 
-           (storageUnit != null && !storageUnit.equals(original.storageUnit))){
+        if((storageUnitId == null && original.storageUnitId != null) || 
+           (storageUnitId != null && !storageUnitId.equals(original.storageUnitId))){
           Element elem = doc.createElement("storage_unit");
-          elem.appendChild(doc.createTextNode(original.storageUnit.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.storageUnitId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -213,18 +213,18 @@ public class StorageLocation implements Auditable, Cloneable {
   public String getTableName() {
     return "storage_location";
   }
-public StorageLocation getParentStorageLocationName() {
-	return parentStorageLocationName;
+public StorageLocation getParentStorageLocation() {
+	return parentStorageLocation;
 }
-public void setParentStorageLocationName(
+public void setParentStorageLocation(
 		StorageLocation parentStorageLocationName) {
-	this.parentStorageLocationName = parentStorageLocationName;
+	this.parentStorageLocation = parentStorageLocationName;
 }
-public StorageUnit getStorageUnitName() {
-	return storageUnitName;
+public StorageUnit getStorageUnit() {
+	return storageUnit;
 }
-public void setStorageUnitName(StorageUnit storageUnitName) {
-	this.storageUnitName = storageUnitName;
+public void setStorageUnit(StorageUnit storageUnitName) {
+	this.storageUnit = storageUnitName;
 }
   
 }   
