@@ -81,7 +81,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
 		
-		OrganizationAddressDO organizationDO = remote.getOrganizationAddressAndUnlock((Integer)key.getObject(0).getValue());
+		OrganizationAddressDO organizationDO = remote.getOrganizationAddressAndUnlock((Integer)key.getKey().getValue());
 
 //		set the fields in the RPC
 		setFieldsInRPC(rpcReturn, organizationDO);
@@ -159,7 +159,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
-				row.addObject(id);			
+				row.setKey(id);			
 				row.addObject(name);
 				model.add(row);
 				i++;
@@ -224,7 +224,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			 nameField.setValue(name);
       
 			 idField.setValue(id);
-			 row.addObject(idField);
+			 row.setKey(idField);
 			 row.addObject(nameField);
 
 			 model.add(row);
@@ -278,7 +278,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		//remote interface to call the organization bean
 		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
-		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getObject(0).getValue());
+//		System.out.println("in contacts");
+		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getKey().getValue());
 
 //		set the fields in the RPC
 		setFieldsInRPC(rpcReturn, organizationDO);
@@ -383,7 +384,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		
 		OrganizationAddressDO organizationDO = new OrganizationAddressDO();
 		try{
-			organizationDO = remote.getOrganizationAddressAndLock((Integer)key.getObject(0).getValue());
+			organizationDO = remote.getOrganizationAddressAndLock((Integer)key.getKey().getValue());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}
@@ -660,8 +661,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		StringObject nameObject = new StringObject();
 		nameObject.setValue(name.trim());
 		
-		//data.addObject(id);
-		data.setKey(id);
+		data.addObject(id);
 		data.addObject(nameObject);
 		
 		model.add(data);

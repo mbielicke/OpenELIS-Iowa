@@ -115,7 +115,7 @@ public class ProviderScreen extends OpenELISScreenForm {
       
    
         
-    public void up(int state) {                        
+    public void up() {                        
         note = (StringField)rpc.getField("usersNote");             
         note.setValue("");
                  
@@ -127,10 +127,10 @@ public class ProviderScreen extends OpenELISScreenForm {
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = false;
-        super.up(state);      
+        super.up();      
     }
     
-    public void abort(int state){      
+    public void abort(){      
         
       //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
       provAddController.setAutoAdd(false);      
@@ -139,7 +139,7 @@ public class ProviderScreen extends OpenELISScreenForm {
       proAddManager.disableRows = true;
       
       clearNotesFields();
-       super.abort(state); 
+       super.abort(); 
        
        loadAddresses = true;
        loadNotes = true;          
@@ -149,7 +149,7 @@ public class ProviderScreen extends OpenELISScreenForm {
                          
     }
     
-    public void add(int state){                       
+    public void add(){                       
        if(key!=null) 
         key.setObject(0, null);
                 
@@ -168,7 +168,7 @@ public class ProviderScreen extends OpenELISScreenForm {
          
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = false;
-        super.add(state);     
+        super.add();     
         
  
         provId.enable(false);
@@ -205,11 +205,11 @@ public class ProviderScreen extends OpenELISScreenForm {
         lastName.setFocus(true);
     }
     
-    public void query(int state){
+    public void query(){
     	//ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");        
     	svp.clear();    	
 
-       super.query(state);
+       super.query();
       
 //    set focus to the last name field
         //TextBox provId = (TextBox)getWidget("providerId");
