@@ -75,7 +75,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     }
 
-    public void up(int state) {
+    public void up() {
 
         dictEntryController.setAutoAdd(true);
 
@@ -85,7 +85,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         dictEntManager.createLists(dictEntryController);
         
         
-        super.up(state);
+        super.up();
     }
 
     public void afterUpdate(boolean success) {
@@ -101,7 +101,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         
     }
     
-    public void commit(int state) {
+    public void commit() {
         if (state == FormInt.QUERY) {
             ((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
                     .get("dictEntTable")).getQueryWidget()).getWidget()).controller
@@ -109,7 +109,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         } else {
             ((TableWidget) getWidget("dictEntTable")).controller.unselect(-1);
         }
-        super.commit(state);
+        super.commit();
     }
 
     public void commitAdd() {
@@ -150,13 +150,13 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     }
 
-    public void abort(int state) {
+    public void abort() {
         removeEntryButton.changeState(AppButton.DISABLED);
         try {
 
             dictEntryController.setAutoAdd(false);
 
-            super.abort(state);
+            super.abort();
 
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
@@ -217,13 +217,13 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         selected = sender;
     }
 
-    public void add(int state) {
+    public void add() {
         dictEntryController.setAutoAdd(true);
 
         DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
         dictEntManager.resetLists();
 
-        super.add(state);
+        super.add();
 
         // AppButton removeEntryButton = (AppButton)
         // getWidget("removeEntryButton");
@@ -238,8 +238,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     }
 
-    public void query(int state) {
-        super.query(state);
+    public void query() {
+        super.query();
 
         // set focus to the name field
         // tname = (TextBox)getWidget("name");

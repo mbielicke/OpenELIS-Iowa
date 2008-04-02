@@ -58,8 +58,8 @@ import com.google.gwt.user.client.ui.Widget;
             } 
          }
          
-        public void query(int state) {
-            super.query(state);
+        public void query() {
+            super.query();
             
          //set focus to the name field
              
@@ -67,8 +67,8 @@ import com.google.gwt.user.client.ui.Widget;
         }                 
                   
          
-         public void add(int state){                                  
-             super.add(state);             
+         public void add(){                                  
+             super.add();             
             //TextBox name = (TextBox)getWidget("name");
             tname.setFocus(true);
             

@@ -26,23 +26,12 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="100%" key="hideablePanel" visible="false">
-				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
+				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="Name" tablewidth="auto" colwidths="175">
 				 <xsl:if test="string($language)='en'">
-				<xsl:call-template name="aToZLeftPanelButtons"/>		
-		</xsl:if>
-				<table manager="OrganizationNameTable" width="auto" style="ScreenLeftTable" key="organizationsTable" maxRows="19" title="Name" showError="false">
-							<widths>175</widths>
-							<editors>
-								<label/>
-							</editors>
-							<fields>
-								<string/>
-							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
-				</table>
-				</panel>
+    				 <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+		         </xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 		<!--button panel code-->

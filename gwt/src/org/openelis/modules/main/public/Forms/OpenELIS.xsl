@@ -61,7 +61,7 @@
 			</menuItem>
     	    <menuItem>
     	      <menuDisplay>
-					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" hover="Hover"/>
+					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" hover="Hover" />
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				  <menuItem style="TopMenuRowContainer" hover="Hover" 
@@ -107,7 +107,7 @@
 		    </menuItem>
 	        <menuItem>
 	          <menuDisplay>
-					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}"  hover="Hover"/>
+					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" hover="Hover"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				  <menuItem style="TopMenuRowContainer"  
@@ -154,7 +154,7 @@
 			</menuItem>
 	        <menuItem>  
 	          <menuDisplay>
-					<label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" hover="Hover"/>
+					<label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" hover="Hover" />
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				<menuItem style="TopMenuRowContainer" 
@@ -183,7 +183,7 @@
 		    </menuItem>
 	        <menuItem>
 	          <menuDisplay>
-					<label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" hover="Hover"/>
+					<label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" hover="Hover" />
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				<menuItem style="TopMenuRowContainer"  

@@ -17,7 +17,7 @@ public class StorageNameTable implements TableManager {
     }  
 
     public boolean canSelect(int row, TableController controller) {        
-        if(userForm.bpanel.state == FormInt.DISPLAY || userForm.bpanel.state == FormInt.DEFAULT)           
+        if(userForm.bpanel.getState() == FormInt.DISPLAY || userForm.bpanel.getState() == FormInt.DEFAULT)           
         	userForm.modelWidget.select(row);
         return false;
     }

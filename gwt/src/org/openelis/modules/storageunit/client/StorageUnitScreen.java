@@ -48,8 +48,8 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		loadDropdowns();
 	}
 	
-	public void add(int state) {
-		super.add(state);
+	public void add() {
+		super.add();
 
 		//set focus to the name field
 		AutoCompleteDropdown cat = (AutoCompleteDropdown)getWidget("category");
@@ -59,8 +59,8 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		((TableWidget) getWidget("StorageUnitTable")).controller.unselect(-1);
 	}
 	
-	public void query(int state) {
-		super.query(state);
+	public void query() {
+		super.query();
 		
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("name");
@@ -75,8 +75,8 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		cat.setFocus(true);
 	}
 	
-	public void abort(int state) {
-		super.abort(state);
+	public void abort() {
+		super.abort();
 		
 //		 need to get the storage unit table
 		TableWidget StorageUnitTable = (TableWidget) getWidget("StorageUnitTable");

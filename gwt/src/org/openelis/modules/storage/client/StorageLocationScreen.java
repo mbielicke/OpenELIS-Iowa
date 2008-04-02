@@ -48,8 +48,8 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		super.afterDraw(success);
 	}
 	
-	public void add(int state) {
-		super.add(state);
+	public void add() {
+		super.add();
 
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("storageLocation.name");
@@ -65,8 +65,8 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		childTable.controller.addRow();
 	}
 	
-	public void query(int state) {
-		super.query(state);
+	public void query() {
+		super.query();
 		
 		//set focus to the name field
 		TextBox name = (TextBox)getWidget("storageLocation.name");
@@ -87,8 +87,8 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		childTable.controller.addRow();
 	}
 	
-	public void abort(int state) {
-		super.abort(state);
+	public void abort() {
+		super.abort();
 		
 		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
 		childTable.controller.setAutoAdd(false);
@@ -129,7 +129,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		super.afterCommitUpdate(success);
 	}
 	
-	public void commit(int state) {
+	public void commit() {
 		if (state == FormInt.QUERY) {
 			((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
 					.get("childStorageLocsTable")).getQueryWidget()).getWidget()).controller
@@ -137,7 +137,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		} else {
 			((TableWidget) getWidget("childStorageLocsTable")).controller.unselect(-1);
 		}
-		super.commit(state);
+		super.commit();
 	}
 	
 	protected void setStyleNameOnButton(Widget sender) {

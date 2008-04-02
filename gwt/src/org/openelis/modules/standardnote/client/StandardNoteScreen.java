@@ -72,8 +72,8 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		}
 	}
 	
-	public void query(int state) {
-		super.query(state);
+	public void query() {
+		super.query();
 		
 		//users cant query by text so disable it
 		textArea.enable(false);
@@ -88,8 +88,8 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		textArea.enable(true);
 	}
 	
-	public void add(int state) {
-		super.add(state);
+	public void add() {
+		super.add();
 
 		//set focus to the name field
 		nameTextbox.setFocus(true);
