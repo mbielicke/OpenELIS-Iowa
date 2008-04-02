@@ -29,6 +29,7 @@ import org.openelis.meta.OrganizationContactAddressMeta;
 import org.openelis.meta.OrganizationContactMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.OrganizationNoteMeta;
+import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
@@ -118,7 +119,7 @@ public class OrganizationBean implements OrganizationRemote {
             
             organization.setIsActive(organizationDO.getIsActive());
             organization.setName(organizationDO.getName());
-            organization.setParentOrganizationId(organizationDO.getParentOrganization());
+            organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
                     
 	        if (organization.getId() == null) {
 	        	manager.persist(organization);
@@ -249,12 +250,13 @@ public class OrganizationBean implements OrganizationRemote {
         QueryBuilder qb = new QueryBuilder();
 
         OrganizationMeta orgMeta = OrganizationMeta.getInstance();
+        OrganizationParentOrganizationMeta parentOrgMeta = OrganizationParentOrganizationMeta.getInstance();
         OrganizationAddressMeta orgAddressMeta = OrganizationAddressMeta.getInstance();
         OrganizationContactMeta orgContactMeta = OrganizationContactMeta.getInstance();
         OrganizationContactAddressMeta orgContactAddressMeta = OrganizationContactAddressMeta.getInstance();
         OrganizationNoteMeta orgNoteMeta = OrganizationNoteMeta.getInstance();
 
-        qb.addMeta(new Meta[]{orgMeta, orgAddressMeta, orgContactAddressMeta, orgContactMeta, orgNoteMeta});
+        qb.addMeta(new Meta[]{orgMeta, parentOrgMeta, orgAddressMeta, orgContactAddressMeta, orgContactMeta, orgNoteMeta});
  
         qb.setSelect("distinct "+orgMeta.ID+", "+orgMeta.NAME);
         qb.addTable(orgMeta);
@@ -273,7 +275,7 @@ public class OrganizationBean implements OrganizationRemote {
         }
         
         sb.append(qb.getEJBQL());
-        
+
          Query query = manager.createQuery(sb.toString());
         
          if(first > -1 && max > -1)
