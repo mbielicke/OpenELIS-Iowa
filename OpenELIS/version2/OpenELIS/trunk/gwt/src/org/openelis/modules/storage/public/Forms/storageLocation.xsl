@@ -4,7 +4,7 @@
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumns.xsl"/>
+<xsl:import href="aToZTwoColumnsNum.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
@@ -70,7 +70,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" width="150px" max="20" tab="location,id"/>
+										<textbox case="mixed" key="storageLocation.name" width="150px" max="20" tab="storageLocation.location,id"/>
 									</widget>
 								</row>
 								<row>								
@@ -78,28 +78,18 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="location" max="80" width="195px" tab="parentStorage,name"/>
+										<textbox case="mixed" key="storageLocation.location" max="80" width="195px" tab="parentStorageLocation.name,storageLocation.name"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="parentStorageLoc" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" key="parentStorage" width="150px" type="integer" tab="storageUnit,location">
-										<autoHeaders>Id,Name,Location</autoHeaders>
-										<autoWidths>50,120,150</autoWidths>
-										<autoEditors>
-											<label/>
-											<label/>
-											<label/>
-										</autoEditors>
-										<autoFields>
-											<string/>
-											<string/>
-											<string/>
-										</autoFields>
-										</auto>
+										<autoDropdown cat="parentStorage" key="parentStorageLocation.name" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="150px" tab="storageLocation.storageUnit.description,storageLocation.location">
+											<headers>Id,Name,Location</headers>
+											<widths>50,120,150</widths>
+										</autoDropdown>
 										<query>
-										<textbox case="upper" width="150px" tab="storageUnit,location"/>
+											<textbox case="upper" width="150px" tab="storageLocation.storageUnit.description,storageLocation.location"/>
 										</query>
 									</widget>	
 								</row>
@@ -108,47 +98,19 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" key="storageUnit" width="150px" type="integer" tab="isAvailable,parentStorage">
-										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
-										<autoWidths>50,160,80,45</autoWidths>
-										<autoEditors>
-											<label/>
-											<label/>
-											<label/>
-											<label/>
-										</autoEditors>
-										<autoFields>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-										</autoFields>
-										</auto>
+									<autoDropdown cat="storageUnit" key="storageLocation.storageUnit.description" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="150px" popWidth="150px" tab="storageLocation.isAvailable,parentStorageLocation.name">
+										<headers>Desc,Category,Singlular</headers>
+										<widths>160,80,45</widths>	
+									</autoDropdown>
 										<query>
-										<textbox case="upper" width="150px" tab="isAvailable,parentStorage"/>
+										<textbox case="upper" width="150px" tab="storageLocation.isAvailable,parentStorageLocation.name"/>
 										</query>
 									</widget>	
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isAvailable" tab="id,storageUnit"/>
-										<query>
-											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,storageUnit">
-													<autoWidths>19</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value=""> </item>
-													<item value="Y">Y</item>
-													<item value="N">N</item>
-													</autoItems>
-													</autoDropdown>
-										</query>
+										<check key="storageLocation.isAvailable" tab="id,storageLocation.storageUnit.description"/>
 									</widget>
 								</row>
 								<row>
@@ -163,29 +125,17 @@
 										<editors>
 											<textbox case="mixed" max="20"/>
 											<textbox case="mixed" max="80"/>
-											<auto cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="150px" type="integer">
-										<autoHeaders>Id,Desc,Category,Singlular</autoHeaders>
-										<autoWidths>50,160,80,45</autoWidths>
-										<autoEditors>
-											<label/>
-											<label/>
-											<label/>
-											<label/>
-										</autoEditors>
-										<autoFields>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-										</autoFields>
-										</auto>
+											<autoDropdown cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="150px">
+												<headers>Desc,Category,Singlular</headers>
+												<widths>160,80,45</widths>
+											</autoDropdown>
 											<check/>
 										</editors>
 										<fields>
 											<string/>
 											<string/>
-											<number type="integer">0</number>
-											<check/>											
+											<dropdown/>
+											<string/>											
 										</fields>
 										<sorts>true,true,true,true</sorts>
 										<filters>false,false ,false,false</filters>
@@ -200,26 +150,13 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="upper"/>
-											<autoDropdown cat="isAvailable" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageLocationServlet" width="64px" type="string" multiSelect="true">
-													<autoWidths>64</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value=""> </item>
-													<item value="Y">Y</item>
-													<item value="N">N</item>
-													</autoItems>
-													</autoDropdown>
+											<check/>
 										</editors>
 										<fields>
 											<queryString/>
 											<queryString/>
 											<queryString/>
-											<collection type="string"/>		
+											<queryString/>	
 										</fields>
 										<sorts>true,true,true,true</sorts>
 										<filters>false,false ,false,false</filters>
@@ -229,37 +166,33 @@
 							</widget>
 								</row>
 							</panel>
-							<!--<panel layout="vertical" height="15px" xsi:type="Panel"/>
-						<panel layout="vertical" width="100%" xsi:type="Panel">
-							
-							</panel>-->
 				</panel>
 			</panel>
 		</panel>
 	</display>
 	<rpc key="display">
-	<number key="id" required="false" type="integer"/>
-    <string key="name" max="20" required="true"/>
-    <number key="storageUnitId" type="integer" required="false"/> 
+	<number key="storageLocation.id" required="false" type="integer"/>
+    <string key="storageLocation.name" max="20" required="true"/>
+    <dropdown  key="storageLocation.storageUnit.description" type="integer" required="false"/> 
    <!-- <number key="sortOrderId" required="true" type="integer"/>-->
-    <string key="location" max="80" required="true"/>
-    <number key="parentStorageId" type="integer" required="false"/>
-    <check key="isAvailable" required="false"/>
+    <string key="storageLocation.location" max="80" required="true"/>
+    <dropdown key="parentStorageLocation.name" type="integer" required="false"/>
+    <string key="storageLocation.isAvailable" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>
 	
 	<rpc key="query">
-	<queryNumber key="id" type="integer"/>
-    <queryString key="name"/>
-    <queryString key="location"/>
-    <queryString key="storageUnit"/>
-    <queryString key="parentStorage"/>  
+	<queryNumber key="storageLocation.id" type="integer"/>
+    <queryString key="storageLocation.name"/>
+    <queryString key="storageLocation.location"/>
+    <queryString key="storageLocation.storageUnit.description"/>
+    <queryString key="parentStorageLocation.name"/>  
     <!--<collection key="sortOrder" type="integer" required="false"/>-->
-    <collection key="isAvailable" type="string" required="false"/>
+    <queryString key="storageLocation.isAvailable" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="name"/>
+		<queryString key="storageLocation.name"/>
 	</rpc>
 </screen>
   </xsl:template>

@@ -2,7 +2,6 @@ package org.openelis.modules.storage.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.modules.storageunit.client.StorageUnitDescTable;
 
 public class StorageEntry implements AppModule {
 
@@ -10,7 +9,7 @@ public class StorageEntry implements AppModule {
         ClassFactory.addClass(new String[] {"ChildStorageLocsTable"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
-                                        return new StorageUnitDescTable();
+                                        return new ChildStorageLocsTable();
                                   }
                                }
        );

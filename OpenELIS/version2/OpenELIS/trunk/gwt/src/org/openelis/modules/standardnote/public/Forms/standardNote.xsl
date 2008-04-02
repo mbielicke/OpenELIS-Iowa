@@ -69,7 +69,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" width="155px" max="20" tab="description,id"/>
+										<textbox case="mixed" key="standardNote.name" width="155px" max="20" tab="standardNote.description,id"/>
 									</widget>
 								</row>
 								<row>								
@@ -77,7 +77,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="description" width="300px" max="60" tab="type,name"/>
+										<textbox case="mixed" key="standardNote.description" width="300px" max="60" tab="standardNote.type,standardNote.name"/>
 									</widget>
 								</row>
 								<row>								
@@ -85,26 +85,9 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="type" cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" tab="text,description">
-											<autoWidths>100</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-												<string/>
-											</autoFields>
+										<autoDropdown key="standardNote.type" case="mixed" width="121px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
+											<widths>100</widths>
 										</autoDropdown>
-										<query>
-										<autoDropdown cat="type" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.utilities.server.StandardNoteServlet" width="121px" dropdown="true" type="integer" fromModel="true" multiSelect="true" tab="text,description">
-											<autoWidths>100</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-												<string/>
-											</autoFields>
-										</autoDropdown>
-										</query>
 									</widget>
 								</row>
 								<row>
@@ -120,7 +103,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="text" width="300px" height="180px" tab="id,type"/>
+										<textarea key="standardNote.text" width="300px" height="180px" tab="id,standardNote.type"/>
 									</widget>
 								</row>
 								
@@ -130,21 +113,21 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="id" type="integer" required="false"/>
-  	<string key="name" required="true" max="20"/>
-  	<string key="description" required="true" max="60"/>
-  	<number key="typeId" type="integer" required="true"/>
-  	<string key="text" required="true"/>
+  	<number key="standardNote.id" type="integer" required="false"/>
+  	<string key="standardNote.name" required="true" max="20"/>
+  	<string key="standardNote.description" required="true" max="60"/>
+  	<dropdown key="standardNote.type" required="true"/>
+  	<string key="standardNote.text" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="id" type="integer" required="false"/>
- 	<queryString key="name" type="string" required="false"/>
-  	<queryString key="description" required="false"/>
-  	<collection key="type" type="integer" required="false"/>
-	<queryString key="text" required="false"/>
+ 	<queryNumber key="standardNote.id" type="integer" required="false"/>
+ 	<queryString key="standardNote.name" type="string" required="false"/>
+  	<queryString key="standardNote.description" required="false"/>
+  	<dropdown key="standardNote.type" required="false"/>
+	<queryString key="standardNote.text" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="name"/>
+		<queryString key="standardNote.name"/>
 	</rpc>
 </screen>
   </xsl:template>
