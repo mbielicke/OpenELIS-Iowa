@@ -10,21 +10,25 @@ public class StorageLocationDO implements Serializable{
 	Integer sortOrder;
 	String name;
 	String location;
-	Integer parentStorageLocation;
-	Integer storageUnit;
+	Integer parentStorageLocationId;
+	String parentStorageLocation;
+	Integer storageUnitId;
+	String storageUnit;
 	String isAvailable;
 	
 	public StorageLocationDO(){
 		
 	}
 	
-	public StorageLocationDO(Integer id, Integer sortOrder, String name, String location, Integer parentStorageLocation,
-						Integer storageUnit, String isAvailable){
+	public StorageLocationDO(Integer id, Integer sortOrder, String name, String location, Integer parentStorageLocationId, String parentStorageLocation,
+						Integer storageUnitId, String storageUnit, String isAvailable){
 		this.id = id;
 		this.sortOrder = sortOrder;
 		this.name = name;
 		this.location = location;
+		this.parentStorageLocationId = parentStorageLocationId;
 		this.parentStorageLocation = parentStorageLocation;
+		this.storageUnitId = storageUnitId;
 		this.storageUnit = storageUnit;
 		this.isAvailable = isAvailable;
 	}
@@ -53,11 +57,11 @@ public class StorageLocationDO implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Integer getParentStorageLocation() {
-		return parentStorageLocation;
+	public Integer getParentStorageLocationId() {
+		return parentStorageLocationId;
 	}
-	public void setParentStorageLocation(Integer parentStorageLocation) {
-		this.parentStorageLocation = parentStorageLocation;
+	public void setParentStorageLocationId(Integer parentStorageLocationId) {
+		this.parentStorageLocationId = parentStorageLocationId;
 	}
 	public Integer getSortOrder() {
 		return sortOrder;
@@ -65,10 +69,26 @@ public class StorageLocationDO implements Serializable{
 	public void setSortOrder(Integer sortOrder) {
 		this.sortOrder = sortOrder;
 	}
-	public Integer getStorageUnit() {
+	public Integer getStorageUnitId() {
+		return storageUnitId;
+	}
+	public void setStorageUnitId(Integer storageUnitId) {
+		this.storageUnitId = storageUnitId;
+	}
+
+	public String getParentStorageLocation() {
+		return parentStorageLocation;
+	}
+
+	public void setParentStorageLocation(String parentStorageLocation) {
+		this.parentStorageLocation = parentStorageLocation;
+	}
+
+	public String getStorageUnit() {
 		return storageUnit;
 	}
-	public void setStorageUnit(Integer storageUnit) {
+
+	public void setStorageUnit(String storageUnit) {
 		this.storageUnit = storageUnit;
 	}
 
