@@ -1,7 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
-                xmlns:locale="xalan://java.util.Locale"
+                xmlns:locale="xalan://java.util.Locale" 
+                xmlns:organizationMeta="xalan://org.openelis.meta.OrganizationMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -12,6 +13,10 @@
   
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>
+  
+  <xalan:component prefix="organizationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
@@ -68,7 +73,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 										</widget>
 										<widget>
-										<textbox key="organization.id" width="75px" tab="organization.name,organization.isActive"/>
+										<textbox key="{organizationMeta:id()}" width="75px" tab="{organizationMeta:name()},{organizationMeta:isActive()}"/>
 										</widget>
 									</row>
 									<row>								
@@ -76,7 +81,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="organization.name" width="225px" max="40" tab="organization.address.multipleUnit,organization.name"/>
+										<textbox case="upper" key="{organizationMeta:name()}" width="225px" max="40" tab="organization.address.multipleUnit,{organizationMeta:name()}"/>
 										</widget>text
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
@@ -94,7 +99,7 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="organization.address.multipleUnit" width="212px" max="30" tab="organization.address.streetAddress,organization.name"/>
+											<textbox case="upper" key="organization.address.multipleUnit" width="212px" max="30" tab="organization.address.streetAddress,{organizationMeta:name()}"/>
 										</widget>
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
@@ -139,19 +144,19 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="parentOrganization.name" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="organization.isActive,organization.address.country">
+										<autoDropdown cat="parentOrg" key="parentOrganization.name" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="{organizationMeta:isActive()},organization.address.country">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="225px" tab="organization.isActive,organization.address.country"/>
+											<textbox case="upper" width="225px" tab="{organizationMeta:isActive()},organization.address.country"/>
 										</query>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="organization.isActive" tab="contactsTable,parentOrganization.nameId"/>
+											<check key="{organizationMeta:isActive()}" tab="contactsTable,parentOrganization.name"/>
 										</widget>
 								</row>
 								</panel>
@@ -328,14 +333,14 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  <number key="organization.id" type="integer" required="false"/>
-  <number key="organization.addressId" required="false" type="integer"/>
-  <string key="organization.name" max="40" required="true"/>
+  <number key="{organizationMeta:id()}" type="integer" required="false"/>
+  <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
+  <string key="{organizationMeta:name()}" max="40" required="true"/>
   <string key="organization.address.streetAddress" max="30" required="true"/>
   <string key="organization.address.multipleUnit" max="30" required="false"/>
   <string key="organization.address.city" max="30" required="true"/>
   <string key="organization.address.zipCode" max="10" required="true"/>
-  <string key="organization.isActive" required="false"/>
+  <string key="{organizationMeta:isActive()}" required="false"/>
 
   <string key="note.subject" max="60" required="false"/>
   <string key="note.text" required="false"/>
@@ -346,9 +351,9 @@
   <dropdown key="organization.address.country" required="true"/>
 	</rpc>
 	<rpc key="query">
-  <queryNumber key="organization.id" type="integer"/>
+  <queryNumber key="{organizationMeta:id()}" type="integer"/>
  <!-- <queryNumber key="addressId" type="integer"/>-->
-  <queryString key="organization.name"/>
+  <queryString key="{organizationMeta:name()}"/>
   <queryString key="organization.address.streetAddress"/>
   <queryString key="organization.address.multipleUnit" value="query"/>
   <queryString key="organization.address.city"/>
@@ -359,10 +364,10 @@
   <table key="contactsTable"/>
   <dropdown key="organization.address.state" required="false"/>
   <dropdown key="organization.address.country" required="false"/>
-  <queryString key="organization.isActive" required="false"/>
+  <queryString key="{organizationMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="organization.name"/>
+		<queryString key="{organizationMeta:name()}"/>
 	</rpc>
 </screen>
   </xsl:template>
