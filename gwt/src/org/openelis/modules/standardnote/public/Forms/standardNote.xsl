@@ -21,24 +21,12 @@
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="290px" width="100%" key="hideablePanel" visible="false">
-				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
+				<aToZ height="290px" width="100%" key="hideablePanel" visible="false" maxRows="10" title='{resource:getString($constants,"name")}' tablewidth="auto" colwidths="175">
 				 <xsl:if test="string($language)='en'">
-			<xsl:call-template name="aToZLeftPanelButtons"/>
-		</xsl:if>
-				<table manager="StandardNoteNameTable" width="auto" style="ScreenLeftTable" key="StandardNoteTable" maxRows="10" title="" showError="false">
-				<headers><xsl:value-of select='resource:getString($constants,"name")'/></headers>
-							<widths>175</widths>
-							<editors>
-								<label/>
-							</editors>
-							<fields>
-								<string/>
-							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
-				</table>
-				</panel>
+    				 <buttonPanel key="atozButtons">
+	         		<xsl:call-template name="aToZLeftPanelButtons"/>
+	         		</buttonPanel>
+         		</xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 			<!--button panel code-->

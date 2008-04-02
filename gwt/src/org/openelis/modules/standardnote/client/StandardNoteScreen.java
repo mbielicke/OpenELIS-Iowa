@@ -4,6 +4,7 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
+import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -34,15 +35,16 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		bpanel = (ButtonPanel) getWidget("buttons");
 
 //		 get storage unit table and set the managers form
-		standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
-		modelWidget.addChangeListener(standardNoteTable.controller);
+		//standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
+        AToZPanel azPanel = (AToZPanel)getWidget("hideablePanel");
+		modelWidget.addChangeListener(azPanel);
 		
 		textArea = (ScreenTextArea)widgets.get("standardNote.text");
 		nameTextbox = (TextBox)getWidget("standardNote.name");
 
 		message.setText("done");
 
-		((StandardNoteNameTable) standardNoteTable.controller.manager).setStandardNoteForm(this);
+		//((StandardNoteNameTable) standardNoteTable.controller.manager).setStandardNoteForm(this);
 		
 		loadDropdowns();
 		
