@@ -14,14 +14,13 @@ import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
@@ -56,13 +55,41 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)key.getObject(0).getValue());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("id", storageLocDO.getId());
-		rpcReturn.setFieldValue("isAvailable", "Y".equals(storageLocDO.getIsAvailable().trim()));
-		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
-		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
-		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		//rpcReturn.setFieldValue("sortOrderId", storageLocDO.getSortOrder());
-		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
+		rpcReturn.setFieldValue("storageLocation.id", storageLocDO.getId());
+		rpcReturn.setFieldValue("storageLocation.isAvailable", storageLocDO.getIsAvailable().trim());
+		rpcReturn.setFieldValue("storageLocation.location", storageLocDO.getLocation().trim());
+		rpcReturn.setFieldValue("storageLocation.name", storageLocDO.getName().trim());
+		rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageLocDO.getStorageUnit());
+		
+//		we need to create a dataset for the parent storage location auto complete
+		if(storageLocDO.getParentStorageLocationId() == null)
+			rpcReturn.setFieldValue("parentStorageLocation.name", null);
+		else{
+			DataSet parentSLSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getParentStorageLocationId());
+			text.setValue(storageLocDO.getParentStorageLocation().trim());
+			parentSLSet.setKey(id);
+			parentSLSet.addObject(text);
+			rpcReturn.setFieldValue("parentStorageLocation.name", parentSLSet);
+		}
+		
+//		we need to create a dataset for the storage unit auto complete
+		if(storageLocDO.getStorageUnitId() == null)
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", null);
+		else{
+			DataSet storageUnitSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getStorageUnitId());
+			text.setValue(storageLocDO.getStorageUnit().trim());
+			storageUnitSet.setKey(id);
+			storageUnitSet.addObject(text);
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageUnitSet);
+		}
         
 //		load the children
         List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
@@ -80,23 +107,23 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		List storageLocationChildren = new ArrayList();
 		
 //		build the storage unit DO from the form
-		newStorageLocDO.setIsAvailable(((Boolean) rpcSend.getFieldValue("isAvailable")?"Y":"N"));
-		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue("location")).trim());
-		newStorageLocDO.setName(((String)rpcSend.getFieldValue("name")).trim());
-		newStorageLocDO.setParentStorageLocation((Integer)rpcSend.getFieldValue("parentStorageId"));
+		newStorageLocDO.setIsAvailable(((String)rpcSend.getFieldValue("storageLocation.isAvailable")).trim());
+		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue("storageLocation.location")).trim());
+		newStorageLocDO.setName(((String)rpcSend.getFieldValue("storageLocation.name")).trim());
+		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue("parentStorageLocation.name"));
 		//newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
-		newStorageLocDO.setStorageUnit((Integer)rpcSend.getFieldValue("storageUnitId"));
+		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue("storageLocation.storageUnit.description"));
 		
 //		child locs info
 		TableModel childTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();
-		System.out.println("TABLE SIZE: "+childTable.numRows());
+
 		for(int i=0; i<childTable.numRows(); i++){
 			StorageLocationDO childDO = new StorageLocationDO();
 			TableRow row = childTable.getRow(i);
 			childDO.setName(((String)((StringField)row.getColumn(0)).getValue()).trim());
 			childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
-			childDO.setStorageUnit((Integer)((NumberField)row.getColumn(2)).getValue());
-			childDO.setIsAvailable(((Boolean)((CheckField)row.getColumn(3)).getValue()?"Y":"N"));
+			childDO.setStorageUnitId((Integer)((DropDownField)row.getColumn(2)).getValue());
+			childDO.setIsAvailable((String)((StringField)row.getColumn(3)).getValue());
 			
 			storageLocationChildren.add(childDO);
 		}
@@ -105,16 +132,44 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		Integer storageLocId = (Integer)remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
 		
 //		lookup the changes from the database and build the rpc
-		StorageLocationDO storageDO = remote.getStorageLoc(storageLocId);
+		StorageLocationDO storageLocDO = remote.getStorageLoc(storageLocId);
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("id", storageDO.getId());
-		rpcReturn.setFieldValue("isAvailable", "Y".equals(storageDO.getIsAvailable().trim()));
-		rpcReturn.setFieldValue("location", storageDO.getLocation().trim());
-		rpcReturn.setFieldValue("name", storageDO.getName().trim());
-		rpcReturn.setFieldValue("parentStorageId", storageDO.getParentStorageLocation());
-		//rpcReturn.setFieldValue("sortOrderId", storageDO.getSortOrder());
-		rpcReturn.setFieldValue("storageUnitId", storageDO.getStorageUnit());
+		rpcReturn.setFieldValue("storageLocation.id", storageLocDO.getId());
+		rpcReturn.setFieldValue("storageLocation.isAvailable", storageLocDO.getIsAvailable().trim());
+		rpcReturn.setFieldValue("storageLocation.location", storageLocDO.getLocation().trim());
+		rpcReturn.setFieldValue("storageLocation.name", storageLocDO.getName().trim());
+		rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageLocDO.getStorageUnit());
+		
+//		we need to create a dataset for the parent storage location auto complete
+		if(storageLocDO.getParentStorageLocationId() == null)
+			rpcReturn.setFieldValue("parentStorageLocation.name", null);
+		else{
+			DataSet parentSLSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getParentStorageLocationId());
+			text.setValue(storageLocDO.getParentStorageLocation().trim());
+			parentSLSet.setKey(id);
+			parentSLSet.addObject(text);
+			rpcReturn.setFieldValue("parentStorageLocation.name", parentSLSet);
+		}
+		
+//		we need to create a dataset for the storage unit auto complete
+		if(storageLocDO.getStorageUnitId() == null)
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", null);
+		else{
+			DataSet storageUnitSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getStorageUnitId());
+			text.setValue(storageLocDO.getStorageUnit().trim());
+			storageUnitSet.setKey(id);
+			storageUnitSet.addObject(text);
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageUnitSet);
+		}
 		
 //		load the children
         List childrenList = remote.getStorageLocChildren(storageLocId,false);
@@ -178,13 +233,14 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			if(rpcSend.getField("childStorageLocsTable") != null)
 				childrenTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();		
 			
-			if(childrenTable != null){
+	/*		if(childrenTable != null){
 				fields.put("childName",(QueryStringField)childrenTable.getRow(0).getColumn(0));
 				fields.put("childLocation",(QueryStringField)childrenTable.getRow(0).getColumn(1));
 				fields.put("childStorageUnit",(QueryStringField)childrenTable.getRow(0).getColumn(2));
 				fields.put("childIsAvailable",(CollectionField)childrenTable.getRow(0).getColumn(3));
-			}
+			}*/
 			
+			fields.remove("childStorageLocsTable");
 			List storageLocNames = new ArrayList();
 			try{
 				storageLocNames = remote.query(fields,0,leftTableRowsPerPage);
@@ -237,9 +293,9 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		newStorageLocDO.setIsAvailable(((Boolean) rpcSend.getFieldValue("isAvailable")?"Y":"N"));
 		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue("location")).trim());
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue("name")).trim());
-		newStorageLocDO.setParentStorageLocation((Integer)rpcSend.getFieldValue("parentStorageId"));
+		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue("parentStorageId"));
 		//newStorageLocDO.setSortOrder((Integer)rpcSend.getFieldValue("sortOrderId"));
-		newStorageLocDO.setStorageUnit((Integer)rpcSend.getFieldValue("storageUnitId"));
+		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue("storageUnitId"));
 
 //		children info
 		TableModel childTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();
@@ -255,7 +311,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			
 			childDO.setName(((String)((StringField)row.getColumn(0)).getValue()).trim());
 			childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
-			childDO.setStorageUnit((Integer)((NumberField)row.getColumn(2)).getValue());
+			childDO.setStorageUnitId((Integer)((NumberField)row.getColumn(2)).getValue());
 			childDO.setIsAvailable(((Boolean)((CheckField)row.getColumn(3)).getValue()?"Y":"N"));
 				
 			storageLocationChildren.add(childDO);	
@@ -318,12 +374,41 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)key.getObject(0).getValue());
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("id", storageLocDO.getId());
-		rpcReturn.setFieldValue("isAvailable", "Y".equals(storageLocDO.getIsAvailable().trim()));
-		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
-		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
-		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
+		rpcReturn.setFieldValue("storageLocation.id", storageLocDO.getId());
+		rpcReturn.setFieldValue("storageLocation.isAvailable", storageLocDO.getIsAvailable().trim());
+		rpcReturn.setFieldValue("storageLocation.location", storageLocDO.getLocation().trim());
+		rpcReturn.setFieldValue("storageLocation.name", storageLocDO.getName().trim());
+		rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageLocDO.getStorageUnit());
+		
+//		we need to create a dataset for the parent storage location auto complete
+		if(storageLocDO.getParentStorageLocationId() == null)
+			rpcReturn.setFieldValue("parentStorageLocation.name", null);
+		else{
+			DataSet parentSLSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getParentStorageLocationId());
+			text.setValue(storageLocDO.getParentStorageLocation().trim());
+			parentSLSet.setKey(id);
+			parentSLSet.addObject(text);
+			rpcReturn.setFieldValue("parentStorageLocation.name", parentSLSet);
+		}
+		
+//		we need to create a dataset for the storage unit auto complete
+		if(storageLocDO.getStorageUnitId() == null)
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", null);
+		else{
+			DataSet storageUnitSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getStorageUnitId());
+			text.setValue(storageLocDO.getStorageUnit().trim());
+			storageUnitSet.setKey(id);
+			storageUnitSet.addObject(text);
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageUnitSet);
+		}
 		
 //		load the children
         List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
@@ -331,7 +416,6 @@ public class StorageLocationService implements AppScreenFormServiceInt,
         TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
 
-        
 		return rpcReturn;
 	}
 
@@ -347,12 +431,41 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		}
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("id", storageLocDO.getId());
-		rpcReturn.setFieldValue("isAvailable", "Y".equals(storageLocDO.getIsAvailable().trim()));
-		rpcReturn.setFieldValue("location", storageLocDO.getLocation().trim());
-		rpcReturn.setFieldValue("name", storageLocDO.getName().trim());
-		rpcReturn.setFieldValue("parentStorageId", storageLocDO.getParentStorageLocation());
-		rpcReturn.setFieldValue("storageUnitId", storageLocDO.getStorageUnit());
+		rpcReturn.setFieldValue("storageLocation.id", storageLocDO.getId());
+		rpcReturn.setFieldValue("storageLocation.isAvailable", storageLocDO.getIsAvailable().trim());
+		rpcReturn.setFieldValue("storageLocation.location", storageLocDO.getLocation().trim());
+		rpcReturn.setFieldValue("storageLocation.name", storageLocDO.getName().trim());
+		rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageLocDO.getStorageUnit());
+		
+//		we need to create a dataset for the parent storage location auto complete
+		if(storageLocDO.getParentStorageLocationId() == null)
+			rpcReturn.setFieldValue("parentStorageLocation.name", null);
+		else{
+			DataSet parentSLSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getParentStorageLocationId());
+			text.setValue(storageLocDO.getParentStorageLocation().trim());
+			parentSLSet.setKey(id);
+			parentSLSet.addObject(text);
+			rpcReturn.setFieldValue("parentStorageLocation.name", parentSLSet);
+		}
+		
+//		we need to create a dataset for the storage unit auto complete
+		if(storageLocDO.getStorageUnitId() == null)
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", null);
+		else{
+			DataSet storageUnitSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(storageLocDO.getStorageUnitId());
+			text.setValue(storageLocDO.getStorageUnit().trim());
+			storageUnitSet.setKey(id);
+			storageUnitSet.addObject(text);
+			rpcReturn.setFieldValue("storageLocation.storageUnit.description", storageUnitSet);
+		}
 		
 //		load the children
         List childrenList = remote.getStorageLocChildren((Integer)key.getObject(0).getValue(),false);
@@ -489,11 +602,11 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(slId);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
-				StringObject idStringObject = new StringObject();
-				idStringObject.setValue(String.valueOf(slId));
-				data.addObject(idStringObject);
+				//StringObject idStringObject = new StringObject();
+				//idStringObject.setValue(String.valueOf(slId));
+				//data.addObject(idStringObject);
 				StringObject descObject = new StringObject();
 				descObject.setValue(desc);
 				data.addObject(descObject);
@@ -505,13 +618,13 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				data.addObject(isSingularObject);
 				
 				//display text
-				StringObject displayObject = new StringObject();
-				displayObject.setValue(desc);
-				data.addObject(displayObject);
+				//StringObject displayObject = new StringObject();
+				//displayObject.setValue(desc);
+				//data.addObject(displayObject);
 				//selected flag
-				StringObject selectedFlag = new StringObject();
-				selectedFlag.setValue("N");
-				data.addObject(selectedFlag);
+				//StringObject selectedFlag = new StringObject();
+				//selectedFlag.setValue("N");
+				//data.addObject(selectedFlag);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);
@@ -545,11 +658,11 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(id);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
-				StringObject idStringObject = new StringObject();
-				idStringObject.setValue(String.valueOf(id));
-				data.addObject(idStringObject);
+				//StringObject idStringObject = new StringObject();
+				//idStringObject.setValue(String.valueOf(id));
+				//data.addObject(idStringObject);
 				StringObject descObject = new StringObject();
 				descObject.setValue(desc);
 				data.addObject(descObject);
@@ -560,13 +673,13 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				isSingularObject.setValue(isSingular);
 				data.addObject(isSingularObject);
 				//display text
-				StringObject displayObject = new StringObject();
-				displayObject.setValue(desc);
-				data.addObject(displayObject);
+				//StringObject displayObject = new StringObject();
+				//displayObject.setValue(desc);
+				//data.addObject(displayObject);
 				//selected flag
-				StringObject selectedFlag = new StringObject();
-				selectedFlag.setValue("N");
-				data.addObject(selectedFlag);
+				//StringObject selectedFlag = new StringObject();
+				//selectedFlag.setValue("N");
+				//data.addObject(selectedFlag);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);
@@ -598,7 +711,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(pslId);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
 				StringObject idStringObject = new StringObject();
 				idStringObject.setValue(String.valueOf(pslId));
@@ -643,7 +756,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				NumberObject idObject = new NumberObject();
 				idObject.setType("integer");
 				idObject.setValue(id);
-				data.addObject(idObject);
+				data.setKey(idObject);
 				//columns
 				StringObject idStringObject = new StringObject();
 				idStringObject.setValue(String.valueOf(id));
@@ -688,10 +801,25 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 	               row.addHidden("id", id);
 	               row.getColumn(0).setValue(slDO.getName());
 	               row.getColumn(1).setValue(slDO.getLocation());
-	               row.getColumn(2).setValue(slDO.getStorageUnit());
-	               row.getColumn(3).setValue(slDO.getIsAvailable());
+	               
+//	       		we need to create a dataset for the storage unit auto complete
+	       		if(slDO.getStorageUnitId() == null)
+	       			row.getColumn(2).setValue(null);
+	       		else{
+	       			DataSet storageUnitSet = new DataSet();
+	       			NumberObject storageUnitId = new NumberObject();
+	       			StringObject storageUnitText = new StringObject();
+	       			storageUnitId.setType("integer");
+	       			storageUnitId.setValue(slDO.getStorageUnitId());
+	       			storageUnitText.setValue(slDO.getStorageUnit().trim());
+	       			storageUnitSet.setKey(storageUnitId);
+	       			storageUnitSet.addObject(storageUnitText);
+	       			row.getColumn(2).setValue(storageUnitSet);
+	       		}
+	       		
+	       		row.getColumn(3).setValue(slDO.getIsAvailable());
 	                
-	               childModel.addRow(row);
+	            childModel.addRow(row);
 	       } 
 			
         } catch (Exception e) {

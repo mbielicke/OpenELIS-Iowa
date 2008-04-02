@@ -16,10 +16,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNoteScreen extends OpenELISScreenForm {
 
+	private TableWidget standardNoteTable;
+	private ScreenTextArea textArea;
+	private TextBox nameTextbox;
 	private Widget selected;
 	
+	private static DataModel typeDropdown;
+	private static boolean loaded = false;
+	
 	public StandardNoteScreen() {
-		super("org.openelis.modules.standardnote.server.StandardNoteService",true);
+		super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded);
         name="Standard Note";
 	}
 	
@@ -28,16 +34,19 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		bpanel = (ButtonPanel) getWidget("buttons");
 
 //		 get storage unit table and set the managers form
-		TableWidget standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
+		standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
 		modelWidget.addChangeListener(standardNoteTable.controller);
+		
+		textArea = (ScreenTextArea)widgets.get("standardNote.text");
+		nameTextbox = (TextBox)getWidget("standardNote.name");
 
 		message.setText("done");
 
 		((StandardNoteNameTable) standardNoteTable.controller.manager).setStandardNoteForm(this);
-
-		super.afterDraw(success);
 		
 		loadDropdowns();
+		
+		super.afterDraw(success);
 	}
 	
 	public void onClick(Widget sender) {
@@ -55,7 +64,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue("name", letter.toUpperCase() + "*");
+			letterRPC.setFieldValue("standardNote.name", letter.toUpperCase() + "* | "+letter.toLowerCase()+"*");
 
 			commitQuery(letterRPC);
 
@@ -67,19 +76,15 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		super.query(state);
 		
 		//users cant query by text so disable it
-		ScreenTextArea textArea = (ScreenTextArea)widgets.get("text");
 		textArea.enable(false);
-		
-		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
-		name.setFocus(true);
+
+		nameTextbox.setFocus(true);
 	}
 	
 	public void commitQuery(FormRPC rpcQuery) {
 		super.commitQuery(rpcQuery);
 		
 		//enable the text area
-		ScreenTextArea textArea = (ScreenTextArea)widgets.get("text");
 		textArea.enable(true);
 	}
 	
@@ -87,8 +92,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		super.add(state);
 
 		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
-		name.setFocus(true);
+		nameTextbox.setFocus(true);
 		
 //		 unselect the row from the table
 		((TableWidget) getWidget("StandardNoteTable")).controller.unselect(-1);
@@ -98,17 +102,9 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		super.afterUpdate(success);
 
 		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
-		name.setFocus(true);
+		nameTextbox.setFocus(true);
 	}
-	
-	public void abort(int state) {
-		super.abort(state);
-		
-//		 need to get the standard Note table
-		TableWidget standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
-		int rowSelected = standardNoteTable.controller.selected;
-	}
+
 	
 	protected void setStyleNameOnButton(Widget sender) {
 		((AppButton)sender).changeState(AppButton.PRESSED);
@@ -118,14 +114,15 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	}
 	
 	private void loadDropdowns(){
-		DataModel standardNoteTypeDropdown = (DataModel) initData[0];
+		if(typeDropdown == null)
+		    typeDropdown = (DataModel)initData[0];
 		
 //		load standard note type dropdowns
-        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("type");
-        ScreenAutoDropdown queryType = displayType.getQueryWidget();
+        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");
+       // ScreenAutoDropdown queryType = displayType.getQueryWidget();
 	               
-       ((AutoCompleteDropdown)displayType.getWidget()).setModel(standardNoteTypeDropdown);
-       ((AutoCompleteDropdown)queryType.getWidget()).setModel(standardNoteTypeDropdown);
+       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
+       //((AutoCompleteDropdown)queryType.getWidget()).setModel(standardNoteTypeDropdown);
 	}
 	
 }

@@ -52,7 +52,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		super.add(state);
 
 		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
+		TextBox name = (TextBox)getWidget("storageLocation.name");
 		name.setFocus(true);
 		
 //		 unselect the row from the table
@@ -69,7 +69,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		super.query(state);
 		
 		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
+		TextBox name = (TextBox)getWidget("storageLocation.name");
 		name.setFocus(true);
 	}
 	
@@ -77,7 +77,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		super.afterUpdate(success);
 
 		//set focus to the name field
-		TextBox name = (TextBox)getWidget("name");
+		TextBox name = (TextBox)getWidget("storageLocation.name");
 		name.setFocus(true);
 		
 		TableWidget childTable = (TableWidget) getWidget("childStorageLocsTable");
@@ -110,9 +110,9 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
 			if(letter.equals("#"))
-				letterRPC.setFieldValue("name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
+				letterRPC.setFieldValue("storageLocation.name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
 			else
-				letterRPC.setFieldValue("name", letter.toUpperCase() + "*");
+				letterRPC.setFieldValue("storageLocation.name", letter.toUpperCase() + "*");
 
 			commitQuery(letterRPC);
 

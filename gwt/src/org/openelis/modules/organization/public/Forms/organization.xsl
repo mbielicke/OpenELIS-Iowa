@@ -126,7 +126,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown key="organization.address.country" case="mixed" width="175px" popWidth="auto" tab="organization.parentOrganization,organization.address.zipCode">
+												<autoDropdown key="organization.address.country" case="mixed" width="175px" popWidth="auto" tab="parentOrganization.name,organization.address.zipCode">
 													<widths>175</widths>
 												</autoDropdown>
 										</widget>					
@@ -139,7 +139,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="organization.parentOrganizationId" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="organization.isActive,organization.address.country">
+										<autoDropdown cat="parentOrg" key="parentOrganization.name" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="organization.isActive,organization.address.country">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
@@ -151,7 +151,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="organization.isActive" tab="contactsTable,organization.parentOrganizationId"/>
+											<check key="organization.isActive" tab="contactsTable,parentOrganization.nameId"/>
 										</widget>
 								</row>
 								</panel>
@@ -339,7 +339,8 @@
 
   <string key="note.subject" max="60" required="false"/>
   <string key="note.text" required="false"/>
-  <dropdown key="organization.parentOrganizationId" type="integer" required="false"/> 
+<!--  <dropdown key="organization.parentOrganizationId" type="integer" required="false"/> -->
+    <dropdown key="parentOrganization.name" type="integer" required="false"/> 
   <table key="contactsTable"/>
   <dropdown key="organization.address.state" required="false"/>
   <dropdown key="organization.address.country" required="true"/>
@@ -352,7 +353,7 @@
   <queryString key="organization.address.multipleUnit" value="query"/>
   <queryString key="organization.address.city"/>
   <queryString key="organization.address.zipCode"/>
-  <queryString key="organization.parentOrganizationId"/>
+  <queryString key="parentOrganization.name"/>
   <queryString key="note.subject"/>
   <queryString key="note.text"/>
   <table key="contactsTable"/>
