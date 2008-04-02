@@ -1,8 +1,6 @@
  package org.openelis.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class OrganizationAddressDO implements Serializable{
@@ -14,7 +12,8 @@ public class OrganizationAddressDO implements Serializable{
 	
 	//organization fields
 	protected Integer organizationId; 
-	protected Integer parentOrganization;  
+	protected Integer parentOrganizationId;  
+	protected String parentOrganization;
 	protected String name;    
 	protected String isActive; 
 	
@@ -25,11 +24,12 @@ public class OrganizationAddressDO implements Serializable{
 		
 	}
 
-	public OrganizationAddressDO(Integer organizationId, Integer parentOrganization, String name, String isActive,
+	public OrganizationAddressDO(Integer organizationId, Integer parentOrganizationId, String parentOrganization, String name, String isActive,
 			Integer addressId, String multipleUnit, String streetAddress, String city, String state, String zipCode,
 			String country){
 		
 		this.organizationId = organizationId;
+		this.parentOrganizationId = parentOrganizationId;
 		this.parentOrganization = parentOrganization;
 		this.name = name;
 		this.isActive = isActive;
@@ -67,15 +67,23 @@ public class OrganizationAddressDO implements Serializable{
 		this.organizationId = organizationId;
 	}
 
-	public Integer getParentOrganization() {
-		return parentOrganization;
+	public Integer getParentOrganizationId() {
+		return parentOrganizationId;
 	}
 
-	public void setParentOrganization(Integer parentOrganization) {
-		this.parentOrganization = parentOrganization;
+	public void setParentOrganizationId(Integer parentOrganizationId) {
+		this.parentOrganizationId = parentOrganizationId;
 	}
 
 	public AddressDO getAddressDO() {
 		return addressDO;
+	}
+
+	public String getParentOrganization() {
+		return parentOrganization;
+	}
+
+	public void setParentOrganization(String parentOrganization) {
+		this.parentOrganization = parentOrganization;
 	}
 }

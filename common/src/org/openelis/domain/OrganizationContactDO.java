@@ -18,7 +18,7 @@ public class OrganizationContactDO implements Serializable {
 	//address fields
 	protected AddressDO addressDO = new AddressDO();
 	
-	protected Boolean delete;
+	protected Boolean delete = false;
 	
 	public Boolean getDelete() {
 		return delete;
