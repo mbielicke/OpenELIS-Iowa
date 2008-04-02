@@ -63,4 +63,24 @@ public class OrganizationMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String parentOrganizationId(){
+		return columnNames[1];
+	}
+	
+	public static String name(){
+		return columnNames[2];
+	}
+	
+	public static String isActive(){
+		return columnNames[3];
+	}
+	
+	public static String addressId(){
+		return columnNames[4];
+	}
 }
