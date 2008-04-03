@@ -62,4 +62,24 @@ public class OrganizationContactMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String organization(){
+		return columnNames[1];
+	}
+	
+	public static String contactType(){
+		return columnNames[2];
+	}
+	
+	public static String name(){
+		return columnNames[3];
+	}
+	
+	public static String address(){
+		return columnNames[4];
+	}
 }

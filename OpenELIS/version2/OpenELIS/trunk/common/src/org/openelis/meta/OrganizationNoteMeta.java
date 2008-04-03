@@ -65,4 +65,36 @@ public class OrganizationNoteMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String referenceId(){
+		return columnNames[1];
+	}
+	
+	public static String referenceTable(){
+		return columnNames[2];
+	}
+	
+	public static String timestamp(){
+		return columnNames[3];
+	}
+	
+	public static String isExternal(){
+		return columnNames[4];
+	}
+	
+	public static String systemUser(){
+		return columnNames[5];
+	}
+	
+	public static String subject(){
+		return columnNames[6];
+	}
+	
+	public static String text(){
+		return columnNames[7];
+	}
 }
