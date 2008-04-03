@@ -17,13 +17,13 @@ import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
@@ -61,6 +61,8 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     private StringField note = null; 
     private StringField subject = null;
+    
+    private static boolean loaded = false;
 
     private static DataModel typeDropDown = null;
     private static DataModel stateDropDown = null;  
@@ -68,20 +70,27 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     
     public ProviderScreen(){
-        super("org.openelis.modules.provider.server.ProviderService",true);
+        super("org.openelis.modules.provider.server.ProviderService",!loaded);
         name="Provider";
     }
     
     public void afterDraw(boolean success) {
-        //loaded = true;
+        loaded = true;
         bpanel = (ButtonPanel) getWidget("buttons");        
         message.setText("done");
         
         //TableWidget provideNamesTable = (TableWidget) getWidget("providersTable");
-        provideNamesController = (EditTable)(((TableWidget)getWidget("providersTable")).controller);
-        modelWidget.addChangeListener(provideNamesController);
+        //provideNamesController = (EditTable)(((TableWidget)getWidget("providersTable")).controller);
+        //modelWidget.addChangeListener(provideNamesController);
         
-        ((ProviderNamesTable) provideNamesController.manager).setProviderForm(this);               
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+        
+        //((ProviderNamesTable) provideNamesController.manager).setProviderForm(this);               
         
         removeContactButton = (AppButton) getWidget("removeAddressButton");
         removeContactButton.addClickListener(this);
@@ -90,15 +99,15 @@ public class ProviderScreen extends OpenELISScreenForm {
         standardNoteButton = (AppButton) getWidget("standardNoteButton");
         standardNoteButton.changeState(AppButton.DISABLED);
         
-        provId = (ScreenTextBox)widgets.get("providerId");
-        lastName = (TextBox)getWidget("lastName");
-        subjectBox = (TextBox)getWidget("usersSubject");
-        noteArea = (TextArea)getWidget("usersNote");
+        provId = (ScreenTextBox)widgets.get("provider.id");
+        lastName = (TextBox)getWidget("provider.lastName");
+        subjectBox = (TextBox)getWidget("note.subject");
+        noteArea = (TextArea)getWidget("note.text");
         svp = (ScreenVertical) widgets.get("notesPanel");
         
         noteTab = (TabPanel)getWidget("provTabPanel");  
         
-        displayType = (ScreenAutoDropdown)widgets.get("providerType");
+        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
                          
         
         //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
@@ -107,19 +116,19 @@ public class ProviderScreen extends OpenELISScreenForm {
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = true;
-           
-        loadDropdowns();
+                   
         
         super.afterDraw(success);
+        loadDropdowns();
     }
       
    
         
     public void up() {                        
-        note = (StringField)rpc.getField("usersNote");             
+        note = (StringField)rpc.getField("note.text");             
         note.setValue("");
                  
-        subject = (StringField)rpc.getField("usersSubject");
+        subject = (StringField)rpc.getField("note.subject");
         subject.setValue("");
         
         //TableController provAddTable = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
@@ -243,28 +252,36 @@ public class ProviderScreen extends OpenELISScreenForm {
     
     public void onClick(Widget sender) {
         String action = ((AppButton)sender).action;
-        if(action.startsWith("query:")){
-            getProviders(action.substring(6, action.length()), sender);
-            
-        } else if (action.equals("removeRow")) {                     
+        if (action.equals("removeRow")) {                     
         	onRemoveRowButtonClick();
         }else if(action.equals("standardNote")){
         	onStandardNoteButtonClick();
         }        
+    }
+    
+    public void onChange(Widget sender) {
+        
+        if(sender == getWidget("atozButtons")){           
+           String action = ((ButtonPanel)sender).buttonClicked.action;           
+           if(action.startsWith("query:")){
+               getProviders(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+           }
+        }else{
+            super.onChange(sender);
+        }
     }
         
     
     private void getProviders(String letter, Widget sender) {
         // we only want to allow them to select a letter if they are in display
         // mode..
-        if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
+        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("lastName", letter.toUpperCase() + "*");
-             
+            letterRPC.setFieldValue("provider.lastName", letter.toUpperCase() + "*");            
             commitQuery(letterRPC);
             
-            setStyleNameOnButton(sender);
+            //setStyleNameOnButton(sender);
             
         }
     }
@@ -352,7 +369,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         loadAddresses = true;
         loadNotes = true;                
         
-        Integer providerId = (Integer)rpc.getFieldValue("providerId");
+        Integer providerId = (Integer)rpc.getFieldValue("provider.id");
         NumberObject provId = new NumberObject();
         provId.setType("integer");
         provId.setValue(providerId);
@@ -390,9 +407,9 @@ public class ProviderScreen extends OpenELISScreenForm {
          countryDropDown = (DataModel) initData[2];
         } 
                                 
-                ScreenAutoDropdown queryType = displayType.getQueryWidget();                
+                //ScreenAutoDropdown queryType = displayType.getQueryWidget();                
                 ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);
-                ((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDropDown);
+                //((AutoCompleteDropdown)queryType.getWidget()).setModel(typeDropDown);
                                        
                     
                    
@@ -486,7 +503,7 @@ public class ProviderScreen extends OpenELISScreenForm {
       if(key!=null){ 
        if(key.getObject(0)!=null){        
          getModel = true;
-         providerId = (Integer)key.getObject(0).getValue();          
+         providerId = (Integer)key.getKey().getValue();          
         }else{
             clearNotes = false;
         }
@@ -526,15 +543,15 @@ public class ProviderScreen extends OpenELISScreenForm {
    }
    
    private void fillAddressModel(){
-              
+    try{          
      Integer providerId = null;
      boolean getModel = false;             
-     
+          
      // access the database only if id is not null 
     if(key!=null){
       if(key.getObject(0)!=null){        
         getModel = true;
-        providerId = (Integer)key.getObject(0).getValue();         
+        providerId = (Integer)key.getKey().getValue();         
       }else{
         clearAddresses = false;  
       }   
@@ -574,6 +591,10 @@ public class ProviderScreen extends OpenELISScreenForm {
            }
        });
       } 
+    }catch(Exception ex){
+        Window.alert(ex.getMessage());
+        ex.printStackTrace();
+    } 
    }
    
    private void clearNotesFields(){
@@ -582,14 +603,14 @@ public class ProviderScreen extends OpenELISScreenForm {
       subjectBox.setText("");
       
       noteArea.setText("");           
-      rpc.setFieldValue("usersSubject", null);
-      rpc.setFieldValue("usersNote", null);  
+      rpc.setFieldValue("note.subject", null);
+      rpc.setFieldValue("note.text", null);  
    }
    
    private void loadTabs(){        
        int selectedTab = noteTab.getTabBar().getSelectedTab();     
-                            
-       if(selectedTab == 0 && loadAddresses){
+                         
+       if(selectedTab == 0 && loadAddresses){ 
           if(clearAddresses){ 
            clearAddresses(); 
           } 
@@ -626,7 +647,7 @@ public class ProviderScreen extends OpenELISScreenForm {
    private void onStandardNoteButtonClick(){
 	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("usersNote")));
+	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.subject")));
 			
 	   standardNotePopupPanel.add(pickerWindow);
 	   int left = this.getAbsoluteLeft();

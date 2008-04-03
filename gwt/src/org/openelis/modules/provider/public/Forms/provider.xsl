@@ -2,8 +2,11 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:providerMeta="xalan://org.openelis.meta.ProviderMeta"
+                xmlns:providerNoteMeta="xalan://org.openelis.meta.ProviderNoteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
+                
 <xsl:import href="aToZOneColumn.xsl"/> 
   
   <xalan:component prefix="resource">
@@ -12,6 +15,14 @@
   
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>
+  
+  <xalan:component prefix="providerMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMeta"/>
+  </xalan:component>  
+  
+  <xalan:component prefix="providerNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderNoteMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
@@ -22,26 +33,14 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal"  spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">
-  <aToZ height= "425px" width = "auto" key= "hideablePanel" visible= "false">
-   <panel layout= "horizontal" xsi:type= "Panel" style="ScreenLeftPanel" spacing= "0">
+  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">
+   <!--<panel layout= "horizontal" xsi:type= "Panel" style="ScreenLeftPanel" spacing= "0">-->
     <xsl:if test="string($language)='en'">
-		<xsl:call-template name="aToZLeftPanelButtons"/>
-    </xsl:if>
-      <table maxRows = "20" manager= "ProviderNamesTable" width= "auto" style="ScreenLeftTable"  key = "providersTable" title="" showError="false">
-       <headers><xsl:value-of select='resource:getString($constants,"lastName")'/>,<xsl:value-of select='resource:getString($constants,"firstName")'/></headers>
-							<widths>75,75</widths>
-							<editors>
-								<label/>
-								<label/>								
-							</editors>
-							<fields>
-								<string/>	
-								<string/>							
-							</fields>
-							<sorts>false,false</sorts>
-							<filters>false,false</filters>
-     </table>
-   </panel>
+		 <buttonPanel key="atozButtons">
+	       <xsl:call-template name="aToZLeftPanelButtons"/>		
+		 </buttonPanel>
+    </xsl:if>     
+   <!--</panel>-->
   </aToZ>
    <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
    <!--button panel code-->
@@ -69,7 +68,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/></text>
      </widget>
      <widget> 
-      <textbox  width= "50px" key = "providerId"  tab="lastName,npi"/>
+      <textbox  width= "50px" key = "{providerMeta:id()}"  tab="{providerMeta:lastName()},{providerMeta:npi()}"/>
      </widget>                 
     </row>
     <row>
@@ -77,12 +76,12 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
-      <textbox key = "lastName" case = "upper" tab="firstName,npi"/>
+      <textbox key = "{providerMeta:lastName()}" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
      </widget>
-     <widget>
+    <!-- <widget>
 										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="80px"  multiSelect="false" fromModel="true" type="integer" tab="npi,middleName">
 													<autoWidths>60</autoWidths>
 													<autoEditors>
@@ -103,20 +102,25 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 													</autoFields>
 										          </autoDropdown>
 												 </query>
-										</widget>          
+										</widget> -->         
+		<widget>
+		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" popWidth="auto" tab="{providerMeta:npi()},{providerMeta:middleName()}">
+			<widths>40</widths>
+		  </autoDropdown>
+		</widget>								
     </row>
     <row>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
      </widget>
      <widget>
-      <textbox key= "firstName" case = "upper"   width= "150px" tab="middleName,lastName"/>
+      <textbox key= "{providerMeta:firstName()}" case = "upper"   width= "150px" tab="{providerMeta:middleName},{providerMeta:lastName()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/></text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "npi" width= "80px" tab="lastName,providerType"/>
+      <textbox case= "mixed"   key= "{providerMeta:npi()}" width= "80px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
      </widget>
     </row>
     <row>
@@ -124,7 +128,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
-      <textbox key= "middleName" case = "upper" width= "150px" tab="providerType,firstName"/>
+      <textbox key= "{providerMeta:middleName}" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
      </widget>
     </row>
    </panel>
@@ -148,7 +152,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px"  popupHeight="80px" dropdown="true" fromModel = "true" type="string">
+		  <!--<autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px"  popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -158,7 +162,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												</autoFields>
 												<autoItems>												 																																			
 												</autoItems>
-											</autoDropdown>		  
+			</autoDropdown>		  
 		    <autoDropdown cat="country" key="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
 											<autoWidths>110</autoWidths>
 											<autoEditors>
@@ -169,6 +173,12 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											</autoFields>
 											<autoItems>												
 											</autoItems>
+			</autoDropdown>-->
+			<autoDropdown  case="upper" width="40px" popWidth="auto">
+				<widths>40</widths>
+			</autoDropdown>
+			<autoDropdown case="mixed" width="110px" popWidth="auto">
+				<widths>110</widths>
 			</autoDropdown>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -211,7 +221,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <autoDropdown cat="state" key="state" case = "upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
+		  <!--<autoDropdown cat="state" key="state" case = "upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
 												<autoWidths>40</autoWidths>
 												<autoEditors>
 													<label/>
@@ -228,6 +238,12 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<autoFields>
 											    <string/>
 											</autoFields>											
+			</autoDropdown>-->
+			<autoDropdown case="upper"  width="40px" popWidth="auto" multiSelect = "true">
+				<widths>40</widths>
+			</autoDropdown>
+			<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect = "true">
+				<widths>110</widths>
 			</autoDropdown>		  
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -278,7 +294,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="usersSubject" width="405px" max="60"/>
+										<textbox case="mixed" key="{providerNoteMeta:subject()}" width="405px" max="60"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -296,7 +312,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="524px" height="50px" case="mixed" key="usersNote"/>
+										<textarea width="524px" height="50px" case="mixed" key="{providerNoteMeta:text()}"/>
 										</widget>
 										</row>
 								 
@@ -322,31 +338,31 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 </display>
 							  
 <rpc key= "display">	
-  <number key="providerId" type="integer" required="false"/>				
-  <string key="lastName" max="30" required="true"/>
-  <string key="firstName" max="20" required="false"/> 
-  <string key="npi" max="20" required="false"/>
-  <string key="middleName" max="20" required="false"/>	
+  <number key="{providerMeta:id()}" type="integer" required="false"/>				
+  <string key="{providerMeta:lastName()}" max="30" required="true"/>
+  <string key="{providerMeta:firstName()}" max="20" required="false"/> 
+  <string key="{providerMeta:npi()}" max="20" required="false"/>
+  <string key="{providerMeta:middleName()}" max="20" required="false"/>	
   <table key="providerAddressTable"/>						      		       
-  <string key="usersSubject" max="60" required="false"/>
-  <string key="usersNote" required="false"/>
-  <dropdown key="providerType" type="integer" required = "true"/>
+  <string key="{providerNoteMeta:subject()}" max="60" required="false"/>
+  <string key="{providerNoteMeta:text()}" required="false"/>
+  <dropdown key="{providerMeta:type()}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
-  <queryNumber key="providerId" type="integer" />				
-  <queryString key="lastName"  />
-  <queryString key="firstName"  /> 
-  <queryString key="npi" />
-  <queryString key="middleName" />	  
-  <queryString key="usersSubject" />
-  <queryString key="usersNote" />                           
+  <queryNumber key="{providerMeta:id()}" type="integer" />				
+  <queryString key="{providerMeta:lastName()}" />
+  <queryString key="{providerMeta:firstName()}" /> 
+  <queryString key="{providerMeta:npi()}" />
+  <queryString key="{providerMeta:middleName()}" />	  
+  <queryString key="{providerNoteMeta:subject()}" />
+  <queryString key="{providerNoteMeta:text()}" />                           
   <table key="providerAddressTable"/>
-  <dropdown key="providerType" type="integer" required = "false"/>    
+  <dropdown key="{providerMeta:type()}" type="integer" required = "false"/>    
 </rpc>
 
 <rpc key="queryByLetter">
-  <queryString key="lastName"/>
+  <queryString key="{providerMeta:lastName()}"/>
 </rpc> 
 </screen>
 </xsl:template>

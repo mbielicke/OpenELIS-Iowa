@@ -28,6 +28,10 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.meta.ProviderAddressAddressMeta;
+import org.openelis.meta.ProviderAddressMeta;
+import org.openelis.meta.ProviderMeta;
+import org.openelis.meta.ProviderNoteMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -48,7 +52,8 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     /**
      * 
-     */
+     */    
+    
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 19;
            
@@ -88,7 +93,7 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getObject(0).getValue();
+        Integer providerId = (Integer)key.getKey().getValue();
         
         
         ProviderDO provDO = new ProviderDO();
@@ -98,80 +103,26 @@ public class ProviderService implements AppScreenFormServiceInt{
              throw new RPCException(ex.getMessage());
          }  
 //      set the fields in the RPC
-        rpcReturn.setFieldValue("providerId", provDO.getId());
-        rpcReturn.setFieldValue("lastName",provDO.getLastName());
-        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
-        rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());                                                        
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId()); 
+          setFieldsInRPC(rpcReturn, provDO);
         return rpcReturn;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
                
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        ProviderDO providerDO = new ProviderDO();
-        NoteDO providerNote = new NoteDO();
-        //provider info        
-        
-        providerDO.setFirstName((String)rpcSend.getFieldValue("firstName"));
-        providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
-        providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
-        providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        
-        //System.out.println("provide type "+ rpcSend.getFieldValue("providerType"));
-        if(!new Integer(-1).equals(rpcSend.getFieldValue("providerType")))
-          providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerType"));        
-        
-        
-        List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
+        ProviderDO providerDO  = getProviderDOFromRPC(rpcSend);
+       
+        NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
+        Integer providerId = (Integer)rpcSend.getField(ProviderMeta.ID).getValue();
                 
-        for(int iter = 0; iter < addressTable.numRows(); iter++){
-            
-            ProviderAddressDO provAddDO = new ProviderAddressDO();
-            TableRow row = addressTable.getRow(iter);
-                                     
-            provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
-            provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
-                        
-           StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            if(deleteFlag == null){
-                provAddDO.setDelete(false);
-            }else{
-                provAddDO.setDelete("Y".equals(deleteFlag.getValue()));
-            }
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            
-            
-            provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
-            provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-            
-            if(!("").equals(row.getColumn(5).getValue())){
-              provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
-            }
-            if(!("").equals(row.getColumn(6).getValue())){
-             provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
-            }
-                        
-            provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
-            provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
-            provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
-            provAddDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
-            provAddDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
-            provAddDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
-            
-            provAddDOList.add(provAddDO);            
-        }
-        
-        providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
-        providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
+        ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
+                                        
+        providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
+        providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
-                
-        Integer providerId =null;
+                         
         try{
             providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
         }catch(Exception ex){
@@ -179,12 +130,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         }
          
         ProviderDO provDO = remote.getProvider(providerId);
-        rpcReturn.setFieldValue("providerId", provDO.getId());        
-        rpcReturn.setFieldValue("lastName",provDO.getLastName());
-        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
-        rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());        
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId());        
+        setFieldsInRPC(rpcReturn, provDO);        
         
         return rpcReturn;
     }
@@ -240,7 +186,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             id.setValue(idResult);
             
-            row.addObject(id);          
+            row.setKey(id); 
             row.addObject(lname);
             row.addObject(fname);
             
@@ -264,22 +210,22 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             if(provAddTable != null){    
                 System.out.println("provAddTable != null");
-                fields.put("location",(QueryStringField)provAddTable.getRow(0).getColumn(0));                                                    
-                fields.put("externalId",(QueryStringField)provAddTable.getRow(0).getColumn(1));
-                fields.put("multiUnit",(QueryStringField)provAddTable.getRow(0).getColumn(2));
-                fields.put("streetAddress",(QueryStringField)provAddTable.getRow(0).getColumn(3));                
-                fields.put("city",(QueryStringField)provAddTable.getRow(0).getColumn(4));                                                                                       
-                //fields.put("state",(CollectionField)provAddTable.getRow(0).getColumn(5));
-                fields.put("state",(DropDownField)provAddTable.getRow(0).getColumn(5));
-                fields.put("country",(DropDownField)provAddTable.getRow(0).getColumn(6));
-                //fields.put("country",(CollectionField)provAddTable.getRow(0).getColumn(6));
-                fields.put("zipCode",(QueryStringField)provAddTable.getRow(0).getColumn(7));
-                fields.put("workPhone",(QueryStringField)provAddTable.getRow(0).getColumn(8));
-                fields.put("homePhone",(QueryStringField)provAddTable.getRow(0).getColumn(9));
-                fields.put("cellPhone",(QueryStringField)provAddTable.getRow(0).getColumn(10));
-                fields.put("faxPhone",(QueryStringField)provAddTable.getRow(0).getColumn(11));
-                fields.put("email",(QueryStringField)provAddTable.getRow(0).getColumn(12));               
+                fields.put(ProviderAddressMeta.LOCATION,(QueryStringField)provAddTable.getRow(0).getColumn(0));                                                    
+                fields.put(ProviderAddressMeta.EXTERNAL_ID,(QueryStringField)provAddTable.getRow(0).getColumn(1));
+                fields.put(ProviderAddressAddressMeta.MULTIPLE_UNIT,(QueryStringField)provAddTable.getRow(0).getColumn(2));
+                fields.put(ProviderAddressAddressMeta.STREET_ADDRESS,(QueryStringField)provAddTable.getRow(0).getColumn(3));                
+                fields.put(ProviderAddressAddressMeta.CITY,(QueryStringField)provAddTable.getRow(0).getColumn(4));                                                                                                       
+                fields.put(ProviderAddressAddressMeta.STATE,(DropDownField)provAddTable.getRow(0).getColumn(5));
+                fields.put(ProviderAddressAddressMeta.COUNTRY,(DropDownField)provAddTable.getRow(0).getColumn(6));                
+                fields.put(ProviderAddressAddressMeta.ZIP_CODE,(QueryStringField)provAddTable.getRow(0).getColumn(7));
+                fields.put(ProviderAddressAddressMeta.WORK_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(8));
+                fields.put(ProviderAddressAddressMeta.HOME_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(9));
+                fields.put(ProviderAddressAddressMeta.CELL_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(10));
+                fields.put(ProviderAddressAddressMeta.FAX_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(11));
+                fields.put(ProviderAddressAddressMeta.EMAIL,(QueryStringField)provAddTable.getRow(0).getColumn(12));               
             }
+            
+            fields.remove("providerAddressTable");
 
             List providerNames = new ArrayList();
                 try{
@@ -312,11 +258,11 @@ public class ProviderService implements AppScreenFormServiceInt{
                 
                 id.setValue(idResult);
                 
-                row.addObject(id);                  
+                row.setKey(id);                   
                 row.addObject(lname);
                 row.addObject(fname);
                 model.add(row);
-
+              
             } 
             if(SessionManager.getSession().getAttribute("systemUserId") == null)
                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
@@ -327,80 +273,17 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        ProviderDO providerDO = new ProviderDO();
-        NumberField providerId = (NumberField) rpcSend.getField("providerId");
-        NoteDO providerNote = new NoteDO();
-        //provider info        
-        providerDO.setId((Integer)providerId.getValue());
-        providerDO.setFirstName((String)rpcSend.getFieldValue("firstName"));
-        providerDO.setLastName((String)rpcSend.getFieldValue("lastName"));
-        providerDO.setMiddleName((String)rpcSend.getFieldValue("middleName"));
-        providerDO.setNpi((String)rpcSend.getFieldValue("npi"));
-        
-        if(!new Integer(-1).equals(rpcSend.getFieldValue("providerType")))
-         providerDO.setTypeId((Integer)rpcSend.getFieldValue("providerType"));
-        
-        List<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
+        ProviderDO providerDO  = getProviderDOFromRPC(rpcSend);
+       
+        NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-        
-        System.out.println("addressTable.numRows() "+ addressTable.numRows());
-        for(int iter = 0; iter < addressTable.numRows(); iter++){
-            
-            ProviderAddressDO provAddDO = new ProviderAddressDO();
-            TableRow row = addressTable.getRow(iter);
-            
-            NumberField provAddId = (NumberField)row.getHidden("provAddId");
-            NumberField addId = (NumberField)row.getHidden("addId");
-            
-            if(provAddId != null){
-             provAddDO.setId((Integer)(provAddId).getValue());
-            } 
-            provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
-            provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
-            provAddDO.setProvider((Integer)providerId.getValue());
-           
-            System.out.println("addId "+addId); 
-            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            if(deleteFlag == null){
-                provAddDO.setDelete(false);
-            }else{
-                provAddDO.setDelete("Y".equals(deleteFlag.getValue()));
-            }
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && provAddId == null){
-                //do nothing
-            }else{
-             if(addId != null){              
-              provAddDO.getAddressDO().setId((Integer)addId.getValue());             
-             }             
-            
-            provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
-            provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-            
-            if(!("").equals(row.getColumn(5).getValue())){
-             provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
-            }
-            if(!("").equals(row.getColumn(6).getValue())){
-             provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
-            }
-                        
-            provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
-            provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
-            provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
-            provAddDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
-            provAddDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
-            provAddDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
-            
-            provAddDOList.add(provAddDO);   
-           } 
-        }
-                                
-        
-        providerNote.setSubject((String)rpcSend.getFieldValue("usersSubject"));
-        providerNote.setText((String)rpcSend.getFieldValue("usersNote"));
+        Integer providerId = (Integer)rpcSend.getField(ProviderMeta.ID).getValue();
+                
+        ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
+                                        
+        providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
+        providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
                 
         
@@ -410,17 +293,10 @@ public class ProviderService implements AppScreenFormServiceInt{
             throw new RPCException(ex.getMessage());
         }
         
-        ProviderDO provDO = remote.getProvider((Integer)providerId.getValue());
+        ProviderDO provDO = remote.getProvider((Integer)providerId);
         //set the fields in the RPC
-        rpcReturn.setFieldValue("providerId", provDO.getId());
-        rpcReturn.setFieldValue("lastName",provDO.getLastName());
-        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
-        rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId());
-               
-        
-        
+        setFieldsInRPC(rpcReturn, provDO);
+                              
         return rpcReturn;
     }
 
@@ -428,23 +304,18 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getObject(0).getValue();
+        Integer providerId = (Integer)key.getKey().getValue();
                 
         ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
 //      set the fields in the RPC
-        rpcReturn.setFieldValue("providerId", provDO.getId());
-        rpcReturn.setFieldValue("lastName",provDO.getLastName());
-        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
-        rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());                              
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId()); 
+        setFieldsInRPC(rpcReturn, provDO);
                                                       
         return rpcReturn;
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getObject(0).getValue();
+        Integer providerId = (Integer)key.getKey().getValue();
         
         
         ProviderDO provDO = new ProviderDO();
@@ -454,12 +325,7 @@ public class ProviderService implements AppScreenFormServiceInt{
              throw new RPCException(ex.getMessage());
          }  
 //      set the fields in the RPC
-        rpcReturn.setFieldValue("providerId", provDO.getId());
-        rpcReturn.setFieldValue("lastName",provDO.getLastName());
-        rpcReturn.setFieldValue("firstName",provDO.getFirstName());
-        rpcReturn.setFieldValue("npi",provDO.getNpi());        
-        rpcReturn.setFieldValue("middleName",provDO.getMiddleName());
-        rpcReturn.setFieldValue("providerType",provDO.getTypeId());
+         setFieldsInRPC(rpcReturn, provDO);
                 
                                                       
         return rpcReturn;
@@ -712,6 +578,86 @@ public class ProviderService implements AppScreenFormServiceInt{
         return model;
     }
         
+    private void setFieldsInRPC(FormRPC rpcReturn, ProviderDO provDO){
+        rpcReturn.setFieldValue(ProviderMeta.ID, provDO.getId());
+        rpcReturn.setFieldValue(ProviderMeta.LAST_NAME,provDO.getLastName());
+        rpcReturn.setFieldValue(ProviderMeta.FIRST_NAME,provDO.getFirstName());
+        rpcReturn.setFieldValue(ProviderMeta.NPI,provDO.getNpi());        
+        rpcReturn.setFieldValue(ProviderMeta.MIDDLE_NAME,provDO.getMiddleName());                              
+        rpcReturn.setFieldValue(ProviderMeta.TYPE,provDO.getTypeId());         
+    }
+    
+    private ProviderDO getProviderDOFromRPC(FormRPC rpcSend){
+     NumberField providerId = (NumberField) rpcSend.getField(ProviderMeta.ID);   
+     ProviderDO providerDO = new ProviderDO();
+     //provider info        
+     providerDO.setId((Integer)providerId.getValue());
+     providerDO.setFirstName((String)rpcSend.getFieldValue(ProviderMeta.FIRST_NAME));
+     providerDO.setLastName((String)rpcSend.getFieldValue(ProviderMeta.LAST_NAME));
+     providerDO.setMiddleName((String)rpcSend.getFieldValue(ProviderMeta.MIDDLE_NAME));
+     providerDO.setNpi((String)rpcSend.getFieldValue(ProviderMeta.NPI));
+     
+     if(!new Integer(-1).equals(rpcSend.getFieldValue(ProviderMeta.TYPE)))
+      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProviderMeta.TYPE));
+     
+     return providerDO;
+    }
     
     
+    private ArrayList<ProviderAddressDO> getProviderAddressListFromRPC(TableModel addressTable, Integer providerId){
+        ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
+          
+           for(int iter = 0; iter < addressTable.numRows(); iter++){            
+            ProviderAddressDO provAddDO = new ProviderAddressDO();
+            TableRow row = addressTable.getRow(iter);
+            
+            NumberField provAddId = (NumberField)row.getHidden("provAddId");
+            NumberField addId = (NumberField)row.getHidden("addId");
+            
+            if(provAddId != null){
+             provAddDO.setId((Integer)(provAddId).getValue());
+            } 
+            provAddDO.setLocation((String)((StringField)row.getColumn(0)).getValue());
+            provAddDO.setExternalId((String)((StringField)row.getColumn(1)).getValue());
+            provAddDO.setProvider((Integer)providerId);
+           
+            System.out.println("addId "+addId); 
+            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            if(deleteFlag == null){
+                provAddDO.setDelete(false);
+            }else{
+                provAddDO.setDelete("Y".equals(deleteFlag.getValue()));
+            }
+            //if the user created the row and clicked the remove button before commit...
+            //we dont need to do anything with that row
+            if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && provAddId == null){
+                //do nothing
+            }else{
+             if(addId != null){              
+              provAddDO.getAddressDO().setId((Integer)addId.getValue());             
+             }             
+            
+            provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
+            provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
+            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
+            
+            if(!("").equals(row.getColumn(5).getValue())){
+             provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
+            }
+            if(!("").equals(row.getColumn(6).getValue())){
+             provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
+            }
+                        
+            provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
+            provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
+            provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
+            provAddDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
+            provAddDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
+            provAddDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
+            
+            provAddDOList.add(provAddDO);   
+           } 
+        }
+       return provAddDOList;    
+    }
 }

@@ -5,6 +5,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -24,38 +25,60 @@ import com.google.gwt.user.client.ui.Widget;
      private ScreenAutoDropdown displayType = null;
      private ScreenAutoDropdown displayTest = null;
      
+     private static boolean loaded = false;
+     
      private static DataModel qaEventTypeDropDown = null;
      private static DataModel testDropDown = null;
      
        
      public QAEventScreen(){
-         super("org.openelis.modules.qaevent.server.QAEventService",true);  
+         super("org.openelis.modules.qaevent.server.QAEventService",!loaded);  
          name="QA Event";
      }
      
-         public void afterDraw(boolean success) {                  
+         public void afterDraw(boolean success) {
+             loaded = true;
                bpanel = (ButtonPanel) getWidget("buttons");        
                message.setText("done");                 
                
-               qaEventsTable = (TableWidget)getWidget("qaEventsTable");
-               modelWidget.addChangeListener(qaEventsTable.controller); 
-                              
-               ((QAEventsNamesTable)qaEventsTable.controller.manager).setQaEventForm(this);
+               //qaEventsTable = (TableWidget)getWidget("qaEventsTable");
+               //modelWidget.addChangeListener(qaEventsTable.controller); 
+               AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+               modelWidget.addChangeListener(atozTable);
+               addChangeListener(atozTable);
                
-               tname = (TextBox)getWidget("name");
-               displayType = (ScreenAutoDropdown)widgets.get("qaEventType");
-               displayTest = (ScreenAutoDropdown)widgets.get("test");
+               //((QAEventsNamesTable)qaEventsTable.controller.manager).setQaEventForm(this);
                
-               loadDropdowns();
+               ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+               atozButtons.addChangeListener(this);
+               
+               tname = (TextBox)getWidget("qaevent.name");
+               displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
+               displayTest = (ScreenAutoDropdown)widgets.get("qaevent.test");
+
                super.afterDraw(success);        
+               
+               loadDropdowns();                           
         }
          
-         public void onClick(Widget sender){
+         /*public void onClick(Widget sender){
              String action = ((AppButton)sender).action;
             if(action.startsWith("query:")){
                 getQAEvents(action.substring(6, action.length()), sender);
                 
             } 
+         }*/
+         
+         public void onChange(Widget sender) {
+             
+             if(sender == getWidget("atozButtons")){           
+                String action = ((ButtonPanel)sender).buttonClicked.action;           
+                if(action.startsWith("query:")){
+                    getQAEvents(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+                }
+             }else{
+                 super.onChange(sender);
+             }
          }
          
         public void query() {
@@ -65,7 +88,7 @@ import com.google.gwt.user.client.ui.Widget;
              
             tname.setFocus(true);
         }                 
-                  
+                      
          
          public void add(){                                  
              super.add();             
@@ -87,14 +110,14 @@ import com.google.gwt.user.client.ui.Widget;
          private void getQAEvents(String letter, Widget sender) {
              // we only want to allow them to select a letter if they are in display
              // mode..
-             if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
+             if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-                 letterRPC.setFieldValue("name", letter.toLowerCase() + "*");
+                 letterRPC.setFieldValue("qaevent.name", letter.toLowerCase() + "*");
                   
                  commitQuery(letterRPC);
                  
-                 setStyleNameOnButton(sender);
+                 //setStyleNameOnButton(sender);
                  
              }
          }
@@ -114,19 +137,19 @@ import com.google.gwt.user.client.ui.Widget;
                    testDropDown = (DataModel)initData[1];
                }       
 
-                    ScreenAutoDropdown queryType = displayType.getQueryWidget();                       
+                    //ScreenAutoDropdown queryType = displayType.getQueryWidget();                       
                     ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-                    ((AutoCompleteDropdown)queryType.getWidget()).setModel(qaEventTypeDropDown);
+                    //((AutoCompleteDropdown)queryType.getWidget()).setModel(qaEventTypeDropDown);
                                                                                                           
-                    ScreenAutoDropdown queryTest = displayTest.getQueryWidget();                    
+                    //ScreenAutoDropdown queryTest = displayTest.getQueryWidget();                    
                     ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
-                    ((AutoCompleteDropdown)queryTest.getWidget()).setModel(testDropDown);
+                    //((AutoCompleteDropdown)queryTest.getWidget()).setModel(testDropDown);
                                            
                 }
                 
          
        public void afterCommitAdd(boolean success){
-           Integer qaeId = (Integer)rpc.getFieldValue("qaeId");
+           Integer qaeId = (Integer)rpc.getFieldValue("qaevent.id");
            NumberObject qaeIdObj = new NumberObject();
            qaeIdObj.setType("integer");
            qaeIdObj.setValue(qaeId);           
@@ -142,15 +165,6 @@ import com.google.gwt.user.client.ui.Widget;
            
            super.afterCommitAdd(success);
        }
-              
-       
-       public void afterFetch(boolean success){
-           super.afterFetch(success);             
-           /*if(success){ 
-           if(modelWidget.getPage()==0 && modelWidget.getSelectedIndex()==0){
-               bpanel.setButtonState("prev", AppButton.DISABLED);
-           }
-          }*/                    
-       }
+                          
               
  }
