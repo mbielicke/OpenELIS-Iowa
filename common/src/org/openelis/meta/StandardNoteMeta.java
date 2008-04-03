@@ -63,4 +63,24 @@ public class StandardNoteMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String name(){
+		return columnNames[1];
+	}
+	
+	public static String description(){
+		return columnNames[2];
+	}
+	
+	public static String type(){
+		return columnNames[3];
+	}
+	
+	public static String text(){
+		return columnNames[4];
+	}
 }
