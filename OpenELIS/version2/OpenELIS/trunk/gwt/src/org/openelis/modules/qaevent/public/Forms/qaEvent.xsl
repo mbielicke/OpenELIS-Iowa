@@ -2,6 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:qaEventMeta="xalan://org.openelis.meta.QaEventMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -13,6 +14,10 @@
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
+  
+  <xalan:component prefix="qaEventMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventMeta"/>
+  </xalan:component>
 
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
@@ -20,29 +25,10 @@
 <screen id= "QAEvents" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height= "425px" width = "100%" key= "hideablePanel" visible= "false">
-   <panel layout= "horizontal" style="ScreenLeftPanel" xsi:type= "Panel" spacing= "0">
-    <xsl:if test="string($language)='en'">
-     	<xsl:call-template name="aToZLeftPanelButtons"/>
-		</xsl:if>
-		
-      <table maxRows = "19" rows = "0" width= "auto" key = "qaEventsTable" manager = "QAEventsNamesTable" title="" showError="false">
-       <headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"test")'/>,<xsl:value-of select='resource:getString($constants,"method")'/></headers>
-							<widths>100,65,65</widths>
-							<editors>
-								<label/>
-								<label/>	
-								<label/>									
-							</editors>
-							<fields>
-								<string/>
-								<string/>
-								<string/>								
-							</fields>
-							<sorts>false,false,false</sorts>
-							<filters>false,false,false</filters>
-     </table>
-   </panel>
+  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}" colwidths ="100,65,65">   
+     <buttonPanel key="atozButtons">
+	   <xsl:call-template name="aToZLeftPanelButtons"/>		
+	</buttonPanel>		     
   </aToZ>
   
   <panel layout= "vertical" xsi:type = "Panel">
@@ -71,7 +57,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "name" case = "lower" tab="description,reportingText"/>
+      <textbox key = "{qaEventMeta:name()}" case = "lower" tab="{qaEventMeta:description()},{qaEventMeta:reportingText()}"/>
      </widget>
      </row>     
      <row>     
@@ -79,7 +65,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "description" width= "200px" tab="qaEventType,name"/>
+      <textbox case= "mixed"   key= "{qaEventMeta:description()}" width= "200px" tab="{qaEventMeta:type()},{qaEventMeta:name()}"/>
      </widget>     
     </row>
      <row>
@@ -87,24 +73,14 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="qaEventType" key="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed"  width="100px" multiSelect="false" fromModel="true"  type="integer" tab="test,description">
-													<autoWidths>80</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>													 													
+										<autoDropdown key="{qaEventMeta:type()}" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
+													
+													 <widths>80</widths>													 													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="qaEventType" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed"  width="80px" fromModel="true" multiSelect="true"  type="integer" tab="test,description">
-													<autoWidths>60</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>													 
+												  <autoDropdown case="mixed" popWidth="auto"  fromModel="true" multiSelect="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
+													
+													<widths>60</widths>													 
 										          </autoDropdown>
 												 </query>
 										</widget>  
@@ -115,28 +91,12 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown cat="test" key="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed" multiSelect="false" fromModel="true" width="150px"   type="integer" tab="billable,qaEventType">
-													<autoWidths>130</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													 <autoItems>													       
-												     </autoItems>													
+										<autoDropdown key="{qaEventMeta:test()}" popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
+													<widths>130</widths>													 													
 										</autoDropdown>
 												<query>
-												  <autoDropdown cat="test" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" case="mixed" fromModel="true" width="150px"  multiSelect="true"  type="integer" tab="billable,qaEventType">
-													<autoWidths>130</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>													       
-												    </autoItems> 
+												  <autoDropdown  case="mixed" popWidth="auto" fromModel="true"   multiSelect="true"  type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
+													<widths>130</widths>												
 										          </autoDropdown>
 												 </query>
 										</widget>
@@ -147,7 +107,7 @@
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
         </widget>
         <widget>
-         <check key= "billable" tab="sequence,test"/>
+         <check key= "{qaEventMeta:isBillable()}" tab="{qaEventMeta:reportingSequence()},{qaEventMeta:test()}"/>
        </widget>
       </row> 
       <row>
@@ -156,7 +116,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "sequence"  width= "50px" tab="reportingText,billable"/>
+      <textbox key= "{qaEventMeta:reportingSequence()}"  width= "50px" tab="{qaEventMeta:reportingText()},{qaEventMeta:isBillable()}"/>
      </widget>    
      </row>
 			
@@ -165,7 +125,7 @@
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="400px" height="200px" case="mixed" key="reportingText" tab="name,sequence"/>
+		  <textarea width="400px" height="200px" case="mixed" key="{qaEventMeta:reportingText()}" tab="{qaEventMeta:name()},{qaEventMeta:reportingSequence()}"/>
 	    </widget> 
 	   </row>								          
                                  					                         
@@ -177,28 +137,28 @@
 </display>
 							  
 <rpc key= "display">
- <number key="qaeId" type="integer" required = "false" />
- <string key="name" required = "true" />
- <number key="sequence" type="integer" required = "false" />
- <string key="description" required = "false" /> 	 
- <string key= "billable" required = "false" />
- <string key="reportingText" required = "true" />
- <dropdown key="test" required = "false" />
- <dropdown key="qaEventType" required = "true" />
+ <number key="{qaEventMeta:id()}" type="integer" required = "false" />
+ <string key="{qaEventMeta:name()}" required = "true" />
+ <number key="{qaEventMeta:reportingSequence()}" type="integer" required = "false" />
+ <string key="{qaEventMeta:description()}" required = "false" /> 	 
+ <string key= "{qaEventMeta:isBillable()}" required = "false" />
+ <string key="{qaEventMeta:reportingText()}" required = "true" />
+ <dropdown key="{qaEventMeta:test()}" type="integer" required = "false" />
+ <dropdown key="{qaEventMeta:type()}" type="integer" required = "true" />
 </rpc>
 					   
 <rpc key= "query">     
- <queryString key="name" />
- <queryNumber key="sequence" type="integer" />
- <queryString key="description"  /> 	
- <dropdown key="qaEventType"/> 
- <dropdown key="test"/>
- <queryString key="billable"/>
- <queryString key="reportingText"  />
+ <queryString key="{qaEventMeta:name()}" />
+ <queryNumber key="{qaEventMeta:reportingSequence()}" type="integer" />
+ <queryString key="{qaEventMeta:description()}"  /> 	
+ <dropdown key="{qaEventMeta:type()}" type="integer"/> 
+ <dropdown key="{qaEventMeta:test()}" type="integer"/>
+ <queryString key="{qaEventMeta:isBillable()}"/>
+ <queryString key="{qaEventMeta:reportingText()}"/>
 </rpc>
 
 <rpc key= "queryByLetter">     
- <queryString key="name"/>
+ <queryString key="{qaEventMeta:name()}"/>
 </rpc>
  
 </screen>
