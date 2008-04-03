@@ -28,7 +28,7 @@ import org.openelis.utils.Auditable;
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
 @NamedQueries({@NamedQuery(name = "getQaEventNameRowsByLetter", query = "select q.id,q.name " + "from QaEvent q  where q.name like :letter order by q.name"),
-               @NamedQuery(name = "getQaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.test,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
+               @NamedQuery(name = "getQaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
                "  from QaEvent q where q.id = :id"),
                @NamedQuery(name = "getTestNames", query = "select distinct t.id, t.name, m.name " + "  from Test t, Method m where t.method  = m.id order by t.name, m.name")})
 public class QaEvent implements Auditable, Cloneable {
@@ -45,7 +45,7 @@ public class QaEvent implements Auditable, Cloneable {
   private String description;             
 
   @Column(name="test")
-  private Integer test;             
+  private Integer testId;             
 
   @Column(name="type")
   private Integer type;             
@@ -61,7 +61,7 @@ public class QaEvent implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test",insertable = false, updatable = false)
-  private Test testLink; 
+  private Test test; 
   
   @Transient
   private QaEvent original;
@@ -94,13 +94,13 @@ public class QaEvent implements Auditable, Cloneable {
       this.description = description;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
+  public void setTest(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
   public Integer getType() {
@@ -172,10 +172,10 @@ public class QaEvent implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((test == null && original.test != null) || 
-           (test != null && !test.equals(original.test))){
+        if((testId == null && original.testId != null) || 
+           (testId != null && !testId.equals(original.testId))){
           Element elem = doc.createElement("test");
-          elem.appendChild(doc.createTextNode(original.test.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.testId.toString().trim()));
           root.appendChild(elem);
         }      
 
@@ -218,11 +218,16 @@ public class QaEvent implements Auditable, Cloneable {
   public String getTableName() {
     return "qaevent";
   }
-public Test getTestLink() {
-    return testLink;
-}
-public void setTestLink(Test testLink) {
-    this.testLink = testLink;
-}
+  
+  public Test getTest() {
+       return test ;
+  }
+
+  public void setTest(Test test) {
+    this.test = test;
+   }
+  
+  
+
   
 }   

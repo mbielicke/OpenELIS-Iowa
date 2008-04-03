@@ -44,7 +44,7 @@ public class Test implements Auditable, Cloneable {
   private String reportingDescription;             
 
   @Column(name="method")
-  private Integer method;             
+  private Integer methodId;             
 
   @Column(name="is_active")
   private String isActive;             
@@ -100,7 +100,7 @@ public class Test implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "method",insertable = false, updatable = false)
-  private Method methodLink;
+  private Method method;
   
   public Integer getId() {
     return id;
@@ -138,13 +138,13 @@ public class Test implements Auditable, Cloneable {
       this.reportingDescription = reportingDescription;
   }
 
-  public Integer getMethod() {
-    return method;
+  public Integer getMethodId() {
+    return methodId;
   }
-  public void setMethod(Integer method) {
-    if((method == null && this.method != null) || 
-       (method != null && !method.equals(this.method)))
-      this.method = method;
+  public void setMethodId(Integer methodId) {
+    if((methodId == null && this.methodId != null) || 
+       (methodId != null && !methodId.equals(this.methodId)))
+      this.methodId = methodId;
   }
 
   public String getIsActive() {
@@ -465,11 +465,11 @@ public class Test implements Auditable, Cloneable {
   public String getTableName() {
     return "test";
   }
-public Method getMethodLink() {
-    return methodLink;
+public Method getMethod() {
+    return method;
 }
-public void setMethodLink(Method methodLink) {
-    this.methodLink = methodLink;
+public void setMethod(Method method) {
+    this.method = method;
 }
   
 }   
