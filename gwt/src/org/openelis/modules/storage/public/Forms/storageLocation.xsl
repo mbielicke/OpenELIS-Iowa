@@ -21,24 +21,12 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="325px" width="100%" key="hideablePanel" visible="false">
-				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
+				<aToZ height="325px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 				 <xsl:if test="string($language)='en'">
-			<xsl:call-template name="aToZLeftPanelButtons"/>
-		</xsl:if>
-		
-				<table manager="StorageNameTable" width="auto" style="ScreenLeftTable" key="storageLocsTable" maxRows="10" title="{resource:getString($constants,'name')}" showError="false">
-							<widths>175</widths>
-							<editors>
-								<label/>
-							</editors>
-							<fields>
-								<string/>
-							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
-				</table>
-				</panel>
+			         <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+		        </xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
@@ -173,7 +161,7 @@
 	<rpc key="display">
 	<number key="storageLocation.id" required="false" type="integer"/>
     <string key="storageLocation.name" max="20" required="true"/>
-    <dropdown  key="storageLocation.storageUnit.description" type="integer" required="false"/> 
+    <dropdown  key="storageLocation.storageUnit.description" type="integer" required="true"/> 
    <!-- <number key="sortOrderId" required="true" type="integer"/>-->
     <string key="storageLocation.location" max="80" required="true"/>
     <dropdown key="parentStorageLocation.name" type="integer" required="false"/>

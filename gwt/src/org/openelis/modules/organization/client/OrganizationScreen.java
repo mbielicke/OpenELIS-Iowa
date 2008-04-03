@@ -71,6 +71,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
             super.onChange(sender);
         }
     }
+    
 	public void onClick(Widget sender) {
 		String action = ((AppButton)sender).action;
         if (action.equals("removeRow")) {
@@ -129,11 +130,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		((OrganizationContactsTable) contactsTable.controller.manager)
 				.setOrganizationForm(this);
 
-		// get contacts table and set the managers form
-
-		//((OrganizationNameTable) orgNameTable.controller.manager)
-		//		.setOrganizationForm(this);
-
         loadDropdowns();
 		super.afterDraw(success);			
 	}
@@ -170,7 +166,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
        
 		super.add();
 		
-		//FIXME need to load the model for the dropdown
 		ScreenTextBox orgId = (ScreenTextBox) widgets.get("organization.id");
 		orgId.enable(false);
 
@@ -188,13 +183,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		TextBox orgName = (TextBox)getWidget("organization.name");
 		orgName.setFocus(true);
 
-		// unselect the row from the table
-		//((TableWidget) getWidget("organizationsTable")).controller.unselect(-1);
-
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
 		removeContactButton.changeState(AppButton.UNPRESSED);
-
-		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
 	}
     
     public void afterAbort(boolean success){
@@ -212,10 +202,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
             
         AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
         removeContactButton.changeState(AppButton.DISABLED);    
-
-        // need to get the org name table model
-        TableWidget orgNameTM = (TableWidget) getWidget("organizationsTable");
-        int rowSelected = orgNameTM.controller.selected;
     }
 
 	public void afterUpdate(boolean success) {
@@ -277,9 +263,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 				
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
 		contactTable.controller.setAutoAdd(false);
-        
-        
-		
+
 		super.afterCommitAdd(success);
 	}
 
@@ -310,21 +294,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		
 		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
 		removeContactButton.changeState(AppButton.UNPRESSED);
-		
-        
 
 		super.afterCommitUpdate(success);
-	}
-
-	public void commit() {
-		if (state == FormInt.QUERY) {
-			((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
-					.get("contactsTable")).getQueryWidget()).getWidget()).controller
-					.unselect(-1);
-		} else {
-			((TableWidget) getWidget("contactsTable")).controller.unselect(-1);
-		}
-		super.commit();
 	}
 	
 	protected void doReset() {

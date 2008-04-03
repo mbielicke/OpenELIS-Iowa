@@ -21,25 +21,12 @@
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="260px" width="100%" key="hideablePanel" visible="false">
-				 <panel layout="horizontal" style="ScreenLeftPanel" xsi:type="Panel" spacing="0">
-				 <xsl:if test="string($language)='en'">
-			<xsl:call-template name="aToZLeftPanelButtons"/>
-		</xsl:if>
-
-				<table manager="StorageUnitDescTable" width="auto" style="ScreenLeftTable" key="StorageUnitTable" maxRows="10" title="" showError="false">
-				<headers><xsl:value-of select='resource:getString($constants,"description")'/></headers>
-							<widths>175</widths>
-							<editors>
-								<label/>
-							</editors>
-							<fields>
-								<string/>
-							</fields>
-							<sorts>false</sorts>
-							<filters>false</filters>
-				</table>
-				</panel>
+			    <aToZ height="260px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
+					 <xsl:if test="string($language)='en'">
+					 <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+					</xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
@@ -60,9 +47,6 @@
  			</widget>
 		</panel>
 		<!--end button panel-->
-
-				<panel key="formDeck" layout="deck" xsi:type="Deck" align="left">
-					<deck>
 					<panel layout="vertical" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 								<row>
@@ -73,26 +57,9 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="category" cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" tab="description,id">
-											<autoWidths>89</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-												<string/>
-											</autoFields>
+										<autoDropdown key="storageUnit.category" case="mixed" width="110px" popWidth="auto" tab="storageUnit.description,storageUnit.id">
+											<widths>89</widths>
 										</autoDropdown>
-										<query>
-										<autoDropdown cat="category" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="110px" dropdown="true" type="string" fromModel="true" multiSelect="true" tab="description,id">
-											<autoWidths>89</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-												<string/>
-											</autoFields>
-										</autoDropdown>
-										</query>
 									</widget>
 								</row>
 								<row>								
@@ -100,7 +67,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="description" max="60" width="300px" tab="isSingular,category"/>
+										<textbox case="mixed" key="storageUnit.description" max="60" width="300px" tab="storageUnit.isSingular,storageUnit.category"/>
 									</widget>
 								</row>
 								<row>
@@ -108,47 +75,29 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isSingular" tab="id,description"/>
-										<query>
-											<autoDropdown cat="isSingular" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.supply.server.StorageUnitServlet" width="40px" dropdown="true" type="string" multiSelect="true" tab="id,description">
-													<autoWidths>19</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-													<autoItems>
-													<item value=""> </item>
-													<item value="Y">Y</item>
-													<item value="N">N</item>
-													</autoItems>
-													</autoDropdown>
-										</query>
+										<check key="storageUnit.isSingular" tab="storageUnit.id,storageUnit.description"/>
 									</widget>
 								</row>
 							</panel>
-				</panel>
-					</deck> 
 				</panel>
 			</panel>
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="id" type="integer" required="false"/>
-  	<string key="categoryId" required="true"/>
-  	<string key="description" max="60" required="true"/>
-  	<check key="isSingular" required="false"/>
+  	<number key="storageUnit.id" type="integer" required="false"/>
+  	<dropdown key="storageUnit.category" required="true"/>
+  	<string key="storageUnit.description" max="60" required="true"/>
+  	<string key="storageUnit.isSingular" required="false"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="id" type="integer" required="false"/>
- 	<collection key="category" type="string" required="false"/>
-  	<queryString key="description" required="true"/>
-  	<collection key="isSingular" type="string" required="false"/>
+ 	<queryNumber key="storageUnit.id" type="integer" required="false"/>
+ 	<dropdown key="storageUnit.category" required="false"/>
+  	<queryString key="storageUnit.description" required="true"/>
+  	<queryString key="storageUnit.isSingular" type="string" required="false"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="description"/>
+		<queryString key="storageUnit.description"/>
 	</rpc>
 </screen>
   </xsl:template>

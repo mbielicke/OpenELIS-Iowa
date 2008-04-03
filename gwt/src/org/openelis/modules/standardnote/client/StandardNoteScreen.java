@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNoteScreen extends OpenELISScreenForm {
 
-	private TableWidget standardNoteTable;
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
 	private Widget selected;
@@ -31,38 +30,41 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	}
 	
 	public void afterDraw(boolean success) {
-
+		loaded = true;
 		bpanel = (ButtonPanel) getWidget("buttons");
 
-//		 get storage unit table and set the managers form
-		//standardNoteTable = (TableWidget) getWidget("StandardNoteTable");
-        AToZPanel azPanel = (AToZPanel)getWidget("hideablePanel");
-		modelWidget.addChangeListener(azPanel);
+		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+		modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
 		
 		textArea = (ScreenTextArea)widgets.get("standardNote.text");
 		nameTextbox = (TextBox)getWidget("standardNote.name");
 
 		message.setText("done");
-
-		//((StandardNoteNameTable) standardNoteTable.controller.manager).setStandardNoteForm(this);
 		
 		loadDropdowns();
 		
 		super.afterDraw(success);
 	}
 	
-	public void onClick(Widget sender) {
-		String action = ((AppButton)sender).action;
-		if(action.startsWith("query:")){
-			getStandardNotes(action.substring(6, action.length()), sender);
-			
-		}
-	}
+	public void onChange(Widget sender) {
+        if(sender == getWidget("atozButtons")){
+           String action = ((ButtonPanel)sender).buttonClicked.action;
+           if(action.startsWith("query:")){
+        	   getStandardNotes(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+           }
+        }else{
+            super.onChange(sender);
+        }
+    }
 	
 	private void getStandardNotes(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
-		if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
+		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
@@ -95,9 +97,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 
 		//set focus to the name field
 		nameTextbox.setFocus(true);
-		
-//		 unselect the row from the table
-		((TableWidget) getWidget("StandardNoteTable")).controller.unselect(-1);
 	}
 	
 	public void afterUpdate(boolean success) {
@@ -121,10 +120,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		
 //		load standard note type dropdowns
         ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");
-       // ScreenAutoDropdown queryType = displayType.getQueryWidget();
 	               
        ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
-       //((AutoCompleteDropdown)queryType.getWidget()).setModel(standardNoteTypeDropdown);
-	}
-	
+	}	
 }

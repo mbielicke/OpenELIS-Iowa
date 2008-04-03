@@ -13,7 +13,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -22,6 +21,7 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.meta.StandardNoteMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -32,7 +32,7 @@ import org.openelis.util.SessionManager;
 
 public class StandardNoteService implements AppScreenFormServiceInt, 
 																AutoCompleteServiceInt {
-
+	
 	private static final long serialVersionUID = 734713425110147476L;
 	private static final int leftTableRowsPerPage = 10;
 	
@@ -45,14 +45,10 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getObject(0).getValue());
+		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getKey().getValue());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("standardNote.id", standardNoteDO.getId());
-		rpcReturn.setFieldValue("standardNote.description", standardNoteDO.getDescription().trim());
-		rpcReturn.setFieldValue("standardNote.name", standardNoteDO.getName().trim());
-		rpcReturn.setFieldValue("standardNote.text", standardNoteDO.getText().trim());
-		rpcReturn.setFieldValue("standardNote.type", standardNoteDO.getType());
+		setFieldsInRPC(rpcReturn, standardNoteDO);
         
       return rpcReturn;  
 	}
@@ -63,10 +59,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
 
 //		build the storage unit DO from the form
-		newStandardNoteDO.setDescription((String)rpcSend.getFieldValue("standardNote.description"));
-		newStandardNoteDO.setName((String)rpcSend.getFieldValue("standardNote.name"));
-		newStandardNoteDO.setText((String)rpcSend.getFieldValue("standardNote.text"));
-		newStandardNoteDO.setType((Integer)rpcSend.getFieldValue("standardNote.type"));
+		newStandardNoteDO = getStandardNoteDOFromRPC(rpcSend);
 		
 		//send the changes to the database
 		Integer standardNoteId = (Integer)remote.updateStandardNote(newStandardNoteDO);
@@ -75,11 +68,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO standardNoteDO = remote.getStandardNote(standardNoteId);
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("standardNote.id", standardNoteDO.getId());
-		rpcReturn.setFieldValue("standardNote.description", standardNoteDO.getDescription().trim());
-		rpcReturn.setFieldValue("standardNote.name", standardNoteDO.getName().trim());
-		rpcReturn.setFieldValue("standardNote.text", standardNoteDO.getText().trim());
-		rpcReturn.setFieldValue("standardNote.type", standardNoteDO.getType());
+		setFieldsInRPC(rpcReturn, standardNoteDO);
 		
 		return rpcReturn;
 	}
@@ -89,20 +78,14 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
 		try {
-			remote.deleteStandardNote((Integer)key.getObject(0).getValue());
+			remote.deleteStandardNote((Integer)key.getKey().getValue());
 			
 		} catch (Exception e) {
-			//if(e instanceof RPCDeleteException){
-			//	throw new RPCDeleteException(openElisConstants.getString("storageLocDeleteException"));
-			//}else
 			throw new RPCException(e.getMessage());
 		}	
 		
-		rpcReturn.setFieldValue("standardNote.id", null);
-		rpcReturn.setFieldValue("standardNote.description", null);
-		rpcReturn.setFieldValue("standardNote.name", null);
-		rpcReturn.setFieldValue("standardNote.text", null);
-		rpcReturn.setFieldValue("standardNote.type", null);
+		//this should set all fields in the rpc to null
+		setFieldsInRPC(rpcReturn, new StandardNoteDO());
 		
 		return rpcReturn;
 	}
@@ -144,7 +127,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
-				row.addObject(id);			
+				row.setKey(id);			
 				row.addObject(name);
 				model.add(row);
 				i++;
@@ -182,7 +165,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			 nameField.setValue(name);
       
 			 idField.setValue(id);
-			 row.addObject(idField);
+			 row.setKey(idField);
 			 row.addObject(nameField);
 
 			 model.add(row);
@@ -203,11 +186,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
 
 		//build the DO from the form
-		newStandardNoteDO.setId((Integer)rpcSend.getFieldValue("standardNote.id"));
-		newStandardNoteDO.setDescription((String)rpcSend.getFieldValue("standardNote.description"));
-		newStandardNoteDO.setName((String)rpcSend.getFieldValue("standardNote.name"));
-		newStandardNoteDO.setText((String)rpcSend.getFieldValue("standardNote.text"));
-		newStandardNoteDO.setType((Integer)rpcSend.getFieldValue("standardNote.type"));
+		newStandardNoteDO = getStandardNoteDOFromRPC(rpcSend);
 
 //		send the changes to the database
 		remote.updateStandardNote(newStandardNoteDO);
@@ -216,11 +195,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO standardNoteDO = remote.getStandardNote(newStandardNoteDO.getId());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("standardNote.id", standardNoteDO.getId());
-		rpcReturn.setFieldValue("standardNote.description", standardNoteDO.getDescription().trim());
-		rpcReturn.setFieldValue("standardNote.name", standardNoteDO.getName().trim());
-		rpcReturn.setFieldValue("standardNote.text", standardNoteDO.getText().trim());
-		rpcReturn.setFieldValue("standardNote.type", standardNoteDO.getType());
+		setFieldsInRPC(rpcReturn, standardNoteDO);
 		
 		return rpcReturn;
 	}
@@ -229,14 +204,10 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getObject(0).getValue());
+		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getKey().getValue());
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("standardNote.id", standardNoteDO.getId());
-		rpcReturn.setFieldValue("standardNote.description", standardNoteDO.getDescription().trim());
-		rpcReturn.setFieldValue("standardNote.name", standardNoteDO.getName().trim());
-		rpcReturn.setFieldValue("standardNote.text", standardNoteDO.getText().trim());
-		rpcReturn.setFieldValue("standardNote.type", standardNoteDO.getType());
+		setFieldsInRPC(rpcReturn, standardNoteDO);
 		
 		return rpcReturn;
 	}
@@ -247,21 +218,36 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
 		
 		try{
-			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getObject(0).getValue());
+			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getKey().getValue());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("standardNote.id", standardNoteDO.getId());
-		rpcReturn.setFieldValue("standardNote.description", standardNoteDO.getDescription().trim());
-		rpcReturn.setFieldValue("standardNote.name", standardNoteDO.getName().trim());
-		rpcReturn.setFieldValue("standardNote.text", standardNoteDO.getText().trim());
-		rpcReturn.setFieldValue("standardNote.type", standardNoteDO.getType());
+		setFieldsInRPC(rpcReturn, standardNoteDO);
 		
 		return rpcReturn;
 	}
 
+	private void setFieldsInRPC(FormRPC rpcReturn, StandardNoteDO standardNoteDO){
+		rpcReturn.setFieldValue(StandardNoteMeta.ID, standardNoteDO.getId());
+		rpcReturn.setFieldValue(StandardNoteMeta.DESCRIPTION, (standardNoteDO.getDescription() == null ? null : standardNoteDO.getDescription().trim()));
+		rpcReturn.setFieldValue(StandardNoteMeta.NAME, (standardNoteDO.getName() == null ? null : standardNoteDO.getName().trim()));
+		rpcReturn.setFieldValue(StandardNoteMeta.TEXT, (standardNoteDO.getText() == null ? null : standardNoteDO.getText().trim()));
+		rpcReturn.setFieldValue(StandardNoteMeta.TYPE, standardNoteDO.getType());
+	}
+	
+	private StandardNoteDO getStandardNoteDOFromRPC(FormRPC rpcSend){
+		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
+		newStandardNoteDO.setId((Integer)rpcSend.getFieldValue(StandardNoteMeta.ID));
+		newStandardNoteDO.setDescription((String)rpcSend.getFieldValue(StandardNoteMeta.DESCRIPTION));
+		newStandardNoteDO.setName((String)rpcSend.getFieldValue(StandardNoteMeta.NAME));
+		newStandardNoteDO.setText((String)rpcSend.getFieldValue(StandardNoteMeta.TEXT));
+		newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.TYPE));
+		
+		return newStandardNoteDO;
+	}
+	
 	public String getXML() throws RPCException {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl");
 	}
@@ -282,12 +268,10 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     }
 
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public DataModel getMatches(String cat, DataModel model, String match) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -311,7 +295,6 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		
 		StringObject blankStringId = new StringObject();
 		NumberObject blankNumberId = new NumberObject();
-		//BooleanObject blankSelected = new BooleanObject();
 				
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
@@ -319,15 +302,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		blankNumberId.setType("integer");
 		blankNumberId.setValue(new Integer(0));
 		
-		//if(cat.equals("contactType"))
 		blankset.setKey(blankNumberId);
-		//else
-		//	blankset.setKey(blankStringId);		
-		
-		//blankset.addObject(blankNumberId);
-		
-		//blankSelected.setValue(new Boolean(false));
-		//blankset.addObject(blankSelected);
 		
 		returnModel.add(blankset);
 		int i=0;
@@ -341,18 +316,14 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			
 			StringObject textObject = new StringObject();
 			NumberObject numberId = new NumberObject();
-			//BooleanObject selected = new BooleanObject();
 			
 			textObject.setValue(dropdownText);
 			set.addObject(textObject);
 			
 			numberId.setType("integer");
 			numberId.setValue(dropdownId);
-			//set.addObject(numberId);
+
 			set.setKey(numberId);
-			
-			//selected.setValue(new Boolean(false));
-			//set.addObject(selected);
 			
 			returnModel.add(set);
 			

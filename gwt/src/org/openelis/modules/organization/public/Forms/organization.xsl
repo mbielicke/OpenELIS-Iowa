@@ -2,7 +2,10 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:organizationMeta="xalan://org.openelis.meta.OrganizationMeta"
+                xmlns:organizationMeta="xalan://org.openelis.meta.OrganizationMeta" 
+                xmlns:orgAddressMeta="xalan://org.openelis.meta.OrganizationAddressMeta"
+                xmlns:orgNoteMeta="xalan://org.openelis.meta.OrganizationNoteMeta"
+                xmlns:parentOrgMeta="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -19,6 +22,18 @@
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
   </xalan:component>
 
+  <xalan:component prefix="orgAddressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationAddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="parentOrgMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"/>
+  </xalan:component>
+  
+    <xalan:component prefix="orgNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationNoteMeta"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
@@ -26,7 +41,7 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="Name" tablewidth="auto" colwidths="175">
+				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 				 <xsl:if test="string($language)='en'">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
@@ -70,13 +85,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="{organizationMeta:name()}" width="225px" max="40" tab="organization.address.multipleUnit,{organizationMeta:name()}"/>
+										<textbox case="upper" key="{organizationMeta:name()}" width="225px" max="40" tab="{orgAddressMeta:multipleUnit()},{organizationMeta:name()}"/>
 										</widget>text
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<textbox case="upper" key="organization.address.city" width="212px" max="30" tab="organization.address.state,organization.address.streetAddress"/>
+											<textbox case="upper" key="{orgAddressMeta:city()}" width="212px" max="30" tab="{orgAddressMeta:state()},{orgAddressMeta:streetAddress()}"/>
 										</widget>		
 									</row>
 									<row>
@@ -88,14 +103,14 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="organization.address.multipleUnit" width="212px" max="30" tab="organization.address.streetAddress,{organizationMeta:name()}"/>
+											<textbox case="upper" key="{orgAddressMeta:multipleUnit()}" width="212px" max="30" tab="{orgAddressMeta:streetAddress()},{organizationMeta:name()}"/>
 										</widget>
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
 										<!--<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">-->
 												<widget>
-													<autoDropdown key="organization.address.state" case="upper" width="40px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
+													<autoDropdown key="{orgAddressMeta:state()}" case="upper" width="40px" popWidth="auto" tab="{orgAddressMeta:zipCode()},{orgAddressMeta:city()}">
 													<widths>40</widths>
 													</autoDropdown>
 												</widget>
@@ -105,7 +120,7 @@
 												</widget>
 												<!--<panel layout="horizontal" width="2px" xsi:type="Panel"/>-->
 												<widget>
-													<maskedbox key="organization.address.zipCode" width="70" mask="99999-9999" tab="organization.address.country,organization.address.state"/>
+													<maskedbox key="{orgAddressMeta:zipCode()}" width="70" mask="99999-9999" tab="{orgAddressMeta:country()},{orgAddressMeta:state()}"/>
 												</widget>
 									<!--</panel>									-->
 									</row>	
@@ -114,13 +129,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/>:</text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="organization.address.streetAddress" width="212px" max="30" tab="organization.address.city,organization.address.multipleUnit"/>
+											<textbox case="upper" key="{orgAddressMeta:streetAddress()}" width="212px" max="30" tab="{orgAddressMeta:city()},{orgAddressMeta:multipleUnit()}"/>
 										</widget>	
 											<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown key="organization.address.country" case="mixed" width="175px" popWidth="auto" tab="parentOrganization.name,organization.address.zipCode">
+												<autoDropdown key="{orgAddressMeta:country()}" case="mixed" width="175px" popWidth="auto" tab="{parentOrgMeta:name()},{orgAddressMeta:zipCode()}">
 													<widths>175</widths>
 												</autoDropdown>
 										</widget>					
@@ -133,19 +148,19 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="parentOrganization.name" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="{organizationMeta:isActive()},organization.address.country">
+										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="225px" tab="{organizationMeta:isActive()},organization.address.country"/>
+											<textbox case="upper" width="225px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}"/>
 										</query>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="{organizationMeta:isActive()}" tab="contactsTable,parentOrganization.name"/>
+											<check key="{organizationMeta:isActive()}" tab="contactsTable,{parentOrgMeta:name()}"/>
 										</widget>
 								</row>
 								</panel>
@@ -278,7 +293,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="note.subject" width="405px" max="60"/>
+										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="405px" max="60"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -296,7 +311,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="524px" height="50px" case="mixed" key="note.text"/>
+										<textarea width="524px" height="50px" case="mixed" key="{orgNoteMeta:text()}"/>
 										</widget>
 										</row>
 								 
@@ -325,34 +340,31 @@
   <number key="{organizationMeta:id()}" type="integer" required="false"/>
   <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
   <string key="{organizationMeta:name()}" max="40" required="true"/>
-  <string key="organization.address.streetAddress" max="30" required="true"/>
-  <string key="organization.address.multipleUnit" max="30" required="false"/>
-  <string key="organization.address.city" max="30" required="true"/>
-  <string key="organization.address.zipCode" max="10" required="true"/>
+  <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
+  <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
+  <string key="{orgAddressMeta:city()}" max="30" required="true"/>
+  <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
   <string key="{organizationMeta:isActive()}" required="false"/>
-
-  <string key="note.subject" max="60" required="false"/>
-  <string key="note.text" required="false"/>
-<!--  <dropdown key="organization.parentOrganizationId" type="integer" required="false"/> -->
-    <dropdown key="parentOrganization.name" type="integer" required="false"/> 
+  <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
+  <string key="{orgNoteMeta:text()}" required="false"/>
+  <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
   <table key="contactsTable"/>
-  <dropdown key="organization.address.state" required="false"/>
-  <dropdown key="organization.address.country" required="true"/>
+  <dropdown key="{orgAddressMeta:state()}" required="false"/>
+  <dropdown key="{orgAddressMeta:country()}" required="true"/>
 	</rpc>
 	<rpc key="query">
   <queryNumber key="{organizationMeta:id()}" type="integer"/>
- <!-- <queryNumber key="addressId" type="integer"/>-->
   <queryString key="{organizationMeta:name()}"/>
-  <queryString key="organization.address.streetAddress"/>
-  <queryString key="organization.address.multipleUnit" value="query"/>
-  <queryString key="organization.address.city"/>
-  <queryString key="organization.address.zipCode"/>
-  <queryString key="parentOrganization.name"/>
-  <queryString key="note.subject"/>
-  <queryString key="note.text"/>
+  <queryString key="{orgAddressMeta:streetAddress()}"/>
+  <queryString key="{orgAddressMeta:multipleUnit()}" value="query"/>
+  <queryString key="{orgAddressMeta:city()}"/>
+  <queryString key="{orgAddressMeta:zipCode()}"/>
+  <queryString key="{parentOrgMeta:name()}"/>
+  <queryString key="{orgNoteMeta:subject()}"/>
+  <queryString key="{orgNoteMeta:text()}"/>
   <table key="contactsTable"/>
-  <dropdown key="organization.address.state" required="false"/>
-  <dropdown key="organization.address.country" required="false"/>
+  <dropdown key="{orgAddressMeta:state()}" required="false"/>
+  <dropdown key="{orgAddressMeta:country()}" required="false"/>
   <queryString key="{organizationMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
