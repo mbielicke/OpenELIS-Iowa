@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,9 +18,8 @@ import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCDeleteException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.StorageUnitMeta;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -57,35 +55,29 @@ public class StorageUnitBean implements StorageUnitRemote{
     
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-        
-        sb.append("select distinct s.id,s.description " + "from StorageUnit s where 1=1 ");
-         //***append the abstract fields to the string buffer
-        if(fields.containsKey("category") && ((ArrayList)((CollectionField)fields.get("category")).getValue()).size()>0 &&
-       		 !(((ArrayList)((CollectionField)fields.get("category")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("category")).getValue()).get(0))))
-        	sb.append(QueryBuilder.getQuery((CollectionField)fields.get("category"), "s.category"));
-        if(fields.containsKey("description"))
-        	sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("description"), "s.description"));
-        if(fields.containsKey("isSingular") && ((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).size()>0 &&
-       		 !(((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).get(0))))
-        	sb.append(QueryBuilder.getQuery((CollectionField)fields.get("isSingular"), "s.isSingular"));
-        	
-         Query query = manager.createQuery(sb.toString()+" order by s.description");
-         
-//       if(first > -1)
-     	// query.setFirstResult(first);
+		QueryBuilder qb = new QueryBuilder();
+		
+		StorageUnitMeta storageUnitMeta = StorageUnitMeta.getInstance();
+		
+		qb.addMeta(storageUnitMeta);
+		
+		 qb.setSelect("distinct "+storageUnitMeta.ID+", "+storageUnitMeta.DESCRIPTION);
+		 qb.addTable(storageUnitMeta);
+	        
+//	      this method is going to throw an exception if a column doesnt match
+		 qb.addWhere(fields);      
 
+	     qb.setOrderBy(storageUnitMeta.DESCRIPTION);
+        
+	     sb.append(qb.getEJBQL());
+
+         Query query = manager.createQuery(sb.toString());
+        
          if(first > -1 && max > -1)
         	 query.setMaxResults(first+max);
          
 //       ***set the parameters in the query
-         if(fields.containsKey("category") && ((ArrayList)((CollectionField)fields.get("category")).getValue()).size()>0 &&
-        		 !(((ArrayList)((CollectionField)fields.get("category")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("category")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("category"), "s.category", query);
-         if(fields.containsKey("description"))
-        	 QueryBuilder.setParameters((QueryStringField)fields.get("description"), "s.description", query);
-         if(fields.containsKey("isSingular") && ((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).size()>0 &&
-           		 !(((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("isSingular")).getValue()).get(0))))
-        	 QueryBuilder.setParameters((CollectionField)fields.get("isSingular"), "s.isSingular", query);
+         qb.setQueryParams(query);
          
          List returnList = GetPage.getPage(query.getResultList(), first, max);
          
