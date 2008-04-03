@@ -70,4 +70,52 @@ public class OrganizationContactAddressMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String multipleUnit(){
+		return columnNames[1];
+	}
+	
+	public static String streetAddress(){
+		return columnNames[2];
+	}
+	
+	public static String city(){
+		return columnNames[3];
+	}
+	
+	public static String state(){
+		return columnNames[4];
+	}
+	
+	public static String zipCode(){
+		return columnNames[5];
+	}
+	
+	public static String workPhone(){
+		return columnNames[6];
+	}
+	
+	public static String homePhone(){
+		return columnNames[7];
+	}
+	
+	public static String cellPhone(){
+		return columnNames[8];
+	}
+	
+	public static String faxPhone(){
+		return columnNames[9];
+	}
+	
+	public static String email(){
+		return columnNames[10];
+	}
+	
+	public static String country(){
+		return columnNames[11];
+	}
 }
