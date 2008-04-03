@@ -21,7 +21,11 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.QaEventMeta;
+import org.openelis.meta.QaEventMethodMeta;
+import org.openelis.meta.QaEventTestMeta;
 import org.openelis.remote.QaEventRemote;
+import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -99,48 +103,35 @@ public class QaEventBean implements QaEventRemote{
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct q.id, q.name,t.name,m.name from QaEvent q left join q.testLink t left join t.methodLink m where 1=1 " );
-        if(fields.containsKey("name"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("name"), "q.name"));
-        if(fields.containsKey("sequence"))
-         sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("sequence"), "q.reportingSequence"));
-        if(fields.containsKey("description"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("description"), "q.description"));     
-        if(fields.containsKey("reportingText"))
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("reportingText"), "q.reportingText"));
-        if(fields.containsKey("qaEventType") && ((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).get(0))))
-            sb.append(QueryBuilder.getQuery((CollectionField)fields.get("qaEventType"), "q.type"));
-        if(fields.containsKey("test") && ((ArrayList)((CollectionField)fields.get("test")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("test")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("test")).getValue()).get(0))))
-            sb.append(QueryBuilder.getQuery((CollectionField)fields.get("test"), "q.test"));        
-        if(fields.containsKey("billable") && ((ArrayList)((CollectionField)fields.get("billable")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("billable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("billable")).getValue()).get(0))))
-            sb.append(QueryBuilder.getQuery((CollectionField)fields.get("billable"), "q.isBillable"));
+        //sb.append("select distinct q.id, q.name,t.name,m.name from QaEvent q left join q.testLink t left join t.methodLink m where 1=1 " );
+        QueryBuilder qb = new QueryBuilder();        
         
+        QaEventMeta qaEventMeta  = QaEventMeta.getInstance();
+        QaEventTestMeta qaEventTestMeta = QaEventTestMeta.getInstance();
+        QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
         
-        Query query = manager.createQuery(sb.toString()+" order by q.name, t.name, m.name");
+        qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
+        qb.setSelect("distinct "+ qaEventMeta.ID+", "+qaEventMeta.NAME+", "+qaEventTestMeta.NAME+", "+qaEventMethodMeta.NAME);
+        qb.addTable(qaEventMeta);
+        
+        //this method is going to throw an exception if a column doesnt match
+        qb.addWhere(fields);
+        
+        qb.setOrderBy(qaEventMeta.NAME+", "+qaEventTestMeta.NAME+", "+qaEventMethodMeta.NAME);
+        
+        //if(qb.hasTable(qaEventMethodMeta.getTable()))
+            qb.addTable(qaEventTestMeta);
+            qb.addTable(qaEventMethodMeta);
+                
+        sb.append(qb.getEJBQL());            
+        System.out.println("sb "+ "{"+sb+"}" );
+        Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
             query.setMaxResults(first+max);
-        
-        if(fields.containsKey("name"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("name"), "q.name",query);
-        if(fields.containsKey("sequence"))
-            QueryBuilder.setParameters((QueryNumberField)fields.get("sequence"), "q.reportingSequence",query);
-        if(fields.containsKey("description"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("description"), "q.description",query);
-        if(fields.containsKey("reportingText"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("reportingText"), "q.reportingText",query);
-        if(fields.containsKey("qaEventType")&& ((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("qaEventType")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("qaEventType"), "q.type",query);
-        if(fields.containsKey("test")&& ((ArrayList)((CollectionField)fields.get("test")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("test")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("test")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("test"), "q.test",query);
-        if(fields.containsKey("billable")&& ((ArrayList)((CollectionField)fields.get("billable")).getValue()).size()>0 &&
-                        !(((ArrayList)((CollectionField)fields.get("billable")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("billable")).getValue()).get(0))))
-               QueryBuilder.setParameters((CollectionField)fields.get("billable"), "q.isBillable",query);
+                
+        //***set the parameters in the query
+        qb.setQueryParams(query);
         
         List returnList = GetPage.getPage(query.getResultList(), first, max);
         if(returnList == null)

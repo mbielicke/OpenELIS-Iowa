@@ -26,9 +26,14 @@ import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.ProviderAddressAddressMeta;
+import org.openelis.meta.ProviderAddressMeta;
+import org.openelis.meta.ProviderMeta;
+import org.openelis.meta.ProviderNoteMeta;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.util.Datetime;
+import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -117,131 +122,46 @@ public class ProviderBean implements ProviderRemote {
                
         
         StringBuffer sb = new StringBuffer();
-        sb.append("select distinct p.id, p.lastName, p.firstName from Provider p left join p.provNote n left join p.providerAddress pa left join pa.provAddress a where " +
-                " (n.referenceTable = "+providerReferenceId+" or n.referenceTable is null) "
-                );
-        if(fields.containsKey("providerId"))
-            sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("providerId"), "p.id"));
-        if(fields.containsKey("lastName"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("lastName"), "p.lastName"));
-        if(fields.containsKey("firstName"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("firstName"), "p.firstName"));
-        if(fields.containsKey("npi"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("npi"), "p.npi"));
-        if(fields.containsKey("middleName"))
-         sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("middleName"), "p.middleName"));
-        if(fields.containsKey("providerType")&& ((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size()>0 && 
-                        !(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).get(0))))
-            sb.append(QueryBuilder.getQuery((CollectionField)fields.get("providerType"), "p.type"));
-        
-         if(fields.containsKey("location") && ((QueryStringField)fields.get("location")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("location"), "pa.location"));
-         if(fields.containsKey("externalId") && ((QueryStringField)fields.get("externalId")).getComparator() != null)
-             sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("externalId"), "pa.externalId"));
-           if(fields.containsKey("multiUnit") && ((QueryStringField)fields.get("multiUnit")).getComparator() != null)
-                    sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("multiUnit"), "a.multipleUnit"));
-                if(fields.containsKey("streetAddress") && ((QueryStringField)fields.get("streetAddress")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("streetAddress"), "a.streetAddress"));
-                if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("city"), "a.city"));
-                if(fields.containsKey("state") && ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
-                   !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
-                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("state"), "a.state"));                                   
-
-                if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
-                      !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size()== 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-                    sb.append(QueryBuilder.getQuery((CollectionField)fields.get("country"), "a.country"));                                     
- 
-                if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("zipCode"), "a.zipCode"));
-                if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("workPhone"), "a.workPhone"));
-                if(fields.containsKey("homePhone") && ((QueryStringField)fields.get("homePhone")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("homePhone"), "a.homePhone"));
-                if(fields.containsKey("cellPhone") && ((QueryStringField)fields.get("cellPhone")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("cellPhone"), "a.cellPhone"));
-                if(fields.containsKey("faxPhone") && ((QueryStringField)fields.get("faxPhone")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("faxPhone"), "a.faxPhone"));
-                if(fields.containsKey("email") && ((QueryStringField)fields.get("email")).getComparator() != null)
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("email"), "a.email"));
-                if(fields.containsKey("usersSubject"))
-                 sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("usersSubject"),"n.subject"));
-                                
-                
-        Query query = manager.createQuery(sb.toString()+" order by p.lastName, p.firstName ");
-        
-//      if(first > -1)
-    	// query.setFirstResult(first);
-
-        if(first > -1 && max > -1)
-        	query.setMaxResults(first+max);
-        
-        if(fields.containsKey("providerId"))
-            QueryBuilder.setParameters((QueryNumberField)fields.get("providerId"), "p.id",query);
-        if(fields.containsKey("lastName"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("lastName"), "p.lastName",query);
-        if(fields.containsKey("firstName"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("firstName"), "p.firstName",query);
-        if(fields.containsKey("npi"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("npi"), "p.npi",query);
-        if(fields.containsKey("middleName"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("middleName"), "p.middleName",query);
-        if(fields.containsKey("providerType")&& ((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size()>0 &&
-                     !(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("providerType")).getValue()).get(0))))
-            QueryBuilder.setParameters((CollectionField)fields.get("providerType"), "p.type",query);
-        
-        if(fields.containsKey("location")&& ((QueryStringField)fields.get("location")).getComparator() != null)
-           QueryBuilder.setParameters((QueryStringField)fields.get("location"), "pa.location",query);
-        
-        if(fields.containsKey("externalId")&&  ((QueryStringField)fields.get("externalId")).getComparator() != null) 
-           QueryBuilder.setParameters((QueryStringField)fields.get("externalId"), "pa.externalId",query);
-    
-         if(fields.containsKey("multiUnit") && ((QueryStringField)fields.get("multiUnit")).getComparator() != null)
-            QueryBuilder.setParameters((QueryStringField)fields.get("multiUnit"), "a.multipleUnit",query);
+        QueryBuilder qb = new QueryBuilder();
          
-         if(fields.containsKey("streetAddress") && ((QueryStringField)fields.get("streetAddress")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("streetAddress"), "a.streetAddress",query);
-         
-         if(fields.containsKey("city") && ((QueryStringField)fields.get("city")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("city"), "a.city",query);
-         
-         if(fields.containsKey("state")&& ((ArrayList)((CollectionField)fields.get("state")).getValue()).size()>0 &&
-                         !(((ArrayList)((CollectionField)fields.get("state")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("state")).getValue()).get(0))))
-             QueryBuilder.setParameters((CollectionField)fields.get("state"), "a.state",query);
-         
-         if(fields.containsKey("country") && ((ArrayList)((CollectionField)fields.get("country")).getValue()).size()>0 &&
-                         !(((ArrayList)((CollectionField)fields.get("country")).getValue()).size() == 1 && "".equals(((ArrayList)((CollectionField)fields.get("country")).getValue()).get(0))))
-             QueryBuilder.setParameters((CollectionField)fields.get("country"), "a.country",query);
-         
-         if(fields.containsKey("zipCode") && ((QueryStringField)fields.get("zipCode")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("zipCode"), "a.zipCode",query);
-         
-         if(fields.containsKey("workPhone") && ((QueryStringField)fields.get("workPhone")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("workPhone"), "a.workPhone",query);
-         
-         if(fields.containsKey("homePhone") && ((QueryStringField)fields.get("homePhone")).getComparator() != null) 
-             QueryBuilder.setParameters((QueryStringField)fields.get("homePhone"), "a.homePhone",query);
-         
-         if(fields.containsKey("cellPhone") && ((QueryStringField)fields.get("cellPhone")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("cellPhone"), "a.cellPhone",query);
-         
-         if(fields.containsKey("faxPhone")&& ((QueryStringField)fields.get("faxPhone")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("faxPhone"), "a.faxPhone",query);
-         
-         if(fields.containsKey("email") && ((QueryStringField)fields.get("email")).getComparator() != null)
-             QueryBuilder.setParameters((QueryStringField)fields.get("email"), "a.email",query);
-                
-         
-         if(fields.containsKey("usersSubject"))
-             QueryBuilder.setParameters((QueryStringField)fields.get("usersSubject"), "n.subject", query);
-         
-        
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
+       ProviderMeta providerMeta = ProviderMeta.getInstance();
+       ProviderAddressMeta providerAddressMeta = ProviderAddressMeta.getInstance();
+       ProviderAddressAddressMeta providerAddressAddressMeta = ProviderAddressAddressMeta.getInstance();
+       ProviderNoteMeta providerNoteMeta = ProviderNoteMeta.getInstance();
+       
+       qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
+       
+       qb.setSelect("distinct "+providerMeta.ID+", "+providerMeta.LAST_NAME+", "+providerMeta.FIRST_NAME);
+       qb.addTable(providerMeta);
+       
+       //this method is going to throw an exception if a column doesnt match
+       qb.addWhere(fields);
+       //System.out.println("{"+fields+"}");
+       
+       qb.setOrderBy(providerMeta.LAST_NAME+", "+providerMeta.FIRST_NAME);
+       
+       if(qb.hasTable(providerAddressAddressMeta.getTable()))
+           qb.addTable(providerAddressMeta);
+          
+       if(qb.hasTable(providerNoteMeta.getTable())){
+           qb.addWhere(providerNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+providerNoteMeta.REFERENCE_TABLE+" is null");
+          }
+          
+       sb.append(qb.getEJBQL());       
+       System.out.println("sb "+ "{"+sb+"}" );
+       Query query = manager.createQuery(sb.toString());
+       
+       if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+       
+      //***set the parameters in the query
+       qb.setQueryParams(query);
+       
+       List returnList = GetPage.getPage(query.getResultList(), first, max);
          if(returnList == null)
         	 throw new LastPageException();
          else
         	 return returnList;
-         //return query.getResultList();
         
     }
 
@@ -314,7 +234,7 @@ public class ProviderBean implements ProviderRemote {
                     provAdd.setExternalId(provAddDO.getExternalId());
                     provAdd.setLocation(provAddDO.getLocation());
                     provAdd.setProvider(provider.getId());
-                    provAdd.setAddress(addressId);
+                    provAdd.setAddressId(addressId);
                                                            
                     if(provAdd.getId()==null){
                        manager.persist(provAdd);                          
