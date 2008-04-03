@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
@@ -13,7 +14,6 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -23,6 +23,10 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.meta.OrganizationAddressMeta;
+import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.OrganizationParentOrganizationMeta;
+import org.openelis.meta.StorageUnitMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -49,10 +53,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO storageUnitDO = remote.getStorageUnitAndUnlock((Integer)key.getKey().getValue());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("storageUnit.id", storageUnitDO.getId());
-		rpcReturn.setFieldValue("storageUnit.category", storageUnitDO.getCategory().trim());
-		rpcReturn.setFieldValue("storageUnit.description", storageUnitDO.getDescription().trim());
-		rpcReturn.setFieldValue("storageUnit.isSingular", storageUnitDO.getIsSingular());
+		setFieldsInRPC(rpcReturn, storageUnitDO);
         
       return rpcReturn;  
 	}
@@ -63,9 +64,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO newStorageUnitDO = new StorageUnitDO();
 
 //		build the storage unit DO from the form
-		newStorageUnitDO.setCategory(((String)rpcSend.getFieldValue("storageUnit.category")).trim());
-		newStorageUnitDO.setDescription(((String)rpcSend.getFieldValue("storageUnit.description")).trim());
-		newStorageUnitDO.setIsSingular(((String)rpcSend.getFieldValue("storageUnit.isSingular")).trim());
+		newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
 		
 		//send the changes to the database
 		Integer storageUnitId = (Integer)remote.updateStorageUnit(newStorageUnitDO);
@@ -74,10 +73,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO storageDO = remote.getStorageUnit(storageUnitId);
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("storageUnit.id", storageDO.getId());
-		rpcReturn.setFieldValue("storageUnit.category", storageDO.getCategory().trim());
-		rpcReturn.setFieldValue("storageUnit.description", storageDO.getDescription().trim());
-		rpcReturn.setFieldValue("storageUnit.isSingular", storageDO.getIsSingular());
+		setFieldsInRPC(rpcReturn, newStorageUnitDO);
 		
 		return rpcReturn;
 	}
@@ -178,10 +174,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO newStorageUnitDO = new StorageUnitDO();
 
 		//build the DO from the form
-		newStorageUnitDO.setId((Integer)rpcSend.getFieldValue("storageUnit.id"));
-		newStorageUnitDO.setCategory(((String)rpcSend.getFieldValue("storageUnit.category")).trim());
-		newStorageUnitDO.setDescription(((String)rpcSend.getFieldValue("storageUnit.description")).trim());
-		newStorageUnitDO.setIsSingular(((String)rpcSend.getFieldValue("storageUnit.isSingular")).trim());
+		newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
 
 //		send the changes to the database
 		remote.updateStorageUnit(newStorageUnitDO);
@@ -190,10 +183,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO storageUnitDO = remote.getStorageUnit(newStorageUnitDO.getId());
 
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("storageUnit.id", storageUnitDO.getId());
-		rpcReturn.setFieldValue("storageUnit.category", storageUnitDO.getCategory().trim());
-		rpcReturn.setFieldValue("storageUnit.description", storageUnitDO.getDescription().trim());
-		rpcReturn.setFieldValue("storageUnit.isSingular", storageUnitDO.getIsSingular().trim());
+		setFieldsInRPC(rpcReturn, storageUnitDO);
 		
 		return rpcReturn;
 	}
@@ -212,10 +202,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 				throw new RPCException(e.getMessage());
 		}	
 		
-		rpcReturn.setFieldValue("storageUnit.id", null);
-		rpcReturn.setFieldValue("storageUnit.category", null);
-		rpcReturn.setFieldValue("storageUnit.description", null);
-		rpcReturn.setFieldValue("storageUnit.isSingular", null);
+		setFieldsInRPC(rpcReturn, new StorageUnitDO());
 		
 		return rpcReturn;
 	}
@@ -227,10 +214,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)key.getKey().getValue());
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("storageUnit.id", storageUnitDO.getId());
-		rpcReturn.setFieldValue("storageUnit.category", storageUnitDO.getCategory().trim());
-		rpcReturn.setFieldValue("storageUnit.description", storageUnitDO.getDescription().trim());
-		rpcReturn.setFieldValue("storageUnit.isSingular", storageUnitDO.getIsSingular());
+		setFieldsInRPC(rpcReturn, storageUnitDO);
 		
 		return rpcReturn;
 	}
@@ -247,14 +231,29 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		}
 		
 //		set the fields in the RPC
-		rpcReturn.setFieldValue("storageUnit.id", storageUnitDO.getId());
-		rpcReturn.setFieldValue("storageUnit.category", storageUnitDO.getCategory().trim());
-		rpcReturn.setFieldValue("storageUnit.description", storageUnitDO.getDescription().trim());
-		rpcReturn.setFieldValue("storageUnit.isSingular", storageUnitDO.getIsSingular());
+		setFieldsInRPC(rpcReturn, storageUnitDO);
 		
 		return rpcReturn;
 	}
 
+	private void setFieldsInRPC(FormRPC rpcReturn, StorageUnitDO storageUnitDO){
+		rpcReturn.setFieldValue(StorageUnitMeta.ID, storageUnitDO.getId());
+		rpcReturn.setFieldValue(StorageUnitMeta.CATEGORY, (storageUnitDO.getCategory() == null ? null : storageUnitDO.getCategory().trim()));
+		rpcReturn.setFieldValue(StorageUnitMeta.DESCRIPTION, (storageUnitDO.getDescription() == null ? null : storageUnitDO.getDescription().trim()));
+		rpcReturn.setFieldValue(StorageUnitMeta.IS_SINGULAR, (storageUnitDO.getIsSingular() == null ? null : storageUnitDO.getIsSingular().trim()));
+	}
+	
+	private StorageUnitDO getStorageUnitDOFromRPC(FormRPC rpcSend){
+		StorageUnitDO newStorageUnitDO = new StorageUnitDO();
+		
+		newStorageUnitDO.setId((Integer)rpcSend.getFieldValue(StorageUnitMeta.ID));
+		newStorageUnitDO.setCategory(((String)rpcSend.getFieldValue(StorageUnitMeta.CATEGORY)).trim());
+		newStorageUnitDO.setDescription(((String)rpcSend.getFieldValue(StorageUnitMeta.DESCRIPTION)).trim());
+		newStorageUnitDO.setIsSingular(((String)rpcSend.getFieldValue(StorageUnitMeta.IS_SINGULAR)).trim());
+		
+		return newStorageUnitDO;
+	}
+	
 	public String getXML() throws RPCException {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageUnit.xsl");
 	}
@@ -275,7 +274,6 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     }
 
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -340,7 +338,6 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 	}
 
 	public DataModel getMatches(String cat, DataModel model, String match) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

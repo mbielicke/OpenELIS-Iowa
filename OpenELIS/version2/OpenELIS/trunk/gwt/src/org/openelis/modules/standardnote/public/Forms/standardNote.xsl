@@ -2,6 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:standardNoteMeta="xalan://org.openelis.meta.StandardNoteMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/> 
@@ -14,6 +15,10 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
 
+  <xalan:component prefix="standardNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StandardNoteMeta"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
@@ -57,7 +62,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="standardNote.name" width="155px" max="20" tab="standardNote.description,id"/>
+										<textbox case="mixed" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},id"/>
 									</widget>
 								</row>
 								<row>								
@@ -65,7 +70,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="standardNote.description" width="300px" max="60" tab="standardNote.type,standardNote.name"/>
+										<textbox case="mixed" key="{standardNoteMeta:description()}" width="300px" max="60" tab="{standardNoteMeta:type()},{standardNoteMeta:name()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -73,7 +78,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="standardNote.type" case="mixed" width="121px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
+										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
 											<widths>100</widths>
 										</autoDropdown>
 									</widget>
@@ -91,7 +96,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="standardNote.text" width="300px" height="180px" tab="id,standardNote.type"/>
+										<textarea key="{standardNoteMeta:text()}" width="300px" height="180px" tab="id,{standardNoteMeta:type()}"/>
 									</widget>
 								</row>
 								
@@ -101,21 +106,21 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="standardNote.id" type="integer" required="false"/>
-  	<string key="standardNote.name" required="true" max="20"/>
-  	<string key="standardNote.description" required="true" max="60"/>
-  	<dropdown key="standardNote.type" required="true"/>
-  	<string key="standardNote.text" required="true"/>
+  	<number key="{standardNoteMeta:id()}" type="integer" required="false"/>
+  	<string key="{standardNoteMeta:name()}" required="true" max="20"/>
+  	<string key="{standardNoteMeta:description()}" required="true" max="60"/>
+  	<dropdown key="{standardNoteMeta:type()}" required="true"/>
+  	<string key="{standardNoteMeta:text()}" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="standardNote.id" type="integer" required="false"/>
- 	<queryString key="standardNote.name" type="string" required="false"/>
-  	<queryString key="standardNote.description" required="false"/>
-  	<dropdown key="standardNote.type" required="false"/>
-	<queryString key="standardNote.text" required="false"/>
+ 	<queryNumber key="{standardNoteMeta:id()}" type="integer" required="false"/>
+ 	<queryString key="{standardNoteMeta:name()}" type="string" required="false"/>
+  	<queryString key="{standardNoteMeta:description()}" required="false"/>
+  	<dropdown key="{standardNoteMeta:type()}" required="false"/>
+	<queryString key="{standardNoteMeta:text()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="standardNote.name"/>
+		<queryString key="{standardNoteMeta:name()}"/>
 	</rpc>
 </screen>
   </xsl:template>
