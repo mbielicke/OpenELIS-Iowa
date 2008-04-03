@@ -81,5 +81,6 @@ public class ProviderDO implements Serializable{
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
-    }      
+    }
+   
 }
