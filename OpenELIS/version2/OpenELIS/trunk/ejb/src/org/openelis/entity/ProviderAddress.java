@@ -42,12 +42,12 @@ public class ProviderAddress implements Auditable, Cloneable {
   private Integer provider;             
 
   @Column(name="address")
-  private Integer address;             
+  private Integer addressId;             
 
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address", insertable = false, updatable = false)
-  private Address provAddress;
+  private Address address;
   
   
   @Transient
@@ -90,13 +90,13 @@ public class ProviderAddress implements Auditable, Cloneable {
       this.provider = provider;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer addressId) {
+    if((addressId == null && this.addressId != null) || 
+       (addressId != null && !addressId.equals(this.addressId)))
+      this.addressId = addressId;
   }
 
   
@@ -139,10 +139,10 @@ public class ProviderAddress implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((address == null && original.address != null) || 
-           (address != null && !address.equals(original.address))){
+        if((addressId == null && original.addressId != null) || 
+           (addressId != null && !addressId.equals(original.addressId))){
           Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.address.toString()));
+          elem.appendChild(doc.createTextNode(original.addressId.toString()));
           root.appendChild(elem);
         }      
 
@@ -157,11 +157,11 @@ public class ProviderAddress implements Auditable, Cloneable {
   public String getTableName() {
     return "provider_address";
   }
-public Address getProvAddress() {
-    return provAddress;
+public Address getAddress() {
+    return address;
 }
-public void setProvAddress(Address provAddress) {
-    this.provAddress = provAddress;
+public void setAddress(Address address) {
+    this.address = address;
 }
   
  
