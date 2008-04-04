@@ -26,15 +26,15 @@
 			    	  <label style="topMenuBarItem" text="{resource:getString($constants,'application')}" hover="Hover"/>
 				</menuDisplay>
 				  <menuPanel style="topMenuContainer" layout="vertical" xsi:type="Panel" position="below">
-				    <menuItem style="TopMenuRowContainer" hover="Hover" 
+				    <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
 				              icon="preferenceIcon" 
 				              label="{resource:getString($constants,'preference')}" 
 				              description="{resource:getString($constants,'preferenceDescription')}"/>
-					<menuItem style="TopMenuRowContainer" hover="Hover" 
+					<menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"  
 					          icon="favoritesMenuIcon"
 					          label="{resource:getString($constants,'favoritesMenu')}"
 					          description="{resource:getString($constants,'favoritesMenuDescription')}"/>
-					<menuItem style="TopMenuRowContainer" hover="Hover" 
+					<menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
 					          icon="logoutIcon"
 					          label="{resource:getString($constants,'logout')}"
 					          description="{resource:getString($constants,'logoutDescription')}"/>
@@ -68,7 +68,7 @@
 				            icon="fullLoginIcon"
 				            label="{resource:getString($constants,'fullLogin')}"
 				            description="{resource:getString($constants,'fullLoginDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" hover="Hover"
+                  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
                             icon="quickEntryIcon"
                             label="{resource:getString($constants,'quickEntry')}"
                             description="{resource:getString($constants,'quickEntryDescription')}"/>

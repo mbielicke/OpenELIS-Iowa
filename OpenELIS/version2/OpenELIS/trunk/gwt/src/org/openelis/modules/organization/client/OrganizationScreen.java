@@ -11,6 +11,7 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -21,6 +22,7 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -342,14 +344,13 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	    //((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDropdown);
 	               
 	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
-	    ScreenTableWidget queryContactTable = (ScreenTableWidget)displayContactTable.getQueryWidget();
+	    ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayContactTable.getQueryWidget();
 	               
 	    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	              																				controller.editors[5];
 	    displayContactState.setModel(stateDropdown);
 	               
-	    TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
-						controller.editors[5];
+	    TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
 	    queryContactState.setModel(stateDropdown);
 	     
 	     
@@ -364,8 +365,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	               																				controller.editors[12];
 	    displayContactCountry.setModel(countryDropdown);
 	               
-	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
-						controller.editors[12];
+	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[12];
 	    queryContactCountry.setModel(countryDropdown);
 	    
 	    
@@ -374,8 +374,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 																controller.editors[0];
    	   displayContactType.setModel(contactTypeDropdown);
 
-   	   TableAutoDropdown queryContactType = (TableAutoDropdown)((TableWidget)queryContactTable.getWidget()).
-	        	   											controller.editors[0];
+   	   TableAutoDropdown queryContactType = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[0];
   	   queryContactType.setModel(contactTypeDropdown);
 	}
     
