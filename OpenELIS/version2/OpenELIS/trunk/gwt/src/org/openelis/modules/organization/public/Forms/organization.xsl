@@ -6,6 +6,8 @@
                 xmlns:orgAddressMeta="xalan://org.openelis.meta.OrganizationAddressMeta"
                 xmlns:orgNoteMeta="xalan://org.openelis.meta.OrganizationNoteMeta"
                 xmlns:parentOrgMeta="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"
+                xmlns:orgContactMeta="xalan://org.openelis.meta.OrganizationContactMeta"
+                xmlns:orgContactAddressMeta="xalan://org.openelis.meta.OrganizationContactAddressMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -32,6 +34,14 @@
   
     <xalan:component prefix="orgNoteMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationNoteMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orgContactMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orgContactAddressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactAddressMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
@@ -248,7 +258,11 @@
 											  <widths>110</widths>
 											</autoDropdown>									 	
 										</editors>
-										<fields>contactType,contactName,contatApt,contactAddress,contactCity,contactState,contactZipCode,contactWorkNum,contactHomeNum,contactCellNum,contactFaxNum,contactEMail,contactCountry</fields>
+										<fields><xsl:value-of select='orgContactMeta:contactType()'/>,<xsl:value-of select='orgContactMeta:name()'/>,<xsl:value-of select='orgContactAddressMeta:multipleUnit()'/>,
+										<xsl:value-of select='orgContactAddressMeta:streetAddress()'/>,<xsl:value-of select='orgContactAddressMeta:city()'/>,<xsl:value-of select='orgContactAddressMeta:state()'/>,
+										<xsl:value-of select='orgContactAddressMeta:zipCode()'/>,<xsl:value-of select='orgContactAddressMeta:workPhone()'/>,<xsl:value-of select='orgContactAddressMeta:homePhone()'/>,
+										<xsl:value-of select='orgContactAddressMeta:cellPhone()'/>,<xsl:value-of select='orgContactAddressMeta:faxPhone()'/>,<xsl:value-of select='orgContactAddressMeta:email()'/>,
+										<xsl:value-of select='orgContactAddressMeta:country()'/></fields>
 									</queryTable>
 									</query>
 								</widget>
@@ -348,19 +362,19 @@
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="false"/>
       <queryString key="{organizationMeta:isActive()}" required="false"/>
-      <dropdown key="contactType" required="false"/>
-	  <queryString key="contactName" required="false"/>
-	  <queryString key="contatApt" required="false"/>
-	  <queryString key="contactAddress" required="false"/>
-	  <queryString key="contactCity" required="false"/>
-	  <dropdown key="contactState" required="false"/>
-	  <queryString key="contactZipCode" required="false"/>
-      <queryString key="contactWorkNum" required="false"/>
-      <queryString key="contactHomeNum" required="false"/>
-      <queryString key="contactCellNum" required="false"/>
-	  <queryString key="contactFaxNum" required="false"/>
-      <queryString key="contactEMail" required="false"/>
-	  <dropdown key="contactCountry" required="false"/>
+      <dropdown key="{orgContactMeta:contactType()}" required="false"/>
+	  <queryString key="{orgContactMeta:name()}" required="false"/>
+	  <queryString key="{orgContactAddressMeta:multipleUnit()}" required="false"/>
+	  <queryString key="{orgContactAddressMeta:streetAddress()}" required="false"/>
+	  <queryString key="{orgContactAddressMeta:city()}" required="false"/>
+	  <dropdown key="{orgContactAddressMeta:state()}" required="false"/>
+	  <queryString key="{orgContactAddressMeta:zipCode()}" required="false"/>
+      <queryString key="{orgContactAddressMeta:workPhone()}" required="false"/>
+      <queryString key="{orgContactAddressMeta:homePhone()}" required="false"/>
+      <queryString key="{orgContactAddressMeta:cellPhone()}" required="false"/>
+	  <queryString key="{orgContactAddressMeta:faxPhone()}" required="false"/>
+      <queryString key="{orgContactAddressMeta:email()}" required="false"/>
+	  <dropdown key="{orgContactAddressMeta:country()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="{organizationMeta:name()}"/>

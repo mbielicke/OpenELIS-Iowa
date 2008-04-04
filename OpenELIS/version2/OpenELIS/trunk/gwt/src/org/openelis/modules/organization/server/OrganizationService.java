@@ -163,7 +163,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
 
 		//contacts table
-		TableModel contactsTable = null;
+		/*TableModel contactsTable = null;
 		if(rpcSend.getField("contactsTable") != null)
 			contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();		
 		
@@ -182,11 +182,11 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			fields.put(OrganizationContactAddressMeta.EMAIL,(QueryStringField)contactsTable.getRow(0).getColumn(11));
 			fields.put(OrganizationContactAddressMeta.COUNTRY,(DropDownField)contactsTable.getRow(0).getColumn(12));
 		}
-
+*/
 		//remove unncessary fields from the query rpc
-		fields.remove("contactsTable");
-		fields.remove("stateModel");
-		fields.remove("countryModel");
+		//fields.remove("contactsTable");
+		//fields.remove("stateModel");
+		//fields.remove("countryModel");
 		
 		List organizationNames = new ArrayList();
 			try{
