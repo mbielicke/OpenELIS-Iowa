@@ -4,6 +4,8 @@
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:providerMeta="xalan://org.openelis.meta.ProviderMeta"
                 xmlns:providerNoteMeta="xalan://org.openelis.meta.ProviderNoteMeta"
+                xmlns:providerAddrMeta="xalan://org.openelis.meta.ProviderAddressMeta"
+                xmlns:providerAddrAddrMeta="xalan://org.openelis.meta.ProviderAddressAddressMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
                 
@@ -21,8 +23,12 @@
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMeta"/>
   </xalan:component>  
   
-  <xalan:component prefix="providerNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderNoteMeta"/>
+  <xalan:component prefix="providerAddrMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="providerAddrAddrMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressAddressMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
@@ -33,14 +39,12 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal"  spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">
-  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">
-   <!--<panel layout= "horizontal" xsi:type= "Panel" style="ScreenLeftPanel" spacing= "0">-->
+  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">   
     <xsl:if test="string($language)='en'">
 		 <buttonPanel key="atozButtons">
 	       <xsl:call-template name="aToZLeftPanelButtons"/>		
 		 </buttonPanel>
     </xsl:if>     
-   <!--</panel>-->
   </aToZ>
    <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
    <!--button panel code-->
@@ -80,29 +84,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
-     </widget>
-    <!-- <widget>
-										<autoDropdown cat="providerType" key="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="80px"  multiSelect="false" fromModel="true" type="integer" tab="npi,middleName">
-													<autoWidths>60</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-										</autoDropdown>
-												<query>
-												  <autoDropdown cat="providerType" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="80px"  multiSelect="true" fromModel="true" type="integer" tab="npi,middleName">
-													<autoWidths>60</autoWidths>
-													<autoEditors>
-														<label/>
-													</autoEditors>
-													<autoFields>
-														<string/>
-													</autoFields>
-										          </autoDropdown>
-												 </query>
-										</widget> -->         
+     </widget>           
 		<widget>
 		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" popWidth="auto" tab="{providerMeta:npi()},{providerMeta:middleName()}">
 			<widths>40</widths>
@@ -128,7 +110,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:middleName}" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
+      <textbox key= "{providerMeta:middleName()}" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
      </widget>
     </row>
    </panel>
@@ -151,29 +133,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <!--<autoDropdown cat="state" key="state" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px"  popupHeight="80px" dropdown="true" fromModel = "true" type="string">
-												<autoWidths>40</autoWidths>
-												<autoEditors>
-													<label/>
-												</autoEditors>
-												<autoFields>
-													<string/>
-												</autoFields>
-												<autoItems>												 																																			
-												</autoItems>
-			</autoDropdown>		  
-		    <autoDropdown cat="country" key="country" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="110px" popupHeight="80px" dropdown="true" fromModel = "true" type="string">
-											<autoWidths>110</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>
-											<autoItems>												
-											</autoItems>
-			</autoDropdown>-->
+		  <textbox case= "mixed"/>		  
 			<autoDropdown  case="upper" width="40px" popWidth="auto">
 				<widths>40</widths>
 			</autoDropdown>
@@ -220,25 +180,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <!--<autoDropdown cat="state" key="state" case = "upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="40px" dropdown="true" fromModel = "true" multiSelect="true" type="string">
-												<autoWidths>40</autoWidths>
-												<autoEditors>
-													<label/>
-												</autoEditors>
-												<autoFields>
-													<string/>
-												</autoFields>												
-											</autoDropdown>
-		  <autoDropdown cat="country" key="country" case = "mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.provider.server.ProviderService" width="110px" dropdown="true" fromModel = "true"  multiSelect="true" type="string">
-											<autoWidths>110</autoWidths>
-											<autoEditors>
-												<label/>
-											</autoEditors>
-											<autoFields>
-											    <string/>
-											</autoFields>											
-			</autoDropdown>-->
+		  <textbox case= "mixed"/>		  
 			<autoDropdown case="upper"  width="40px" popWidth="auto" multiSelect = "true">
 				<widths>40</widths>
 			</autoDropdown>
@@ -265,7 +207,25 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <queryString/>
 		  <queryString/>
 		  <queryString/>
-		  <queryString/>
+		  <queryString/> 
+		 <!-- <fields><xsl:value-of select='providerAddrMeta:location()'/>,<xsl:value-of select='providerAddrMeta:externalId()'/>,<xsl:value-of select='providerAddrAddrMeta:multipleUnit()'/>,
+										<xsl:value-of select='providerAddrAddrMeta:streetAddress()'/>,<xsl:value-of select='providerAddrAddrMeta:city()'/>,<xsl:value-of select='providerAddrAddrMeta:state()'/>,
+										<xsl:value-of select='providerAddrAddrMeta:country()'/>,<xsl:value-of select='providerAddrAddrMeta:zipCode()'/>,<xsl:value-of select='providerAddrAddrMeta:workPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:homePhone()'/>,
+										<xsl:value-of select='providerAddrAddrMeta:cellPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:faxPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:email()'/>,
+										</fields>
+										<queryString key="{providerAddrMeta:location()}" required="false"/>
+	  <queryString key="{providerAddrMeta:externalId()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:multipleUnit()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:streetAddress()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:city()}" required="false"/>
+	  <dropdown key="{providerAddrAddrMeta:state()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:zipCode()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:workPhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:homePhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:cellPhone()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:faxPhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:email()}" required="false"/>
+	  <dropdown key="{providerAddrAddrMeta:country()}" required="false"/>  -->
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>

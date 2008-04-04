@@ -225,7 +225,7 @@ public class ProviderService implements AppScreenFormServiceInt{
                 fields.put(ProviderAddressAddressMeta.EMAIL,(QueryStringField)provAddTable.getRow(0).getColumn(12));               
             }
             
-            fields.remove("providerAddressTable");
+            fields.remove("providerAddressTable"); 
 
             List providerNames = new ArrayList();
                 try{
