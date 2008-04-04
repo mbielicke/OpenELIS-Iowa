@@ -21,8 +21,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.DictionaryMeta;
@@ -155,7 +153,7 @@ public class CategoryBean implements CategoryRemote {
              
            if(catId!=null){
              if(!catId.equals(category.getId())){
-                 throw new Exception("Category System Name belongs to another category"); 
+                 throw new Exception("This Category System Name belongs to another category. Please choose some other system name."); 
              }  
            }                                 
          } 
@@ -240,7 +238,7 @@ public class CategoryBean implements CategoryRemote {
                  dictionary.setEntry(dictDO.getEntry());
                  dictionary.setIsActive(dictDO.getIsActive());
                  dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                 dictionary.setRelatedEntryId(dictDO.getRelatedEntry());                 
+                 dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());                 
                  dictionary.setSystemName(dictDO.getSystemName());    
                                                                                 
               if(dictionary.getId()==null){                  
