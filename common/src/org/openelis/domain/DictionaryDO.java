@@ -13,7 +13,7 @@ public class DictionaryDO implements Serializable {
 
     protected Integer category;             
 
-    protected Integer relatedEntry;             
+    protected Integer relatedEntryId;             
 
     protected String systemName;             
 
@@ -24,6 +24,8 @@ public class DictionaryDO implements Serializable {
     protected String entry;
     
     protected Boolean delete;
+    
+    protected String relatedEntryText;
     
     public Boolean getDelete() {
         return delete;
@@ -37,10 +39,11 @@ public class DictionaryDO implements Serializable {
         
     }
 
-    public DictionaryDO(Integer id, Integer category, Integer relatedEntry,
+    public DictionaryDO(Integer id, Integer category, Integer relatedEntryId,String relatedEntryText,
           String systemName,String isActive,  String localAbbrev, String entry){
         this.id = id;
-        this.relatedEntry = relatedEntry;
+        this.relatedEntryId = relatedEntryId;
+        this.relatedEntryText = relatedEntryText;
         this.systemName = systemName;
         this.isActive = isActive;
         this.localAbbrev = localAbbrev;
@@ -85,15 +88,7 @@ public class DictionaryDO implements Serializable {
 
     public void setLocalAbbrev(String localAbbrev) {
         this.localAbbrev = localAbbrev;
-    }
-
-    public Integer getRelatedEntry() {
-        return relatedEntry;
-    }
-
-    public void setRelatedEntry(Integer relatedEntry) {
-        this.relatedEntry = relatedEntry;
-    }
+    }  
 
     public String getSystemName() {
         return systemName;
@@ -101,6 +96,22 @@ public class DictionaryDO implements Serializable {
 
     public void setSystemName(String systemName) {
         this.systemName = systemName;
+    }
+
+    public String getRelatedEntryText() {
+        return relatedEntryText;
+    }
+
+    public void setRelatedEntryText(String relatedEntryText) {
+        this.relatedEntryText = relatedEntryText;
+    }
+
+    public Integer getRelatedEntryId() {
+        return relatedEntryId;
+    }
+
+    public void setRelatedEntryId(Integer relatedEntryId) {
+        this.relatedEntryId = relatedEntryId;
     }
 
 }
