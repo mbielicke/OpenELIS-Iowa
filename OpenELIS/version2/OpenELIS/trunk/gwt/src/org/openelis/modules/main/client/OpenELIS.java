@@ -35,6 +35,7 @@ import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMenuPopupPanel;
+import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenStack;
 import org.openelis.gwt.screen.ScreenTab;
@@ -187,6 +188,16 @@ public class OpenELIS implements EntryPoint {
                                           return new ScreenCheck();
                                       else if(args[0] instanceof Node)
                                           return new ScreenCheck((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {"ScreenQueryTable","queryTable"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenQueryTableWidget();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenQueryTableWidget((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });

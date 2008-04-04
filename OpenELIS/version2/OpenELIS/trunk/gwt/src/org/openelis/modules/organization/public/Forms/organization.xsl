@@ -219,7 +219,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="567px" rows="1" title="" maxRows="8" showError="false">
+									<queryTable width="567px" title="" maxRows="8" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -248,25 +248,8 @@
 											  <widths>110</widths>
 											</autoDropdown>									 	
 										</editors>
-										<fields>
-											<dropdown/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<dropdown/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<dropdown/>
-										</fields>
-										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
-										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
-										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
-									</table>
+										<fields>contactType,contactName,contatApt,contactAddress,contactCity,contactState,contactZipCode,contactWorkNum,contactHomeNum,contactCellNum,contactFaxNum,contactEMail,contactCountry</fields>
+									</queryTable>
 									</query>
 								</widget>
 
@@ -337,35 +320,47 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  <number key="{organizationMeta:id()}" type="integer" required="false"/>
-  <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
-  <string key="{organizationMeta:name()}" max="40" required="true"/>
-  <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
-  <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
-  <string key="{orgAddressMeta:city()}" max="30" required="true"/>
-  <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
-  <string key="{organizationMeta:isActive()}" required="false"/>
-  <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
-  <string key="{orgNoteMeta:text()}" required="false"/>
-  <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
-  <table key="contactsTable"/>
-  <dropdown key="{orgAddressMeta:state()}" required="false"/>
-  <dropdown key="{orgAddressMeta:country()}" required="true"/>
+  	  <number key="{organizationMeta:id()}" type="integer" required="false"/>
+      <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
+      <string key="{organizationMeta:name()}" max="40" required="true"/>
+      <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
+      <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
+      <string key="{orgAddressMeta:city()}" max="30" required="true"/>
+      <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
+      <string key="{organizationMeta:isActive()}" required="false"/>
+      <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
+      <string key="{orgNoteMeta:text()}" required="false"/>
+      <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
+      <table key="contactsTable"/>
+      <dropdown key="{orgAddressMeta:state()}" required="false"/>
+      <dropdown key="{orgAddressMeta:country()}" required="true"/>
 	</rpc>
 	<rpc key="query">
-  <queryNumber key="{organizationMeta:id()}" type="integer"/>
-  <queryString key="{organizationMeta:name()}"/>
-  <queryString key="{orgAddressMeta:streetAddress()}"/>
-  <queryString key="{orgAddressMeta:multipleUnit()}" value="query"/>
-  <queryString key="{orgAddressMeta:city()}"/>
-  <queryString key="{orgAddressMeta:zipCode()}"/>
-  <queryString key="{parentOrgMeta:name()}"/>
-  <queryString key="{orgNoteMeta:subject()}"/>
-  <queryString key="{orgNoteMeta:text()}"/>
-  <table key="contactsTable"/>
-  <dropdown key="{orgAddressMeta:state()}" required="false"/>
-  <dropdown key="{orgAddressMeta:country()}" required="false"/>
-  <queryString key="{organizationMeta:isActive()}" required="false"/>
+      <queryNumber key="{organizationMeta:id()}" type="integer"/>
+      <queryString key="{organizationMeta:name()}"/>
+      <queryString key="{orgAddressMeta:streetAddress()}"/>
+      <queryString key="{orgAddressMeta:multipleUnit()}" value="query"/>
+      <queryString key="{orgAddressMeta:city()}"/>
+      <queryString key="{orgAddressMeta:zipCode()}"/>
+      <queryString key="{parentOrgMeta:name()}"/>
+      <queryString key="{orgNoteMeta:subject()}"/>
+      <queryString key="{orgNoteMeta:text()}"/>
+      <dropdown key="{orgAddressMeta:state()}" required="false"/>
+      <dropdown key="{orgAddressMeta:country()}" required="false"/>
+      <queryString key="{organizationMeta:isActive()}" required="false"/>
+      <dropdown key="contactType" required="false"/>
+	  <queryString key="contactName" required="false"/>
+	  <queryString key="contatApt" required="false"/>
+	  <queryString key="contactAddress" required="false"/>
+	  <queryString key="contactCity" required="false"/>
+	  <dropdown key="contactState" required="false"/>
+	  <queryString key="contactZipCode" required="false"/>
+      <queryString key="contactWorkNum" required="false"/>
+      <queryString key="contactHomeNum" required="false"/>
+      <queryString key="contactCellNum" required="false"/>
+	  <queryString key="contactFaxNum" required="false"/>
+      <queryString key="contactEMail" required="false"/>
+	  <dropdown key="contactCountry" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="{organizationMeta:name()}"/>
