@@ -18,6 +18,7 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -32,14 +33,15 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     private EditTable dictEntryController = null;
     private AppButton removeEntryButton = null;
     private TextBox tname = null;
-    private EditTable categoryNamesController = null;
 
     private ScreenAutoDropdown displaySection = null;
 
+    private static boolean loaded = false;
+    
     private static DataModel sectionDropDown = null;
 
     public DictionaryScreen() {
-        super("org.openelis.modules.dictionary.server.DictionaryService", true);
+        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
         name = "Dictionary";
     }
 
@@ -47,13 +49,22 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     public void afterDraw(boolean success) {
         // try{
+        loaded = true;
+        
         bpanel = (ButtonPanel)getWidget("buttons");
         message.setText("done");
 
-        categoryNamesController = ((TableWidget)getWidget("categoryTable")).controller;
-        modelWidget.addChangeListener(categoryNamesController);
+        //categoryNamesController = ((TableWidget)getWidget("categoryTable")).controller;
+        //modelWidget.addChangeListener(categoryNamesController);
 
-        ((CategorySystemNamesTable)categoryNamesController.manager).setDictionaryForm(this);
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+        
+        //((CategorySystemNamesTable)categoryNamesController.manager).setDictionaryForm(this);
 
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
@@ -67,9 +78,11 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
         displaySection = (ScreenAutoDropdown)widgets.get("category.section");
 
+        loadDropdowns();
+        
         super.afterDraw(success);
 
-        loadDropdowns();
+        
         // ConstantMap cmap = (ConstantMap)initData[3];
         // hmap = (HashMap)cmap.getValue();
 
@@ -101,16 +114,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         
     }
     
-    public void commit() {
-        if (state == FormInt.QUERY) {
-            ((TableWidget) ((ScreenTableWidget) ((ScreenTableWidget) widgets
-                    .get("dictEntTable")).getQueryWidget()).getWidget()).controller
-                    .unselect(-1);
-        } else {
-            ((TableWidget) getWidget("dictEntTable")).controller.unselect(-1);
-        }
-        super.commit();
-    }
 
     public void commitAdd() {
 
@@ -163,12 +166,22 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         }
     }
 
+    public void onChange(Widget sender) {
+        
+        if(sender == getWidget("atozButtons")){           
+           String action = ((ButtonPanel)sender).buttonClicked.action;           
+           if (action.startsWith("query:")) {
+               getCategories(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);
+           } 
+        } else{
+            super.onChange(sender);
+           }
+       
+    }   
+    
     public void onClick(Widget sender) {
         String action = ((AppButton)sender).action;
-        if (action.startsWith("query:")) {
-            getCategories(action.substring(6, action.length()), sender);
-
-        } else if (action.equals("removeEntry")) {
+         if (action.equals("removeEntry")) {
 
             // TableWidget dictEntTable = (TableWidget)
             // getWidget("dictEntTable");
@@ -196,16 +209,17 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     private void getCategories(String letter, Widget sender) {
         // we only want to allow them to select a letter if they are in display
         // mode..
-        if (bpanel.getState() == FormInt.DISPLAY || bpanel.getState() == FormInt.DEFAULT) {
+        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
             letterRPC.setFieldValue("category.name", letter.toUpperCase() + "*"
                                             + " | "
                                             + letter.toLowerCase()
                                             + "*");
+            
             commitQuery(letterRPC);
 
-            setStyleNameOnButton(sender);
+            //setStyleNameOnButton(sender);
 
         }
     }
@@ -223,8 +237,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
         dictEntManager.resetLists();
 
-        super.add();
-
+        super.add();        
         // AppButton removeEntryButton = (AppButton)
         // getWidget("removeEntryButton");
         removeEntryButton.changeState(AppButton.UNPRESSED);
@@ -233,8 +246,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         // tname = (TextBox)getWidget("name");
         tname.setFocus(true);
 
-        // TableWidget catNameTM = (TableWidget) getWidget("categoryTable");
-        categoryNamesController.unselect(-1);
+        
 
     }
 
@@ -347,10 +359,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             sectionDropDown = (DataModel)initData[0];
         }
 
-        ScreenAutoDropdown querySection = displaySection.getQueryWidget();
+        //ScreenAutoDropdown querySection = displaySection.getQueryWidget();
 
         ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
-        ((AutoCompleteDropdown)querySection.getWidget()).setModel(sectionDropDown);
+        //((AutoCompleteDropdown)querySection.getWidget()).setModel(sectionDropDown);
     }
 
     public boolean validate() {
@@ -384,40 +396,5 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             return true;
         }
     }
-    
-  /*  private void getLists(){
-        StringObject strObj = new StringObject();
-        strObj.setValue("SystemName");
-
-        DataObject[] args = {strObj};
-        screenService.getObject("getList",args,new AsyncCallback() {                                    
-                                    public void onSuccess(Object result) {        
-                                        Window.alert("getList S "+ new Boolean(result == null).toString());
-                                        CollectionField listfield = (CollectionField)result;
-                                        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
-                                        dictEntManager.setList((ArrayList)listfield.getValue(), "SystemName");                                        
-                                    }
-
-                                    public void onFailure(Throwable caught) {
-                                        Window.alert(caught.getMessage());
-                                    }
-                                });
-        
-        //strObj = new StringObject();
-        strObj.setValue("Entry");
-
-        args[0] = strObj;
-        screenService.getObject("getList",args,new AsyncCallback() {                                    
-                                    public void onSuccess(Object result) {
-                                        Window.alert("getList E "+ new Boolean(result == null).toString());
-                                        CollectionField listfield = (CollectionField)result;
-                                        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
-                                        dictEntManager.setList((ArrayList)listfield.getValue(), "Entry");
-                                    }
-
-                                    public void onFailure(Throwable caught) {
-                                        Window.alert(caught.getMessage());
-                                    }
-                                });
-    }*/
+      
 }

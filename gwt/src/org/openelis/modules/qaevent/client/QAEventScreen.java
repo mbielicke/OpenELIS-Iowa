@@ -10,20 +10,19 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
  public class QAEventScreen extends OpenELISScreenForm {
 
-     private Widget selected = null;
-     
-     private TableWidget qaEventsTable = null;
+     private Widget selected = null;     
      private TextBox tname = null;
      private ScreenAutoDropdown displayType = null;
      private ScreenAutoDropdown displayTest = null;
+     private TextArea reportingText = null;
      
      private static boolean loaded = false;
      
@@ -55,19 +54,12 @@ import com.google.gwt.user.client.ui.Widget;
                tname = (TextBox)getWidget("qaevent.name");
                displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
                displayTest = (ScreenAutoDropdown)widgets.get("qaevent.test");
-
+ 
+               reportingText = (TextArea)getWidget("qaevent.reportingText");
                super.afterDraw(success);        
                
                loadDropdowns();                           
-        }
-         
-         /*public void onClick(Widget sender){
-             String action = ((AppButton)sender).action;
-            if(action.startsWith("query:")){
-                getQAEvents(action.substring(6, action.length()), sender);
-                
-            } 
-         }*/
+        }                 
          
          public void onChange(Widget sender) {
              
@@ -82,21 +74,24 @@ import com.google.gwt.user.client.ui.Widget;
          }
          
         public void query() {
+            
             super.query();
             
-         //set focus to the name field
-             
+         //set focus to the name field            
             tname.setFocus(true);
+           
+         // isable the text area so that it doesn't get included in the query, this is done becuase most 
+         // databases don't support querying by BLOBs
+            reportingText.setEnabled(false);
+            
         }                 
                       
          
          public void add(){                                  
-             super.add();             
-            //TextBox name = (TextBox)getWidget("name");
-            tname.setFocus(true);
-            
-            //TableWidget catNameTM = (TableWidget) getWidget("qaEventsTable");
-            qaEventsTable.controller.unselect(-1);
+             super.add();       
+             
+             reportingText.setEnabled(true);
+            tname.setFocus(true);            
          }
          
         public void afterUpdate(boolean success) {
@@ -105,6 +100,7 @@ import com.google.gwt.user.client.ui.Widget;
             //set focus to the name field
             //TextBox name = (TextBox)getWidget("name");
             tname.setFocus(true);
+            reportingText.setEnabled(true);
         }
          
          private void getQAEvents(String letter, Widget sender) {

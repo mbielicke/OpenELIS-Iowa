@@ -50,7 +50,7 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {   
-       if(dictionaryForm.bpanel.getState() == FormInt.ADD || dictionaryForm.bpanel.getState() == FormInt.UPDATE) 
+       if(dictionaryForm.state == FormInt.ADD || dictionaryForm.state == FormInt.UPDATE) 
         return true;
        
        return false;
