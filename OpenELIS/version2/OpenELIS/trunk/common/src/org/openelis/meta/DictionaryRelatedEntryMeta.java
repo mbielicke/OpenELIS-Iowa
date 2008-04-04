@@ -66,4 +66,33 @@ public class DictionaryRelatedEntryMeta implements Meta{
 	
 		return columnHashList.containsKey(column);
 	}
+        
+    public static String id(){
+        return columnNames[0];
+    }
+    
+    public static String category(){
+        return columnNames[1];
+    }
+    
+    public static String relatedEntry(){
+        return columnNames[2];
+    }
+
+    public static String systemName(){
+        return columnNames[3];
+    }
+    
+    public static String isActive(){
+        return columnNames[4];
+    }
+    
+    public static String localAbbrev(){
+        return columnNames[5];
+    }
+    
+    public static String entry(){
+        return columnNames[6];
+    }        
+    
 }
