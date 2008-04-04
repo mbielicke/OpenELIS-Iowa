@@ -28,9 +28,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "getCategory", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
                               "  from Category c where c.id = :id"),
-              @NamedQuery(name = "getDictionaryEntries", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntryId," +
+              @NamedQuery(name = "getDictionaryEntries", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntryId, dre.entry, " +
                              "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                              "  from  Dictionary d  where d.category = :id " +
+                              "  from  Dictionary d left join d.relatedEntry dre  where d.category = :id " +
                               " order by d.systemName "),
               @NamedQuery(name = "getDictionaryDropdownValues", query = "select d.id, d.entry from Dictionary d where d.isActive='Y' and d.category = :id order by d.entry"),
               @NamedQuery(name = "getMatchingEntries", query = "select d.id, d.entry from Dictionary d where d.entry like :entry order by d.entry"),
