@@ -324,6 +324,16 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
+      ClassFactory.addClass(new String[] {"TableCheck",TableCheck.TAG_NAME},
+              new ClassFactory.Factory() {
+                    public Object newInstance(Object[] args) {
+                        if(args == null)
+                            return new TableCheck();
+                        else if(args[0] instanceof Node)
+                            return new TableCheck((Node)args[0]);
+                        return null;
+                    }
+      });
       ClassFactory.addClass(new String[] {"TableMaskedTextBox",TableMaskedTextBox.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
