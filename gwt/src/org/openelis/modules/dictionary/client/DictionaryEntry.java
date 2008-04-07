@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class DictionaryEntry implements AppModule {
 
     public void onModuleLoad() {
-        ClassFactory.addClass(new String[] {"DictionaryEntriesTable"}, 
+       ClassFactory.addClass(new String[] {"DictionaryEntriesTable"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new DictionaryEntriesTable();
@@ -21,14 +21,7 @@ public class DictionaryEntry implements AppModule {
                                        return new DictionaryScreen();
                                    }
                                }
-        );
-        ClassFactory.addClass(new String[] {"CategorySystemNamesTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new CategorySystemNamesTable();
-                                  }
-                              }
-       );
+        );      
     }
 
     public String getModuleName() {

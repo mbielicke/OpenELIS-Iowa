@@ -180,22 +180,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
             
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-
-            //contacts table
-             TableModel dictEntryTable = null;
-            if(rpcSend.getField("dictEntTable") != null)
-                dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();                            
-            
-            if(dictEntryTable != null){                   
-                fields.put(DictionaryMeta.IS_ACTIVE,(QueryStringField)dictEntryTable.getRow(0).getColumn(0));
-                fields.put(DictionaryMeta.SYSTEM_NAME,(QueryStringField)dictEntryTable.getRow(0).getColumn(1));
-                fields.put(DictionaryMeta.LOCAL_ABBREV,(QueryStringField)dictEntryTable.getRow(0).getColumn(2));
-                fields.put(DictionaryMeta.ENTRY,(QueryStringField)dictEntryTable.getRow(0).getColumn(3));                
-                fields.put(DictionaryRelatedEntryMeta.ENTRY,(QueryStringField)dictEntryTable.getRow(0).getColumn(4));                                      
-            }
-            
-            fields.remove("dictEntTable");
-            
             List systemNames = new ArrayList();
                 try{                                        
                     systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
@@ -486,8 +470,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     }
 
    //  the method called to load the matching entries in the autocomplete box(es) on the screen
-    public DataModel getMatches(String cat, DataModel model, String match) { 
-        System.out.println("getMatches cat: "+ cat+ " match: "+match);
+    public DataModel getMatches(String cat, DataModel model, String match) {         
         
        if(("relatedEntry").equals(cat)){ 
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
@@ -571,8 +554,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
            dictDO.setSystemName(sysName);           
-           dictDO.setEntry(entry);
-           System.out.println("sysName: "+sysName+" "+" entry: "+entry);       
+           dictDO.setEntry(entry);  
            NumberField id = (NumberField)row.getHidden("id");
            //NumberField relEntryId = (NumberField)row.getHidden("relEntryId");                         
          

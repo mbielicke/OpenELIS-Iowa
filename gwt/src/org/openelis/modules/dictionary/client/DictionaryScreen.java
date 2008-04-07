@@ -17,7 +17,6 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -47,8 +46,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     private Widget selected;
 
-    public void afterDraw(boolean success) {
-        // try{
+    public void afterDraw(boolean success) {       
+
         loaded = true;
         
         bpanel = (ButtonPanel)getWidget("buttons");
@@ -56,7 +55,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
         //categoryNamesController = ((TableWidget)getWidget("categoryTable")).controller;
         //modelWidget.addChangeListener(categoryNamesController);
-
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
         modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
@@ -65,7 +63,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         atozButtons.addChangeListener(this);
         
         //((CategorySystemNamesTable)categoryNamesController.manager).setDictionaryForm(this);
-
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
 
@@ -75,13 +72,14 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
         removeEntryButton.addClickListener(this);
         removeEntryButton.changeState(AppButton.DISABLED);
-
-        displaySection = (ScreenAutoDropdown)widgets.get("category.section");
-
-        loadDropdowns();
+                
+        displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
         
+        loadDropdowns();
         super.afterDraw(success);
+        
 
+              
         
         // ConstantMap cmap = (ConstantMap)initData[3];
         // hmap = (HashMap)cmap.getValue();
