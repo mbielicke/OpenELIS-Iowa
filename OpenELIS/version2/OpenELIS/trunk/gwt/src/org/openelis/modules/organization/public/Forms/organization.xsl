@@ -163,7 +163,7 @@
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="225px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}"/>
+											<textbox case="upper" width="241px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}"/>
 										</query>
 										</widget>
 										<widget>
@@ -290,7 +290,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="405px" max="60"/>
+										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="405px" max="60" showError="false"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -308,7 +308,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="524px" height="50px" case="mixed" key="{orgNoteMeta:text()}"/>
+										<textarea width="524px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false"/>
 										</widget>
 										</row>
 								 
@@ -318,7 +318,7 @@
 								</widget>
 								<widget colspan="2">
 								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="127px" width="524px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="524px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
 								
 								</panel>
 								</panel>

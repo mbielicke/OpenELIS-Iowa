@@ -19,10 +19,8 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -32,8 +30,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.OrganizationAddressMeta;
-import org.openelis.meta.OrganizationContactAddressMeta;
-import org.openelis.meta.OrganizationContactMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.OrganizationNoteMeta;
 import org.openelis.meta.OrganizationParentOrganizationMeta;
@@ -162,32 +158,6 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		
 		HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
 
-		//contacts table
-		/*TableModel contactsTable = null;
-		if(rpcSend.getField("contactsTable") != null)
-			contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();		
-		
-		if(contactsTable != null){	
-			fields.put(OrganizationContactMeta.CONTACT_TYPE,(DropDownField)contactsTable.getRow(0).getColumn(0));
-			fields.put(OrganizationContactMeta.NAME,(QueryStringField)contactsTable.getRow(0).getColumn(1));
-			fields.put(OrganizationContactAddressMeta.MULTIPLE_UNIT,(QueryStringField)contactsTable.getRow(0).getColumn(2));
-			fields.put(OrganizationContactAddressMeta.STREET_ADDRESS,(QueryStringField)contactsTable.getRow(0).getColumn(3));
-			fields.put(OrganizationContactAddressMeta.CITY,(QueryStringField)contactsTable.getRow(0).getColumn(4));
-			fields.put(OrganizationContactAddressMeta.STATE,(DropDownField)contactsTable.getRow(0).getColumn(5));
-			fields.put(OrganizationContactAddressMeta.ZIP_CODE,(QueryStringField)contactsTable.getRow(0).getColumn(6));
-			fields.put(OrganizationContactAddressMeta.WORK_PHONE,(QueryStringField)contactsTable.getRow(0).getColumn(7));
-			fields.put(OrganizationContactAddressMeta.HOME_PHONE,(QueryStringField)contactsTable.getRow(0).getColumn(8));
-			fields.put(OrganizationContactAddressMeta.CELL_PHONE,(QueryStringField)contactsTable.getRow(0).getColumn(9));
-			fields.put(OrganizationContactAddressMeta.FAX_PHONE,(QueryStringField)contactsTable.getRow(0).getColumn(10));
-			fields.put(OrganizationContactAddressMeta.EMAIL,(QueryStringField)contactsTable.getRow(0).getColumn(11));
-			fields.put(OrganizationContactAddressMeta.COUNTRY,(DropDownField)contactsTable.getRow(0).getColumn(12));
-		}
-*/
-		//remove unncessary fields from the query rpc
-		//fields.remove("contactsTable");
-		//fields.remove("stateModel");
-		//fields.remove("countryModel");
-		
 		List organizationNames = new ArrayList();
 			try{
 				
