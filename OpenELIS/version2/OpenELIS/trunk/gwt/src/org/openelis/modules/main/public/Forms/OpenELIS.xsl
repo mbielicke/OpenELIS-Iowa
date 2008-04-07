@@ -34,7 +34,7 @@
 					          icon="favoritesMenuIcon"
 					          label="{resource:getString($constants,'favoritesMenu')}"
 					          description="{resource:getString($constants,'favoritesMenuDescription')}"/>
-					<menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
+					<menuItem style="TopMenuRowContainer" hover="Hover"
 					          icon="logoutIcon"
 					          label="{resource:getString($constants,'logout')}"
 					          description="{resource:getString($constants,'logoutDescription')}"/>
@@ -45,15 +45,15 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'edit')}" hover="Hover"/>
 			  </menuDisplay>
 	            <menuPanel style="topMenuContainer" layout="vertical" position="below">
-				  <menuItem style="TopMenuRowContainer" hover="Hover" 
+				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
 				            icon="cutIcon"
 				            label="{resource:getString($constants,'cut')}"
 				            description=""/>
-				  <menuItem style="TopMenuRowContainer" hover="Hover" 
+				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
 				            icon="copyIcon"
 				            label="{resource:getString($constants,'copy')}"
 				            description=""/>
-	              <menuItem style="TopMenuRowContainer" hover="Hover" 
+	              <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
 	                        icon="pasteIcon"
 	                        label="{resource:getString($constants,'paste')}"
 	                        description=""/>
@@ -64,7 +64,7 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" hover="Hover" />
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				  <menuItem style="TopMenuRowContainer" hover="Hover" 
+				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
 				            icon="fullLoginIcon"
 				            label="{resource:getString($constants,'fullLogin')}"
 				            description="{resource:getString($constants,'fullLoginDescription')}"/>
@@ -72,11 +72,11 @@
                             icon="quickEntryIcon"
                             label="{resource:getString($constants,'quickEntry')}"
                             description="{resource:getString($constants,'quickEntryDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" hover="Hover"
+				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
 				            icon="secondEntryIcon"
 				            label="{resource:getString($constants,'secondEntry')}"
 				            description="{resource:getString($constants,'secondEntryDescription')}"/>
-				  <menuItem style="TopMenuRowContainer"
+				  <menuItem style="TopMenuRowContainer" enabled="false"
 				            hover="Hover"
 				            icon="trackingIcon"
 				            label="{resource:getString($constants,'tracking')}"
@@ -85,7 +85,7 @@
 					<html>&lt;hr/&gt;</html>
 				  </widget>
 				  <menuItem style="TopMenuRowContainer"  
-				            hover="Hover"
+				            hover="Hover" enabled="false"
 				            icon="projectIcon"
 				            label="{resource:getString($constants,'project')}"
 				            description="{resource:getString($constants,'projectDescription')}"/>
@@ -111,32 +111,32 @@
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				  <menuItem style="TopMenuRowContainer"  
-				            hover="Hover"
+				            hover="Hover" enabled="false"
 				            icon="worksheetCreationIcon"
 				            label="{resource:getString($constants,'worksheetCreation')}"
 				            description="{resource:getString($constants,'worksheetCreationDescription')}"/>
                   <menuItem style="TopMenuRowContainer" 
-                            hover="Hover"
+                            hover="Hover" enabled="false"
                             icon="worksheetCompletionIcon"
                             label="{resource:getString($constants,'worksheetCompletion')}"
                             description="{resource:getString($constants,'worksheetCompletionDescription')}"/>
                   <menuItem style="TopMenuRowContainer" 
-                            hover="Hover"
+                            hover="Hover" enabled="false"
                             icon="addOrCancelIcon"
                             label="{resource:getString($constants,'addOrCancel')}"
                             description="{resource:getString($constants,'addOrCancelDescription')}"/>
                   <menuItem style="TopMenuRowContainer" 
-                            hover="Hover"
+                            hover="Hover" enabled="false"
                             icon="reviewAndReleaseIcon"
                             label="{resource:getString($constants,'reviewAndRelease')}"
                             description="{resource:getString($constants,'reviewAndReleaseDescription')}"/>
                   <menuItem style="TopMenuRowContainer" 
-                            hover="Hover"
+                            hover="Hover" enabled="false"
                             icon="toDoIcon"
                             label="{resource:getString($constants,'toDo')}"
                             description="{resource:getString($constants,'toDoDescription')}"/>
 				  <menuItem style="TopMenuRowContainer" 
-				            hover="Hover"
+				            hover="Hover" enabled="false"
 				            icon="labelForIcon"
 				            label="{resource:getString($constants,'labelFor')}"
 				            description="{resource:getString($constants,'labelForDescription')}"/>
@@ -146,7 +146,7 @@
 				            label="{resource:getString($constants,'storage')}"
 				            description="{resource:getString($constants,'storageDescription')}"/>
 				  <menuItem style="TopMenuRowContainer" 
-				            hover="Hover"
+				            hover="Hover" enabled="false"
 				            icon="QCIcon"
 				            label="{resource:getString($constants,'QC')}"
 				            description="{resource:getString($constants,'QCDescription')}"/>
@@ -158,12 +158,12 @@
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="orderIcon"
 				          label="{resource:getString($constants,'order')}"
 				          description="{resource:getString($constants,'orderDescription')}"/>
 				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="inventoryIcon"
 				          label="{resource:getString($constants,'inventory')}"
 				          description="{resource:getString($constants,'inventoryDescription')}"/>
@@ -175,7 +175,7 @@
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="instrumentIcon"
 				          label="{resource:getString($constants,'instrument')}"
 				          description="{resource:getString($constants,'instrumentDescription')}"/>
@@ -187,17 +187,17 @@
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="testIcon"
 				          label="{resource:getString($constants,'test')}"
 				          description="{resource:getString($constants,'testDescription')}"/>
 				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="methodIcon"
 				          label="{resource:getString($constants,'method')}"
 				          description="{resource:getString($constants,'methodDescription')}"/>
  				<menuItem style="TopMenuRowContainer" 
- 				          hover="Hover"
+ 				          hover="Hover" enabled="false"
  				          icon="panelIcon"
  				          label="{resource:getString($constants,'panel')}"
  				          description="{resource:getString($constants,'panelDescription')}"/>
@@ -209,7 +209,7 @@
 				          onClick="this"
 				          value="QAEventScreen"/>
  				<menuItem style="TopMenuRowContainer"  
- 				          hover="Hover"
+ 				          hover="Hover" enabled="false"
  				          icon="labelSectionIcon"
  				          label="{resource:getString($constants,'labSection')}"
  				          description="{resource:getString($constants,'labSectionDescription')}"/>
@@ -229,7 +229,7 @@
 				          onClick="this"
 				          value="DictionaryScreen"/>
 				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="auxiliaryPromptIcon"
 				          label="{resource:getString($constants,'auxiliaryPrompt')}"
 				          description="{resource:getString($constants,'auxiliaryPromptDescription')}"/>
@@ -237,7 +237,7 @@
 					<html>&lt;hr/&gt;</html>
 			    </widget>
 			    <menuItem style="TopMenuRowContainer"  
-			              hover="Hover"
+			              hover="Hover" 
 			              icon="barcodeLabelIcon"
 			              label="{resource:getString($constants,'barcodeLabel')}"
 			              description="{resource:getString($constants,'barcodeLabelDescription')}"/>
@@ -274,7 +274,7 @@
 					<html>&lt;hr/&gt;</html>
 				</widget>
 				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
+				          hover="Hover" enabled="false"
 				          icon="instrumentIcon"
 				          label="{resource:getString($constants,'instrument')}"
 				          description="{resource:getString($constants,'instrumentMainDescription')}"/>
@@ -282,7 +282,7 @@
 					<html>&lt;hr/&gt;</html>
 				</widget>
 			    <menuItem style="TopMenuRowContainer"
-			              hover="Hover"
+			              hover="Hover" enabled="false"
 			              icon="scriptletIcon"
 			              label="{resource:getString($constants,'scriptlet')}"
 			              description="{resource:getString($constants,'scriptletDescription')}"/>
