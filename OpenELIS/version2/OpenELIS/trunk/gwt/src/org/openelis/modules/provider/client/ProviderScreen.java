@@ -413,24 +413,24 @@ public class ProviderScreen extends OpenELISScreenForm {
                     
                    
                    ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-                   ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
+                   //ScreenTableWidget queryAddressTable = (ScreenTableWidget)displayAddressTable.getQueryWidget();
                    
                    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
                                                                                                 controller.editors[5];
                    displayContactState.setModel(stateDropDown);
                    
-                   TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
-                        controller.editors[5];
-                   queryContactState.setModel(stateDropDown);
+                   //TableAutoDropdown queryContactState = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
+                    //    controller.editors[5];
+                  // queryContactState.setModel(stateDropDown);
                                                                                               
                    
                    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
                                                                                                 controller.editors[6];
                    displayContactCountry.setModel(countryDropDown);
                    
-                   TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
-                        controller.editors[6];
-                   queryContactCountry.setModel(countryDropDown);
+                  // TableAutoDropdown queryContactCountry = (TableAutoDropdown)((TableWidget)queryAddressTable.getWidget()).
+                  //      controller.editors[6];
+                  // queryContactCountry.setModel(countryDropDown);
                
     } 
     

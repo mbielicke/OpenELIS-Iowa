@@ -5,14 +5,7 @@ import org.openelis.gwt.screen.ClassFactory;
 
 public class ProviderEntry implements AppModule {
 
-    public void onModuleLoad() {
-        ClassFactory.addClass(new String[] {"ProviderNamesTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new ProviderNamesTable();
-                                  }
-                               }
-       );
+    public void onModuleLoad() {      
         ClassFactory.addClass(new String[] {"ProviderAddressesTable"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

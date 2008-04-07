@@ -150,8 +150,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             try{
                 
                 ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
-                providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                System.out.println("providers.size() "+providers.size());
+                providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
             }catch(Exception e){
 	        	if(e instanceof LastPageException){
 	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -200,33 +199,6 @@ public class ProviderService implements AppScreenFormServiceInt{
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
             
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-
-            //contacts table
-             TableModel provAddTable = null;
-            if(rpcSend.getField("providerAddressTable") != null)
-                provAddTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-                
-            System.out.println("providerAddressTable != null");
-            
-            if(provAddTable != null){    
-                System.out.println("provAddTable != null");
-                fields.put(ProviderAddressMeta.LOCATION,(QueryStringField)provAddTable.getRow(0).getColumn(0));                                                    
-                fields.put(ProviderAddressMeta.EXTERNAL_ID,(QueryStringField)provAddTable.getRow(0).getColumn(1));
-                fields.put(ProviderAddressAddressMeta.MULTIPLE_UNIT,(QueryStringField)provAddTable.getRow(0).getColumn(2));
-                fields.put(ProviderAddressAddressMeta.STREET_ADDRESS,(QueryStringField)provAddTable.getRow(0).getColumn(3));                
-                fields.put(ProviderAddressAddressMeta.CITY,(QueryStringField)provAddTable.getRow(0).getColumn(4));                                                                                                       
-                fields.put(ProviderAddressAddressMeta.STATE,(DropDownField)provAddTable.getRow(0).getColumn(5));
-                fields.put(ProviderAddressAddressMeta.COUNTRY,(DropDownField)provAddTable.getRow(0).getColumn(6));                
-                fields.put(ProviderAddressAddressMeta.ZIP_CODE,(QueryStringField)provAddTable.getRow(0).getColumn(7));
-                fields.put(ProviderAddressAddressMeta.WORK_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(8));
-                fields.put(ProviderAddressAddressMeta.HOME_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(9));
-                fields.put(ProviderAddressAddressMeta.CELL_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(10));
-                fields.put(ProviderAddressAddressMeta.FAX_PHONE,(QueryStringField)provAddTable.getRow(0).getColumn(11));
-                fields.put(ProviderAddressAddressMeta.EMAIL,(QueryStringField)provAddTable.getRow(0).getColumn(12));               
-            }
-            
-            fields.remove("providerAddressTable"); 
-
             List providerNames = new ArrayList();
                 try{
                     providerNames = remote.query(fields,0,leftTableRowsPerPage);
