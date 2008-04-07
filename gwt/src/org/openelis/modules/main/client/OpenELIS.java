@@ -13,6 +13,7 @@ import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.QueryDateField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -35,6 +36,7 @@ import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMenuPopupPanel;
+import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenStack;
@@ -484,7 +486,7 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      /*
+      
       ClassFactory.addClass(new String[] {"PagedTreeField",PagedTreeField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
@@ -495,7 +497,7 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {"QueryCheckField",WidgetMap.RPC_QUERY_CHECK},
+      /*ClassFactory.addClass(new String[] {"QueryCheckField",WidgetMap.RPC_QUERY_CHECK},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -604,8 +606,8 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      /*
-      ClassFactory.addClass(new String[] {"ScreenPagedTree,ScreenPagedTree.TAG_NAME},
+      
+      ClassFactory.addClass(new String[] {"ScreenPagedTree",ScreenPagedTree.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -615,7 +617,7 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      */
+      
       ClassFactory.addClass(new String[] {"ScreenAutoDropdown",ScreenAutoDropdown.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

@@ -220,7 +220,9 @@
 				          hover="Hover"
 				          icon="analyteIcon"
 				          label="{resource:getString($constants,'analyte')}"
-				          description="{resource:getString($constants,'analyteDescription')}"/>
+				          description="{resource:getString($constants,'analyteDescription')}" 
+				          onClick="this" 
+				          value="AnalyteScreen"/>
 				<menuItem style="TopMenuRowContainer"  
 				          hover="Hover"
 				          icon="dictionaryIcon"
@@ -252,7 +254,9 @@
 				          hover="Hover"
 				          icon="trailerForTestIcon"
 				          label="{resource:getString($constants,'trailerForTest')}"
-				          description="{resource:getString($constants,'trailerForTestDescription')}"/>
+				          description="{resource:getString($constants,'trailerForTestDescription')}" 
+				          onClick="this" 
+				          value="TestTrailerScreen"/>
 			    <widget>
 					<html>&lt;hr/&gt;</html>
 			    </widget>
