@@ -62,7 +62,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},id"/>
+										<textbox case="mixed" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},{standardNoteMeta:text()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -78,25 +78,25 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" popWidth="auto" tab="organization.address.zipCode,organization.address.city">
+										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" popWidth="auto" tab="{standardNoteMeta:text()},{standardNoteMeta:description()}">
 											<widths>100</widths>
 										</autoDropdown>
 									</widget>
 								</row>
-								<row>
+							<!--	<row>
 								  <widget>
 								    <text style="Prompt">Test Date</text>
 								  </widget>
 								  <widget>
 				                    <calendar begin="0" end="2"/>
 							      </widget>
-							    </row>	   
+							    </row>	    -->
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="{standardNoteMeta:text()}" width="300px" height="180px" tab="id,{standardNoteMeta:type()}"/>
+										<textarea key="{standardNoteMeta:text()}" width="300px" height="180px" tab="{standardNoteMeta:name()},{standardNoteMeta:type()}"/>
 									</widget>
 								</row>
 								

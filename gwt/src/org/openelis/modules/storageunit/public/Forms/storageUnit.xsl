@@ -2,6 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:storageUnitMeta="xalan://org.openelis.meta.StorageUnitMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumnsNum.xsl"/>   
@@ -12,6 +13,10 @@
   
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>
+  
+ <xalan:component prefix="StorageUnitMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageUnitMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
@@ -57,7 +62,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="storageUnit.category" case="mixed" width="110px" popWidth="auto" tab="storageUnit.description,storageUnit.id">
+										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" popWidth="auto" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}">
 											<widths>89</widths>
 										</autoDropdown>
 									</widget>
@@ -67,7 +72,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="storageUnit.description" max="60" width="300px" tab="storageUnit.isSingular,storageUnit.category"/>
+										<textbox case="mixed" key="{storageUnitMeta:description()}" max="60" width="300px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
 									</widget>
 								</row>
 								<row>
@@ -75,7 +80,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
 									</widget>
 									<widget>
-										<check key="storageUnit.isSingular" tab="storageUnit.id,storageUnit.description"/>
+										<check key="{storageUnitMeta:isSingular()}" tab="{storageUnitMeta:id()},{storageUnitMeta:description()}"/>
 									</widget>
 								</row>
 							</panel>
@@ -84,20 +89,20 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="storageUnit.id" type="integer" required="false"/>
-  	<dropdown key="storageUnit.category" required="true"/>
-  	<string key="storageUnit.description" max="60" required="true"/>
-  	<string key="storageUnit.isSingular" required="false"/>
+  	<number key="{storageUnitMeta:id()}" type="integer" required="false"/>
+  	<dropdown key="{storageUnitMeta:category()}" required="true"/>
+  	<string key="{storageUnitMeta:description()}" max="60" required="true"/>
+  	<string key="{storageUnitMeta:isSingular()}" required="false"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="storageUnit.id" type="integer" required="false"/>
- 	<dropdown key="storageUnit.category" required="false"/>
-  	<queryString key="storageUnit.description" required="true"/>
-  	<queryString key="storageUnit.isSingular" type="string" required="false"/>
+ 	<queryNumber key="{storageUnitMeta:id()}" type="integer" required="false"/>
+ 	<dropdown key="{storageUnitMeta:category()}" required="false"/>
+  	<queryString key="{storageUnitMeta:description()}" required="true"/>
+  	<queryString key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="storageUnit.description"/>
+		<queryString key="{storageUnitMeta:description()}"/>
 	</rpc>
 </screen>
   </xsl:template>

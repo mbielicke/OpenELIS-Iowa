@@ -13,6 +13,7 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -38,9 +39,8 @@ import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
 
-public class StorageLocationService implements AppScreenFormServiceInt, 
-														  
-														  AutoCompleteServiceInt{
+public class StorageLocationService implements AppScreenFormServiceInt,
+   											   AutoCompleteServiceInt{
     
 	private static final long serialVersionUID = -7614978840440946815L;
 	private static final int leftTableRowsPerPage = 10;
@@ -376,6 +376,14 @@ public class StorageLocationService implements AppScreenFormServiceInt,
         ModelField data = new ModelField();
         data.setValue(model);
         return new DataObject[] {xml,data};
+    }
+    
+    public BooleanObject validateUniqueName(StringObject name){
+		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
+		
+		BooleanObject returnObject = new BooleanObject();
+		returnObject.setValue(remote.getStorageLocByName((String)name.getValue()) != null);
+    	return returnObject;
     }
     
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
