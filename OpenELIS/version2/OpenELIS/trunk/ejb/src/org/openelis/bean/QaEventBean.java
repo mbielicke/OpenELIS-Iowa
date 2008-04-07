@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,9 +16,6 @@ import javax.persistence.Query;
 import org.openelis.domain.QaEventDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.meta.QaEventMethodMeta;
@@ -111,20 +107,19 @@ public class QaEventBean implements QaEventRemote{
         QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
         
         qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
-        qb.setSelect("distinct "+ qaEventMeta.ID+", "+qaEventMeta.NAME+", "+qaEventTestMeta.NAME+", "+qaEventMethodMeta.NAME);
+        qb.setSelect("distinct "+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
         qb.addTable(qaEventMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
         
-        qb.setOrderBy(qaEventMeta.NAME+", "+qaEventTestMeta.NAME+", "+qaEventMethodMeta.NAME);
+        qb.setOrderBy(QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
         
         //if(qb.hasTable(qaEventMethodMeta.getTable()))
             qb.addTable(qaEventTestMeta);
             qb.addTable(qaEventMethodMeta);
                 
         sb.append(qb.getEJBQL());            
-        System.out.println("sb "+ "{"+sb+"}" );
         Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
