@@ -65,4 +65,32 @@ public class StorageLocationParentMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String sortOrder(){
+		return columnNames[1];
+	}
+	
+	public static String name(){
+		return columnNames[2];
+	}
+	
+	public static String location(){
+		return columnNames[3];
+	}
+	
+	public static String parentStorageLocation(){
+		return columnNames[4];
+	}
+	
+	public static String storageUnit(){
+		return columnNames[5];
+	}
+	
+	public static String isAvailable(){
+		return columnNames[6];
+	}
 }

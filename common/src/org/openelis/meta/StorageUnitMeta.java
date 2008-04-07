@@ -62,4 +62,20 @@ public class StorageUnitMeta implements Meta{
 		
 		return columnHashList.containsKey(column);
 	}
+	
+	public static String id(){
+		return columnNames[0];
+	}
+	
+	public static String category(){
+		return columnNames[1];
+	}
+	
+	public static String description(){
+		return columnNames[2];
+	}
+	
+	public static String isSingular(){
+		return columnNames[3];
+	}
 }
