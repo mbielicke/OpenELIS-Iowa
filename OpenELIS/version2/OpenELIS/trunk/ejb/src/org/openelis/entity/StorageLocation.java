@@ -30,6 +30,8 @@ import org.w3c.dom.Element;
 " s.location,s.parentStorageLocationId,p.name,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s LEFT JOIN s.parentStorageLocation p where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "getStorageLocationByParentId", query = "select s.id " +
 							 " from StorageLocation s where s.parentStorageLocationId = :id"),
+@NamedQuery(name = "getStorageLocationByName", query = "select s.id " +
+							 " from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "getStorageLocationByStorageUnitId", query = "select s.id " +
 							 " from StorageLocation s where s.storageUnitId = :id"),
 @NamedQuery(name = "getStorageLocationAutoCompleteByName", query = "select s.id, s.name, s.location " +

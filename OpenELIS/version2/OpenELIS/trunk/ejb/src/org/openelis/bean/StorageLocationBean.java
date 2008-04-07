@@ -248,4 +248,10 @@ public class StorageLocationBean implements StorageLocationRemote{
             
 		return storageLocation.getId();
 	}
+
+	public Integer getStorageLocByName(String name) {
+		Query query = manager.createNamedQuery("getStorageLocationByName");
+		query.setParameter("name", name);
+		return (Integer) query.getSingleResult();
+	}
 }
