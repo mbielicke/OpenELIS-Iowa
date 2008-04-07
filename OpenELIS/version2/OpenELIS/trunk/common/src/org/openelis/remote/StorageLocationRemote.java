@@ -37,4 +37,6 @@ public interface StorageLocationRemote {
 	 public Object[] autoCompleteLookupById(Integer id);
 	 
 	 public void deleteStorageLoc(Integer StorageLocId) throws Exception;
+	 
+	 public Integer getStorageLocByName(String name);
 }
