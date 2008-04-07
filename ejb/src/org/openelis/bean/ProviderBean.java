@@ -1,6 +1,5 @@
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,9 +21,6 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.ProviderAddressAddressMeta;
 import org.openelis.meta.ProviderAddressMeta;
@@ -131,24 +127,22 @@ public class ProviderBean implements ProviderRemote {
        
        qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
        
-       qb.setSelect("distinct "+providerMeta.ID+", "+providerMeta.LAST_NAME+", "+providerMeta.FIRST_NAME);
+       qb.setSelect("distinct "+ProviderMeta.ID+", "+ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME);
        qb.addTable(providerMeta);
        
        //this method is going to throw an exception if a column doesnt match
-       qb.addWhere(fields);
-       //System.out.println("{"+fields+"}");
+       qb.addWhere(fields);   
        
-       qb.setOrderBy(providerMeta.LAST_NAME+", "+providerMeta.FIRST_NAME);
+       qb.setOrderBy(ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME);
        
        if(qb.hasTable(providerAddressAddressMeta.getTable()))
            qb.addTable(providerAddressMeta);
           
        if(qb.hasTable(providerNoteMeta.getTable())){
-           qb.addWhere(providerNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+providerNoteMeta.REFERENCE_TABLE+" is null");
+           qb.addWhere(ProviderNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+ProviderNoteMeta.REFERENCE_TABLE+" is null");
           }
           
        sb.append(qb.getEJBQL());       
-       System.out.println("sb "+ "{"+sb+"}" );
        Query query = manager.createQuery(sb.toString());
        
        if(first > -1 && max > -1)

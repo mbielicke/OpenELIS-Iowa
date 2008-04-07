@@ -92,13 +92,13 @@ public class CategoryBean implements CategoryRemote {
         
         qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
         
-        qb.setSelect("distinct "+categoryMeta.ID+", "+categoryMeta.NAME);
+        qb.setSelect("distinct "+CategoryMeta.ID+", "+CategoryMeta.NAME);
         qb.addTable(categoryMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(categoryMeta.NAME);
+        qb.setOrderBy(CategoryMeta.NAME);
         
         if(qb.hasTable(dicRelatedEntryMeta.getTable()))
         	qb.addTable(dictionaryMeta);
