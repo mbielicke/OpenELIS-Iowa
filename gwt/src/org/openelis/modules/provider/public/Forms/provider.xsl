@@ -23,6 +23,10 @@
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMeta"/>
   </xalan:component>  
   
+  <xalan:component prefix="providerNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderNoteMeta"/>
+  </xalan:component> 
+  
   <xalan:component prefix="providerAddrMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressMeta"/>
   </xalan:component>
@@ -80,7 +84,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/></text>
      </widget>
      <widget width= "210px"> 
-      <textbox key = "{providerMeta:lastName()}" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
+      <textbox key = "{providerMeta:lastName()}" max="30" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/></text>
@@ -96,13 +100,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/></text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:firstName()}" case = "upper"   width= "150px" tab="{providerMeta:middleName},{providerMeta:lastName()}"/>
+      <textbox key= "{providerMeta:firstName()}" max="20"  case = "upper"   width= "150px" tab="{providerMeta:middleName()},{providerMeta:lastName()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/></text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{providerMeta:npi()}" width= "80px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
+      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "80px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
      </widget>
     </row>
     <row>
@@ -110,7 +114,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/></text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:middleName()}" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
+      <textbox key= "{providerMeta:middleName()}" max="20" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
      </widget>
     </row>
    </panel>
@@ -129,23 +133,23 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
 		 <widths>115,130,130,130,130,50,130,100,90,90,90,150,145</widths>
 		 <editors>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>		  
+		  <textbox case= "mixed" max="50" />
+		  <textbox case= "mixed" max="10"/>
+		  <textbox case= "mixed" max="30"/>
+		  <textbox case= "mixed" max="30"/>
+		  <textbox case= "mixed" max="30"/>		  
 			<autoDropdown  case="upper" width="40px" popWidth="auto">
 				<widths>40</widths>
 			</autoDropdown>
 			<autoDropdown case="mixed" width="110px" popWidth="auto">
 				<widths>110</widths>
 			</autoDropdown>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>		 
+			<textbox case= "mixed" max="10"/>
+			<textbox case= "mixed" max="21"/>
+			<textbox case= "mixed" max="16"/>
+			<textbox case= "mixed" max="16"/>
+			<textbox case= "mixed" max="16"/>
+			<textbox case= "mixed" max="80"/>		 
 		</editors>
 		 <fields>
 		  <string required = "true"/>
@@ -167,7 +171,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <table width= "550px" maxRows = "6" rows = "1" title = "" showError="false">
+	     <queryTable width= "550px" maxRows = "6" title = "" showError="false">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -195,42 +199,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed"/>		 
 		</editors>
 		<fields>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>		  
-		  <dropdown/>
-		  <dropdown/>		  	    		  	
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/>
-		  <queryString/> 
-		 <!-- <fields><xsl:value-of select='providerAddrMeta:location()'/>,<xsl:value-of select='providerAddrMeta:externalId()'/>,<xsl:value-of select='providerAddrAddrMeta:multipleUnit()'/>,
-										<xsl:value-of select='providerAddrAddrMeta:streetAddress()'/>,<xsl:value-of select='providerAddrAddrMeta:city()'/>,<xsl:value-of select='providerAddrAddrMeta:state()'/>,
-										<xsl:value-of select='providerAddrAddrMeta:country()'/>,<xsl:value-of select='providerAddrAddrMeta:zipCode()'/>,<xsl:value-of select='providerAddrAddrMeta:workPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:homePhone()'/>,
-										<xsl:value-of select='providerAddrAddrMeta:cellPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:faxPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:email()'/>,
-										</fields>
-										<queryString key="{providerAddrMeta:location()}" required="false"/>
-	  <queryString key="{providerAddrMeta:externalId()}" required="false"/>
-	  <queryString key="{providerAddrAddrMeta:multipleUnit()}" required="false"/>
-	  <queryString key="{providerAddrAddrMeta:streetAddress()}" required="false"/>
-	  <queryString key="{providerAddrAddrMeta:city()}" required="false"/>
-	  <dropdown key="{providerAddrAddrMeta:state()}" required="false"/>
-	  <queryString key="{providerAddrAddrMeta:zipCode()}" required="false"/>
-      <queryString key="{providerAddrAddrMeta:workPhone()}" required="false"/>
-      <queryString key="{providerAddrAddrMeta:homePhone()}" required="false"/>
-      <queryString key="{providerAddrAddrMeta:cellPhone()}" required="false"/>
-	  <queryString key="{providerAddrAddrMeta:faxPhone()}" required="false"/>
-      <queryString key="{providerAddrAddrMeta:email()}" required="false"/>
-	  <dropdown key="{providerAddrAddrMeta:country()}" required="false"/>  -->
+		  <xsl:value-of select='providerAddrMeta:location()'/>,<xsl:value-of select='providerAddrMeta:externalId()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:multipleUnit()'/>,<xsl:value-of select='providerAddrAddrMeta:streetAddress()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:city()'/>,<xsl:value-of select='providerAddrAddrMeta:state()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:country()'/>,<xsl:value-of select='providerAddrAddrMeta:zipCode()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:workPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:homePhone()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:cellPhone()'/>,<xsl:value-of select='providerAddrAddrMeta:faxPhone()'/>,
+		  <xsl:value-of select='providerAddrAddrMeta:email()'/>																				
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
-	    </table>
+	    </queryTable>
 	    </query>
 	  </widget>			
 	  <widget halign="left" style="WhiteContentPanel">
@@ -316,9 +296,21 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="{providerMeta:npi()}" />
   <queryString key="{providerMeta:middleName()}" />	  
   <queryString key="{providerNoteMeta:subject()}" />
-  <queryString key="{providerNoteMeta:text()}" />                           
-  <table key="providerAddressTable"/>
-  <dropdown key="{providerMeta:type()}" type="integer" required = "false"/>    
+  <queryString key="{providerNoteMeta:text()}" /> 
+  <dropdown key="{providerMeta:type()}" type="integer" required = "false"/>                            
+  <queryString key="{providerAddrMeta:location()}" required="false"/>
+	  <queryString key="{providerAddrMeta:externalId()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:multipleUnit()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:streetAddress()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:city()}" required="false"/>
+	  <dropdown key="{providerAddrAddrMeta:state()}" required="false"/>
+	  <dropdown key="{providerAddrAddrMeta:country()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:zipCode()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:workPhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:homePhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:cellPhone()}" required="false"/>
+	  <queryString key="{providerAddrAddrMeta:faxPhone()}" required="false"/>
+      <queryString key="{providerAddrAddrMeta:email()}" required="false"/>	 
 </rpc>
 
 <rpc key="queryByLetter">
