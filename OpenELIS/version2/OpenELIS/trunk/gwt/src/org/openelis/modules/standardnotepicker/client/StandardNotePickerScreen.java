@@ -37,7 +37,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 		String action = ((AppButton)sender).action;
 		if(action.equals("find")){
 			TextBox findTextBox = (TextBox)getWidget("findTextBox");
-			 String queryString = findTextBox.getText();
+			 String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
 			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
 			queryRPC.setFieldValue("name", queryString);
 			queryRPC.setFieldValue("description", queryString);
@@ -162,11 +162,11 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 		}
 	}
 	
-	public void abort(int state) {
+	public void abort() {
 		window.close();
 	}
 	
-	public void commit(int state) {
+	public void commit() {
 		TextArea textArea = (TextArea)getWidget("noteText");
 		noteTextArea.setText(noteTextArea.getText()+textArea.getText());
 		

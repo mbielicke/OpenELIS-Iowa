@@ -35,7 +35,7 @@
 		</panel>
 				<panel key="treeContainer" layout="vertical" height="250px" width="320px" overflow="auto" xsi:type="Panel">
 				<!--tree-->
-				<pagedTree key="noteTree" vertical="true" height = "250px" width = "320px" itemsPerPage="1000" title=""/>
+				<pagedtree key="noteTree" vertical="true" height = "250px" width = "320px" itemsPerPage="1000" title=""/>
 				</panel>
 				<panel layout="horizontal" xsi:type="Panel" spacing="10">
 				<widget>

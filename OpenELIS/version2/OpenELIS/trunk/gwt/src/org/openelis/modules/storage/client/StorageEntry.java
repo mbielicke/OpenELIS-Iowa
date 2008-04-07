@@ -13,13 +13,6 @@ public class StorageEntry implements AppModule {
                                   }
                                }
        );
-        ClassFactory.addClass(new String[] {"StorageNameTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                        return new StorageNameTable();
-                                  }
-                               }
-       );
         ClassFactory.addClass(new String[] {"StorageLocationScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {

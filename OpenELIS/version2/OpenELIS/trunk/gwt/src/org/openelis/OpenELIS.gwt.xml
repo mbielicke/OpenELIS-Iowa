@@ -8,6 +8,7 @@
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="org.openelis.modules.main.Main"/>
+    <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
@@ -17,6 +18,7 @@
     <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>        
     <inherits name="org.openelis.modules.storage.Storage"/>
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/>        
+    <inherits name="org.openelis.modules.testTrailer.TestTrailer"/> 
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
