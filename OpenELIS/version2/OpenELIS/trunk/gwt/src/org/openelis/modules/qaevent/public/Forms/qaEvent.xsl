@@ -57,7 +57,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "{qaEventMeta:name()}" case = "lower" tab="{qaEventMeta:description()},{qaEventMeta:reportingText()}"/>
+      <textbox key = "{qaEventMeta:name()}" max = "20" width= "150px" case = "lower" tab="{qaEventMeta:description()},{qaEventMeta:reportingText()}"/>
      </widget>
      </row>     
      <row>     
@@ -65,7 +65,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{qaEventMeta:description()}" width= "200px" tab="{qaEventMeta:type()},{qaEventMeta:name()}"/>
+      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:description()}" width= "300px" tab="{qaEventMeta:type()},{qaEventMeta:name()}"/>
      </widget>     
     </row>
      <row>
@@ -73,14 +73,14 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{qaEventMeta:type()}" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
+										<autoDropdown key="{qaEventMeta:type()}" width = "90px" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
 													
-													 <widths>80</widths>													 													
+													 <widths>100</widths>													 													
 										</autoDropdown>
 												<query>
 												  <autoDropdown case="mixed" popWidth="auto"  fromModel="true" multiSelect="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
 													
-													<widths>60</widths>													 
+													<widths>100</widths>													 
 										          </autoDropdown>
 												 </query>
 										</widget>  
@@ -91,12 +91,12 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{qaEventMeta:test()}" popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
-													<widths>130</widths>													 													
+										<autoDropdown key="{qaEventMeta:test()}" width = "140px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
+													<widths>135</widths>													 													
 										</autoDropdown>
 												<query>
 												  <autoDropdown  case="mixed" popWidth="auto" fromModel="true"   multiSelect="true"  type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
-													<widths>130</widths>												
+													<widths>135</widths>												
 										          </autoDropdown>
 												 </query>
 										</widget>
@@ -107,7 +107,7 @@
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
         </widget>
         <widget>
-         <check key= "{qaEventMeta:isBillable()}" tab="{qaEventMeta:reportingSequence()},{qaEventMeta:test()}"/>
+          <check key= "{qaEventMeta:isBillable()}" tab="{qaEventMeta:reportingSequence()},{qaEventMeta:test()}"/>
        </widget>
       </row> 
       <row>
@@ -138,9 +138,9 @@
 							  
 <rpc key= "display">
  <number key="{qaEventMeta:id()}" type="integer" required = "false" />
- <string key="{qaEventMeta:name()}" required = "true" />
- <number key="{qaEventMeta:reportingSequence()}" type="integer" required = "false" />
- <string key="{qaEventMeta:description()}" required = "false" /> 	 
+ <string key="{qaEventMeta:name()}" max = "20" required = "true" />
+ <number key="{qaEventMeta:reportingSequence()}"  type="integer" required = "false" />
+ <string key="{qaEventMeta:description()}" max = "60" required = "false" /> 	 
  <string key= "{qaEventMeta:isBillable()}" required = "false" />
  <string key="{qaEventMeta:reportingText()}" required = "true" />
  <dropdown key="{qaEventMeta:test()}" type="integer" required = "false" />

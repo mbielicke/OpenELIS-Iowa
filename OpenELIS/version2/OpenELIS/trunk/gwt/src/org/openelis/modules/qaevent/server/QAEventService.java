@@ -94,7 +94,7 @@ public class QAEventService implements
                  
                  QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
                  qaEvents = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                 System.out.println("qaEvents.size() "+qaEvents.size());
+                 
              }catch(Exception e){
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
