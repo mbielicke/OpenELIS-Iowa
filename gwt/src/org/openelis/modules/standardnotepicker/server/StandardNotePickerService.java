@@ -21,6 +21,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.widget.pagedtree.TreeModel;
 import org.openelis.gwt.widget.pagedtree.TreeModelItem;
+import org.openelis.meta.StandardNoteMeta;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
@@ -87,8 +88,8 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		descField.setValue(desc.getValue());
 		
 		HashMap fields = new HashMap();
-		fields.put("name", nameField);
-		fields.put("description", descField);
+		fields.put(StandardNoteMeta.NAME, nameField);
+		fields.put(StandardNoteMeta.DESCRIPTION, descField);
 		
 		List standardNoteCategories = new ArrayList();
 		try{
@@ -131,9 +132,9 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		nameField.setValue(name.getValue());
 		descField.setValue(desc.getValue());
 		HashMap<String,AbstractField> fields = new HashMap<String, AbstractField>();
-		fields.put("type", typeField);
-		fields.put("name", nameField);
-		fields.put("description", descField);
+		fields.put(StandardNoteMeta.TYPE, typeField);
+		fields.put(StandardNoteMeta.NAME, nameField);
+		fields.put(StandardNoteMeta.DESCRIPTION, descField);
 		List list = new ArrayList();
 		try{
 			list = remote.getStandardNoteByType(fields);

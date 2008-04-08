@@ -2,6 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:standardNoteMeta="xalan://org.openelis.meta.StandardNoteMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="button.xsl"/>
@@ -14,6 +15,10 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
 
+  <xalan:component prefix="standardNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StandardNoteMeta"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
@@ -60,8 +65,8 @@
 	<tree key="noteTree"/>
 	</rpc>
 	<rpc key="queryByNameDescription">
- 	<queryString key="name" type="string" required="false"/>
-  	<queryString key="description" required="false"/>
+ 	<queryString key="{standardNoteMeta:name()}" type="string" required="false"/>
+  	<queryString key="{standardNoteMeta:description()}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>

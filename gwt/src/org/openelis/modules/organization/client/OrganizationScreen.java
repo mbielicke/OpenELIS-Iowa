@@ -338,10 +338,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	
 //	  load the state dropdowns
 		ScreenAutoDropdown displayState = (ScreenAutoDropdown)widgets.get("organization.address.state");
-	    //ScreenAutoDropdown queryState = displayState.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayState.getWidget()).setModel(stateDropdown);
-	    //((AutoCompleteDropdown)queryState.getWidget()).setModel(stateDropdown);
 	               
 	    ScreenTableWidget displayContactTable = (ScreenTableWidget)widgets.get("contactsTable");
 	    ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayContactTable.getQueryWidget();
@@ -356,10 +354,8 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	     
 		//load the country dropdowns
 	    ScreenAutoDropdown displayCountry = (ScreenAutoDropdown)widgets.get("organization.address.country");
-	    //ScreenAutoDropdown queryCountry = displayCountry.getQueryWidget();
 	               
 	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
-	    //((AutoCompleteDropdown)queryCountry.getWidget()).setModel(countryDropdown);
 	               
 	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
 	               																				controller.editors[12];
@@ -444,7 +440,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
           if(getModel){              
              // reset the model so that old data goes away 
               TableController orgContactController = (TableController)(((TableWidget)getWidget("contactsTable")).controller);
-              //orgContactController.model.reset();
             
               NumberObject orgIdObj = new NumberObject();
               orgIdObj.setType("integer");
