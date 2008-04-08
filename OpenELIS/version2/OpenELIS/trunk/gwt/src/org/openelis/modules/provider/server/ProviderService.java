@@ -17,10 +17,8 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -28,8 +26,6 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.ProviderAddressAddressMeta;
-import org.openelis.meta.ProviderAddressMeta;
 import org.openelis.meta.ProviderMeta;
 import org.openelis.meta.ProviderNoteMeta;
 import org.openelis.persistence.CachingManager;
@@ -161,11 +157,9 @@ public class ProviderService implements AppScreenFormServiceInt{
         
         int i=0;
         model.clear();
-       // List providers = new ArrayList();
         
-        //while(i < organizations.size() && i < leftTableRowsPerPage) {
         while(i < providers.size() && i < leftTableRowsPerPage) {
-            //Object[] result = (Object[])organizations.get(i);
+
             Object[] result = (Object[])providers.get(i);
             //org id
             Integer idResult = (Integer)result[0];
@@ -382,8 +376,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             entries = catRemote.getDropdownValues(id);
             DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
-                          
-            //BooleanObject blankSelected = new BooleanObject();               
+                                       
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
@@ -391,35 +384,28 @@ public class ProviderService implements AppScreenFormServiceInt{
             blankNumberId.setType("integer");
             blankNumberId.setValue(new Integer(-1));
             if(cat.equals("providerType")){
-              //blankset.addObject(blankNumberId);
+
               blankset.setKey(blankNumberId);
             } else{
-              //blankset.addObject(blankStringId);
+
               blankset.setKey(blankStringId);
             }            
-            
-           // blankSelected.setValue(new Boolean(false));
-           // blankset.addObject(blankSelected);
+
             
             model.add(blankset);        
           
         
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             Object[] idType = (Object[])iter.next();
-            //System.out.println("typeId "+idType[0]);
-            //System.out.println("type "+idType[1]); 
             DataSet set = new DataSet();
-            //Object[] result = (Object[]) entries.get(i);
+
             //id
             Integer dropdownId = (Integer)idType[0];
             //entry
             String dropdownText = (String)idType[1];
             
             StringObject textObject = new StringObject();
-            
-            
-            //BooleanObject selected = new BooleanObject();
-            
+
             textObject.setValue(dropdownText);
             set.addObject(textObject);
             
@@ -427,17 +413,15 @@ public class ProviderService implements AppScreenFormServiceInt{
                 NumberObject numberId = new NumberObject();
                 numberId.setType("integer");
                 numberId.setValue(dropdownId);
-                //set.addObject(numberId);
+
                 set.setKey(numberId);
             }else{
                StringObject stringId = new StringObject();
                stringId.setValue(dropdownText);
-               //set.addObject(stringId);
+
                set.setKey(stringId);
             }
-            
-            //selected.setValue(new Boolean(false));
-           // set.addObject(selected);
+
             
             model.add(set);
             
@@ -533,7 +517,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         return returnObject;
     	
         }catch(Exception e){
-        	System.out.println(e.getMessage());
+        	e.printStackTrace();
         }
         return null;        
     }

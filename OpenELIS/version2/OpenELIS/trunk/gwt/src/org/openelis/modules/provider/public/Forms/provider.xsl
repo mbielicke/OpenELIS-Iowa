@@ -70,6 +70,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		<!--end button panel-->
    
    <panel layout= "vertical"  height = "5px" xsi:type= "Panel"/>
+   <panel layout="vertical" xsi:type="Panel">
    <panel key= "secMod" width = "450px" layout= "table"  style= "Form" xsi:type= "Table">
     <row>
     <widget>
@@ -119,12 +120,11 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
    </panel>
    
-   <panel layout= "vertical" height = "20px" xsi:type= "Panel"/>
-    <panel height= "200px" key= "provTabPanel"  halign= "center" layout= "tab"  xsi:type= "Tab">
+    <panel height= "200px" key= "provTabPanel"  halign="center" layout= "tab"  xsi:type= "Tab">
      <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
-      <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
-       <widget halign= "center">
-        <table width= "550px" cellHeight = "20" maxRows = "6" rows = "1" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false">
+      <panel layout= "vertical" spacing= "0" padding="0" xsi:type= "Panel">
+       <widget valign="top">
+        <table width= "574px" cellHeight = "20" maxRows = "6" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -171,7 +171,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "550px" maxRows = "6" title = "" showError="false">
+	     <queryTable width= "574px" maxRows = "6" title = "" showError="false">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -213,7 +213,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 	    </queryTable>
 	    </query>
 	  </widget>			
-	  <widget halign="left" style="WhiteContentPanel">
+	  
+	  <widget halign = "left" style="WhiteContentPanel">
 									<appButton action="removeRow" onclick="this" key="removeAddressButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
@@ -262,7 +263,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 								</widget>
 								<widget colspan="2">
 								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="127px" width="524px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="524px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
 								
 								</panel>
 								</panel>
@@ -274,6 +275,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    </panel>   
   
   </panel>
+ </panel>
  </panel>
 </display>
 							  
