@@ -109,7 +109,7 @@
 					<panel layout="vertical"  spacing="5" xsi:type="Panel">
 						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "6" cellHeight = "20" rows = "0" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
+							<table maxRows = "6" cellHeight = "20" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -135,7 +135,7 @@
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
 						  <query>
-						   	<queryTable width = "480px" cellHeight = "20" maxRows = "5"  title="" showError="false">
+						   	<queryTable width = "auto" cellHeight = "20" maxRows = "6"  title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
