@@ -170,30 +170,10 @@ public class StandardNoteBean implements StandardNoteRemote{
 	}
     
     public List queryForType(HashMap fields) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        //select distinct d.id,d.entry from standard_note s, dictionary d where s.type=d.id and (s.description like '%Called%' or s.description like '%Opening%' or s.description like '%All%')
-        sb.append("select distinct d.id,d.entry " + "from StandardNote s left join s.dictionary d where 1=1 ");
+        Query query = manager.createNamedQuery("getStandardNoteTypes");
         
-        //***append the abstract fields to the string buffer
-        String nameFrom = QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name");
-        if(!"".equals(nameFrom))
-            nameFrom = " and (("+nameFrom.substring(6);
-        sb.append(nameFrom);
-
-        String descFrom = QueryBuilder.getQuery((QueryStringField)fields.get("description"), "s.description");
-        if(!"".equals(descFrom)){
-            descFrom = " or"+descFrom.substring(4);
-            descFrom+=")";
-        }
-        sb.append(descFrom);
-        
-        Query query = manager.createQuery(sb.toString()+" order by d.entry");
-        
-//      ***set the parameters in the query
-        if(fields.containsKey("name"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
-        if(fields.containsKey("description"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("description"), "s.description", query);
+        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
+        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
         
         List returnList = query.getResultList();
         
@@ -204,40 +184,11 @@ public class StandardNoteBean implements StandardNoteRemote{
     }
     
     public List getStandardNoteByType(HashMap fields) throws Exception{
-        /////
-        StringBuffer sb = new StringBuffer();
-    
-        sb.append("select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where 1=1 ");
+    	Query query = manager.createNamedQuery("getStandardNoteByType");
         
-        //***append the abstract fields to the string buffer
-        String nameFrom = QueryBuilder.getQuery((QueryStringField)fields.get("name"), "s.name");
-        if(!"".equals(nameFrom))
-            nameFrom = " and (("+nameFrom.substring(6);
-        sb.append(nameFrom);
-
-        String descFrom = QueryBuilder.getQuery((QueryStringField)fields.get("description"), "s.description");
-        if(!"".equals(descFrom)){
-            descFrom = " or"+descFrom.substring(4);
-            descFrom+=")";
-        }
-        sb.append(descFrom);
-        
-        if(fields.containsKey("type"))
-            sb.append(QueryBuilder.getQuery((QueryNumberField)fields.get("type"), "s.type"));
-        if(fields.containsKey("text"))
-            sb.append(QueryBuilder.getQuery((QueryStringField)fields.get("text"), "s.text"));
-                
-        Query query = manager.createQuery(sb.toString()+" order by s.name");
-        
-    //  ***set the parameters in the query
-        if(fields.containsKey("name"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("name"), "s.name", query);
-        if(fields.containsKey("description"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("description"), "s.description", query);
-        if(fields.containsKey("type"))
-            QueryBuilder.setParameters((QueryNumberField)fields.get("type"), "s.type", query);
-        if(fields.containsKey("text"))
-            QueryBuilder.setParameters((QueryStringField)fields.get("text"), "s.text", query);
+        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
+        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
+        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMeta.TYPE)).getValue()).trim()));
         
         List returnList = query.getResultList();
         
