@@ -26,7 +26,7 @@
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
-			    <aToZ height="260px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
+			    <aToZ height="260px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 					 <xsl:if test="string($language)='en'">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
@@ -59,12 +59,10 @@
 								</row>
 								<row>								
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" popWidth="auto" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}">
-											<widths>89</widths>
-										</autoDropdown>
+										<textbox case="mixed" key="name" max="60" width="150px" tab="description,text"/>
 									</widget>
 								</row>
 								<row>								
@@ -72,15 +70,15 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{storageUnitMeta:description()}" max="60" width="300px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
+										<textbox case="mixed" key="description" max="60" width="300px" tab="text,name"/>
 									</widget>
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{storageUnitMeta:isSingular()}" tab="{storageUnitMeta:id()},{storageUnitMeta:description()}"/>
+										<textarea key="text" width="300px" height="170px" tab="name,description"/>
 									</widget>
 								</row>
 							</panel>
@@ -89,20 +87,20 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="{storageUnitMeta:id()}" type="integer" required="false"/>
-  	<dropdown key="{storageUnitMeta:category()}" required="true"/>
-  	<string key="{storageUnitMeta:description()}" max="60" required="true"/>
-  	<string key="{storageUnitMeta:isSingular()}" required="false"/>
+  	<number key="id" type="integer" required="false"/>
+  	<string key="name" max="20" required="true"/>
+  	<string key="description" max="60" required="true"/>
+  	<string key="text" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="{storageUnitMeta:id()}" type="integer" required="false"/>
- 	<dropdown key="{storageUnitMeta:category()}" required="false"/>
-  	<queryString key="{storageUnitMeta:description()}" required="true"/>
-  	<queryString key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
+ 	<queryNumber key="id" type="integer" required="false"/>
+  	<queryString key="name" max="20" required="true"/>
+  	<queryString key="description" max="60" required="true"/>
+  	<queryString key="text" required="true"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{storageUnitMeta:description()}"/>
+		<queryString key="name"/>
 	</rpc>
 </screen>
   </xsl:template>

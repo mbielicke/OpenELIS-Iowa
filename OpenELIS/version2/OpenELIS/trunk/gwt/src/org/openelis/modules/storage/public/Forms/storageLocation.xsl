@@ -185,12 +185,11 @@
 	</rpc>
 	
 	<rpc key="query">
-	<queryNumber key="{storageLocationMeta:id()}" type="integer"/>
-    <queryString key="{storageLocationMeta:name()}"/>
-    <queryString key="{storageLocationMeta:location()}"/>
-    <queryString key="{storageLocationStorageUnitMeta:description()}"/>
-    <queryString key="{storageLocationParentMeta:name()}"/>  
-    <!--<collection key="sortOrder" type="integer" required="false"/>-->
+	<queryNumber key="{storageLocationMeta:id()}" type="integer" required="false"/>
+    <queryString key="{storageLocationMeta:name()}" required="false"/>
+    <queryString key="{storageLocationMeta:location()}" required="false"/>
+    <queryString key="{storageLocationStorageUnitMeta:description()}" required="false"/>
+    <queryString key="{storageLocationParentMeta:name()}" required="false"/>  
     <queryString key="{storageLocationMeta:isAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>

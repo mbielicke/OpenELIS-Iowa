@@ -97,7 +97,7 @@
 	<rpc key="query">
  	<queryNumber key="{storageUnitMeta:id()}" type="integer" required="false"/>
  	<dropdown key="{storageUnitMeta:category()}" required="false"/>
-  	<queryString key="{storageUnitMeta:description()}" required="true"/>
+  	<queryString key="{storageUnitMeta:description()}" required="false"/>
   	<queryString key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
 
 	</rpc>
