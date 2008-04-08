@@ -34,7 +34,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     private TextBox tname = null;
 
     private ScreenAutoDropdown displaySection = null;
-
     private static boolean loaded = false;
     
     private static DataModel sectionDropDown = null;
@@ -53,16 +52,13 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         bpanel = (ButtonPanel)getWidget("buttons");
         message.setText("done");
 
-        //categoryNamesController = ((TableWidget)getWidget("categoryTable")).controller;
-        //modelWidget.addChangeListener(categoryNamesController);
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
         modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
-        
-        //((CategorySystemNamesTable)categoryNamesController.manager).setDictionaryForm(this);
+                
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
 
@@ -77,12 +73,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         
         loadDropdowns();
         super.afterDraw(success);
-        
-
-              
-        
-        // ConstantMap cmap = (ConstantMap)initData[3];
-        // hmap = (HashMap)cmap.getValue();
 
     }
 
@@ -101,14 +91,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     public void afterUpdate(boolean success) {
         super.afterUpdate(success);
-
-        // AppButton removeEntryButton = (AppButton)
-        // getWidget("removeEntryButton");
         removeEntryButton.changeState(AppButton.UNPRESSED);
 
         // set focus to the name field
         tname.setFocus(true);
-        //getLists();
         
     }
     
@@ -181,8 +167,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         String action = ((AppButton)sender).action;
          if (action.equals("removeEntry")) {
 
-            // TableWidget dictEntTable = (TableWidget)
-            // getWidget("dictEntTable");
             int selectedRow = dictEntryController.selected;
 
             if (selectedRow > -1 && dictEntryController.model.numRows() > 1) {
@@ -217,7 +201,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             
             commitQuery(letterRPC);
 
-            //setStyleNameOnButton(sender);
+
 
         }
     }
@@ -236,8 +220,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         dictEntManager.resetLists();
 
         super.add();        
-        // AppButton removeEntryButton = (AppButton)
-        // getWidget("removeEntryButton");
+
         removeEntryButton.changeState(AppButton.UNPRESSED);
 
         // set focus to the name field
@@ -252,11 +235,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         super.query();
 
         // set focus to the name field
-        // tname = (TextBox)getWidget("name");
+       
         tname.setFocus(true);
 
-        // AppButton removeEntryButton = (AppButton)
-        // getWidget("removeEntryButton");
+      
         removeEntryButton.changeState(AppButton.DISABLED);
     }
     
@@ -290,8 +272,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
                                         if (hasError) {
                                             DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
                                             String dictSystemNameError = "An entry with this System Name already exists in the database.Please choose some other name";
-                                            // String dictSystemNameError =
-                                            // (String)(hmap.get("dictSystemNameError"));
+                                           
                                             dictEntManager.showError(trow,
                                                                      1,
                                                                      dictEntryController,
@@ -336,8 +317,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
                                         if (hasError) {
                                             DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
                                             String dictEntryError = "An entry with this Entry text already exists in the database.Please choose some other text";
-                                            // String dictEntryError =
-                                            // (String)(hmap.get("dictEntryError"));
+                                            
                                             dictEntManager.showError(trow,
                                                                      3,
                                                                      dictEntryController,
@@ -357,10 +337,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             sectionDropDown = (DataModel)initData[0];
         }
 
-        //ScreenAutoDropdown querySection = displaySection.getQueryWidget();
+       
 
         ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
-        //((AutoCompleteDropdown)querySection.getWidget()).setModel(sectionDropDown);
+        
     }
 
     public boolean validate() {

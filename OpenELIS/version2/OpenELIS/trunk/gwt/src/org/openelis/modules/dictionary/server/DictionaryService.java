@@ -67,19 +67,14 @@ public class DictionaryService implements AppScreenFormServiceInt,
         
         if(sectionDropDownField ==null)
             sectionDropDownField = getInitialModel("section");                     
-           
-           /*ConstantMap cmap = new ConstantMap();
-           HashMap<String,String> hmap = new HashMap<String, String>();
-           hmap.put("dictSystemNameError", openElisConstants.getString("dictSystemNameError"));
-           hmap.put("dictEntryError", openElisConstants.getString("dictEntryError"));
-           cmap.setValue(hmap);*/
+                      
            return new DataObject[] {xml,sectionDropDownField};
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = (Integer)key.getKey().getValue();
-//      System.out.println("in contacts");
+
         CategoryDO catDO = new CategoryDO();
          try{
             catDO = remote.getCategoryAndUnlock(categoryId);
@@ -269,7 +264,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = (Integer)key.getKey().getValue();
-//      System.out.println("in contacts");
+
         CategoryDO catDO = new CategoryDO();
          try{
             catDO = remote.getCategoryAndLock(categoryId);
@@ -291,7 +286,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
              
              for(int iter = 0;iter < contactsList.size();iter++) {
                  DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
-                 //DictionaryDO dictDO = addressRow.getDictionaryDO();
 
                     TableRow row = dictEntryModel.createRow();
                     NumberField id = new NumberField();
@@ -313,7 +307,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
                      row.getColumn(2).setValue(dictDO.getLocalAbbrev());
                      row.getColumn(3).setValue(dictDO.getEntry());
                                                                                                         
-                     //row.getColumn(4).setValue(dictDO.getRelatedEntryId());   
                      
 //                   we need to create a dataset for the parent organization auto complete
                     if(dictDO.getRelatedEntryId() == null)
@@ -411,8 +404,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         DataSet blankset = new DataSet();
         
         StringObject blankStringId = new StringObject();
-                      
-        //BooleanObject blankSelected = new BooleanObject();               
+                                    
         blankStringId.setValue("");
         blankset.addObject(blankStringId);
         
@@ -420,7 +412,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
          NumberObject blankNumberId = new NumberObject();
          blankNumberId.setType("integer");
          blankNumberId.setValue(-1);
-         //blankset.addObject(blankNumberId);
          blankset.setKey(blankNumberId);
         }                        
         
@@ -433,35 +424,27 @@ public class DictionaryService implements AppScreenFormServiceInt,
                       
                                  
          if(sections!=null){
-            // System.out.println("sections.size() "+ sections.size());   
-          //  List<OptionItem> optionlist = new ArrayList<OptionItem>();
-         
+
           for (Iterator iter = sections.iterator(); iter.hasNext();) {
               SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
                            
                 DataSet set = new DataSet();
-                //Object[] result = (Object[]) entries.get(i);
                 //id
                 Integer dropdownId = sectionDO.getId();
                 //entry
                 String dropdownText = sectionDO.getName();
                 
                 StringObject textObject = new StringObject();
-                //StringObject stringId = new StringObject();
                 NumberObject numberId = new NumberObject();
-               // BooleanObject selected = new BooleanObject();
                 
                 textObject.setValue(dropdownText);
                 set.addObject(textObject);
                 
-               // if(cat.equals("contactType")){
                     numberId.setType("integer");
                     numberId.setValue(dropdownId);
-                    //set.addObject(numberId);
                     set.setKey(numberId);              
                 
-                model.add(set);                
-              //}             
+                model.add(set);                          
            }                           
           }
         }        
@@ -555,8 +538,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          
            dictDO.setSystemName(sysName);           
            dictDO.setEntry(entry);  
-           NumberField id = (NumberField)row.getHidden("id");
-           //NumberField relEntryId = (NumberField)row.getHidden("relEntryId");                         
+           NumberField id = (NumberField)row.getHidden("id");                 
          
             StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
               if(deleteFlag == null){
