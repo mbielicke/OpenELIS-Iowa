@@ -40,13 +40,9 @@ import com.google.gwt.user.client.ui.Widget;
                bpanel = (ButtonPanel) getWidget("buttons");        
                message.setText("done");                 
                
-               //qaEventsTable = (TableWidget)getWidget("qaEventsTable");
-               //modelWidget.addChangeListener(qaEventsTable.controller); 
                AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
                modelWidget.addChangeListener(atozTable);
                addChangeListener(atozTable);
-               
-               //((QAEventsNamesTable)qaEventsTable.controller.manager).setQaEventForm(this);
                
                ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
                atozButtons.addChangeListener(this);
@@ -80,7 +76,7 @@ import com.google.gwt.user.client.ui.Widget;
          //set focus to the name field            
             tname.setFocus(true);
            
-         // isable the text area so that it doesn't get included in the query, this is done becuase most 
+         // disable the text area so that it doesn't get included in the query, this is done because most 
          // databases don't support querying by BLOBs
             reportingText.setEnabled(false);
             
@@ -98,7 +94,6 @@ import com.google.gwt.user.client.ui.Widget;
             super.afterUpdate(success);
             
             //set focus to the name field
-            //TextBox name = (TextBox)getWidget("name");
             tname.setFocus(true);
             reportingText.setEnabled(true);
         }
@@ -113,8 +108,7 @@ import com.google.gwt.user.client.ui.Widget;
                   
                  commitQuery(letterRPC);
                  
-                 //setStyleNameOnButton(sender);
-                 
+                
              }
          }
          
@@ -133,13 +127,10 @@ import com.google.gwt.user.client.ui.Widget;
                    testDropDown = (DataModel)initData[1];
                }       
 
-                    //ScreenAutoDropdown queryType = displayType.getQueryWidget();                       
+                                        
                     ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-                    //((AutoCompleteDropdown)queryType.getWidget()).setModel(qaEventTypeDropDown);
-                                                                                                          
-                    //ScreenAutoDropdown queryTest = displayTest.getQueryWidget();                    
                     ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
-                    //((AutoCompleteDropdown)queryTest.getWidget()).setModel(testDropDown);
+                    
                                            
                 }
                 
