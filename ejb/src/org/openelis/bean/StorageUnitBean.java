@@ -85,7 +85,6 @@ public class StorageUnitBean implements StorageUnitRemote{
         	 throw new LastPageException();
          else
         	 return returnList;
-         //return query.getResultList();
 	}
 
 	public Integer updateStorageUnit(StorageUnitDO unitDO) {
@@ -93,7 +92,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 		StorageUnit storageUnit = null;
 		
 		try {
-//			organization reference table id
+//			storage unit reference table id
         	Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "storage_unit");
             Integer storageUnitReferenceId = (Integer)query.getSingleResult();

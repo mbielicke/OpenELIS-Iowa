@@ -16,11 +16,16 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+	@NamedQueries({@NamedQuery(name = "getTestTrailer", query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text) from " + 
+															" TestTrailer t where t.id = :id")})
+	 
 @Entity
 @Table(name="test_trailer")
 @EntityListeners({AuditUtil.class})
