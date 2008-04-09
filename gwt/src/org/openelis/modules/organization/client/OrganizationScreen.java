@@ -189,6 +189,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		removeContactButton.changeState(AppButton.UNPRESSED);
 	}
     
+
     public void afterAbort(boolean success){
         loadContacts = true;
         loadNotes = true;                

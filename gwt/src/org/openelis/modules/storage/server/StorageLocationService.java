@@ -488,11 +488,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				String category = (String)result[2];
 				if(category != null)
 					category = category.trim();
-				//is singular
-				String isSingular = (String)result[3];
-				if(isSingular != null)
-					isSingular = isSingular.trim();
-				
+			
 				DataSet data = new DataSet();
 				//hidden id
 				NumberObject idObject = new NumberObject();
@@ -506,10 +502,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				StringObject categoryObject = new StringObject();
 				categoryObject.setValue(category);
 				data.addObject(categoryObject);
-				StringObject isSingularObject = new StringObject();
-				isSingularObject.setValue(isSingular);
-				data.addObject(isSingularObject);
-				
+			
 				//add the dataset to the datamodel
 				dataModel.add(data);
 			}			
@@ -586,23 +579,12 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				idObject.setValue(pslId);
 				data.setKey(idObject);
 				//columns
-				StringObject idStringObject = new StringObject();
-				idStringObject.setValue(String.valueOf(pslId));
-				data.addObject(idStringObject);
 				StringObject nameObject = new StringObject();
 				nameObject.setValue(name.trim());
 				data.addObject(nameObject);
 				StringObject locationObject = new StringObject();
 				locationObject.setValue(location.trim());
 				data.addObject(locationObject);
-				//display text
-				StringObject displayObject = new StringObject();
-				displayObject.setValue(name.trim());
-				data.addObject(displayObject);
-				//selected flag
-				StringObject selectedFlag = new StringObject();
-				selectedFlag.setValue("N");
-				data.addObject(selectedFlag);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);

@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:storageUnitMeta="xalan://org.openelis.meta.StorageUnitMeta"
+                xmlns:testTrailerMeta="xalan://org.openelis.meta.TestTrailerMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumnsNum.xsl"/>   
@@ -15,14 +15,14 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
- <xalan:component prefix="StorageUnitMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageUnitMeta"/>
+ <xalan:component prefix="testTrailerMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestTrailerMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
-<screen id="Storage" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="TestTrailer" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
@@ -62,7 +62,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" max="60" width="150px" tab="description,text"/>
+										<textbox case="mixed" key="{testTrailerMeta:name()}" max="60" width="150px" tab="{testTrailerMeta:description()},{testTrailerMeta:text()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -70,7 +70,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="description" max="60" width="300px" tab="text,name"/>
+										<textbox case="mixed" key="{testTrailerMeta:description()}" max="60" width="300px" tab="{testTrailerMeta:text()},{testTrailerMeta:name()}"/>
 									</widget>
 								</row>
 								<row>
@@ -78,7 +78,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="text" width="300px" height="170px" tab="name,description"/>
+										<textarea key="{testTrailerMeta:text()}" width="300px" height="170px" tab="{testTrailerMeta:name()},{testTrailerMeta:description()}"/>
 									</widget>
 								</row>
 							</panel>
@@ -87,16 +87,16 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="id" type="integer" required="false"/>
-  	<string key="name" max="20" required="true"/>
-  	<string key="description" max="60" required="true"/>
-  	<string key="text" required="true"/>
+  	<number key="{testTrailerMeta:id()}" type="integer" required="false"/>
+  	<string key="{testTrailerMeta:name()}" max="20" required="true"/>
+  	<string key="{testTrailerMeta:description()}" max="60" required="true"/>
+  	<string key="{testTrailerMeta:text()}" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="id" type="integer" required="false"/>
-  	<queryString key="name" max="20" required="true"/>
-  	<queryString key="description" max="60" required="true"/>
-  	<queryString key="text" required="true"/>
+ 	<queryNumber key="{testTrailerMeta:id()}" type="integer" required="false"/>
+  	<queryString key="{testTrailerMeta:name()}" max="20" required="true"/>
+  	<queryString key="{testTrailerMeta:description()}" max="60" required="true"/>
+  	<queryString key="{testTrailerMeta:text()}" required="true"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
