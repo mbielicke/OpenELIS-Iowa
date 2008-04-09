@@ -83,5 +83,4 @@ public class OrganizationParentOrganizationMeta implements Meta{
 	public static String addressId(){
 		return columnNames[4];
 	}
-
 }
