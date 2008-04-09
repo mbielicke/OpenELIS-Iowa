@@ -470,7 +470,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             NumberObject idObject = new NumberObject();
             idObject.setType("integer");
             idObject.setValue(entryId);
-            data.addObject(idObject);
+            data.setKey(idObject);
             
             StringObject nameObject = new StringObject();
             nameObject.setValue(entryText.trim());
@@ -480,9 +480,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
             displayObject.setValue(entryText.trim());
             data.addObject(displayObject);
             
-            StringObject selectedFlag = new StringObject();
-            selectedFlag.setValue("N");
-            data.addObject(selectedFlag);
+            //StringObject selectedFlag = new StringObject();
+           // selectedFlag.setValue("N");
+           // data.addObject(selectedFlag);
             
             //add the dataset to the datamodel
             dataModel.add(data);
