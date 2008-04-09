@@ -118,10 +118,10 @@
 									<check/>									
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
-									<textbox/>										
-									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" multiSelect="false" width="100px" popWidth="90px">
-												<widths>100</widths>																								
-									</autoDropdown>																										
+									<textbox/>																			
+									<autoDropdown cat="relatedEntry" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="90px">												
+												<widths>100</widths>
+											</autoDropdown>
 								</editors>
 								<fields>																											
 									<string>Y</string>
