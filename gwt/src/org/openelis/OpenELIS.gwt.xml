@@ -23,6 +23,7 @@
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
  
+    <servlet path='/PreferencesServlet' class='org.openelis.server.PreferencesServlet'/>  
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->
