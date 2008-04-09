@@ -125,7 +125,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-		message.setText("done");
+		message.setText("Done");
 
 		// get contacts table and set the managers form
 		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
