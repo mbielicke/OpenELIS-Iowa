@@ -87,9 +87,9 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown cat="parentStorage" key="{storageLocationParentMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="150px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:location()}">
-											<headers>Id,Name,Location</headers>
-											<widths>50,120,150</widths>
+										<autoDropdown cat="parentStorageLoc" key="{storageLocationParentMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="280px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:location()}">
+											<headers>Name,Location</headers>
+											<widths>120,150</widths>
 										</autoDropdown>
 										<query>
 											<textbox case="upper" width="166px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:location()}"/>
@@ -101,9 +101,9 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="150px" popWidth="150px" tab="{storageLocationMeta:isAvailable()},{storageLocationParentMeta:name()}">
-										<headers>Desc,Category,Singlular</headers>
-										<widths>160,80,45</widths>	
+									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="150px" popWidth="247px" tab="{storageLocationMeta:isAvailable()},{storageLocationParentMeta:name()}">
+										<headers>Desc,Category</headers>
+										<widths>160,80</widths>	
 									</autoDropdown>
 										<query>
 										<textbox case="upper" width="166px" tab="{storageLocationMeta:isAvailable()},{storageLocationParentMeta:name()}"/>

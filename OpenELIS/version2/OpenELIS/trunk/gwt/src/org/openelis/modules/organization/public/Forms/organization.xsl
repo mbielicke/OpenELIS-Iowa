@@ -158,7 +158,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="225px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}">
+										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="423px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>

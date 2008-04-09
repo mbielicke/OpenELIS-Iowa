@@ -2,7 +2,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:storageUnitMeta="xalan://org.openelis.meta.StorageUnitMeta"
+                xmlns:analyteMeta="xalan://org.openelis.meta.AnalyteMeta"
+                xmlns:parentAnalyteMeta="xalan://org.openelis.meta.AnalyteParentAnalyteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumnsNum.xsl"/>   
@@ -15,14 +16,18 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
- <xalan:component prefix="StorageUnitMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageUnitMeta"/>
+  <xalan:component prefix="analyteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="parentAnalyteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteParentAnalyteMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
-<screen id="Storage" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="Analyte" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
@@ -62,7 +67,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="name" max="60" width="350px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
+										<textbox case="mixed" key="{analyteMeta:name()}" max="60" width="350px" tab="{analyteMeta:analyteGroup()},{analyteMeta:isActive()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -70,7 +75,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"analyteGroup")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="analyteGroup" width="200px" tab="parentAnalyte,name"/>
+										<textbox case="mixed" key="{analyteMeta:analyteGroup()}" width="200px" tab="{parentAnalyteMeta:name()},{analyteMeta:name()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -78,7 +83,13 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="parentAnalyte" width="200px" tab="externalId,analyteGroup"/>
+									<autoDropdown cat="parentAnalyte" key="{parentAnalyteMeta:name()}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" popWidth="198px" tab="{analyteMeta:externalId()},{analyteMeta:analyteGroup()}">
+										<headers>Name</headers>
+										<widths>194</widths>
+										</autoDropdown>
+										<query>
+											<textbox case="mixed" width="200px" tab="{analyteMeta:externalId()},{analyteMeta:analyteGroup()}"/>
+										</query>
 									</widget>
 								</row>
 								<row>								
@@ -86,7 +97,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"externalId")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="externalId" max="20" width="150px" tab="isActive,parentAnalyte"/>
+										<textbox case="mixed" key="{analyteMeta:externalId()}" max="20" width="150px" tab="{analyteMeta:isActive()},{parentAnalyteMeta:name()}"/>
 									</widget>
 								</row>
 								<row>
@@ -94,7 +105,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									</widget>
 									<widget>
-										<check key="isActive" tab="name,externalId"/>
+										<check key="{analyteMeta:isActive()}" tab="{analyteMeta:name()},{analyteMeta:externalId()}"/>
 									</widget>
 								</row>
 							</panel>
@@ -103,23 +114,23 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="id" type="integer" required="false"/>
-  	<string key="name" required="true"/>
-  	<number key="analyteGroup" type="integer" required="true"/>
-  	<number key="parentAnalyte" type="integer" required="false"/>
-  	<string key="externalId" required="false"/>
-  	<string key="isActive" required="false"/>
+  	<number key="{analyteMeta:id()}" type="integer" required="false"/>
+  	<string key="{analyteMeta:name()}" required="true"/>
+  	<number key="{analyteMeta:analyteGroup()}" type="integer" required="true"/>
+  	<dropdown key="{parentAnalyteMeta:name()}" type="integer" required="false"/>
+  	<string key="{analyteMeta:externalId()}" required="false"/>
+  	<string key="{analyteMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="query">
-  	<queryNumber key="id" type="integer" required="false"/>
-  	<queryString key="name" required="false"/>
-  	<queryNumber key="analyteGroup" type="integer" required="false"/>
-  	<queryNumber key="parentAnalyte" type="integer" required="false"/>
-  	<queryString key="externalId" required="false"/>
-  	<queryString key="isActive" required="false"/>
+  	<queryNumber key="{analyteMeta:id()}" type="integer" required="false"/>
+  	<queryString key="{analyteMeta:name()}" required="false"/>
+  	<queryNumber key="{analyteMeta:analyteGroup()}" type="integer" required="false"/>
+  	<queryString key="{parentAnalyteMeta:name()}" required="false"/>
+  	<queryString key="{analyteMeta:externalId()}" required="false"/>
+  	<queryString key="{analyteMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-	<queryString key="name"/>
+	<queryString key="{analyteMeta:name()}"/>
 	</rpc>
 </screen>
   </xsl:template>
