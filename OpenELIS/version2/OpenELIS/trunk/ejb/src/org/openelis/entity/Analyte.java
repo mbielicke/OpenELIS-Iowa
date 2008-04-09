@@ -5,22 +5,32 @@ package org.openelis.entity;
   * Analyte Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries({@NamedQuery(name = "getAnalyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroup,a.parentAnalyteId,p.name,a.externalId) from " + 
+		                                                " Analyte a left join a.parentAnalyte p where a.id = :id"),
+	           @NamedQuery(name = "getAnalyteAutoCompleteByName", query = "select a.id, a.name " +
+			   											 " from Analyte a where a.name like :name order by a.name"),
+			   @NamedQuery(name = "getAnalyteAutoCompleteById", query = "select a.id, a.name " +
+			   											 " from Analyte a where a.id = :id order by a.name")})
+			   											 
 @Entity
 @Table(name="analyte")
 @EntityListeners({AuditUtil.class})
@@ -41,11 +51,14 @@ public class Analyte implements Auditable, Cloneable {
   private Integer analyteGroup;             
 
   @Column(name="parent_analyte")
-  private Integer parentAnalyte;             
+  private Integer parentAnalyteId;             
 
   @Column(name="external_id")
   private String externalId;             
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_analyte", insertable = false, updatable = false)
+  private Analyte parentAnalyte;
 
   @Transient
   private Analyte original;
@@ -87,13 +100,13 @@ public class Analyte implements Auditable, Cloneable {
       this.analyteGroup = analyteGroup;
   }
 
-  public Integer getParentAnalyte() {
-    return parentAnalyte;
+  public Integer getParentAnalyteId() {
+    return parentAnalyteId;
   }
-  public void setParentAnalyte(Integer parentAnalyte) {
-    if((parentAnalyte == null && this.parentAnalyte != null) || 
-       (parentAnalyte != null && !parentAnalyte.equals(this.parentAnalyte)))
-      this.parentAnalyte = parentAnalyte;
+  public void setParentAnalyteId(Integer parentAnalyte) {
+    if((parentAnalyte == null && this.parentAnalyteId != null) || 
+       (parentAnalyte != null && !parentAnalyte.equals(this.parentAnalyteId)))
+      this.parentAnalyteId = parentAnalyte;
   }
 
   public String getExternalId() {
@@ -145,10 +158,10 @@ public class Analyte implements Auditable, Cloneable {
         root.appendChild(elem);
       }      
 
-      if((parentAnalyte == null && original.parentAnalyte != null) || 
-         (parentAnalyte != null && !parentAnalyte.equals(original.parentAnalyte))){
+      if((parentAnalyteId == null && original.parentAnalyteId != null) || 
+         (parentAnalyteId != null && !parentAnalyteId.equals(original.parentAnalyteId))){
         Element elem = doc.createElement("parent_analyte");
-        elem.appendChild(doc.createTextNode(original.parentAnalyte.toString().trim()));
+        elem.appendChild(doc.createTextNode(original.parentAnalyteId.toString().trim()));
         root.appendChild(elem);
       }      
 
@@ -170,5 +183,11 @@ public class Analyte implements Auditable, Cloneable {
   public String getTableName() {
     return "analyte";
   }
+public Analyte getParentAnalyte() {
+	return parentAnalyte;
+}
+public void setParentAnalyte(Analyte parentAnalyte) {
+	this.parentAnalyte = parentAnalyte;
+}
   
 }   
