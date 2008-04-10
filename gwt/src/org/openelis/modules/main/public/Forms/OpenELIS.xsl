@@ -241,8 +241,10 @@
 			    <menuItem style="TopMenuRowContainer"  
 			              hover="Hover" 
 			              icon="barcodeLabelIcon"
-			              label="{resource:getString($constants,'barcodeLabel')}"
-			              description="{resource:getString($constants,'barcodeLabelDescription')}"/>
+			              label="{resource:getString($constants,'label')}"
+			              description="{resource:getString($constants,'barcodeLabelDescription')}"
+			              onClick="this"
+			              value="LabelScreen"/>
 				<menuItem style="TopMenuRowContainer"  
 				          hover="Hover"
 				          icon="standardNoteIcon"
@@ -294,7 +296,9 @@
 				          hover="Hover"
 				          icon="systemVariableIcon"
 				          label="{resource:getString($constants,'systemVariable')}"
-				          description="{resource:getString($constants,'systemVariableDescription')}"/>
+				          description="{resource:getString($constants,'systemVariableDescription')}"
+				          onClick="this"
+				          value="SystemVariableScreen"/>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
