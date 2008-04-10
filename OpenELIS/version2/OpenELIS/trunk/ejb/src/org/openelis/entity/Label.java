@@ -7,20 +7,25 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries({@NamedQuery(name = "getLabel", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerType,l.scriptlet)" +                                                                                                  
+                    "  from Label l where l.id = :id"),
+               @NamedQuery(name = "getScriptlets", query = "select distinct script.id, script.name from Scriptlet script  " +                                                                                                  
+                    "   order by script.name "),
+               @NamedQuery(name = "getReferringTests", query =  "select distinct t.id from Test t where t.label = :id")   })
 @Entity
 @Table(name="label")
 @EntityListeners({AuditUtil.class})
