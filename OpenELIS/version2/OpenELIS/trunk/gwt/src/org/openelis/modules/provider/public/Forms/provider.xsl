@@ -92,7 +92,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      </widget>           
 		<widget>
 		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" popWidth="auto" tab="{providerMeta:npi()},{providerMeta:middleName()}">
-			<widths>40</widths>
+			<widths>70</widths>
 		  </autoDropdown>
 		</widget>								
     </row>
