@@ -359,7 +359,7 @@ public class QAEventService implements
         rpcReturn.setFieldValue(QaEventMeta.IS_BILLABLE,qaeDO.getIsBillable());     
         rpcReturn.setFieldValue(QaEventMeta.DESCRIPTION,qaeDO.getDescription());
         rpcReturn.setFieldValue(QaEventMeta.REPORTING_TEXT,qaeDO.getReportingText());   
-        rpcReturn.setFieldValue(QaEventMeta.TEST,qaeDO.getTest());        
+        rpcReturn.setFieldValue(QaEventMeta.TEST_ID,qaeDO.getTest());        
         rpcReturn.setFieldValue(QaEventMeta.TYPE,qaeDO.getType());
     }
     
@@ -376,8 +376,8 @@ public class QAEventService implements
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QaEventMeta.REPORTING_SEQUENCE));
         qaeDO.setReportingText((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT));    
                 
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST)))
-            qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST));   
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST_ID)))
+            qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST_ID));   
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TYPE)))
             qaeDO.setType((Integer)rpcSend.getFieldValue(QaEventMeta.TYPE));        
      

@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.Widget;
                
                tname = (TextBox)getWidget("qaevent.name");
                displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
-               displayTest = (ScreenAutoDropdown)widgets.get("qaevent.test");
+               displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
  
                reportingText = (TextArea)getWidget("qaevent.reportingText");
                super.afterDraw(success);        
