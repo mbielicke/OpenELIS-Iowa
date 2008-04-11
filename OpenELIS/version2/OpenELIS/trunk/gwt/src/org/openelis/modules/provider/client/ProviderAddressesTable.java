@@ -1,6 +1,7 @@
 package org.openelis.modules.provider.client;
 
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
@@ -40,16 +41,14 @@ public class ProviderAddressesTable implements TableManager {
         return true;
     }
 
-    public boolean doAutoAdd(int row, int col, TableController controller) {
-       if (col == 0 && row == controller.model.numRows() - 1) {
-           return true;
-        }   
-        
+    public boolean doAutoAdd(int row, int col, TableController controller) {                
         return false;
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
+        if((col == 0 || col == 4 || col == 5 || col == 7) && (row == controller.model.numRows()-1)){          
+            ((EditTable)controller).addRow();  
+         }
 
     }
 
@@ -82,10 +81,6 @@ public class ProviderAddressesTable implements TableManager {
         //this.providerForm = providerForm;
     }
 
-    public void validateRow(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
 
     public void setMultiple(int row, int col, TableController controller) {
         // TODO Auto-generated method stub
