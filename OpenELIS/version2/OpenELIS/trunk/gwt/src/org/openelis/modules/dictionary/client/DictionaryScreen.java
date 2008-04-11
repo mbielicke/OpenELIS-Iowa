@@ -343,13 +343,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         
     }
 
-    public boolean validate() {
-
-        boolean entryError = false;
-        boolean sysNameError = false;
-        for (int iter = 0; iter < dictEntryController.model.numRows(); iter++) {
-            StringField snfield = (StringField)dictEntryController.model.getFieldAt(iter,
-                                                                                    1);
+    public boolean validate() {     
+        boolean entryError = false;        
+        for (int iter = 0; iter < dictEntryController.model.numRows(); iter++) {            
             StringField efield = (StringField)dictEntryController.model.getFieldAt(iter,
                                                                                    3);
             if (efield.getValue() != null) {
@@ -363,12 +359,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             if (!(efield.getErrors().length == 0)) {
                 entryError = true;
             }
-            if (!(snfield.getErrors().length == 0)) {
-                sysNameError = true;
-            }
+          
         }
 
-        if (entryError || sysNameError) {
+        if (entryError) {
             return false;
         } else {
             return true;
