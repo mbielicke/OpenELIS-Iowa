@@ -99,7 +99,6 @@ public class QaEventBean implements QaEventRemote{
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        //sb.append("select distinct q.id, q.name,t.name,m.name from QaEvent q left join q.testLink t left join t.methodLink m where 1=1 " );
         QueryBuilder qb = new QueryBuilder();        
         
         QaEventMeta qaEventMeta  = QaEventMeta.getInstance();

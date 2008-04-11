@@ -14,7 +14,7 @@ public class QaEventMeta implements Meta {
     ID                      = "qaevent.id",
     NAME                    = "qaevent.name",
     DESCRIPTION             = "qaevent.description",  
-    TEST                    = "qaevent.test",
+    TEST_ID                 = "qaevent.testId",
     TYPE                    = "qaevent.type", 
     IS_BILLABLE             = "qaevent.isBillable",
     REPORTING_SEQUENCE      = "qaevent.reportingSequence",
@@ -25,15 +25,17 @@ public class QaEventMeta implements Meta {
     // Array of column names used for building select/insert/update strings
     //
     private static final String[] columnNames = {
-         ID, NAME, DESCRIPTION, TEST, TYPE, IS_BILLABLE,REPORTING_SEQUENCE,REPORTING_TEXT};
+         ID, NAME, DESCRIPTION, TEST_ID, TYPE, IS_BILLABLE,REPORTING_SEQUENCE,REPORTING_TEXT};
     
-    private static HashMap<String,String> columnHashList;
+   
 
     private static QaEventMeta qaEventMeta =  new QaEventMeta();
     
     private QaEventMeta(){
         
     }
+    
+    private static HashMap<String,String> columnHashList;
     
     static {
         columnHashList = new HashMap<String, String>(columnNames.length);
@@ -81,9 +83,9 @@ public class QaEventMeta implements Meta {
         return columnNames[2];
     }
     
-    public static String test(){
+    public static String testId(){
         return columnNames[3];
-    }
+    }       
     
     public static String type(){
         return columnNames[4];
