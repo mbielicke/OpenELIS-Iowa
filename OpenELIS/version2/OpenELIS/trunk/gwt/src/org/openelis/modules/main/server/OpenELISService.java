@@ -1,6 +1,7 @@
 package org.openelis.modules.main.server;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -9,6 +10,7 @@ import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
+import org.openelis.server.PreferencesManager;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -19,7 +21,27 @@ public class OpenELISService implements OpenELISServiceInt {
     private static final long serialVersionUID = 1L;
 
     public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl");
+        try {
+            Preferences prefs = PreferencesManager.getUser(this.getClass());
+            if(prefs.get("favorites") == null){
+                prefs.put("favorites", "provider,ProviderScreen:organization,OrganizationScreen");
+                PreferencesManager.store(prefs);
+            }
+            Document doc = XMLUtil.createNew("doc");
+            Element root = doc.getDocumentElement();
+            String[] favorites = prefs.get("favorites").split(":");
+            for(int i = 0; i < favorites.length; i++){
+                String[] fav = favorites[i].split(","); 
+                Element favorite = doc.createElement("favorite");
+                favorite.setAttribute("label",fav[0]);
+                favorite.setAttribute("value", fav[1]);
+                root.appendChild(favorite);
+            }
+            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl",doc);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
 	}
     
     public DataObject[] getXMLData() throws RPCException {

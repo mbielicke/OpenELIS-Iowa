@@ -83,14 +83,14 @@
 										</autoDropdown>
 									</widget>
 								</row>
-							<!--	<row>
+								<row>
 								  <widget>
 								    <text style="Prompt">Test Date</text>
 								  </widget>
 								  <widget>
 				                    <calendar begin="0" end="2"/>
 							      </widget>
-							    </row>	    -->
+							    </row>	   
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
