@@ -5,12 +5,15 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuItem;
+import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.services.PreferencesService;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -39,6 +42,13 @@ public class OpenELIS extends AppScreen {
     }
 
     public void onClick(Widget item) {
+        if(item == widgets.get("showFavorites")){
+            ScreenMenuPanel fm = (ScreenMenuPanel)widgets.get("favoritesMenu");
+            fm.setVisible(!fm.isVisible());
+            browser.setBrowserHeight();
+            return;
+            
+        }
         if(item instanceof ScreenMenuItem){
             OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName((String)((ScreenMenuItem)item).getUserObject()));
         }
@@ -48,5 +58,15 @@ public class OpenELIS extends AppScreen {
     	for(int i=0;i<table.getRowCount(); i++){
     		table.getCellFormatter().addStyleName(i,col, style);
     	}
+    }
+    
+    public void onDrop(Widget sender, Widget source) {
+        VerticalPanel vp = (VerticalPanel)((ScreenMenuPanel)sender).getWidget();
+        for(int i = 0; i < vp.getWidgetCount(); i++){
+            if(vp.getWidget(i).getAbsoluteTop() > source.getAbsoluteTop()){
+                vp.insert((Widget)((ScreenWidget)source).getUserObject(), i);
+                break;
+            }
+        }
     }
 }

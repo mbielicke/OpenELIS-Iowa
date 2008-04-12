@@ -12,13 +12,15 @@
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
+  
+      <xsl:variable name="language"><xsl:value-of select="doc/locale"/></xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
 
   <xsl:template match="doc">
-    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
+
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
-		<panel height="100%" layout="vertical" style="AppBackground" width="100%" xsi:type="Panel">
+		<panel layout="vertical" style="AppBackground" sizeToWindow="true" xsi:type="Panel">
 		<panel layout="absolute" style="topMenuBar">
 		<menuPanel layout="horizontal" xsi:type="Panel" style="topBarItemHolder" spacing="0" padding="0">
 		    <menuItem>
@@ -26,37 +28,43 @@
 			    	  <label style="topMenuBarItem" text="{resource:getString($constants,'application')}" hover="Hover"/>
 				</menuDisplay>
 				  <menuPanel style="topMenuContainer" layout="vertical" xsi:type="Panel" position="below">
-				    <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
-				              icon="preferenceIcon" 
-				              label="{resource:getString($constants,'preference')}" 
-				              description="{resource:getString($constants,'preferenceDescription')}"/>
-					<menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"  
-					          icon="favoritesMenuIcon"
-					          label="{resource:getString($constants,'favoritesMenu')}"
-					          description="{resource:getString($constants,'favoritesMenuDescription')}"/>
-					<menuItem style="TopMenuRowContainer" hover="Hover"
-					          icon="logoutIcon"
-					          label="{resource:getString($constants,'logout')}"
-					          description="{resource:getString($constants,'logoutDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">preference</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">favoritesMenu</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">logout</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 				  </menuPanel>
 		    </menuItem>
 		    <menuItem>
-		      <menuDisplay>
+		      <menuDisplay>					
 					<label style="topMenuBarItem" text="{resource:getString($constants,'edit')}" hover="Hover"/>
 			  </menuDisplay>
 	            <menuPanel style="topMenuContainer" layout="vertical" position="below">
-				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
-				            icon="cutIcon"
-				            label="{resource:getString($constants,'cut')}"
-				            description=""/>
-				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
-				            icon="copyIcon"
-				            label="{resource:getString($constants,'copy')}"
-				            description=""/>
-	              <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
-	                        icon="pasteIcon"
-	                        label="{resource:getString($constants,'paste')}"
-	                        description=""/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">cut</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>	            
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">copy</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">paste</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 			    </menuPanel>
 			</menuItem>
     	    <menuItem>
@@ -64,45 +72,44 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" hover="Hover" />
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
-				            icon="fullLoginIcon"
-				            label="{resource:getString($constants,'fullLogin')}"
-				            description="{resource:getString($constants,'fullLoginDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false" 
-                            icon="quickEntryIcon"
-                            label="{resource:getString($constants,'quickEntry')}"
-                            description="{resource:getString($constants,'quickEntryDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" hover="Hover" enabled="false"
-				            icon="secondEntryIcon"
-				            label="{resource:getString($constants,'secondEntry')}"
-				            description="{resource:getString($constants,'secondEntryDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" enabled="false"
-				            hover="Hover"
-				            icon="trackingIcon"
-				            label="{resource:getString($constants,'tracking')}"
-				            description="{resource:getString($constants,'trackingDescription')}"/>
+					<xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">fullLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">quickEntry</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">secondEntry</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">tracking</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 				  <widget>
 					<html>&lt;hr/&gt;</html>
 				  </widget>
-				  <menuItem style="TopMenuRowContainer"  
-				            hover="Hover" enabled="false"
-				            icon="projectIcon"
-				            label="{resource:getString($constants,'project')}"
-				            description="{resource:getString($constants,'projectDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" 
-                            hover="Hover"
-                            icon="providerIcon"
-                            label="{resource:getString($constants,'provider')}"
-                            description="{resource:getString($constants,'providerDescription')}"
-                            onClick="this"
-                            value="ProviderScreen"/>
-                  <menuItem style="TopMenuRowContainer"  
-                            hover="Hover"
-                            icon="organizationIcon"
-                            label="{resource:getString($constants,'organization')}"
-                            description="{resource:getString($constants,'organizationDescription')}"
-                            onClick="this"
-                            value="OrganizationScreen"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">project</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				  
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">provider</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">ProviderScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">organization</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">OrganizationScreen</xsl:with-param>
+				    </xsl:call-template>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
@@ -110,46 +117,46 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" hover="Hover"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				  <menuItem style="TopMenuRowContainer"  
-				            hover="Hover" enabled="false"
-				            icon="worksheetCreationIcon"
-				            label="{resource:getString($constants,'worksheetCreation')}"
-				            description="{resource:getString($constants,'worksheetCreationDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" 
-                            hover="Hover" enabled="false"
-                            icon="worksheetCompletionIcon"
-                            label="{resource:getString($constants,'worksheetCompletion')}"
-                            description="{resource:getString($constants,'worksheetCompletionDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" 
-                            hover="Hover" enabled="false"
-                            icon="addOrCancelIcon"
-                            label="{resource:getString($constants,'addOrCancel')}"
-                            description="{resource:getString($constants,'addOrCancelDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" 
-                            hover="Hover" enabled="false"
-                            icon="reviewAndReleaseIcon"
-                            label="{resource:getString($constants,'reviewAndRelease')}"
-                            description="{resource:getString($constants,'reviewAndReleaseDescription')}"/>
-                  <menuItem style="TopMenuRowContainer" 
-                            hover="Hover" enabled="false"
-                            icon="toDoIcon"
-                            label="{resource:getString($constants,'toDo')}"
-                            description="{resource:getString($constants,'toDoDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" 
-				            hover="Hover" enabled="false"
-				            icon="labelForIcon"
-				            label="{resource:getString($constants,'labelFor')}"
-				            description="{resource:getString($constants,'labelForDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" 
-				            hover="Hover"
-				            icon="storageIcon"
-				            label="{resource:getString($constants,'storage')}"
-				            description="{resource:getString($constants,'storageDescription')}"/>
-				  <menuItem style="TopMenuRowContainer" 
-				            hover="Hover" enabled="false"
-				            icon="QCIcon"
-				            label="{resource:getString($constants,'QC')}"
-				            description="{resource:getString($constants,'QCDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">worksheetCreation</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">worksheetCompletion</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">addOrCancel</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">reviewAndRelease</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">toDo</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">labelFor</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">storage</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">QC</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 				</menuPanel>
 			</menuItem>
 	        <menuItem>  
@@ -157,16 +164,16 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" hover="Hover" />
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover" enabled="false"
-				          icon="orderIcon"
-				          label="{resource:getString($constants,'order')}"
-				          description="{resource:getString($constants,'orderDescription')}"/>
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover" enabled="false"
-				          icon="inventoryIcon"
-				          label="{resource:getString($constants,'inventory')}"
-				          description="{resource:getString($constants,'inventoryDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">order</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">inventory</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
@@ -174,11 +181,11 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'instrument')}" hover="Hover"/>
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover" enabled="false"
-				          icon="instrumentIcon"
-				          label="{resource:getString($constants,'instrument')}"
-				          description="{resource:getString($constants,'instrumentDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">instrument</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
@@ -186,119 +193,101 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" hover="Hover" />
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover" enabled="false"
-				          icon="testIcon"
-				          label="{resource:getString($constants,'test')}"
-				          description="{resource:getString($constants,'testDescription')}"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover" enabled="false"
-				          icon="methodIcon"
-				          label="{resource:getString($constants,'method')}"
-				          description="{resource:getString($constants,'methodDescription')}"/>
- 				<menuItem style="TopMenuRowContainer" 
- 				          hover="Hover" enabled="false"
- 				          icon="panelIcon"
- 				          label="{resource:getString($constants,'panel')}"
- 				          description="{resource:getString($constants,'panelDescription')}"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
-				          icon="QAEventIcon"
-				          label="{resource:getString($constants,'QAEvent')}"
-				          description="{resource:getString($constants,'QAEventDescription')}"
-				          onClick="this"
-				          value="QAEventScreen"/>
- 				<menuItem style="TopMenuRowContainer"  
- 				          hover="Hover" enabled="false"
- 				          icon="labelSectionIcon"
- 				          label="{resource:getString($constants,'labSection')}"
- 				          description="{resource:getString($constants,'labSectionDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">test</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">method</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">panel</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">QAEvent</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">QAEventScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">labSection</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 			    <widget>
 				   <html>&lt;hr/&gt;</html>
 				</widget>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
-				          icon="analyteIcon"
-				          label="{resource:getString($constants,'analyte')}"
-				          description="{resource:getString($constants,'analyteDescription')}" 
-				          onClick="this" 
-				          value="AnalyteScreen"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
-				          icon="dictionaryIcon"
-				          label="{resource:getString($constants,'dictionary')}"
-				          description="{resource:getString($constants,'dictionaryDescription')}"
-				          onClick="this"
-				          value="DictionaryScreen"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover" enabled="false"
-				          icon="auxiliaryPromptIcon"
-				          label="{resource:getString($constants,'auxiliaryPrompt')}"
-				          description="{resource:getString($constants,'auxiliaryPromptDescription')}"/>
+					<xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">analyte</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">AnalyteScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">dictionary</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">DictionaryScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">auxiliaryPrompt</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 			    <widget>
 					<html>&lt;hr/&gt;</html>
 			    </widget>
-			    <menuItem style="TopMenuRowContainer"  
-			              hover="Hover" 
-			              icon="barcodeLabelIcon"
-			              label="{resource:getString($constants,'label')}"
-			              description="{resource:getString($constants,'barcodeLabelDescription')}"
-			              onClick="this"
-			              value="LabelScreen"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
-				          icon="standardNoteIcon"
-				          label="{resource:getString($constants,'standardNote')}"
-				          description="{resource:getString($constants,'standardNoteDescription')}"
-				          onClick="this"
-				          value="StandardNoteScreen"/>
-				<menuItem style="TopMenuRowContainer"  
-				          hover="Hover"
-				          icon="trailerForTestIcon"
-				          label="{resource:getString($constants,'trailerForTest')}"
-				          description="{resource:getString($constants,'trailerForTestDescription')}" 
-				          onClick="this" 
-				          value="TestTrailerScreen"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">barcodeLabel</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>			    
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">standardNote</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">StandardNoteScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">trailerForTest</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">TestTrailerScreen</xsl:with-param>
+				    </xsl:call-template>
 			    <widget>
 					<html>&lt;hr/&gt;</html>
 			    </widget>
-			    <menuItem style="TopMenuRowContainer"  
-			              hover="Hover"
-			              icon="storageUnitIcon"
-			              label="{resource:getString($constants,'storageUnit')}"
-			              description="{resource:getString($constants,'storageUnitDescription')}"
-			              onClick="this"
-			              value="StorageUnitScreen"/>
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
-				          icon="storageLocationIcon"
-				          label="{resource:getString($constants,'storageLocation')}"
-				          description="{resource:getString($constants,'storageLocationDescription')}"
-				          onClick="this"
-				          value="StorageLocationScreen"/>
+			    	<xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">storageUnit</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">StorageUnitScreen</xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">storageLocation</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">StorageLocationScreen</xsl:with-param>
+				    </xsl:call-template>
 				<widget>
 					<html>&lt;hr/&gt;</html>
 				</widget>
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover" enabled="false"
-				          icon="instrumentIcon"
-				          label="{resource:getString($constants,'instrument')}"
-				          description="{resource:getString($constants,'instrumentMainDescription')}"/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">instrument</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 				<widget>
 					<html>&lt;hr/&gt;</html>
 				</widget>
-			    <menuItem style="TopMenuRowContainer"
-			              hover="Hover" enabled="false"
-			              icon="scriptletIcon"
-			              label="{resource:getString($constants,'scriptlet')}"
-			              description="{resource:getString($constants,'scriptletDescription')}"/>
-				<menuItem style="TopMenuRowContainer" 
-				          hover="Hover"
-				          icon="systemVariableIcon"
-				          label="{resource:getString($constants,'systemVariable')}"
-				          description="{resource:getString($constants,'systemVariableDescription')}"
-				          onClick="this"
-				          value="SystemVariableScreen"/>
+					<xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">scriptlet</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">systemVariable</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">SystemVariableScreen</xsl:with-param>
+				    </xsl:call-template>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
@@ -306,45 +295,45 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'report')}" hover="Hover"/>
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				    <menuItem style="TopMenuRowContainer"  
-				              hover="Hover"
-				              icon="finalReportIcon"
-				              label="{resource:getString($constants,'finalReport')}"
-				              description=""/>
-					<menuItem style="TopMenuRowContainer"  
-					          hover="Hover"
-					          icon="sampleDataExportIcon"
-					          label="{resource:getString($constants,'sampleDataExport')}"
-					          description=""/>
-					<menuItem style="TopMenuRowContainer"  
-					          hover="Hover"
-					          icon="loginLabelIcon"
-					          label="{resource:getString($constants,'loginLabel')}"
-					          description=""/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">finalReport</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>				
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">sampleDataExport</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">loginLabel</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 					<widget>
 						<html>&lt;hr/&gt;</html>
 					</widget>
-					<menuItem style="TopMenuRowContainer"  
-					          hover="Hover"
-					          icon="referenceIcon"
-					          label="{resource:getString($constants,'reference')}"
-					          description="">
+					<menuItem style="TopMenuRowContainer" 
+						      hover="Hover"
+						      icon="referenceIcon"
+						      label="{resource:getString($constants,'reference')}"
+						      description="">					
 						  <menuPanel layout="vertical" style="topMenuContainer" position="side">
-							<menuItem style="TopMenuRowContainer" 
-							          hover="Hover"
-							          icon="organizationReportIcon"
-							          label="{resource:getString($constants,'organization')}"
-							          description=""/>
-							<menuItem style="TopMenuRowContainer" 
-							          hover="Hover"
-							          icon="testReportIcon"
-							          label="{resource:getString($constants,'test')}"
-							          description=""/>
-							<menuItem style="TopMenuRowContainer" 
-							          hover="Hover"
-							          icon="qaEventReportIcon"
-							          label="{resource:getString($constants,'QAEvent')}"
-							          description=""/>
+				          <xsl:call-template name="menuItem">
+				            <xsl:with-param name="label">organization</xsl:with-param>
+				            <xsl:with-param name="enabled">false</xsl:with-param>
+				            <xsl:with-param name="value"></xsl:with-param>
+				          </xsl:call-template>						  
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">test</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">QAEvent</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 						  </menuPanel>
 					</menuItem>
 					<menuItem style="TopMenuRowContainer" 
@@ -353,41 +342,69 @@
 						      label="{resource:getString($constants,'summary')}"
 						      description="">
 							<menuPanel layout="vertical" style="topMenuContainer" position="side">
-								<menuItem style="TopMenuRowContainer" 
-								          hover="Hover"
-								          icon="QAByOrganizationIcon"
-								          label="{resource:getString($constants,'QAByOrganization')}"
-								          description=""/>
-								<menuItem style="TopMenuRowContainer" 
-								          hover="Hover"
-								          icon="sampleDataExportIcon"
-								          label="{resource:getString($constants,'testCountByFacility')}"
-								          description=""/>
-								<menuItem style="TopMenuRowContainer" 
-								          hover="Hover"
-								          icon="loginLabelIcon"
-								          label="{resource:getString($constants,'turnaround')}"
-								          description=""/>
-								<menuItem style="TopMenuRowContainer" 
-								          hover="Hover"
-								          icon="referenceIcon"
-								          label="{resource:getString($constants,'positiveTestCount')}"
-								          description=""/>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">QAByOrganization</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">testCountByFacility</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">turnaround</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="label">positiveTestCount</xsl:with-param>
+				      <xsl:with-param name="enabled">false</xsl:with-param>
+				      <xsl:with-param name="value"></xsl:with-param>
+				    </xsl:call-template>
 							</menuPanel>
 					 </menuItem>
 				</menuPanel>
 		    </menuItem>
         </menuPanel>
        </panel>
-	   <panel layout="vertical" width="100%" xsi:type="Panel" spacing="5">
-	    	<widget>
-		    	<winbrowser key="browser" sizeToWindow="true"/>
-	    	</widget>
-	   </panel>
+       <panel layout="horizontal" xsi:type="Panel">
+         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" drop="this" width="220px">
+	  		<xsl:for-each select="favorite">
+			    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
+			    <xsl:variable name="value"><xsl:value-of select="@value"/></xsl:variable>
+		        <menuItem style="TopMenuRowContainer" enabled="true"  
+			              hover="Hover"
+				          icon="{$label}Icon"
+		        		  label="{resource:getString($constants,$label)}"
+				          description=""
+				          value="{$value}"
+				          onClick="this"/>
+			    </xsl:for-each>
+			</menuPanel>
+		    	<widget>
+			    	<winbrowser key="browser" sizeToWindow="true"/>
+		    	</widget>
+		</panel>
 	</panel>
 	</display>
 	<rpc key="display"/>
 	<rpc key="query"/>
 </screen>
+  </xsl:template>
+  
+  
+  <xsl:template name="menuItem">
+    <xsl:param name="label"/>
+    <xsl:param name="value"/>
+    <xsl:param name="enabled"/>
+    <xsl:variable name="descrip"><xsl:value-of select="$label"/>Description</xsl:variable>
+  	<menuItem style="TopMenuRowContainer" enabled="{$enabled}"  
+	          hover="Hover"
+	          icon="{$label}Icon"
+	   		  label="{resource:getString($constants,$label)}"
+	          description="{resource:getString($constants,$descrip)}" 
+	          value="{$value}"
+	          onClick="this"/>
   </xsl:template>
 </xsl:stylesheet>
