@@ -74,7 +74,7 @@ public class FavoritesService implements AppScreenFormServiceInt {
                     root.appendChild(favorite);
                 }
             }
-            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organizeFavorites.xsl",doc);
+            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/favoritesMenu.xsl",doc);
         }catch(Exception e){
             e.printStackTrace();
             return null;

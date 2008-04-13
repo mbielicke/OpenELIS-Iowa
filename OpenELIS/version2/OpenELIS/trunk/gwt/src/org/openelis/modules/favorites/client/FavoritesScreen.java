@@ -1,27 +1,23 @@
 package org.openelis.modules.favorites.client;
 
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import com.google.gwt.user.client.ui.Widget;
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.modules.main.client.service.OpenELISServiceInt;
+import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
-public class FavoritesScreen extends OpenELISScreenForm {
-	
-    
-	public FavoritesScreen() {
-        super("org.openelis.modules.favorites.server.FavoritesService",false);
-        name="Favorites";
-    }
-	
-	public void onClick(Widget sender) {
-		if (sender == widgets.get("addButton")) {
-			new FavoritesAdd();
-		}
-    }
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-	public void afterDraw(boolean sucess) {  	
-    //    	bpanel = (ButtonPanel)getWidget("buttons");
-        	//bpanel.enable("cb", true);
-        	message.setText("done");
-        	//super.afterDraw(sucess);
-	}
+public class FavoritesScreen extends AppScreen {
+	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
+    public static ServiceDefTarget target = (ServiceDefTarget)screenService;
+        
+	public FavoritesScreen() {	    
+        super();
+        String base = GWT.getModuleBaseURL();
+        base += "OpenELISServlet?service=org.openelis.modules.favorites.server.FavoritesService";
+        target.setServiceEntryPoint(base);
+        service = screenService;
+        getXML();
+    }
 	
 }
