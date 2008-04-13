@@ -369,7 +369,14 @@
         </menuPanel>
        </panel>
        <panel layout="horizontal" xsi:type="Panel">
-         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" drop="this" width="220px">
+         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" width="220px">
+	         <menuItem style="TopMenuRowContainer" enabled="true"
+	                   hover="Hover"
+	                   icon="favoritesIcon"
+	                   label="Edit Favorites"
+	                   value="FavoritesScreen"
+	                   description=""
+	                   onClick="this"/>
 	  		<xsl:for-each select="favorite">
 			    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
 			    <xsl:variable name="value"><xsl:value-of select="@value"/></xsl:variable>
