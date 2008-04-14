@@ -18,10 +18,10 @@ import javax.persistence.Query;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.StorageLocationChildMeta;
+import org.openelis.meta.StorageLocationChildStorageUnitMeta;
 import org.openelis.meta.StorageLocationMeta;
-import org.openelis.meta.StorageLocationParentMeta;
 import org.openelis.meta.StorageLocationStorageUnitMeta;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.Meta;
@@ -35,10 +35,7 @@ import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 public class StorageLocationBean implements StorageLocationRemote{
 
 	@PersistenceContext(name = "openelis")
-    private EntityManager manager;
-    //private String className = this.getClass().getName();
-   // private Logger log = Logger.getLogger(className);
-	
+    private EntityManager manager;	
 	
 	@EJB
 	private SystemUserUtilLocal sysUser;
@@ -81,21 +78,27 @@ public class StorageLocationBean implements StorageLocationRemote{
 	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
-		
-//		we need to see if this item can be deleted first
-		Query query = null;
-		query = manager.createNamedQuery("getStorageLocationByParentId");
-		query.setParameter("id", StorageLocId);
-		List linkedRecords = query.getResultList();
-		
-		if(linkedRecords.size() > 0){
-			throw new RPCDeleteException();
-		}
-		//then we need to delete it
+
+		//delete the records
 		try {
+				//delete the parent record
             	storageLocation = manager.find(StorageLocation.class, StorageLocId);
             	if(storageLocation != null)
             		manager.remove(storageLocation);
+            	
+            	//find the child records
+            	List childStorageLocs = getStorageLocChildren(StorageLocId);
+            	
+            	//delete the child records if they exist
+            	Iterator children = childStorageLocs.iterator();
+            	while(children.hasNext()){
+            		StorageLocationDO childDO = (StorageLocationDO) children.next();
+            		StorageLocation child = null;
+            		child = manager.find(StorageLocation.class, childDO.getId());
+            		
+            		if(child != null)
+            			manager.remove(child);           		
+            	}
             	
 		} catch (Exception e) {
             e.printStackTrace();
@@ -138,14 +141,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         }
 	}
 	
-	public List getStorageLocChildren(Integer StorageId, boolean unlock) {
-		//FIXME not sure how to handle locks yet
-		/*if(unlock){
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "storage_location");
-            lockBean.giveUpLock((Integer)query.getSingleResult(),StorageId);
-        }*/
-		
+	public List getStorageLocChildren(Integer StorageId) {
 		Query query = manager.createNamedQuery("getStorageLocationChildren");
 		query.setParameter("id", StorageId);
 		return query.getResultList();
@@ -156,20 +152,27 @@ public class StorageLocationBean implements StorageLocationRemote{
         QueryBuilder qb = new QueryBuilder();
         
         StorageLocationMeta storageLocationMeta = StorageLocationMeta.getInstance();
-        StorageLocationParentMeta parentStorageLocationMeta = StorageLocationParentMeta.getInstance();
+        StorageLocationChildMeta StorageLocationChildrenMeta = StorageLocationChildMeta.getInstance();
+        StorageLocationChildStorageUnitMeta storageLocationChildrenStorageUnitMeta = StorageLocationChildStorageUnitMeta.getInstance();
         StorageLocationStorageUnitMeta storageUnitMeta = StorageLocationStorageUnitMeta.getInstance();
         
-        qb.addMeta(new Meta[]{storageLocationMeta, parentStorageLocationMeta, storageUnitMeta});
+        qb.addMeta(new Meta[]{storageLocationMeta, StorageLocationChildrenMeta, storageLocationChildrenStorageUnitMeta, storageUnitMeta});
         
         qb.setSelect("distinct "+storageLocationMeta.ID+", "+storageLocationMeta.NAME);
         qb.addTable(storageLocationMeta);
-        
-        //sb.append("select distinct s.id,s.name " + "from StorageLocation s where 1=1 ");
         
 //      this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
         qb.setOrderBy(storageLocationMeta.NAME);
+        
+        qb.addWhere(storageLocationMeta.PARENT_STORAGE_LOCATION + " is null");    
+        
+        if(qb.hasTable(storageLocationChildrenStorageUnitMeta.getTable()))
+        	qb.addTable(StorageLocationChildrenMeta);
+        
+        //if(qb.hasTable(StorageLocationChildrenMeta.getTable()))
+        //	qb.addWhere("");
         
         sb.append(qb.getEJBQL());
 
@@ -199,49 +202,43 @@ public class StorageLocationBean implements StorageLocationRemote{
             else
             	storageLocation = manager.find(StorageLocation.class, storageDO.getId());
             
-         storageLocation.setIsAvailable(storageDO.getIsAvailable());
-         storageLocation.setLocation(storageDO.getLocation());
-         storageLocation.setName(storageDO.getName());
-         storageLocation.setParentStorageLocationId(storageDO.getParentStorageLocationId());
-         //FIXME this may need to change....
-         storageLocation.setSortOrder(0);
-         storageLocation.setStorageUnitId(storageDO.getStorageUnitId());
-         
-         if (storageLocation.getId() == null) {
-	        	manager.persist(storageLocation);
-         }
-         
-//       update children
-         int i=0;
-         for (Iterator childrenItr = storageLocationChildren.iterator(); childrenItr.hasNext();) {
-        	 StorageLocationDO childDO = (StorageLocationDO) childrenItr.next();
-        	 StorageLocation childStorageLoc = null;
-	            
-	            if (childDO.getId() == null)
-	            	childStorageLoc = new StorageLocation();
-	            else
-	            	childStorageLoc = manager.find(StorageLocation.class, childDO.getId());
-
-	            //if(contactDO.getDelete() && orgContact.getId() != null){
-	            	//delete the contact record and the address record from the database
-	            //	manager.remove(orgContact);
-	            //	addressBean.deleteAddress(contactDO.getAddressDO());
-	            	
-	            //}else{
-	            childStorageLoc.setSortOrder(i);
-	            childStorageLoc.setName(childDO.getName());
-	            childStorageLoc.setLocation(childDO.getLocation());
-	            childStorageLoc.setParentStorageLocationId(storageLocation.getId());
-	            childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());
-	            childStorageLoc.setIsAvailable(childDO.getIsAvailable());
-			            
-			    if (childStorageLoc.getId() == null) {
-			       manager.persist(childStorageLoc);
-			    }
-			    i++;
-         }
-			//}
-         
+	         storageLocation.setIsAvailable(storageDO.getIsAvailable());
+	         storageLocation.setLocation(storageDO.getLocation());
+	         storageLocation.setName(storageDO.getName());
+	         storageLocation.setStorageUnitId(storageDO.getStorageUnitId());
+	         
+	         if (storageLocation.getId() == null) {
+		        	manager.persist(storageLocation);
+	         }
+	         
+	//       update the children
+	         int sortOrder=1;
+	         for (Iterator childrenItr = storageLocationChildren.iterator(); childrenItr.hasNext();) {
+	        	 StorageLocationDO childDO = (StorageLocationDO) childrenItr.next();
+	        	 StorageLocation childStorageLoc = null;
+		            
+	        	 if (childDO.getId() == null)
+	        		 childStorageLoc = new StorageLocation();
+	        	 else
+		          	childStorageLoc = manager.find(StorageLocation.class, childDO.getId());
+	
+	        	 if(childDO.getDelete() && childStorageLoc.getId() != null){
+		           	//delete the child record from the database
+		           	manager.remove(childStorageLoc);
+		            	
+		         }else{
+		        	 childStorageLoc.setSortOrder(sortOrder);
+			         childStorageLoc.setLocation(childDO.getLocation());
+			         childStorageLoc.setParentStorageLocationId(storageLocation.getId());
+			         childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());
+			         childStorageLoc.setIsAvailable(childDO.getIsAvailable());
+					            
+			         if (childStorageLoc.getId() == null) {
+			        	 manager.persist(childStorageLoc);
+			         }
+					 sortOrder++;
+		         }
+			}         
 		} catch (Exception e) {
             e.printStackTrace();
         }

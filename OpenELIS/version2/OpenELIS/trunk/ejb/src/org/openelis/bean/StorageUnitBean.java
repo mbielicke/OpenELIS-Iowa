@@ -161,7 +161,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 		
 		//we need to see if this item can be deleted first
 		Query query = null;
-		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
+		query = manager.createNamedQuery("getAnalyteByParentId");
 		query.setParameter("id", storageUnitId);
 		List linkedRecords = query.getResultList();
 		
