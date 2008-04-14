@@ -22,7 +22,7 @@ public interface StorageLocationRemote {
 	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception;
 	
 	//method to return a child storage locs
-	public List getStorageLocChildren(Integer StorageId, boolean unlock);
+	public List getStorageLocChildren(Integer StorageId);
 	
 	 //method to query for storage locs
 	 public List query(HashMap fields, int first, int max) throws Exception;
