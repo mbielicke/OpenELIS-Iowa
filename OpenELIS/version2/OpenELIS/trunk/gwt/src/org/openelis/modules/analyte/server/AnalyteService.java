@@ -10,6 +10,7 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -25,7 +26,6 @@ import org.openelis.meta.AnalyteParentAnalyteMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
-import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
@@ -39,8 +39,16 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 					? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
 	
 	public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
+//		remote interface to call the analyte bean
+		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
+		
+		
+		AnalyteDO analyteDO = remote.getAnalyteAndUnlock((Integer)key.getKey().getValue());
+
+//		set the fields in the RPC
+		setFieldsInRPC(rpcReturn, analyteDO);
+        
+		return rpcReturn;  
 	}
 
 	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -67,13 +75,19 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 //		remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
+		try {
+			remote.deleteAnalyte((Integer)key.getKey().getValue());
+			
+		} catch (Exception e) {
+			if(e instanceof RPCDeleteException){
+				throw new RPCDeleteException(openElisConstants.getString("analyteDeleteException"));
+			}else
+			throw new RPCException(e.getMessage());
+		}	
 		
-		AnalyteDO analyteDO = remote.getAnalyteAndUnlock((Integer)key.getKey().getValue());
-
-//		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, analyteDO);
+		setFieldsInRPC(rpcReturn, new AnalyteDO());
 		
-        return rpcReturn;  
+		return rpcReturn;
 	}
 
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
@@ -221,8 +235,22 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		rpcReturn.setFieldValue(AnalyteMeta.NAME, (analyteDO.getName() == null ? null : analyteDO.getName().trim()));
 		rpcReturn.setFieldValue(AnalyteMeta.IS_ACTIVE, (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive().trim()));
 		rpcReturn.setFieldValue(AnalyteMeta.ANALYTE_GROUP, analyteDO.getAnalyteGroup());
-		rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, analyteDO.getParentAnalyteId());
 		rpcReturn.setFieldValue(AnalyteMeta.EXTERNAL_ID, (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId().trim()));
+		
+//		we need to create a dataset for the parent organization auto complete
+		if(analyteDO.getParentAnalyteId() == null)
+			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, null);
+		else{
+			DataSet parentAnalyteSet = new DataSet();
+			NumberObject id = new NumberObject();
+			StringObject text = new StringObject();
+			id.setType("integer");
+			id.setValue(analyteDO.getParentAnalyteId());
+			text.setValue(analyteDO.getParentAnalyte().trim());
+			parentAnalyteSet.setKey(id);
+			parentAnalyteSet.addObject(text);
+			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, parentAnalyteSet);
+		}
 	}
 	
 	private AnalyteDO getAnalyteDOFromRPC(FormRPC rpcSend) {
@@ -248,38 +276,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 	}
 
 	public DataModel getDisplay(String cat, DataModel model, AbstractField value) throws RPCException {
-		if(cat.equals("parentAnalyte"))
-			return getParentAnalyteDisplay((Integer)value.getValue());
-		
-		return null;	
-	}
-	
-	private DataModel getParentAnalyteDisplay(Integer value){
-		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-		
-		List autoCompleteList = remote.autoCompleteLookupById(value);
-		
-		Object[] result = (Object[]) autoCompleteList.get(0);
-		//id
-		Integer analyteId = (Integer)result[0];
-		//name
-		String name = (String)result[1];
-		
-		DataModel model = new DataModel();
-		DataSet data = new DataSet();
-		
-		NumberObject id = new NumberObject();
-		id.setType("integer");
-		id.setValue(analyteId);
-		StringObject nameObject = new StringObject();
-		nameObject.setValue(name.trim());
-		
-		data.setKey(id);
-		data.addObject(nameObject);
-		
-		model.add(data);
-
-		return model;	
+		return null;
 	}
 
 	public DataModel getMatches(String cat, DataModel model, String match) throws RPCException {

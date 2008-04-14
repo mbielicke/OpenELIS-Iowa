@@ -73,22 +73,20 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{qaEventMeta:type()}" width = "90px" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{qaEventMeta:test()},{qaEventMeta:description()}">
-													
-													 <widths>100</widths>													 													
-										</autoDropdown>												
-										</widget>  
-										        
+		<autoDropdown key="{qaEventMeta:type()}" width = "90px" case="mixed" popWidth="auto"  tab="{qaEventMeta:testId()},{qaEventMeta:description()}">
+			<widths>100</widths>													 													
+		</autoDropdown>
+	</widget>  									        
      </row>
      <row>
      <widget>
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{qaEventMeta:testId()}" width = "140px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
-													<widths>135</widths>													 													
-										</autoDropdown>                							
-					</widget>
+		<autoDropdown key="{qaEventMeta:testId()}" width = "140px"  popWidth="auto" case="mixed" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
+			<widths>132</widths>													 													
+		</autoDropdown>
+	 </widget>
 	  </row>		
 	  						
       <row>           
@@ -96,7 +94,7 @@
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
         </widget>
         <widget>
-          <check key= "{qaEventMeta:isBillable()}" tab="{qaEventMeta:reportingSequence()},{qaEventMeta:test()}"/>
+          <check key= "{qaEventMeta:isBillable()}" tab="{qaEventMeta:reportingSequence()},{qaEventMeta:testId()}"/>
        </widget>
       </row> 
       <row>

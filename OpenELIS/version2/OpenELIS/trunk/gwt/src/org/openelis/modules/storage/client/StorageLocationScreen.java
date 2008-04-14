@@ -1,11 +1,8 @@
 package org.openelis.modules.storage.client;
 
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.BooleanObject;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -13,10 +10,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class StorageLocationScreen extends OpenELISScreenForm {
@@ -41,6 +35,14 @@ public class StorageLocationScreen extends OpenELISScreenForm {
             super.onChange(sender);
         }
     }
+
+	
+	public void onClick(Widget sender) {
+		String action = ((AppButton)sender).action;
+        if (action.equals("removeRow")) {
+			onRemoveRowButtonClick();
+		}
+	}
 	
 	public void afterDraw(boolean success) {
 
@@ -56,7 +58,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
         nameTextbox = (TextBox)getWidget("storageLocation.name");
 		childTable = (TableWidget) getWidget("childStorageLocsTable");
 		
-		message.setText("done");
+		message.setText("Done");
 		
 		((ChildStorageLocsTable) childTable.controller.manager).setStorageForm(this);
 
@@ -137,24 +139,23 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		selected = sender;
 	}
 	
-	protected boolean validate() {
-	/*	StringObject nameObj = new StringObject();
-		nameObj.setValue(nameTextbox.getText());
-        
-       // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {nameObj}; 
-        boolean unique;
-       screenService.getObject("validateUniqueName", args, new AsyncCallback(){
-          public void onSuccess(Object result){    
-        	  Boolean boolResult = (Boolean)((BooleanObject)result).getValue();
-        	  unique = boolResult.booleanValue();
-             
-          }
-          
-          public void onFailure(Throwable caught){
-              Window.alert(caught.getMessage());
-          }
-      }); */
-		return super.validate();
-	}
+	private void onRemoveRowButtonClick(){
+			int selectedRow = childTable.controller.selected;
+			if (selectedRow > -1
+				&& childTable.controller.model.numRows() > 1) {
+				TableRow row = childTable.controller.model
+						.getRow(selectedRow);
+				row.setShow(false);
+				// delete the last row of the table because it is autoadd
+				childTable.controller.model
+						.deleteRow(childTable.controller.model.numRows() - 1);
+				// reset the model
+				childTable.controller.reset();
+				// need to set the deleted flag to "Y" also
+				StringField deleteFlag = new StringField();
+				deleteFlag.setValue("Y");
+
+				row.addHidden("deleteFlag", deleteFlag);
+			}
+    }
 }

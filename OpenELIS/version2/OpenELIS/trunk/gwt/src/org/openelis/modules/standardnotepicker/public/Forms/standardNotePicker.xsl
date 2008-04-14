@@ -53,8 +53,8 @@
 		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer" align="center">
 			<widget>
     			<buttonPanel key="buttons">
-    			<xsl:call-template name="popupCommitButton"/>
-    			<xsl:call-template name="popupAbortButton"/>
+    			<xsl:call-template name="popupSelectButton"/>
+    			<xsl:call-template name="popupCancelButton"/>
 				</buttonPanel>
  			</widget>
 		</panel>
