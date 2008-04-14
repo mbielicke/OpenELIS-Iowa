@@ -250,10 +250,10 @@ public class OrganizationScreen extends OpenELISScreenForm {
         // done because key is set to null in AppScreenForm for the add operation 
         if(key ==null){  
          key = new DataSet();
-         key.addObject(orgIdObj);
+         key.setKey(orgIdObj);
         }
         else{
-            key.setObject(0,orgIdObj);
+            key.setKey(orgIdObj);
         }
         
                 
@@ -382,7 +382,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
          
          // access the database only if id is not null  
          if(key!=null){
-           if(key.getObject(0)!=null){        
+           if(key.getKey()!=null){        
              getModel = true;
              orgId = (Integer)key.getKey().getValue(); 
            }else{
@@ -428,7 +428,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
          
          // access the database only if id is not null 
          if(key!=null){
-          if(key.getObject(0)!=null){        
+          if(key.getKey()!=null){        
            getModel = true;
            orgId = (Integer)key.getKey().getValue(); 
           }else{
