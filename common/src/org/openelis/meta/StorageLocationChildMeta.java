@@ -4,19 +4,19 @@ import java.util.HashMap;
 
 import org.openelis.util.Meta;
 
-public class StorageLocationParentMeta implements Meta{
-	private String tableName = "parentStorageLocation";
-	private String entityName = "storageLocation.parentStorageLocation";
+public class StorageLocationChildMeta implements Meta{
+	private String tableName = "childStorageLocation";
+	private String entityName = "storageLocation.childLocations";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID               			= "parentStorageLocation.id",
-     SORT_ORDER					= "parentStorageLocation.sortOrder",
-     NAME   					= "parentStorageLocation.name",
-     LOCATION  					= "parentStorageLocation.location",
-     PARENT_STORAGE_LOCATION	= "parentStorageLocation.parentStorageLocationId",
-     STORAGE_UNIT 				= "parentStorageLocation.storageUnitId",
-     IS_AVAILABLE 				= "parentStorageLocation.isAvailable";
+     ID               			= "childStorageLocation.id",
+     SORT_ORDER					= "childStorageLocation.sortOrder",
+     NAME   					= "childStorageLocation.name",
+     LOCATION  					= "childStorageLocation.location",
+     PARENT_STORAGE_LOCATION	= "childStorageLocation.parentStorageLocationId",
+     STORAGE_UNIT 				= "childStorageLocation.storageUnitId",
+     IS_AVAILABLE 				= "childStorageLocation.isAvailable";
 
 	//
 	// Array of column names used for building select/insert/update strings
@@ -26,20 +26,20 @@ public class StorageLocationParentMeta implements Meta{
 	
 	private static HashMap<String,String> columnHashList;
 	
-	private static final StorageLocationParentMeta storageLocationParentMeta = new StorageLocationParentMeta();
+	private static final StorageLocationChildMeta storageLocationChildMeta = new StorageLocationChildMeta();
 	
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(22), "");
+	     columnHashList.put(columnNames[i].substring(21), "");
 	}
 
-	private StorageLocationParentMeta() {
+	private StorageLocationChildMeta() {
 
 	}
 	
-	public static StorageLocationParentMeta getInstance(){
-		return storageLocationParentMeta;
+	public static StorageLocationChildMeta getInstance(){
+		return storageLocationChildMeta;
 	}
 	
 	public String[] getColumnList() {

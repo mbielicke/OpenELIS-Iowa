@@ -14,7 +14,7 @@ public class StorageLocationMeta implements Meta{
      SORT_ORDER					= "storageLocation.sortOrder",
      NAME   					= "storageLocation.name",
      LOCATION  					= "storageLocation.location",
-     PARENT_STORAGE_LOCATION	= "storageLocation.parentStorageLocation",
+     PARENT_STORAGE_LOCATION	= "storageLocation.parentStorageLocationId",
      STORAGE_UNIT 				= "storageLocation.storageUnit",
      IS_AVAILABLE 				= "storageLocation.isAvailable";
 

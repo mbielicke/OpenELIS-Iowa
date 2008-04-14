@@ -6,28 +6,29 @@ public class StorageLocationDO implements Serializable{
 
 	private static final long serialVersionUID = 6315788445035701792L;
 	
-	Integer id;
-	Integer sortOrder;
-	String name;
-	String location;
-	Integer parentStorageLocationId;
-	String parentStorageLocation;
-	Integer storageUnitId;
-	String storageUnit;
-	String isAvailable;
+	protected Integer id;
+	protected Integer sortOrder;
+	protected String name;
+	protected String location;
+	protected Integer parentStorageLocationId;
+	//String parentStorageLocation;
+	protected Integer storageUnitId;
+	protected String storageUnit;
+	protected String isAvailable;
 	
+	protected Boolean delete = false;
+
 	public StorageLocationDO(){
 		
 	}
 	
-	public StorageLocationDO(Integer id, Integer sortOrder, String name, String location, Integer parentStorageLocationId, String parentStorageLocation,
-						Integer storageUnitId, String storageUnit, String isAvailable){
+	public StorageLocationDO(Integer id, Integer sortOrder, String name, String location, Integer parentStorageLocationId, Integer storageUnitId, String storageUnit, String isAvailable){
 		this.id = id;
 		this.sortOrder = sortOrder;
 		this.name = name;
 		this.location = location;
 		this.parentStorageLocationId = parentStorageLocationId;
-		this.parentStorageLocation = parentStorageLocation;
+//		/this.parentStorageLocation = parentStorageLocation;
 		this.storageUnitId = storageUnitId;
 		this.storageUnit = storageUnit;
 		this.isAvailable = isAvailable;
@@ -76,13 +77,13 @@ public class StorageLocationDO implements Serializable{
 		this.storageUnitId = storageUnitId;
 	}
 
-	public String getParentStorageLocation() {
+	/*public String getParentStorageLocation() {
 		return parentStorageLocation;
 	}
 
 	public void setParentStorageLocation(String parentStorageLocation) {
 		this.parentStorageLocation = parentStorageLocation;
-	}
+	}*/
 
 	public String getStorageUnit() {
 		return storageUnit;
@@ -92,4 +93,11 @@ public class StorageLocationDO implements Serializable{
 		this.storageUnit = storageUnit;
 	}
 
+	public Boolean getDelete() {
+		return delete;
+	}
+
+	public void setDelete(Boolean delete) {
+		this.delete = delete;
+	}
 }
