@@ -86,7 +86,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
         vp.getPanel().add(loadingHtml);
         //add(loadingHtml);
         
-        message.setText("done");
+        message.setText("Done");
         
         StringObject name = new StringObject();
         StringObject desc = new StringObject();

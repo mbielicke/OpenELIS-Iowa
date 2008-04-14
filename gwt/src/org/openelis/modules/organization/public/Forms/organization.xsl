@@ -52,11 +52,9 @@
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
 				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
-				 <xsl:if test="string($language)='en'">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-		         </xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 		<!--button panel code-->
@@ -79,9 +77,6 @@
 		
 					<panel layout="vertical" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
-							<row>
-									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
-							</row>
 									<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
@@ -103,10 +98,7 @@
 										<widget colspan="3">
 											<textbox case="upper" key="{orgAddressMeta:city()}" width="212px" max="30" tab="{orgAddressMeta:state()},{orgAddressMeta:streetAddress()}"/>
 										</widget>		
-									</row>
-									<row>
-									<panel layout="vertical" xsi:type="Panel" style="FormVerticalSpacing"/>
-									</row>						
+									</row>				
 									<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
@@ -118,21 +110,17 @@
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
-										<!--<panel layout="horizontal" xsi:type="Panel" padding="0" spacing="0">-->
 												<widget>
 													<autoDropdown key="{orgAddressMeta:state()}" case="upper" width="40px" popWidth="auto" tab="{orgAddressMeta:zipCode()},{orgAddressMeta:city()}">
-													<widths>40</widths>
+													<widths>32</widths>
 													</autoDropdown>
 												</widget>
-									<!--<panel layout="horizontal" width="24px" xsi:type="Panel"/>-->
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 												</widget>
-												<!--<panel layout="horizontal" width="2px" xsi:type="Panel"/>-->
 												<widget>
 													<maskedbox key="{orgAddressMeta:zipCode()}" width="70" mask="99999-9999" tab="{orgAddressMeta:country()},{orgAddressMeta:state()}"/>
 												</widget>
-									<!--</panel>									-->
 									</row>	
 									<row>
 										<widget>
@@ -146,13 +134,10 @@
 										</widget>
 										<widget colspan="3">
 												<autoDropdown key="{orgAddressMeta:country()}" case="mixed" width="175px" popWidth="auto" tab="{parentOrgMeta:name()},{orgAddressMeta:zipCode()}">
-													<widths>175</widths>
+													<widths>167</widths>
 												</autoDropdown>
 										</widget>					
 									</row>
-								<row>
-									<panel layout="vertical" xsi:type="Panel" style="FormVerticalSpacing"/>
-								</row>
 								<row>
 									<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
@@ -180,7 +165,7 @@
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
 							<widget valign="top">
-								<table width="567px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="" showError="false">
+								<table width="574px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -190,14 +175,14 @@
 										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
 										<editors>
 											<autoDropdown case="mixed" width="90px" popWidth="auto">
-											  <widths>90</widths>
+											  <widths>100</widths>
 											</autoDropdown>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<autoDropdown case="upper" width="40px" popWidth="auto">
-												 <widths>40</widths>
+												 <widths>32</widths>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
 										 	<textbox case="mixed"/>
@@ -206,7 +191,7 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<autoDropdown case="mixed" width="110px" popWidth="auto">
-											  <widths>110</widths>
+											  <widths>102</widths>
 											</autoDropdown>
 										</editors>
 										<fields>
@@ -229,7 +214,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="567px" title="" maxRows="8" showError="false">
+									<queryTable width="574px" title="" maxRows="8" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
@@ -267,7 +252,7 @@
 									</query>
 								</widget>
 
-									<widget style="WhiteContentPanel">
+									<widget style="WhiteContentPanel" halign="center">
 									<appButton action="removeRow" onclick="this" style="Button" key="removeContactButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
@@ -290,7 +275,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="405px" max="60" showError="false"/>
+										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="412px" max="60" showError="false"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -308,7 +293,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="524px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false"/>
+										<textarea width="531px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false"/>
 										</widget>
 										</row>
 								 
@@ -318,7 +303,7 @@
 								</widget>
 								<widget colspan="2">
 								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="524px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="531px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
 								
 								</panel>
 								</panel>
@@ -341,7 +326,7 @@
       <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
       <string key="{orgAddressMeta:city()}" max="30" required="true"/>
       <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
-      <string key="{organizationMeta:isActive()}" required="false"/>
+      <check key="{organizationMeta:isActive()}" required="false"/>
       <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
       <string key="{orgNoteMeta:text()}" required="false"/>
       <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
@@ -361,7 +346,7 @@
       <queryString key="{orgNoteMeta:text()}"/>
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="false"/>
-      <queryString key="{organizationMeta:isActive()}" required="false"/>
+      <queryCheck key="{organizationMeta:isActive()}" required="false"/>
       <dropdown key="{orgContactMeta:contactType()}" required="false"/>
 	  <queryString key="{orgContactMeta:name()}" required="false"/>
 	  <queryString key="{orgContactAddressMeta:multipleUnit()}" required="false"/>

@@ -527,7 +527,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
   			ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
   			pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
   			
-  			//StandardNotePickerScreen pickerScreen = new StandardNotePickerScreen((TextArea)getWidget("organization.orgNote.text"));
   			standardNotePopupPanel.add(pickerWindow);
   			int left = this.getAbsoluteLeft();
   			int top = this.getAbsoluteTop();

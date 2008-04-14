@@ -32,11 +32,9 @@
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
 			    <aToZ height="260px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
-					 <xsl:if test="string($language)='en'">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-					</xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
@@ -119,7 +117,7 @@
   	<number key="{analyteMeta:analyteGroup()}" type="integer" required="true"/>
   	<dropdown key="{parentAnalyteMeta:name()}" type="integer" required="false"/>
   	<string key="{analyteMeta:externalId()}" required="false"/>
-  	<string key="{analyteMeta:isActive()}" required="false"/>
+  	<check key="{analyteMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="query">
   	<queryNumber key="{analyteMeta:id()}" type="integer" required="false"/>
@@ -127,7 +125,7 @@
   	<queryNumber key="{analyteMeta:analyteGroup()}" type="integer" required="false"/>
   	<queryString key="{parentAnalyteMeta:name()}" required="false"/>
   	<queryString key="{analyteMeta:externalId()}" required="false"/>
-  	<queryString key="{analyteMeta:isActive()}" required="false"/>
+  	<queryCheck key="{analyteMeta:isActive()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 	<queryString key="{analyteMeta:name()}"/>

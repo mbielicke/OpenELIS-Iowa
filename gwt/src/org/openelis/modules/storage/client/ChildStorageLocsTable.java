@@ -14,7 +14,7 @@ public class ChildStorageLocsTable implements TableManager {
     }  
 
     public boolean canSelect(int row, TableController controller) {        
-    	if(userForm.bpanel.getState() == FormInt.ADD || userForm.bpanel.getState() == FormInt.UPDATE)           
+    	if(userForm.state == FormInt.ADD || userForm.state == FormInt.UPDATE)           
             return true;
         return false;
     }

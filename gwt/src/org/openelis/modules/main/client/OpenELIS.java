@@ -14,6 +14,7 @@ import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.PagedTreeField;
+import org.openelis.gwt.common.data.QueryCheckField;
 import org.openelis.gwt.common.data.QueryDateField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -52,6 +53,7 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
 import org.openelis.gwt.widget.ProxyListener;
+import org.openelis.gwt.widget.QueryCheck;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCalendar;
 import org.openelis.gwt.widget.table.TableCheck;
@@ -497,7 +499,7 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      /*ClassFactory.addClass(new String[] {"QueryCheckField",WidgetMap.RPC_QUERY_CHECK},
+      ClassFactory.addClass(new String[] {"QueryCheckField",QueryCheckField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -507,7 +509,7 @@ public class OpenELIS implements EntryPoint {
                                       return null;
                                   }
       });
-      */
+      
       ClassFactory.addClass(new String[] {"QueryDateField",QueryDateField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

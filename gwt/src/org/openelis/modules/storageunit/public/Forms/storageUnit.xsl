@@ -27,11 +27,9 @@
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
 			    <aToZ height="260px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
-					 <xsl:if test="string($language)='en'">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-					</xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
@@ -63,7 +61,7 @@
 									</widget>
 									<widget>
 										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" popWidth="auto" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}">
-											<widths>89</widths>
+											<widths>120</widths>
 										</autoDropdown>
 									</widget>
 								</row>
@@ -72,7 +70,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{storageUnitMeta:description()}" max="60" width="300px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
+										<textbox case="lower" key="{storageUnitMeta:description()}" max="60" width="300px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
 									</widget>
 								</row>
 								<row>
@@ -92,13 +90,13 @@
   	<number key="{storageUnitMeta:id()}" type="integer" required="false"/>
   	<dropdown key="{storageUnitMeta:category()}" required="true"/>
   	<string key="{storageUnitMeta:description()}" max="60" required="true"/>
-  	<string key="{storageUnitMeta:isSingular()}" required="false"/>
+  	<check key="{storageUnitMeta:isSingular()}" required="false"/>
 	</rpc>
 	<rpc key="query">
  	<queryNumber key="{storageUnitMeta:id()}" type="integer" required="false"/>
  	<dropdown key="{storageUnitMeta:category()}" required="false"/>
   	<queryString key="{storageUnitMeta:description()}" required="false"/>
-  	<queryString key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
+  	<queryCheck key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
 
 	</rpc>
 	<rpc key="queryByLetter">

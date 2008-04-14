@@ -49,7 +49,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
         
         cat = (AutoCompleteDropdown)getWidget("storageUnit.category");
         
-		message.setText("done");
+		message.setText("Done");
 
 		super.afterDraw(success);
 

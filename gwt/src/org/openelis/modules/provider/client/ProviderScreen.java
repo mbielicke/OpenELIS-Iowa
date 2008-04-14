@@ -597,7 +597,7 @@ public class ProviderScreen extends OpenELISScreenForm {
    private void onStandardNoteButtonClick(){
 	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.subject")));
+	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
 			
 	   standardNotePopupPanel.add(pickerWindow);
 	   int left = this.getAbsoluteLeft();

@@ -3,11 +3,13 @@
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:storageLocationMeta="xalan://org.openelis.meta.StorageLocationMeta"
-                xmlns:storageLocationParentMeta="xalan://org.openelis.meta.StorageLocationParentMeta"
+                xmlns:storageLocationChildMeta="xalan://org.openelis.meta.StorageLocationChildMeta"
                 xmlns:storageLocationStorageUnitMeta="xalan://org.openelis.meta.StorageLocationStorageUnitMeta"
+                xmlns:storageLocationChildStorageUnitMeta="xalan://org.openelis.meta.StorageLocationChildStorageUnitMeta"
+                
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumnsNum.xsl"/>
+<xsl:import href="aToZOneColumn.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
@@ -21,12 +23,16 @@
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="storageLocationParentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationParentMeta"/>
+  <xalan:component prefix="storageLocationChildMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationChildMeta"/>
   </xalan:component>
   
   <xalan:component prefix="storageLocationStorageUnitMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationStorageUnitMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="storageLocationChildStorageUnitMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationChildStorageUnitMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
@@ -36,12 +42,10 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="325px" width="100%" key="hideablePanel" visible="false" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
-				 <xsl:if test="string($language)='en'">
+				<aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 			         <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-		        </xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 				<!--button panel code-->
@@ -73,43 +77,34 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{storageLocationMeta:name()}" width="150px" max="20" tab="{storageLocationMeta:location()},{storageLocationMeta:isAvailable()}"/>
+										<textbox case="lower" key="{storageLocationMeta:name()}" width="150px" max="20" tab="{storageLocationMeta:location()},{storageLocationMeta:isAvailable()}"/>
 									</widget>
 								</row>
-								<row>								
+								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{storageLocationMeta:location()}" max="80" width="195px" tab="{storageLocationParentMeta:name()},{storageLocationMeta:name()}"/>
+										<textbox case="mixed" key="{storageLocationMeta:location()}" max="80" width="395px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:name()}"/>
 									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentStorage")'/>:</text>
-									</widget>
-									<widget>
-										<autoDropdown cat="parentStorageLoc" key="{storageLocationParentMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="280px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:location()}">
-											<headers>Name,Location</headers>
-											<widths>120,150</widths>
-										</autoDropdown>
-										<query>
-											<textbox case="upper" width="166px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:location()}"/>
-										</query>
-									</widget>	
 								</row>
 								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="150px" popWidth="247px" tab="{storageLocationMeta:isAvailable()},{storageLocationParentMeta:name()}">
+									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" popWidth="364px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}">
 										<headers>Desc,Category</headers>
-										<widths>160,80</widths>	
+										<widths>267,90</widths>	
 									</autoDropdown>
 										<query>
-										<textbox case="upper" width="166px" tab="{storageLocationMeta:isAvailable()},{storageLocationParentMeta:name()}"/>
+										<textbox case="upper" width="366px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}"/>
 										</query>
 									</widget>	
-									<widget>
+									
+								</row>
+								<row>
+								<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
@@ -121,53 +116,57 @@
 								</row>
 								<row>
 								<widget  colspan="4" halign="center">
-							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="7" title="" showError="false">
-										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
-										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
-										<widths>130,200,115,80</widths>
+							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="11" title="" showError="false">
+										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
+										<widths>225,275,80</widths>
 										<editors>
-											<textbox case="mixed" max="20"/>
-											<textbox case="mixed" max="80"/>
-											<autoDropdown cat="storageUnit" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="150px">
-												<headers>Desc,Category,Singlular</headers>
-												<widths>160,80,45</widths>
+											<autoDropdown cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="257px">
+												<headers>Desc,Category</headers>
+												<widths>180,70</widths>
 											</autoDropdown>
+											<textbox case="mixed" max="80"/>
 											<check/>
 										</editors>
 										<fields>
-											<string/>
-											<string/>
 											<dropdown/>
-											<string/>											
+											<string/>
+											<string/>
 										</fields>
-										<sorts>true,true,true,true</sorts>
-										<filters>false,false ,false,false</filters>
-										<colAligns>left,left,left,left</colAligns>
+										<sorts>true,true,true</sorts>
+										<filters>false,false ,false</filters>
+										<colAligns>left,left,left</colAligns>
 									</table>
 									<query>
-									<table width="auto" maxRows="7" rows="1" title="" showError="false">
-										<headers><xsl:value-of select='resource:getString($constants,"name")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
-										<xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
-										<widths>130,200,115,80</widths>
+									<queryTable width="auto" maxRows="11" rows="1" title="" showError="false">
+										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
+										<widths>225,275,80</widths>
 										<editors>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
 											<textbox case="upper"/>
+											<textbox case="mixed"/>
 											<check/>
 										</editors>
 										<fields>
-											<queryString/>
-											<queryString/>
-											<queryString/>
-											<queryString/>	
+											<xsl:value-of select='storageLocationChildStorageUnitMeta:description()'/>,<xsl:value-of select='storageLocationChildMeta:location()'/>,
+											<xsl:value-of select='storageLocationChildMeta:isAvailable()'/>
 										</fields>
-										<sorts>true,true,true,true</sorts>
-										<filters>false,false ,false,false</filters>
-										<colAligns>left,left,left,left</colAligns>
-									</table>
+									</queryTable>
 									</query>
 							</widget>
 								</row>
+								<row>
+		                <widget halign = "left">
+                            <appButton  action="removeRow" onclick="this" key = "removeEntryButton">
+                            <panel xsi:type="Panel" layout="horizontal">
+              						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
+                              <widget>
+                                  <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+                               </widget> 
+                               </panel>
+                             </appButton>
+                           </widget>	      
+                           </row>
 							</panel>
 				</panel>
 			</panel>
@@ -177,10 +176,8 @@
 	<number key="{storageLocationMeta:id()}" required="false" type="integer"/>
     <string key="{storageLocationMeta:name()}" max="20" required="true"/>
     <dropdown  key="{storageLocationStorageUnitMeta:description()}" type="integer" required="true"/> 
-   <!-- <number key="sortOrderId" required="true" type="integer"/>-->
     <string key="{storageLocationMeta:location()}" max="80" required="true"/>
-    <dropdown key="{storageLocationParentMeta:name()}" type="integer" required="false"/>
-    <string key="{storageLocationMeta:isAvailable()}" required="false"/>
+    <check key="{storageLocationMeta:isAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>
 	
@@ -189,9 +186,12 @@
     <queryString key="{storageLocationMeta:name()}" required="false"/>
     <queryString key="{storageLocationMeta:location()}" required="false"/>
     <queryString key="{storageLocationStorageUnitMeta:description()}" required="false"/>
-    <queryString key="{storageLocationParentMeta:name()}" required="false"/>  
-    <queryString key="{storageLocationMeta:isAvailable()}" required="false"/>
-    <table key="childStorageLocsTable"/>
+    <queryCheck key="{storageLocationMeta:isAvailable()}" required="false"/>
+    
+	<!-- table values -->
+	<queryString key="{storageLocationChildStorageUnitMeta:description()}" required="false"/>
+	<queryString key="{storageLocationChildMeta:location()}" required="false"/>
+	<queryCheck key="{storageLocationChildMeta:isAvailable()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="storageLocation.name"/>

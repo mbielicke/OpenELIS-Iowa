@@ -411,7 +411,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue(OrganizationAddressMeta.COUNTRY,organizationDO.getAddressDO().getCountry());
 		
 		//we need to create a dataset for the parent organization auto complete
-		if(organizationDO.getParentOrganization() == null)
+		if(organizationDO.getParentOrganizationId() == null)
 			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, null);
 		else{
 			DataSet parentOrgSet = new DataSet();

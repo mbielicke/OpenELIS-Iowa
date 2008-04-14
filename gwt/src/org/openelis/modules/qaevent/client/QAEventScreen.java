@@ -5,6 +5,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -22,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
      private TextBox tname = null;
      private ScreenAutoDropdown displayType = null;
      private ScreenAutoDropdown displayTest = null;
-     private TextArea reportingText = null;
+     private ScreenTextArea reportingText = null;
      
      private static boolean loaded = false;
      
@@ -51,7 +52,7 @@ import com.google.gwt.user.client.ui.Widget;
                displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
                displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
  
-               reportingText = (TextArea)getWidget("qaevent.reportingText");
+               reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");
                super.afterDraw(success);        
                
                loadDropdowns();                           
@@ -78,7 +79,7 @@ import com.google.gwt.user.client.ui.Widget;
            
          // disable the text area so that it doesn't get included in the query, this is done because most 
          // databases don't support querying by BLOBs
-            reportingText.setEnabled(false);
+            reportingText.enable(false);
             
         }                 
                       
@@ -86,7 +87,7 @@ import com.google.gwt.user.client.ui.Widget;
          public void add(){                                  
              super.add();       
              
-             reportingText.setEnabled(true);
+             reportingText.enable(true);
             tname.setFocus(true);            
          }
          
@@ -95,7 +96,7 @@ import com.google.gwt.user.client.ui.Widget;
             
             //set focus to the name field
             tname.setFocus(true);
-            reportingText.setEnabled(true);
+            reportingText.enable(true);
         }
          
          private void getQAEvents(String letter, Widget sender) {

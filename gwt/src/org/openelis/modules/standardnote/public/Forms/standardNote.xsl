@@ -27,11 +27,9 @@
 		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
 			<!--left table goes here -->
 				<aToZ height="290px" width="100%" key="hideablePanel" visible="false" maxRows="10" title='{resource:getString($constants,"name")}' tablewidth="auto" colwidths="175">
-				 <xsl:if test="string($language)='en'">
     				 <buttonPanel key="atozButtons">
 	         		<xsl:call-template name="aToZLeftPanelButtons"/>
 	         		</buttonPanel>
-         		</xsl:if>
 				</aToZ>
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
 			<!--button panel code-->
@@ -79,7 +77,7 @@
 									</widget>
 									<widget>
 										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" popWidth="auto" tab="{standardNoteMeta:text()},{standardNoteMeta:description()}">
-											<widths>100</widths>
+											<widths>131</widths>
 										</autoDropdown>
 									</widget>
 								</row>
@@ -90,7 +88,7 @@
 								  <widget>
 				                    <calendar begin="0" end="2"/>
 							      </widget>
-							    </row>	   
+							    </row>	    
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>

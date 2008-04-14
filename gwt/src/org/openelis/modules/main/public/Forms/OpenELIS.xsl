@@ -28,7 +28,7 @@
 			    	  <label style="topMenuBarItem" text="{resource:getString($constants,'application')}" hover="Hover"/>
 				</menuDisplay>
 				  <menuPanel style="topMenuContainer" layout="vertical" xsi:type="Panel" position="below">
-				    <xsl:call-template name="menuItem">
+				    				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">preference</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
@@ -117,7 +117,7 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" hover="Hover"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				    <xsl:call-template name="menuItem">
+				  				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">worksheetCreation</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>

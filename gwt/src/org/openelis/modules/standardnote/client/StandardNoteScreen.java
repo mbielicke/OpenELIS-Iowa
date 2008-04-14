@@ -9,7 +9,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.TextBox;
@@ -43,7 +42,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		textArea = (ScreenTextArea)widgets.get("standardNote.text");
 		nameTextbox = (TextBox)getWidget("standardNote.name");
 
-		message.setText("done");
+		message.setText("Done");
 		
 		loadDropdowns();
 		

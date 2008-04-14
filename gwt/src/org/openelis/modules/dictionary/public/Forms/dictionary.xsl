@@ -34,12 +34,9 @@
 			<!--left table goes here -->
 																
   <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="150">   
-    <xsl:if test="string($language)='en'">
      	 <buttonPanel key="atozButtons">
 	    	  <xsl:call-template name="aToZLeftPanelButtons"/>		
-		 </buttonPanel>
-    </xsl:if>
-        
+		 </buttonPanel>        
   </aToZ>
   
   
@@ -61,9 +58,7 @@
  			</widget>
 		</panel>
 		<!--end button panel-->
-		
-		          <panel layout= "vertical" height = "5px" xsi:type= "Panel"/>			
-		          		
+			          		
 						<panel layout="vertical" spacing="0"  xsi:type="Panel">							
 							<panel key="secMod" layout="table" style="Form"  xsi:type="Table">																							
 								<row>
@@ -89,7 +84,7 @@
 									 									 									  
 									           <widget>
 												   <autoDropdown key="{categoryMeta:section()}" case="lower" width="100px" popWidth="auto" tab="{categoryMeta:systemName()},{categoryMeta:description()}">
-													 <widths>90</widths>
+													 <widths>92</widths>
 												   </autoDropdown>
 												</widget>
 								     							   						
@@ -104,12 +99,11 @@
 								</row>						  							
 						</panel>
 					</panel>
-					<panel height="25px" layout="vertical"  xsi:type="Panel"/>
+					<panel height="10px" layout="vertical"  xsi:type="Panel"/>
 					
 					<panel layout="vertical"  spacing="5" xsi:type="Panel">
-						<!-- start TAB 1 data table -->
 						<widget>
-							<table maxRows = "6" cellHeight = "20" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
+							<table maxRows = "11" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -119,8 +113,8 @@
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
 									<textbox/>																			
-									<autoDropdown cat="relatedEntry" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="90px">												
-												<widths>100</widths>
+									<autoDropdown cat="relatedEntry" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="118px">												
+												<widths>113</widths>
 											</autoDropdown>
 								</editors>
 								<fields>																											
@@ -135,11 +129,11 @@
 								<colAligns>center,left,center,right,left</colAligns>
 							</table>
 						  <query>
-						   	<queryTable width = "auto" cellHeight = "20" maxRows = "6"  title="" showError="false">
+						   	<queryTable width = "auto" maxRows = "11"  title="" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>65,95,75,110,100</widths>
+								<widths>45,95,75,110,120</widths>
 								<editors>									
 								    <check threeState="true"/>											
 									<textbox/>									
@@ -157,10 +151,9 @@
 								<colAligns>center,left,center,right,left</colAligns>
 							</queryTable>
 						  </query>						  
-						</widget>
-						<panel layout= "horizontal" xsi:type= "Panel" height= "5px"/>								                
-		                <widget halign = "left">
-                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton">
+						</widget>								                
+		                <widget halign = "center">
+                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton" style="Button">
                             <panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
                               <widget>

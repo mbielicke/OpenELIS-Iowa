@@ -1,17 +1,19 @@
 package org.openelis.modules.testTrailer.client;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZPanel;
-import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TestTrailerScreen extends OpenELISScreenForm {
 	
-	private Widget selected;
+	private TextBox nameTextBox;
+	private ScreenTextArea textArea;
 	
 	public TestTrailerScreen() {
 		super("org.openelis.modules.testTrailer.server.TestTrailerService",false);
@@ -22,7 +24,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	        if(sender == getWidget("atozButtons")){
 	           String action = ((ButtonPanel)sender).buttonClicked.action;
 	           if(action.startsWith("query:")){
-	        	   getStorageUnits(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+	        	   getTestTrailers(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
 	           }
 	        }else{
 	            super.onChange(sender);
@@ -40,14 +42,39 @@ public class TestTrailerScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-		message.setText("done");
+        nameTextBox = (TextBox) getWidget("testTrailer.name");
+        textArea = (ScreenTextArea) widgets.get("testTrailer.text");
+        
+		message.setText("Done");
 
 		super.afterDraw(success);
 	}
 	
+	public void add() {
+		super.add();
+
+		//set focus to the name field
+		nameTextBox.setFocus(true);
+	}
 	
+	public void query() {
+		super.query();
+		
+//		users cant query by text so disable it
+		textArea.enable(false);
+		
+		//set focus to the name field
+		nameTextBox.setFocus(true);
+	}
 	
-	private void getStorageUnits(String letter, Widget sender) {
+	public void afterUpdate(boolean success) {
+		super.afterUpdate(success);
+
+		//set focus to the name field
+		nameTextBox.setFocus(true);
+	}
+	
+	private void getTestTrailers(String letter, Widget sender) {
 		// we only want to allow them to select a letter if they are in display
 		// mode..
 		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
@@ -55,20 +82,11 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
 			if(letter.equals("#"))
-				letterRPC.setFieldValue("storageUnit.description", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
+				letterRPC.setFieldValue("testTrailer.name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
 			else
-				letterRPC.setFieldValue("storageUnit.description", letter.toUpperCase() + "*");
+				letterRPC.setFieldValue("testTrailer.name", letter.toUpperCase() + "* | " + letter.toLowerCase() + "*");
 
 			commitQuery(letterRPC);
-
-			setStyleNameOnButton(sender);
 		}
-	}
-	
-	protected void setStyleNameOnButton(Widget sender) {
-		((AppButton)sender).changeState(AppButton.PRESSED);
-		if (selected != null)
-			((AppButton)selected).changeState(AppButton.UNPRESSED);
-		selected = sender;
 	}
 }

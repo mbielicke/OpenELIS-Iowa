@@ -28,8 +28,8 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.meta.StorageLocationChildMeta;
 import org.openelis.meta.StorageLocationMeta;
-import org.openelis.meta.StorageLocationParentMeta;
 import org.openelis.meta.StorageLocationStorageUnitMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -41,9 +41,8 @@ import org.openelis.util.SessionManager;
 
 public class StorageLocationService implements AppScreenFormServiceInt,
    											   AutoCompleteServiceInt{
-    
-	private static final long serialVersionUID = -7614978840440946815L;
-	private static final int leftTableRowsPerPage = 10;
+
+	private static final int leftTableRowsPerPage = 19;
 	
 	private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
 			new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
@@ -60,7 +59,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
         
 //		load the children
-        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue(),false);
+        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
         //need to build the children table now...
         TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -91,7 +90,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren(storageLocId,false);
+        List childrenList = remote.getStorageLocChildren(storageLocId);
         //need to build the children table now...
         TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -102,7 +101,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 //		if the rpc is null then we need to get the page
 		if(rpcSend == null){
 //			need to get the query rpc out of the cache
-	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageUnit");
+	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageLocation");
 
 	        if(rpc == null)
 	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
@@ -147,19 +146,6 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			
 			HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
 			
-//			children table
-			TableModel childrenTable = null;
-			if(rpcSend.getField("childStorageLocsTable") != null)
-				childrenTable = (TableModel)rpcSend.getField("childStorageLocsTable").getValue();		
-			
-	/*		if(childrenTable != null){
-				fields.put("childName",(QueryStringField)childrenTable.getRow(0).getColumn(0));
-				fields.put("childLocation",(QueryStringField)childrenTable.getRow(0).getColumn(1));
-				fields.put("childStorageUnit",(QueryStringField)childrenTable.getRow(0).getColumn(2));
-				fields.put("childIsAvailable",(CollectionField)childrenTable.getRow(0).getColumn(3));
-			}*/
-			
-			fields.remove("childStorageLocsTable");
 			List storageLocNames = new ArrayList();
 			try{
 				storageLocNames = remote.query(fields,0,leftTableRowsPerPage);
@@ -195,7 +181,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
         //need to save the rpc used to the encache
         if(SessionManager.getSession().getAttribute("systemUserId") == null)
         	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-        CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageUnit", rpcSend);
+        CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StorageLocation", rpcSend);
 		}
 		
 		return model;
@@ -224,7 +210,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren(storageLocDO.getId(),false);
+        List childrenList = remote.getStorageLocChildren(storageLocDO.getId());
         //need to build the children table now...
         TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -247,6 +233,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		}	
 		
 		setFieldsInRPC(rpcReturn, new StorageLocationDO());
+		rpcReturn.setFieldValue("childStorageLocsTable",null);
 		
 		return rpcReturn;
 	}
@@ -261,7 +248,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue(),false);
+        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
         //need to build the children table now...
         TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -284,10 +271,10 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue(),false);
+        //List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue(),false);
         //need to build the children table now...
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
-        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+       // TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+       // rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
 
 		return rpcReturn;
 	}
@@ -299,7 +286,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		rpcReturn.setFieldValue(StorageLocationMeta.NAME, (storageLocDO.getName() == null ? null : storageLocDO.getName().trim()));
 		
 //		we need to create a dataset for the parent storage location auto complete
-		if(storageLocDO.getParentStorageLocationId() == null)
+	/*	if(storageLocDO.getParentStorageLocationId() == null)
 			rpcReturn.setFieldValue(StorageLocationParentMeta.NAME, null);
 		else{
 			DataSet parentSLSet = new DataSet();
@@ -311,7 +298,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			parentSLSet.setKey(id);
 			parentSLSet.addObject(text);
 			rpcReturn.setFieldValue(StorageLocationParentMeta.NAME, parentSLSet);
-		}
+		}*/
 		
 //		we need to create a dataset for the storage unit auto complete
 		if(storageLocDO.getStorageUnitId() == null)
@@ -336,7 +323,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		newStorageLocDO.setIsAvailable((String) rpcSend.getFieldValue(StorageLocationMeta.IS_AVAILABLE));
 		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.LOCATION)).trim());
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.NAME)).trim());
-		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationParentMeta.ID));
+		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationChildMeta.ID));
 		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION));
 		
 		return newStorageLocDO;
@@ -349,18 +336,29 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			StorageLocationDO childDO = new StorageLocationDO();
 			TableRow row = childTable.getRow(i);
 			
-			//contact data
+			//parent data
 			NumberField id = (NumberField)row.getHidden("id");
-			
-			if(id != null)
-				childDO.setId((Integer)id.getValue());
-			
-			childDO.setName(((String)((StringField)row.getColumn(0)).getValue()).trim());
-			childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
-			childDO.setStorageUnitId((Integer)((DropDownField)row.getColumn(2)).getValue());
-			childDO.setIsAvailable(((String)((StringField)row.getColumn(3)).getValue()).trim());
+			StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+			if(deleteFlag == null){
+				childDO.setDelete(false);
+			}else{
+				childDO.setDelete("Y".equals(deleteFlag.getValue()));
+			}
+				//if the user created the row and clicked the remove button before commit...
+				//we dont need to do anything with that row
+				if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && id == null){
+					//do nothing
+				}else{
 				
-			storageLocationChildren.add(childDO);	
+				if(id != null)
+					childDO.setId((Integer)id.getValue());
+				
+				childDO.setStorageUnitId((Integer)((DropDownField)row.getColumn(0)).getValue());
+				childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
+				childDO.setIsAvailable(((String)((StringField)row.getColumn(2)).getValue()).trim());
+					
+				storageLocationChildren.add(childDO);	
+			}
 		}
 		return storageLocationChildren;
 	}
@@ -525,10 +523,6 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				String category = (String)result[2];
 				if(category != null)
 					category = category.trim();
-				//is singular
-				String isSingular = (String)result[3];
-				if(isSingular != null)
-					isSingular = isSingular.trim();
 				
 				DataSet data = new DataSet();
 				//hidden id
@@ -543,9 +537,6 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				StringObject categoryObject = new StringObject();
 				categoryObject.setValue(category);
 				data.addObject(categoryObject);
-				StringObject isSingularObject = new StringObject();
-				isSingularObject.setValue(isSingular);
-				data.addObject(isSingularObject);
 				
 				//add the dataset to the datamodel
 				dataModel.add(data);
@@ -654,25 +645,25 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 	               id.setValue(slDO.getId());
 	               
 	               row.addHidden("id", id);
-	               row.getColumn(0).setValue(slDO.getName());
-	               row.getColumn(1).setValue(slDO.getLocation());
 	               
-//	       		we need to create a dataset for the storage unit auto complete
-	       		if(slDO.getStorageUnitId() == null)
-	       			row.getColumn(2).setValue(null);
-	       		else{
-	       			DataSet storageUnitSet = new DataSet();
-	       			NumberObject storageUnitId = new NumberObject();
-	       			StringObject storageUnitText = new StringObject();
-	       			storageUnitId.setType("integer");
-	       			storageUnitId.setValue(slDO.getStorageUnitId());
-	       			storageUnitText.setValue(slDO.getStorageUnit().trim());
-	       			storageUnitSet.setKey(storageUnitId);
-	       			storageUnitSet.addObject(storageUnitText);
-	       			row.getColumn(2).setValue(storageUnitSet);
-	       		}
+//		       		we need to create a dataset for the storage unit auto complete
+		       		if(slDO.getStorageUnitId() == null)
+		       			row.getColumn(0).setValue(null);
+		       		else{
+		       			DataSet storageUnitSet = new DataSet();
+		       			NumberObject storageUnitId = new NumberObject();
+		       			StringObject storageUnitText = new StringObject();
+		       			storageUnitId.setType("integer");
+		       			storageUnitId.setValue(slDO.getStorageUnitId());
+		       			storageUnitText.setValue(slDO.getStorageUnit().trim());
+		       			storageUnitSet.setKey(storageUnitId);
+		       			storageUnitSet.addObject(storageUnitText);
+		       			row.getColumn(0).setValue(storageUnitSet);
+		       		}
+		       		
+	               row.getColumn(1).setValue(slDO.getLocation());
 	       		
-	       		row.getColumn(3).setValue(slDO.getIsAvailable());
+	       		row.getColumn(2).setValue(slDO.getIsAvailable());
 	                
 	            childModel.addRow(row);
 	       } 
