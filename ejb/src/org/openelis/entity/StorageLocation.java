@@ -5,6 +5,8 @@ package org.openelis.entity;
   * StorageLocation Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -15,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,9 +28,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "getStorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocationId,p.name,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s LEFT JOIN s.parentStorageLocation p where s.id = :id"),
+" s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
 @NamedQuery(name = "getStorageLocationChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocationId,p.name,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s LEFT JOIN s.parentStorageLocation p where s.parentStorageLocationId = :id"),
+" s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "getStorageLocationByParentId", query = "select s.id " +
 							 " from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "getStorageLocationByName", query = "select s.id " +
@@ -68,9 +71,10 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="is_available")
   private String isAvailable;             
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
-  private StorageLocation parentStorageLocation;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_storage_location")
+  private Collection<StorageLocation> childLocations;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
@@ -215,12 +219,12 @@ public class StorageLocation implements Auditable, Cloneable {
   public String getTableName() {
     return "storage_location";
   }
-public StorageLocation getParentStorageLocation() {
-	return parentStorageLocation;
+public Collection<StorageLocation> getChildLocations() {
+	return childLocations;
 }
-public void setParentStorageLocation(
-		StorageLocation parentStorageLocationName) {
-	this.parentStorageLocation = parentStorageLocationName;
+public void setChildLocations(
+		Collection<StorageLocation> childLocations) {
+	this.childLocations = childLocations;
 }
 public StorageUnit getStorageUnit() {
 	return storageUnit;

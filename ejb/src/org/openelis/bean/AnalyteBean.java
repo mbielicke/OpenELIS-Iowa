@@ -16,6 +16,7 @@ import javax.persistence.Query;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.entity.Analyte;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
@@ -59,28 +60,28 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
 	public void deleteAnalyte(Integer analyteId) throws Exception {
-		/*manager.setFlushMode(FlushModeType.COMMIT);
-		StorageUnit storageUnit = null;
+		manager.setFlushMode(FlushModeType.COMMIT);
+		Analyte analyte = null;
 		
 		//we need to see if this item can be deleted first
+		//FIXME we need to code this when the parent screens are coded
 		Query query = null;
-		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
-		query.setParameter("id", storageUnitId);
+		query = manager.createNamedQuery("getAnalyteByParentId");
+		query.setParameter("id", analyteId);
 		List linkedRecords = query.getResultList();
-		
+		System.out.println("SIZE:    ["+linkedRecords.size()+"]      '''''''''''''''''");
 		if(linkedRecords.size() > 0){
 			throw new RPCDeleteException();
 		}
 		//then we need to delete it
 		try {
-            	storageUnit = manager.find(StorageUnit.class, storageUnitId);
-            	if(storageUnit != null)
-            		manager.remove(storageUnit);
+			analyte = manager.find(Analyte.class, analyteId);
+            	if(analyte != null)
+            		manager.remove(analyte);
             	
 		} catch (Exception e) {
-            //log.error(e.getMessage());
             e.printStackTrace();
-        }*/		
+        }		
 	}
 
 	public AnalyteDO getAnalyte(Integer analyteId) {

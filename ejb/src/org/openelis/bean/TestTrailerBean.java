@@ -49,28 +49,28 @@ public class TestTrailerBean implements TestTrailerRemote{
     }
     
 	public void deleteTestTrailer(Integer testTrailerId) throws Exception {
-		/*manager.setFlushMode(FlushModeType.COMMIT);
-		StorageUnit storageUnit = null;
+		manager.setFlushMode(FlushModeType.COMMIT);
+		TestTrailer testTrailer = null;
 		
 		//we need to see if this item can be deleted first
-		Query query = null;
+		//FIXME we need to code this when the parent screens are coded
+		/*Query query = null;
 		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
 		query.setParameter("id", storageUnitId);
 		List linkedRecords = query.getResultList();
 		
 		if(linkedRecords.size() > 0){
 			throw new RPCDeleteException();
-		}
+		}*/
 		//then we need to delete it
 		try {
-            	storageUnit = manager.find(StorageUnit.class, storageUnitId);
-            	if(storageUnit != null)
-            		manager.remove(storageUnit);
+			testTrailer = manager.find(TestTrailer.class, testTrailerId);
+            	if(testTrailer != null)
+            		manager.remove(testTrailer);
             	
 		} catch (Exception e) {
-            //log.error(e.getMessage());
             e.printStackTrace();
-        }	*/	
+        }	
 	}
 
 	public Integer getSystemUserId() {
