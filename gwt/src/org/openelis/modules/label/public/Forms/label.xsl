@@ -5,7 +5,7 @@
                 xmlns:labelMeta="xalan://org.openelis.meta.LabelMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumns.xsl"/>
+<xsl:import href="aToZTwoColumnsNum.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
