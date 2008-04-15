@@ -107,24 +107,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
         removeEntryButton.changeState(AppButton.DISABLED);
 
         dictEntryController.setAutoAdd(false);
-    }
-
-    public void afterCommitAdd(boolean success) {
-        Integer categoryId = (Integer)rpc.getFieldValue("category.id");
-        NumberObject categoryIdObj = new NumberObject();
-        categoryIdObj.setType("integer");
-        categoryIdObj.setValue(categoryId);
-
-        // done because key is set to null in AppScreenForm for the add
-        // operation
-        if (key == null) {
-            key = new DataSet();
-            key.addObject(categoryIdObj);
-        } else {
-            key.setObject(0, categoryIdObj);
-        }
-        super.afterCommitAdd(success);
-    }
+    }    
 
     public void commitUpdate() {
 

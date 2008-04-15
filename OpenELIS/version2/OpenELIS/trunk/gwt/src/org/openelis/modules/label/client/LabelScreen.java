@@ -97,22 +97,5 @@ public class LabelScreen extends OpenELISScreenForm {
                                                             
               }
       
-      
-      public void afterCommitAdd(boolean success){
-          Integer labelId = (Integer)rpc.getFieldValue("label.id");
-          NumberObject labelObj = new NumberObject();
-          labelObj.setType("integer");
-          labelObj.setValue(labelId);           
-          
-          //done because key is set to null in AppScreenForm for the add operation 
-          if(key ==null){  
-           key = new DataSet();
-           key.addObject(labelObj);
-          }
-          else{
-              key.setObject(0,labelObj);
-          }
-          
-          super.afterCommitAdd(success);
-      }
+            
 }

@@ -43,10 +43,10 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal"  spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">
-  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">   
+  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="88,87">   
 		 <buttonPanel key="atozButtons">
 	       <xsl:call-template name="aToZLeftPanelButtons"/>		
-		 </buttonPanel>    
+		 </buttonPanel>   
   </aToZ>
    <panel layout= "vertical" spacing= "0" xsi:type= "Panel">
    <!--button panel code-->
@@ -75,22 +75,22 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
      </widget>
      <widget> 
-      <textbox  width= "50px" key = "{providerMeta:id()}"  tab="{providerMeta:lastName()},{providerMeta:npi()}"/>
+      <textbox  width= "50px"  key = "{providerMeta:id()}"  tab="{providerMeta:lastName()},{providerMeta:npi()}"/>
      </widget>                 
     </row>
     <row>
       <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/>:</text>
      </widget>
-     <widget width= "210px"> 
-      <textbox key = "{providerMeta:lastName()}" max="30" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
+     <widget > 
+      <textbox key = "{providerMeta:lastName()}" max="30" width= "215px" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>           
 		<widget>
 		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" popWidth="auto" tab="{providerMeta:npi()},{providerMeta:middleName()}">
-			<widths>70</widths>
+			<widths>90</widths>
 		  </autoDropdown>
 		</widget>								
     </row>
@@ -99,13 +99,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:firstName()}" max="20"  case = "upper"   width= "150px" tab="{providerMeta:middleName()},{providerMeta:lastName()}"/>
+      <textbox key= "{providerMeta:firstName()}" max="20"  case = "upper"   width= "145px" tab="{providerMeta:middleName()},{providerMeta:lastName()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "80px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
+      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "145px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
      </widget>
     </row>
     <row>
@@ -113,7 +113,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:middleName()}" max="20" case = "upper" width= "150px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
+      <textbox key= "{providerMeta:middleName()}" max="20" case = "upper" width= "145px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
      </widget>
     </row>
    </panel>
@@ -129,18 +129,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		 <widths>115,130,130,130,130,56,126,100,90,90,90,150,145</widths>
+		 <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
 		 <editors>
 		  <textbox case= "mixed" max="50" />
 		  <textbox case= "mixed" max="10"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>		  
-			<autoDropdown  case="upper" width="40px" popWidth="auto">
-				<widths>32</widths>
+			<autoDropdown  case="upper" width="45px" popWidth="auto">
+				<widths>37</widths>
 			</autoDropdown>
 			<autoDropdown case="mixed" width="110px" popWidth="auto">
-				<widths>102</widths>
+				<widths>105</widths>
 			</autoDropdown>
 			<textbox case= "mixed" max="10"/>
 			<textbox case= "mixed" max="21"/>
@@ -176,18 +176,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
                   <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		  <widths>115,130,130,130,130,56,126,100,90,90,90,150,145</widths>
+		  <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
 		  <editors>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>		  
-			<autoDropdown case="upper"  width="40px" popWidth="auto" multiSelect = "true">
-				<widths>50</widths>
+			<autoDropdown case="upper"  width="45px" popWidth="auto" multiSelect = "true">
+				<widths>37</widths>
 			</autoDropdown>
 			<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect = "true">
-				<widths>120</widths>
+				<widths>105</widths>
 			</autoDropdown>		  
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -279,12 +279,12 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							  
 <rpc key= "display">	
   <number key="{providerMeta:id()}" type="integer" required="false"/>				
-  <string key="{providerMeta:lastName()}" max="30" required="true"/>
-  <string key="{providerMeta:firstName()}" max="20" required="false"/> 
-  <string key="{providerMeta:npi()}" max="20" required="false"/>
-  <string key="{providerMeta:middleName()}" max="20" required="false"/>	
+  <string key="{providerMeta:lastName()}"  required="true"/>
+  <string key="{providerMeta:firstName()}"  required="false"/> 
+  <string key="{providerMeta:npi()}" required="false"/>
+  <string key="{providerMeta:middleName()}"  required="false"/>	
   <table key="providerAddressTable"/>						      		       
-  <string key="{providerNoteMeta:subject()}" max="60" required="false"/>
+  <string key="{providerNoteMeta:subject()}" required="false"/>
   <string key="{providerNoteMeta:text()}" required="false"/>
   <dropdown key="{providerMeta:type()}" type="integer" required = "true"/>
 </rpc>
