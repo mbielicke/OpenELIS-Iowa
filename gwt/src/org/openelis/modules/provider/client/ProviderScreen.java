@@ -13,6 +13,7 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -23,6 +24,7 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -342,10 +344,10 @@ public class ProviderScreen extends OpenELISScreenForm {
         //done because key is set to null in AppScreenForm for the add operation 
         if(key ==null){  
          key = new DataSet();
-         key.addObject(provId);
+         key.setKey(provId);
         }
         else{
-            key.setObject(0,provId);
+            key.setKey(provId);
         }
         
         loadTabs();
@@ -371,18 +373,25 @@ public class ProviderScreen extends OpenELISScreenForm {
          countryDropDown = (DataModel) initData[2];
         } 
                                 
-                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);
+                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
                 
                    ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+                   ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
                    
                    TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
                                                                                                 controller.editors[5];
                    displayContactState.setModel(stateDropDown);
                    
+                   TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
+                    queryContactState.setModel(stateDropDown);
+                   
                    
                    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                                controller.editors[6];
+                                                                                               controller.editors[6];
                    displayContactCountry.setModel(countryDropDown);
+                   
+                   TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
+                   queryContactCountry.setModel(countryDropDown);
                    
                                  
     } 
@@ -453,7 +462,7 @@ public class ProviderScreen extends OpenELISScreenForm {
      
      // access the database only if id is not null 
       if(key!=null){ 
-       if(key.getObject(0)!=null){        
+       if(key.getKey()!=null){        
          getModel = true;
          providerId = (Integer)key.getKey().getValue();          
         }else{
@@ -501,7 +510,7 @@ public class ProviderScreen extends OpenELISScreenForm {
           
      // access the database only if id is not null 
     if(key!=null){
-      if(key.getObject(0)!=null){        
+      if(key.getKey()!=null){        
         getModel = true;
         providerId = (Integer)key.getKey().getValue();         
       }else{
@@ -597,7 +606,7 @@ public class ProviderScreen extends OpenELISScreenForm {
    private void onStandardNoteButtonClick(){
 	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
+	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.subject")));
 			
 	   standardNotePopupPanel.add(pickerWindow);
 	   int left = this.getAbsoluteLeft();

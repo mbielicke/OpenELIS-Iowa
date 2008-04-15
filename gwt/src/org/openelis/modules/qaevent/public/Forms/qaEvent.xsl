@@ -57,7 +57,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "{qaEventMeta:name()}" max = "20" width= "150px" case = "lower" tab="{qaEventMeta:description()},{qaEventMeta:reportingText()}"/>
+      <textbox key = "{qaEventMeta:name()}" max = "20" width= "145px" case = "lower" tab="{qaEventMeta:description()},{qaEventMeta:reportingText()}"/>
      </widget>
      </row>     
      <row>     
@@ -65,16 +65,16 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:description()}" width= "300px" tab="{qaEventMeta:type()},{qaEventMeta:name()}"/>
+      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:description()}" width= "425px" tab="{qaEventMeta:type()},{qaEventMeta:name()}"/>
      </widget>     
     </row>
      <row>
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
-     <widget>
-		<autoDropdown key="{qaEventMeta:type()}" width = "90px" case="mixed" popWidth="auto"  tab="{qaEventMeta:testId()},{qaEventMeta:description()}">
-			<widths>100</widths>													 													
+     <widget>  		
+		<autoDropdown key="{qaEventMeta:type()}" width = "120px" case="mixed" popWidth="auto"  tab="{qaEventMeta:testId()},{qaEventMeta:description()}">
+			<widths>115</widths>													 													
 		</autoDropdown>
 	</widget>  									        
      </row>

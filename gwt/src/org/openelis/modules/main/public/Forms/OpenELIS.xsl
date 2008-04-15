@@ -240,9 +240,9 @@
 					<html>&lt;hr/&gt;</html>
 			    </widget>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">barcodeLabel</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="value"></xsl:with-param>
+				      <xsl:with-param name="label">label</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">LabelScreen</xsl:with-param>
 				    </xsl:call-template>			    
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">standardNote</xsl:with-param>

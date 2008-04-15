@@ -33,7 +33,7 @@
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
 																
-  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="150">   
+  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="175">   
      	 <buttonPanel key="atozButtons">
 	    	  <xsl:call-template name="aToZLeftPanelButtons"/>		
 		 </buttonPanel>        
@@ -66,7 +66,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="50" key="{categoryMeta:name()}" tab="{categoryMeta:description()},{categoryMeta:systemName()}"/>
+										<textbox case="mixed" max="50" width="355px" key="{categoryMeta:name()}" tab="{categoryMeta:description()},{categoryMeta:systemName()}"/>
 									</widget>
 								</row>
 								<row>
@@ -74,7 +74,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="60" key="{categoryMeta:description()}" width="300px" tab="{categoryMeta:section()},{categoryMeta:name()}"/>
+										<textbox case="mixed" max="60" key="{categoryMeta:description()}" width="425px" tab="{categoryMeta:section()},{categoryMeta:name()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -94,7 +94,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="30" key="{categoryMeta:systemName()}" tab="{categoryMeta:name()},{categoryMeta:section()}"/>
+										<textbox case="mixed" max="30" width="215px" key="{categoryMeta:systemName()}" tab="{categoryMeta:name()},{categoryMeta:section()}"/>
 									</widget>
 								</row>						  							
 						</panel>
@@ -107,14 +107,14 @@
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,95,75,110,120</widths>
+								<widths>45,105,85,120,130</widths>
 								<editors>
 									<check/>									
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
 									<textbox/>																			
-									<autoDropdown cat="relatedEntry" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="118px">												
-												<widths>113</widths>
+									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="90px">												
+												<widths>100</widths>
 											</autoDropdown>
 								</editors>
 								<fields>																											
@@ -133,7 +133,7 @@
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,95,75,110,120</widths>
+								<widths>45,105,85,120,130</widths>
 								<editors>									
 								    <check threeState="true"/>											
 									<textbox/>									

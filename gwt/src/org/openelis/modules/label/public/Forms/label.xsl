@@ -25,7 +25,7 @@
 <screen id= "Label" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height="200px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="100">   
+  <aToZ height="200px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">   
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     
@@ -58,7 +58,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "{labelMeta:name()}" max = "30" width= "150px" case = "lower" tab="{labelMeta:description()},{labelMeta:scriptlet()}"/>
+      <textbox key = "{labelMeta:name()}" max = "30" width= "215px" case = "lower" tab="{labelMeta:description()},{labelMeta:scriptlet()}"/>
      </widget>
      </row>     
      <row>     
@@ -66,7 +66,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" max = "60"  key= "{labelMeta:description()}" width= "300px" tab="{labelMeta:printerType()},{labelMeta:name()}"/>
+      <textbox case= "mixed" max = "60"  key= "{labelMeta:description()}" width= "425px" tab="{labelMeta:printerType()},{labelMeta:name()}"/>
      </widget>     
     </row>
      <row>
@@ -74,8 +74,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"printerType")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{labelMeta:printerType()}" width = "90px" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{labelMeta:scriptlet()},{labelMeta:description()}">
-													
+										<autoDropdown key="{labelMeta:printerType()}" width = "90px" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{labelMeta:scriptlet()},{labelMeta:description()}">													
 													 <widths>100</widths>													 													
 										</autoDropdown>												
 										</widget>  
@@ -86,8 +85,8 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{labelMeta:scriptlet()}" width = "140px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{labelMeta:name()},{labelMeta:printerType()}">													
-													<widths>135</widths>													 													
+										<autoDropdown key="{labelMeta:scriptlet()}" width = "180px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{labelMeta:name()},{labelMeta:printerType()}">													
+													<widths>190</widths>													 													
 										</autoDropdown>												
 										</widget>
 	  </row>			  												          
