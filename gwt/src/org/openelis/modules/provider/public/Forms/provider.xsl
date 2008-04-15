@@ -43,7 +43,7 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal"  spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">
-  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">   
+  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="75,75">   
 		 <buttonPanel key="atozButtons">
 	       <xsl:call-template name="aToZLeftPanelButtons"/>		
 		 </buttonPanel>    

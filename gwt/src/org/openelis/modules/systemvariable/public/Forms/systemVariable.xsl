@@ -22,7 +22,7 @@
 <screen id= "SystemVariable" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height="200px" width="100%" key="hideablePanel" visible="false" maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="100">   
+  <aToZ height="200px" width="100%" key="hideablePanel" maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="100">   
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     
