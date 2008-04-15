@@ -2,8 +2,6 @@ package org.openelis.modules.label.client;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
