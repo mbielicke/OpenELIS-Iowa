@@ -33,7 +33,7 @@
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
 																
-  <aToZ height="425px" width="100%" key="hideablePanel" visible="false" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="150">   
+  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="150">   
      	 <buttonPanel key="atozButtons">
 	    	  <xsl:call-template name="aToZLeftPanelButtons"/>		
 		 </buttonPanel>        
