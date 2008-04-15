@@ -15,6 +15,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -55,7 +56,7 @@ public class ProviderScreen extends OpenELISScreenForm {
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private TextBox subjectBox = null;
-    private TextArea noteArea = null;
+    private ScreenTextArea noteArea = null;
     private EditTable provAddController = null;
     private TabPanel noteTab = null;    
     private ScreenAutoDropdown displayType = null;
@@ -98,7 +99,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         provId = (ScreenTextBox)widgets.get("provider.id");
         lastName = (TextBox)getWidget("provider.lastName");
         subjectBox = (TextBox)getWidget("note.subject");
-        noteArea = (TextArea)getWidget("note.text");
+        noteArea = (ScreenTextArea)widgets.get("note.text");
         svp = (ScreenVertical) widgets.get("notesPanel");
         
         noteTab = (TabPanel)getWidget("provTabPanel");  
@@ -131,7 +132,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.disableRows = false;
         
-        noteArea.setEnabled(true);
+        noteArea.enable(true);
         super.up();      
     }
     
@@ -170,7 +171,7 @@ public class ProviderScreen extends OpenELISScreenForm {
         proAddManager.disableRows = false;
         super.add();     
         
-        noteArea.setEnabled(true);
+        noteArea.enable(true);
         provId.enable(false);
         
         //set focus to the last name field       
@@ -205,7 +206,7 @@ public class ProviderScreen extends OpenELISScreenForm {
       
         //    set focus to the last name field
         provId.setFocus(true);
-        
+        noteArea.enable(false);
          removeContactButton.changeState(AppButton.DISABLED);
          
          standardNoteButton.changeState(AppButton.DISABLED);
@@ -221,8 +222,6 @@ public class ProviderScreen extends OpenELISScreenForm {
         loadTabs();        
        } 
        super.afterFetch(success); 
-       
-       noteArea.setEnabled(false);
        
      }
     
@@ -561,7 +560,7 @@ public class ProviderScreen extends OpenELISScreenForm {
                   
       subjectBox.setText("");
       
-      noteArea.setText("");           
+      ((TextArea)noteArea.getWidget()).setText("");           
       rpc.setFieldValue("note.subject", null);
       rpc.setFieldValue("note.text", null);  
    }
