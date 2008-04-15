@@ -369,12 +369,16 @@
         </menuPanel>
        </panel>
        <panel layout="horizontal" xsi:type="Panel">
-          <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false">
-            <panel layout="horizontal" xsi:type="Panel" style="FavoritesHeader">
+          <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false" width="220px">
+            <panel layout="horizontal" xsi:type="Panel" style="Header">
               <widget>
                 <text>Favorites</text>
               </widget>
-              <panel layout="absolute" xsi:type="Panel" style="EditSettings" key="EditFavorites" onPanelClick="this"/>
+              <widget>
+                <appButton action="editFavorites" key="EditFavorites">
+	              <panel layout="absolute" xsi:type="Absolute" style="EditSettings"/>
+	            </appButton>
+	          </widget>
             </panel>
 	      </panel>
 		    	<widget>

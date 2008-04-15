@@ -165,7 +165,7 @@
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
 							<widget valign="top">
-								<table width="574px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="" showError="false">
+								<table width="574px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
