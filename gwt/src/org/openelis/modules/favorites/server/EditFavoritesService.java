@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -13,13 +12,12 @@ import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.server.PreferencesManager;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class FavoritesService implements AppScreenFormServiceInt {
+public class EditFavoritesService implements AppScreenFormServiceInt {
 
 	/**
 	 * 
@@ -42,22 +40,18 @@ public class FavoritesService implements AppScreenFormServiceInt {
 	public String getXML() throws RPCException {
        
         try {
-            Preferences prefs = PreferencesManager.getUser(this.getClass());
-            if(prefs.get("favorites") == null){
-                prefs.put("favorites", "provider,ProviderScreen:organization,OrganizationScreen");
-                PreferencesManager.store(prefs);
-            }
             Document doc = XMLUtil.createNew("doc");
             Element root = doc.getDocumentElement();
-            String[] favorites = prefs.get("favorites").split(":");
-            for(int i = 0; i < favorites.length; i++){
-                String[] fav = favorites[i].split(","); 
+            Iterator itemsIt = items.keySet().iterator();
+            while(itemsIt.hasNext()){
+            	String key = (String)itemsIt.next();
+                String label = (String)items.get(key);
                 Element favorite = doc.createElement("favorite");
-                favorite.setAttribute("label",fav[0]);
-                favorite.setAttribute("value", fav[1]);
-                root.appendChild(favorite);
-            }
-            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/favoritesMenu.xsl",doc);
+                favorite.setAttribute("label",label);
+                favorite.setAttribute("value",key);
+                    root.appendChild(favorite);
+                }
+            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/favoritesEdit.xsl",doc);
         }catch(Exception e){
             e.printStackTrace();
             return null;

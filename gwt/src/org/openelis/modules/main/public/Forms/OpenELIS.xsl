@@ -28,7 +28,7 @@
 			    	  <label style="topMenuBarItem" text="{resource:getString($constants,'application')}" hover="Hover"/>
 				</menuDisplay>
 				  <menuPanel style="topMenuContainer" layout="vertical" xsi:type="Panel" position="below">
-				    				    <xsl:call-template name="menuItem">
+				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">preference</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
@@ -36,8 +36,8 @@
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">favoritesMenu</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value"></xsl:with-param>
-				    </xsl:call-template>
+				      <xsl:with-param name="value">FavoritesMenu</xsl:with-param>
+				    </xsl:call-template>http://www.google.com/ig?hl=en
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">logout</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
@@ -117,7 +117,7 @@
 					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" hover="Hover"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				  				    <xsl:call-template name="menuItem">
+				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">worksheetCreation</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
@@ -369,26 +369,14 @@
         </menuPanel>
        </panel>
        <panel layout="horizontal" xsi:type="Panel">
-         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" width="220px">
-	         <menuItem style="TopMenuRowContainer" enabled="true"
-	                   hover="Hover"
-	                   icon="favoritesIcon"
-	                   label="Edit Favorites"
-	                   value="FavoritesScreen"
-	                   description=""
-	                   onClick="this"/>
-	  		<xsl:for-each select="favorite">
-			    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
-			    <xsl:variable name="value"><xsl:value-of select="@value"/></xsl:variable>
-		        <menuItem style="TopMenuRowContainer" enabled="true"  
-			              hover="Hover"
-				          icon="{$label}Icon"
-		        		  label="{resource:getString($constants,$label)}"
-				          description=""
-				          value="{$value}"
-				          onClick="this"/>
-			    </xsl:for-each>
-			</menuPanel>
+          <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false">
+            <panel layout="horizontal" xsi:type="Panel" style="FavoritesHeader">
+              <widget>
+                <text>Favorites</text>
+              </widget>
+              <panel layout="absolute" xsi:type="Panel" style="EditSettings" key="EditFavorites" onPanelClick="this"/>
+            </panel>
+	      </panel>
 		    	<widget>
 			    	<winbrowser key="browser" sizeToWindow="true"/>
 		    	</widget>

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.data.CheckField;
@@ -20,6 +21,7 @@ import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenAToZPanel;
 import org.openelis.gwt.screen.ScreenAbsolute;
@@ -36,19 +38,16 @@ import org.openelis.gwt.screen.ScreenMaskedBox;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.screen.ScreenMenuPopupPanel;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenStack;
 import org.openelis.gwt.screen.ScreenTab;
-import org.openelis.gwt.screen.ScreenTabBrowser;
 import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenText;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenTitledPanel;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
@@ -88,10 +87,19 @@ public class OpenELIS implements EntryPoint {
         }
     });
     Window.enableScrolling(false);
-	RootPanel.get("main").add(new org.openelis.modules.main.client.openelis.OpenELIS());
+	RootPanel.get("main").add((AppScreen)ClassFactory.forName("OpenELIS"));
   }
   
   public void setWidgetMap() {
+	  ClassFactory.addClass(new String[] {"OpenELIS"},
+			                new ClassFactory.Factory() {
+		  	                   private org.openelis.modules.main.client.openelis.OpenELIS mainScreen;
+		  	                   public Object newInstance(Object[] args){
+		  	                	   if(mainScreen == null)
+		  	                		   mainScreen = new org.openelis.modules.main.client.openelis.OpenELIS();
+		  	                	   return mainScreen;
+		  	                   }
+	  });
       ClassFactory.addClass(new String[] {"ScreenVertical",ScreenVertical.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

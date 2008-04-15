@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,6 +17,7 @@ import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.services.PreferencesService;
 import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
@@ -42,14 +44,25 @@ public class OpenELIS extends AppScreen {
     }
 
     public void onClick(Widget item) {
-        if(item == widgets.get("showFavorites")){
-            ScreenMenuPanel fm = (ScreenMenuPanel)widgets.get("favoritesMenu");
-            fm.setVisible(!fm.isVisible());
-            browser.setBrowserHeight();
-            return;
-            
-        }
+    	if(item == widgets.get("EditFavorites")){
+        	AppScreen editFavorites = new org.openelis.modules.favorites.client.EditFavoritesScreen();
+        	if(((VerticalPanel)getWidget("favoritesPanel")).getWidgetCount() > 1){
+        		((VerticalPanel)getWidget("favoritesPanel")).remove(1);
+        	}
+        	((VerticalPanel)getWidget("favoritesPanel")).add(editFavorites);
+        	return;
+    	}
         if(item instanceof ScreenMenuItem){
+        	if(((String)((ScreenMenuItem)item).getUserObject()).equals("FavoritesMenu")){
+                VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
+                if(fmp.getWidgetCount() == 1){
+                	FavoritesScreen fv = new FavoritesScreen();
+                	fmp.add(fv);
+                }
+                fmp.setVisible(!fmp.isVisible());
+                browser.setBrowserHeight();
+                return;
+        	}
             OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName((String)((ScreenMenuItem)item).getUserObject()));
         }
     }
