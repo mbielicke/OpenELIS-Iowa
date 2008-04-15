@@ -1,8 +1,5 @@
 package org.openelis.modules.favorites.server;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
@@ -25,18 +22,6 @@ public class FavoritesService implements AppScreenFormServiceInt {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-    private static HashMap items = new HashMap();
-    
-     {items.put("ProviderScreen", "provider");
-      items.put("OrganizationScreen","organization");
-      items.put("QAEventScreen","QAEvent");
-      items.put("AnalyteScreen", "analyte");
-      items.put("DictionaryScreen", "dictionary");
-      items.put("StandardNoteScreen", "standardNote");
-      items.put("StorageUnitScreen", "storageUnit");
-      items.put("StorageLocationScreen", "storageLocation");
-     }
                                                
     
 	public String getXML() throws RPCException {
