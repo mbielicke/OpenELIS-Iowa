@@ -1,8 +1,6 @@
 package org.openelis.modules.systemvariable.client;
 
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -16,7 +14,7 @@ public class SystemVariableScreen extends OpenELISScreenForm {
     
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService",loaded);
-        name="SystemVariable";
+        name="System Variable";
     }
     
     public void afterDraw(boolean success) {
@@ -59,23 +57,6 @@ public class SystemVariableScreen extends OpenELISScreenForm {
            
         }
     }
-    
-    public void afterCommitAdd(boolean success){
-        Integer svId = (Integer)rpc.getFieldValue("systemVariable.id");
-        NumberObject qaeIdObj = new NumberObject();
-        qaeIdObj.setType("integer");
-        qaeIdObj.setValue(svId);           
         
-        //done because key is set to null in AppScreenForm for the add operation 
-        if(key ==null){  
-         key = new DataSet();
-         key.addObject(qaeIdObj);
-        }
-        else{
-            key.setObject(0,qaeIdObj);
-        }
-        
-        super.afterCommitAdd(success);
-    }
 
 }

@@ -22,7 +22,7 @@
 <screen id= "SystemVariable" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height="200px" width="100%" key="hideablePanel" maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="100">   
+  <aToZ height="200px" width="100%" key="hideablePanel"  maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">     
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     
@@ -55,7 +55,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key ="{systemVariableMeta:name()}" max = "30" width= "150px" case = "lower" tab="{systemVariableMeta:value()}"/>
+      <textbox key ="{systemVariableMeta:name()}" max = "30" width= "215px" case = "lower" tab="{systemVariableMeta:value()}"/>
      </widget>
      </row>     
      <row>     
@@ -63,7 +63,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"value")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"  key= "{systemVariableMeta:value()}" width= "300px" tab="{systemVariableMeta:name()}"/>
+      <textbox case= "mixed" key= "{systemVariableMeta:value()}" width= "425px" tab="{systemVariableMeta:name()}"/>
      </widget>     
     </row>     						          
                                  					                         
