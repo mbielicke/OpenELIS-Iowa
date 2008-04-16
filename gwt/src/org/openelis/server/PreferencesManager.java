@@ -34,7 +34,8 @@ public class PreferencesManager {
             for(int i = 0; i < nodes.getLength(); i++){
                 Node node = nodes.item(i);
                 if(node.getNodeType() == Node.ELEMENT_NODE){
-                    prefs.put(node.getNodeName(),node.getFirstChild().getNodeValue());
+                    if(node.getFirstChild() != null)
+                        prefs.put(node.getNodeName(),node.getFirstChild().getNodeValue());
                 }
             }
             return prefs;

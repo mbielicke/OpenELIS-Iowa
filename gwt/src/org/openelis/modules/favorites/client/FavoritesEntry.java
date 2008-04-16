@@ -13,13 +13,6 @@ public class FavoritesEntry implements AppModule {
                                    }
                                }
         );
-        ClassFactory.addClass(new String[] {"EditFavoritesScreen"}, 
-                new ClassFactory.Factory() {
-                    public Object newInstance(Object[] args) {
-                        return new EditFavoritesScreen();
-                    }
-                }
-);
     }
 
     public String getModuleName() {

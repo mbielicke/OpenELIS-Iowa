@@ -18,7 +18,7 @@
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
  <screen id="favorites" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-	<menuPanel layout="vertical" style="topMenuContainer" key="editFavoritesPanel">
+	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu">
 	  <xsl:for-each select="favorite">
 	    <xsl:variable name="icon"><xsl:value-of select="@label"/>Icon</xsl:variable>
 	    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
@@ -57,6 +57,9 @@
 	</menuPanel>
    </display>
    <rpc key="display">
+     <xsl:for-each select="favorite">
+       <check key="{@value}" required="false"><xsl:value-of select="@selected"/></check>
+     </xsl:for-each>
    </rpc>
  </screen>
 </xsl:template>

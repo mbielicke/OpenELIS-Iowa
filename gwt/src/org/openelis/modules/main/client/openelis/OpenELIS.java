@@ -1,21 +1,20 @@
 package org.openelis.modules.main.client.openelis;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.modules.favorites.client.EditFavoritesScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class OpenELIS extends AppScreen {
 	
@@ -24,6 +23,7 @@ public class OpenELIS extends AppScreen {
     
     public static String modules;
     public static WindowBrowser browser;
+    private FavoritesScreen fv;
     
 	public OpenELIS() {	    
         super();
@@ -41,25 +41,17 @@ public class OpenELIS extends AppScreen {
 
     public void onClick(Widget item) {
     	if(item == getWidget("EditFavorites")){
-    		VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
-    		if(fmp.getWidgetCount() > 1){
-    			if(fmp.getWidget(1) instanceof EditFavoritesScreen){
-    				((EditFavoritesScreen)fmp.getWidget(1)).commitUpdate();
-    				return;
-    			}
-    		}
-        	AppScreen editFavorites = new org.openelis.modules.favorites.client.EditFavoritesScreen();
-        	if(((VerticalPanel)getWidget("favoritesPanel")).getWidgetCount() > 1){
-        		((VerticalPanel)getWidget("favoritesPanel")).remove(1);
-        	}
-        	((VerticalPanel)getWidget("favoritesPanel")).add(editFavorites);
-        	return;
+    	    if(fv.editing)
+                fv.saveFavorites();
+            else
+                fv.getEditFavorites();
+            return;
     	}
         if(item instanceof ScreenMenuItem){
         	if(((String)((ScreenMenuItem)item).getUserObject()).equals("FavoritesMenu")){
                 VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
                 if(fmp.getWidgetCount() == 1){
-                	FavoritesScreen fv = new FavoritesScreen();
+                	fv = new FavoritesScreen();
                 	fmp.add(fv);
                 }
                 fmp.setVisible(!fmp.isVisible());
