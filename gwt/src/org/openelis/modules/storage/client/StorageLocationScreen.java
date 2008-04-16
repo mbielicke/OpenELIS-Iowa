@@ -7,6 +7,7 @@ import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -16,8 +17,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class StorageLocationScreen extends OpenELISScreenForm {
 	
 	private TextBox nameTextbox;
-	private TableWidget childTable;
+	private EditTable childTable;
 	
+    private AppButton removeEntryButton;
+    
 	private Widget selected;
 	
 	public StorageLocationScreen() {
@@ -55,26 +58,29 @@ public class StorageLocationScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
+        removeEntryButton = (AppButton) getWidget("removeEntryButton");
+        
         nameTextbox = (TextBox)getWidget("storageLocation.name");
-		childTable = (TableWidget) getWidget("childStorageLocsTable");
+		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
+		
+		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
 		
 		message.setText("Done");
-		
-		((ChildStorageLocsTable) childTable.controller.manager).setStorageForm(this);
 
 		super.afterDraw(success);
 	}
 	
 	public void add() {
+		childTable.setAutoAdd(true);
 		super.add();
 
 		//set focus to the name field
 		nameTextbox.setFocus(true);
 		
-		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		childTableManager.disableRows = false;
-		childTable.controller.setAutoAdd(true);
-		childTable.controller.addRow();
+		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
+		//childTableManager.disableRows = false;
+		
+		//childTable.controller.addRow();
 	}
 	
 	public void query() {
@@ -82,6 +88,8 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		
 		//set focus to the name field
 		nameTextbox.setFocus(true);
+		
+		removeEntryButton.changeState(AppButton.DISABLED);
 	}
 	
 	public void afterUpdate(boolean success) {
@@ -90,20 +98,25 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 		//set focus to the name field
 		nameTextbox.setFocus(true);
 		
-		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		childTableManager.disableRows = false;
-		childTable.controller.setAutoAdd(true);
-		childTable.controller.addRow();
+		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
+		//childTableManager.disableRows = false;
+//		childTable.setAutoAdd(true);
+		//childTable.controller.addRow();
+	}
+	
+	public void up() {
+		childTable.setAutoAdd(true);
+		super.up();
 	}
 	
 	public void abort() {
 		super.abort();
 		
-		childTable.controller.setAutoAdd(false);
+		childTable.setAutoAdd(false);
 		
 		//if add delete the last row
-		if (state == FormInt.UPDATE || state == FormInt.ADD)
-			childTable.controller.deleteRow(childTable.controller.model.numRows() - 1);
+		//if (state == FormInt.UPDATE || state == FormInt.ADD)
+		//	childTable.controller.deleteRow(childTable.controller.model.numRows() - 1);
 	}
 	
 	private void getStorageLocs(String letter, Widget sender) {
@@ -125,12 +138,17 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	}
 	
 	public void afterCommitUpdate(boolean success) {
-		ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		childTableManager.disableRows = true;
-		childTable.controller.setAutoAdd(false);
+		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
+		//childTableManager.disableRows = true;
+		childTable.setAutoAdd(false);
 		
 		super.afterCommitUpdate(success);
 	}
+	
+	public void commitAdd() {
+		childTable.setAutoAdd(false);
+        super.commitAdd();
+    } 
 	
 	protected void setStyleNameOnButton(Widget sender) {
 		((AppButton)sender).changeState(AppButton.PRESSED);
@@ -140,17 +158,17 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 	}
 	
 	private void onRemoveRowButtonClick(){
-			int selectedRow = childTable.controller.selected;
+			int selectedRow = childTable.selected;
 			if (selectedRow > -1
-				&& childTable.controller.model.numRows() > 1) {
-				TableRow row = childTable.controller.model
+				&& childTable.model.numRows() > 1) {
+				TableRow row = childTable.model
 						.getRow(selectedRow);
 				row.setShow(false);
 				// delete the last row of the table because it is autoadd
-				childTable.controller.model
-						.deleteRow(childTable.controller.model.numRows() - 1);
+				childTable.model
+						.deleteRow(childTable.model.numRows() - 1);
 				// reset the model
-				childTable.controller.reset();
+				childTable.reset();
 				// need to set the deleted flag to "Y" also
 				StringField deleteFlag = new StringField();
 				deleteFlag.setValue("Y");

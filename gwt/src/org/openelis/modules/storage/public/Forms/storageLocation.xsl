@@ -131,21 +131,21 @@
 										<fields>
 											<dropdown/>
 											<string/>
-											<string/>
+											<check/>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false ,false</filters>
 										<colAligns>left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" maxRows="11" rows="1" title="" showError="false">
+									<queryTable width="auto" maxRows="11" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
 										<editors>
 											<textbox case="upper"/>
 											<textbox case="mixed"/>
-											<check/>
+											<check threeState="true"/>
 										</editors>
 										<fields>
 											<xsl:value-of select='storageLocationChildStorageUnitMeta:description()'/>,<xsl:value-of select='storageLocationChildMeta:location()'/>,
