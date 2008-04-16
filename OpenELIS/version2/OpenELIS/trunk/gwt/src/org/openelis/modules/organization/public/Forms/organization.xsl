@@ -61,15 +61,29 @@
 		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
 			<widget>
     			<buttonPanel key="buttons">
-    			<xsl:call-template name="queryButton"/>
-    			<xsl:call-template name="previousButton"/>
-    			<xsl:call-template name="nextButton"/>
+    			<xsl:call-template name="queryButton">
+    				<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
+    			<xsl:call-template name="previousButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
+    			<xsl:call-template name="nextButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="addButton"/>
-    			<xsl:call-template name="updateButton"/>
+    			<xsl:call-template name="addButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
+    			<xsl:call-template name="updateButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="commitButton"/>
-    			<xsl:call-template name="abortButton"/>
+    			<xsl:call-template name="commitButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
+    			<xsl:call-template name="abortButton">
+    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			</xsl:call-template>
 				</buttonPanel>
  			</widget>
 		</panel>

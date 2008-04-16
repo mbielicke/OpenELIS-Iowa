@@ -49,6 +49,12 @@ public class OrganizationScreen extends OpenELISScreenForm {
     
     private static DataModel contactTypeDropdown; 
     
+    private AppButton removeContactButton;
+    private EditTable contactsController;
+    private ScreenTextBox orgId;
+	private TextBox orgName;
+
+    
     private static boolean loaded = false;
 
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
@@ -110,13 +116,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
         loaded = true;
 		bpanel = (ButtonPanel) getWidget("buttons");
 		
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
-		orgContactsTable.disableRows = true;
-
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-
-		removeContactButton.changeState(AppButton.DISABLED);
-
+		removeContactButton = (AppButton) getWidget("removeContactButton");
 
 		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
 		modelWidget.addChangeListener(atozTable);
@@ -125,13 +125,17 @@ public class OrganizationScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-		message.setText("Done");
+        orgId = (ScreenTextBox) widgets.get("organization.id");
+        
+		orgName = (TextBox)getWidget("organization.name");
 
 		// get contacts table and set the managers form
-		TableWidget contactsTable = (TableWidget) getWidget("contactsTable");
-		((OrganizationContactsTable) contactsTable.controller.manager)
-				.setOrganizationForm(this);
+		contactsController = ((TableWidget)getWidget("contactsTable")).controller;
+		contactsController.setAutoAdd(false);
+		((OrganizationContactsTable) contactsController.manager).setOrganizationForm(this);
 
+		message.setText("Done");
+		
         loadDropdowns();
 		super.afterDraw(success);			
 	}
@@ -156,39 +160,37 @@ public class OrganizationScreen extends OpenELISScreenForm {
 			letterRPC.setFieldValue("organization.name", letter.toUpperCase() + "*");
 
 			commitQuery(letterRPC);
-
-			//setStyleNameOnButton(sender);
 		}
 	}
 
 	// button panel action methods
 	public void add() {
+		contactsController.setAutoAdd(true);
+		
        if(key!=null) 
         key.setObject(0, null);
        
 		super.add();
 		
-		ScreenTextBox orgId = (ScreenTextBox) widgets.get("organization.id");
 		orgId.enable(false);
-
-		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
-		OrganizationContactsTable orgContactsTableManager = (OrganizationContactsTable) contactTable.controller.manager;
-		orgContactsTableManager.disableRows = false;
-		contactTable.controller.setAutoAdd(true);
-		contactTable.controller.addRow();
 		
 		ScreenVertical vp = (ScreenVertical) widgets.get("notesPanel");
 		//we need to remove anything in the notes tab if it exists
 		vp.clear();
 		
 		//set focus to the org name field
-		TextBox orgName = (TextBox)getWidget("organization.name");
 		orgName.setFocus(true);
-
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.UNPRESSED);
 	}
     
+	public void up() {
+		contactsController.setAutoAdd(true);
+		super.up();
+	}
+	
+	public void abort() {
+		contactsController.setAutoAdd(false);
+		super.abort();
+	}
 
     public void afterAbort(boolean success){
         loadContacts = true;
@@ -198,13 +200,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
         orgContacts.controller.setAutoAdd(false);
         
         loadTabs();
-        
-        OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) orgContacts.controller.manager;
-        orgContactsTable.disableRows = true;
-        orgContacts.controller.unselect(-1);
-            
-        AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-        removeContactButton.changeState(AppButton.DISABLED);    
     }
 
 	public void afterUpdate(boolean success) {
@@ -215,24 +210,13 @@ public class OrganizationScreen extends OpenELISScreenForm {
         loadContacts = true;
         loadNotes = true;                
         
-        loadTabs();
-         
+        loadTabs();         
        }
-		ScreenTextBox orgId = (ScreenTextBox) widgets.get("organization.id");
-		orgId.enable(false);
+      
+      orgId.enable(false);
 		
-		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
-		OrganizationContactsTable orgContactsTableManager = (OrganizationContactsTable) contactTable.controller.manager;
-		orgContactsTableManager.disableRows = false;
-		contactTable.controller.setAutoAdd(true);
-		contactTable.controller.addRow();
-		
-		//set focus to the org name field
-		TextBox orgName = (TextBox)getWidget("organization.name");
-		orgName.setFocus(true);
-
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.UNPRESSED);
+      //set focus to the org name field
+      orgName.setFocus(true);
 	}
 
 	public void afterCommitAdd(boolean success) {
@@ -261,8 +245,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
         
         clearNotesFields();
        } 
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.UNPRESSED);
 				
 		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
 		contactTable.controller.setAutoAdd(false);
@@ -274,8 +256,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		super.query();
 		
 		//set focus to the org id field
-		TextBox orgId = (TextBox)getWidget("organization.id");
 		orgId.setFocus(true);
+		
+		removeContactButton.changeState(AppButton.DISABLED);
 	}
 	
 	public void afterCommitUpdate(boolean success) {
@@ -290,15 +273,10 @@ public class OrganizationScreen extends OpenELISScreenForm {
        //the note subject and body fields need to be refeshed after every successful commit   
         clearNotesFields();
        } 
-		OrganizationContactsTable orgContactsTable = (OrganizationContactsTable) ((TableWidget) getWidget("contactsTable")).controller.manager;
-		orgContactsTable.disableRows = true;
-		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
-		contactTable.controller.setAutoAdd(false);
 		
-		AppButton removeContactButton = (AppButton) getWidget("removeContactButton");
-		removeContactButton.changeState(AppButton.UNPRESSED);
+      contactsController.setAutoAdd(false);
 
-		super.afterCommitUpdate(success);
+      super.afterCommitUpdate(success);
 	}
 	
 	protected void doReset() {
