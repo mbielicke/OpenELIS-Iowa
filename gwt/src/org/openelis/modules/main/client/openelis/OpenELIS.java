@@ -1,25 +1,21 @@
 package org.openelis.modules.main.client.openelis;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
-import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
-import org.openelis.gwt.services.PreferencesService;
 import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.modules.favorites.client.EditFavoritesScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class OpenELIS extends AppScreen {
 	
@@ -44,7 +40,14 @@ public class OpenELIS extends AppScreen {
     }
 
     public void onClick(Widget item) {
-    	if(item == widgets.get("EditFavorites")){
+    	if(item == getWidget("EditFavorites")){
+    		VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
+    		if(fmp.getWidgetCount() > 1){
+    			if(fmp.getWidget(1) instanceof EditFavoritesScreen){
+    				((EditFavoritesScreen)fmp.getWidget(1)).commitUpdate();
+    				return;
+    			}
+    		}
         	AppScreen editFavorites = new org.openelis.modules.favorites.client.EditFavoritesScreen();
         	if(((VerticalPanel)getWidget("favoritesPanel")).getWidgetCount() > 1){
         		((VerticalPanel)getWidget("favoritesPanel")).remove(1);
