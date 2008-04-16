@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -175,24 +176,72 @@ public class ProviderBean implements ProviderRemote {
                 provider = manager.find(Provider.class, providerDO.getId());
             }
             
+            validateProvider(providerDO);    
+            
+            ArrayList<ProviderAddressDO> updateList = null;
+            ArrayList<ProviderAddressDO> deleteList = null;
+            
+            for (Iterator iter = addresses.iterator(); iter.hasNext();) {
+                ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();                
+                boolean checkForUpdate =  false;
+                
+                
+                
+                validateProviderAddress(provAddDO);
+                
+                if(provAddDO.getDelete()!=null){ 
+                  if(provAddDO.getDelete()){
+                     if(deleteList == null){
+                         deleteList = new ArrayList<ProviderAddressDO>();
+                     } 
+                      deleteList.add(provAddDO);
+                    
+                  }else{   
+                      checkForUpdate = true;
+                  } 
+                }else{ 
+                    checkForUpdate = true; 
+                                   
+                }                              
+              
+              if(checkForUpdate){   
+                 if(updateList==null){
+                     updateList =  new ArrayList<ProviderAddressDO>();
+                 } 
+                  updateList.add(provAddDO);                                                         
+                } 
+              
+            }
+            
             provider.setFirstName(providerDO.getFirstName());
             provider.setLastName(providerDO.getLastName());
             provider.setMiddleName(providerDO.getMiddleName());
             provider.setNpi(providerDO.getNpi());
-            if(providerDO.getTypeId()!=null){
-                provider.setType(providerDO.getTypeId());
-               }else{
-                   throw new Exception("Type must be specified for a provider"); 
-               }
+            provider.setType(providerDO.getTypeId());            
             
             if (provider.getId() == null) {
                 manager.persist(provider);
             }
-            
-            for (Iterator iter = addresses.iterator(); iter.hasNext();) {
+                        
+           if(deleteList!=null){
+            for (Iterator iter = deleteList.iterator(); iter.hasNext();){
                 ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();
+                ProviderAddress provAdd = null;                
+                                                                
+                if(provAdd.getId() != null){                    
+                    //delete the contact record and the address record from the database 
+                    provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
+                     manager.remove(provAdd);                     
+                     addressBean.deleteAddress(provAddDO.getAddressDO());
+                     }
+            }
+           } 
+           
+          if(updateList!=null){  
+            for (Iterator iter = updateList.iterator(); iter.hasNext();) {
+                ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();
+                Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());
                 ProviderAddress provAdd = null;
-                boolean checkForUpdate =  false;
                 
                 if (provAddDO.getId() == null){
                     provAdd = new ProviderAddress();
@@ -200,45 +249,17 @@ public class ProviderBean implements ProviderRemote {
                 else{
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
-                if(provAddDO.getDelete()!=null){ 
-                  if(provAddDO.getDelete()){
-                    if(provAdd.getId() != null){
-                  
-                    //delete the contact record and the address record from the database                    
-                     manager.remove(provAdd);                     
-                     addressBean.deleteAddress(provAddDO.getAddressDO());
-                     }
-                  }else{   
-                      checkForUpdate = true;
-                  } 
-                }else{ 
-                    checkForUpdate = true; 
-                                   
-                }
                 
-               
-              
-              if(checkForUpdate){
-                  Integer addressId = null;                                                                                          
-                      addressId =  addressBean.updateAddress(provAddDO.getAddressDO());
-                      
-                  String location = provAddDO.getLocation();                                                    
-                  
-                  if(!location.trim().equals("")){ 
-                    provAdd.setExternalId(provAddDO.getExternalId());
-                    provAdd.setLocation(provAddDO.getLocation());
-                    provAdd.setProvider(provider.getId());
-                    provAdd.setAddressId(addressId);
-                                                           
-                    if(provAdd.getId()==null){
-                       manager.persist(provAdd);                          
-                    }
-                  }else{
-                      throw new Exception("Location must be specified for each address");
-                  }     
-                } 
-              
+                provAdd.setExternalId(provAddDO.getExternalId());
+                provAdd.setLocation(provAddDO.getLocation());
+                provAdd.setProvider(provider.getId());
+                provAdd.setAddressId(addressId);
+                                                       
+                if(provAdd.getId()==null){
+                   manager.persist(provAdd);                          
+                }
             }
+          } 
                              
             //update note
             Note note = null;
@@ -287,7 +308,6 @@ public class ProviderBean implements ProviderRemote {
     }
 
 
-
     public ProviderDO getProviderAndLock(Integer providerId) throws Exception{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "provider");
@@ -302,5 +322,18 @@ public class ProviderBean implements ProviderRemote {
         return getProvider(providerId);
     }
 
+   private void validateProvider(ProviderDO providerDO)throws Exception{
+       if(providerDO.getTypeId()==null){           
+              throw new Exception("Type must be specified for a provider"); 
+          }
+    }
+   
+   private void validateProviderAddress(ProviderAddressDO provAddDO)throws Exception{
+       String location = provAddDO.getLocation();          
+       if(("").equals(location.trim())){            
+         }else{
+             throw new Exception("Location must be specified for each address");
+         }     
+       } 
    
 }
