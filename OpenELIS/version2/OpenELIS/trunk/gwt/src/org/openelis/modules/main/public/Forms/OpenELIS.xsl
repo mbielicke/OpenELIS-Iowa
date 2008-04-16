@@ -370,12 +370,12 @@
        </panel>
        <panel layout="horizontal" xsi:type="Panel">
           <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false" width="220px">
-            <panel layout="horizontal" xsi:type="Panel" style="Header">
+            <panel layout="horizontal" xsi:type="Panel" style="Header" width="100%" height="20px">
               <widget>
                 <text>Favorites</text>
               </widget>
-              <widget>
-                <appButton action="editFavorites" key="EditFavorites">
+              <widget halign="right">
+                <appButton action="editFavorites" key="EditFavorites" onclick="this">
 	              <panel layout="absolute" xsi:type="Absolute" style="EditSettings"/>
 	            </appButton>
 	          </widget>
