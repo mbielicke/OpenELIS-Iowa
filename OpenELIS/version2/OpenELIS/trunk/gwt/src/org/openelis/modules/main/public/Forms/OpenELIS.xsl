@@ -37,7 +37,7 @@
 				      <xsl:with-param name="label">favoritesMenu</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="value">FavoritesMenu</xsl:with-param>
-				    </xsl:call-template>http://www.google.com/ig?hl=en
+				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">logout</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
