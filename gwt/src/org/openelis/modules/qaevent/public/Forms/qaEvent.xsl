@@ -128,7 +128,7 @@
  <string key="{qaEventMeta:name()}" max = "20" required = "true" />
  <number key="{qaEventMeta:reportingSequence()}"  type="integer" required = "false" />
  <string key="{qaEventMeta:description()}" max = "60" required = "false" /> 	 
- <string key= "{qaEventMeta:isBillable()}" required = "false" />
+ <check key= "{qaEventMeta:isBillable()}" required = "false" />
  <string key="{qaEventMeta:reportingText()}" required = "true" />
  <dropdown key="{qaEventMeta:testId()}" type="integer" required = "false" />
  <dropdown key="{qaEventMeta:type()}" type="integer" required = "true" />
@@ -140,7 +140,7 @@
  <queryString key="{qaEventMeta:description()}"  /> 	
  <dropdown key="{qaEventMeta:type()}" type="integer"/> 
  <dropdown key="{qaEventMeta:testId()}" type="integer"/>
- <queryString key="{qaEventMeta:isBillable()}"/>
+ <queryCheck key="{qaEventMeta:isBillable()}"/>
  <queryString key="{qaEventMeta:reportingText()}"/>
 </rpc>
 

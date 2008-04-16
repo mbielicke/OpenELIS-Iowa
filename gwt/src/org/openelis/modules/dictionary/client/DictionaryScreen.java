@@ -123,7 +123,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     }   
     
     public void onClick(Widget sender) {
-        String action = ((AppButton)sender).action;
+        String action = ((AppButton)sender).action;        
          if (action.equals("removeEntry")) {
 
             int selectedRow = dictEntryController.selected;
