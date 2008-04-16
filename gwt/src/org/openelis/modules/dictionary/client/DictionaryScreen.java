@@ -1,18 +1,10 @@
 package org.openelis.modules.dictionary.client;
 
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
@@ -25,6 +17,12 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm implements
                                                         MouseListener {
@@ -66,8 +64,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
         tname = (TextBox)getWidget("category.name");
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
-        removeEntryButton.addClickListener(this);
-        removeEntryButton.changeState(AppButton.DISABLED);
                 
         displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
         
@@ -91,7 +87,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
     public void afterUpdate(boolean success) {
         super.afterUpdate(success);
-        removeEntryButton.changeState(AppButton.UNPRESSED);
 
         // set focus to the name field
         tname.setFocus(true);
@@ -100,37 +95,18 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     
 
     public void commitAdd() {
-
-        dictEntryController.unselect(-1);
-
-        super.commitAdd();
-        removeEntryButton.changeState(AppButton.DISABLED);
-
         dictEntryController.setAutoAdd(false);
+        super.commitAdd();
     }    
 
     public void commitUpdate() {
-
-        dictEntryController.unselect(-1);
-
-        super.commitUpdate();
-        removeEntryButton.changeState(AppButton.DISABLED);
-
-        dictEntryController.setAutoAdd(false);
-
+    	dictEntryController.setAutoAdd(false);
+    	super.commitUpdate();
     }
 
     public void abort() {
-        removeEntryButton.changeState(AppButton.DISABLED);
-        try {
-
-            dictEntryController.setAutoAdd(false);
-
-            super.abort();
-
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-        }
+    	dictEntryController.setAutoAdd(false);
+        super.abort();
     }
 
     public void onChange(Widget sender) {
@@ -204,10 +180,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
 
         super.add();        
 
-        removeEntryButton.changeState(AppButton.UNPRESSED);
-
         // set focus to the name field
-        // tname = (TextBox)getWidget("name");
         tname.setFocus(true);
 
         
@@ -217,8 +190,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
     public void query() {
         super.query();
 
-        // set focus to the name field
-       
+        // set focus to the name field       
         tname.setFocus(true);
 
       

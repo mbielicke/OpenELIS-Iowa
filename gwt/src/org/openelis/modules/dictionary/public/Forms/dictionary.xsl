@@ -118,7 +118,7 @@
 											</autoDropdown>
 								</editors>
 								<fields>																											
-									<string>Y</string>
+									<check>Y</check>
 									<string/>									
 									<string/>
 									<string required = "true"/>
@@ -179,7 +179,7 @@
 	 <queryString key="{categoryMeta:name()}"/>
 	 <queryString key="{categoryMeta:description()}"/>
 	 <dropdown key="{categoryMeta:section()}" type="integer" required="false"/> 
-	 <queryString key="{dictionaryMeta:isActive()}" required="false"/>
+	 <queryCheck key="{dictionaryMeta:isActive()}" required="false"/>
 	  <queryString key="{dictionaryMeta:systemName()}" required="false"/>
 	  <queryString key="{dictionaryMeta:localAbbrev()}" required="false"/>
 	  <queryString key="{dictionaryMeta:entry()}" required="false"/>
