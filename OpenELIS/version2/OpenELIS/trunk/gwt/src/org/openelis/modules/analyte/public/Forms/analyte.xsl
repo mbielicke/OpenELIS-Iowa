@@ -114,7 +114,7 @@
 	<rpc key="display">
   	<number key="{analyteMeta:id()}" type="integer" required="false"/>
   	<string key="{analyteMeta:name()}" required="true"/>
-  	<number key="{analyteMeta:analyteGroup()}" type="integer" required="true"/>
+  	<number key="{analyteMeta:analyteGroup()}" type="integer" required="false"/>
   	<dropdown key="{parentAnalyteMeta:name()}" type="integer" required="false"/>
   	<string key="{analyteMeta:externalId()}" required="false"/>
   	<check key="{analyteMeta:isActive()}" required="false"/>
