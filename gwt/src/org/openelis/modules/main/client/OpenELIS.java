@@ -21,6 +21,7 @@ import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenAToZPanel;
@@ -100,6 +101,15 @@ public class OpenELIS implements EntryPoint {
 		  	                	   return mainScreen;
 		  	                   }
 	  });
+      ClassFactory.addClass(new String[] {"AppConstants"},
+                            new ClassFactory.Factory() {
+                              private AppConstants consts;
+                              public Object newInstance(Object[] args){
+                                  if(consts == null)
+                                      consts = new AppConstants();
+                                  return consts;
+                              }
+      });
       ClassFactory.addClass(new String[] {"ScreenVertical",ScreenVertical.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

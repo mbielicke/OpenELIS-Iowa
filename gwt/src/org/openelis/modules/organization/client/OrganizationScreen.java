@@ -133,8 +133,6 @@ public class OrganizationScreen extends OpenELISScreenForm {
 		contactsController = ((TableWidget)getWidget("contactsTable")).controller;
 		contactsController.setAutoAdd(false);
 		((OrganizationContactsTable) contactsController.manager).setOrganizationForm(this);
-
-		message.setText("Done");
 		
         loadDropdowns();
 		super.afterDraw(success);			

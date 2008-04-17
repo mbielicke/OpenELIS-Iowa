@@ -6,6 +6,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.data.ConstantMap;
+import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuItem;
@@ -31,12 +33,13 @@ public class OpenELIS extends AppScreen {
         base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISService";
         target.setServiceEntryPoint(base);
         service = screenService;
-        getXML();
+        getXMLData();
     }
 
    public void afterDraw(boolean Success) {
         	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
+            ((AppConstants)ClassFactory.forName("AppConstants")).addMapp((ConstantMap)initData[0]);
     }
 
     public void onClick(Widget item) {

@@ -9,8 +9,6 @@ public interface OpenELISServiceIntAsync extends AppScreenFormServiceIntAsync {
     
     public void getObject(String method, DataObject[] args, AsyncCallback callback);
     
-    public void getMenuList(AsyncCallback callback);
-    
     public void logout(AsyncCallback callback);
     
 
