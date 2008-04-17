@@ -372,7 +372,7 @@
           <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false" width="220px">
             <panel layout="horizontal" xsi:type="Panel" style="Header" width="100%" height="20px">
               <widget>
-                <text>Favorites</text>
+                <text style="ScreenWindowLabel">Favorites</text>
               </widget>
               <widget halign="right">
                 <appButton action="editFavorites" key="EditFavorites" onclick="this">
