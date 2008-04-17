@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +23,10 @@ import org.openelis.domain.OrganizationTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.OrganizationAddressMeta;
 import org.openelis.meta.OrganizationContactAddressMeta;
@@ -92,97 +96,105 @@ public class OrganizationBean implements OrganizationRemote {
     }
 	
 	@RolesAllowed("organization-update")
-    public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) {
-//        log.debug("Entering updateProject");
+    public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception{
 		 manager.setFlushMode(FlushModeType.COMMIT);
 		 Organization organization = null;
-        try {
-        	//organization reference table id
-        	Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "organization");
-            Integer organizationReferenceId = (Integer)query.getSingleResult();
-            
-//          organization contact reference table id
-            query.setParameter("name", "organization_contact");
-            Integer organizationContactReferenceId = (Integer)query.getSingleResult();
-            
-            if (organizationDO.getOrganizationId() == null)
-            	organization = new Organization();
-            else
-                organization = manager.find(Organization.class, organizationDO.getOrganizationId());
+    
+    	//organization reference table id
+    	Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "organization");
+        Integer organizationReferenceId = (Integer)query.getSingleResult();
+        
+        //organization contact reference table id
+        query.setParameter("name", "organization_contact");
+        Integer organizationContactReferenceId = (Integer)query.getSingleResult();
+        
+        if (organizationDO.getOrganizationId() == null)
+        	organization = new Organization();
+        else
+            organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
-            //send the address to the update address bean
-            Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
-            
-            //update organization
-            organization.setAddressId(orgAddressId);
-            
-            organization.setIsActive(organizationDO.getIsActive());
-            organization.setName(organizationDO.getName());
-            organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
-                    
-	        if (organization.getId() == null) {
-	        	manager.persist(organization);
-            }
-            
-            //update contacts
-            for (Iterator contactsItr = contacts.iterator(); contactsItr.hasNext();) {
-				OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
-	            OrganizationContact orgContact = null;
-	            
-	            if (contactDO.getId() == null)
-	            	orgContact = new OrganizationContact();
-	            else
-	            	orgContact = manager.find(OrganizationContact.class, contactDO.getId());
-
-	            if(contactDO.getDelete() && orgContact.getId() != null){
-	            	//delete the contact record and the address record from the database
-	            	manager.remove(orgContact);
-	            	addressBean.deleteAddress(contactDO.getAddressDO());
-	            	
-	            }else{
-//	            	send the contact address to the address bean
-		            Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
-			                
-		            orgContact.setContactType(contactDO.getContactType());
-			        orgContact.setName(contactDO.getName());
-			        orgContact.setOrganization(organization.getId());
-			        orgContact.setAddressId(contactAddressId);
-			            
-			        if (orgContact.getId() == null) {
-			            manager.persist(orgContact);
-			        }
-	           }
-			}
-            
-            
-            
-//          update note
-            Note note = null;
-            //we need to make sure the note is filled out...
-	        if(!("".equals(noteDO.getText())) ||   !("".equals(noteDO.getSubject()))){
-	        	note = new Note();
-	            note.setIsExternal(noteDO.getIsExternal());
-	            note.setReferenceId(organization.getId());
-	            note.setReferenceTable(organizationReferenceId);
-	            note.setSubject(noteDO.getSubject());
-	            note.setSystemUser(getSystemUserId());
-	            note.setText(noteDO.getText());
-            	note.setTimestamp(Datetime.getInstance());
-        	}
-            
-//          insert into note table if necessary
-            if(note != null && note.getId() == null){
-            	manager.persist(note);
-            }
-
-            lockBean.giveUpLock(organizationReferenceId,organization.getId()); 
-        } catch (Exception e) {
-            //log.error(e.getMessage());
-            e.printStackTrace();
-        } finally {
-            //log.debug("Exiting updateProject");
+        //validate the organization record and its address
+        List exceptionList = new ArrayList();
+        validateOrganizationAndAddress(organizationDO, exceptionList);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
         }
+        
+        //send the address to the update address bean
+        Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
+        
+        //update organization
+        organization.setAddressId(orgAddressId);
+        
+        organization.setIsActive(organizationDO.getIsActive());
+        organization.setName(organizationDO.getName());
+        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
+                
+        if (organization.getId() == null) {
+        	manager.persist(organization);
+        }
+        
+        //update contacts
+        for (Iterator contactsItr = contacts.iterator(); contactsItr.hasNext();) {
+			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+            OrganizationContact orgContact = null;
+            
+            //validate the organization record and its address
+            exceptionList = new ArrayList();
+            validateContactAndAddress(contactDO, exceptionList);
+            if(exceptionList.size() > 0){
+            	throw (RPCException)exceptionList.get(0);
+            }
+            
+            if (contactDO.getId() == null)
+            	orgContact = new OrganizationContact();
+            else
+            	orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+
+            if(contactDO.getDelete() && orgContact.getId() != null){
+            	//delete the contact record and the address record from the database
+            	manager.remove(orgContact);
+            	addressBean.deleteAddress(contactDO.getAddressDO());
+            	
+            }else{
+//	            	send the contact address to the address bean
+	            Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+		                
+	            orgContact.setContactType(contactDO.getContactType());
+		        orgContact.setName(contactDO.getName());
+		        orgContact.setOrganization(organization.getId());
+		        orgContact.setAddressId(contactAddressId);
+		            
+		        if (orgContact.getId() == null) {
+		            manager.persist(orgContact);
+		        }
+           }
+		}
+        
+        
+        
+//          update note
+        Note note = null;
+        //we need to make sure the note is filled out...
+        if(!("".equals(noteDO.getText())) ||   !("".equals(noteDO.getSubject()))){
+        	note = new Note();
+            note.setIsExternal(noteDO.getIsExternal());
+            note.setReferenceId(organization.getId());
+            note.setReferenceTable(organizationReferenceId);
+            note.setSubject(noteDO.getSubject());
+            note.setSystemUser(getSystemUserId());
+            note.setText(noteDO.getText());
+        	note.setTimestamp(Datetime.getInstance());
+    	}
+        
+//          insert into note table if necessary
+        if(note != null && note.getId() == null){
+        	manager.persist(note);
+        }
+
+        lockBean.giveUpLock(organizationReferenceId,organization.getId()); 
+   
         return organization.getId();        
     }
 
@@ -306,5 +318,95 @@ public class OrganizationBean implements OrganizationRemote {
 		query.setMaxResults(maxResults);
 		return query.getResultList();
 	}
+
+	public List validateForAdd(OrganizationAddressDO organizationDO, List contacts) {
+		//im not going to validate note for now...the user can input whatever they want
+		List exceptionList = new ArrayList();
+		
+		validateOrganizationAndAddress(organizationDO, exceptionList);
+		
+		Iterator contactsItr = contacts.iterator();
+		while(contactsItr.hasNext()){
+			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+			
+			validateContactAndAddress(contactDO, exceptionList);
+		}
+		
+		return exceptionList;
+	}
+
+	public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts) {
+		//im not going to validate note for now...the user can input whatever they want
+		List exceptionList = new ArrayList();
+		
+		validateOrganizationAndAddress(organizationDO, exceptionList);
+		
+		Iterator contactsItr = contacts.iterator();
+		while(contactsItr.hasNext()){
+			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+			
+			validateContactAndAddress(contactDO, exceptionList);
+		}
+		
+		return exceptionList;
+	}
 	
+	private void validateOrganizationAndAddress(OrganizationAddressDO organizationDO, List exceptionList){
+		//name required
+		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationMeta.NAME));
+		}
+		
+		//street address required
+		if(organizationDO.getAddressDO().getStreetAddress() == null || "".equals(organizationDO.getAddressDO().getStreetAddress())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.STREET_ADDRESS));
+		}
+
+		//city required
+		if(organizationDO.getAddressDO().getCity() == null || "".equals(organizationDO.getAddressDO().getCity())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.CITY));
+		}
+
+		//zipcode required
+		if(organizationDO.getAddressDO().getZipCode() == null || "".equals(organizationDO.getAddressDO().getZipCode())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.ZIP_CODE));
+		}
+		
+		//country required
+		if(organizationDO.getAddressDO().getCountry() == null || "".equals(organizationDO.getAddressDO().getCountry())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.COUNTRY));
+		}		
+	}
+	
+	private void validateContactAndAddress(OrganizationContactDO orgContactDO, List exceptionList){
+		//contact type required
+		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactMeta.CONTACT_TYPE));
+		}
+
+		//name required
+		if(orgContactDO.getName() == null || "".equals(orgContactDO.getName())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactMeta.NAME));
+		}
+		
+		//street address required
+		/*if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.STREET_ADDRESS));
+		}
+		
+		//city required
+		if(orgContactDO.getAddressDO().getCity() == null || "".equals(orgContactDO.getAddressDO().getCity())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.CITY));	
+		}
+		
+		//zipcode required
+		if(orgContactDO.getAddressDO().getZipCode() == null || "".equals(orgContactDO.getAddressDO().getZipCode())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.ZIP_CODE));
+		}
+		
+		//country required
+		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.COUNTRY));
+		}		*/
+	}
 }
