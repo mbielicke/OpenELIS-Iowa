@@ -42,11 +42,10 @@ public class OrganizationContactsTable implements TableManager {
     public void finishedEditing(int row, int col, TableController controller) {}
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-    	if (col == 0 && row == controller.model.numRows() - 1) {
+        if(col == 0)
             return true;
-        }   
-        
-        return false;
+        else
+            return false;
     }
 
     public void rowAdded(int row, TableController controller) {}
