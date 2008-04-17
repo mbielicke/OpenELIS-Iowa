@@ -9,8 +9,12 @@ import java.util.Locale;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FieldErrorListException;
 import org.openelis.gwt.common.Filter;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
@@ -29,6 +33,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.widget.FormInt;
 import org.openelis.meta.OrganizationAddressMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.OrganizationNoteMeta;
@@ -90,14 +95,38 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
 		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
 		
-		
-		//build the noteDo from the form
+//		build the noteDo from the form
 		organizationNote.setSubject((String)rpcSend.getFieldValue(OrganizationNoteMeta.SUBJECT));
 		organizationNote.setText((String)rpcSend.getFieldValue(OrganizationNoteMeta.TEXT));
 		organizationNote.setIsExternal("Y");
 		
+		//validate the fields on the backend
+		/*List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
+		if(exceptionList.size() > 0){
+			//we need to get the keys and look them up in the resource bundle for internationalization
+			for (int i=0; i<exceptionList.size();i++) {
+				if(exceptionList.get(i) instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+				else if(exceptionList.get(i) instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+			}	
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		} */
+		
 		//send the changes to the database
-		Integer orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+		Integer orgId;
+		try{
+			orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+		}catch(Exception e){
+			if(e instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+				else if(e instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		}
 		
 		//lookup the changes from the database and build the rpc
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress(orgId);
@@ -213,13 +242,37 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
 		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());		
 		
-		//build the noteDo from the form
+//		build the noteDo from the form
 		organizationNote.setSubject((String)rpcSend.getFieldValue(OrganizationNoteMeta.SUBJECT));
 		organizationNote.setText((String)rpcSend.getFieldValue(OrganizationNoteMeta.TEXT));
 		organizationNote.setIsExternal("Y");
 		
-		//send the changes to the database
-		remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+//		validate the fields on the backend
+		List exceptionList = remote.validateForUpdate(newOrganizationDO, organizationContacts);
+		if(exceptionList.size() > 0){
+			//we need to get the keys and look them up in the resource bundle for internationalization
+			for (int i=0; i<exceptionList.size();i++) {
+				if(exceptionList.get(i) instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+				else if(exceptionList.get(i) instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+			}	
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		} 
+		
+//		send the changes to the database
+		try{
+			remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+		}catch(Exception e){
+			if(e instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+				else if(e instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			
+			return rpcSend;
+		}
+		
 		
 		//lookup the changes from the database and build the rpc
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress(newOrganizationDO.getOrganizationId());
