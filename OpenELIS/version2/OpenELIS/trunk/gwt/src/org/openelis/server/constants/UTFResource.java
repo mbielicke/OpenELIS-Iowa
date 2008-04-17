@@ -1,6 +1,5 @@
 package org.openelis.server.constants;
 
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
