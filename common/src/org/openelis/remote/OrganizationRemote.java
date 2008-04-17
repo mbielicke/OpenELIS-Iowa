@@ -22,7 +22,7 @@ public interface OrganizationRemote {
 	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
 	
 	//commit a change to org, or insert a new org
-	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts);
+	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception;
 	
 	//method to return just notes
 	public List getOrganizationNotes(Integer organizationId);
@@ -41,4 +41,10 @@ public interface OrganizationRemote {
 	 
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(OrganizationAddressDO organizationDO, List contacts);
 }
