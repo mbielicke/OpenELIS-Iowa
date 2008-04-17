@@ -335,18 +335,18 @@
 	<rpc key="display">
   	  <number key="{organizationMeta:id()}" type="integer" required="false"/>
       <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
-      <string key="{organizationMeta:name()}" max="40" required="true"/>
-      <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
+      <string key="{organizationMeta:name()}" max="40" required="false"/> <!---->
+      <string key="{orgAddressMeta:streetAddress()}" max="30" required="false"/> <!---->
       <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
-      <string key="{orgAddressMeta:city()}" max="30" required="true"/>
-      <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
+      <string key="{orgAddressMeta:city()}" max="30" required="false"/> <!---->
+      <string key="{orgAddressMeta:zipCode()}" max="10" required="false"/> <!---->
       <check key="{organizationMeta:isActive()}" required="false"/>
       <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
       <string key="{orgNoteMeta:text()}" required="false"/>
       <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
       <table key="contactsTable"/>
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
-      <dropdown key="{orgAddressMeta:country()}" required="true"/>
+      <dropdown key="{orgAddressMeta:country()}" required="false"/> <!---->
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{organizationMeta:id()}" type="integer"/>
