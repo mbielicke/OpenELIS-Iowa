@@ -40,8 +40,8 @@
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">logout</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="value"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">Logout</xsl:with-param>
 				    </xsl:call-template>
 				  </menuPanel>
 		    </menuItem>

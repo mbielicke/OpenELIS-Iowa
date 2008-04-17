@@ -60,6 +60,9 @@ public class OpenELIS extends AppScreen {
                 fmp.setVisible(!fmp.isVisible());
                 browser.setBrowserHeight();
                 return;
+        	}else if(((String)((ScreenMenuItem)item).getUserObject()).equals("Logout")){
+        		//FIXME logout code should go here soon
+        		return;
         	}
             OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName((String)((ScreenMenuItem)item).getUserObject()));
         }
