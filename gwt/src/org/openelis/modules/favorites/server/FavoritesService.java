@@ -112,7 +112,10 @@ public class FavoritesService implements FavoritesServiceInt {
             }
         }
         Preferences prefs = PreferencesManager.getUser(this.getClass());
-        prefs.put("favorites", favorites.toString());
+        if(!favorites.toString().equals(""))
+            prefs.put("favorites", favorites.toString());
+        else
+            prefs.removePreference("favorites");
         PreferencesManager.store(prefs);
         return getFavorites(prefs);
     }
