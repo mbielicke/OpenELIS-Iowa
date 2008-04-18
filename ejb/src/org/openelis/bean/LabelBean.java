@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -14,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.LabelDO;
 import org.openelis.entity.Label;
 import org.openelis.gwt.common.LastPageException;
@@ -28,6 +30,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("label-select")
 public class LabelBean implements LabelRemote {
     
     @PersistenceContext(name = "openelis")
@@ -58,6 +62,7 @@ public class LabelBean implements LabelRemote {
         return label;
     }
 
+    @RolesAllowed("label-update")
     public LabelDO getLabelAndLock(Integer labelId) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "label");
@@ -117,6 +122,7 @@ public class LabelBean implements LabelRemote {
          return returnList;
     }
 
+    @RolesAllowed("label-update")
     public Integer updateLabel(LabelDO labelDO) throws Exception {
         try{
             manager.setFlushMode(FlushModeType.COMMIT);
@@ -176,6 +182,7 @@ public class LabelBean implements LabelRemote {
           }
     }    
 
+    @RolesAllowed("label-delete")
     public void deleteLabel(Integer labelId) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         Label label = null;
