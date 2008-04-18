@@ -9,7 +9,10 @@ import java.util.Locale;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
@@ -118,11 +121,29 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
         providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
+        
+        List exceptionList = remote.validateForAdd(providerDO, provAddDOList);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
                          
         try{
             providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+        }catch(Exception e){
+            if(e instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+                else if(e instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+            
+            return rpcSend;
         }
          
         ProviderDO provDO = remote.getProvider(providerId);
@@ -251,12 +272,29 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
         providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
-                
         
+        List exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
+                         
         try{
-            remote.updateProvider(providerDO, providerNote, provAddDOList);        
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
+        }catch(Exception e){
+            if(e instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+                else if(e instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+            
+            return rpcSend;
         }
         
         ProviderDO provDO = remote.getProvider((Integer)providerId);
@@ -548,10 +586,10 @@ public class ProviderService implements AppScreenFormServiceInt{
      ProviderDO providerDO = new ProviderDO();
      //provider info        
      providerDO.setId((Integer)providerId.getValue());
-     providerDO.setFirstName((String)rpcSend.getFieldValue(ProviderMeta.FIRST_NAME));
-     providerDO.setLastName((String)rpcSend.getFieldValue(ProviderMeta.LAST_NAME));
-     providerDO.setMiddleName((String)rpcSend.getFieldValue(ProviderMeta.MIDDLE_NAME));
-     providerDO.setNpi((String)rpcSend.getFieldValue(ProviderMeta.NPI));
+     providerDO.setFirstName(((String)rpcSend.getFieldValue(ProviderMeta.FIRST_NAME)).trim());
+     providerDO.setLastName(((String)rpcSend.getFieldValue(ProviderMeta.LAST_NAME)).trim());
+     providerDO.setMiddleName(((String)rpcSend.getFieldValue(ProviderMeta.MIDDLE_NAME)).trim());
+     providerDO.setNpi(((String)rpcSend.getFieldValue(ProviderMeta.NPI)).trim());
      
      if(!new Integer(-1).equals(rpcSend.getFieldValue(ProviderMeta.TYPE)))
       providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProviderMeta.TYPE));
@@ -593,9 +631,9 @@ public class ProviderService implements AppScreenFormServiceInt{
               provAddDO.getAddressDO().setId((Integer)addId.getValue());             
              }             
             
-            provAddDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
-            provAddDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-            provAddDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
+            provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.getColumn(2)).getValue()).trim());
+            provAddDO.getAddressDO().setStreetAddress(((String)((StringField)row.getColumn(3)).getValue()).trim());
+            provAddDO.getAddressDO().setCity(((String)((StringField)row.getColumn(4)).getValue()).trim());
             
             if(!("").equals(row.getColumn(5).getValue())){
              provAddDO.getAddressDO().setState((String)row.getColumn(5).getValue());
@@ -604,12 +642,12 @@ public class ProviderService implements AppScreenFormServiceInt{
              provAddDO.getAddressDO().setCountry((String)row.getColumn(6).getValue());
             }
                         
-            provAddDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(7)).getValue());
-            provAddDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
-            provAddDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
-            provAddDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
-            provAddDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
-            provAddDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
+            provAddDO.getAddressDO().setZipCode(((String)((StringField)row.getColumn(7)).getValue()).trim());
+            provAddDO.getAddressDO().setWorkPhone(((String)((StringField)row.getColumn(8)).getValue()).trim());
+            provAddDO.getAddressDO().setHomePhone(((String)((StringField)row.getColumn(9)).getValue()).trim());
+            provAddDO.getAddressDO().setCellPhone(((String)((StringField)row.getColumn(10)).getValue()).trim());
+            provAddDO.getAddressDO().setFaxPhone(((String)((StringField)row.getColumn(11)).getValue()).trim());
+            provAddDO.getAddressDO().setEmail(((String)((StringField)row.getColumn(12)).getValue()).trim());
             
             provAddDOList.add(provAddDO);   
            } 

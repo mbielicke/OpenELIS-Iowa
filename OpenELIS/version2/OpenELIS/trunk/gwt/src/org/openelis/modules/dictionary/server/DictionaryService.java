@@ -8,18 +8,21 @@ import java.util.Locale;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
@@ -28,9 +31,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.CategoryMeta;
-import org.openelis.meta.DictionaryMeta;
-import org.openelis.meta.DictionaryRelatedEntryMeta;
-import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -101,11 +101,29 @@ public class DictionaryService implements AppScreenFormServiceInt,
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)catId.getValue());
         
+        List exceptionList = remote.validateForAdd(categoryDO,dictDOList);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
+        
         Integer categoryId = null;
        try{
           categoryId = remote.updateCategory(categoryDO, dictDOList);          
-       }catch(Exception ex){           
-           throw new RPCException(ex.getMessage());
+       }catch(Exception ex){
+           if(ex instanceof FieldErrorException)
+               rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
+               else if(ex instanceof FormErrorException)
+                   rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+           
+           return rpcSend;
        }
        
          categoryDO = remote.getCategory((Integer)categoryId); 
@@ -226,13 +244,29 @@ public class DictionaryService implements AppScreenFormServiceInt,
         TableModel dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)categoryId.getValue());
-        
-         
-         try{
-             remote.updateCategory(categoryDO, dictDOList);       
-         }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
-         }
+        List exceptionList = remote.validateForAdd(categoryDO,dictDOList);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
+                
+       try{
+           remote.updateCategory(categoryDO, dictDOList);          
+       }catch(Exception ex){
+           if(ex instanceof FieldErrorException)
+               rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
+               else if(ex instanceof FormErrorException)
+                   rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+           
+           return rpcSend;
+       }
          
          categoryDO = remote.getCategory((Integer)categoryId.getValue());
          setFieldsInRPC(rpcReturn,categoryDO);
@@ -514,9 +548,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         NumberField categoryId = (NumberField) rpcSend.getField(CategoryMeta.ID);
         CategoryDO categoryDO = new CategoryDO();
         categoryDO.setId((Integer)categoryId.getValue());
-        categoryDO.setDescription((String)rpcSend.getFieldValue(CategoryMeta.DESCRIPTION));
-        categoryDO.setName((String)rpcSend.getFieldValue(CategoryMeta.NAME));
-        categoryDO.setSystemName((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME));
+        categoryDO.setDescription(((String)rpcSend.getFieldValue(CategoryMeta.DESCRIPTION)).trim());
+        categoryDO.setName(((String)rpcSend.getFieldValue(CategoryMeta.NAME)).trim());
+        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME)).trim());
                 
         if(!new Integer(-1).equals(rpcSend.getFieldValue(CategoryMeta.SECTION)))
            categoryDO.setSection((Integer)rpcSend.getFieldValue(CategoryMeta.SECTION));
@@ -561,11 +595,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
                  }
                 }
                      
-              StringField isActive =  (StringField)row.getColumn(0);              
+              CheckField isActive =  (CheckField)row.getColumn(0);              
               dictDO.setIsActive((String)isActive.getValue());
               
              dictDO.setCategory(categoryId);         
-             dictDO.setLocalAbbrev((String)((StringField)row.getColumn(2)).getValue());         
+             dictDO.setLocalAbbrev(((String)((StringField)row.getColumn(2)).getValue()).trim());         
              dictDOList.add(dictDO);             
           }
         
