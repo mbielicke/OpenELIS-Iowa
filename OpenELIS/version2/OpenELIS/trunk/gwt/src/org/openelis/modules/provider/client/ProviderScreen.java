@@ -621,7 +621,7 @@ public class ProviderScreen extends OpenELISScreenForm {
              TableRow row = provAddController.model
                      .getRow(selectedRow);
              
-             row.setShow(false);
+             provAddController.model.hideRow(row);
              // delete the last row of the table because it is autoadd
              provAddController.model
                      .deleteRow(provAddController.model.numRows() - 1);
