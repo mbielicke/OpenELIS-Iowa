@@ -27,6 +27,8 @@ import org.w3c.dom.Element;
 @NamedQueries({@NamedQuery(name = "getAnalyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroup,a.parentAnalyteId,p.name,a.externalId) from " + 
 		                                                " Analyte a left join a.parentAnalyte p where a.id = :id"),
 		       @NamedQuery(name = "getAnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
+		       @NamedQuery(name = "getAnalyteByName", query = "select a.id from Analyte a where a.name = :name"),
+		       @NamedQuery(name = "getAnalyteNameById", query = "select a.name from Analyte a where a.id = :id"),
 	           @NamedQuery(name = "getAnalyteAutoCompleteByName", query = "select a.id, a.name " +
 			   											 " from Analyte a where a.name like :name order by a.name"),
 			   @NamedQuery(name = "getAnalyteAutoCompleteById", query = "select a.id, a.name " +

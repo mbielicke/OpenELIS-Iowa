@@ -24,7 +24,6 @@ import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
