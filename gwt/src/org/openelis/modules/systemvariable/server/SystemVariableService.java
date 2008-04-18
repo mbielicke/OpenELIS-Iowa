@@ -247,8 +247,8 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         SystemVariableDO sysVarDO = new SystemVariableDO();
         Integer svId = (Integer) rpcsend.getFieldValue(SystemVariableMeta.ID);        
         sysVarDO.setId(svId);
-        sysVarDO.setName((String)rpcsend.getFieldValue(SystemVariableMeta.NAME));
-        sysVarDO.setValue((String)rpcsend.getFieldValue(SystemVariableMeta.VALUE));
+        sysVarDO.setName(((String)rpcsend.getFieldValue(SystemVariableMeta.NAME)).trim());
+        sysVarDO.setValue(((String)rpcsend.getFieldValue(SystemVariableMeta.VALUE)).trim());
         return sysVarDO;
     }
 

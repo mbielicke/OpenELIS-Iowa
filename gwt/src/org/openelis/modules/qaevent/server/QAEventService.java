@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.QaEventDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
@@ -66,12 +69,29 @@ public class QAEventService implements
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpcSend);
         
+        List exceptionList = remote.validateForAdd(qaeDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
         Integer qaeId = null;
         try{ 
          qaeId = remote.updateQaEvent(qaeDO);
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
-        } 
+            if(ex instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
+                else if(ex instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+            
+            return rpcSend;
+        }
         
         qaeDO = remote.getQaEvent((Integer)qaeId);
         setFieldsInRPC(rpcReturn, qaeDO);
@@ -197,12 +217,29 @@ public class QAEventService implements
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpcSend);
-                
+        
+        List exceptionList = remote.validateForAdd(qaeDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+            return rpcSend;
+        } 
         Integer qaeId = null;
         try{ 
          qaeId = remote.updateQaEvent(qaeDO);
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            if(ex instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
+                else if(ex instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+            
+            return rpcSend;
         } 
         
         qaeDO = remote.getQaEvent((Integer)qaeId);
@@ -368,13 +405,13 @@ public class QAEventService implements
         NumberField qaeIdField = (NumberField) rpcSend.getField(QaEventMeta.ID);
         
         qaeDO.setId((Integer)qaeIdField.getValue());
-        qaeDO.setDescription((String)rpcSend.getFieldValue(QaEventMeta.DESCRIPTION));
+        qaeDO.setDescription(((String)rpcSend.getFieldValue(QaEventMeta.DESCRIPTION)).trim());
         
 
-        qaeDO.setIsBillable((String)rpcSend.getFieldValue(QaEventMeta.IS_BILLABLE));                                     
-        qaeDO.setName((String)rpcSend.getFieldValue(QaEventMeta.NAME));         
+        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QaEventMeta.IS_BILLABLE)).trim());                                     
+        qaeDO.setName(((String)rpcSend.getFieldValue(QaEventMeta.NAME)).trim());         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QaEventMeta.REPORTING_SEQUENCE));
-        qaeDO.setReportingText((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT));    
+        qaeDO.setReportingText(((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT)).trim());    
                 
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST_ID)))
             qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST_ID));   

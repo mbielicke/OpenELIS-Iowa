@@ -279,14 +279,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							  
 <rpc key= "display">	
   <number key="{providerMeta:id()}" type="integer" required="false"/>				
-  <string key="{providerMeta:lastName()}"  required="true"/>
+  <string key="{providerMeta:lastName()}"  required="false"/>
   <string key="{providerMeta:firstName()}"  required="false"/> 
   <string key="{providerMeta:npi()}" required="false"/>
   <string key="{providerMeta:middleName()}"  required="false"/>	
   <table key="providerAddressTable"/>						      		       
   <string key="{providerNoteMeta:subject()}" required="false"/>
   <string key="{providerNoteMeta:text()}" required="false"/>
-  <dropdown key="{providerMeta:type()}" type="integer" required = "true"/>
+  <dropdown key="{providerMeta:type()}" type="integer" required="false"/>
 </rpc>
 					   
 <rpc key= "query">     

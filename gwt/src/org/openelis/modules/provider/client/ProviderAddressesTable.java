@@ -46,7 +46,7 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
-        if((col == 0 || col == 4 || col == 5 || col == 7) && (row == controller.model.numRows()-1)){          
+       if((col == 0 || col == 4 || col == 5 || col == 7) && (row == controller.model.numRows()-1)){          
             ((EditTable)controller).addRow();  
          }
 

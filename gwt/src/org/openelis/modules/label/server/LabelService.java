@@ -323,8 +323,8 @@ public class LabelService implements AppScreenFormServiceInt {
         NumberField labelIdField = (NumberField) rpcSend.getField(LabelMeta.ID);
         
         labelDO.setId((Integer)labelIdField.getValue());
-        labelDO.setName((String)rpcSend.getFieldValue(LabelMeta.NAME));
-        labelDO.setDescription((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION));
+        labelDO.setName(((String)rpcSend.getFieldValue(LabelMeta.NAME)).trim());
+        labelDO.setDescription(((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION)).trim());
               
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE)))
             labelDO.setPrinterType((Integer)rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE));   
