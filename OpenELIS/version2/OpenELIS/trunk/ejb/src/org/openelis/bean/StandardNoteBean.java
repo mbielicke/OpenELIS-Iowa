@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.LastPageException;
@@ -28,6 +30,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("standardnote-select")
 public class StandardNoteBean implements StandardNoteRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -53,6 +57,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         }
     }
 
+    @RolesAllowed("standardnote-delete")
 	public void deleteStandardNote(Integer standardNoteId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;
@@ -76,6 +81,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         return standardNoteRecord;
 	}
 	
+    @RolesAllowed("standardnote-update")
 	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "standard_note");
@@ -137,6 +143,7 @@ public class StandardNoteBean implements StandardNoteRemote{
        	 return returnList;
 	}
 
+    @RolesAllowed("standardnote-update")
 	public Integer updateStandardNote(StandardNoteDO standardNoteDO) {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;

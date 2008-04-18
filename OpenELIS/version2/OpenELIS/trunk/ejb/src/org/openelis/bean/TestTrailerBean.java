@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.entity.TestTrailer;
 import org.openelis.gwt.common.LastPageException;
@@ -26,6 +28,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("testtrailer-select")
 public class TestTrailerBean implements TestTrailerRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -48,6 +52,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         }
     }
     
+    @RolesAllowed("testtrailer-delete")
 	public void deleteTestTrailer(Integer testTrailerId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;
@@ -92,6 +97,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         return testTrailerRecord;
 	}
 
+    @RolesAllowed("testtrailer-update")
 	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "test_trailer");
@@ -142,6 +148,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         	 return returnList;
 	}
 
+    @RolesAllowed("testtrailer-update")
 	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;

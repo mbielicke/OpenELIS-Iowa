@@ -1,9 +1,11 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -13,9 +15,12 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.QaEventDO;
 import org.openelis.entity.QaEvent;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.meta.QaEventMethodMeta;
@@ -29,6 +34,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("qaevent-select")
 public class QaEventBean implements QaEventRemote{
 
     @PersistenceContext(name = "openelis")
@@ -133,7 +140,8 @@ public class QaEventBean implements QaEventRemote{
         else
          return returnList;
     }
-
+   
+    @RolesAllowed("qaevent-update")
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
         
        try{
@@ -142,6 +150,12 @@ public class QaEventBean implements QaEventRemote{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         Integer qaEventReferenceId = (Integer)query.getSingleResult();
+        
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateQaEvent(qaEventDO,exceptionList);  
+        if(exceptionList.size() > 0){
+            throw (RPCException)exceptionList.get(0);
+        }
         
         QaEvent qaEvent = null;
         
@@ -157,11 +171,7 @@ public class QaEventBean implements QaEventRemote{
         qaEvent.setReportingSequence(qaEventDO.getReportingSequence());
         qaEvent.setReportingText(qaEventDO.getReportingText());
         qaEvent.setTest(qaEventDO.getTest());
-        if(qaEventDO.getType()!=null){
-         qaEvent.setType(qaEventDO.getType());
-        }else{
-            throw new Exception("Type must be specified for a QA Event"); 
-        } 
+        qaEvent.setType(qaEventDO.getType());
         
         if(qaEvent.getId() == null){
             manager.persist(qaEvent);
@@ -175,7 +185,7 @@ public class QaEventBean implements QaEventRemote{
        } 
     }
 
-
+    @RolesAllowed("qaevent-update")
     public QaEventDO getQaEventAndLock(Integer qaEventId) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
@@ -191,5 +201,33 @@ public class QaEventBean implements QaEventRemote{
         
         return getQaEvent(qaEventId);
     }
+    
+    public List validateForAdd(QaEventDO qaeDO){
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        
+        validateQaEvent(qaeDO, exceptionList);
+        
+        return exceptionList;
+    }
+    
+    public List validateForUpdate(QaEventDO qaeDO){
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        
+        validateQaEvent(qaeDO, exceptionList);
+        
+        return exceptionList;
+    }
+    
+    private void validateQaEvent(QaEventDO qaEventDO,List<Exception> exceptionList){
+        if(qaEventDO.getType()==null){                       
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.TYPE));
+           } 
+        if("".equals(qaEventDO.getName())){                       
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.NAME));
+           } 
+        if("".equals(qaEventDO.getReportingText())){                       
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.REPORTING_TEXT));
+           } 
+    } 
  
 }

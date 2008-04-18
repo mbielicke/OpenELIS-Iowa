@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
 import org.openelis.gwt.common.LastPageException;
@@ -27,6 +29,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("systemvariable-select")
 public class SystemVariableBean implements SystemVariableRemote{
 
 
@@ -71,6 +75,7 @@ public class SystemVariableBean implements SystemVariableRemote{
         return sysVarDO;
     }
 
+    @RolesAllowed("systemvariable-update")
     public SystemVariableDO getSystemVariableAndLock(Integer sysVarId) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "system_variable");
@@ -116,6 +121,7 @@ public class SystemVariableBean implements SystemVariableRemote{
         
     }
 
+    @RolesAllowed("systemvariable-update")
     public Integer updateSystemVariable(SystemVariableDO sysVarDO) throws Exception {
         try{
             manager.setFlushMode(FlushModeType.COMMIT);
@@ -149,6 +155,7 @@ public class SystemVariableBean implements SystemVariableRemote{
       }
     }  
     
+    @RolesAllowed("systemvariable-delete")    
     public void deleteSystemVariable(Integer sysVarId) throws Exception {
       manager.setFlushMode(FlushModeType.COMMIT);
       SystemVariable sysVar = null;

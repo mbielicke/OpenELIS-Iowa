@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
@@ -35,6 +37,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("analyte-select")
 public class AnalyteBean implements AnalyteRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -65,6 +69,7 @@ public class AnalyteBean implements AnalyteRemote{
 		return query.getResultList();
 	}
 
+    @RolesAllowed("analyte-delete")
 	public void deleteAnalyte(Integer analyteId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
@@ -98,6 +103,7 @@ public class AnalyteBean implements AnalyteRemote{
         return analyteRecord;
 	}
 
+    @RolesAllowed("analyte-update")
 	public AnalyteDO getAnalyteAndLock(Integer analyteId) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
@@ -160,6 +166,7 @@ public class AnalyteBean implements AnalyteRemote{
         	 return returnList;
 	}
 
+    @RolesAllowed("analyte-update")
 	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;

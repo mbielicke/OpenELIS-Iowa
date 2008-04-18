@@ -16,6 +16,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
@@ -44,6 +45,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote {
 
 	@PersistenceContext(name = "openelis")

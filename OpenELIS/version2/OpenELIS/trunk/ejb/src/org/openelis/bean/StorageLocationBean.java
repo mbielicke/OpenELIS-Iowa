@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.LastPageException;
@@ -32,6 +34,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("storagelocation-select")
 public class StorageLocationBean implements StorageLocationRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -75,6 +79,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         }
 	}
 
+    @RolesAllowed("storagelocation-delete")
 	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
@@ -113,6 +118,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         return storageLocRecord;
 	}
 	
+    @RolesAllowed("storagelocation-update")
 	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "storage_location");
@@ -192,6 +198,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         	 return returnList;
 	}
 
+    @RolesAllowed("storagelocation-update")
 	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;

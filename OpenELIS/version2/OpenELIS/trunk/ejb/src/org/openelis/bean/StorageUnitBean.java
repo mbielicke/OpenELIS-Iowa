@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -14,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
 import org.openelis.gwt.common.LastPageException;
@@ -28,6 +30,8 @@ import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+@RolesAllowed("storageunit-select")
 public class StorageUnitBean implements StorageUnitRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -87,6 +91,7 @@ public class StorageUnitBean implements StorageUnitRemote{
         	 return returnList;
 	}
 
+    @RolesAllowed("storageunit-update")
 	public Integer updateStorageUnit(StorageUnitDO unitDO) {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
@@ -127,6 +132,7 @@ public class StorageUnitBean implements StorageUnitRemote{
         return storageUnitRecord;
 	}
 	
+    @RolesAllowed("storageunit-update")
 	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "storage_unit");
@@ -155,6 +161,7 @@ public class StorageUnitBean implements StorageUnitRemote{
         }      
     }
 
+    @RolesAllowed("storageunit-delete")
 	public void deleteStorageUnit(Integer storageUnitId) throws Exception {
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
