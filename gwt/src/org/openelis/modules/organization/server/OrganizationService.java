@@ -99,7 +99,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		organizationNote.setIsExternal("Y");
 		
 		//validate the fields on the backend
-		/*List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
+		List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
 		if(exceptionList.size() > 0){
 			//we need to get the keys and look them up in the resource bundle for internationalization
 			for (int i=0; i<exceptionList.size();i++) {
@@ -110,15 +110,16 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			}	
 			rpcSend.status = IForm.INVALID_FORM;
 			return rpcSend;
-		} */
+		} 
 		
 		//send the changes to the database
 		Integer orgId;
 		try{
 			orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
 		}catch(Exception e){
-			if(e instanceof FieldErrorException)
+			if(e instanceof FieldErrorException){
 				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+			}
 				else if(e instanceof FormErrorException)
 					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
 			
