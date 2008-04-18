@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.AnalyteDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCDeleteException;
@@ -59,8 +62,34 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		// build the analyte DO from the form
 		newAnalyteDO = getAnalyteDOFromRPC(rpcSend);
 
+		//validate the fields on the backend
+		List exceptionList = remote.validateForAdd(newAnalyteDO);
+		if(exceptionList.size() > 0){
+			//we need to get the keys and look them up in the resource bundle for internationalization
+			for (int i=0; i<exceptionList.size();i++) {
+				if(exceptionList.get(i) instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+				else if(exceptionList.get(i) instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+			}	
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		} 
+		
 		// send the changes to the database
-		Integer analyteId = (Integer) remote.updateAnalyte(newAnalyteDO);
+		Integer analyteId;
+		try{
+			analyteId = (Integer) remote.updateAnalyte(newAnalyteDO);
+		}catch(Exception e){
+			if(e instanceof FieldErrorException){
+				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+			}
+				else if(e instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		}
 
 		// lookup the changes from the database and build the rpc
 		AnalyteDO analyteDO = remote.getAnalyte(analyteId);
@@ -189,8 +218,33 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		//build the AnalyteDO from the form
 		newAnalyteDO = getAnalyteDOFromRPC(rpcSend);
 		
+		//validate the fields on the backend
+		List exceptionList = remote.validateForUpdate(newAnalyteDO);
+		if(exceptionList.size() > 0){
+			//we need to get the keys and look them up in the resource bundle for internationalization
+			for (int i=0; i<exceptionList.size();i++) {
+				if(exceptionList.get(i) instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+				else if(exceptionList.get(i) instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+			}	
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		} 
+		
 		//send the changes to the database
-		remote.updateAnalyte(newAnalyteDO);
+		try{
+			remote.updateAnalyte(newAnalyteDO);
+		}catch(Exception e){
+			if(e instanceof FieldErrorException){
+				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
+			}
+				else if(e instanceof FormErrorException)
+					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			
+			rpcSend.status = IForm.INVALID_FORM;
+			return rpcSend;
+		}
 		
 		//lookup the changes from the database and build the rpc
 		AnalyteDO analyteDO = remote.getAnalyte(newAnalyteDO.getId());
