@@ -10,7 +10,7 @@ import org.openelis.domain.AnalyteDO;
 @Remote
 public interface AnalyteRemote {
 	//commit a change to analyte, or insert a new analyte
-	public Integer updateAnalyte(AnalyteDO analyteDO);
+	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception;
 	
 	//method to return a whole analyte
 	public AnalyteDO getAnalyte(Integer analyteId);
@@ -34,4 +34,13 @@ public interface AnalyteRemote {
 	 public List autoCompleteLookupById(Integer id);
 	 
 	 public void deleteAnalyte(Integer analyteId) throws Exception;
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(AnalyteDO analyteDO);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(AnalyteDO analyteDO);
+	 
+	 //method to validate the fields before the backend deletes it
+	 public List validateForDelete(Integer analyteId);
 }
