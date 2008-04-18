@@ -1,6 +1,8 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,12 +16,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
@@ -69,7 +75,7 @@ public class AnalyteBean implements AnalyteRemote{
 		query = manager.createNamedQuery("getAnalyteByParentId");
 		query.setParameter("id", analyteId);
 		List linkedRecords = query.getResultList();
-		System.out.println("SIZE:    ["+linkedRecords.size()+"]      '''''''''''''''''");
+
 		if(linkedRecords.size() > 0){
 			throw new RPCDeleteException();
 		}
@@ -154,7 +160,7 @@ public class AnalyteBean implements AnalyteRemote{
         	 return returnList;
 	}
 
-	public Integer updateAnalyte(AnalyteDO analyteDO) {
+	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
 		
@@ -192,5 +198,61 @@ public class AnalyteBean implements AnalyteRemote{
 		query = manager.createNamedQuery("getAnalyteAutoCompleteById");
 		query.setParameter("id",id);
 		return query.getResultList();
+	}
+
+	public List validateForAdd(AnalyteDO analyteDO) {
+		List exceptionList = new ArrayList();
+		
+		validateAnalyte(analyteDO, exceptionList, false);
+		
+		return exceptionList;
+	}
+
+	public List validateForDelete(Integer analyteId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List validateForUpdate(AnalyteDO analyteDO) {
+		List exceptionList = new ArrayList();
+		
+		validateAnalyte(analyteDO, exceptionList, true);
+		
+		return exceptionList;
+	}
+	
+	private void validateAnalyte(AnalyteDO analyteDO, List exceptionList, boolean isUpdate){
+		//name required
+		boolean nameFilledOut = true;
+		boolean nameDifferentThanOriginal = true;
+		
+		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",AnalyteMeta.NAME));
+			nameFilledOut = false;
+		}
+		
+		//name not duplicate
+		//need to make sure to take update into account...old name versus new name...
+		if(isUpdate){
+			//need to lookup the old value to compare
+			Query query = null;
+			query = manager.createNamedQuery("getAnalyteNameById");
+			query.setParameter("id",analyteDO.getId());
+			String oldName = (String)query.getSingleResult();
+	
+			if(analyteDO.getName().equals(oldName.trim()))
+				nameDifferentThanOriginal = false;
+		}
+		
+		//need to look it up to verify
+		if(nameFilledOut && nameDifferentThanOriginal){
+			Query query = null;
+			query = manager.createNamedQuery("getAnalyteByName");
+			query.setParameter("name",analyteDO.getName());
+					
+			if(query.getResultList().size() > 0){
+				exceptionList.add(new FieldErrorException("fieldUniqueException",AnalyteMeta.NAME));
+			}
+		}
 	}
 }
