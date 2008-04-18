@@ -517,7 +517,7 @@ public class OrganizationScreen extends OpenELISScreenForm {
   					&& orgContactsTable.controller.model.numRows() > 1) {
 	  				TableRow row = orgContactsTable.controller.model
 	  						.getRow(selectedRow);
-	  				row.setShow(false);
+                    orgContactsTable.controller.model.hideRow(row);
 	  				// delete the last row of the table because it is autoadd
 	  				orgContactsTable.controller.model
 	  						.deleteRow(orgContactsTable.controller.model.numRows() - 1);

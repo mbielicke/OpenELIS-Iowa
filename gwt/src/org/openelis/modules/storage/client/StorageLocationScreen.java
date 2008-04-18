@@ -163,7 +163,7 @@ public class StorageLocationScreen extends OpenELISScreenForm {
 				&& childTable.model.numRows() > 1) {
 				TableRow row = childTable.model
 						.getRow(selectedRow);
-				row.setShow(false);
+                childTable.model.hideRow(row);
 				// delete the last row of the table because it is autoadd
 				childTable.model
 						.deleteRow(childTable.model.numRows() - 1);

@@ -131,7 +131,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements
             if (selectedRow > -1 && dictEntryController.model.numRows() > 1) {
                 TableRow row = dictEntryController.model.getRow(selectedRow);
 
-                row.setShow(false);
+                dictEntryController.model.hideRow(row);
                 // delete the last row of the table because it is autoadd
 
                 dictEntryController.model.deleteRow(dictEntryController.model.numRows() - 1);
