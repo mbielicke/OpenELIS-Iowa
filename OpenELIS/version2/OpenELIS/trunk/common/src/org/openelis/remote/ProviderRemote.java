@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.NoteDO;
+import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 
 @Remote
@@ -37,4 +38,10 @@ public interface ProviderRemote {
      public List<Object[]> getProviderTypes();
      
      public List getProviderNotes(Integer providerId);    
+     
+     //method to validate the fields before the backend updates it in the database
+     public List validateForUpdate(ProviderDO providerDO, List<ProviderAddressDO> addresses);
+     
+     //method to validate the fields before the backend updates it in the database
+     public List validateForAdd(ProviderDO providerDO, List<ProviderAddressDO> addresses);
 }

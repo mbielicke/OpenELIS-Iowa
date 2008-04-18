@@ -31,5 +31,9 @@ public interface QaEventRemote {
     //method to get all the tests for a given QaEvent
     public List<Object[]> getTestNames();
     
+    public List validateForAdd(QaEventDO qaeDO);
+    
+    public List validateForUpdate(QaEventDO qaeDO);    
+    
     
 }
