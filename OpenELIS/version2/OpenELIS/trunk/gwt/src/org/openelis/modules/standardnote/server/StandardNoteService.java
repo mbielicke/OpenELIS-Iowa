@@ -332,4 +332,9 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		
 		return returnModel;
 	}
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

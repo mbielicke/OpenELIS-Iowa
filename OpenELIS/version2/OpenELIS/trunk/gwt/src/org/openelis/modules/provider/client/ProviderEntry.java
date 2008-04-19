@@ -2,10 +2,12 @@ package org.openelis.modules.provider.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class ProviderEntry implements AppModule {
 
-    public void onModuleLoad() {      
+    public void onModuleLoad() {   
+    	OpenELIS.modules.addItem(getModuleName());
         ClassFactory.addClass(new String[] {"ProviderAddressesTable"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

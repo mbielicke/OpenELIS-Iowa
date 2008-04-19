@@ -421,4 +421,9 @@ public class QAEventService implements
        return qaeDO;
     }
 
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -254,4 +254,9 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		return null;
 	}
 
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

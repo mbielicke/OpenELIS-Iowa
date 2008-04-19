@@ -252,4 +252,10 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         return sysVarDO;
     }
 
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

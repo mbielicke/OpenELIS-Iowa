@@ -2,6 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions" 
                 extension-element-prefixes="resource"
                 version="1.0">
 
@@ -17,7 +18,7 @@
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
 
   <xsl:template match="doc">
-
+   <xsl:variable name="modules"><xsl:value-of select="modules"/></xsl:variable>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
 		<panel layout="vertical" style="AppBackground" sizeToWindow="true" xsi:type="Panel">
@@ -33,11 +34,13 @@
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">favoritesMenu</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">FavoritesMenu</xsl:with-param>
-				    </xsl:call-template>
+				    <xsl:if test="contains($modules,'Favorites')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">favoritesMenu</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">FavoritesMenu</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">logout</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
@@ -99,17 +102,21 @@
 				      <xsl:with-param name="label">project</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
-				    </xsl:call-template>				  
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">provider</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">ProviderScreen</xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">organization</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">OrganizationScreen</xsl:with-param>
-				    </xsl:call-template>
+				    <xsl:if test="contains($modules,'Provider')">				  
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">provider</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">ProviderScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
+				    <xsl:if test="contains($modules,'Organization')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">organization</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">OrganizationScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>
@@ -208,11 +215,13 @@
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">QAEvent</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">QAEventScreen</xsl:with-param>
-				    </xsl:call-template>
+				    <xsl:if test="contains($modules,'QAEvent')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">QAEvent</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">QAEventScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">labSection</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
@@ -221,16 +230,20 @@
 			    <widget>
 				   <html>&lt;hr/&gt;</html>
 				</widget>
-					<xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">analyte</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">AnalyteScreen</xsl:with-param>
-				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">dictionary</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">DictionaryScreen</xsl:with-param>
-				    </xsl:call-template>
+				    <xsl:if test="contains($modules,'Analyte')">
+					  <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">analyte</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">AnalyteScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
+				    <xsl:if test="contains($modules,'Dictionary')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">dictionary</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">DictionaryScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">auxiliaryPrompt</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
@@ -239,34 +252,44 @@
 			    <widget>
 					<html>&lt;hr/&gt;</html>
 			    </widget>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">label</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">LabelScreen</xsl:with-param>
-				    </xsl:call-template>			    
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">standardNote</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">StandardNoteScreen</xsl:with-param>
-				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">trailerForTest</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">TestTrailerScreen</xsl:with-param>
-				    </xsl:call-template>
+			        <xsl:if test="contains($modules,'Label')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">label</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">LabelScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
+				    <xsl:if test="contains($modules,'StandardNote')">			    
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">standardNote</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">StandardNoteScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
+				    <xsl:if test="contains($modules,'TestTrailer')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">trailerForTest</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">TestTrailerScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 			    <widget>
 					<html>&lt;hr/&gt;</html>
 			    </widget>
-			    	<xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">storageUnit</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">StorageUnitScreen</xsl:with-param>
-				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">storageLocation</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">StorageLocationScreen</xsl:with-param>
-				    </xsl:call-template>
+			        <xsl:if test="contains($modules,'StorageUnit')">
+			    	  <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">storageUnit</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">StorageUnitScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
+				    <xsl:if test="contains($modules,'Storage')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">storageLocation</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				        <xsl:with-param name="value">StorageLocationScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				<widget>
 					<html>&lt;hr/&gt;</html>
 				</widget>
@@ -283,11 +306,13 @@
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="label">systemVariable</xsl:with-param>
-				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="value">SystemVariableScreen</xsl:with-param>
-				    </xsl:call-template>
+				    <xsl:if test="contains($modules,'SystemVariable')">
+				      <xsl:call-template name="menuItem">
+				        <xsl:with-param name="label">systemVariable</xsl:with-param>
+				        <xsl:with-param name="enabled">true</xsl:with-param>
+				       <xsl:with-param name="value">SystemVariableScreen</xsl:with-param>
+				      </xsl:call-template>
+				    </xsl:if>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>

@@ -334,4 +334,9 @@ public class LabelService implements AppScreenFormServiceInt {
        return labelDO;
     }
 
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
