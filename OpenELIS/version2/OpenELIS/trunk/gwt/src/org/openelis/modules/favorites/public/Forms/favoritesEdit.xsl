@@ -29,9 +29,13 @@
 	      <menuDisplay>
 	        <panel layout="table" xsi:type="Table" style="TopMenuRowContainer">
 	          <row>
-	            <widget style="topMenuIcon">
-	              <panel xsi:type="Absolute" style="{$icon}" layout="absolute"/>
-	            </widget>
+	           <widget align="right">
+	             <panel layout="horizontal" xsi:type="Panel">
+	               <widget>
+	                 <check key="{$value}"/>
+	               </widget>
+	             </panel>
+	           </widget>
 	            <widget>
 	              <panel layout="vertical" xsi:type="Panel">
 	                <widget style="topMenuItemMiddle">
@@ -40,13 +44,6 @@
 	                <widget>
 	                  <label wordwrap="true" text="{resource:getString($constants,$description)}" style="topMenuItemDesc,locked"/>
 	                </widget>
-	             </panel>
-	           </widget>
-	           <widget align="right">
-	             <panel layout="horizontal" xsi:type="Panel">
-	               <widget>
-	                 <check key="{$value}"/>
-	               </widget>
 	             </panel>
 	           </widget>
 	         </row>  
