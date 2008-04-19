@@ -837,5 +837,10 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				return (Integer)((NumberObject)list.get(0)).getValue();
     	}
     	return null;
-    }    
+    }
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}    
 }

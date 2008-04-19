@@ -1,12 +1,15 @@
 package org.openelis.modules.main.server;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -16,9 +19,6 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.HashMap;
-import java.util.Locale;
 
 public class OpenELISService implements OpenELISServiceInt {
    
@@ -160,5 +160,23 @@ public class OpenELISService implements OpenELISServiceInt {
         cmap.setValue(map);
         return cmap;
     }
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		try {
+			Document doc = XMLUtil.createNew("doc");
+			Element root = doc.getDocumentElement();
+			Element modules = doc.createElement("modules");
+			String modu = ((CollectionField)args[0]).toString();
+			System.out.println("modules : "+modu);
+			modules.appendChild(doc.createTextNode(modu));
+			root.appendChild(modules);
+			StringObject xml = new StringObject();
+			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl",doc));
+			return new DataObject[] {xml,getConstants()};
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

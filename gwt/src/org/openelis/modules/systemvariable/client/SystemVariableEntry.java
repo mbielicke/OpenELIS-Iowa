@@ -2,6 +2,7 @@ package org.openelis.modules.systemvariable.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class SystemVariableEntry implements AppModule {
 
@@ -10,6 +11,7 @@ public class SystemVariableEntry implements AppModule {
     }
 
     public void onModuleLoad() {
+    	OpenELIS.modules.addItem(getModuleName());
         ClassFactory.addClass(new String[] {"SystemVariableScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

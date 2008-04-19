@@ -391,4 +391,9 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		modelField.setValue(model);
 		return modelField;
 	}
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

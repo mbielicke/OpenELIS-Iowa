@@ -372,4 +372,9 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		
 		return dataModel;		
 	}
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

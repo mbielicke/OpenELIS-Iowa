@@ -5,7 +5,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.data.CheckField;
@@ -53,7 +52,6 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
 import org.openelis.gwt.widget.ProxyListener;
-import org.openelis.gwt.widget.QueryCheck;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableCalendar;
 import org.openelis.gwt.widget.table.TableCheck;

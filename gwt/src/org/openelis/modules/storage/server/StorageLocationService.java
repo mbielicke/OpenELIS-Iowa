@@ -676,4 +676,9 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		
 		return childModel;
 	}
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -604,6 +604,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
           }
         
         return dictDOList;
-    } 
+    }
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	} 
     
 }

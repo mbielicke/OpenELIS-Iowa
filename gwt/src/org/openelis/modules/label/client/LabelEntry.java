@@ -2,6 +2,7 @@ package org.openelis.modules.label.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 
 public class LabelEntry implements AppModule {
@@ -11,13 +12,14 @@ public class LabelEntry implements AppModule {
     }
 
     public void onModuleLoad() {
-       ClassFactory.addClass(new String[] {"LabelScreen"}, 
+    	OpenELIS.modules.addItem(getModuleName());
+        ClassFactory.addClass(new String[] {"LabelScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new LabelScreen();
                                   }
                               }
-       );    
+        );    
 
     }
         

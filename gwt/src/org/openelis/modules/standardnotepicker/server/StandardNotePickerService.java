@@ -169,4 +169,9 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 			return returnString;
 		}
 	}
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

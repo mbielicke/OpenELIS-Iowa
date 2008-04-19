@@ -165,5 +165,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
     public String saveFavorites(FormRPC rpc) {
         // TODO Auto-generated method stub
         return new FavoritesService().saveFavorites(rpc);
-    }    
+    }
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		return ((AppScreenFormServiceInt)getService()).getXMLData(args);
+	}    
 }

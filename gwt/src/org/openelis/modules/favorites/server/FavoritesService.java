@@ -1,27 +1,20 @@
 package org.openelis.modules.favorites.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.favorites.client.FavoritesServiceInt;
 import org.openelis.server.PreferencesManager;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class FavoritesService implements FavoritesServiceInt {
 

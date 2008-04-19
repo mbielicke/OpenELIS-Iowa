@@ -6,7 +6,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
@@ -23,7 +25,7 @@ public class OpenELIS extends AppScreen {
 	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
     public static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
-    public static String modules;
+    public static CollectionField modules = new CollectionField();
     public static WindowBrowser browser;
     private FavoritesScreen fv;
     
@@ -33,7 +35,7 @@ public class OpenELIS extends AppScreen {
         base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISService";
         target.setServiceEntryPoint(base);
         service = screenService;
-        getXMLData();
+        getXMLData(new DataObject[] {modules});
     }
 
    public void afterDraw(boolean Success) {

@@ -654,4 +654,9 @@ public class ProviderService implements AppScreenFormServiceInt{
         }
        return provAddDOList;    
     }
+
+	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
