@@ -3,7 +3,7 @@
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
 	<inherits name="com.google.gwt.xml.XML"/>
-    <!--<inherits name="com.google.gwt.i18n.I18N"/> -->
+    <inherits name="com.google.gwt.i18n.I18N"/> 
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
@@ -11,9 +11,9 @@
     <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
-    <inherits name="org.openelis.modules.label.Label"/>
+    <inherits name="org.openelis.modules.label.Label"/> 
     <inherits name="org.openelis.modules.organization.Organization"/>
-    <inherits name="org.openelis.modules.provider.Provider"/> 
+    <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
     <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>        

@@ -1,11 +1,5 @@
 package org.openelis.modules.main.client.openelis;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataObject;
@@ -20,7 +14,14 @@ import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
-public class OpenELIS extends AppScreen {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+public class OpenELIS extends AppScreen implements ClickListener{
 	
 	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
     public static ServiceDefTarget target = (ServiceDefTarget)screenService;

@@ -20,12 +20,11 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DictionaryScreen extends OpenELISScreenForm implements
-                                                        MouseListener {
+public class DictionaryScreen extends OpenELISScreenForm implements ClickListener{
 
     private EditTable dictEntryController = null;
     private AppButton removeEntryButton = null;

@@ -31,15 +31,17 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OrganizationScreen extends OpenELISScreenForm {
+public class OrganizationScreen extends OpenELISScreenForm implements ClickListener, TabListener{
 
 	private Widget selected;
   
@@ -529,4 +531,9 @@ public class OrganizationScreen extends OpenELISScreenForm {
 	  				row.addHidden("deleteFlag", deleteFlag);
   				}
           }
+
+		public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+			// TODO Auto-generated method stub
+			
+		}
 }
