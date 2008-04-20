@@ -11,10 +11,11 @@ import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class StorageLocationScreen extends OpenELISScreenForm {
+public class StorageLocationScreen extends OpenELISScreenForm implements ClickListener {
 	
 	private TextBox nameTextbox;
 	private EditTable childTable;

@@ -15,6 +15,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -22,7 +23,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener{
+public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener, ClickListener{
 
 	//ScreenWindow window;
 	public TextArea noteTextArea;
@@ -64,7 +65,6 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	            }
 	         });        
 		}
-		super.onClick(sender);
 	}
 	
 	public void afterDraw(boolean sucess) {
