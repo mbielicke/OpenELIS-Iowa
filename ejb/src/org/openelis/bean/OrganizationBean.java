@@ -27,6 +27,7 @@ import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.OrganizationAddressMeta;
 import org.openelis.meta.OrganizationContactAddressMeta;
@@ -138,13 +139,13 @@ public class OrganizationBean implements OrganizationRemote {
         }
         
         //update contacts
-        for (Iterator contactsItr = contacts.iterator(); contactsItr.hasNext();) {
-			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+        for (int i=0; i<contacts.size();i++) {
+			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
             OrganizationContact orgContact = null;
             
             //validate the organization record and its address
             exceptionList = new ArrayList();
-            validateContactAndAddress(contactDO, exceptionList);
+            validateContactAndAddress(contactDO, i, exceptionList);
             if(exceptionList.size() > 0){
             	throw (RPCException)exceptionList.get(0);
             }
@@ -327,11 +328,10 @@ public class OrganizationBean implements OrganizationRemote {
 		
 		validateOrganizationAndAddress(organizationDO, exceptionList);
 		
-		Iterator contactsItr = contacts.iterator();
-		while(contactsItr.hasNext()){
-			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+		for(int i=0; i<contacts.size();i++){			
+			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
 			
-			validateContactAndAddress(contactDO, exceptionList);
+			validateContactAndAddress(contactDO, i, exceptionList);
 		}
 		
 		return exceptionList;
@@ -343,11 +343,10 @@ public class OrganizationBean implements OrganizationRemote {
 		
 		validateOrganizationAndAddress(organizationDO, exceptionList);
 		
-		Iterator contactsItr = contacts.iterator();
-		while(contactsItr.hasNext()){
-			OrganizationContactDO contactDO = (OrganizationContactDO) contactsItr.next();
+		for(int i=0; i<contacts.size();i++){			
+			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
 			
-			validateContactAndAddress(contactDO, exceptionList);
+			validateContactAndAddress(contactDO, i, exceptionList);
 		}
 		
 		return exceptionList;
@@ -380,35 +379,35 @@ public class OrganizationBean implements OrganizationRemote {
 		}		
 	}
 	
-	private void validateContactAndAddress(OrganizationContactDO orgContactDO, List exceptionList){
+	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, List exceptionList){
 		//contact type required
 		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactMeta.CONTACT_TYPE));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.CONTACT_TYPE));
 		}
 
 		//name required
 		if(orgContactDO.getName() == null || "".equals(orgContactDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactMeta.NAME));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.NAME));
 		}
 		
 		//street address required
-		/*if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.STREET_ADDRESS));
+		if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.STREET_ADDRESS));
 		}
 		
 		//city required
 		if(orgContactDO.getAddressDO().getCity() == null || "".equals(orgContactDO.getAddressDO().getCity())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.CITY));	
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.CITY));	
 		}
 		
 		//zipcode required
 		if(orgContactDO.getAddressDO().getZipCode() == null || "".equals(orgContactDO.getAddressDO().getZipCode())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.ZIP_CODE));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.ZIP_CODE));
 		}
 		
 		//country required
 		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationContactAddressMeta.COUNTRY));
-		}		*/
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.COUNTRY));
+		}		
 	}
 }
