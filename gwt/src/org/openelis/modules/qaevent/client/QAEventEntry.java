@@ -26,7 +26,7 @@ public class QAEventEntry implements AppModule {
     }
 
     public String getModuleName() {
-        return "Analysis";
+        return "QAEvent";
     }
 
 }
