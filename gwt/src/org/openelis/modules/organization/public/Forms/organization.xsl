@@ -138,7 +138,7 @@
 									</row>	
 									<row>
 										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"street")'/>:</text>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 										</widget>
 										<widget>
 											<textbox case="upper" key="{orgAddressMeta:streetAddress()}" width="212px" max="30" tab="{orgAddressMeta:city()},{orgAddressMeta:multipleUnit()}"/>
@@ -183,10 +183,10 @@
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
 										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
-										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
-										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
-										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
+										<xsl:value-of select='resource:getString($constants,"country")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,
+										<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,<xsl:value-of select='resource:getString($constants,"email")'/></headers>
+										<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
 										<editors>
 											<autoDropdown case="mixed" width="90px" popWidth="auto">
 											  <widths>100</widths>
@@ -199,29 +199,29 @@
 												 <widths>32</widths>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
+										 	<autoDropdown case="mixed" width="110px" popWidth="auto">
+											  <widths>102</widths>
+											</autoDropdown>
 										 	<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<autoDropdown case="mixed" width="110px" popWidth="auto">
-											  <widths>102</widths>
-											</autoDropdown>
 										</editors>
 										<fields>
-											<dropdown key="{orgContactMeta:contactType()}"/>
-											<string key="{orgContactMeta:name()}"/>
+											<dropdown key="{orgContactMeta:contactType()}" required="true"/>
+											<string key="{orgContactMeta:name()}" required="true"/>
 											<string key="{orgContactAddressMeta:multipleUnit()}"/>
-											<string key="{orgContactAddressMeta:streetAddress()}"/>
-											<string key="{orgContactAddressMeta:city()}"/>
+											<string key="{orgContactAddressMeta:streetAddress()}" required="true"/>
+											<string key="{orgContactAddressMeta:city()}" required="true"/>
 											<dropdown key="{orgContactAddressMeta:state()}"/>
-											<string key="{orgContactAddressMeta:zipCode()}"/>
+											<string key="{orgContactAddressMeta:zipCode()}" required="true"/>
+											<dropdown key="{orgContactAddressMeta:country()}" required="true"/>
 											<string key="{orgContactAddressMeta:workPhone()}"/>
 											<string key="{orgContactAddressMeta:homePhone()}"/>
 											<string key="{orgContactAddressMeta:cellPhone()}"/>
 											<string key="{orgContactAddressMeta:faxPhone()}"/>
 											<string key="{orgContactAddressMeta:email()}"/>
-											<dropdown key="{orgContactAddressMeta:country()}"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -229,13 +229,14 @@
 									</table>
 									<query>
 									<queryTable width="574px" title="" maxRows="8" showError="false">
-										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
-										<xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
-										<xsl:value-of select='resource:getString($constants,"state")'/>,<xsl:value-of select='resource:getString($constants,"zipcode")'/>,
+										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,
+										<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,<xsl:value-of select='resource:getString($constants,"address")'/>,
+										<xsl:value-of select='resource:getString($constants,"city")'/>,<xsl:value-of select='resource:getString($constants,"state")'/>,
+										<xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"country")'/>,
 										<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
 										<xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
-										<xsl:value-of select='resource:getString($constants,"email")'/>,<xsl:value-of select='resource:getString($constants,"country")'/></headers>
-										<widths>106,130,130,130,130,56,68,100,90,90,90,150,126</widths>
+										<xsl:value-of select='resource:getString($constants,"email")'/></headers>
+										<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
 										<editors>
 											<autoDropdown case="mixed" width="90px" popWidth="auto" multiSelect="true">
 											  <widths>90</widths>
@@ -248,20 +249,20 @@
 												<widths>40</widths>
 											</autoDropdown>
 										 	<textbox case="mixed"/>
+										 	<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect="true">
+											  <widths>110</widths>
+											</autoDropdown>		
 										 	<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-										 	<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect="true">
-											  <widths>110</widths>
-											</autoDropdown>									 	
+											<textbox case="mixed"/>		 	
 										</editors>
 										<fields><xsl:value-of select='orgContactMeta:contactType()'/>,<xsl:value-of select='orgContactMeta:name()'/>,<xsl:value-of select='orgContactAddressMeta:multipleUnit()'/>,
 										<xsl:value-of select='orgContactAddressMeta:streetAddress()'/>,<xsl:value-of select='orgContactAddressMeta:city()'/>,<xsl:value-of select='orgContactAddressMeta:state()'/>,
-										<xsl:value-of select='orgContactAddressMeta:zipCode()'/>,<xsl:value-of select='orgContactAddressMeta:workPhone()'/>,<xsl:value-of select='orgContactAddressMeta:homePhone()'/>,
-										<xsl:value-of select='orgContactAddressMeta:cellPhone()'/>,<xsl:value-of select='orgContactAddressMeta:faxPhone()'/>,<xsl:value-of select='orgContactAddressMeta:email()'/>,
-										<xsl:value-of select='orgContactAddressMeta:country()'/></fields>
+										<xsl:value-of select='orgContactAddressMeta:zipCode()'/>,<xsl:value-of select='orgContactAddressMeta:country()'/></fields>,<xsl:value-of select='orgContactAddressMeta:workPhone()'/>,
+										<xsl:value-of select='orgContactAddressMeta:homePhone()'/>,	<xsl:value-of select='orgContactAddressMeta:cellPhone()'/>,<xsl:value-of select='orgContactAddressMeta:faxPhone()'/>,
+										<xsl:value-of select='orgContactAddressMeta:email()'/>										
 									</queryTable>
 									</query>
 								</widget>
@@ -335,18 +336,18 @@
 	<rpc key="display">
   	  <number key="{organizationMeta:id()}" type="integer" required="false"/>
       <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
-      <string key="{organizationMeta:name()}" max="40" required="false"/> <!---->
-      <string key="{orgAddressMeta:streetAddress()}" max="30" required="false"/> <!---->
+      <string key="{organizationMeta:name()}" max="40" required="true"/>
+      <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
       <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
-      <string key="{orgAddressMeta:city()}" max="30" required="false"/> <!---->
-      <string key="{orgAddressMeta:zipCode()}" max="10" required="false"/> <!---->
+      <string key="{orgAddressMeta:city()}" max="30" required="true"/>
+      <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
       <check key="{organizationMeta:isActive()}" required="false"/>
       <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
       <string key="{orgNoteMeta:text()}" required="false"/>
       <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
       <table key="contactsTable"/>
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
-      <dropdown key="{orgAddressMeta:country()}" required="false"/> <!---->
+      <dropdown key="{orgAddressMeta:country()}" required="true"/>
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{organizationMeta:id()}" type="integer"/>
