@@ -17,6 +17,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
@@ -100,15 +101,9 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		
 		//validate the fields on the backend
 		List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
+		
 		if(exceptionList.size() > 0){
-			//we need to get the keys and look them up in the resource bundle for internationalization
-			for (int i=0; i<exceptionList.size();i++) {
-				if(exceptionList.get(i) instanceof FieldErrorException)
-				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-				else if(exceptionList.get(i) instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-			}	
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, contactsTable, rpcSend);
 			return rpcSend;
 		} 
 		
@@ -117,13 +112,11 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		try{
 			orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
 		}catch(Exception e){
-			if(e instanceof FieldErrorException){
-				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-			}
-				else if(e instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
 			
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, contactsTable, rpcSend);
+			
 			return rpcSend;
 		}
 		
@@ -249,14 +242,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 //		validate the fields on the backend
 		List exceptionList = remote.validateForUpdate(newOrganizationDO, organizationContacts);
 		if(exceptionList.size() > 0){
-			//we need to get the keys and look them up in the resource bundle for internationalization
-			for (int i=0; i<exceptionList.size();i++) {
-				if(exceptionList.get(i) instanceof FieldErrorException)
-				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-				else if(exceptionList.get(i) instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-			}	
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, contactsTable, rpcSend);
+			
 			return rpcSend;
 		} 
 		
@@ -264,14 +251,13 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		try{
 			remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
 		}catch(Exception e){
-			if(e instanceof FieldErrorException)
-				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-				else if(e instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, contactsTable, rpcSend);
 			
 			return rpcSend;
 		}
-		
 		
 		//lookup the changes from the database and build the rpc
 		OrganizationAddressDO organizationDO = remote.getOrganizationAddress(newOrganizationDO.getOrganizationId());
@@ -839,8 +825,26 @@ public class OrganizationService implements AppScreenFormServiceInt,
     	return null;
     }
 
+    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+    	//we need to get the keys and look them up in the resource bundle for internationalization
+		for (int i=0; i<exceptionList.size();i++) {
+			//if the error is inside the org contacts table
+			if(exceptionList.get(i) instanceof TableFieldErrorException){
+				TableRow row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+				row.getColumn(contactsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
+																		.addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			//if the error is on the field
+			}else if(exceptionList.get(i) instanceof FieldErrorException)
+				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			//if the error is on the entire form
+			else if(exceptionList.get(i) instanceof FormErrorException)
+				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+		}	
+		rpcSend.status = IForm.INVALID_FORM;
+    }
+
 	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
-	}    
+	}
 }
