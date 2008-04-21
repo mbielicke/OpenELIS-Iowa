@@ -31,6 +31,7 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -293,7 +294,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
 		controller.editors[5];
 		displayState.editor.reset();
 		TableAutoDropdown displayCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
-		controller.editors[12];
+		controller.editors[7];
 		displayCountry.editor.reset();
 		super.doReset();
 	}
@@ -336,10 +337,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
 	    ((AutoCompleteDropdown)displayCountry.getWidget()).setModel(countryDropdown);
 	               
 	    TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayContactTable.getWidget()).
-	               																				controller.editors[12];
+	               																				controller.editors[7];
 	    displayContactCountry.setModel(countryDropdown);
 	               
-	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[12];
+	    TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[7];
 	    queryContactCountry.setModel(countryDropdown);
 	    
 	    

@@ -417,12 +417,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
 	                row.getColumn(4).setValue(contactRow.getAddressDO().getCity());          
 	                row.getColumn(5).setValue(contactRow.getAddressDO().getState());
 	                row.getColumn(6).setValue(contactRow.getAddressDO().getZipCode());
-	                row.getColumn(7).setValue(contactRow.getAddressDO().getWorkPhone());
-	                row.getColumn(8).setValue(contactRow.getAddressDO().getHomePhone());
-	                row.getColumn(9).setValue(contactRow.getAddressDO().getCellPhone());
-	                row.getColumn(10).setValue(contactRow.getAddressDO().getFaxPhone());
-	                row.getColumn(11).setValue(contactRow.getAddressDO().getEmail());	                
-	                row.getColumn(12).setValue(contactRow.getAddressDO().getCountry());
+	                row.getColumn(7).setValue(contactRow.getAddressDO().getCountry());
+	                row.getColumn(8).setValue(contactRow.getAddressDO().getWorkPhone());
+	                row.getColumn(9).setValue(contactRow.getAddressDO().getHomePhone());
+	                row.getColumn(10).setValue(contactRow.getAddressDO().getCellPhone());
+	                row.getColumn(11).setValue(contactRow.getAddressDO().getFaxPhone());
+	                row.getColumn(12).setValue(contactRow.getAddressDO().getEmail());	                
 	                
 	                contactsModel.addRow(row);
 	       } 
@@ -516,12 +516,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				contactDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
 				contactDO.getAddressDO().setState((String)row.getColumn(5).getValue());
 				contactDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(6)).getValue());
-				contactDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(7)).getValue());
-				contactDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(8)).getValue());
-				contactDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(9)).getValue());
-				contactDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(10)).getValue());
-				contactDO.getAddressDO().setEmail((String)((StringField)row.getColumn(11)).getValue());
-				contactDO.getAddressDO().setCountry((String)row.getColumn(12).getValue());
+				contactDO.getAddressDO().setCountry((String)row.getColumn(7).getValue());
+				contactDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
+				contactDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
+				contactDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
+				contactDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
+				contactDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
 				
 				organizationContacts.add(contactDO);	
 			}
