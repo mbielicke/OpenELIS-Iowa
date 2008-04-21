@@ -209,19 +209,19 @@
 											</autoDropdown>
 										</editors>
 										<fields>
-											<dropdown/>
-											<string required="true"/>
-											<string/>
-											<string/>
-											<string/>
-											<dropdown/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<string/>
-											<dropdown/>
+											<dropdown key="{orgContactMeta:contactType()}"/>
+											<string key="{orgContactMeta:name()}"/>
+											<string key="{orgContactAddressMeta:multipleUnit()}"/>
+											<string key="{orgContactAddressMeta:streetAddress()}"/>
+											<string key="{orgContactAddressMeta:city()}"/>
+											<dropdown key="{orgContactAddressMeta:state()}"/>
+											<string key="{orgContactAddressMeta:zipCode()}"/>
+											<string key="{orgContactAddressMeta:workPhone()}"/>
+											<string key="{orgContactAddressMeta:homePhone()}"/>
+											<string key="{orgContactAddressMeta:cellPhone()}"/>
+											<string key="{orgContactAddressMeta:faxPhone()}"/>
+											<string key="{orgContactAddressMeta:email()}"/>
+											<dropdown key="{orgContactAddressMeta:country()}"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -361,6 +361,7 @@
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="false"/>
       <queryCheck key="{organizationMeta:isActive()}" required="false"/>
+      
       <dropdown key="{orgContactMeta:contactType()}" required="false"/>
 	  <queryString key="{orgContactMeta:name()}" required="false"/>
 	  <queryString key="{orgContactAddressMeta:multipleUnit()}" required="false"/>
