@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,7 +18,9 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.SystemVariableMeta;
 import org.openelis.remote.SystemVariableRemote;
@@ -131,8 +134,11 @@ public class SystemVariableBean implements SystemVariableRemote{
             Integer sysVarReferenceId = (Integer)query.getSingleResult();
             
             SystemVariable sysVar = null;
-            
-            validate(sysVarDO);
+            List<Exception> exceptionList = new ArrayList<Exception>();
+            validate(sysVarDO,exceptionList);
+            if(exceptionList.size() > 0){
+                throw (RPCException)exceptionList.get(0);
+            }
             
             if(sysVarDO.getId()==null){
                 sysVar = new SystemVariable();            
@@ -170,12 +176,24 @@ public class SystemVariableBean implements SystemVariableRemote{
       } 
     }
     
-    public void validate(SystemVariableDO sysVarDO) throws Exception{
-        if(sysVarDO.getName()==null){
-            throw new Exception("Name must be specified for a system variable");
+    public List<Exception> validateforAdd(SystemVariableDO sysVarDO){
+       List<Exception> exceptionList = new ArrayList<Exception>(); 
+       validate(sysVarDO,exceptionList);        
+       return exceptionList; 
+    }
+
+    public List<Exception> validateforUpdate(SystemVariableDO sysVarDO) {
+        List<Exception> exceptionList = new ArrayList<Exception>(); 
+        validate(sysVarDO,exceptionList);        
+        return exceptionList; 
+    }
+    
+    private void validate(SystemVariableDO sysVarDO,List<Exception> exceptionList){
+        if(sysVarDO.getName()==null || "".equals(sysVarDO.getName())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",SystemVariableMeta.NAME));
         }
-        if(sysVarDO.getValue()==null){
-            throw new Exception("Value must be specified for a system variable");
+        if(sysVarDO.getValue()==null|| "".equals(sysVarDO.getValue())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",SystemVariableMeta.VALUE));
         }
     }
     
