@@ -103,7 +103,7 @@
 					
 					<panel layout="vertical"  spacing="5" xsi:type="Panel">
 						<widget>
-							<table maxRows = "11" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false">
+							<table maxRows = "11" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -118,11 +118,11 @@
 											</autoDropdown>
 								</editors>
 								<fields>																											
-									<check>Y</check>
-									<string/>									
-									<string/>
-									<string required = "true"/>
-									<dropdown/>									
+									<check key="{dictionaryMeta:isActive()}">Y</check>
+									<string key="{dictionaryMeta:systemName()}"/>									
+									<string key="{dictionaryMeta:localAbbrev()}"/>
+									<string key="{dictionaryMeta:entry()}" /> <!--required = "true"-->
+									<dropdown key="{dictRelEntryMeta:entry()}"/>									
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
@@ -168,8 +168,8 @@
 	</display>
 	<rpc key = "display">
 	 <number key="{categoryMeta:id()}" type="integer" required="false"/>	
-	 <string key="{categoryMeta:systemName()}" max="30" required="false"/>
-	 <string key="{categoryMeta:name()}" max="50" required="false"/>
+	 <string key="{categoryMeta:systemName()}" max="30" required="false"/> <!--required = "true"-->
+	 <string key="{categoryMeta:name()}" max="50" required="false"/> <!--required = "true"-->
 	 <string key="{categoryMeta:description()}" max="60" required="false"/>
      <table key="dictEntTable"/>	 
      <dropdown key="{categoryMeta:section()}" type="integer" required="false"/>    

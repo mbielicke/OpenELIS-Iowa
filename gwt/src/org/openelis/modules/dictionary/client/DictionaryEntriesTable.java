@@ -13,6 +13,8 @@ import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
+import com.google.gwt.user.client.Window;
+
 
 
 
@@ -57,12 +59,15 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {              
-        return false;
+        if(col == 0 || col == 1 || col == 3)
+            return true;
+        else
+            return false;
     }
 
     public void finishedEditing(int row, int col, TableController controller) { 
-        
         TableRow tableRow =  controller.model.getRow(row);
+        
         Integer id  = null;
         NumberField idField = (NumberField)tableRow.getHidden("id");  
         if(idField!=null){
@@ -118,11 +123,7 @@ public class DictionaryEntriesTable implements TableManager {
           }                
          }
         }                    
-        if((col == 1 || col == 3) && (row == controller.model.numRows()-1)){          
-           ((EditTable)controller).addRow();  
-        }
-        
-        
+
      }
 
     public void getNextPage(TableController controller) {

@@ -69,33 +69,26 @@ public class QAEventService implements
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpcSend);
         
-        List exceptionList = remote.validateForAdd(qaeDO);
+        List<Exception> exceptionList = remote.validateForAdd(qaeDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            rpcSend.status = IForm.INVALID_FORM;
+            setRpcErrors(exceptionList, rpcSend);   
             return rpcSend;
-        } 
+        }  
         Integer qaeId = null;
         try{ 
          qaeId = remote.updateQaEvent(qaeDO);
-        }catch(Exception ex){
-            if(ex instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
-                else if(ex instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
             
             return rpcSend;
         }
         
         qaeDO = remote.getQaEvent((Integer)qaeId);
-        setFieldsInRPC(rpcReturn, qaeDO);
-        
+        setFieldsInRPC(rpcReturn, qaeDO);        
         return rpcReturn;
     }
 
@@ -218,29 +211,23 @@ public class QAEventService implements
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpcSend);
         
-        List exceptionList = remote.validateForAdd(qaeDO);
+        List<Exception> exceptionList = remote.validateForUpdate(qaeDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            rpcSend.status = IForm.INVALID_FORM;
+            setRpcErrors(exceptionList, rpcSend);   
             return rpcSend;
         } 
         Integer qaeId = null;
         try{ 
          qaeId = remote.updateQaEvent(qaeDO);
-        }catch(Exception ex){
-            if(ex instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
-                else if(ex instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
             
             return rpcSend;
-        } 
+        }
         
         qaeDO = remote.getQaEvent((Integer)qaeId);
         setFieldsInRPC(rpcReturn, qaeDO);
@@ -425,5 +412,18 @@ public class QAEventService implements
 		// TODO Auto-generated method stub
 		return null;
 	}
+    
+     private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+         //we need to get the keys and look them up in the resource bundle for internationalization
+         for (int i=0; i<exceptionList.size();i++) {
+             //if the error is inside the org contacts table
+              if(exceptionList.get(i) instanceof FieldErrorException)
+                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+             //if the error is on the entire form
+             else if(exceptionList.get(i) instanceof FormErrorException)
+                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+         }   
+         rpcSend.status = IForm.INVALID_FORM;
+     }
 
 }

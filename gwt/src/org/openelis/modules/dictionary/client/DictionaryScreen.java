@@ -291,36 +291,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
             sectionDropDown = (DataModel)initData[0];
         }
 
-       
-
         ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
         
     }
-
-    public boolean validate() {     
-        boolean entryError = false;        
-        for (int iter = 0; iter < dictEntryController.model.numRows(); iter++) {            
-            StringField efield = (StringField)dictEntryController.model.getFieldAt(iter,
-                                                                                   3);
-            if (efield.getValue() != null) {
-                if ((efield.getValue().toString().trim().equals(""))) {
-                    efield.addError("Field is required");
-                }
-            } else {
-                efield.addError("Field is required");
-            }
-
-            if (!(efield.getErrors().length == 0)) {
-                entryError = true;
-            }
-          
-        }
-
-        if (entryError) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    
       
 }

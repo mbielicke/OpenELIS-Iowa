@@ -11,10 +11,11 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
- public class QAEventScreen extends OpenELISScreenForm {
+ public class QAEventScreen extends OpenELISScreenForm implements ClickListener{
 
      private Widget selected = null;     
      private TextBox tname = null;
@@ -130,7 +131,12 @@ import com.google.gwt.user.client.ui.Widget;
                     ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
                     
                                            
-                }                              
+                }
+
+    public void onClick(Widget arg0) {
+        // TODO Auto-generated method stub
+        
+    }                              
                           
               
  }
