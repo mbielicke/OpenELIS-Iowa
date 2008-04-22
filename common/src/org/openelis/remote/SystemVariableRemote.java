@@ -27,5 +27,9 @@ public interface SystemVariableRemote {
     public Integer getSystemUserId();
     
     public void deleteSystemVariable(Integer sysVarId) throws Exception;
+    
+    public List<Exception> validateforAdd(SystemVariableDO sysVarDO);
+    
+    public List<Exception> validateforUpdate(SystemVariableDO sysVarDO);
        
 }
