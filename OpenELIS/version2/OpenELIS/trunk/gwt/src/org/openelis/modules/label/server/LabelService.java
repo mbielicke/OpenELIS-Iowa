@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.LabelDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -18,6 +22,8 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.meta.LabelMeta;
@@ -60,11 +66,23 @@ public class LabelService implements AppScreenFormServiceInt {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         LabelDO labelDO = getLabelDOFromRPC(rpcSend);
         Integer labelId = null;
-         try{
-             labelId = remote.updateLabel(labelDO);             
-         }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
-         }
+        List<Exception> exceptionList = remote.validateForAdd(labelDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcSend);   
+            return rpcSend;
+        } 
+                         
+        try{
+            labelId = (Integer)remote.updateLabel(labelDO);        
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
+            
+            return rpcSend;
+        }
         
          labelDO = remote.getLabel(labelId);
          setFieldsInRPC(rpcReturn, labelDO);
@@ -73,10 +91,21 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+        List<Exception> exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcReturn);              
+            return rpcReturn;
+        }
         try{
             remote.deleteLabel((Integer)key.getKey().getValue());
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcReturn);
+            
+            return rpcReturn;
         }
         setFieldsInRPC(rpcReturn, new LabelDO());
         return rpcReturn;
@@ -189,11 +218,23 @@ public class LabelService implements AppScreenFormServiceInt {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         LabelDO labelDO = getLabelDOFromRPC(rpcSend);
         Integer labelId = null;
-         try{
-             labelId = remote.updateLabel(labelDO);             
-         }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
-         }
+        List<Exception> exceptionList = remote.validateForUpdate(labelDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcSend);              
+            return rpcSend;
+        } 
+                         
+        try{
+            labelId = (Integer)remote.updateLabel(labelDO);        
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
+            
+            return rpcSend;
+        }
         
          labelDO = remote.getLabel(labelId);
          setFieldsInRPC(rpcReturn, labelDO);
@@ -339,4 +380,16 @@ public class LabelService implements AppScreenFormServiceInt {
 		return null;
 	}
 
+     private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            for (int i=0; i<exceptionList.size();i++) {
+                //if the error is inside the org contacts table
+                 if(exceptionList.get(i) instanceof FieldErrorException)
+                    rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                //if the error is on the entire form
+                else if(exceptionList.get(i) instanceof FormErrorException)
+                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }   
+            rpcSend.status = IForm.INVALID_FORM;
+        }
 }

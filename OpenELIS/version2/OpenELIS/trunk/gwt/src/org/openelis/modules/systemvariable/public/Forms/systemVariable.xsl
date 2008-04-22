@@ -75,8 +75,8 @@
 							  
 <rpc key= "display">
  <number key="{systemVariableMeta:id()}" type="integer" required = "false" />
- <string key="{systemVariableMeta:name()}" required = "true" />
- <string key="{systemVariableMeta:value()}" required = "true" /> 	 
+ <string key="{systemVariableMeta:name()}" required="false"/> <!--required = "true"-->
+ <string key="{systemVariableMeta:value()}" required="false"/> <!--required = "true"--> 	 
 </rpc>
 					   
 <rpc key= "query">     

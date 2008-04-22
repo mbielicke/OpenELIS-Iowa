@@ -6,9 +6,10 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SystemVariableScreen extends OpenELISScreenForm {
+public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener{
 
     private static boolean loaded = false;
     
@@ -56,6 +57,11 @@ public class SystemVariableScreen extends OpenELISScreenForm {
             
            
         }
+    }
+
+    public void onClick(Widget arg0) {
+        // TODO Auto-generated method stub
+        
     }
         
 

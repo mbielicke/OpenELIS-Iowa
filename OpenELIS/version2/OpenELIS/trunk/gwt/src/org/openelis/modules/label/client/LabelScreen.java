@@ -10,9 +10,10 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class LabelScreen extends OpenELISScreenForm {
+public class LabelScreen extends OpenELISScreenForm implements ClickListener {
 
     private static boolean loaded = false;
     private static DataModel printerTypeDropDown ;
@@ -97,6 +98,11 @@ public class LabelScreen extends OpenELISScreenForm {
                   ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
                                                             
               }
+
+    public void onClick(Widget arg0) {
+        // TODO Auto-generated method stub
+        
+    }
       
             
 }

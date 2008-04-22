@@ -38,7 +38,7 @@
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
-<screen id= "Provider" serviceUrl= "OpenElisService"
+<screen id= "Provider" name = "Provider" serviceUrl= "OpenElisService"
 xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd"
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
@@ -122,7 +122,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
      <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
       <panel layout= "vertical" spacing= "0" padding="0" xsi:type= "Panel">
        <widget valign="top">
-        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false">
+        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false" showScroll="true">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -150,19 +150,19 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed" max="80"/>		 
 		</editors>
 		 <fields>
-		  <string required = "true"/>
-		  <string/>
-		  <string/>
-		  <string/>
-		  <string required = "true"/>		  		  
-		  <dropdown/>
-		  <dropdown/>
-		  <string required = "true"/>
-		  <string/>
-		  <string/>
-		  <string/>
-		  <string/>
-		  <string/>	  
+		  <string key = "{providerAddrMeta:location()}" /> <!--required = "true"-->
+		  <string key="{providerAddrMeta:externalId()}"/>
+		  <string key="{providerAddrAddrMeta:multipleUnit()}"/>
+		  <string key="{providerAddrAddrMeta:streetAddress()}"/>
+		  <string key="{providerAddrAddrMeta:city()}" /> <!--required = "true"-->		  		  
+		  <dropdown key="{providerAddrAddrMeta:state()}" /> <!--required = "true"-->
+		  <dropdown key="{providerAddrAddrMeta:country()}" />
+		  <string key="{providerAddrAddrMeta:zipCode()}" /> <!--required = "true"-->
+		  <string key="{providerAddrAddrMeta:workPhone()}"/>
+		  <string key="{providerAddrAddrMeta:homePhone()}"/>
+		  <string key="{providerAddrAddrMeta:cellPhone()}"/>
+		  <string key="{providerAddrAddrMeta:faxPhone()}"/>
+		  <string key="{providerAddrAddrMeta:email()}"/>	  
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
@@ -279,14 +279,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							  
 <rpc key= "display">	
   <number key="{providerMeta:id()}" type="integer" required="false"/>				
-  <string key="{providerMeta:lastName()}"  required="false"/>
+  <string key="{providerMeta:lastName()}"  required="false"/> <!--required = "true"-->
   <string key="{providerMeta:firstName()}"  required="false"/> 
   <string key="{providerMeta:npi()}" required="false"/>
   <string key="{providerMeta:middleName()}"  required="false"/>	
   <table key="providerAddressTable"/>						      		       
   <string key="{providerNoteMeta:subject()}" required="false"/>
   <string key="{providerNoteMeta:text()}" required="false"/>
-  <dropdown key="{providerMeta:type()}" type="integer" required="false"/>
+  <dropdown key="{providerMeta:type()}" type="integer" required="false"/> <!--required = "true"-->
 </rpc>
 					   
 <rpc key= "query">     

@@ -156,10 +156,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
                          
     }
     
-    public void add(){                       
-       if(key!=null) 
-        key.setObject(0, null);
-                
+    public void add(){                                       
        
         removeContactButton.changeState(AppButton.UNPRESSED);
         
@@ -397,64 +394,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
                                  
     } 
     
-   public boolean validate(){
-       //TableController provAddController = (TableController)(((TableWidget)getWidget("providerAddressTable")).controller);
-       provAddController.unselect(-1);
-       boolean noErrors =  true;
-       
-       for(int iter = 0; iter < provAddController.model.numRows(); iter++){
-           StringField locfield = (StringField)provAddController.model.getFieldAt(iter, 0);  
-           StringField cityfield = (StringField)provAddController.model.getFieldAt(iter, 4);
-           DropDownField stateField = (DropDownField)provAddController.model.getFieldAt(iter, 5);
-           StringField zipField = (StringField)provAddController.model.getFieldAt(iter, 7);
-           
-           if(locfield.getValue()!=null){
-               if(("").equals(locfield.getValue().toString().trim())){
-                   locfield.addError("Field is required");
-               }  
-             }else{
-                 locfield.addError("Field is required");
-             }
-           
-           if(!(locfield.getErrors().length==0)){
-               noErrors = false;                   
-           }
-                     
-           if(cityfield.getValue()!=null){
-               if(("").equals(cityfield.getValue().toString().trim())){
-                   cityfield.addError("Field is required");
-                   noErrors = false; 
-               }  
-             }else{
-                 cityfield.addError("Field is required");
-                 noErrors = false; 
-             }
-           
-         if(("").equals(stateField.getValue())){
-             noErrors = false;
-             stateField.addError("Field is required");
-         }
-                     
-           
-           if(zipField.getValue()!=null){
-               if(("").equals(zipField.getValue().toString().trim())){
-                   zipField.addError("Field is required");
-                   noErrors = false; 
-               }  
-             }else{
-                 zipField.addError("Field is required");
-                 noErrors = false; 
-             }
-                     
-       }          
-              
-       if(!noErrors){           
-           return false;
-       }
- 
-       
-       return true; 
-   }
+
    
    private void fillNotesModel(){  
        

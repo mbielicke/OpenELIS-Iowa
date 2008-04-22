@@ -15,6 +15,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
@@ -101,16 +102,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)catId.getValue());
         
-        List exceptionList = remote.validateForAdd(categoryDO,dictDOList);
+        List<Exception> exceptionList = remote.validateForAdd(categoryDO,dictDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            rpcSend.status = IForm.INVALID_FORM;
+            setRpcErrors(exceptionList, dictEntryTable, rpcSend);   
+            //rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
         
@@ -118,10 +114,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
        try{
           categoryId = remote.updateCategory(categoryDO, dictDOList);          
        }catch(Exception ex){
-           if(ex instanceof FieldErrorException)
-               rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
-               else if(ex instanceof FormErrorException)
-                   rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+           exceptionList = new ArrayList<Exception>();
+           exceptionList.add(ex);
+           
+           setRpcErrors(exceptionList, dictEntryTable, rpcSend);
            
            return rpcSend;
        }
@@ -244,26 +240,22 @@ public class DictionaryService implements AppScreenFormServiceInt,
         TableModel dictEntryTable = (TableModel)rpcSend.getField("dictEntTable").getValue();
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)categoryId.getValue());
-        List exceptionList = remote.validateForAdd(categoryDO,dictDOList);
+        List<Exception> exceptionList = remote.validateForAdd(categoryDO,dictDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            rpcSend.status = IForm.INVALID_FORM;
+            setRpcErrors(exceptionList, dictEntryTable, rpcSend);   
+            //rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
-                
+        
+        
        try{
            remote.updateCategory(categoryDO, dictDOList);          
        }catch(Exception ex){
-           if(ex instanceof FieldErrorException)
-               rpcSend.getField(((FieldErrorException)ex).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)ex).getMessage()));
-               else if(ex instanceof FormErrorException)
-                   rpcSend.addError(openElisConstants.getString(((FormErrorException)ex).getMessage()));
+           exceptionList = new ArrayList<Exception>();
+           exceptionList.add(ex);
+           
+           setRpcErrors(exceptionList, dictEntryTable, rpcSend);
            
            return rpcSend;
        }
@@ -570,8 +562,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-           dictDO.setSystemName(sysName);           
-           dictDO.setEntry(entry);  
+           dictDO.setSystemName(sysName.trim());           
+           dictDO.setEntry(entry.trim());  
            NumberField id = (NumberField)row.getHidden("id");                 
          
             StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
@@ -611,4 +603,21 @@ public class DictionaryService implements AppScreenFormServiceInt,
 		return null;
 	} 
     
+    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+        //we need to get the keys and look them up in the resource bundle for internationalization
+        for (int i=0; i<exceptionList.size();i++) {
+            //if the error is inside the org contacts table
+            if(exceptionList.get(i) instanceof TableFieldErrorException){
+                TableRow row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                row.getColumn(contactsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
+                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the field
+            }else if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the entire form
+            else if(exceptionList.get(i) instanceof FormErrorException)
+                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+        }   
+        rpcSend.status = IForm.INVALID_FORM;
+    }
 }

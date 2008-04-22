@@ -22,7 +22,7 @@
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
-<screen id= "Label" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id= "Label" name = "Label" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
   <aToZ height="200px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">   
@@ -100,10 +100,10 @@
 							  
 <rpc key= "display">
  <number key="{labelMeta:id()}" type="integer" required = "false" />
- <string key="{labelMeta:name()}" max = "20" required = "true" /> 
+ <string key="{labelMeta:name()}" max = "20" required="false"/> <!--required = "true"--> 
  <string key="{labelMeta:description()}" max = "60" required = "false" /> 	 
- <dropdown key="{labelMeta:printerType()}" type="integer" required = "true" />
- <dropdown key="{labelMeta:scriptlet()}" type="integer" required = "true" />
+ <dropdown key="{labelMeta:printerType()}" type="integer" required="false"/> <!--required = "true"-->
+ <dropdown key="{labelMeta:scriptlet()}" type="integer" required="false"/> <!--required = "true"-->
 </rpc>
 					   
 <rpc key= "query">     

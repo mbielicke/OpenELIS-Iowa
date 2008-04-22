@@ -125,13 +125,13 @@
 							  
 <rpc key= "display">
  <number key="{qaEventMeta:id()}" type="integer" required = "false" />
- <string key="{qaEventMeta:name()}" max = "20" required = "false" />
+ <string key="{qaEventMeta:name()}" max = "20" required="false"/> <!--required = "true"-->
  <number key="{qaEventMeta:reportingSequence()}"  type="integer" required = "false" />
  <string key="{qaEventMeta:description()}" max = "60" required = "false" /> 	 
  <check key= "{qaEventMeta:isBillable()}" required = "false" />
- <string key="{qaEventMeta:reportingText()}" required = "false" />
+ <string key="{qaEventMeta:reportingText()}" required="false"/> <!--required = "true"-->
  <dropdown key="{qaEventMeta:testId()}" type="integer" required = "false" />
- <dropdown key="{qaEventMeta:type()}" type="integer" required = "false" />
+ <dropdown key="{qaEventMeta:type()}" type="integer" required="false"/> <!--required = "true"-->
 </rpc>
 					   
 <rpc key= "query">     

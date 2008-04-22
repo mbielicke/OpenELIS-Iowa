@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
@@ -67,10 +70,21 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpcSend);
         Integer svId = null;
+        List<Exception> exceptionList = remote.validateforAdd(sysVarDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcSend);   
+            return rpcSend;
+        }
         try{ 
          svId = remote.updateSystemVariable(sysVarDO);
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
+            
+            return rpcSend;
         } 
         
         sysVarDO = remote.getSystemVariable((Integer)svId);
@@ -200,11 +214,22 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpcSend);
         Integer svId = null;
+        List<Exception> exceptionList = remote.validateforUpdate(sysVarDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcSend);   
+            return rpcSend;
+        }
         try{ 
          svId = remote.updateSystemVariable(sysVarDO);
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
-        } 
+        }catch(Exception e){
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
+            
+            return rpcSend;
+        }
         
         sysVarDO = remote.getSystemVariable((Integer)svId);
         setFieldsInRPC(rpcReturn, sysVarDO);
@@ -258,4 +283,16 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 		return null;
 	}
 
+    private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+        //we need to get the keys and look them up in the resource bundle for internationalization
+        for (int i=0; i<exceptionList.size();i++) {
+            //if the error is inside the org contacts table
+             if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the entire form
+            else if(exceptionList.get(i) instanceof FormErrorException)
+                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+        }   
+        rpcSend.status = IForm.INVALID_FORM;
+    }
 }

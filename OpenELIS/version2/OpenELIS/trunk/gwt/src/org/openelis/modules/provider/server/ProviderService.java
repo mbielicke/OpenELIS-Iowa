@@ -16,6 +16,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -122,26 +123,21 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
         
-        List exceptionList = remote.validateForAdd(providerDO, provAddDOList);
+        List<Exception> exceptionList = remote.validateForAdd(providerDO, provAddDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            rpcSend.status = IForm.INVALID_FORM;
+            setRpcErrors(exceptionList, addressTable, rpcSend);   
+            //rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
                          
         try{
             providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
         }catch(Exception e){
-            if(e instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-                else if(e instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, addressTable, rpcSend);
             
             return rpcSend;
         }
@@ -273,15 +269,10 @@ public class ProviderService implements AppScreenFormServiceInt{
         providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
         providerNote.setIsExternal("Y");
         
-        List exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
+        List<Exception> exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
+            setRpcErrors(exceptionList, addressTable, rpcSend);   
             rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
@@ -289,10 +280,10 @@ public class ProviderService implements AppScreenFormServiceInt{
         try{
             providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
         }catch(Exception e){
-            if(e instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-                else if(e instanceof FormErrorException)
-                    rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, addressTable, rpcSend);
             
             return rpcSend;
         }
@@ -659,4 +650,22 @@ public class ProviderService implements AppScreenFormServiceInt{
 		// TODO Auto-generated method stub
 		return null;
 	}
+    
+    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+        //we need to get the keys and look them up in the resource bundle for internationalization
+        for (int i=0; i<exceptionList.size();i++) {
+            //if the error is inside the org contacts table
+            if(exceptionList.get(i) instanceof TableFieldErrorException){
+                TableRow row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                row.getColumn(contactsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
+                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the field
+            }else if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the entire form
+            else if(exceptionList.get(i) instanceof FormErrorException)
+                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+        }   
+        rpcSend.status = IForm.INVALID_FORM;
+    }
 }
