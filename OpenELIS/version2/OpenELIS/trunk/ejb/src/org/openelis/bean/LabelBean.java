@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,7 +19,10 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.LabelDO;
 import org.openelis.entity.Label;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.LabelMeta;
 import org.openelis.remote.LabelRemote;
@@ -132,8 +136,11 @@ public class LabelBean implements LabelRemote {
             Integer labelReferenceId = (Integer)query.getSingleResult();
             
             Label label = null;
-            
-            validate(labelDO);
+            List<Exception> exceptionList = new ArrayList<Exception>();
+            validateLabel(labelDO,exceptionList);
+            if(exceptionList.size() > 0){
+                throw (RPCException)exceptionList.get(0);
+            } 
             
             if(labelDO.getId()==null){
                 label = new Label();            
@@ -164,42 +171,35 @@ public class LabelBean implements LabelRemote {
         return scriptlets;
     }
     
-    public void validate(LabelDO labelDO)throws Exception{
-        if(labelDO.getName()==null){            
-            throw new Exception("Name must be specified for a Label");   
-          }else {
-              if(("").equals(labelDO.getName().trim())){          
-               throw new Exception("Name must be specified for a Label");                 
-           }
+    public void validateLabel(LabelDO labelDO, List<Exception> exceptionList){
+
+         if("".equals(labelDO.getName())){          
+             exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.NAME));                 
+
           }                       
                                 
           if(labelDO.getPrinterType()==null){              
-              throw new Exception("Printer Type must be specified for a Label");              
+              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.PRINTER_TYPE));          
           } 
           
           if(labelDO.getScriptlet()==null){              
-              throw new Exception("A Scriptlet must be specified for a Label"); 
-          }
+              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.SCRIPTLET));
+         }
+                   
+          
+          
     }    
 
     @RolesAllowed("label-delete")
     public void deleteLabel(Integer labelId) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
-        Label label = null;
-        List <Object[]> tests  = null;
-        try{
-            Query query = manager.createNamedQuery("getReferringTests");
-            query.setParameter("id", labelId);
-            tests = query.getResultList();
-        }catch(NoResultException nrex){
-            nrex.printStackTrace();
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateForDelete(labelId);
+        if(exceptionList.size() > 0){
+            throw (RPCException)exceptionList.get(0);
         }
-                
-         if(tests!=null){             
-            if(tests.size() > 0){ 
-             throw new Exception("This label cannot be deleted because it is linked to one or more tests.");
-            } 
-         else {
+        Label label = null;
+        
              label = manager.find(Label.class, labelId);
              try{
                  manager.remove(label);
@@ -208,6 +208,39 @@ public class LabelBean implements LabelRemote {
                  throw e;
              }
          }
-       }
+
+
+    public List<Exception> validateForAdd(LabelDO labelDO) {
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateLabel(labelDO,exceptionList);
+        return exceptionList;
     }
+
+    public List<Exception> validateForUpdate(LabelDO labelDO) {
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateLabel(labelDO,exceptionList);
+        return exceptionList;
+    }
+    
+    public List<Exception> validateForDelete(Integer labelId){
+        List<Exception> exceptionList = new ArrayList<Exception>();        
+        List <Object[]> tests  = null;
+        try{               
+            Query query = manager.createNamedQuery("getReferringTests");
+            query.setParameter("id", labelId);
+            tests = query.getResultList();
+        }catch(NoResultException nrex){
+            nrex.printStackTrace();
+        }
+        
+       
+        if(tests!=null){  //done to make sure that if an exception was thrown during the execution of the above query 
+                          //then the call tests.size() doesn't make a NullPointerException be thrown            
+            if(tests.size() > 0){ 
+                exceptionList.add(new FormErrorException("labelDeleteException"));
+            }
+         }
+        return exceptionList;
+     }
+    
 }

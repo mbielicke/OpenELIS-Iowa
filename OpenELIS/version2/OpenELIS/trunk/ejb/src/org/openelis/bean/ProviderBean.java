@@ -26,6 +26,7 @@ import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.ProviderAddressAddressMeta;
 import org.openelis.meta.ProviderAddressMeta;
@@ -191,13 +192,13 @@ public class ProviderBean implements ProviderRemote {
             
             ArrayList<ProviderAddressDO> updateList = null;
             ArrayList<ProviderAddressDO> deleteList = null;
-            
+            int index = 0 ;
             for (Iterator iter = addresses.iterator(); iter.hasNext();) {
                 ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();                
                 boolean checkForUpdate =  false;
                 
                 exceptionList = new ArrayList<Exception>();
-                validateProviderAddress(provAddDO,exceptionList);
+                validateProviderAddress(provAddDO,index,exceptionList);
                 if(exceptionList.size() > 0){
                     throw (RPCException)exceptionList.get(0);
                 }
@@ -223,7 +224,7 @@ public class ProviderBean implements ProviderRemote {
                  } 
                   updateList.add(provAddDO);                                                         
                 } 
-              
+              index++;
             }
             
             provider.setFirstName(providerDO.getFirstName());
@@ -345,10 +346,22 @@ public class ProviderBean implements ProviderRemote {
        return exceptionList;
     }
    
-   private List validateProviderAddress(ProviderAddressDO provAddDO,List<Exception> exceptionList){
-       String location = provAddDO.getLocation();                 
-       if("".equals(location)){            
-           exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderAddressMeta.LOCATION));
+   private List validateProviderAddress(ProviderAddressDO provAddDO,int rowIndex,List<Exception> exceptionList){
+       String location = provAddDO.getLocation();  
+       String city = provAddDO.getAddressDO().getCity();
+       String state = provAddDO.getAddressDO().getState();
+       String zipcode = provAddDO.getAddressDO().getZipCode();      
+       if(location == null || "".equals(location)){            
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProviderAddressMeta.LOCATION));
+         }
+       if(state == null || "".equals(state)){            
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProviderAddressAddressMeta.STATE));
+         }
+       if(city == null || "".equals(city)){            
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProviderAddressAddressMeta.CITY));
+         }
+       if(zipcode == null || "".equals(zipcode)){            
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProviderAddressAddressMeta.ZIP_CODE));
          }
        
        return  exceptionList;
@@ -357,10 +370,9 @@ public class ProviderBean implements ProviderRemote {
      public List validateForAdd(ProviderDO providerDO, List<ProviderAddressDO> addresses) {
          List<Exception> exceptionList = new ArrayList<Exception>();
          validateProvider(providerDO,exceptionList);
-        
          for(int iter = 0; iter < addresses.size(); iter++){
              ProviderAddressDO provAddDO = (ProviderAddressDO)addresses.get(iter);
-             validateProviderAddress(provAddDO, exceptionList);
+             validateProviderAddress(provAddDO,iter, exceptionList);
          }
          return exceptionList;
      }
@@ -371,7 +383,7 @@ public class ProviderBean implements ProviderRemote {
        
         for(int iter = 0; iter < addresses.size(); iter++){
             ProviderAddressDO provAddDO = (ProviderAddressDO)addresses.get(iter);
-            validateProviderAddress(provAddDO, exceptionList);
+            validateProviderAddress(provAddDO,iter, exceptionList);
         }
         return exceptionList;
      } 
