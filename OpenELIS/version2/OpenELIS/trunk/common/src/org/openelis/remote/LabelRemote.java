@@ -27,7 +27,11 @@ public interface LabelRemote {
     
     public List<Object[]> getScriptlets();
     
-    public void validate(LabelDO labelDO)throws Exception;
+    public List<Exception> validateForAdd(LabelDO labelDO);
+    
+    public List<Exception> validateForUpdate(LabelDO labelDO);
+    
+    public List<Exception> validateForDelete(Integer labelId);
     
     public void deleteLabel(Integer labelId) throws Exception;
 }
