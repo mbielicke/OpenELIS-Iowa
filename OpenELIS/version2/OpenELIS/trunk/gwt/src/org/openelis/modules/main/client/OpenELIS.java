@@ -1,6 +1,9 @@
 package org.openelis.modules.main.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -63,7 +66,7 @@ import org.openelis.gwt.widget.table.TableTextBox;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class OpenELIS implements EntryPoint {
+public class OpenELIS implements EntryPoint, EventListener {
   /**
    * This is the entry point method.
    */
@@ -657,6 +660,11 @@ public class OpenELIS implements EntryPoint {
                                 }
                            
       });
+  }
+
+  public void onBrowserEvent(Event event) {
+      Window.alert("module on browser");
+      DOM.eventPreventDefault(event);
   }
   
 }
