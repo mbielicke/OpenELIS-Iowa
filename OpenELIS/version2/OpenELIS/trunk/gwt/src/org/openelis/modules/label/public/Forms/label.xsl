@@ -100,10 +100,10 @@
 							  
 <rpc key= "display">
  <number key="{labelMeta:id()}" type="integer" required = "false" />
- <string key="{labelMeta:name()}" max = "20" required="false"/> <!--required = "true"--> 
+ <string key="{labelMeta:name()}" max = "20" required = "true"/> 
  <string key="{labelMeta:description()}" max = "60" required = "false" /> 	 
- <dropdown key="{labelMeta:printerType()}" type="integer" required="false"/> <!--required = "true"-->
- <dropdown key="{labelMeta:scriptlet()}" type="integer" required="false"/> <!--required = "true"-->
+ <dropdown key="{labelMeta:printerType()}" type="integer" required = "true"/>
+ <dropdown key="{labelMeta:scriptlet()}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     

@@ -244,7 +244,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
             setRpcErrors(exceptionList, dictEntryTable, rpcSend);   
-            //rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
         
@@ -603,13 +602,13 @@ public class DictionaryService implements AppScreenFormServiceInt,
 		return null;
 	} 
     
-    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+    private void setRpcErrors(List exceptionList, TableModel entriesTable, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
-            //if the error is inside the org contacts table
+            //if the error is inside the entries table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
-                TableRow row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                row.getColumn(contactsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
+                TableRow row = entriesTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                row.getColumn(entriesTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
                                                                         .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)

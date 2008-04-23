@@ -1,7 +1,7 @@
 package org.openelis.modules.provider.client;
 
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
@@ -9,7 +9,7 @@ public class ProviderAddressesTable implements TableManager {
 
     public boolean disableRows = false;
     
-    //private Provider providerForm;
+    private ProviderScreen providerForm;
     
     public boolean action(int row, int col, TableController controller) {
         // TODO Auto-generated method stub
@@ -34,11 +34,11 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        //if(providerForm.bpanel.state == FormInt.ADD || providerForm.bpanel.state == FormInt.UPDATE)      
-        if(disableRows){
-            return false;
+        if(providerForm.state == FormInt.ADD || providerForm.state == FormInt.UPDATE){      
+       // if(disableRows){
+            return true;
         } 
-        return true;
+        return false;
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {                
@@ -81,7 +81,7 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public void setProviderForm(ProviderScreen providerForm) {
-        //this.providerForm = providerForm;
+       this.providerForm = providerForm;
     }
 
 

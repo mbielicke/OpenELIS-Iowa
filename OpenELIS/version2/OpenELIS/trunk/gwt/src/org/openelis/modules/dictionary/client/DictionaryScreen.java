@@ -75,10 +75,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
         dictEntryController.setAutoAdd(true);
 
-        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
-        dictEntManager.resetLists();
+        //DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
+        //dictEntManager.resetLists();
 
-        dictEntManager.createLists(dictEntryController);
+        //dictEntManager.createLists(dictEntryController);
         
         
         super.up();
