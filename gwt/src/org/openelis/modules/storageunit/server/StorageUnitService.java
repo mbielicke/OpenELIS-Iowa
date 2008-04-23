@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.StorageUnitDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCDeleteException;
@@ -69,9 +72,25 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		// build the storage unit DO from the form
 		newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
 
+		//validate the fields on the backend
+		List exceptionList = remote.validateForAdd(newStorageUnitDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		} 
+		
 		// send the changes to the database
-		Integer storageUnitId = (Integer) remote
-				.updateStorageUnit(newStorageUnitDO);
+		Integer storageUnitId;
+		try{
+			storageUnitId = (Integer) remote.updateStorageUnit(newStorageUnitDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
 
 		// lookup the changes from the database and build the rpc
 		StorageUnitDO storageDO = remote.getStorageUnit(storageUnitId);
@@ -195,9 +214,25 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		// build the DO from the form
 		newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
 
+		//validate the fields on the backend
+		List exceptionList = remote.validateForUpdate(newStorageUnitDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		} 
+		
 		// send the changes to the database
-		remote.updateStorageUnit(newStorageUnitDO);
-
+		try{
+			remote.updateStorageUnit(newStorageUnitDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
+		
 		// lookup the changes from the database and build the rpc
 		StorageUnitDO storageUnitDO = remote.getStorageUnit(newStorageUnitDO
 				.getId());
@@ -211,19 +246,26 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn)
 			throws RPCException {
 		// remote interface to call the storage unit bean
-		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
-				.lookup("openelis/StorageUnitBean/remote");
+		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
+		
+		//validate the fields on the backend
+		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcReturn);
+			
+			return rpcReturn;
+		} 
 
 		try {
 			remote.deleteStorageUnit((Integer) key.getKey().getValue());
 
 		} catch (Exception e) {
-			if (e instanceof RPCDeleteException) {
-				throw new RPCDeleteException(openElisConstants
-						.getString("storageUnitDeleteException"));
-			} else
-				throw new RPCException(e.getMessage());
-		}
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcReturn);
+			return rpcReturn;
+		}	
 
 		setFieldsInRPC(rpcReturn, new StorageUnitDO());
 
@@ -283,7 +325,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		newStorageUnitDO.setId((Integer) rpcSend
 				.getFieldValue(StorageUnitMeta.ID));
 		newStorageUnitDO.setCategory(((String) rpcSend
-				.getFieldValue(StorageUnitMeta.CATEGORY)).trim());
+				.getFieldValue(StorageUnitMeta.CATEGORY)));
 		newStorageUnitDO.setDescription(((String) rpcSend
 				.getFieldValue(StorageUnitMeta.DESCRIPTION)).trim());
 		newStorageUnitDO.setIsSingular(((String) rpcSend
@@ -392,6 +434,17 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		return modelField;
 	}
 
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+		//we need to get the keys and look them up in the resource bundle for internationalization
+		for (int i=0; i<exceptionList.size();i++) {
+			if(exceptionList.get(i) instanceof FieldErrorException)
+			rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			else if(exceptionList.get(i) instanceof FormErrorException)
+				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+		}	
+		rpcSend.status = IForm.INVALID_FORM;
+    }
+	
 	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;

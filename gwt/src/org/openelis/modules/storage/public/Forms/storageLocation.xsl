@@ -129,9 +129,9 @@
 											<check/>
 										</editors>
 										<fields>
-											<dropdown/>
-											<string/>
-											<check/>
+											<dropdown key="{storageLocationChildStorageUnitMeta:description()}" required="true"/>
+											<string key="{storageLocationChildMeta:location()}" required="true"/>
+											<check key="{storageLocationChildMeta:isAvailable()}">Y</check>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false ,false</filters>
@@ -175,7 +175,7 @@
 	<rpc key="display">
 	<number key="{storageLocationMeta:id()}" required="false" type="integer"/>
     <string key="{storageLocationMeta:name()}" max="20" required="true"/>
-    <dropdown  key="{storageLocationStorageUnitMeta:description()}" type="integer" required="true"/> 
+    <dropdown  key="{storageLocationStorageUnitMeta:description()}" type="integer" required="true"/>
     <string key="{storageLocationMeta:location()}" max="80" required="true"/>
     <check key="{storageLocationMeta:isAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>

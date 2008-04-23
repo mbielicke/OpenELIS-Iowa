@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.TestTrailerDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
-import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -50,38 +52,64 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 	}
 
 	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-//		remote interface to call the testTrailer bean
+		//remote interface to call the testTrailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		TestTrailerDO newTestTrailerDO = new TestTrailerDO();
 		
-//		build the testTrailer DO from the form
+		//build the testTrailer DO from the form
 		newTestTrailerDO = getTestTrailerDOFromRPC(rpcSend);
 				
-		//send the changes to the database
-		Integer testTrailerId = (Integer)remote.updateTestTrailer(newTestTrailerDO);
+		//validate the fields on the backend
+		List exceptionList = remote.validateForAdd(newTestTrailerDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		} 
 		
-//		lookup the changes from the database and build the rpc
+		//send the changes to the database
+		Integer testTrailerId;
+		try{
+			testTrailerId = (Integer)remote.updateTestTrailer(newTestTrailerDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
+		
+		//lookup the changes from the database and build the rpc
 		TestTrailerDO testTrailerDO = remote.getTestTrailer(testTrailerId);
 
-//		set the fields in the RPC
+		//set the fields in the RPC
 		setFieldsInRPC(rpcReturn, testTrailerDO);
 	
 		return rpcReturn;
 	}
 
 	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-//		remote interface to call the test trailer bean
+		//remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
+
+		//validate the fields on the backend
+		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcReturn);
+			
+			return rpcReturn;
+		} 
 		
 		try {
 			remote.deleteTestTrailer((Integer)key.getKey().getValue());
 			
 		} catch (Exception e) {
-			if(e instanceof RPCDeleteException){
-				throw new RPCDeleteException("");
-			}else
-			throw new RPCException(e.getMessage());
-		}	
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcReturn);
+			return rpcReturn;
+		}
 		
 		setFieldsInRPC(rpcReturn, new TestTrailerDO());
 		
@@ -179,20 +207,36 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 	}
 
 	public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-//		remote interface to call the test trailer bean
+		//remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		TestTrailerDO newTestTrailerDO = new TestTrailerDO();
 		
 		//build the DO from the form
 		newTestTrailerDO = getTestTrailerDOFromRPC(rpcSend);
 		
-//		send the changes to the database
-		remote.updateTestTrailer(newTestTrailerDO);
+		//validate the fields on the backend
+		List exceptionList = remote.validateForUpdate(newTestTrailerDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		}
+		
+		//send the changes to the database
+		try{
+			remote.updateTestTrailer(newTestTrailerDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
 		
 		//lookup the changes from the database and build the rpc
 		TestTrailerDO testTrailerDO = remote.getTestTrailer(newTestTrailerDO.getId());
 
-//		set the fields in the RPC
+		//set the fields in the RPC
 		setFieldsInRPC(rpcReturn, testTrailerDO);
         
 		return rpcReturn;
@@ -253,6 +297,17 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+		//we need to get the keys and look them up in the resource bundle for internationalization
+		for (int i=0; i<exceptionList.size();i++) {
+			if(exceptionList.get(i) instanceof FieldErrorException)
+			rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			else if(exceptionList.get(i) instanceof FormErrorException)
+				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+		}	
+		rpcSend.status = IForm.INVALID_FORM;
+    }
 
 	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
 		// TODO Auto-generated method stub
