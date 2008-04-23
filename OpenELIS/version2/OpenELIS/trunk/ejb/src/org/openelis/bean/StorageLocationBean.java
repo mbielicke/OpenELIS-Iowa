@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,10 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.StorageLocationChildMeta;
 import org.openelis.meta.StorageLocationChildStorageUnitMeta;
@@ -81,33 +85,42 @@ public class StorageLocationBean implements StorageLocationRemote{
 
     @RolesAllowed("storagelocation-delete")
 	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
+    	Query lockQuery = manager.createNamedQuery("getTableId");
+		lockQuery.setParameter("name", "storage_location");
+		Integer storageLocTableId = (Integer)lockQuery.getSingleResult();
+        lockBean.getLock(storageLocTableId, StorageLocId);
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
 
-		//delete the records
-		try {
-				//delete the parent record
-            	storageLocation = manager.find(StorageLocation.class, StorageLocId);
-            	if(storageLocation != null)
-            		manager.remove(storageLocation);
+		//validate the storage loc record
+        List exceptionList = new ArrayList();
+        exceptionList = validateForDelete(StorageLocId);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
+        }
+        
+		//delete the records				
+        //delete the parent record
+        storageLocation = manager.find(StorageLocation.class, StorageLocId);
+        if(storageLocation != null)
+        manager.remove(storageLocation);
             	
-            	//find the child records
-            	List childStorageLocs = getStorageLocChildren(StorageLocId);
+        //find the child records
+        List childStorageLocs = getStorageLocChildren(StorageLocId);
             	
-            	//delete the child records if they exist
-            	Iterator children = childStorageLocs.iterator();
-            	while(children.hasNext()){
-            		StorageLocationDO childDO = (StorageLocationDO) children.next();
-            		StorageLocation child = null;
-            		child = manager.find(StorageLocation.class, childDO.getId());
-            		
-            		if(child != null)
-            			manager.remove(child);           		
-            	}
-            	
-		} catch (Exception e) {
-            e.printStackTrace();
-        }			
+        //delete the child records if they exist
+        Iterator children = childStorageLocs.iterator();
+        while(children.hasNext()){
+        	StorageLocationDO childDO = (StorageLocationDO) children.next();
+        	StorageLocation child = null;
+        	child = manager.find(StorageLocation.class, childDO.getId());
+         		
+        	if(child != null)
+        		manager.remove(child);           		
+        }
+           
+        lockBean.giveUpLock(storageLocTableId, StorageLocId);
 	}
 
 	public StorageLocationDO getStorageLoc(Integer StorageId) {
@@ -199,56 +212,65 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 
     @RolesAllowed("storagelocation-update")
-	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) {
+	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
 		
-		try {
-            if (storageDO.getId() == null)
-            	storageLocation = new StorageLocation();
-            else
-            	storageLocation = manager.find(StorageLocation.class, storageDO.getId());
-            
-	         storageLocation.setIsAvailable(storageDO.getIsAvailable());
-	         storageLocation.setLocation(storageDO.getLocation());
-	         storageLocation.setName(storageDO.getName());
-	         storageLocation.setStorageUnitId(storageDO.getStorageUnitId());
-	         
-	         if (storageLocation.getId() == null) {
-		        	manager.persist(storageLocation);
-	         }
-	         
-	//       update the children
-	         int sortOrder=1;
-	         for (Iterator childrenItr = storageLocationChildren.iterator(); childrenItr.hasNext();) {
-	        	 StorageLocationDO childDO = (StorageLocationDO) childrenItr.next();
-	        	 StorageLocation childStorageLoc = null;
-		            
-	        	 if (childDO.getId() == null)
-	        		 childStorageLoc = new StorageLocation();
-	        	 else
-		          	childStorageLoc = manager.find(StorageLocation.class, childDO.getId());
-	
-	        	 if(childDO.getDelete() && childStorageLoc.getId() != null){
-		           	//delete the child record from the database
-		           	manager.remove(childStorageLoc);
-		            	
-		         }else{
-		        	 childStorageLoc.setSortOrder(sortOrder);
-			         childStorageLoc.setLocation(childDO.getLocation());
-			         childStorageLoc.setParentStorageLocationId(storageLocation.getId());
-			         childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());
-			         childStorageLoc.setIsAvailable(childDO.getIsAvailable());
-					            
-			         if (childStorageLoc.getId() == null) {
-			        	 manager.persist(childStorageLoc);
-			         }
-					 sortOrder++;
-		         }
-			}         
-		} catch (Exception e) {
-            e.printStackTrace();
+		//validate the storage loc record
+        List exceptionList = new ArrayList();
+        validateStorageLocation(storageDO, exceptionList);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
         }
+        
+        if (storageDO.getId() == null)
+           	storageLocation = new StorageLocation();
+        else
+           	storageLocation = manager.find(StorageLocation.class, storageDO.getId());
+            
+	    storageLocation.setIsAvailable(storageDO.getIsAvailable());
+	    storageLocation.setLocation(storageDO.getLocation());
+	    storageLocation.setName(storageDO.getName());
+	    storageLocation.setStorageUnitId(storageDO.getStorageUnitId());
+	         
+	    if (storageLocation.getId() == null) {
+		  	manager.persist(storageLocation);
+	    }
+	         
+	    //update the children
+	    int sortOrder=1;
+	    for (int i=0; i<storageLocationChildren.size();i++) {
+	      	 StorageLocationDO childDO = (StorageLocationDO) storageLocationChildren.get(i);
+	      	 StorageLocation childStorageLoc = null;
+		            
+	      	 //validate the child storage loc record
+	         exceptionList = new ArrayList();
+	         validateChildStorageLocation(childDO, i, exceptionList);
+	         if(exceptionList.size() > 0){
+	        	 throw (RPCException)exceptionList.get(0);
+	         }
+	            
+		    if (childDO.getId() == null)
+		    	childStorageLoc = new StorageLocation();
+		    else
+		    	childStorageLoc = manager.find(StorageLocation.class, childDO.getId());
+		
+		    if(childDO.getDelete() && childStorageLoc.getId() != null){
+		    	//delete the child record from the database
+			    manager.remove(childStorageLoc);        	
+		    }else{
+		    	childStorageLoc.setSortOrder(sortOrder);
+				childStorageLoc.setLocation(childDO.getLocation());
+				childStorageLoc.setParentStorageLocationId(storageLocation.getId());
+				childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());
+				childStorageLoc.setIsAvailable(childDO.getIsAvailable());
+						            
+				if (childStorageLoc.getId() == null) {
+					manager.persist(childStorageLoc);
+				}
+				sortOrder++;
+		    }
+		}
             
 		return storageLocation.getId();
 	}
@@ -257,5 +279,82 @@ public class StorageLocationBean implements StorageLocationRemote{
 		Query query = manager.createNamedQuery("getStorageLocationByName");
 		query.setParameter("name", name);
 		return (Integer) query.getSingleResult();
+	}
+
+	public List validateForAdd(StorageLocationDO storageLocationDO, List childLocs) {
+		List exceptionList = new ArrayList();
+		
+		validateStorageLocation(storageLocationDO, exceptionList);
+		
+		for(int i=0; i<childLocs.size();i++){			
+			StorageLocationDO childDO = (StorageLocationDO) childLocs.get(i);
+			
+			validateChildStorageLocation(childDO, i, exceptionList);
+		}
+		
+		return exceptionList;
+	}
+
+	public List validateForDelete(Integer storageLocationId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List validateForUpdate(StorageLocationDO storageLocationDO, List childLocs) {
+		List exceptionList = new ArrayList();
+		
+		validateStorageLocation(storageLocationDO, exceptionList);
+		
+		for(int i=0; i<childLocs.size();i++){			
+			StorageLocationDO childDO = (StorageLocationDO) childLocs.get(i);
+			
+			validateChildStorageLocation(childDO, i, exceptionList);
+		}
+		
+		return exceptionList;	
+	}
+	
+	private void validateStorageLocation(StorageLocationDO storageLocationDO, List exceptionList){
+		//name required
+		if(storageLocationDO.getName() == null || "".equals(storageLocationDO.getName())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.NAME));
+		}
+		
+		//no name duplicates
+		Query query = null;
+		//its an add if its null
+		if(storageLocationDO.getId() == null){
+			query = manager.createNamedQuery("storageLocationAddNameCompare");
+			query.setParameter("name", storageLocationDO.getName());
+		}else{
+			query = manager.createNamedQuery("storageLocationUpdateNameCompare");
+			query.setParameter("name", storageLocationDO.getName());
+			query.setParameter("id",storageLocationDO.getId());
+		}
+		
+		if(query.getResultList().size() > 0)
+			exceptionList.add(new FieldErrorException("fieldUniqueException",StorageLocationMeta.NAME));
+		
+		//location required
+		if(storageLocationDO.getLocation() == null || "".equals(storageLocationDO.getLocation())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.LOCATION));
+		}
+		
+		//storage unit required
+		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationStorageUnitMeta.DESCRIPTION));
+		}		
+	}
+	
+	private void validateChildStorageLocation(StorageLocationDO storageLocationDO, int rowIndex, List exceptionList){
+		//storage unit required
+		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationChildStorageUnitMeta.DESCRIPTION));
+		}
+		
+		//location required		
+		if(storageLocationDO.getLocation() == null || "".equals(storageLocationDO.getLocation())){
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationChildMeta.LOCATION));
+		}		
 	}
 }

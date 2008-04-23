@@ -2,7 +2,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -18,16 +17,14 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.Analyte;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCDeleteException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
-import org.openelis.meta.OrganizationMeta;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
@@ -71,19 +68,21 @@ public class AnalyteBean implements AnalyteRemote{
 
     @RolesAllowed("analyte-delete")
 	public void deleteAnalyte(Integer analyteId) throws Exception {
+		Query lockQuery = manager.createNamedQuery("getTableId");
+		lockQuery.setParameter("name", "analyte");
+		Integer analyteTableId = (Integer)lockQuery.getSingleResult();
+        lockBean.getLock(analyteTableId, analyteId);
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
 		
-		//we need to see if this item can be deleted first
-		//FIXME we need to code this when the parent screens are coded
-		Query query = null;
-		query = manager.createNamedQuery("getAnalyteByParentId");
-		query.setParameter("id", analyteId);
-		List linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-			throw new RPCDeleteException();
-		}
+//		validate the analyte record
+        List exceptionList = new ArrayList();
+        exceptionList = validateForDelete(analyteId);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
+        }
+        
 		//then we need to delete it
 		try {
 			analyte = manager.find(Analyte.class, analyteId);
@@ -92,7 +91,9 @@ public class AnalyteBean implements AnalyteRemote{
             	
 		} catch (Exception e) {
             e.printStackTrace();
-        }		
+        }
+		
+		lockBean.giveUpLock(analyteTableId, analyteId);
 	}
 
 	public AnalyteDO getAnalyte(Integer analyteId) {
@@ -170,33 +171,36 @@ public class AnalyteBean implements AnalyteRemote{
 	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
-		
-		try {
-//			analyte reference table id
-        	Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "analyte");
-            Integer analyteReferenceId = (Integer)query.getSingleResult();
-            
-            if (analyteDO.getId() == null)
-            	analyte = new Analyte();
-            else
-            	analyte = manager.find(Analyte.class, analyteDO.getId());
-            
-            analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
-            analyte.setExternalId(analyteDO.getExternalId());
-            analyte.setIsActive(analyteDO.getIsActive());
-            analyte.setName(analyteDO.getName());
-            analyte.setParentAnalyteId(analyteDO.getParentAnalyteId());
-         
-            if (analyte.getId() == null) {
-	        	manager.persist(analyte);
-            }
-         
-            lockBean.giveUpLock(analyteReferenceId,analyte.getId()); 
-		} catch (Exception e) {
-            e.printStackTrace();
+
+		//analyte reference table id
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "analyte");
+        Integer analyteReferenceId = (Integer)query.getSingleResult();
+        
+        //validate the analyte record
+        List exceptionList = new ArrayList();
+        validateAnalyte(analyteDO, exceptionList);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
         }
+        
+        if (analyteDO.getId() == null)
+         	analyte = new Analyte();
+        else
+          	analyte = manager.find(Analyte.class, analyteDO.getId());
             
+        analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
+        analyte.setExternalId(analyteDO.getExternalId());
+        analyte.setIsActive(analyteDO.getIsActive());
+        analyte.setName(analyteDO.getName());
+        analyte.setParentAnalyteId(analyteDO.getParentAnalyteId());
+         
+        if (analyte.getId() == null) {
+	      	manager.persist(analyte);
+        }
+         
+        lockBean.giveUpLock(analyteReferenceId,analyte.getId()); 
+		    
 		return analyte.getId();
 	}
 
@@ -210,56 +214,102 @@ public class AnalyteBean implements AnalyteRemote{
 	public List validateForAdd(AnalyteDO analyteDO) {
 		List exceptionList = new ArrayList();
 		
-		validateAnalyte(analyteDO, exceptionList, false);
+		validateAnalyte(analyteDO, exceptionList);
 		
 		return exceptionList;
 	}
 
 	public List validateForDelete(Integer analyteId) {
-		// TODO Auto-generated method stub
-		return null;
+		List exceptionList = new ArrayList();
+		//make sure no analytes are pointing to this record
+		Query query = null;
+		query = manager.createNamedQuery("getAnalyteByParentId");
+		query.setParameter("id", analyteId);
+		List linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteDeleteException"));
+		}
+		
+		//make sure no results are pointing to this record
+		query = manager.createNamedQuery("getResultByAnalyteId");
+		query.setParameter("id", analyteId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteResultDeleteException"));
+		}
+		
+		//make sure no tests are pointing to this record
+		query = manager.createNamedQuery("getTestAnalyteByAnalyteId");
+		query.setParameter("id", analyteId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteTestDeleteException"));
+		}
+		
+		//make sure no methods are pointing to this record
+		query = manager.createNamedQuery("getMethodAnalyteByAnalyteId");
+		query.setParameter("id", analyteId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteMethodDeleteException"));
+		}
+		
+		//make sure no qcs are pointing to this record
+		query = manager.createNamedQuery("getQCAnalyteByAnalyteId");
+		query.setParameter("id", analyteId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteQCDeleteException"));
+		}
+		
+		//make sure no worksheets are pointing to this record
+		//FIXME table doesnt exist currently so this will have to be added later
+		
+		//make sure no aux fields are pointing to this record
+		query = manager.createNamedQuery("getAuxFieldByAnalyteId");
+		query.setParameter("id", analyteId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("analyteAuxFieldDeleteException"));
+		}
+		
+		return exceptionList;
 	}
 
 	public List validateForUpdate(AnalyteDO analyteDO) {
 		List exceptionList = new ArrayList();
 		
-		validateAnalyte(analyteDO, exceptionList, true);
+		validateAnalyte(analyteDO, exceptionList);
 		
 		return exceptionList;
 	}
 	
-	private void validateAnalyte(AnalyteDO analyteDO, List exceptionList, boolean isUpdate){
-		//name required
-		boolean nameFilledOut = true;
-		boolean nameDifferentThanOriginal = true;
-		
+	private void validateAnalyte(AnalyteDO analyteDO, List exceptionList){
+		//name required	
 		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
 			exceptionList.add(new FieldErrorException("fieldRequiredException",AnalyteMeta.NAME));
-			nameFilledOut = false;
 		}
 		
 		//name not duplicate
-		//need to make sure to take update into account...old name versus new name...
-		if(isUpdate){
-			//need to lookup the old value to compare
-			Query query = null;
-			query = manager.createNamedQuery("getAnalyteNameById");
+		//need to make sure to take update into account...
+		Query query = null;
+		//its an add if its null
+		if(analyteDO.getId() == null){
+			query = manager.createNamedQuery("analyteAddNameCompare");
+			query.setParameter("name", analyteDO.getName());
+		}else{
+			query = manager.createNamedQuery("analyteUpdateNameCompare");
+			query.setParameter("name", analyteDO.getName());
 			query.setParameter("id",analyteDO.getId());
-			String oldName = (String)query.getSingleResult();
-	
-			if(analyteDO.getName().equals(oldName.trim()))
-				nameDifferentThanOriginal = false;
 		}
 		
-		//need to look it up to verify
-		if(nameFilledOut && nameDifferentThanOriginal){
-			Query query = null;
-			query = manager.createNamedQuery("getAnalyteByName");
-			query.setParameter("name",analyteDO.getName());
-					
-			if(query.getResultList().size() > 0){
-				exceptionList.add(new FieldErrorException("fieldUniqueException",AnalyteMeta.NAME));
-			}
-		}
+		if(query.getResultList().size() > 0)
+			exceptionList.add(new FieldErrorException("fieldUniqueException",AnalyteMeta.NAME));
 	}
 }

@@ -5,12 +5,6 @@ package org.openelis.entity;
   * TestTrailer Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,11 +14,18 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 	@NamedQueries({@NamedQuery(name = "getTestTrailer", query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text) from " + 
-															" TestTrailer t where t.id = :id")})
+															" TestTrailer t where t.id = :id"),
+				   @NamedQuery(name = "testTrailerUpdateNameCompare", query = "select t.id from TestTrailer t where t.name = :name and t.id != :id"),
+				   @NamedQuery(name = "testTrailerAddNameCompare", query = "select t.id from TestTrailer t where t.name = :name")})
+				   
 	 
 @Entity
 @Table(name="test_trailer")
