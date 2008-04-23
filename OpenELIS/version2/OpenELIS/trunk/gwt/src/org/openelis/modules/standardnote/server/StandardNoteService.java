@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
@@ -61,8 +64,25 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 //		build the storage unit DO from the form
 		newStandardNoteDO = getStandardNoteDOFromRPC(rpcSend);
 		
-		//send the changes to the database
-		Integer standardNoteId = (Integer)remote.updateStandardNote(newStandardNoteDO);
+		//validate the fields on the backend
+		List exceptionList = remote.validateForAdd(newStandardNoteDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		} 
+		
+		// send the changes to the database
+		Integer standardNoteId;
+		try{
+			standardNoteId = (Integer) remote.updateStandardNote(newStandardNoteDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
 		
 //		lookup the changes from the database and build the rpc
 		StandardNoteDO standardNoteDO = remote.getStandardNote(standardNoteId);
@@ -77,12 +97,24 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
+		//validate the fields on the backend
+		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcReturn);
+			
+			return rpcReturn;
+		} 
+		
 		try {
 			remote.deleteStandardNote((Integer)key.getKey().getValue());
 			
 		} catch (Exception e) {
-			throw new RPCException(e.getMessage());
-		}	
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcReturn);
+			return rpcReturn;
+		}
 		
 		//this should set all fields in the rpc to null
 		setFieldsInRPC(rpcReturn, new StandardNoteDO());
@@ -188,8 +220,24 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		//build the DO from the form
 		newStandardNoteDO = getStandardNoteDOFromRPC(rpcSend);
 
-//		send the changes to the database
-		remote.updateStandardNote(newStandardNoteDO);
+		//validate the fields on the backend
+		List exceptionList = remote.validateForUpdate(newStandardNoteDO);
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcSend);
+			
+			return rpcSend;
+		} 
+		
+		//send the changes to the database
+		try{
+			remote.updateStandardNote(newStandardNoteDO);
+		}catch(Exception e){
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcSend);
+			return rpcSend;
+		}
 		
 		//lookup the changes from the database and build the rpc
 		StandardNoteDO standardNoteDO = remote.getStandardNote(newStandardNoteDO.getId());
@@ -333,6 +381,17 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		return returnModel;
 	}
 
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+		//we need to get the keys and look them up in the resource bundle for internationalization
+		for (int i=0; i<exceptionList.size();i++) {
+			if(exceptionList.get(i) instanceof FieldErrorException)
+			rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			else if(exceptionList.get(i) instanceof FormErrorException)
+				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+		}	
+		rpcSend.status = IForm.INVALID_FORM;
+    }
+	
 	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;

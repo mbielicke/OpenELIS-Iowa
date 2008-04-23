@@ -13,7 +13,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
-import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -65,14 +64,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		//validate the fields on the backend
 		List exceptionList = remote.validateForAdd(newAnalyteDO);
 		if(exceptionList.size() > 0){
-			//we need to get the keys and look them up in the resource bundle for internationalization
-			for (int i=0; i<exceptionList.size();i++) {
-				if(exceptionList.get(i) instanceof FieldErrorException)
-				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-				else if(exceptionList.get(i) instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-			}	
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, rpcSend);
+			
 			return rpcSend;
 		} 
 		
@@ -81,13 +74,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		try{
 			analyteId = (Integer) remote.updateAnalyte(newAnalyteDO);
 		}catch(Exception e){
-			if(e instanceof FieldErrorException){
-				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-			}
-				else if(e instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
 			
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, rpcSend);
 			return rpcSend;
 		}
 
@@ -104,14 +94,23 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 //		remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
+		//validate the fields on the backend
+		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		if(exceptionList.size() > 0){
+			setRpcErrors(exceptionList, rpcReturn);
+			
+			return rpcReturn;
+		} 
+		
 		try {
 			remote.deleteAnalyte((Integer)key.getKey().getValue());
 			
 		} catch (Exception e) {
-			if(e instanceof RPCDeleteException){
-				throw new RPCDeleteException(openElisConstants.getString("analyteDeleteException"));
-			}else
-			throw new RPCException(e.getMessage());
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
+			
+			setRpcErrors(exceptionList, rpcReturn);
+			return rpcReturn;
 		}	
 		
 		setFieldsInRPC(rpcReturn, new AnalyteDO());
@@ -221,14 +220,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		//validate the fields on the backend
 		List exceptionList = remote.validateForUpdate(newAnalyteDO);
 		if(exceptionList.size() > 0){
-			//we need to get the keys and look them up in the resource bundle for internationalization
-			for (int i=0; i<exceptionList.size();i++) {
-				if(exceptionList.get(i) instanceof FieldErrorException)
-				rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-				else if(exceptionList.get(i) instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-			}	
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, rpcSend);
+			
 			return rpcSend;
 		} 
 		
@@ -236,13 +229,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		try{
 			remote.updateAnalyte(newAnalyteDO);
 		}catch(Exception e){
-			if(e instanceof FieldErrorException){
-				rpcSend.getField(((FieldErrorException)e).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)e).getMessage()));
-			}
-				else if(e instanceof FormErrorException)
-					rpcSend.addError(openElisConstants.getString(((FormErrorException)e).getMessage()));
+			exceptionList = new ArrayList();
+			exceptionList.add(e);
 			
-			rpcSend.status = IForm.INVALID_FORM;
+			setRpcErrors(exceptionList, rpcSend);
 			return rpcSend;
 		}
 		
@@ -373,6 +363,17 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		return dataModel;		
 	}
 
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+		//we need to get the keys and look them up in the resource bundle for internationalization
+		for (int i=0; i<exceptionList.size();i++) {
+			if(exceptionList.get(i) instanceof FieldErrorException)
+			rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			else if(exceptionList.get(i) instanceof FormErrorException)
+				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+		}	
+		rpcSend.status = IForm.INVALID_FORM;
+    }
+	
 	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;

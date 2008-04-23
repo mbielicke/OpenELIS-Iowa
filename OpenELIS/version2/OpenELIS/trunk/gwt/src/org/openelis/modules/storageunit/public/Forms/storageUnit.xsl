@@ -88,8 +88,8 @@
 	</display>
 	<rpc key="display">
   	<number key="{storageUnitMeta:id()}" type="integer" required="false"/>
-  	<dropdown key="{storageUnitMeta:category()}" required="true"/>
-  	<string key="{storageUnitMeta:description()}" max="60" required="true"/>
+  	<dropdown key="{storageUnitMeta:category()}" required="false"/><!---->
+  	<string key="{storageUnitMeta:description()}" max="60" required="false"/><!---->
   	<check key="{storageUnitMeta:isSingular()}" required="false"/>
 	</rpc>
 	<rpc key="query">
