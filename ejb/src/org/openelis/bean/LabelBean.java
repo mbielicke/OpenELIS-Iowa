@@ -192,6 +192,11 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-delete")
     public void deleteLabel(Integer labelId) throws Exception {
+        Query lockQuery = manager.createNamedQuery("getTableId");
+        lockQuery.setParameter("name", "label");
+        Integer labelTableId = (Integer)lockQuery.getSingleResult();
+        lockBean.getLock(labelTableId, labelId);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateForDelete(labelId);
@@ -207,6 +212,8 @@ public class LabelBean implements LabelRemote {
                  e.printStackTrace();
                  throw e;
              }
+             
+             lockBean.giveUpLock(labelTableId, labelId); 
          }
 
 

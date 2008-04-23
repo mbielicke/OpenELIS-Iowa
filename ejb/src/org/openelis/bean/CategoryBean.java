@@ -17,6 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.catalina.logger.SystemOutLogger;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
@@ -392,40 +393,45 @@ public class CategoryBean implements CategoryRemote {
     }
     
     private void validateDictionary(DictionaryDO dictDO, Integer categoryId, int index,List<String>systemNames,List<String>entries,List<Exception> exceptionList){             
-              
+             
             if(!("").equals(dictDO.getEntry())){   
              if(!entries.contains(dictDO.getEntry())){
                entries.add(dictDO.getEntry());
-              }else{                                  
-                  exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.ENTRY));
+              }else{        
+                  // entry texts only have to be unique for a category and not across all the categories  
+                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.ENTRY));
               } 
             }else{              
+                // entry texts must be specified for each row in the dictionary table 
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", index,DictionaryMeta.ENTRY));
             }              
            
             
-             if(!("").equals(dictDO.getSystemName())){  
-                 
-              if(!systemNames.contains(dictDO.getSystemName())){
-                Query catIdQuery  = manager.createNamedQuery("getCategoryIdForDictSysName");
-                catIdQuery.setParameter("systemName", dictDO.getSystemName());
-                Integer catId = null;
-                try{
-                    catId = (Integer)catIdQuery.getSingleResult();
-                }catch(NoResultException ex){                     
-                    ex.printStackTrace();
-                }catch(Exception ex){                    
-                    exceptionList.add(ex);
-                }
-                
-                 if(catId != null){
-                     if(!catId.equals(categoryId)){                         
-                         exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
-                     }
+             if(!("").equals(dictDO.getSystemName())){ 
+               if(!systemNames.contains(dictDO.getSystemName())){     
+                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForDictSysName");
+                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
+                 Integer catId = null;
+                 try{
+                     //checking to see if there is another dictionary for which this system name has been used and which belongs to some other category
+                     catId = (Integer)catIdQuery.getSingleResult();
+                 }catch(NoResultException ex){                     
+                     ex.printStackTrace();
+                 }catch(Exception ex){                    
+                     exceptionList.add(ex);
                  }
+                 
+                  if(catId != null){
+                      if(!catId.equals(categoryId)){                                                        
+                        //system names have to be unique across all the categories  
+                          exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
+                      }
+                  }
+                           
                 systemNames.add(dictDO.getSystemName());                            
-            }else{               
-                exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
+            }else{      
+              // system names have to be unique for a category
+                exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.SYSTEM_NAME));
             }
             
        }                 
@@ -433,16 +439,13 @@ public class CategoryBean implements CategoryRemote {
     
     public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
         List<Exception> exceptionList = new ArrayList<Exception>();
-        validateCategory(categoryDO,exceptionList);
-        int index = 0;
+        validateCategory(categoryDO,exceptionList);        
         ArrayList<String> systemNames = new ArrayList<String>();
         
         ArrayList<String> entries = new ArrayList<String>();
-        for (Iterator iter = dictDOList.iterator(); iter.hasNext();) {
-            DictionaryDO dictDO = (DictionaryDO)iter.next();
-            exceptionList = new ArrayList<Exception>();
-            validateDictionary(dictDO,categoryDO.getId(),index,systemNames,entries,exceptionList);
-            index++;
+        for (int iter =0; iter< dictDOList.size(); iter++) {
+            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
+            validateDictionary(dictDO,categoryDO.getId(),iter,systemNames,entries,exceptionList);            
         }
         
         return exceptionList;
@@ -451,16 +454,14 @@ public class CategoryBean implements CategoryRemote {
     public List validateForUpdate(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateCategory(categoryDO,exceptionList);
-        int index = 0;
         ArrayList<String> systemNames = new ArrayList<String>();
         
         ArrayList<String> entries = new ArrayList<String>();
-        for (Iterator iter = dictDOList.iterator(); iter.hasNext();) {
-            DictionaryDO dictDO = (DictionaryDO)iter.next();
-            exceptionList = new ArrayList<Exception>();
-            validateDictionary(dictDO,categoryDO.getId(),index,systemNames,entries,exceptionList);
-            index++;
-        }      
+        for (int iter =0; iter< dictDOList.size(); iter++) {
+            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
+            validateDictionary(dictDO,categoryDO.getId(),iter,systemNames,entries,exceptionList);            
+        }
+        
         return exceptionList;
     }
     
