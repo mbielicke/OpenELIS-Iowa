@@ -121,7 +121,7 @@
 									<check key="{dictionaryMeta:isActive()}">Y</check>
 									<string key="{dictionaryMeta:systemName()}"/>									
 									<string key="{dictionaryMeta:localAbbrev()}"/>
-									<string key="{dictionaryMeta:entry()}" /> <!--required = "true"-->
+									<string key="{dictionaryMeta:entry()}" required = "true"/>
 									<dropdown key="{dictRelEntryMeta:entry()}"/>									
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
@@ -168,8 +168,8 @@
 	</display>
 	<rpc key = "display">
 	 <number key="{categoryMeta:id()}" type="integer" required="false"/>	
-	 <string key="{categoryMeta:systemName()}" max="30" required="false"/> <!--required = "true"-->
-	 <string key="{categoryMeta:name()}" max="50" required="false"/> <!--required = "true"-->
+	 <string key="{categoryMeta:systemName()}" max="30" required = "true"/>
+	 <string key="{categoryMeta:name()}" max="50" required = "true"/>
 	 <string key="{categoryMeta:description()}" max="60" required="false"/>
      <table key="dictEntTable"/>	 
      <dropdown key="{categoryMeta:section()}" type="integer" required="false"/>    

@@ -150,14 +150,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed" max="80"/>		 
 		</editors>
 		 <fields>
-		  <string key = "{providerAddrMeta:location()}" /> <!--required = "true"-->
+		  <string key = "{providerAddrMeta:location()}" required = "true"/>
 		  <string key="{providerAddrMeta:externalId()}"/>
 		  <string key="{providerAddrAddrMeta:multipleUnit()}"/>
 		  <string key="{providerAddrAddrMeta:streetAddress()}"/>
-		  <string key="{providerAddrAddrMeta:city()}" /> <!--required = "true"-->		  		  
-		  <dropdown key="{providerAddrAddrMeta:state()}" /> <!--required = "true"-->
+		  <string key="{providerAddrAddrMeta:city()}" required = "true"/>		  		  
+		  <dropdown key="{providerAddrAddrMeta:state()}" required = "true"/>
 		  <dropdown key="{providerAddrAddrMeta:country()}" />
-		  <string key="{providerAddrAddrMeta:zipCode()}" /> <!--required = "true"-->
+		  <string key="{providerAddrAddrMeta:zipCode()}" required = "true"/>
 		  <string key="{providerAddrAddrMeta:workPhone()}"/>
 		  <string key="{providerAddrAddrMeta:homePhone()}"/>
 		  <string key="{providerAddrAddrMeta:cellPhone()}"/>
@@ -279,14 +279,14 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 							  
 <rpc key= "display">	
   <number key="{providerMeta:id()}" type="integer" required="false"/>				
-  <string key="{providerMeta:lastName()}"  required="false"/> <!--required = "true"-->
+  <string key="{providerMeta:lastName()}"  required = "true"/>
   <string key="{providerMeta:firstName()}"  required="false"/> 
   <string key="{providerMeta:npi()}" required="false"/>
   <string key="{providerMeta:middleName()}"  required="false"/>	
   <table key="providerAddressTable"/>						      		       
   <string key="{providerNoteMeta:subject()}" required="false"/>
   <string key="{providerNoteMeta:text()}" required="false"/>
-  <dropdown key="{providerMeta:type()}" type="integer" required="false"/> <!--required = "true"-->
+  <dropdown key="{providerMeta:type()}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     

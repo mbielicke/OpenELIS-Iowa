@@ -5,18 +5,11 @@ import java.util.ArrayList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
-
-import com.google.gwt.user.client.Window;
-
-
-
 
 public class DictionaryEntriesTable implements TableManager {
     
@@ -65,8 +58,8 @@ public class DictionaryEntriesTable implements TableManager {
             return false;
     }
 
-    public void finishedEditing(int row, int col, TableController controller) { 
-        TableRow tableRow =  controller.model.getRow(row);
+    public void finishedEditing(int row, int col, TableController controller) {         
+        /*TableRow tableRow =  controller.model.getRow(row);
         
         Integer id  = null;
         NumberField idField = (NumberField)tableRow.getHidden("id");  
@@ -123,7 +116,7 @@ public class DictionaryEntriesTable implements TableManager {
           }                
          }
         }                    
-
+              */
      }
 
     public void getNextPage(TableController controller) {

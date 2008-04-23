@@ -112,7 +112,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         provAddController.setAutoAdd(false);
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.disableRows = true;
+        proAddManager.setProviderForm(this);
+        //proAddManager.disableRows = true;
                    
         loadDropdowns();
         
