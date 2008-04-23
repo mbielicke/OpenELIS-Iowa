@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,9 +19,12 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCDeleteException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.StorageUnitMeta;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilder;
@@ -92,35 +96,37 @@ public class StorageUnitBean implements StorageUnitRemote{
 	}
 
     @RolesAllowed("storageunit-update")
-	public Integer updateStorageUnit(StorageUnitDO unitDO) {
+	public Integer updateStorageUnit(StorageUnitDO unitDO) throws Exception{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
 		
-		try {
-//			storage unit reference table id
-        	Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "storage_unit");
-            Integer storageUnitReferenceId = (Integer)query.getSingleResult();
-            
-            if (unitDO.getId() == null)
-            	storageUnit = new StorageUnit();
-            else
-            	storageUnit = manager.find(StorageUnit.class, unitDO.getId());
-            
-            storageUnit.setCategory(unitDO.getCategory());
-            storageUnit.setDescription(unitDO.getDescription());
-            storageUnit.setIsSingular(unitDO.getIsSingular());
-         
-            if (storageUnit.getId() == null) {
-	        	manager.persist(storageUnit);
-            }
-         
-            lockBean.giveUpLock(storageUnitReferenceId,storageUnit.getId()); 
-		} catch (Exception e) {
-            //log.error(e.getMessage());
-            e.printStackTrace();
+		//validate the analyte record
+        List exceptionList = new ArrayList();
+        validateStorageUnit(unitDO, exceptionList);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
         }
+        
+        //storage unit reference table id
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_unit");
+        Integer storageUnitReferenceId = (Integer)query.getSingleResult();
             
+        if (unitDO.getId() == null)
+        	storageUnit = new StorageUnit();
+        else
+           	storageUnit = manager.find(StorageUnit.class, unitDO.getId());
+            
+        storageUnit.setCategory(unitDO.getCategory());
+        storageUnit.setDescription(unitDO.getDescription());
+        storageUnit.setIsSingular(unitDO.getIsSingular());
+         
+        if (storageUnit.getId() == null) {
+	       	manager.persist(storageUnit);
+        }
+         
+        lockBean.giveUpLock(storageUnitReferenceId,storageUnit.getId()); 
+		    
 		return storageUnit.getId();
 	}
 
@@ -163,18 +169,21 @@ public class StorageUnitBean implements StorageUnitRemote{
 
     @RolesAllowed("storageunit-delete")
 	public void deleteStorageUnit(Integer storageUnitId) throws Exception {
+    	Query lockQuery = manager.createNamedQuery("getTableId");
+		lockQuery.setParameter("name", "storage_unit");
+		Integer storageUnitTableId = (Integer)lockQuery.getSingleResult();
+        lockBean.getLock(storageUnitTableId, storageUnitId);
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
 		
-		//we need to see if this item can be deleted first
-		Query query = null;
-		query = manager.createNamedQuery("getAnalyteByParentId");
-		query.setParameter("id", storageUnitId);
-		List linkedRecords = query.getResultList();
-		
-		if(linkedRecords.size() > 0){
-			throw new RPCDeleteException();
-		}
+		//validate the storage unit record
+        List exceptionList = new ArrayList();
+        exceptionList = validateForDelete(storageUnitId);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
+        }
+        
 		//then we need to delete it
 		try {
             	storageUnit = manager.find(StorageUnit.class, storageUnitId);
@@ -185,6 +194,8 @@ public class StorageUnitBean implements StorageUnitRemote{
             //log.error(e.getMessage());
             e.printStackTrace();
         }		
+		
+		lockBean.giveUpLock(storageUnitTableId, storageUnitId);
 	}
 
 	public List autoCompleteLookupByDescription(String desc, int maxResults) {
@@ -206,5 +217,49 @@ public class StorageUnitBean implements StorageUnitRemote{
         	Object[] returnArray = new Object[3];
         	return returnArray;
         }
+	}
+
+	public List validateForAdd(StorageUnitDO storageUnitDO) {
+		List exceptionList = new ArrayList();
+		
+		validateStorageUnit(storageUnitDO, exceptionList);
+		
+		return exceptionList;
+	}
+
+	public List validateForDelete(Integer storageUnitId) {
+		List exceptionList = new ArrayList();
+		//make sure no analytes are pointing to this record
+		Query query = null;
+		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
+		query.setParameter("id", storageUnitId);
+		List linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("storageUnitDeleteException"));
+		}
+		
+		return exceptionList;
+	}
+
+	public List validateForUpdate(StorageUnitDO storageUnitDO) {
+		List exceptionList = new ArrayList();
+		
+		validateStorageUnit(storageUnitDO, exceptionList);
+		
+		return exceptionList;
 	}	 
+	
+	private void validateStorageUnit(StorageUnitDO storageUnitDO, List exceptionList){
+		//category required
+		if(storageUnitDO.getCategory() == null || "".equals(storageUnitDO.getCategory())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.CATEGORY));
+		}
+		
+		//description required
+		if(storageUnitDO.getDescription() == null || "".equals(storageUnitDO.getDescription())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.DESCRIPTION));
+		}
+		
+	}
 }

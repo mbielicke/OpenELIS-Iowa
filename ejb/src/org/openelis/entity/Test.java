@@ -18,11 +18,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+	@NamedQueries({@NamedQuery(name = "getTestByTestTrailerId", query = "select t.id from Test t where t.testTrailer = :id")})
 
 @Entity
 @Table(name="test")

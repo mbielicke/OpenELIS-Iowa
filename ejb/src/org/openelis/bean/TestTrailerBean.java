@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,8 +18,12 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.entity.TestTrailer;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilder;
@@ -54,19 +59,21 @@ public class TestTrailerBean implements TestTrailerRemote{
     
     @RolesAllowed("testtrailer-delete")
 	public void deleteTestTrailer(Integer testTrailerId) throws Exception {
+    	Query lockQuery = manager.createNamedQuery("getTableId");
+		lockQuery.setParameter("name", "test_trailer");
+		Integer testTrailerTableId = (Integer)lockQuery.getSingleResult();
+        lockBean.getLock(testTrailerTableId, testTrailerId);
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;
 		
-		//we need to see if this item can be deleted first
-		//FIXME we need to code this when the parent screens are coded
-		/*Query query = null;
-		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
-		query.setParameter("id", storageUnitId);
-		List linkedRecords = query.getResultList();
-		
-		if(linkedRecords.size() > 0){
-			throw new RPCDeleteException();
-		}*/
+		//validate the test trailer record
+        List exceptionList = new ArrayList();
+        exceptionList = validateForDelete(testTrailerId);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
+        }
+        
 		//then we need to delete it
 		try {
 			testTrailer = manager.find(TestTrailer.class, testTrailerId);
@@ -76,6 +83,8 @@ public class TestTrailerBean implements TestTrailerRemote{
 		} catch (Exception e) {
             e.printStackTrace();
         }	
+		
+		lockBean.giveUpLock(testTrailerTableId, testTrailerId);
 	}
 
 	public Integer getSystemUserId() {
@@ -154,10 +163,17 @@ public class TestTrailerBean implements TestTrailerRemote{
 		TestTrailer testTrailer = null;
 		
 		try {
-//			test trailer reference table id
+			//test trailer reference table id
         	Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "test_trailer");
             Integer testTrailerReferenceId = (Integer)query.getSingleResult();
+            
+            //validate the test trailer record
+            List exceptionList = new ArrayList();
+            validateTestTrailer(testTrailerDO, exceptionList);
+            if(exceptionList.size() > 0){
+            	throw (RPCException)exceptionList.get(0);
+            }
             
             if (testTrailerDO.getId() == null)
             	testTrailer = new TestTrailer();
@@ -178,5 +194,71 @@ public class TestTrailerBean implements TestTrailerRemote{
         }
             
 		return testTrailer.getId();
+	}
+
+	public List validateForAdd(TestTrailerDO testTrailerDO) {
+		List exceptionList = new ArrayList();
+		
+		validateTestTrailer(testTrailerDO, exceptionList);
+		
+		return exceptionList;
+	}
+
+	public List validateForDelete(Integer testTrailerId) {
+		List exceptionList = new ArrayList();
+		//make sure no tests are pointing to this record
+		//getTestByTestTrailerId
+		Query query = null;
+		query = manager.createNamedQuery("getTestByTestTrailerId");
+		query.setParameter("id", testTrailerId);
+		List linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("testTrailerTestDeleteException"));
+		}
+		
+		return exceptionList;
+	}
+
+	public List validateForUpdate(TestTrailerDO testTrailerDO) {
+		List exceptionList = new ArrayList();
+		
+		validateTestTrailer(testTrailerDO, exceptionList);
+		
+		return exceptionList;
+	}
+	
+	private void validateTestTrailer(TestTrailerDO testTrailerDO, List exceptionList){
+		//name required	
+		if(testTrailerDO.getName() == null || "".equals(testTrailerDO.getName())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.NAME));
+		}
+		
+		//name not duplicate
+		//need to make sure to take update into account...old name versus new name...
+		Query query = null;
+		//if null then it is an add
+		if(testTrailerDO.getId() == null){
+			query = manager.createNamedQuery("testTrailerAddNameCompare");
+			query.setParameter("name", testTrailerDO.getName());
+		}else{
+			query = manager.createNamedQuery("testTrailerUpdateNameCompare");
+			query.setParameter("name", testTrailerDO.getName());
+			query.setParameter("id",testTrailerDO.getId());
+		}
+		
+		if(query.getResultList().size() > 0)
+			exceptionList.add(new FieldErrorException("fieldUniqueException",TestTrailerMeta.NAME));
+		
+		
+		//description required
+		if(testTrailerDO.getDescription() == null || "".equals(testTrailerDO.getDescription())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.DESCRIPTION));
+		}
+		
+		//text required
+		if(testTrailerDO.getText()== null || "".equals(testTrailerDO.getText())){
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.TEXT));
+		}
 	}
 }

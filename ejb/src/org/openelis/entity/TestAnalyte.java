@@ -16,10 +16,14 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+	@NamedQueries({@NamedQuery(name = "getTestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyte = :id")})
 
 @Entity
 @Table(name="test_analyte")
