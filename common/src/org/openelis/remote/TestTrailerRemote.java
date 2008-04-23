@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.TestTrailerDO;
 
 @Remote
@@ -28,4 +29,13 @@ public interface TestTrailerRemote {
 	 public Integer getSystemUserId();
 	 
 	 public void deleteTestTrailer(Integer testTrailerId) throws Exception;
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(TestTrailerDO testTrailerDO);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(TestTrailerDO testTrailerDO);
+	 
+	 //method to validate the fields before the backend deletes it
+	 public List validateForDelete(Integer testTrailerId);
 }

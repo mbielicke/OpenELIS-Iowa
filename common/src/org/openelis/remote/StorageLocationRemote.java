@@ -10,7 +10,7 @@ import org.openelis.domain.StorageLocationDO;
 @Remote
 public interface StorageLocationRemote {
 //	commit a change to storage loc, or insert a new storage loc
-	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren);
+	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception;
 	
 	//method to return a whole storage loc
 	public StorageLocationDO getStorageLoc(Integer StorageId);
@@ -39,4 +39,14 @@ public interface StorageLocationRemote {
 	 public void deleteStorageLoc(Integer StorageLocId) throws Exception;
 	 
 	 public Integer getStorageLocByName(String name);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(StorageLocationDO storageLocationDO, List childLocs);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(StorageLocationDO storageLocationDO, List childLocs);
+	 
+	 //method to validate the fields before the backend deletes it
+	 public List validateForDelete(Integer storageLocationId);
 }
+

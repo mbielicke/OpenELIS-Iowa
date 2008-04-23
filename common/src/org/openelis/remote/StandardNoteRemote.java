@@ -10,7 +10,7 @@ import org.openelis.domain.StandardNoteDO;
 @Remote
 public interface StandardNoteRemote {
 	//commit a change to a standard note, or insert a new standard note
-	public Integer updateStandardNote(StandardNoteDO standardNoteDO);
+	public Integer updateStandardNote(StandardNoteDO standardNoteDO) throws Exception;
 	
 	//method to return a whole standard note
 	public StandardNoteDO getStandardNote(Integer standardNoteId);
@@ -34,4 +34,13 @@ public interface StandardNoteRemote {
 	 public Integer getSystemUserId();
 	 
 	 public void deleteStandardNote(Integer standardNoteId) throws Exception;
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(StandardNoteDO standardNoteDO);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(StandardNoteDO standardNoteDO);
+	 
+	 //method to validate the fields before the backend deletes it
+	 public List validateForDelete(Integer standardNoteId);
 }
