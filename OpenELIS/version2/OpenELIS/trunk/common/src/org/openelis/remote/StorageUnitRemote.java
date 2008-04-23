@@ -10,7 +10,7 @@ import org.openelis.domain.StorageUnitDO;
 @Remote
 public interface StorageUnitRemote {
 	//commit a change to storage unit, or insert a new storage unit
-	public Integer updateStorageUnit(StorageUnitDO unitDO);
+	public Integer updateStorageUnit(StorageUnitDO unitDO) throws Exception;
 	
 	//method to return a whole storage unit
 	public StorageUnitDO getStorageUnit(Integer StorageUnitId);
@@ -34,5 +34,14 @@ public interface StorageUnitRemote {
 	 public Object[] autoCompleteLookupById(Integer id);
 	 
 	 public void deleteStorageUnit(Integer StorageUnitId) throws Exception;
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForUpdate(StorageUnitDO storageUnitDO);
+	 
+	 //method to validate the fields before the backend updates it in the database
+	 public List validateForAdd(StorageUnitDO storageUnitDO);
+	 
+	 //method to validate the fields before the backend deletes it
+	 public List validateForDelete(Integer storageUnitId);
 
 }
