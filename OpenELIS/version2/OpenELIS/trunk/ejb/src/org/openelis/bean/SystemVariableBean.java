@@ -163,7 +163,12 @@ public class SystemVariableBean implements SystemVariableRemote{
     
     @RolesAllowed("systemvariable-delete")    
     public void deleteSystemVariable(Integer sysVarId) throws Exception {
-      manager.setFlushMode(FlushModeType.COMMIT);
+     Query lockQuery = manager.createNamedQuery("getTableId");
+     lockQuery.setParameter("name", "system_variable");
+     Integer sysvarTableId = (Integer)lockQuery.getSingleResult();
+     lockBean.getLock(sysvarTableId, sysVarId);  
+     
+     manager.setFlushMode(FlushModeType.COMMIT);
       SystemVariable sysVar = null;
       try{
           sysVar = manager.find(SystemVariable.class, sysVarId);
@@ -174,6 +179,8 @@ public class SystemVariableBean implements SystemVariableRemote{
           e.printStackTrace();
           throw e;
       } 
+       
+       lockBean.giveUpLock(sysvarTableId, sysVarId);
     }
     
     public List<Exception> validateforAdd(SystemVariableDO sysVarDO){
