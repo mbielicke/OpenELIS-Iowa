@@ -113,7 +113,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.setProviderForm(this);
-        //proAddManager.disableRows = true;
                    
         loadDropdowns();
         
@@ -132,8 +131,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         provAddController.setAutoAdd(true);
         
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.disableRows = false;
+        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+        //proAddManager.disableRows = false;
         
         noteArea.enable(true);
         super.up();      
@@ -143,8 +142,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
       provAddController.setAutoAdd(false);      
       
-      ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-      proAddManager.disableRows = true;
+      //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+      //proAddManager.disableRows = true;
       
       clearNotesFields();
        super.abort(); 
@@ -167,8 +166,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         provAddController.setAutoAdd(true);
          
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.disableRows = false;
+        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+        //proAddManager.disableRows = false;
         super.add();     
         
         noteArea.enable(true);
@@ -560,14 +559,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private void onRemoveRowButtonClick(){
     	int selectedRow = provAddController.selected;
          if (selectedRow > -1
-                 && provAddController.model.numRows() > 1) {
-             TableRow row = provAddController.model
-                     .getRow(selectedRow);
+                 && provAddController.model.numRows() > 0) {
+             TableRow row = provAddController.model.getRow(selectedRow);
              
              provAddController.model.hideRow(row);
              // delete the last row of the table because it is autoadd
-             provAddController.model
-                     .deleteRow(provAddController.model.numRows() - 1);
+             //provAddController.model.deleteRow(provAddController.model.numRows() - 1);
              // reset the model
              provAddController.reset();
              // need to set the deleted flag to "Y" also
