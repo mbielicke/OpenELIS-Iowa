@@ -9,8 +9,6 @@ import org.openelis.domain.QaEventDO;
 
 @Remote
 public interface QaEventRemote {
-    // method to return list of QaEvent ids and QaEvent names by the letter they start with
-    public List getQaEventNameListByLetter(String letter, int startPos, int maxResults);
    
     // method to return QaEvent 
     public QaEventDO getQaEvent(Integer qaEventId);

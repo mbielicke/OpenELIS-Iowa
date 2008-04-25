@@ -11,19 +11,13 @@ public class DictionaryRelatedEntryMeta implements Meta{
 	
 	public static final String
      ID            	= "dictionary.relatedEntry.id",
-     /*CATEGORY		= "dictionary.relatedEntry.category",
-     RELATED_ENTRY	= "dictionary.relatedEntry.relatedEntry",
-     SYSTEM_NAME  	= "dictionary.relatedEntry.systemName",
-     IS_ACTIVE		= "dictionary.relatedEntry.isActive",
-	 LOCAL_ABBREV 	= "dictionary.relatedEntry.localAbbrev",*/
 	 ENTRY 			= "dictionary.relatedEntry.entry";
 
 	//
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, ENTRY};
-        // CATEGORY, RELATED_ENTRY, SYSTEM_NAME, IS_ACTIVE, LOCAL_ABBREV
+	     ID, ENTRY};        
 	
 	private static HashMap<String,String> columnHashList;
 	
@@ -71,29 +65,9 @@ public class DictionaryRelatedEntryMeta implements Meta{
     public static String id(){
         return columnNames[0];
     }
-    
-   /* public static String category(){
-        return columnNames[1];
-    }
-    
-    public static String relatedEntry(){
-        return columnNames[2];
-    }
-
-    public static String systemName(){
-        return columnNames[3];
-    }
-    
-    public static String isActive(){
-        return columnNames[4];
-    }
-    
-    public static String localAbbrev(){
-        return columnNames[5];
-    } */
+       
     
     public static String entry(){
-        //return columnNames[6];
         return columnNames[1];
     }        
     
