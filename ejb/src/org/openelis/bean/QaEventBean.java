@@ -68,21 +68,7 @@ public class QaEventBean implements QaEventRemote{
         QaEventDO qaEvent = (QaEventDO) query.getSingleResult();
         
         return qaEvent;
-    }
-
-    public List getQaEventNameListByLetter(String letter, int startPos, int maxResults) {
-        Query query = manager.createNamedQuery("getQaEventNameRowsByLetter");
-        query.setParameter("letter", letter);
-        
-        if(maxResults > 0){
-            query.setFirstResult(startPos);
-            query.setMaxResults(maxResults);
-        }
-        
-        List<Object[]> qaeList = query.getResultList(); 
-        
-        return qaeList;
-    }
+    }  
       
 
     public Integer getSystemUserId() {

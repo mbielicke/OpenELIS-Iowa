@@ -202,9 +202,8 @@ public class ProviderBean implements ProviderRemote {
                 if(exceptionList.size() > 0){
                     throw (RPCException)exceptionList.get(0);
                 }
-                
-                if(provAddDO.getDelete()!=null){ 
-                  if(provAddDO.getDelete()){
+                                
+                  if(new Boolean(true).equals(provAddDO.getDelete())){
                      if(deleteList == null){
                          deleteList = new ArrayList<ProviderAddressDO>();
                      } 
@@ -213,10 +212,7 @@ public class ProviderBean implements ProviderRemote {
                   }else{   
                       checkForUpdate = true;
                   } 
-                }else{ 
-                    checkForUpdate = true; 
-                                   
-                }                              
+                                             
               
               if(checkForUpdate){   
                  if(updateList==null){
@@ -242,7 +238,7 @@ public class ProviderBean implements ProviderRemote {
                 ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();
                 ProviderAddress provAdd = null;                
                                                                 
-                if(provAdd.getId() != null){                    
+                if(provAddDO.getId() != null){                    
                     //delete the contact record and the address record from the database 
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                      manager.remove(provAdd);                     

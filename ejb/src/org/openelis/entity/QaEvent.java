@@ -27,8 +27,7 @@ import org.openelis.utils.Auditable;
 @Entity
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
-@NamedQueries({@NamedQuery(name = "getQaEventNameRowsByLetter", query = "select q.id,q.name " + "from QaEvent q  where q.name like :letter order by q.name"),
-               @NamedQuery(name = "getQaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "getQaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
                "  from QaEvent q where q.id = :id"),
                @NamedQuery(name = "getTestNames", query = "select distinct t.id, t.name, m.name " + "  from Test t, Method m where t.method  = m.id order by t.name, m.name")})
 public class QaEvent implements Auditable, Cloneable {
