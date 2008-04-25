@@ -32,10 +32,7 @@ public class DictionaryEntriesTable implements TableManager {
         return false;
     }
 
-    public boolean canEdit(int row, int col, TableController controller) {
-       //if(col == 0 && (row == controller.model.numRows()-1)){          
-         //  controller.addRow();  
-      // }                 
+    public boolean canEdit(int row, int col, TableController controller) {                
         return true;
     }
 
@@ -45,7 +42,7 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {   
-       if(dictionaryForm.state == FormInt.ADD || dictionaryForm.state == FormInt.UPDATE) 
+       if(dictionaryForm.state == FormInt.ADD || dictionaryForm.state == FormInt.UPDATE || dictionaryForm.state == FormInt.QUERY) 
         return true;
        
        return false;
@@ -156,7 +153,7 @@ public class DictionaryEntriesTable implements TableManager {
     }
       
     
-    public boolean checkInList(String listName,String text,int row){
+   /* public boolean checkInList(String listName,String text,int row){
       boolean duplicate =  false;      
        if(listName.equals("systemName")){
            if(systemNamesList.contains(text)){  
@@ -206,7 +203,7 @@ public class DictionaryEntriesTable implements TableManager {
            systemNamesList.add(controller.model.getRow(iter).getColumn(1).getValue()) ;
            entryList.add(controller.model.getRow(iter).getColumn(3).getValue()) ;                   
        }
-    }
+    }*/
 
     public void showError(int row, int col, TableController controller,String error) {
          AbstractField field =  controller.model.getFieldAt(row, col);      

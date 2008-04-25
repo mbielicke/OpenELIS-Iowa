@@ -122,27 +122,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }   
     
     public void onClick(Widget sender) {
+        
         String action = ((AppButton)sender).action;        
          if (action.equals("removeEntry")) {
-
-            int selectedRow = dictEntryController.selected;
-
-            if (selectedRow > -1 && dictEntryController.model.numRows() > 1) {
-                TableRow row = dictEntryController.model.getRow(selectedRow);
-
-                dictEntryController.model.hideRow(row);
-                // delete the last row of the table because it is autoadd
-
-                dictEntryController.model.deleteRow(dictEntryController.model.numRows() - 1);
-
-                // reset the model
-                dictEntryController.reset();
-                // need to set the deleted flag to "Y" also
-                StringField deleteFlag = new StringField();
-                deleteFlag.setValue("Y");
-
-                row.addHidden("deleteFlag", deleteFlag);
-            }
+             onRemoveRowButtonClick();            
         }
     }
 
@@ -197,7 +180,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
     
 
-    public void checkSystemName(Integer id, String systemName, int row) {
+   /* public void checkSystemName(Integer id, String systemName, int row) {
         final Integer entryId = id;
 
         final int trow = row;
@@ -284,7 +267,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
                                     }
                                 });
 
-    }
+    }*/
 
     private void loadDropdowns() {
         if (sectionDropDown == null) {
@@ -295,5 +278,24 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         
     }
     
-      
+    private void onRemoveRowButtonClick(){
+        int selectedRow = dictEntryController.selected;            
+        
+        if (selectedRow > -1 && dictEntryController.model.numRows() > 0) {
+            TableRow row = dictEntryController.model.getRow(selectedRow);
+            
+            dictEntryController.model.hideRow(row);
+            // delete the last row of the table because it is autoadd
+
+            //dictEntryController.model.deleteRow(dictEntryController.model.numRows() - 1);
+
+            // reset the model
+            dictEntryController.reset();
+            // need to set the deleted flag to "Y" also
+            StringField deleteFlag = new StringField();
+            deleteFlag.setValue("Y");
+
+            row.addHidden("deleteFlag", deleteFlag);
+        }
+    }
 }

@@ -7,7 +7,7 @@ import org.openelis.gwt.widget.table.TableManager;
 
 public class ProviderAddressesTable implements TableManager {
 
-    public boolean disableRows = false;
+    //public boolean disableRows = false;
     
     private ProviderScreen providerForm;
     
@@ -22,10 +22,7 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
-       // if(disableRows){
             return true;
-         // } 
-        //return true;
     }
 
     public boolean canInsert(int row, TableController controller) {
@@ -34,8 +31,8 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        if(providerForm.state == FormInt.ADD || providerForm.state == FormInt.UPDATE){      
-       // if(disableRows){
+        if(providerForm.state == FormInt.ADD || providerForm.state == FormInt.UPDATE || providerForm.state == FormInt.QUERY){      
+
             return true;
         } 
         return false;
@@ -49,9 +46,6 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
-       //if((col == 0 || col == 4 || col == 5 || col == 7) && (row == controller.model.numRows()-1)){          
-        //    ((EditTable)controller).addRow();  
-       //  }
 
     }
 
