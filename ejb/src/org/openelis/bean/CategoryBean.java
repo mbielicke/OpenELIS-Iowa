@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -17,8 +16,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.catalina.logger.SystemOutLogger;
-import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
@@ -28,11 +25,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.DictionaryMeta;
 import org.openelis.meta.DictionaryRelatedEntryMeta;
-import org.openelis.meta.ProviderMeta;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
