@@ -21,6 +21,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -296,8 +297,27 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 
 	public List validateForDelete(Integer storageLocationId) {
-		// TODO Auto-generated method stub
-		return null;
+		List exceptionList = new ArrayList();
+		//make sure no storage rows are pointing to this record
+		Query query = null;
+		query = manager.createNamedQuery("getStorageByStorageLocationId");
+		query.setParameter("id", storageLocationId);
+		List linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("storageLocationStorageDeleteException"));
+		}
+		
+		//make sure no inventory locations are pointing to this record
+		query = manager.createNamedQuery("getInventoryLocationByStorageLocationId");
+		query.setParameter("id", storageLocationId);
+		linkedRecords = query.getResultList();
+
+		if(linkedRecords.size() > 0){
+			exceptionList.add(new FormErrorException("storageLocationInventoryLocationDeleteException"));
+		}
+		
+		return exceptionList;
 	}
 
 	public List validateForUpdate(StorageLocationDO storageLocationDO, List childLocs) {
