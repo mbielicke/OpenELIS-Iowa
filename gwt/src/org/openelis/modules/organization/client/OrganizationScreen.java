@@ -520,8 +520,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
 	  						.getRow(selectedRow);
                     orgContactsTable.controller.model.hideRow(row);
 	  				// delete the last row of the table because it is autoadd
-	  				orgContactsTable.controller.model
-	  						.deleteRow(orgContactsTable.controller.model.numRows() - 1);
+	  				//orgContactsTable.controller.model
+	  				//		.deleteRow(orgContactsTable.controller.model.numRows() - 1);
 	  				// reset the model
 	  				orgContactsTable.controller.reset();
 	  				// need to set the deleted flag to "Y" also
