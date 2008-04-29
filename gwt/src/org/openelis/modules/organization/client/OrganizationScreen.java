@@ -68,6 +68,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
 
 	public OrganizationScreen() {
         super("org.openelis.modules.organization.server.OrganizationService",!loaded);
+        name = "Organization";
 	}
 
     public void onChange(Widget sender) {
