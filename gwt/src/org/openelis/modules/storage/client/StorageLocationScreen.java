@@ -77,11 +77,6 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 
 		//set focus to the name field
 		nameTextbox.setFocus(true);
-		
-		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		//childTableManager.disableRows = false;
-		
-		//childTable.controller.addRow();
 	}
 	
 	public void query() {
@@ -110,14 +105,10 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		super.up();
 	}
 	
-	public void abort() {
-		super.abort();
-		
+	public void abort() {		
 		childTable.setAutoAdd(false);
 		
-		//if add delete the last row
-		//if (state == FormInt.UPDATE || state == FormInt.ADD)
-		//	childTable.controller.deleteRow(childTable.controller.model.numRows() - 1);
+		super.abort();
 	}
 	
 	private void getStorageLocs(String letter, Widget sender) {

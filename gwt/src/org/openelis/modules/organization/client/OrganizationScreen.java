@@ -13,6 +13,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -54,6 +55,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
     private AppButton removeContactButton;
     private EditTable contactsController;
     private ScreenTextBox orgId;
+    private ScreenTextArea noteText;
 	private TextBox orgName;
 
     
@@ -130,6 +132,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
         orgId = (ScreenTextBox) widgets.get("organization.id");
         
 		orgName = (TextBox)getWidget("organization.name");
+		
+		noteText = (ScreenTextArea) widgets.get("note.text");
 
 		// get contacts table and set the managers form
 		contactsController = ((TableWidget)getWidget("contactsTable")).controller;
@@ -196,8 +200,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
         loadContacts = true;
         loadNotes = true;                
         
-        TableWidget orgContacts = (TableWidget) getWidget("contactsTable");
-        orgContacts.controller.setAutoAdd(false);
+        contactsController.setAutoAdd(false);
         
         loadTabs();
     }
@@ -246,8 +249,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
         clearNotesFields();
        } 
 				
-		TableWidget contactTable = (TableWidget) getWidget("contactsTable");
-		contactTable.controller.setAutoAdd(false);
+
+       contactsController.setAutoAdd(false);
 
 		super.afterCommitAdd(success);
 	}
@@ -257,6 +260,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements ClickListe
 		
 		//set focus to the org id field
 		orgId.setFocus(true);
+		
+		noteText.enable(false);
 		
 		removeContactButton.changeState(AppButton.DISABLED);
 	}
