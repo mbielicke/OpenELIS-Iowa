@@ -169,7 +169,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "574px" maxRows = "9" title = "" showError="false">
+	     <queryTable width= "592px" maxRows = "9" title = "" showError="false">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -233,7 +233,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{providerNoteMeta:subject()}" width="412px" max="60" showError="false"/>
+										<textbox case="mixed" key="{providerNoteMeta:subject()}" width="435px" max="60" showError="false"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -251,7 +251,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="531px" height="61px" case="mixed" key="{providerNoteMeta:text()}" showError="false"/>
+										<textarea width="549px" height="61px" case="mixed" key="{providerNoteMeta:text()}" showError="false"/>
 										</widget>
 										</row>
 								 
@@ -261,7 +261,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 								</widget>
 								<widget colspan="2">
 								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="531px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="549px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
 								
 								</panel>
 								</panel>
