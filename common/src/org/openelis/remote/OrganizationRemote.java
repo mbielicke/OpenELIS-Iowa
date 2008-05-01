@@ -9,9 +9,6 @@ import org.openelis.domain.OrganizationAddressDO;
 
 @Remote
 public interface OrganizationRemote {
-	//method to return list of org ids and org names by what letter they start with
-	public List getOrganizationNameListByLetter(String letter, int startPos, int maxResults);
-	
 	//method to return org name, address
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
 	
