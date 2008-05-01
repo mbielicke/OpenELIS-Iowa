@@ -175,12 +175,14 @@
 				      <xsl:with-param name="label">order</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="value"></xsl:with-param>
-				    </xsl:call-template>				
+				    </xsl:call-template>	
+				    <xsl:if test="contains($modules,'Inventory')">			
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="label">inventory</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="value"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="value">InventoryScreen</xsl:with-param>
 				    </xsl:call-template>
+				    </xsl:if>
 				</menuPanel>
 		    </menuItem>
 	        <menuItem>

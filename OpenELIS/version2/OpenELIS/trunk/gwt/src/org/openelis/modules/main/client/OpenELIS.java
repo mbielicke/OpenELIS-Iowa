@@ -51,6 +51,7 @@ import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenText;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenTitledPanel;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
@@ -223,6 +224,17 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      
+      ClassFactory.addClass(new String[] {"ScreenTitledPanel", ScreenTitledPanel.TAG_NAME},
+              new ClassFactory.Factory() {
+                    public Object newInstance(Object[] args) {
+                        if(args == null)
+                            return new ScreenTitledPanel();
+                        else if(args[0] instanceof Node)
+                            return new ScreenTitledPanel((Node)args[0],(ScreenBase)args[1]);
+                        return null;
+                    }
+});
       /*
       ClassFactory.addClass(new String[] {"ScreenDragSelect",ScreenDragSelect.TAG_NAME},
                             new ClassFactory.Factory() {
