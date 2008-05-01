@@ -2,7 +2,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -20,7 +19,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.domain.OrganizationTableRowDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
@@ -224,20 +222,6 @@ public class OrganizationBean implements OrganizationRemote {
 
         return orgNotes;
 	}
-	
-	public List<OrganizationTableRowDO> getOrganizationNameListByLetter(String letter, int startPos, int maxResults){
-		Query query = manager.createNamedQuery("getOrganizationNameRowsByLetter");
-		query.setParameter("letter", letter);
-		
-		if(maxResults > 0){
-			query.setFirstResult(startPos);
-			query.setMaxResults(maxResults);
-		}
-		
-		List orgList = query.getResultList();// getting a list of organizations
-		
-		return orgList;
-	}
 
 	public Integer getSystemUserId(){
 	        try {
@@ -247,9 +231,7 @@ public class OrganizationBean implements OrganizationRemote {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	            return null;
-	        } finally {
-	        }
-	        
+	        }         
 	    }
 
 	public List query(HashMap fields, int first, int max) throws Exception{
