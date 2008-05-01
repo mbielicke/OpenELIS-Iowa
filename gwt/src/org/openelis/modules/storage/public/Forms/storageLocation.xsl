@@ -116,7 +116,7 @@
 								</row>
 								<row>
 								<widget  colspan="4" halign="center">
-							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="11" title="" showError="false">
+							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="11" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
@@ -141,7 +141,7 @@
 									<queryTable width="auto" maxRows="11" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
-										<widths>225,275,80</widths>
+										<widths>225,275,98</widths>
 										<editors>
 											<textbox case="upper"/>
 											<textbox case="mixed"/>

@@ -133,7 +133,7 @@
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,105,85,120,130</widths>
+								<widths>45,105,85,120,148</widths>
 								<editors>									
 								    <check threeState="true"/>											
 									<textbox/>									

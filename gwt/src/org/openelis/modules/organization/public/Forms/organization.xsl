@@ -228,7 +228,7 @@
 										<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="574px" title="" maxRows="8" showError="false">
+									<queryTable width="592px" title="" maxRows="8" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,
 										<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,<xsl:value-of select='resource:getString($constants,"address")'/>,
 										<xsl:value-of select='resource:getString($constants,"city")'/>,<xsl:value-of select='resource:getString($constants,"state")'/>,
