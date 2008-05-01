@@ -168,12 +168,13 @@ public class StorageLocation implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((sortOrder == null && original.sortOrder != null) || 
+        //4/29/08 - we dont want to keep track of when sort order changes
+        /*if((sortOrder == null && original.sortOrder != null) || 
            (sortOrder != null && !sortOrder.equals(original.sortOrder))){
           Element elem = doc.createElement("sort_order");
           elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
           root.appendChild(elem);
-        }      
+        }*/      
 
         if((name == null && original.name != null) || 
            (name != null && !name.equals(original.name))){

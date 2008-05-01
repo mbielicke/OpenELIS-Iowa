@@ -5,22 +5,38 @@ package org.openelis.entity;
   * InventoryItem Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
+import java.util.Collection;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+	/*@NamedQueries({	@NamedQuery(name = "getInventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
+			"					i.unitOfMeasure,i.isReorderAuto,i.isLotMaintained,i.isActive, i.averageLeadTime, i.averageCost, i.averageDailyUse) from InventoryItem i where i.id = :id")})
+		*/	
+			/*QUERY AFTER THE FIELDS GET PUT INTO THE DB
+			 * 
+			 * select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
+						" i.unitOfMeasure,i.isReorderAuto,i.isLotMaintained,i.isActive, i.averageLeadTime, i.averageCost, i.averageDailyUse, i.store" +
+						" i.purchasedUnit, i.dispensedUnit, i.isBulk, i.isNotForSale, i.isSubassembly, i.isComponent) from InventoryItem i where i.id = :id
+			 * 
+			 */
+			   
 @Entity
 @Table(name="inventory_item")
 @EntityListeners({AuditUtil.class})
@@ -67,6 +83,9 @@ public class InventoryItem implements Auditable, Cloneable {
   @Column(name="average_daily_use")
   private Integer averageDailyUse;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+  private Collection<Note> note;
 
   @Transient
   private InventoryItem original;
@@ -303,5 +322,11 @@ public class InventoryItem implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_item";
   }
+public Collection<Note> getNote() {
+	return note;
+}
+public void setNote(Collection<Note> note) {
+	this.note = note;
+}
   
 }   

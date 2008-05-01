@@ -23,8 +23,9 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "getInventoryLocationByStorageLocationId", query = "select i.id from InventoryLocation i where i.storageLocation = :id")})
-
+	/*@NamedQueries({	@NamedQuery(name = "getInventoryLocations", query = "select new org.openelis.domain.InventoryLocationDO() from InventoryLocation i where i.id = :id"),
+					@NamedQuery(name = "getInventoryLocationByStorageLocationId", query = "select i.id from InventoryLocation i where i.storageLocation = :id")})
+*/
 @Entity
 @Table(name="inventory_location")
 @EntityListeners({AuditUtil.class})

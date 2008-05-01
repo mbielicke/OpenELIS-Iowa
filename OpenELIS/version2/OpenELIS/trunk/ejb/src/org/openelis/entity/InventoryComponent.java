@@ -5,22 +5,28 @@ package org.openelis.entity;
   * InventoryComponent Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+/*	@NamedQueries({	@NamedQuery(name = "getInventoryComponents", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
+			 											" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id")})
+*/
 @Entity
 @Table(name="inventory_component")
 @EntityListeners({AuditUtil.class})
@@ -40,7 +46,10 @@ public class InventoryComponent implements Auditable, Cloneable {
   @Column(name="quantity")
   private Double quantity;             
 
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "component", insertable = false, updatable = false)
+  private Organization componentInventoryItem;
+  
   @Transient
   private InventoryComponent original;
 
@@ -132,5 +141,11 @@ public class InventoryComponent implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_component";
   }
+public Organization getComponentInventoryItem() {
+	return componentInventoryItem;
+}
+public void setComponentInventoryItem(Organization componentInventoryItem) {
+	this.componentInventoryItem = componentInventoryItem;
+}
   
 }   
