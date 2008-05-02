@@ -113,9 +113,6 @@ public class CategoryBean implements CategoryRemote {
         // setting the order by clause
         qb.setOrderBy(CategoryMeta.NAME);
         
-        // this is done to make sure that if the generated query contains alias for related entry join attribute(as specified in 
-        // the entity class) then the alias for the entry for which this related entry is specified is present, otherwise the query will produce 
-        // an exception on the lines of "xyz field/alias not found"
         if(qb.hasTable(dicRelatedEntryMeta.getTable()))
         	qb.addTable(dictionaryMeta);
         
@@ -290,21 +287,14 @@ public class CategoryBean implements CategoryRemote {
        }     
        return entryList;
     }
-
-    /** This function is used to find the id for the dictionary record that has its system name set to the one
-     * specified by the parameter "systemname".
-     * @return The id of the record if there is such a dictionary record in the database or null if there isn't  
-     */     
+    
     public Integer getEntryIdForSystemName(String systemName)throws Exception{ 
         Query query = manager.createNamedQuery("getEntryIdForSystemName");  
         query.setParameter("systemName", systemName);
         Integer entryId = null;
-        try{ 
-          // this code will throw an exception if the query created above did not return any result 
-          // or it will return as a result the id of the sought record           
+        try{     
           entryId = (Integer)query.getSingleResult();
         }catch(NoResultException ex){
-            // if no results returned by the execution of the query, return null
             return null;
         } catch(Exception ex){
             ex.printStackTrace();
@@ -312,21 +302,14 @@ public class CategoryBean implements CategoryRemote {
         }    
         return entryId;
     } 
-    
-    /** This function is used to find the id for the dictionary record that has its entry text set to the one
-     * specified by the parameter "entry".
-     * @return The id of the row if there is such a dictionary record in the database or null if there isn't  
-     */ 
+     
     public Integer getEntryIdForEntry(String entry)throws Exception{
         Query query = manager.createNamedQuery("getEntryIdForEntry");  
         query.setParameter("entry", entry);
         Integer entryId = null;
         try{ 
-            //this code will throw an exception if the query created above did not return any result 
-            // or it will return as a result the id of the sought record  
           entryId = (Integer)query.getSingleResult();
         }catch(NoResultException ex){
-           //if no results returned by the execution of the query, return null
             return null;
         } catch(Exception ex){
             ex.printStackTrace();
@@ -335,17 +318,11 @@ public class CategoryBean implements CategoryRemote {
         return entryId;
     } 
         
-    /** This function is used to find the id for the category record that has its entry text set to the one
-     * specified by the parameter "systemName".
-     * @return The id of the row if there is such a category record in the database or null if there isn't  
-     */ 
     public Integer getCategoryId(String systemName){
         Query query = manager.createNamedQuery("getCategoryIdBySystemName");  
         query.setParameter("systemName", systemName);
         Integer categoryId = null;
         try{ 
-            // this code will throw an exception if the query created above did not return any result 
-            // or it will return as a result the id of the sought record  
             categoryId = (Integer)query.getSingleResult();        
         } catch(Exception ex){          
             ex.printStackTrace();
@@ -354,21 +331,12 @@ public class CategoryBean implements CategoryRemote {
         return categoryId;
     }
     
-   /** This function is used to find the entry text for the dictionary record the id for which
-    *  is specified by the parameter "id"
-    *  @return  An array of objects containing the id and the entry text of the record 
-    *  if there is such a dictionary record in the database or null if there isn't  
-    */
     public Object[] autoCompleteLookupById(Integer id)throws Exception{
       try{  
         Query query  = manager.createNamedQuery("getEntryAutoCompleteById");
         query.setParameter("id",id);
-        //this code will throw an exception if the query created above did not return any result 
-        // or it will return as a result an array of objects containing the id and the entry text
-        // of the sought record    
         return (Object[])query.getSingleResult();
       }catch(NoResultException ex){
-         //if no results returned by the execution of the query, return null
           return null;
       } catch(Exception ex){
           throw ex;
@@ -376,12 +344,6 @@ public class CategoryBean implements CategoryRemote {
       
     }
     
-    /** This function is used to return a CategoryDO object and create a lock for the category record specified by the
-     *  parameter "categoryId".This will disallow any updates to this record until and unless the user which made this lock to be created, 
-     *  either commits or aborts the current transaction i.e. getCategoryAndUnlock(Integer categoryId) is called.    
-     *  @return  A CategoryDO object containing the data for the category record specified by the parameter "categoryId"
-     *  @see getCategoryAndUnlock(Integer)
-     */
     @RolesAllowed("dictionary-update")
     public CategoryDO getCategoryAndLock(Integer categoryId)throws Exception {
         Query query = manager.createNamedQuery("getTableId");
@@ -392,10 +354,6 @@ public class CategoryBean implements CategoryRemote {
         return getCategory(categoryId);
     }
 
-    /** This function is used to return a CategoryDO object and release any locks for the category record specified by the parameter "categoryId".     
-     *  @return  A CategoryDO object containing the data for the category record specified by the parameter "categoryId"
-     *  @see getCategoryAndLock(Integer)
-     */
     public CategoryDO getCategoryAndUnlock(Integer categoryId) {
         
         Query unlockQuery = manager.createNamedQuery("getTableId");
@@ -407,16 +365,9 @@ public class CategoryBean implements CategoryRemote {
     } 
     
     
-    /** This function validates the data in CategoryDO specified by the parameter "categoryDO" before it can be committed to the database. 
-     *  It is called before any update is attempted so that if data is invalid, the user can be
-     *  notified.It is also called during an update. The parameter "exceptionList" is the list of exceptions that could potentially
-     *  be thrown due to the invalidity of data due to certain reasons. This list is ultimately used to notify users about violation of 
-     *  some constraint related to specific fields on the screen.
-     *  @see validateDictionary(DictionaryDO, Integer, int ,List,List,List) 
-     */
     private void validateCategory(CategoryDO categoryDO,List<Exception> exceptionList){
         // this code will check whether the system name, if specified, for this DO is not used for any other category record
-        // i.e. for a record whose Id is not the same as the Id specified for this DO
+        // i.e. for a record the Id for which is not the same as the Id specified for this DO
             if(!("").equals(categoryDO.getSystemName())){
                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForCatSysName");
                 catIdQuery.setParameter("systemName", categoryDO.getSystemName());
@@ -431,12 +382,7 @@ public class CategoryBean implements CategoryRemote {
                     exceptionList.add(ex);
                 }
                 
-              if(catId!=null){
-                // if the Id for this DO is null, then it will mean that this is a new record and thus if the above query returned
-                // a result then this is the violation of the uniqueness constraint described above because an attempt has been made to use
-                //  an already used system name for a new record
-                // if the id for this DO is not null and the id for the system name specified for it is not same as the id specifed for the DO,
-                //  then  again the violation of the uniqueness constraint, in both cases a exception added to the list of exceptions  
+              if(catId!=null){  
                 if(!catId.equals(categoryDO.getId())){
                     exceptionList.add(new FieldErrorException("fieldUniqueException",CategoryMeta.SYSTEM_NAME));
                 }  
@@ -454,18 +400,7 @@ public class CategoryBean implements CategoryRemote {
             
     }
     
-    /** This function validates the data in DictionaryDO specified by the parameter "dictDO" before it can be committed to the database. 
-     *  It is called before any update is attempted so that if data is invalid, the user can be
-     *  notified.It is also called during an update. The parameter "exceptionList" is the list of exceptions that could potentially
-     *  be thrown due to the invalidity of data due to certain reasons. This list is ultimately used to notify users about violation of 
-     *  some constraint related to specific fields on the screen.
-     *  The parameter "categoryId" is the id of the category to which this dictionary record belongs.
-     *  The lists "systemNames" and "entries" are the lists of values for all DictionaryDOs  validated so far.  
-     *  The parameter "index" is the index in the list of DictionaryDOs required for a given update attempt 
-     *  The parameter "exceptionList" is the list of exceptions that could potentially
-     *  be thrown due to the invalidity of data due to certain reasons.
-     *  @see validateCategory(CategoryDO, List) 
-     */
+    
     private void validateDictionary(DictionaryDO dictDO, Integer categoryId, int index,List<String>systemNames,List<String>entries,List<Exception> exceptionList){             
              
             if(!("").equals(dictDO.getEntry())){   
@@ -512,12 +447,6 @@ public class CategoryBean implements CategoryRemote {
        }                 
     }
     
-    /** This function is called to validate data when new records are being added to the database  
-     *  The parameter "categoryDO" contains the data for a category record.
-     *  The parameter "dictDOList" is the list of DictionaryDOs that represent all the records that 
-     *  belong to the one specified by "categoryDO"   
-     *  validateForAdd(CategoryDO, List)
-     */
     public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
         // this is the list of all the exceptions that will potentially be caused by the violation of one or more constraints duing validation
         List<Exception> exceptionList = new ArrayList<Exception>();
@@ -536,15 +465,9 @@ public class CategoryBean implements CategoryRemote {
         return exceptionList;
     }
     
-    /** This function is called to validate data when an existing category record is being updated in the database  
-     *  The parameter "categoryDO" contains the data for a category record.
-     *  The parameter "dictDOList" is the list of DictionaryDOs that represent all the records that belong to the one 
-     *  specified by "categoryDO"   
-     *  @see validateForAdd(CategoryDO, List)
-     */
     public List validateForUpdate(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
       // this is the list of all the exceptions that will potentially be caused by 
-      //  the violation of one or more constraints duing validation
+      //  the violation of one or more constraints during validation
         List<Exception> exceptionList = new ArrayList<Exception>();
         
         // first validate the data for the category 
