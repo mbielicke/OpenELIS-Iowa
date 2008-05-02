@@ -111,11 +111,11 @@
 										<check key="{storageLocationMeta:isAvailable()}" tab="{storageLocationMeta:name()},{storageLocationStorageUnitMeta:description()}"/>
 									</widget>
 								</row>
-								<row>
-								<panel layout="vertical" height="15px" xsi:type="Panel"/>
-								</row>
-								<row>
-								<widget  colspan="4" halign="center">
+								</panel>
+								<panel height="10px" layout="vertical"  xsi:type="Panel"/>
+								
+								<panel layout="vertical" xsi:type="Panel" spacing="3">
+								<widget>
 							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="11" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
@@ -152,11 +152,9 @@
 											<xsl:value-of select='storageLocationChildMeta:isAvailable()'/>
 										</fields>
 									</queryTable>
-									</query>
-							</widget>
-								</row>
-								<row>
-		                <widget halign = "left">
+									</query>             
+                           </widget>
+		                <widget halign = "center">
                             <appButton  action="removeRow" onclick="this" key = "removeEntryButton">
                             <panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
@@ -166,7 +164,7 @@
                                </panel>
                              </appButton>
                            </widget>	      
-                           </row>
+
 							</panel>
 				</panel>
 			</panel>

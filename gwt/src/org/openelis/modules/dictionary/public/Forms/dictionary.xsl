@@ -101,7 +101,7 @@
 					</panel>
 					<panel height="10px" layout="vertical"  xsi:type="Panel"/>
 					
-					<panel layout="vertical"  spacing="5" xsi:type="Panel">
+					<panel layout="vertical"  spacing="3" xsi:type="Panel">
 						<widget>
 							<table maxRows = "11" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
