@@ -289,7 +289,7 @@
 				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" xsi:type="Tab">
 					<!-- TAB 1 (Components) -->
 					<tab key="tab1" text="{resource:getString($constants,'components')}">
-							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
+							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
@@ -343,7 +343,7 @@
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
 					<tab key="tab2" text="{resource:getString($constants,'locationQuantity')}">
-						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
+						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="locQuantitiesTable" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,

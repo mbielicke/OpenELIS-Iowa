@@ -177,7 +177,7 @@
 				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" xsi:type="Tab">
 					<!-- TAB 1 -->
 					<tab key="tab1" text="{resource:getString($constants,'contact')}">
-							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel">
+							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
 								<table width="574px" key="contactsTable" manager="OrganizationContactsTable" maxRows="8" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"type")'/>,<xsl:value-of select='resource:getString($constants,"contactName")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -266,8 +266,7 @@
 									</queryTable>
 									</query>
 								</widget>
-
-									<widget style="WhiteContentPanel" halign="center">
+								<widget style="WhiteContentPanel" halign="center">									
 									<appButton action="removeRow" onclick="this" style="Button" key="removeContactButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
