@@ -1,11 +1,5 @@
 package org.openelis.modules.storageunit.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -13,7 +7,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
-import org.openelis.gwt.common.RPCDeleteException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -31,8 +24,14 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class StorageUnitService implements AppScreenFormServiceInt,
 		AutoCompleteServiceInt {

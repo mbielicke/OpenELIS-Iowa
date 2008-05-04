@@ -3,6 +3,7 @@ package org.openelis.server;
 import edu.uiowa.uhl.security.remote.SecurityRemote;
 
 import org.apache.log4j.Logger;
+import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
@@ -56,6 +57,7 @@ public class JUnitFilter implements Filter {
         if(config.getInitParameter("Pass") != null)
             pass = config.getInitParameter("Pass");
         SessionManager.init("OpenELIS"); 
+        ServiceUtils.props = "org.openelis.modules.main.server.constants.OpenELISConstants";
         CachingManager.init(Constants.APP_ROOT);
         log.debug("getting out");
     }

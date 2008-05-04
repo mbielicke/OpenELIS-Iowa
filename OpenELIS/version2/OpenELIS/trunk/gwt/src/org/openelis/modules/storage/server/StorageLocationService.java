@@ -1,11 +1,5 @@
 package org.openelis.modules.storage.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -40,8 +34,14 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class StorageLocationService implements AppScreenFormServiceInt,
    											   AutoCompleteServiceInt{

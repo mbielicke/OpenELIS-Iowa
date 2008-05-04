@@ -2,7 +2,6 @@ package org.openelis.modules.main.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.xml.client.Document;
 
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;

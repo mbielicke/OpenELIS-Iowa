@@ -58,6 +58,7 @@ public class StaticFilter implements Filter {
         if(config.getInitParameter("ipTrys") != null)
             ipTrys = Integer.parseInt(config.getInitParameter("ipTrys"));
         SessionManager.init("OpenELIS"); 
+        ServiceUtils.props = "org.openelis.modules.main.server.constants.OpenELISConstants";
         CachingManager.init(Constants.APP_ROOT);
         log.debug("getting out");
     }

@@ -1,10 +1,7 @@
 package org.openelis.modules.organization.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -42,15 +39,18 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {

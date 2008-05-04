@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
+                xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:categoryMeta="xalan://org.openelis.meta.CategoryMeta"
                 xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta"
@@ -10,7 +10,7 @@
 <xsl:import href="aToZOneColumn.xsl"/>
 
   <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>
   
   <xalan:component prefix="locale">
@@ -26,8 +26,9 @@
   </xalan:component>
   
   <xsl:template match="doc"> 
-    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
+      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Dictionary" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
