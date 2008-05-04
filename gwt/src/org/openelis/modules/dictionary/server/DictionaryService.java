@@ -1,10 +1,7 @@
 package org.openelis.modules.dictionary.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SectionIdNameDO;
+import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
@@ -36,11 +33,14 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 
-import edu.uiowa.uhl.security.domain.SectionIdNameDO;
-import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class DictionaryService implements AppScreenFormServiceInt,
                                            AutoCompleteServiceInt{

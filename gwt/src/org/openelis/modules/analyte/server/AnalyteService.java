@@ -1,11 +1,5 @@
 package org.openelis.modules.analyte.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.openelis.domain.AnalyteDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -29,8 +23,14 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
 

@@ -1,22 +1,22 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.server.constants.UTFResource"
+                xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:fn="http://www.w3.org/2005/xpath-functions" 
                 extension-element-prefixes="resource"
                 version="1.0">
 
   <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.server.constants.UTFResource"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>
   
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-      <xsl:variable name="language"><xsl:value-of select="doc/locale"/></xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle('org.openelis.modules.main.server.constants.OpenELISConstants',locale:new(string($language)))"/>
-
+       <xsl:variable name="language"><xsl:value-of select="doc/locale"/></xsl:variable>
+    <xsl:variable name="props"><xsl:value-of select="doc/props"/></xsl:variable>
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
   <xsl:template match="doc">
    <xsl:variable name="modules"><xsl:value-of select="modules"/></xsl:variable>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

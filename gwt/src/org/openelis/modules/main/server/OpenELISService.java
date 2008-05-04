@@ -1,8 +1,5 @@
 package org.openelis.modules.main.server;
 
-import java.util.HashMap;
-import java.util.Locale;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.CollectionField;
@@ -14,11 +11,14 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.constants.UTFResource;
 import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.util.HashMap;
+import java.util.Locale;
 
 public class OpenELISService implements OpenELISServiceInt {
    
