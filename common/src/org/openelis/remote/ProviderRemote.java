@@ -23,7 +23,7 @@ public interface ProviderRemote {
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses) throws Exception;
     
     //method to return just notes
-    public List getProviderNotes(Integer providerId, boolean topLevel);
+    public List getProviderNotes(Integer providerId);
     
     //method to return just provider addresses
     public List getProviderAddresses(Integer providerId);
@@ -35,9 +35,7 @@ public interface ProviderRemote {
      public Integer getSystemUserId();
      
      //method to get all the dicntionary entries for providers
-     public List<Object[]> getProviderTypes();
-     
-     public List getProviderNotes(Integer providerId);    
+     public List<Object[]> getProviderTypes();  
      
      //method to validate the fields before the backend updates it in the database
      public List validateForUpdate(ProviderDO providerDO, List<ProviderAddressDO> addresses);

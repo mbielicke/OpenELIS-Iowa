@@ -3,6 +3,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.Datetime;
+
 public class NoteDO implements Serializable{
 
 	/**
@@ -13,7 +15,7 @@ public class NoteDO implements Serializable{
 	protected Integer id;
 	protected Integer referenceId;  
 	protected Integer referenceTable;   
-	protected Date timestamp;    
+	protected Datetime timestamp;    
 	protected String isExternal;  
 	protected Integer systemUser; 
 	protected String subject; 
@@ -27,8 +29,16 @@ public class NoteDO implements Serializable{
     	this.id = id;
     	this.referenceId = referenceId;
     	this.referenceTable = referenceTable;
-    	this.timestamp = timestamp;
+    	this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
     	this.isExternal = isExternal;
+    	this.systemUser = systemUser;
+    	this.subject = subject;
+    	this.text = text;
+    }
+    
+    public NoteDO(Integer id, Integer systemUser, String text, Date timestamp, String subject){
+    	this.id = id;
+    	this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
     	this.systemUser = systemUser;
     	this.subject = subject;
     	this.text = text;
@@ -76,11 +86,11 @@ public class NoteDO implements Serializable{
 	public void setText(String text) {
 		this.text = text;
 	}
-	public Date getTimestamp() {
+	public Datetime getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setTimestamp(Datetime timestamp) {
+		this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
 	} 
 
 }
