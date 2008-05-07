@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableCellInputWidget;
@@ -141,8 +142,7 @@ public class DictionaryEntriesTable implements TableManager {
     }
     
     public void setRelatedEntryId(Integer entryId){
-        NumberField relEntryId = new NumberField(); 
-        relEntryId.setType("integer");                     
+        NumberField relEntryId = new NumberField(NumberObject.INTEGER); 
         relEntryId.setValue(entryId);
         relEntryRow.addHidden("relEntryId", relEntryId);        
     }

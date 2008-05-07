@@ -38,7 +38,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	
 	public void afterDraw(boolean success) {
 		loaded = true;
-		bpanel = (ButtonPanel) getWidget("buttons");
+		setBpanel((ButtonPanel) getWidget("buttons"));
 
 		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
 		modelWidget.addChangeListener(atozTable);

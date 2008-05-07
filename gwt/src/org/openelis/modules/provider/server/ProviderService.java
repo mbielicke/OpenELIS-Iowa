@@ -1,7 +1,10 @@
 package org.openelis.modules.provider.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
@@ -34,18 +37,14 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 
 public class ProviderService implements AppScreenFormServiceInt{
@@ -115,7 +114,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-        Integer providerId = (Integer)rpcSend.getField(ProviderMeta.ID).getValue();
+        Integer providerId = providerDO.getId();
                 
         ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
                                         
@@ -142,8 +141,10 @@ public class ProviderService implements AppScreenFormServiceInt{
             return rpcSend;
         }
          
-        ProviderDO provDO = remote.getProvider(providerId);
-        setFieldsInRPC(rpcReturn, provDO);        
+        //ProviderDO provDO = remote.getProvider(providerId);
+        providerDO.setId(providerId);
+        
+        setFieldsInRPC(rpcReturn, providerDO);        
         
         return rpcReturn;
     }
@@ -187,10 +188,9 @@ public class ProviderService implements AppScreenFormServiceInt{
 
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject();            
+            NumberObject id = new NumberObject(NumberObject.INTEGER);            
             StringObject lname = new StringObject();
             StringObject fname = new StringObject();
-            id.setType("integer");
              lname.setValue(lnameResult);
              fname.setValue(fnameResult);
             
@@ -232,10 +232,9 @@ public class ProviderService implements AppScreenFormServiceInt{
 
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject();                
+                NumberObject id = new NumberObject(NumberObject.INTEGER);                
                 StringObject lname = new StringObject();
                 StringObject fname = new StringObject();
-                id.setType("integer");
                  lname.setValue(lnameResult);
                  fname.setValue(fnameResult);
                 
@@ -261,9 +260,8 @@ public class ProviderService implements AppScreenFormServiceInt{
         NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-        Integer providerId = (Integer)rpcSend.getField(ProviderMeta.ID).getValue();
                 
-        ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
+        ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerDO.getId());
                                         
         providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
         providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
@@ -278,7 +276,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         } 
                          
         try{
-            providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
+            remote.updateProvider(providerDO, providerNote, provAddDOList);        
         }catch(Exception e){
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
@@ -288,9 +286,9 @@ public class ProviderService implements AppScreenFormServiceInt{
             return rpcSend;
         }
         
-        ProviderDO provDO = remote.getProvider((Integer)providerId);
+        //ProviderDO provDO = remote.getProvider((Integer)providerId);
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, provDO);
+        setFieldsInRPC(rpcReturn, providerDO);
                               
         return rpcReturn;
     }
@@ -335,10 +333,8 @@ public class ProviderService implements AppScreenFormServiceInt{
                 ProviderAddressDO addressRow = (ProviderAddressDO)contactsList.get(iter);
 
                    TableRow row = addressModel.createRow();
-                   NumberField id = new NumberField();
-                   id.setType("integer");
-                   NumberField addId = new NumberField();
-                   addId.setType("integer");
+                   NumberField id = new NumberField(NumberObject.INTEGER);
+                   NumberField addId = new NumberField(NumberObject.INTEGER);
                     id.setValue(addressRow.getId());
                     addId.setValue(addressRow.getAddressDO().getId());
                     row.addHidden("provAddId", id);
@@ -409,8 +405,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject();
-            blankNumberId.setType("integer");
+            NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
             blankNumberId.setValue(new Integer(-1));
             if(cat.equals("providerType")){
 
@@ -439,8 +434,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             set.addObject(textObject);
             
             if(cat.equals("providerType")){
-                NumberObject numberId = new NumberObject();
-                numberId.setType("integer");
+                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
                 numberId.setValue(dropdownId);
 
                 set.setKey(numberId);
@@ -474,16 +468,16 @@ public class ProviderService implements AppScreenFormServiceInt{
 		root.setAttribute("key", "notePanel");   
 		int i=0;
         while(itr.hasNext()){           
-            Object[] result = (Object[])itr.next();
-                        
+            NoteDO noteRow = (NoteDO)itr.next();
+            
             //user id
-            Integer userId = (Integer)result[1];
+            Integer userId = noteRow.getSystemUser();
             //body
-            String body = (String)result[2];
+            String body = noteRow.getText();
             //date
-            Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
+            String date = noteRow.getTimestamp().toString();
             //subject
-            String subject = (String)result[4];
+            String subject = noteRow.getSubject();
                         
             
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
@@ -509,17 +503,17 @@ public class ProviderService implements AppScreenFormServiceInt{
             	 mainRowPanel.setAttribute("style", "TableRow");
              }
         	 mainRowPanel.setAttribute("layout", "vertical");
-        	 mainRowPanel.setAttribute("width", "507px");
+        	 mainRowPanel.setAttribute("width", "531px");
         	 
         	 topRowPanel.setAttribute("layout", "horizontal");
-        	 topRowPanel.setAttribute("width", "507px");
+        	 topRowPanel.setAttribute("width", "531px");
         	 titleText.setAttribute("key", "note"+i+"Title");
         	 titleText.setAttribute("style", "notesSubjectText");
         	 titleText.appendChild(doc.createTextNode(subject));
         	 authorWidgetTag.setAttribute("halign", "right");
         	 authorPanel.setAttribute("layout", "vertical");
         	 dateText.setAttribute("key", "note"+i+"Date");
-        	 dateText.appendChild(doc.createTextNode(date.toString()));
+        	 dateText.appendChild(doc.createTextNode(date));
         	 authorText.setAttribute("key", "note"+i+"Author");
         	 authorText.appendChild(doc.createTextNode("by "+userName));
         	 bodytextTag.setAttribute("key", "note"+i+"Body");

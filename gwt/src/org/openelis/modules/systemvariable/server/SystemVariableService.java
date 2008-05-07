@@ -142,11 +142,9 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
              DataSet row = new DataSet();
              
-             NumberObject id = new NumberObject();
+             NumberObject id = new NumberObject(NumberObject.INTEGER);
 
              StringObject svname = new StringObject();
-             
-             id.setType("integer");
   
              id.setValue(idResult);
 
@@ -187,11 +185,10 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
                  DataSet row = new DataSet();
                  
-                 NumberObject id = new NumberObject();
+                 NumberObject id = new NumberObject(NumberObject.INTEGER);
 
                  StringObject svname = new StringObject();
-                 
-                 id.setType("integer");
+               
                  id.setValue(idResult);
      
                  svname.setValue(nameResult);                       

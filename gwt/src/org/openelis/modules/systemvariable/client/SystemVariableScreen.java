@@ -9,18 +9,15 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener{
-
-    private static boolean loaded = false;
+public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener {
     
     public SystemVariableScreen() {
-        super("org.openelis.modules.systemvariable.server.SystemVariableService",loaded);
+        super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
         name="System Variable";
     }
     
     public void afterDraw(boolean success) {
-        //loaded = true;
-        bpanel = (ButtonPanel) getWidget("buttons");        
+        setBpanel((ButtonPanel) getWidget("buttons"));        
         message.setText("done");
 
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");

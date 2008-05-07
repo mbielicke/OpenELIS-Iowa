@@ -281,6 +281,14 @@
 										<check key="{inventoryItemMeta:isLabor()}" tab="{inventoryItemMeta:name()},{inventoryItemMeta:isSubAssembly()}"/>
 									</widget>	
 								</row>
+								<row>
+									<widget>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
+									</widget>
+									<widget>
+										<check key="{inventoryItemMeta:isLabor()}" tab="{inventoryItemMeta:name()},{inventoryItemMeta:isSubAssembly()}"/>
+									</widget>	
+								</row>
 								</panel>
 								</content>
 								</titledPanel>

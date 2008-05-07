@@ -153,9 +153,8 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 				String nameResult = (String)result[1];
 
 				DataSet row = new DataSet();
-				NumberObject id = new NumberObject();
+				NumberObject id = new NumberObject(NumberObject.INTEGER);
 				StringObject name = new StringObject();
-				id.setType("integer");
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
@@ -191,8 +190,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 
 			DataSet row = new DataSet();
 
-			 NumberObject idField = new NumberObject();
-			 idField.setType("integer");
+			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
 			 StringObject nameField = new StringObject();
 			 nameField.setValue(name);
       
@@ -342,12 +340,11 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		DataSet blankset = new DataSet();
 		
 		StringObject blankStringId = new StringObject();
-		NumberObject blankNumberId = new NumberObject();
+		NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
 				
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
 		
-		blankNumberId.setType("integer");
 		blankNumberId.setValue(new Integer(0));
 		
 		blankset.setKey(blankNumberId);
@@ -363,12 +360,11 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			String dropdownText = (String)result[1];
 			
 			StringObject textObject = new StringObject();
-			NumberObject numberId = new NumberObject();
+			NumberObject numberId = new NumberObject(NumberObject.INTEGER);
 			
 			textObject.setValue(dropdownText);
 			set.addObject(textObject);
 			
-			numberId.setType("integer");
 			numberId.setValue(dropdownId);
 
 			set.setKey(numberId);

@@ -130,12 +130,11 @@ public class QAEventService implements
 
              DataSet row = new DataSet();
              
-             NumberObject id = new NumberObject();
+             NumberObject id = new NumberObject(NumberObject.INTEGER);
 
              StringObject qaname = new StringObject();
              StringObject tname = new StringObject();
              StringObject mname = new StringObject();
-             id.setType("integer");
   
              id.setValue(idResult);
 
@@ -180,12 +179,11 @@ public class QAEventService implements
 
                  DataSet row = new DataSet();
                  
-                 NumberObject id = new NumberObject();
+                 NumberObject id = new NumberObject(NumberObject.INTEGER);
 
                  StringObject qaname = new StringObject();
                  StringObject tname = new StringObject();
                  StringObject mname = new StringObject();
-                 id.setType("integer");
                  id.setValue(idResult);
      
                      qaname.setValue(nameResult);  
@@ -297,8 +295,7 @@ public class QAEventService implements
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject();
-            blankNumberId.setType("integer");
+            NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
             blankNumberId.setValue(new Integer(-1));
             
 
@@ -336,8 +333,8 @@ public class QAEventService implements
             set.addObject(textObject);
             
 
-                NumberObject numberId = new NumberObject();
-                numberId.setType("integer");
+                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+
                 numberId.setValue(dropdownId);
 
                 set.setKey(numberId);           

@@ -149,9 +149,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 				String nameResult = (String)result[1];
 
 				DataSet row = new DataSet();
-				NumberObject id = new NumberObject();
+				NumberObject id = new NumberObject(NumberObject.INTEGER);
 				StringObject name = new StringObject();
-				id.setType("integer");
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
@@ -187,8 +186,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 
 			DataSet row = new DataSet();
 
-			 NumberObject idField = new NumberObject();
-			 idField.setType("integer");
+			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
 			 StringObject nameField = new StringObject();
 			 nameField.setValue(name);
       
@@ -286,9 +284,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, null);
 		else{
 			DataSet parentAnalyteSet = new DataSet();
-			NumberObject id = new NumberObject();
+			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
-			id.setType("integer");
 			id.setValue(analyteDO.getParentAnalyteId());
 			text.setValue(analyteDO.getParentAnalyte().trim());
 			parentAnalyteSet.setKey(id);
@@ -347,8 +344,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			
 			DataSet data = new DataSet();
 			//hidden id
-			NumberObject idObject = new NumberObject();
-			idObject.setType("integer");
+			NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 			idObject.setValue(analyteId);
 			data.setKey(idObject);
 			//columns
