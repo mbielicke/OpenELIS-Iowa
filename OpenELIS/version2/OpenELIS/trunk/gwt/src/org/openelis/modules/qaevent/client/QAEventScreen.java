@@ -36,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
      
          public void afterDraw(boolean success) {
              loaded = true;
-               bpanel = (ButtonPanel) getWidget("buttons");        
+               setBpanel((ButtonPanel) getWidget("buttons"));        
                message.setText("done");                 
                
                AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");

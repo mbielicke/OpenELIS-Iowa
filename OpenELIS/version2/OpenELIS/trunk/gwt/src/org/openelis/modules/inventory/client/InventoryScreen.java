@@ -24,20 +24,12 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryScreen extends OpenELISScreenForm implements ClickListener, TabListener{
 
-	private Widget selected;
-
-    
-    //private AppButton removeContactButton;
-    //private EditTable contactsController;
 	private ScreenTextBox nameTextbox;
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
 	
 	private EditTable componentsController;
 	private EditTable locsController;
-	//private ScreenTextBox aveLeadTime;
-	//private ScreenTextBox aveCost;
-	//private ScreenTextBox aveDailyUse;
 	
 	public InventoryScreen() {
         super("org.openelis.modules.inventory.server.InventoryService",false);
@@ -69,7 +61,7 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 	}
 	
 	public void afterDraw(boolean success) {
-		bpanel = (ButtonPanel) getWidget("buttons");
+		setBpanel((ButtonPanel) getWidget("buttons"));
 		
 		//removeContactButton = (AppButton) getWidget("removeContactButton");
 
@@ -128,10 +120,10 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 		super.abort();
 	}
 	
-	public void up() {
+	public void update() {
 		locsController.setAutoAdd(true);
 		componentsController.setAutoAdd(true);
-		super.up();
+		super.update();
 	}
 
 	public void afterCommitUpdate(boolean success) {

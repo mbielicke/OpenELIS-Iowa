@@ -150,9 +150,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				String nameResult = (String)result[1];
 
 				DataSet row = new DataSet();
-				NumberObject id = new NumberObject();
+				NumberObject id = new NumberObject(NumberObject.INTEGER);
 				StringObject name = new StringObject();
-				id.setType("integer");
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
@@ -188,8 +187,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 
 			DataSet row = new DataSet();
 
-			 NumberObject idField = new NumberObject();
-			 idField.setType("integer");
+			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
 			 StringObject nameField = new StringObject();
 			 nameField.setValue(name);
       
@@ -338,9 +336,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			rpcReturn.setFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION, null);
 		else{
 			DataSet storageUnitSet = new DataSet();
-			NumberObject id = new NumberObject();
+			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
-			id.setType("integer");
 			id.setValue(storageLocDO.getStorageUnitId());
 			text.setValue(storageLocDO.getStorageUnit().trim());
 			storageUnitSet.setKey(id);
@@ -442,8 +439,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		DataModel model = new DataModel();
 		DataSet data = new DataSet();
 		
-		NumberObject id = new NumberObject();
-		id.setType("integer");
+		NumberObject id = new NumberObject(NumberObject.INTEGER);
 		id.setValue(suId);
 		StringObject nameObject = new StringObject();
 		nameObject.setValue(desc);
@@ -472,8 +468,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		DataModel model = new DataModel();
 		DataSet data = new DataSet();
 		
-		NumberObject id = new NumberObject();
-		id.setType("integer");
+		NumberObject id = new NumberObject(NumberObject.INTEGER);
 		id.setValue(suId);
 		StringObject nameObject = new StringObject();
 		nameObject.setValue(name);
@@ -522,8 +517,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			
 				DataSet data = new DataSet();
 				//hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(slId);
 				data.setKey(idObject);
 				//columns
@@ -559,8 +553,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				
 				DataSet data = new DataSet();
 				//hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(id);
 				data.setKey(idObject);
 				//columns
@@ -598,8 +591,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				
 				DataSet data = new DataSet();
 //				hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(pslId);
 				data.setKey(idObject);
 				//columns
@@ -632,8 +624,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 				
 				DataSet data = new DataSet();
 				//hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(id);
 				data.setKey(idObject);
 				//columns
@@ -673,8 +664,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 
 	               TableRow row = childModel.createRow();
 	               
-	               NumberField id = new NumberField();
-	               id.setType("integer");
+	               NumberField id = new NumberField(NumberObject.INTEGER);
 	               id.setValue(slDO.getId());
 	               
 	               row.addHidden("id", id);
@@ -684,9 +674,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		       			row.getColumn(0).setValue(null);
 		       		else{
 		       			DataSet storageUnitSet = new DataSet();
-		       			NumberObject storageUnitId = new NumberObject();
+		       			NumberObject storageUnitId = new NumberObject(NumberObject.INTEGER);
 		       			StringObject storageUnitText = new StringObject();
-		       			storageUnitId.setType("integer");
 		       			storageUnitId.setValue(slDO.getStorageUnitId());
 		       			storageUnitText.setValue(slDO.getStorageUnit().trim());
 		       			storageUnitSet.setKey(storageUnitId);

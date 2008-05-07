@@ -170,8 +170,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject();
-            id.setType("integer");
+            NumberObject id = new NumberObject(NumberObject.INTEGER);
             id.setValue(idResult);
             
             StringObject sysName = new StringObject();
@@ -209,9 +208,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject();                
+                NumberObject id = new NumberObject(NumberObject.INTEGER);                
                 StringObject sysName = new StringObject();
-                id.setType("integer");
                 
                 sysName.setValue(sysNameResult);
                 id.setValue(idResult);
@@ -313,14 +311,12 @@ public class DictionaryService implements AppScreenFormServiceInt,
                  DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
 
                     TableRow row = dictEntryModel.createRow();
-                    NumberField id = new NumberField();
-                    id.setType("integer");                    
+                    NumberField id = new NumberField(NumberObject.INTEGER);
                      id.setValue(dictDO.getId());
                    
                      row.addHidden("id", id);
                      
-                     NumberField relEntryId = new NumberField();
-                     relEntryId.setType("integer");                     
+                     NumberField relEntryId = new NumberField(NumberObject.INTEGER);
                      relEntryId.setValue(dictDO.getRelatedEntryId());
 
                      row.addHidden("relEntryId", relEntryId);
@@ -338,9 +334,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
                        row.getColumn(4).setValue(null);
                     else{
                         DataSet relEntrySet = new DataSet();
-                        NumberObject idObj = new NumberObject();
+                        NumberObject idObj = new NumberObject(NumberObject.INTEGER);
                         StringObject text = new StringObject();
-                        idObj.setType("integer");
                         idObj.setValue(dictDO.getRelatedEntryId());
                         text.setValue(dictDO.getRelatedEntryText().trim());
                         relEntrySet.setKey(id);
@@ -365,8 +360,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         try{
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
           Integer entryId = remote.getEntryIdForSystemName((String)systemName.getValue());
-          NumberField idField = new NumberField();
-          idField.setType("integer");
+          NumberField idField = new NumberField(NumberObject.INTEGER);
           idField.setValue(entryId);          
           return idField;
         }catch(Exception ex){
@@ -380,8 +374,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          try{ 
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
           Integer entryId = remote.getEntryIdForEntry((String)entry.getValue());        
-          NumberField idField = new NumberField();
-          idField.setType("integer");
+          NumberField idField = new NumberField(NumberObject.INTEGER);
           idField.setValue(entryId);          
           return idField;
          }catch(Exception ex){
@@ -403,8 +396,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          String entry = (String)result[1];
          DataSet data = new DataSet();
         
-         NumberObject id = new NumberObject();
-         id.setType("integer");
+         NumberObject id = new NumberObject(NumberObject.INTEGER);
          id.setValue(dictId);
          StringObject nameObject = new StringObject();
          nameObject.setValue(entry.trim());
@@ -434,8 +426,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         blankset.addObject(blankStringId);
         
         if(cat.equals("section")){
-         NumberObject blankNumberId = new NumberObject();
-         blankNumberId.setType("integer");
+         NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
          blankNumberId.setValue(-1);
          blankset.setKey(blankNumberId);
         }                        
@@ -460,14 +451,13 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 String dropdownText = sectionDO.getName();
                 
                 StringObject textObject = new StringObject();
-                NumberObject numberId = new NumberObject();
+                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
                 
                 textObject.setValue(dropdownText);
                 set.addObject(textObject);
-                
-                    numberId.setType("integer");
-                    numberId.setValue(dropdownId);
-                    set.setKey(numberId);              
+             
+                numberId.setValue(dropdownId);
+                set.setKey(numberId);              
                 
                 model.add(set);                          
            }                           
@@ -492,8 +482,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             
             DataSet data = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject();
-            idObject.setType("integer");
+            NumberObject idObject = new NumberObject(NumberObject.INTEGER);
             idObject.setValue(entryId);
             data.setKey(idObject);
             

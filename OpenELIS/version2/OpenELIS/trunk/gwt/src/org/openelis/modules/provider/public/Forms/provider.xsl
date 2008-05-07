@@ -234,7 +234,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{providerNoteMeta:subject()}" width="435px" max="60" showError="false"/>
+										<textbox case="mixed" key="{providerNoteMeta:subject()}" width="435px" max="60" showError="false" tab="{providerNoteMeta:text()},{providerNoteMeta:text()}"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -252,7 +252,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="549px" height="61px" case="mixed" key="{providerNoteMeta:text()}" showError="false"/>
+										<textarea width="549px" height="61px" case="mixed" key="{providerNoteMeta:text()}" showError="false" tab="{providerNoteMeta:subject()},{providerNoteMeta:subject()}"/>
 										</widget>
 										</row>
 								 

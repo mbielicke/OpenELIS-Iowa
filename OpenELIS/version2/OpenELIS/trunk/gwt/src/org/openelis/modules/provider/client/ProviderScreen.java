@@ -4,8 +4,6 @@ package org.openelis.modules.provider.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -51,10 +49,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private boolean clearNotes = false; // tells whether notes panel is to be cleared 
     private boolean clearAddresses = false; // tells whether table tab is to be cleared
     
-    private Widget selected = null;
     private ScreenVertical svp = null;
-    private AppButton removeContactButton = null;
-    private AppButton standardNoteButton = null;
+    private AppButton        removeContactButton, standardNoteButton;
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private TextBox subjectBox = null;
@@ -78,43 +74,31 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         name="Provider";
     }
     
+    public void onChange(Widget sender) {
+        
+        if(sender == getWidget("atozButtons")){           
+           String action = ((ButtonPanel)sender).buttonClicked.action;           
+           if(action.startsWith("query:")){
+               getProviders(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+           }
+        }else{
+            super.onChange(sender);
+        }
+    }
+
+    public void onClick(Widget sender) {
+        if (sender == removeContactButton)
+            onRemoveRowButtonClick();
+        else if (sender == standardNoteButton)
+            onStandardNoteButtonClick();    
+    }
+
     public void afterDraw(boolean success) {
         loaded = true;
-        bpanel = (ButtonPanel) getWidget("buttons");        
+        setBpanel((ButtonPanel) getWidget("buttons"));        
         message.setText("done");
-        
-        
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
-        
-        removeContactButton = (AppButton) getWidget("removeAddressButton");
-        removeContactButton.addClickListener(this);
-        removeContactButton.changeState(AppButton.DISABLED);              
-        
-        standardNoteButton = (AppButton) getWidget("standardNoteButton");
-        standardNoteButton.changeState(AppButton.DISABLED);
-        
-        provId = (ScreenTextBox)widgets.get("provider.id");
-        lastName = (TextBox)getWidget("provider.lastName");
-        subjectBox = (TextBox)getWidget("note.subject");
-        noteArea = (ScreenTextArea)widgets.get("note.text");
-        svp = (ScreenVertical) widgets.get("notesPanel");
-        
-        noteTab = (TabPanel)getWidget("provTabPanel");  
-        
-        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
-        
-        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddController.setAutoAdd(false);
-        
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.setProviderForm(this);
                    
-        loadDropdowns();
+        initWidgets();
         
         super.afterDraw(success);
         
@@ -122,42 +106,32 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       
    
         
-    public void up() {                        
-        note = (StringField)rpc.getField("note.text");             
-        note.setValue("");
-                 
-        subject = (StringField)rpc.getField("note.subject");
-        subject.setValue("");
-        
-        provAddController.setAutoAdd(true);
-        
-        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        //proAddManager.disableRows = false;
-        
-        noteArea.enable(true);
-        super.up();      
-    }
+    public void afterFetch(boolean success){       
+    //      every time a fetch is done, data in both tabs should be loaded afresh
+           if(success){ 
+            loadAddresses = true;
+            loadNotes = true;                        
+                
+            loadTabs();        
+           } 
+           super.afterFetch(success); 
+           
+         }
+
+    public void query(){
+    	svp.clear();    	       
+       super.query();
     
-    public void abort(){      
-        
-      provAddController.setAutoAdd(false);      
-      
-      //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-      //proAddManager.disableRows = true;
-      
-      clearNotesFields();
-       super.abort(); 
-       
-       loadAddresses = true;
-       loadNotes = true;          
-              
-       loadTabs();
-       
-                         
+        //    set focus to the last name field
+        provId.setFocus(true);
+        noteArea.enable(false);
+         removeContactButton.changeState(AppButton.DISABLED);
+         
+         standardNoteButton.changeState(AppButton.DISABLED);
     }
-    
+
     public void add(){                                       
-       
+    
         removeContactButton.changeState(AppButton.UNPRESSED);
         
         standardNoteButton.changeState(AppButton.UNPRESSED);
@@ -176,6 +150,22 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         //set focus to the last name field       
         lastName.setFocus(true);
         
+    }
+
+    public void update() {                        
+        note = (StringField)rpc.getField("note.text");             
+        note.setValue("");
+                 
+        subject = (StringField)rpc.getField("note.subject");
+        subject.setValue("");
+        
+        provAddController.setAutoAdd(true);
+        
+        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+        //proAddManager.disableRows = false;
+        
+        noteArea.enable(true);
+        super.update();      
     }
     
     public void afterUpdate(boolean success) {
@@ -198,75 +188,81 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         //      set focus to the last name field
         lastName.setFocus(true);
     }
-    
-    public void query(){
-    	svp.clear();    	       
-       super.query();
-      
-        //    set focus to the last name field
-        provId.setFocus(true);
-        noteArea.enable(false);
-         removeContactButton.changeState(AppButton.DISABLED);
-         
-         standardNoteButton.changeState(AppButton.DISABLED);
-    }
-          
-    
-    public void afterFetch(boolean success){       
-//      every time a fetch is done, data in both tabs should be loaded afresh
-       if(success){ 
-        loadAddresses = true;
-        loadNotes = true;                        
-            
-        loadTabs();        
-       } 
-       super.afterFetch(success); 
-       
-     }
-    
-    
-    public void onClick(Widget sender) {
-        String action = ((AppButton)sender).action;
-        if (action.equals("removeRow")) {                     
-        	onRemoveRowButtonClick();
-        }else if(action.equals("standardNote")){
-        	onStandardNoteButtonClick();
-        }        
-    }
-    
-    public void onChange(Widget sender) {
-        
-        if(sender == getWidget("atozButtons")){           
-           String action = ((ButtonPanel)sender).buttonClicked.action;           
-           if(action.startsWith("query:")){
-               getProviders(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
-           }
-        }else{
-            super.onChange(sender);
-        }
-    }
-        
-    
-    private void getProviders(String letter, Widget sender) {
-        // we only want to allow them to select a letter if they are in display
-        // mode..
-        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
-            FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("provider.lastName", letter.toUpperCase() + "*");            
-            commitQuery(letterRPC);
-            
-       }
+    public void abort(){      
+        
+      provAddController.setAutoAdd(false);      
+      
+      if(state == FormInt.ADD){
+          loadAddresses = false;
+          clearAddresses = true;
+          
+          loadNotes = false;
+          clearNotes = true;
+      }else{
+          loadAddresses = true;
+          loadNotes = true;
+      }
+      
+      //the super needs to ge before the load tabs method or the table wont load.
+      super.abort();
+      
+      loadTabs();                                
     }
     
-	protected void setStyleNameOnButton(Widget sender) {
-		((AppButton)sender).changeState(AppButton.PRESSED);
-		if (selected != null)
-			((AppButton)selected).changeState(AppButton.UNPRESSED);
-		selected = sender;
-	}
-       
+    public void commitQuery(FormRPC rpcQuery){
+        provAddController.unselect(-1);
+        
+        super.commitQuery(rpcQuery);
+    }
+
+    public void commitAdd(){
+                       
+        provAddController.unselect(-1);
                
+        super.commitAdd();                              
+        
+        removeContactButton.changeState(AppButton.DISABLED);
+        
+        standardNoteButton.changeState(AppButton.DISABLED);
+        
+        provAddController.setAutoAdd(false);      
+    }
+    
+    public void afterCommitAdd(boolean success){      
+        // we need to load the notes tab if it has been already loaded
+       if(success){  
+        loadNotes = true;
+        clearNotes = true;                
+        
+        loadTabs();
+                
+        clearNotesFields();
+      }
+        
+        super.afterCommitAdd(success);         
+    }
+
+    public void afterCommitUpdate(boolean success){
+        provAddController.setAutoAdd(false); 
+        //we need to do this reset to get rid of the last row
+        provAddController.reset();
+        
+        super.afterCommitUpdate(success); 
+        
+        //we need to load the notes tab if it has been already loaded
+        if(success){  
+         loadNotes = true;
+         clearNotes = true;                
+         
+         loadTabs();
+                 
+         clearNotesFields();
+       }
+        
+                    
+    }
+    
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index){
        // this code is for the generic situation of a tab being clicked  
                 
@@ -285,117 +281,82 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
            loadNotes = false;      
         }
         return true;
-    }  
-    
-    public void commitAdd(){
-                       
-        provAddController.unselect(-1);
-               
-        super.commitAdd();                              
-        
-        removeContactButton.changeState(AppButton.DISABLED);
-        
-        standardNoteButton.changeState(AppButton.DISABLED);
-        
-        provAddController.setAutoAdd(false);      
+    }
+
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+    	// TODO Auto-generated method stub
+    	
     }
     
-    public void commitUpdate(){ 
-        provAddController.unselect(-1);                       
-        super.commitUpdate();        
-        
-        removeContactButton.changeState(AppButton.DISABLED);
-        
-        standardNoteButton.changeState(AppButton.DISABLED);
-                
-        provAddController.setAutoAdd(false);      
-    }
+    private void getProviders(String letter, Widget sender) {
+        // we only want to allow them to select a letter if they are in display
+        // mode..
+        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
     
-    public void afterCommitUpdate(boolean success){
-      // when a provider's data is committed, after being updated, to the database, this code will make sure that whichever tab is open, 
-      //or will be opened subsequently, will have the latest data in it     
-       if(success){ 
-        loadAddresses = true;
-        loadNotes = true;
-        
-        loadTabs();
-        
-      // the note subject and body fields need to be refeshed after every successful commit
-        clearNotesFields();
-       } 
-        super.afterCommitUpdate(success);     
-        
+            FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+            letterRPC.setFieldValue("provider.lastName", letter.toUpperCase() + "*");            
+            commitQuery(letterRPC);
+            
+       }
     }
-    
-    public void afterCommitAdd(boolean success){
-      // when a new provider's data is added to the database, this code will make sure that whichever tab is open, 
-      //or will be opened subsequently, will have the latest data in it
-       if(success){  
-        loadAddresses = true;
-        loadNotes = true;                
+
+    private void initWidgets(){
+//      load other widgets
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
         
-        Integer providerId = (Integer)rpc.getFieldValue("provider.id");
-        NumberObject provId = new NumberObject();
-        provId.setType("integer");
-        provId.setValue(providerId);
-                
-        //done because key is set to null in AppScreenForm for the add operation 
-        if(key ==null){  
-         key = new DataSet();
-         key.setKey(provId);
-        }
-        else{
-            key.setKey(provId);
-        }
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
         
-        loadTabs();
-                
-        clearNotesFields();
-      }
+        removeContactButton = (AppButton) getWidget("removeAddressButton");
         
-        super.afterCommitAdd(success);         
-    }
-    
-    
-    public void commitQuery(FormRPC rpcQuery){
-        provAddController.unselect(-1);
+        standardNoteButton = (AppButton) getWidget("standardNoteButton");
         
-        super.commitQuery(rpcQuery);
-    }
-           
-                 
-    private void loadDropdowns(){
+        provId = (ScreenTextBox)widgets.get("provider.id");
+        lastName = (TextBox)getWidget("provider.lastName");
+        subjectBox = (TextBox)getWidget("note.subject");
+        noteArea = (ScreenTextArea)widgets.get("note.text");
+        svp = (ScreenVertical) widgets.get("notesPanel");
+        
+        noteTab = (TabPanel)getWidget("provTabPanel");  
+        
+        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
+        
+        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.setAutoAdd(false);
+        
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+        proAddManager.setProviderForm(this);
+        
+        //load dropdowns
        if(typeDropDown == null){
          typeDropDown = (DataModel) initData[0];
          stateDropDown = (DataModel) initData[1];
          countryDropDown = (DataModel) initData[2];
         } 
                                 
-                ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
-                
-                   ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-                   ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
-                   
-                   TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                                controller.editors[5];
-                   displayContactState.setModel(stateDropDown);
-                   
-                   TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
-                    queryContactState.setModel(stateDropDown);
-                   
-                   
-                   TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                               controller.editors[6];
-                   displayContactCountry.setModel(countryDropDown);
-                   
-                   TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
-                   queryContactCountry.setModel(countryDropDown);
-                   
-                                 
+       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
+    
+       ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+       ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
+       
+       TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                    controller.editors[5];
+       displayContactState.setModel(stateDropDown);
+       
+       TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
+        queryContactState.setModel(stateDropDown);
+       
+       
+       TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                   controller.editors[6];
+       displayContactCountry.setModel(countryDropDown);
+       
+       TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
+       queryContactCountry.setModel(countryDropDown);              
     } 
     
-
-   
    private void fillNotesModel(){  
        
        Integer providerId = null;
@@ -415,8 +376,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
        if(getModel){ 
         
-         NumberObject provId = new NumberObject();
-         provId.setType("integer");
+         NumberObject provId = new NumberObject(NumberObject.INTEGER);
          provId.setValue(providerId);
          
         // prepare the argument list for the getObject function
@@ -463,8 +423,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
      
       if(getModel){
                  
-          NumberObject provId = new NumberObject();
-          provId.setType("integer");
+          NumberObject provId = new NumberObject(NumberObject.INTEGER);
           provId.setValue(providerId);
           TableField tf = new TableField();
           tf.setValue(provAddController.model);
@@ -547,7 +506,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
    private void onStandardNoteButtonClick(){
 	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.subject")));
+	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
 			
 	   standardNotePopupPanel.add(pickerWindow);
 	   int left = this.getAbsoluteLeft();
@@ -574,9 +533,4 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
              row.addHidden("deleteFlag", deleteFlag);
          }  
     }
-
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-		// TODO Auto-generated method stub
-		
-	}
 }

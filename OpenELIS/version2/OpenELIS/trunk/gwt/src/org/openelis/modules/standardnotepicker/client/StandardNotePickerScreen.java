@@ -70,7 +70,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	public void afterDraw(boolean sucess) {
         final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
         tree.controller.setTreeListener(this);
-        bpanel = (ButtonPanel) getWidget("buttons");
+        setBpanel((ButtonPanel) getWidget("buttons"));
         super.afterDraw(sucess);
         
         ScreenAppButton findButton = (ScreenAppButton)widgets.get("findButton");
@@ -138,8 +138,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	        name.setValue(queryRPC.getFieldValue("standardNote.name")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
 	        desc.setValue(queryRPC.getFieldValue("standardNote.description")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
 	        
-	        NumberObject idObj = new NumberObject();
-			idObj.setType("integer");
+	        NumberObject idObj = new NumberObject(NumberObject.INTEGER);
 			idObj.setValue(id);
 	        
 	       // prepare the argument list for the getObject function

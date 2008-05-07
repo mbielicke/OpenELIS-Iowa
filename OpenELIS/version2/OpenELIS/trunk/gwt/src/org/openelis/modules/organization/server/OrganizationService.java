@@ -1,7 +1,10 @@
 package org.openelis.modules.organization.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -20,6 +23,7 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -39,18 +43,14 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {
@@ -121,10 +121,10 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		}
 		
 		//lookup the changes from the database and build the rpc
-		OrganizationAddressDO organizationDO = remote.getOrganizationAddress(orgId);
+		newOrganizationDO.setOrganizationId(orgId);
 
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, organizationDO);
+		setFieldsInRPC(rpcReturn, newOrganizationDO);
 
 		return rpcReturn;
 	}
@@ -160,9 +160,9 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				String nameResult = (String)result[1];
 
 				DataSet row = new DataSet();
-				NumberObject id = new NumberObject();
+				NumberObject id = new NumberObject(NumberObject.INTEGER);
 				StringObject name = new StringObject();
-				id.setType("integer");
+	
 				name.setValue(nameResult);
 				id.setValue(idResult);
 				
@@ -199,8 +199,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 
 			DataSet row = new DataSet();
 
-			 NumberObject idField = new NumberObject();
-			 idField.setType("integer");
+			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
 			 StringObject nameField = new StringObject();
 			 nameField.setValue(name);
       
@@ -260,10 +259,10 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		}
 		
 		//lookup the changes from the database and build the rpc
-		OrganizationAddressDO organizationDO = remote.getOrganizationAddress(newOrganizationDO.getOrganizationId());
+		//OrganizationAddressDO organizationDO = remote.getOrganizationAddress(newOrganizationDO.getOrganizationId());
 
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, organizationDO);
+		setFieldsInRPC(rpcReturn, newOrganizationDO);	
 		
 		return rpcReturn;
 	}
@@ -298,17 +297,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		Element root = (Element) doc.getDocumentElement();
 		root.setAttribute("key", "notePanel");   
 		int i=0;
-        while(itr.hasNext()){           
-            Object[] result = (Object[])itr.next();
-                        
+		while(itr.hasNext()){
+		    NoteDO noteRow = (NoteDO)itr.next();
+            
             //user id
-            Integer userId = (Integer)result[1];
+            Integer userId = noteRow.getSystemUser();
             //body
-            String body = (String)result[2];
+            String body = noteRow.getText();
             //date
-            Datetime date = new Datetime(Datetime.YEAR,Datetime.MINUTE,result[3]);
+            String date = noteRow.getTimestamp().toString();
             //subject
-            String subject = (String)result[4];
+            String subject = noteRow.getSubject();
                         
             
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
@@ -325,7 +324,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
         	 Element dateText = (Element) doc.createElement("text");
         	 Element authorText = (Element) doc.createElement("text");
         	 Element bodyWidgetTag = (Element) doc.createElement("widget");
-        	 Element bodytextTag = (Element) doc.createElement("text");
+        	 Element bodytextTag =  (Element) doc.createElement("text");
         	 
         	 mainRowPanel.setAttribute("key", "note"+i);
         	 if(i % 2 == 1){
@@ -334,17 +333,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
             	 mainRowPanel.setAttribute("style", "TableRow");
              }
         	 mainRowPanel.setAttribute("layout", "vertical");
-        	 mainRowPanel.setAttribute("width", "507px");
+        	 mainRowPanel.setAttribute("width", "531px");
         	 
         	 topRowPanel.setAttribute("layout", "horizontal");
-        	 topRowPanel.setAttribute("width", "507px");
+        	 topRowPanel.setAttribute("width", "531px");
         	 titleText.setAttribute("key", "note"+i+"Title");
         	 titleText.setAttribute("style", "notesSubjectText");
         	 titleText.appendChild(doc.createTextNode(subject));
         	 authorWidgetTag.setAttribute("halign", "right");
         	 authorPanel.setAttribute("layout", "vertical");
         	 dateText.setAttribute("key", "note"+i+"Date");
-        	 dateText.appendChild(doc.createTextNode(date.toString()));
+        	 dateText.appendChild(doc.createTextNode(date));
         	 authorText.setAttribute("key", "note"+i+"Author");
         	 authorText.appendChild(doc.createTextNode("by "+userName));
         	 bodytextTag.setAttribute("key", "note"+i+"Body");
@@ -361,8 +360,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
         	 authorPanel.appendChild(dateText);
         	 authorPanel.appendChild(authorText);
         	 bodyWidgetTag.appendChild(bodytextTag);
-          
-          i++;
+             
+             i++;
       }
 
         StringObject returnObject = new StringObject();
@@ -402,10 +401,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
 
 	               TableRow row = contactsModel.createRow();
-	               NumberField id = new NumberField();
-	               id.setType("integer");
-	               NumberField addId = new NumberField();
-	               addId.setType("integer");
+	               NumberField id = new NumberField(NumberObject.INTEGER);
+	               NumberField addId = new NumberField(NumberObject.INTEGER);
 	                id.setValue(contactRow.getId());
 	                addId.setValue(contactRow.getAddressDO().getId());
 	                row.addHidden("contactId", id);
@@ -453,9 +450,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, null);
 		else{
 			DataSet parentOrgSet = new DataSet();
-			NumberObject id = new NumberObject();
+			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
-			id.setType("integer");
 			id.setValue(organizationDO.getParentOrganizationId());
 			text.setValue(organizationDO.getParentOrganization().trim());
 			parentOrgSet.setKey(id);
@@ -470,7 +466,9 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		newOrganizationDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrganizationMeta.ID));
 		newOrganizationDO.setName((String) rpcSend.getFieldValue(OrganizationMeta.NAME));
 		newOrganizationDO.setIsActive((String)rpcSend.getFieldValue(OrganizationMeta.IS_ACTIVE));
-		newOrganizationDO.setParentOrganizationId((Integer) rpcSend.getFieldValue(OrganizationParentOrganizationMeta.NAME));
+		newOrganizationDO.setParentOrganizationId((Integer) rpcSend.getFieldValue(OrganizationParentOrganizationMeta.NAME));		
+		newOrganizationDO.setParentOrganization((String)((DropDownField)rpcSend.getField(OrganizationParentOrganizationMeta.NAME)).getTextValue());
+		
 		//organization address value
 		newOrganizationDO.getAddressDO().setId((Integer) rpcSend.getFieldValue(OrganizationMeta.ADDRESS_ID));
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue(OrganizationAddressMeta.MULTIPLE_UNIT));
@@ -572,13 +570,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		DataSet blankset = new DataSet();
 		
 		StringObject blankStringId = new StringObject();
-		NumberObject blankNumberId = new NumberObject();
+		NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
 		BooleanObject blankSelected = new BooleanObject();
         
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
 		
-		blankNumberId.setType("integer");
 		blankNumberId.setValue(new Integer(0));
 		
 		if(cat.equals("contactType"))
@@ -601,7 +598,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			
 			StringObject textObject = new StringObject();
 			StringObject stringId = new StringObject();
-			NumberObject numberId = new NumberObject();
+			NumberObject numberId = new NumberObject(NumberObject.INTEGER);
 			BooleanObject selected = new BooleanObject();
 		
 			textObject.setValue(dropdownText);
@@ -611,7 +608,6 @@ public class OrganizationService implements AppScreenFormServiceInt,
             
 			
 			if(cat.equals("contactType")){
-				numberId.setType("integer");
 				numberId.setValue(dropdownId);
 				set.setKey(numberId);
 			}else{
@@ -653,8 +649,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		DataModel model = new DataModel();
 		DataSet data = new DataSet();
 		
-		NumberObject id = new NumberObject();
-		id.setType("integer");
+		NumberObject id = new NumberObject(NumberObject.INTEGER);
 		id.setValue(orgId);
 		StringObject nameObject = new StringObject();
 		nameObject.setValue(name.trim());
@@ -698,8 +693,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				String state = (String)result[4];
 				DataSet data = new DataSet();
 				//hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(orgId);
 				data.setKey(idObject);
 				//columns
@@ -743,8 +737,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 				
 				DataSet data = new DataSet();
 				//hidden id
-				NumberObject idObject = new NumberObject();
-				idObject.setType("integer");
+				NumberObject idObject = new NumberObject(NumberObject.INTEGER);
 				idObject.setValue(orgId);
 				data.setKey(idObject);
 				//columns

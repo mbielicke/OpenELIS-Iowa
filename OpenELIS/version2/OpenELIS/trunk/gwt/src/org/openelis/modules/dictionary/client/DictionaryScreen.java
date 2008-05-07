@@ -46,7 +46,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
         loaded = true;
         
-        bpanel = (ButtonPanel)getWidget("buttons");
+        setBpanel((ButtonPanel)getWidget("buttons"));
         message.setText("done");
 
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
@@ -71,7 +71,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
     }
 
-    public void up() {
+    public void update() {
 
         dictEntryController.setAutoAdd(true);
 
@@ -81,7 +81,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         //dictEntManager.createLists(dictEntryController);
         
         
-        super.up();
+        super.update();
     }
 
     public void afterUpdate(boolean success) {

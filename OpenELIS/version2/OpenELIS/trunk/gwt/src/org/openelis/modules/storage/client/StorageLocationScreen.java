@@ -49,8 +49,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	}
 	
 	public void afterDraw(boolean success) {
-
-		bpanel = (ButtonPanel) getWidget("buttons");
+		setBpanel((ButtonPanel) getWidget("buttons"));
 
 		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
 		modelWidget.addChangeListener(atozTable);
@@ -100,9 +99,9 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		//childTable.controller.addRow();
 	}
 	
-	public void up() {
+	public void update() {
 		childTable.setAutoAdd(true);
-		super.up();
+		super.update();
 	}
 	
 	public void abort() {		

@@ -32,8 +32,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	    }
 	
 	public void afterDraw(boolean success) {
-	
-		bpanel = (ButtonPanel) getWidget("buttons");
+		setBpanel((ButtonPanel) getWidget("buttons"));
 
 		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
 		modelWidget.addChangeListener(atozTable);

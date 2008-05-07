@@ -290,7 +290,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="435px" max="60" showError="false"/>
+										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="435px" max="60" showError="false" tab="{orgNoteMeta:text()},{orgNoteMeta:text()}"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -308,7 +308,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false"/>
+										<textarea width="549px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false" tab="{orgNoteMeta:subject()},{orgNoteMeta:subject()}"/>
 										</widget>
 										</row>
 								 
@@ -318,8 +318,7 @@
 								</widget>
 								<widget colspan="2">
 								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="549px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
-								
+								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="549px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">								
 								</panel>
 								</panel>
 								</widget>
@@ -345,9 +344,9 @@
       <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
       <string key="{orgNoteMeta:text()}" required="false"/>
       <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
-      <table key="contactsTable"/>
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="true"/>
+      <table key="contactsTable"/>
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{organizationMeta:id()}" type="integer"/>
