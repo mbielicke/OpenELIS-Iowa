@@ -32,10 +32,8 @@ import org.openelis.utils.Auditable;
                                            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
                                            " where pa.provider = :id order by pa.location"),
                @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='provider_type' and d.category = c.id"),
-               @NamedQuery(name = "getProviderNotesTopLevel", query = "select n.id,n.systemUser,n.text, n.timestamp, n.subject " + 
-                       "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id"),
-               @NamedQuery(name = "getProviderNotesSecondLevel", query = "select n.id, n.systemUser, n.text " +
-                      "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.id = :id")})               
+               @NamedQuery(name = "getProviderNotes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) " + 
+                       "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id ORDER BY n.timestamp DESC")})               
 @Entity 
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})

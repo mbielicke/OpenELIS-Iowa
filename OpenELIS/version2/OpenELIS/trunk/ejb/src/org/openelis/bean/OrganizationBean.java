@@ -184,9 +184,9 @@ public class OrganizationBean implements OrganizationRemote {
             note.setReferenceId(organization.getId());
             note.setReferenceTable(organizationReferenceId);
             note.setSubject(noteDO.getSubject());
-            note.setSystemUser(getSystemUserId());
+            note.setSystemUser(noteDO.getSystemUser());
             note.setText(noteDO.getText());
-        	note.setTimestamp(Datetime.getInstance());
+        	note.setTimestamp(noteDO.getTimestamp());
     	}
         
 //          insert into note table if necessary
@@ -211,14 +211,10 @@ public class OrganizationBean implements OrganizationRemote {
 	public List getOrganizationNotes(Integer organizationId) {
 		Query query = null;
 		
-		query = manager.createNamedQuery("getOrganizationNotesTopLevel");
-		//}else{
-		//	query = manager.createNamedQuery("getOrganizationNotesSecondLevel");
-		//}
-		
+		query = manager.createNamedQuery("getOrganizationNotes");	
 		query.setParameter("id", organizationId);
 		
-		List orgNotes = query.getResultList();// getting list of notes from the org id
+		List orgNotes = query.getResultList();// getting list of noteDOs from the org id
 
         return orgNotes;
 	}
