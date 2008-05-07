@@ -88,20 +88,15 @@ public class ProviderBean implements ProviderRemote {
     }
 
 
-    public List getProviderNotes(Integer providerId, boolean topLevel) {
+    public List getProviderNotes(Integer providerId) {
        Query query = null;
         
-        if(topLevel){
-            query = manager.createNamedQuery("getProviderNotesTopLevel");
-        }else{
-            query = manager.createNamedQuery("getProviderNotesSecondLevel");
-        }
+       query = manager.createNamedQuery("getProviderNotes");
+       query.setParameter("id", providerId);
         
-        query.setParameter("id", providerId);
-        
-        List provNotes = query.getResultList();// getting list of notes from the provider id
+       List provNotes = query.getResultList(); // getting list of noteDOs from the provider id
 
-        return provNotes;
+       return provNotes;
     }
 
 
@@ -304,17 +299,6 @@ public class ProviderBean implements ProviderRemote {
     public List<Object[]> getProviderTypes() {
         Query query = manager.createNamedQuery("getProviderTypes");        
         return query.getResultList();
-    }
-
-    public List getProviderNotes(Integer providerId) {
-       Query query = null;
-       query = manager.createNamedQuery("getProviderNotesTopLevel");
-       
-       query.setParameter("id", providerId);
-        
-       List provNotes = query.getResultList();// getting list of notes from the provider id
-
-       return provNotes;
     }
 
     @RolesAllowed("provider-update")
