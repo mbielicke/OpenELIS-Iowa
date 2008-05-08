@@ -80,6 +80,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         final HTML loadingHtml = new HTML();
+        loadingHtml.setStyleName("ScreenLabel");
         loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
         vp.clear();
         vp.remove(tree);
@@ -128,6 +129,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			
 			final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
 			final HTML loadingHtml = new HTML();
+            loadingHtml.setStyleName("ScreenLabel");
 	        loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
 			finalTreeItem.addItem(loadingHtml);
 			

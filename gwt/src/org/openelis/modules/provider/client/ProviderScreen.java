@@ -32,6 +32,7 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -79,7 +80,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         if(sender == getWidget("atozButtons")){           
            String action = ((ButtonPanel)sender).buttonClicked.action;           
            if(action.startsWith("query:")){
-               getProviders(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+               getProviders(action.substring(6, action.length()));      
            }
         }else{
             super.onChange(sender);
@@ -96,7 +97,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     public void afterDraw(boolean success) {
         loaded = true;
         setBpanel((ButtonPanel) getWidget("buttons"));        
-        message.setText("done");
+        message.setText("Done");
                    
         initWidgets();
         
@@ -288,15 +289,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     	
     }
     
-    private void getProviders(String letter, Widget sender) {
-        // we only want to allow them to select a letter if they are in display
-        // mode..
+    private void getProviders(String query) {
         if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
-    
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("provider.lastName", letter.toUpperCase() + "*");            
-            commitQuery(letterRPC);
             
+            letterRPC.setFieldValue("provider.lastName", query);            
+            commitQuery(letterRPC); 
        }
     }
 
@@ -375,7 +373,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       } 
         
        if(getModel){ 
-        
+         final HTML loadingHtml = new HTML();
+         loadingHtml.setStyleName("ScreenLabel");
+         loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
+         svp.add(loadingHtml);
+           
          NumberObject provId = new NumberObject(NumberObject.INTEGER);
          provId.setValue(providerId);
          
@@ -384,7 +386,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
          
         screenService.getObject("getNotesModel", args, new AsyncCallback(){
            public void onSuccess(Object result){  
-        	   svp = (ScreenVertical) widgets.get("notesPanel");
                // get the datamodel, load it in the notes panel and set the value in the rpc
           	   String xmlString = (String) ((StringObject)result).getValue();               
                svp.load(xmlString);

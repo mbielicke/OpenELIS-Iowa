@@ -122,12 +122,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
            return rpcSend;
        }
        
-         categoryDO = remote.getCategory((Integer)categoryId); 
-         
+         categoryDO.setId(categoryId);
+           
          setFieldsInRPC(rpcReturn, categoryDO);                                   
-         
-         List addressList = remote.getDictionaryEntries(categoryId);
-         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+
+        // rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),dictDOList));
                   
         return rpcReturn;
     }
@@ -257,11 +256,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
            return rpcSend;
        }
          
-         categoryDO = remote.getCategory((Integer)categoryId.getValue());
          setFieldsInRPC(rpcReturn,categoryDO);
          
-         List addressList = remote.getDictionaryEntries((Integer)categoryId.getValue());
-         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        // rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),dictDOList));
          
          
         return rpcReturn;

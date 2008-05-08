@@ -12,6 +12,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -19,6 +20,7 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
+import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
@@ -81,11 +83,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			return rpcSend;
 		}
 
-		// lookup the changes from the database and build the rpc
-		AnalyteDO analyteDO = remote.getAnalyte(analyteId);
-
+		newAnalyteDO.setId(analyteId);
+        
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, analyteDO);
+		setFieldsInRPC(rpcReturn, newAnalyteDO);
 
 		return rpcReturn;
 	}
@@ -210,7 +211,6 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 //		remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		AnalyteDO newAnalyteDO = new AnalyteDO();
-		List analytes = new ArrayList();
 
 		//build the AnalyteDO from the form
 		newAnalyteDO = getAnalyteDOFromRPC(rpcSend);
@@ -233,12 +233,9 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			setRpcErrors(exceptionList, rpcSend);
 			return rpcSend;
 		}
-		
-		//lookup the changes from the database and build the rpc
-		AnalyteDO analyteDO = remote.getAnalyte(newAnalyteDO.getId());
 
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, analyteDO);
+		setFieldsInRPC(rpcReturn, newAnalyteDO);
 		
 		return rpcReturn;
 	}
@@ -302,6 +299,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(AnalyteMeta.IS_ACTIVE)).trim());
 		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(AnalyteMeta.ANALYTE_GROUP));
 		newAnalyteDO.setParentAnalyteId((Integer) rpcSend.getFieldValue(AnalyteParentAnalyteMeta.NAME));
+        newAnalyteDO.setParentAnalyte((String)((DropDownField)rpcSend.getField(AnalyteParentAnalyteMeta.NAME)).getTextValue());
 		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(AnalyteMeta.EXTERNAL_ID)).trim());		
 
 		return newAnalyteDO;

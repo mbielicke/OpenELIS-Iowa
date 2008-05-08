@@ -6,7 +6,7 @@
                 xmlns:parentAnalyteMeta="xalan://org.openelis.meta.AnalyteParentAnalyteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumnsNum.xsl"/>   
+<xsl:import href="aToZTwoColumns.xsl"/>   
   
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>

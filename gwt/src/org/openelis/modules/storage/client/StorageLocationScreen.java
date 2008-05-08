@@ -33,7 +33,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
         if(sender == getWidget("atozButtons")){
            String action = ((ButtonPanel)sender).buttonClicked.action;
            if(action.startsWith("query:")){
-        	   getStorageLocs(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+        	   getStorageLocs(action.substring(6, action.length()));      
            }
         }else{
             super.onChange(sender);
@@ -70,14 +70,6 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		super.afterDraw(success);
 	}
 	
-	public void add() {
-		childTable.setAutoAdd(true);
-		super.add();
-
-		//set focus to the name field
-		nameTextbox.setFocus(true);
-	}
-	
 	public void query() {
 		super.query();
 		
@@ -87,65 +79,41 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		removeEntryButton.changeState(AppButton.DISABLED);
 	}
 	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
+	public void add() {
+    	childTable.setAutoAdd(true);
+    	super.add();
+    
+    	//set focus to the name field
+    	nameTextbox.setFocus(true);
+    }
 
-		//set focus to the name field
-		nameTextbox.setFocus(true);
-		
-		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		//childTableManager.disableRows = false;
-//		childTable.setAutoAdd(true);
-		//childTable.controller.addRow();
-	}
-	
-	public void update() {
-		childTable.setAutoAdd(true);
-		super.update();
-	}
-	
-	public void abort() {		
+    public void update() {
+    	childTable.setAutoAdd(true);
+    	super.update();
+    }
+
+    public void afterUpdate(boolean success) {
+    		super.afterUpdate(success);
+    
+    		//set focus to the name field
+    		nameTextbox.setFocus(true);
+    	}
+
+    public void abort() {		
 		childTable.setAutoAdd(false);
 		
 		super.abort();
 	}
 	
-	private void getStorageLocs(String letter, Widget sender) {
-		// we only want to allow them to select a letter if they are in display
-		// mode..
-		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+	public void commitAdd() {
+    	childTable.setAutoAdd(false);
+        super.commitAdd();
+    }
 
-			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			
-			if(letter.equals("#"))
-				letterRPC.setFieldValue("storageLocation.name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
-			else
-				letterRPC.setFieldValue("storageLocation.name", letter.toUpperCase() + "* | "+letter.toLowerCase() + "*");
-
-			commitQuery(letterRPC);
-
-			setStyleNameOnButton(sender);
-		}
-	}
-	
-	public void afterCommitUpdate(boolean success) {
-		//ChildStorageLocsTable childTableManager = (ChildStorageLocsTable) childTable.controller.manager;
-		//childTableManager.disableRows = true;
+    public void afterCommitUpdate(boolean success) {
 		childTable.setAutoAdd(false);
 		
 		super.afterCommitUpdate(success);
-	}
-	
-	public void commitAdd() {
-		childTable.setAutoAdd(false);
-        super.commitAdd();
-    } 
-	
-	protected void setStyleNameOnButton(Widget sender) {
-		((AppButton)sender).changeState(AppButton.PRESSED);
-		if (selected != null)
-			((AppButton)selected).changeState(AppButton.UNPRESSED);
-		selected = sender;
 	}
 	
 	private void onRemoveRowButtonClick(){
@@ -166,5 +134,16 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 
 				row.addHidden("deleteFlag", deleteFlag);
 			}
+    }
+
+    private void getStorageLocs(String query) {
+    	if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+    
+    		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+    		
+    		letterRPC.setFieldValue("storageLocation.name", query);
+    
+    		commitQuery(letterRPC);
+    	}
     }
 }

@@ -87,7 +87,8 @@ public class SystemVariableService implements AppScreenFormServiceInt {
             return rpcSend;
         } 
         
-        sysVarDO = remote.getSystemVariable((Integer)svId);
+        sysVarDO.setId(svId);
+        
         setFieldsInRPC(rpcReturn, sysVarDO);
         return rpcReturn;
     }
@@ -228,8 +229,8 @@ public class SystemVariableService implements AppScreenFormServiceInt {
             return rpcSend;
         }
         
-        sysVarDO = remote.getSystemVariable((Integer)svId);
         setFieldsInRPC(rpcReturn, sysVarDO);
+        
         return rpcReturn;
     }
 

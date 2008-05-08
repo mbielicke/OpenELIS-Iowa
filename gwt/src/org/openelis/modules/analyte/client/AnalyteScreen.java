@@ -22,7 +22,7 @@ public class AnalyteScreen extends OpenELISScreenForm {
 	        if(sender == getWidget("atozButtons")){
 	           String action = ((ButtonPanel)sender).buttonClicked.action;
 	           if(action.startsWith("query:")){
-	        	   getAnalytes(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+	        	   getAnalytes(action.substring(6, action.length()));      
 	           }
 	        }else{
 	            super.onChange(sender);
@@ -68,17 +68,12 @@ public class AnalyteScreen extends OpenELISScreenForm {
 		nameTextBox.setFocus(true);
 	}
 	
-	private void getAnalytes(String letter, Widget sender) {
-		// we only want to allow them to select a letter if they are in display
-		// mode..
+	private void getAnalytes(String query) {
 		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			
-			if(letter.equals("#"))
-				letterRPC.setFieldValue("analyte.name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
-			else
-				letterRPC.setFieldValue("analyte.name", letter.toUpperCase() + "* | " + letter.toLowerCase() + "*");
+
+			letterRPC.setFieldValue("analyte.name", query);
 
 			commitQuery(letterRPC);
 		}

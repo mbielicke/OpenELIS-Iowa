@@ -26,6 +26,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.meta.StorageLocationChildMeta;
 import org.openelis.meta.StorageLocationMeta;
 import org.openelis.meta.StorageLocationStorageUnitMeta;
@@ -105,17 +106,11 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			return rpcSend;
 		}
 		
-//		lookup the changes from the database and build the rpc
-		StorageLocationDO storageLocDO = remote.getStorageLoc(storageLocId);
-
+		newStorageLocDO.setId(storageLocId);
+        
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageLocDO);
-		
-//		load the children
-        List childrenList = remote.getStorageLocChildren(storageLocId);
-        //need to build the children table now...
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
-        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+		setFieldsInRPC(rpcReturn, newStorageLocDO);
+
 		return rpcReturn;
 	}
 
@@ -240,17 +235,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			return rpcSend;
 		}
 		
-		//lookup the changes from the database and build the rpc
-		StorageLocationDO storageLocDO = remote.getStorageLoc(newStorageLocDO.getId());
-
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageLocDO);
-		
-//		load the children
-        List childrenList = remote.getStorageLocChildren(storageLocDO.getId());
-        //need to build the children table now...
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
-        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+		setFieldsInRPC(rpcReturn, newStorageLocDO);
         
 		return rpcReturn;
 	}
@@ -317,10 +303,10 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        //List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue(),false);
+        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
         //need to build the children table now...
-       // TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
-       // rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
+        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
+        rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
 
 		return rpcReturn;
 	}
@@ -355,6 +341,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.NAME)).trim());
 		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationChildMeta.ID));
 		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION));
+        newStorageLocDO.setStorageUnit((String)((DropDownField)rpcSend.getField(StorageLocationStorageUnitMeta.DESCRIPTION)).getTextValue());
 		
 		return newStorageLocDO;
 	}

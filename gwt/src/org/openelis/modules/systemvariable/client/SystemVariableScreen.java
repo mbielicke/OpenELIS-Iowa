@@ -7,15 +7,34 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener {
     
+    private TextBox nameTextBox;
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
         name="System Variable";
     }
     
+    public void onChange(Widget sender) {
+        
+        if(sender == getWidget("atozButtons")){           
+           String action = ((ButtonPanel)sender).buttonClicked.action;           
+           if(action.startsWith("query:")){
+               getSystemVariables(action.substring(6, action.length()));      
+           }
+        }else{
+            super.onChange(sender);
+        }
+    }
+
+    public void onClick(Widget arg0) {
+        // TODO Auto-generated method stub
+        
+    }
+
     public void afterDraw(boolean success) {
         setBpanel((ButtonPanel) getWidget("buttons"));        
         message.setText("done");
@@ -27,38 +46,39 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
+        nameTextBox = (TextBox)getWidget("systemVariable.name");
+        
         super.afterDraw(success);
     }  
     
-    public void onChange(Widget sender) {
+    public void query() {
+        super.query();
         
-        if(sender == getWidget("atozButtons")){           
-           String action = ((ButtonPanel)sender).buttonClicked.action;           
-           if(action.startsWith("query:")){
-               getSystemVariables(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
-           }
-        }else{
-            super.onChange(sender);
-        }
+        nameTextBox.setFocus(true);
     }
     
-    private void getSystemVariables(String letter, Widget sender) {
-        // we only want to allow them to select a letter if they are in display
-        // mode..
+    public void add() {
+        super.add();
+        
+        nameTextBox.setFocus(true);
+    }
+    
+    public void afterUpdate(boolean success) {
+        super.afterUpdate(success);
+        
+        nameTextBox.setFocus(true);
+    }
+    
+    private void getSystemVariables(String query) {
         if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("systemVariable.name", letter.toLowerCase() + "*");
+            letterRPC.setFieldValue("systemVariable.name", query);
              
             commitQuery(letterRPC);
             
            
         }
-    }
-
-    public void onClick(Widget arg0) {
-        // TODO Auto-generated method stub
-        
     }
         
 

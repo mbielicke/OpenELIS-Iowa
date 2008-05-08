@@ -81,7 +81,8 @@ public class LabelService implements AppScreenFormServiceInt {
             return rpcSend;
         }
         
-         labelDO = remote.getLabel(labelId);
+        labelDO.setId(labelId);
+        
          setFieldsInRPC(rpcReturn, labelDO);
         return rpcReturn;
     }
@@ -211,7 +212,7 @@ public class LabelService implements AppScreenFormServiceInt {
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         LabelDO labelDO = getLabelDOFromRPC(rpcSend);
-        Integer labelId = null;
+        
         List<Exception> exceptionList = remote.validateForUpdate(labelDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
@@ -220,7 +221,7 @@ public class LabelService implements AppScreenFormServiceInt {
         } 
                          
         try{
-            labelId = (Integer)remote.updateLabel(labelDO);        
+            remote.updateLabel(labelDO);        
         }catch(Exception e){
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
@@ -230,7 +231,6 @@ public class LabelService implements AppScreenFormServiceInt {
             return rpcSend;
         }
         
-         labelDO = remote.getLabel(labelId);
          setFieldsInRPC(rpcReturn, labelDO);
         return rpcReturn;
     }

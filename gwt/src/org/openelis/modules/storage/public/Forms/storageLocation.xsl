@@ -144,7 +144,7 @@
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,98</widths>
 										<editors>
-											<textbox case="upper"/>
+											<textbox case="lower"/>
 											<textbox case="mixed"/>
 											<check threeState="true"/>
 										</editors>

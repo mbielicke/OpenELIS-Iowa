@@ -86,8 +86,9 @@ public class QAEventService implements
             
             return rpcSend;
         }
+
+        qaeDO.setId(qaeId);
         
-        qaeDO = remote.getQaEvent((Integer)qaeId);
         setFieldsInRPC(rpcReturn, qaeDO);        
         return rpcReturn;
     }
@@ -215,9 +216,8 @@ public class QAEventService implements
             setRpcErrors(exceptionList, rpcSend);   
             return rpcSend;
         } 
-        Integer qaeId = null;
         try{ 
-         qaeId = remote.updateQaEvent(qaeDO);
+            remote.updateQaEvent(qaeDO);
         }catch(Exception e){
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
@@ -227,7 +227,6 @@ public class QAEventService implements
             return rpcSend;
         }
         
-        qaeDO = remote.getQaEvent((Integer)qaeId);
         setFieldsInRPC(rpcReturn, qaeDO);
         
         return rpcReturn;
@@ -240,8 +239,7 @@ public class QAEventService implements
 
         QaEventDO qaeDO = remote.getQaEvent(qaeId);
 //      set the fields in the RPC
-        setFieldsInRPC(rpcReturn, qaeDO);
-      
+        setFieldsInRPC(rpcReturn, qaeDO);      
             
         return rpcReturn;
     }
