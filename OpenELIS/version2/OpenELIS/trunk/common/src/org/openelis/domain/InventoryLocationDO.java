@@ -15,6 +15,10 @@ public class InventoryLocationDO implements Serializable{
 	protected Integer quantityOnHand;
 	protected Date expirationDate;
 	
+    public InventoryLocationDO(){
+        
+    }
+    
 	public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, Integer storageLocationId, String storageLocation,
 									Integer quantityOnHand, Date expirationDate){
 		this.id = id;
