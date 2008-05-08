@@ -84,11 +84,10 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			return rpcSend;
 		}
 		
-//		lookup the changes from the database and build the rpc
-		StandardNoteDO standardNoteDO = remote.getStandardNote(standardNoteId);
-
+        newStandardNoteDO.setId(standardNoteId);
+        
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, standardNoteDO);
+		setFieldsInRPC(rpcReturn, newStandardNoteDO);
 		
 		return rpcReturn;
 	}
@@ -236,12 +235,9 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			setRpcErrors(exceptionList, rpcSend);
 			return rpcSend;
 		}
-		
-		//lookup the changes from the database and build the rpc
-		StandardNoteDO standardNoteDO = remote.getStandardNote(newStandardNoteDO.getId());
 
 //		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, standardNoteDO);
+		setFieldsInRPC(rpcReturn, newStandardNoteDO);
 		
 		return rpcReturn;
 	}

@@ -91,11 +91,10 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 			return rpcSend;
 		}
 
-		// lookup the changes from the database and build the rpc
-		StorageUnitDO storageDO = remote.getStorageUnit(storageUnitId);
+        newStorageUnitDO.setId(storageUnitId);
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageDO);
+		setFieldsInRPC(rpcReturn, newStorageUnitDO);
 
 		return rpcReturn;
 	}
@@ -230,12 +229,8 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 			return rpcSend;
 		}
 		
-		// lookup the changes from the database and build the rpc
-		StorageUnitDO storageUnitDO = remote.getStorageUnit(newStorageUnitDO
-				.getId());
-
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageUnitDO);
+		setFieldsInRPC(rpcReturn, newStorageUnitDO);
 
 		return rpcReturn;
 	}

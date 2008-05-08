@@ -79,11 +79,10 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 			return rpcSend;
 		}
 		
-		//lookup the changes from the database and build the rpc
-		TestTrailerDO testTrailerDO = remote.getTestTrailer(testTrailerId);
+        newTestTrailerDO.setId(testTrailerId);
 
 		//set the fields in the RPC
-		setFieldsInRPC(rpcReturn, testTrailerDO);
+		setFieldsInRPC(rpcReturn, newTestTrailerDO);
 	
 		return rpcReturn;
 	}
@@ -230,12 +229,9 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 			setRpcErrors(exceptionList, rpcSend);
 			return rpcSend;
 		}
-		
-		//lookup the changes from the database and build the rpc
-		TestTrailerDO testTrailerDO = remote.getTestTrailer(newTestTrailerDO.getId());
 
 		//set the fields in the RPC
-		setFieldsInRPC(rpcReturn, testTrailerDO);
+		setFieldsInRPC(rpcReturn, newTestTrailerDO);
         
 		return rpcReturn;
 	}

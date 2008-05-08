@@ -5,7 +5,7 @@
                 xmlns:testTrailerMeta="xalan://org.openelis.meta.TestTrailerMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumnsNum.xsl"/>   
+<xsl:import href="aToZTwoColumns.xsl"/>   
   
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -61,7 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{testTrailerMeta:name()}" max="60" width="150px" tab="{testTrailerMeta:description()},{testTrailerMeta:text()}"/>
+										<textbox case="lower" key="{testTrailerMeta:name()}" max="60" width="150px" tab="{testTrailerMeta:description()},{testTrailerMeta:text()}"/>
 									</widget>
 								</row>
 								<row>								

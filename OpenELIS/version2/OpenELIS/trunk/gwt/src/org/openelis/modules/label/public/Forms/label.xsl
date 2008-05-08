@@ -5,7 +5,7 @@
                 xmlns:labelMeta="xalan://org.openelis.meta.LabelMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZTwoColumnsNum.xsl"/>
+<xsl:import href="aToZTwoColumns.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -25,8 +25,8 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "Label" name = "Label" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height="200px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">   
+ <panel layout= "horizontal" spacing= "0" padding= "0" height="225px" style="WhiteContentPanel" xsi:type= "Panel">  
+  <aToZ height="225px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">   
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     

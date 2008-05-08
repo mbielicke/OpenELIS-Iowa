@@ -4,7 +4,6 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AToZPanel;
-import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -18,8 +17,6 @@ public class StorageUnitScreen extends OpenELISScreenForm {
     private static boolean loaded = false;
     private static DataModel storageUnitCategoryDropdown;
 	
-	private Widget selected;
-	
 	public StorageUnitScreen() {
 		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded);
         name="Storage Unit";
@@ -29,7 +26,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	        if(sender == getWidget("atozButtons")){
 	           String action = ((ButtonPanel)sender).buttonClicked.action;
 	           if(action.startsWith("query:")){
-	        	   getStorageUnits(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+	        	   getStorageUnits(action.substring(6, action.length()));      
 	           }
 	        }else{
 	            super.onChange(sender);
@@ -51,21 +48,27 @@ public class StorageUnitScreen extends OpenELISScreenForm {
         
 		message.setText("Done");
 
+        //load the dropdowns
+        if(storageUnitCategoryDropdown == null)
+            storageUnitCategoryDropdown = (DataModel)initData[0];
+        
+        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storageUnit.category");
+                   
+        ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
+        
 		super.afterDraw(success);
-
-		loadDropdowns();
-	}
-	
-	public void add() {
-		super.add();
-
-		//set focus to the name field
-		cat.setFocus(true);
 	}
 	
 	public void query() {
-		super.query();
-		
+    	super.query();
+    	
+    	//set focus to the name field
+    	cat.setFocus(true);
+    }
+
+    public void add() {
+		super.add();
+
 		//set focus to the name field
 		cat.setFocus(true);
 	}
@@ -77,37 +80,14 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		cat.setFocus(true);
 	}
 	
-	private void getStorageUnits(String letter, Widget sender) {
-		// we only want to allow them to select a letter if they are in display
-		// mode..
+	private void getStorageUnits(String query) {
 		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			if(letter.equals("#"))
-				letterRPC.setFieldValue("storageUnit.description", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
-			else
-				letterRPC.setFieldValue("storageUnit.description", letter.toUpperCase() + "*");
+			letterRPC.setFieldValue("storageUnit.description", query);
 
 			commitQuery(letterRPC);
-
-			setStyleNameOnButton(sender);
 		}
-	}
-	
-	protected void setStyleNameOnButton(Widget sender) {
-		((AppButton)sender).changeState(AppButton.PRESSED);
-		if (selected != null)
-			((AppButton)selected).changeState(AppButton.UNPRESSED);
-		selected = sender;
-	}
-	
-	private void loadDropdowns(){
-		if(storageUnitCategoryDropdown == null)
-			storageUnitCategoryDropdown = (DataModel)initData[0];
-		
-	    ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storageUnit.category");
-	               
-	    ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
 	}
 }

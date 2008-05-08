@@ -29,6 +29,7 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -48,7 +49,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
     private AppButton        removeContactButton, standardNoteButton;
     private EditTable        contactsController;
-    private Widget           selected;
     private ScreenTextBox    orgId;
     private ScreenTextArea   noteText;
     private TextBox          orgName;
@@ -69,8 +69,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         if (sender == atozButtons) {
             String action = atozButtons.buttonClicked.action;
             if (action.startsWith("query:")) {
-                getOrganizations(action.substring(6, action.length()),
-                                 atozButtons.buttonClicked);
+                getOrganizations(action.substring(6, action.length()));
             }
         } else {
             super.onChange(sender);
@@ -224,9 +223,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         return true;
     }
 
-    private void getOrganizations(String query, Widget sender) {
+    private void getOrganizations(String query) {
         if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
-            Window.alert(query);
             
             FormRPC rpc;
 
@@ -267,6 +265,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         orgId = (ScreenTextBox)widgets.get("organization.id");
         orgName = (TextBox)getWidget("organization.name");
         noteText = (ScreenTextArea)widgets.get("note.text");
+        svp = (ScreenVertical) widgets.get("notesPanel");
 
         if (stateDropdown == null) {
             stateDropdown = (DataModel)initData[0];
@@ -353,31 +352,35 @@ public class OrganizationScreen extends OpenELISScreenForm implements
              clearNotes = false;
          } 
             
-           if(getModel){               
-             NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
-             orgIdObj.setValue(orgId);
-             
-            // prepare the argument list for the getObject function
-             DataObject[] args = new DataObject[] {orgIdObj}; 
-             
-            screenService.getObject("getNotesModel", args, new AsyncCallback(){
-               public void onSuccess(Object result){    
-                   svp = (ScreenVertical) widgets.get("notesPanel");
-                 // get the datamodel, load it in the notes panel and set the value in the rpc
-                   String xmlString = (String) ((StringObject)result).getValue();
-                   svp.load(xmlString);   
-                   
-                   if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
-                       clearNotes = true;
-                    }else {
-                        clearNotes = false;
-                    }
-               }
+           if(getModel){ 
+               final HTML loadingHtml = new HTML();
+               loadingHtml.setStyleName("ScreenLabel");
+               loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
+               svp.add(loadingHtml);
                
-               public void onFailure(Throwable caught){
-                   Window.alert(caught.getMessage());
-               }
-           }); 
+               NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
+               orgIdObj.setValue(orgId);
+                 
+               // prepare the argument list for the getObject function
+               DataObject[] args = new DataObject[] {orgIdObj}; 
+                 
+               screenService.getObject("getNotesModel", args, new AsyncCallback(){
+                   public void onSuccess(Object result){    
+                     // get the datamodel, load it in the notes panel and set the value in the rpc
+                       String xmlString = (String) ((StringObject)result).getValue();
+                       svp.load(xmlString);   
+                       
+                       if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
+                           clearNotes = true;
+                        }else {
+                            clearNotes = false;
+                        }
+                   }
+                   
+                   public void onFailure(Throwable caught){
+                       Window.alert(caught.getMessage());
+                   }
+               }); 
          }       
        }
 

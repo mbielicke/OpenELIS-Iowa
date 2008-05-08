@@ -16,8 +16,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
  public class QAEventScreen extends OpenELISScreenForm implements ClickListener{
-
-     private Widget selected = null;     
+   
      private TextBox tname = null;
      private ScreenAutoDropdown displayType = null;
      private ScreenAutoDropdown displayTest = null;
@@ -34,41 +33,32 @@ import com.google.gwt.user.client.ui.Widget;
          name="QA Event";
      }
      
-         public void afterDraw(boolean success) {
+         public void onChange(Widget sender) {
+         
+         if(sender == getWidget("atozButtons")){           
+            String action = ((ButtonPanel)sender).buttonClicked.action;           
+            if(action.startsWith("query:")){
+                getQAEvents(action.substring(6, action.length()));      
+            }
+         }else{
+             super.onChange(sender);
+         }
+     }
+
+        public void onClick(Widget arg0) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void afterDraw(boolean success) {
              loaded = true;
-               setBpanel((ButtonPanel) getWidget("buttons"));        
-               message.setText("done");                 
-               
-               AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-               modelWidget.addChangeListener(atozTable);
-               addChangeListener(atozTable);
-               
-               ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-               atozButtons.addChangeListener(this);
-               
-               tname = (TextBox)getWidget("qaevent.name");
-               displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
-               displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
- 
-               reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");
-               super.afterDraw(success);        
-               
-               loadDropdowns();                           
+             
+               setBpanel((ButtonPanel) getWidget("buttons"));          
+               initWidgets();                 
+               super.afterDraw(success); 
         }                 
          
-         public void onChange(Widget sender) {
-             
-             if(sender == getWidget("atozButtons")){           
-                String action = ((ButtonPanel)sender).buttonClicked.action;           
-                if(action.startsWith("query:")){
-                    getQAEvents(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
-                }
-             }else{
-                 super.onChange(sender);
-             }
-         }
-         
-        public void query() {
+         public void query() {
             
             super.query();
             
@@ -97,46 +87,44 @@ import com.google.gwt.user.client.ui.Widget;
             reportingText.enable(true);
         }
          
-         private void getQAEvents(String letter, Widget sender) {
-             // we only want to allow them to select a letter if they are in display
-             // mode..
+         private void getQAEvents(String query) {
              if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-                 letterRPC.setFieldValue("qaevent.name", letter.toLowerCase() + "*");
+                 letterRPC.setFieldValue("qaevent.name", query);
                   
                  commitQuery(letterRPC);
-                 
-                
              }
          }
          
-     	protected void setStyleNameOnButton(Widget sender) {
-    		((AppButton)sender).changeState(AppButton.PRESSED);
-    		if (selected != null)
-    			((AppButton)selected).changeState(AppButton.UNPRESSED);
-    		selected = sender;
-    	}                
-        
-     private void loadDropdowns(){
-            
-            //load type and test dropdowns
-               if(qaEventTypeDropDown == null){
-                   qaEventTypeDropDown = (DataModel)initData[0];               
-                   testDropDown = (DataModel)initData[1];
-               }       
+     private void initWidgets(){
+         message.setText("done");                 
+         
+         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+         modelWidget.addChangeListener(atozTable);
+         addChangeListener(atozTable);
+         
+         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+         atozButtons.addChangeListener(this);
+         
+         tname = (TextBox)getWidget("qaevent.name");
+         displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
+         displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
 
-                                        
-                    ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-                    ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
-                    
-                                           
-                }
+         reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");       
+     
+        //load type and test dropdowns
+           if(qaEventTypeDropDown == null){
+               qaEventTypeDropDown = (DataModel)initData[0];               
+               testDropDown = (DataModel)initData[1];
+           }       
 
-    public void onClick(Widget arg0) {
-        // TODO Auto-generated method stub
-        
-    }                              
-                          
+                                    
+                ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
+                ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
+                
+                                       
+            }                              
+                      
               
  }

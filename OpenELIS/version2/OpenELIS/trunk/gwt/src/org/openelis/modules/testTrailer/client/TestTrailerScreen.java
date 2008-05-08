@@ -24,7 +24,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	        if(sender == getWidget("atozButtons")){
 	           String action = ((ButtonPanel)sender).buttonClicked.action;
 	           if(action.startsWith("query:")){
-	        	   getTestTrailers(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
+	        	   getTestTrailers(action.substring(6, action.length()));      
 	           }
 	        }else{
 	            super.onChange(sender);
@@ -49,19 +49,19 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 		super.afterDraw(success);
 	}
 	
-	public void add() {
+	public void query() {
+    		super.query();
+    		
+    //		users cant query by text so disable it
+    		textArea.enable(false);
+    		
+    		//set focus to the name field
+    		nameTextBox.setFocus(true);
+    	}
+
+    public void add() {
 		super.add();
 
-		//set focus to the name field
-		nameTextBox.setFocus(true);
-	}
-	
-	public void query() {
-		super.query();
-		
-//		users cant query by text so disable it
-		textArea.enable(false);
-		
 		//set focus to the name field
 		nameTextBox.setFocus(true);
 	}
@@ -73,17 +73,12 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 		nameTextBox.setFocus(true);
 	}
 	
-	private void getTestTrailers(String letter, Widget sender) {
-		// we only want to allow them to select a letter if they are in display
-		// mode..
+	private void getTestTrailers(String query) {
 		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			if(letter.equals("#"))
-				letterRPC.setFieldValue("testTrailer.name", "0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9*");
-			else
-				letterRPC.setFieldValue("testTrailer.name", letter.toUpperCase() + "* | " + letter.toLowerCase() + "*");
+			letterRPC.setFieldValue("testTrailer.name", query);
 
 			commitQuery(letterRPC);
 		}

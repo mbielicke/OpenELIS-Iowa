@@ -61,7 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},{standardNoteMeta:text()}"/>
+										<textbox case="lower" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},{standardNoteMeta:text()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -82,14 +82,14 @@
 										</autoDropdown>
 									</widget>
 								</row>
-								<row>
+							<!--	<row>
 								  <widget>
 								    <text style="Prompt">Test Date</text>
 								  </widget>
 								  <widget>
 				                    <calendar begin="0" end="2"/>
 							      </widget>
-							    </row>	    
+							    </row>	 -->   
 								<row>								
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
