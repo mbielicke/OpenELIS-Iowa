@@ -50,7 +50,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)
-            storageUnitCategoryDropdown = (DataModel)initData[0];
+            storageUnitCategoryDropdown = (DataModel)initData.get("categories");
         
         ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storageUnit.category");
                    

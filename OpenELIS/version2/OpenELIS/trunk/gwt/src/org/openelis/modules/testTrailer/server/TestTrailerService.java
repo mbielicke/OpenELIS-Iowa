@@ -10,7 +10,6 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -287,7 +286,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/testTrailer.xsl");
 	}
 
-	public DataObject[] getXMLData() throws RPCException {
+	public HashMap getXMLData() throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -303,7 +302,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		rpcSend.status = IForm.INVALID_FORM;
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

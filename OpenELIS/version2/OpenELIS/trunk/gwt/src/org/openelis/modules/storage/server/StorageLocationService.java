@@ -13,7 +13,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
@@ -384,13 +383,16 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl");
 	}
 
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl"));
         DataModel model = new DataModel();
         ModelField data = new ModelField();
         data.setValue(model);
-        return new DataObject[] {xml,data};
+        HashMap map = new HashMap();
+        map.put("xml", xml);
+        map.put("data",data);
+        return map;
     }
     
     public BooleanObject validateUniqueName(StringObject name){
@@ -704,7 +706,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		rpcSend.status = IForm.INVALID_FORM;
     }
 	
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

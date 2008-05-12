@@ -1,8 +1,14 @@
 package org.openelis.modules.main.client.openelis;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
@@ -14,12 +20,7 @@ import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.HashMap;
 
 public class OpenELIS extends AppScreen implements ClickListener{
 	
@@ -36,13 +37,15 @@ public class OpenELIS extends AppScreen implements ClickListener{
         base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISService";
         target.setServiceEntryPoint(base);
         service = screenService;
-        getXMLData(new DataObject[] {modules});
+        HashMap map = new HashMap();
+        map.put("modules",modules);
+        getXMLData(map);
     }
 
    public void afterDraw(boolean Success) {
         	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
-            ((AppConstants)ClassFactory.forName("AppConstants")).addMapp((ConstantMap)initData[0]);
+            ((AppConstants)ClassFactory.forName("AppConstants")).addMapp((ConstantMap)initData.get("AppConstants"));
     }
 
     public void onClick(Widget item) {

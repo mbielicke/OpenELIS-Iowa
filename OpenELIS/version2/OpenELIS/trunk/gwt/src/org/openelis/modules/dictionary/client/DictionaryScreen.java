@@ -156,7 +156,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
         
         if (sectionDropDown == null) {
-            sectionDropDown = (DataModel)initData[0];
+            sectionDropDown = (DataModel)initData.get("categories");
         }
 
         ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);

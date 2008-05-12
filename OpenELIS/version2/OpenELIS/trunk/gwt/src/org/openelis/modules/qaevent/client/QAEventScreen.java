@@ -96,7 +96,7 @@ import com.google.gwt.user.client.ui.Widget;
                  commitQuery(letterRPC);
              }
          }
-         
+        
      private void initWidgets(){
          message.setText("done");                 
          
@@ -114,10 +114,10 @@ import com.google.gwt.user.client.ui.Widget;
          reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");       
      
         //load type and test dropdowns
-           if(qaEventTypeDropDown == null){
-               qaEventTypeDropDown = (DataModel)initData[0];               
-               testDropDown = (DataModel)initData[1];
-           }       
+               if(qaEventTypeDropDown == null){
+                   qaEventTypeDropDown = (DataModel)initData.get("qaevent");               
+                   testDropDown = (DataModel)initData.get("tests");
+               }       
 
                                     
                 ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);

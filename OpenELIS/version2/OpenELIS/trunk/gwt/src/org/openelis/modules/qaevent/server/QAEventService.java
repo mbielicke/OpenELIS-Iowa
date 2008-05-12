@@ -10,7 +10,6 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -355,7 +354,7 @@ public class QAEventService implements
     }
         
 
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));    
         
@@ -368,7 +367,12 @@ public class QAEventService implements
         if(testDropDownField ==null)
             testDropDownField = getInitialModel("test");
         
-        return new DataObject[] {xml,qaTypeDropDownField,testDropDownField};
+        HashMap map = new HashMap();
+        map.put("xml", xml);
+        map.put("qaevent", qaTypeDropDownField);
+        map.put("tests",testDropDownField);
+        
+        return map;
     }
     
     private void setFieldsInRPC(FormRPC rpcReturn, QaEventDO qaeDO){
@@ -403,7 +407,7 @@ public class QAEventService implements
        return qaeDO;
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

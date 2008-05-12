@@ -1,10 +1,7 @@
 package org.openelis.modules.provider.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
@@ -19,7 +16,6 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -43,8 +39,11 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 
 public class ProviderService implements AppScreenFormServiceInt{
@@ -64,7 +63,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");        
     }
     
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
         
@@ -86,8 +85,14 @@ public class ProviderService implements AppScreenFormServiceInt{
              countryDropDownField = getInitialModel("country");
              CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
          }   
-           
-           return new DataObject[] {xml,providerTypeDropDownField,stateDropDownField,countryDropDownField};
+         
+         HashMap map = new HashMap();
+         map.put("xml", xml);
+         map.put("providers", providerTypeDropDownField);
+         map.put("states", stateDropDownField);
+         map.put("countries", countryDropDownField);
+         
+         return map;
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -640,7 +645,7 @@ public class ProviderService implements AppScreenFormServiceInt{
        return provAddDOList;    
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

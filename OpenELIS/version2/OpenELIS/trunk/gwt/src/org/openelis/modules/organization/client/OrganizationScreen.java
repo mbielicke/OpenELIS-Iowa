@@ -268,9 +268,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         svp = (ScreenVertical) widgets.get("notesPanel");
 
         if (stateDropdown == null) {
-            stateDropdown = (DataModel)initData[0];
-            countryDropdown = (DataModel)initData[1];
-            contactTypeDropdown = (DataModel)initData[2];
+            stateDropdown = (DataModel)initData.get("states");
+            countryDropdown = (DataModel)initData.get("countries");
+            contactTypeDropdown = (DataModel)initData.get("contacts");
         }
 
         drop = (AutoCompleteDropdown)getWidget("organization.address.state");
