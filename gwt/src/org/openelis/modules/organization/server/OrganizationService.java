@@ -1,10 +1,7 @@
 package org.openelis.modules.organization.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -21,7 +18,6 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
@@ -49,8 +45,11 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {
@@ -774,7 +773,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		return null;
 	}
 
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl"));
         
@@ -798,7 +797,13 @@ public class OrganizationService implements AppScreenFormServiceInt,
         	CachingManager.putElement("InitialData", "contactTypeDropdown", contactTypeDropdownField);
         }
         
-        return new DataObject[] {xml,stateDropdownField,countryDropdownField,contactTypeDropdownField};
+        HashMap map = new HashMap();
+        map.put("xml", xml);
+        map.put("states", stateDropdownField);
+        map.put("countries", countryDropdownField);
+        map.put("contats", contactTypeDropdownField);
+        
+        return map;
     }
     
     private String getStringDropDownValue(ArrayList list){
@@ -836,7 +841,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		rpcSend.status = IForm.INVALID_FORM;
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

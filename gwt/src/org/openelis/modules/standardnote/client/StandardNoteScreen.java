@@ -102,7 +102,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
         message.setText("Done");
         
 		if(typeDropdown == null)
-		    typeDropdown = (DataModel)initData[0];
+		    typeDropdown = (DataModel)initData.get("noteTypes");
 		
 //		load standard note type dropdowns
         ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");

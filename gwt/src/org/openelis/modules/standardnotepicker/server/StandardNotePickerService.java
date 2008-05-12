@@ -1,16 +1,10 @@
 package org.openelis.modules.standardnotepicker.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
@@ -28,6 +22,11 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class StandardNotePickerService implements AppScreenFormServiceInt {
 
@@ -71,10 +70,12 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
 	}
     
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl"));
-        return new DataObject[] {xml};
+        HashMap map = new HashMap();
+        map.put("xml",xml);
+        return map;
     }
 	
 	public PagedTreeField getTreeModel(StringObject name, StringObject desc) throws RPCException{
@@ -170,7 +171,7 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		}
 	}
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

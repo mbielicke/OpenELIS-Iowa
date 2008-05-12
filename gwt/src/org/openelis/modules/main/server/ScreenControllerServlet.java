@@ -20,6 +20,8 @@ import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpSession;
 
 public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, TableServiceInt, FavoritesServiceInt {
@@ -58,8 +60,8 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return ((AppScreenFormServiceInt)getService()).getXML();
     }
 
-    public DataObject[] getXMLData() throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).getXMLData();
+    public HashMap getXMLData() throws RPCException {
+       return ((AppScreenFormServiceInt)getService()).getXMLData();
     }
     
     public DataObject getObject(String method, DataObject[] args) throws RPCException {
@@ -167,7 +169,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return new FavoritesService().saveFavorites(rpc);
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		return ((AppScreenFormServiceInt)getService()).getXMLData(args);
 	}    
 }

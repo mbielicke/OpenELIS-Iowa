@@ -93,10 +93,13 @@ public class OpenELISService implements OpenELISServiceInt {
         }
 	}
     
-    public DataObject[] getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-        return new DataObject[] {xml,getConstants()};
+        HashMap map = new HashMap();
+        map.put("xml",xml);
+        map.put("AppConstants", getConstants());
+        return map;
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -161,18 +164,21 @@ public class OpenELISService implements OpenELISServiceInt {
         return cmap;
     }
 
-	public DataObject[] getXMLData(DataObject[] args) throws RPCException {
+	public HashMap getXMLData(HashMap args) throws RPCException {
 		try {
 			Document doc = XMLUtil.createNew("doc");
 			Element root = doc.getDocumentElement();
 			Element modules = doc.createElement("modules");
-			String modu = ((CollectionField)args[0]).toString();
+			String modu = ((CollectionField)args.get("modules")).toString();
 			System.out.println("modules : "+modu);
 			modules.appendChild(doc.createTextNode(modu));
 			root.appendChild(modules);
 			StringObject xml = new StringObject();
 			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl",doc));
-			return new DataObject[] {xml,getConstants()};
+            HashMap map = new HashMap();
+            map.put("xml", xml);
+            map.put("AppConstants",getConstants());
+			return map;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;

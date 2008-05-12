@@ -329,9 +329,9 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         //load dropdowns
        if(typeDropDown == null){
-         typeDropDown = (DataModel) initData[0];
-         stateDropDown = (DataModel) initData[1];
-         countryDropDown = (DataModel) initData[2];
+         typeDropDown = (DataModel) initData.get("providers");
+         stateDropDown = (DataModel) initData.get("states");
+         countryDropDown = (DataModel) initData.get("countries");
         } 
                                 
        ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                

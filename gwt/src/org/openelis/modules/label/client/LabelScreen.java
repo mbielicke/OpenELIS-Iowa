@@ -106,8 +106,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
           
           //load dropdowns
              if(scriptletDropdown == null){
-                 printerTypeDropDown = (DataModel)initData[0];               
-                 scriptletDropdown = (DataModel)initData[1];
+                 printerTypeDropDown = (DataModel)initData.get("printer");               
+                 scriptletDropdown = (DataModel)initData.get("scriptlet");
              }                                             
                   ((AutoCompleteDropdown)displayPType.getWidget()).setModel(printerTypeDropDown);
                   ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
