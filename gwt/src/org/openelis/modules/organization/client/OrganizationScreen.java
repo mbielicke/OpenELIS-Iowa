@@ -86,7 +86,71 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     public void afterDraw(boolean success) {
         loaded = true;
 
-        initWidgets();
+        TableWidget d;
+        QueryTable q;
+        ScreenTableWidget sw;
+        AutoCompleteDropdown drop;
+        AToZPanel atozTable;
+
+        //
+        // we are interested in in getting button actions in two places,
+        // modelwidget and us.
+        //
+        atozTable = (AToZPanel)getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+
+        removeContactButton = (AppButton)getWidget("removeContactButton");
+        standardNoteButton = (AppButton)getWidget("standardNoteButton");
+        
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+
+        //
+        // disable auto add and make sure there are no rows in the table
+        //
+        contactsController = ((TableWidget)getWidget("contactsTable")).controller;
+        contactsController.setAutoAdd(false);
+        ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
+
+        orgId = (ScreenTextBox)widgets.get("organization.id");
+        orgName = (TextBox)getWidget("organization.name");
+        noteText = (ScreenTextArea)widgets.get("note.text");
+        svp = (ScreenVertical) widgets.get("notesPanel");
+
+        if (stateDropdown == null) {
+            stateDropdown = (DataModel)initData.get("states");
+            countryDropdown = (DataModel)initData.get("countries");
+            contactTypeDropdown = (DataModel)initData.get("contacts");
+        }
+
+        drop = (AutoCompleteDropdown)getWidget("organization.address.state");
+        drop.setModel(stateDropdown);
+
+        sw = (ScreenTableWidget)widgets.get("contactsTable");
+        d = (TableWidget)sw.getWidget();
+        q = (QueryTable)sw.getQueryWidget().getWidget();
+        //
+        // state dropdown
+        //
+        ((TableAutoDropdown)d.controller.editors[5]).setModel(stateDropdown);
+        ((TableAutoDropdown)q.editors[5]).setModel(stateDropdown);
+
+        //
+        // country dropdowns
+        //
+        drop = (AutoCompleteDropdown)getWidget("organization.address.country");
+        drop.setModel(countryDropdown);
+
+        ((TableAutoDropdown)d.controller.editors[7]).setModel(countryDropdown);
+        ((TableAutoDropdown)q.editors[7]).setModel(countryDropdown);
+
+        //
+        // contact type dropdowns
+        //
+        ((TableAutoDropdown)d.controller.editors[0]).setModel(contactTypeDropdown);
+        ((TableAutoDropdown)q.editors[0]).setModel(contactTypeDropdown);
+        
         setBpanel((ButtonPanel)getWidget("buttons"));
         super.afterDraw(success);
     }
@@ -232,73 +296,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             rpc.setFieldValue("organization.name", query);
             commitQuery(rpc);
         }
-    }
-
-    private void initWidgets() {
-        TableWidget d;
-        QueryTable q;
-        ScreenTableWidget sw;
-        AutoCompleteDropdown drop;
-        AToZPanel atozTable;
-
-        //
-        // we are interested in in getting button actions in two places,
-        // modelwidget and us.
-        //
-        atozTable = (AToZPanel)getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
-
-        removeContactButton = (AppButton)getWidget("removeContactButton");
-        standardNoteButton = (AppButton)getWidget("standardNoteButton");
-        
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
-
-        //
-        // disable auto add and make sure there are no rows in the table
-        //
-        contactsController = ((TableWidget)getWidget("contactsTable")).controller;
-        contactsController.setAutoAdd(false);
-        ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
-
-        orgId = (ScreenTextBox)widgets.get("organization.id");
-        orgName = (TextBox)getWidget("organization.name");
-        noteText = (ScreenTextArea)widgets.get("note.text");
-        svp = (ScreenVertical) widgets.get("notesPanel");
-
-        if (stateDropdown == null) {
-            stateDropdown = (DataModel)initData.get("states");
-            countryDropdown = (DataModel)initData.get("countries");
-            contactTypeDropdown = (DataModel)initData.get("contacts");
-        }
-
-        drop = (AutoCompleteDropdown)getWidget("organization.address.state");
-        drop.setModel(stateDropdown);
-
-        sw = (ScreenTableWidget)widgets.get("contactsTable");
-        d = (TableWidget)sw.getWidget();
-        q = (QueryTable)sw.getQueryWidget().getWidget();
-        //
-        // state dropdown
-        //
-        ((TableAutoDropdown)d.controller.editors[5]).setModel(stateDropdown);
-        ((TableAutoDropdown)q.editors[5]).setModel(stateDropdown);
-
-        //
-        // country dropdowns
-        //
-        drop = (AutoCompleteDropdown)getWidget("organization.address.country");
-        drop.setModel(countryDropdown);
-
-        ((TableAutoDropdown)d.controller.editors[7]).setModel(countryDropdown);
-        ((TableAutoDropdown)q.editors[7]).setModel(countryDropdown);
-
-        //
-        // contact type dropdowns
-        //
-        ((TableAutoDropdown)d.controller.editors[0]).setModel(contactTypeDropdown);
-        ((TableAutoDropdown)q.editors[0]).setModel(contactTypeDropdown);
     }
 
     private void loadTabs() {

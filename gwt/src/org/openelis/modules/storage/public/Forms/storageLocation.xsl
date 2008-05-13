@@ -186,6 +186,7 @@
     <queryString key="{storageLocationMeta:location()}" required="false"/>
     <queryString key="{storageLocationStorageUnitMeta:description()}" required="false"/>
     <queryCheck key="{storageLocationMeta:isAvailable()}" required="false"/>
+    <table key="childStorageLocsTable"/>
     
 	<!-- table values -->
 	<queryString key="{storageLocationChildStorageUnitMeta:description()}" required="false"/>

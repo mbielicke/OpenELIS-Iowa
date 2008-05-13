@@ -361,7 +361,7 @@
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="false"/>
       <queryCheck key="{organizationMeta:isActive()}" required="false"/>
-      
+      <table key="contactsTable"/>
       <dropdown key="{orgContactMeta:contactType()}" required="false"/>
 	  <queryString key="{orgContactMeta:name()}" required="false"/>
 	  <queryString key="{orgContactAddressMeta:multipleUnit()}" required="false"/>

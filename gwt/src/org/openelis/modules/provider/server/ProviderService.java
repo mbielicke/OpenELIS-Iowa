@@ -1,11 +1,14 @@
 package org.openelis.modules.provider.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
@@ -39,83 +42,128 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 
 public class ProviderService implements AppScreenFormServiceInt{
-
-    /**
-     * 
-     */    
     
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 19;
            
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
-                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
-                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");        
-    }
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
+        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
+        if(rpcSend == null){
+           //need to get the query rpc out of the cache        
+                       
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider");
     
-    public HashMap getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
+           if(rpc == null)
+               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+    
+            List providers = null;
+                
+            try{
+                
+                ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
+                providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
+            }catch(Exception e){
+            	if(e instanceof LastPageException){
+            		throw new LastPageException(openElisConstants.getString("lastPageException"));
+            	}else{
+            		throw new RPCException(e.getMessage());	
+            	}
+            }
         
-        DataModel providerTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "providerTypeDropDown");
-        DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
-        DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
+        int i=0;
+        model.clear();
         
-        if(providerTypeDropDownField ==null){
-            providerTypeDropDownField = getInitialModel("providerType");
-            CachingManager.putElement("InitialData", "providerTypeDropDown", providerTypeDropDownField);
-        }   
-           
-         if(stateDropDownField == null){
-             stateDropDownField = getInitialModel("state");
-             CachingManager.putElement("InitialData", "stateDropDown", stateDropDownField);
-         }  
-         
-         if(countryDropDownField == null){
-             countryDropDownField = getInitialModel("country");
-             CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
-         }   
-         
-         HashMap map = new HashMap();
-         map.put("xml", xml);
-         map.put("providers", providerTypeDropDownField);
-         map.put("states", stateDropDownField);
-         map.put("countries", countryDropDownField);
-         
-         return map;
-    }
-
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getKey().getValue();
+        while(i < providers.size() && i < leftTableRowsPerPage) {
+    
+            Object[] result = (Object[])providers.get(i);
+            //org id
+            Integer idResult = (Integer)result[0];
+            //org name
+            String lnameResult = (String)result[1];
+            
+            String fnameResult = (String)result[2];
+    
+            DataSet row = new DataSet();
+            
+            NumberObject id = new NumberObject(NumberObject.INTEGER);            
+            StringObject lname = new StringObject();
+            StringObject fname = new StringObject();
+             lname.setValue(lnameResult);
+             fname.setValue(fnameResult);
+            
+            id.setValue(idResult);
+            
+            row.setKey(id); 
+            row.addObject(lname);
+            row.addObject(fname);
+            
+            model.add(row);
+            i++;
+         }
         
-        
-        ProviderDO provDO = new ProviderDO();
-         try{
-          provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId);
-          }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
-         }  
-//      set the fields in the RPC
-          setFieldsInRPC(rpcReturn, provDO);
-        return rpcReturn;
+                
+        return model;   
+        } else{
+            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+            
+            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            fields.remove("providerAddressTable");
+            
+            List providerNames = new ArrayList();
+                try{
+                    providerNames = remote.query(fields,0,leftTableRowsPerPage);
+    
+            }catch(Exception e){
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());
+            }
+    
+            Iterator itraaa = providerNames.iterator();
+            model=  new DataModel();
+            while(itraaa.hasNext()){
+                Object[] result = (Object[])(Object[])itraaa.next();
+                //org id
+                Integer idResult = (Integer)result[0];
+                //org name
+                String lnameResult = (String)result[1];
+                
+                String fnameResult = (String)result[2];
+    
+                DataSet row = new DataSet();
+                
+                NumberObject id = new NumberObject(NumberObject.INTEGER);                
+                StringObject lname = new StringObject();
+                StringObject fname = new StringObject();
+                 lname.setValue(lnameResult);
+                 fname.setValue(fnameResult);
+                
+                id.setValue(idResult);
+                
+                row.setKey(id);                   
+                row.addObject(lname);
+                row.addObject(fname);
+                model.add(row);
+              
+            } 
+            if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider", rpcSend);         
+       }
+        return model;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
                
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpcSend);
-       
+    
         NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
@@ -154,114 +202,10 @@ public class ProviderService implements AppScreenFormServiceInt{
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
-        //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
-        if(rpcSend == null){
-           //need to get the query rpc out of the cache        
-                       
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider");
-
-           if(rpc == null)
-               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-
-            List providers = null;
-                
-            try{
-                
-                ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
-                providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
-            }catch(Exception e){
-	        	if(e instanceof LastPageException){
-	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
-	        	}else{
-	        		throw new RPCException(e.getMessage());	
-	        	}
-            }
-        
-        int i=0;
-        model.clear();
-        
-        while(i < providers.size() && i < leftTableRowsPerPage) {
-
-            Object[] result = (Object[])providers.get(i);
-            //org id
-            Integer idResult = (Integer)result[0];
-            //org name
-            String lnameResult = (String)result[1];
-            
-            String fnameResult = (String)result[2];
-
-            DataSet row = new DataSet();
-            
-            NumberObject id = new NumberObject(NumberObject.INTEGER);            
-            StringObject lname = new StringObject();
-            StringObject fname = new StringObject();
-             lname.setValue(lnameResult);
-             fname.setValue(fnameResult);
-            
-            id.setValue(idResult);
-            
-            row.setKey(id); 
-            row.addObject(lname);
-            row.addObject(fname);
-            
-            model.add(row);
-            i++;
-         }
-        
-                
-        return model;   
-        } else{
-            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-            List providerNames = new ArrayList();
-                try{
-                    providerNames = remote.query(fields,0,leftTableRowsPerPage);
-
-            }catch(Exception e){
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());
-            }
-
-            Iterator itraaa = providerNames.iterator();
-            model=  new DataModel();
-            while(itraaa.hasNext()){
-                Object[] result = (Object[])(Object[])itraaa.next();
-                //org id
-                Integer idResult = (Integer)result[0];
-                //org name
-                String lnameResult = (String)result[1];
-                
-                String fnameResult = (String)result[2];
-
-                DataSet row = new DataSet();
-                
-                NumberObject id = new NumberObject(NumberObject.INTEGER);                
-                StringObject lname = new StringObject();
-                StringObject fname = new StringObject();
-                 lname.setValue(lnameResult);
-                 fname.setValue(fnameResult);
-                
-                id.setValue(idResult);
-                
-                row.setKey(id);                   
-                row.addObject(lname);
-                row.addObject(fname);
-                model.add(row);
-              
-            } 
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider", rpcSend);         
-       }
-        return model;
-    }      
-
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpcSend);
-       
+    
         NoteDO providerNote = new NoteDO();       
         
         TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
@@ -283,6 +227,9 @@ public class ProviderService implements AppScreenFormServiceInt{
         try{
             remote.updateProvider(providerDO, providerNote, provAddDOList);        
         }catch(Exception e){
+            if(e instanceof EntityLockedException)
+                throw new RPCException(e.getMessage());
+            
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
@@ -298,38 +245,97 @@ public class ProviderService implements AppScreenFormServiceInt{
         return rpcReturn;
     }
 
-   
-
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getKey().getValue();
-                
-        ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
-//      set the fields in the RPC
-        setFieldsInRPC(rpcReturn, provDO);
-                                                      
-        return rpcReturn;
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+            Integer providerId = (Integer)key.getKey().getValue();
+            
+            
+            ProviderDO provDO = new ProviderDO();
+             try{
+              provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId);
+              }catch(Exception ex){
+                 throw new RPCException(ex.getMessage());
+             }  
+    //      set the fields in the RPC
+              setFieldsInRPC(rpcReturn, provDO);
+            return rpcReturn;
+        }
+
+    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
+            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+            Integer providerId = (Integer)key.getKey().getValue();
+                    
+            ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
+    //      set the fields in the RPC
+            setFieldsInRPC(rpcReturn, provDO);
+                                                          
+            return rpcReturn;
+        }
+
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        Integer providerId = (Integer)key.getKey().getValue();
+            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+            Integer providerId = (Integer)key.getKey().getValue();
+            
+            
+            ProviderDO provDO = new ProviderDO();
+             try{
+              provDO =  (ProviderDO)remote.getProviderAndLock(providerId);
+             }catch(Exception ex){
+                 throw new RPCException(ex.getMessage());
+             }  
+    //      set the fields in the RPC
+             setFieldsInRPC(rpcReturn, provDO);
+                    
+                                                          
+            return rpcReturn;
+        }
+
+    public String getXML() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");        
+    }
+    
+    public HashMap getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
         
+        DataModel providerTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "providerTypeDropDown");
+        DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
+        DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
         
-        ProviderDO provDO = new ProviderDO();
-         try{
-          provDO =  (ProviderDO)remote.getProviderAndLock(providerId);
-         }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
+        if(providerTypeDropDownField ==null){
+            providerTypeDropDownField = getInitialModel("providerType");
+            CachingManager.putElement("InitialData", "providerTypeDropDown", providerTypeDropDownField);
+        }   
+           
+         if(stateDropDownField == null){
+             stateDropDownField = getInitialModel("state");
+             CachingManager.putElement("InitialData", "stateDropDown", stateDropDownField);
          }  
-//      set the fields in the RPC
-         setFieldsInRPC(rpcReturn, provDO);
-                
-                                                      
-        return rpcReturn;
-    }    
-    
-    
+         
+         if(countryDropDownField == null){
+             countryDropDownField = getInitialModel("country");
+             CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
+         }   
+         
+         HashMap map = new HashMap();
+         map.put("xml", xml);
+         map.put("providers", providerTypeDropDownField);
+         map.put("states", stateDropDownField);
+         map.put("countries", countryDropDownField);
+         
+         return map;
+    }
+
+    public HashMap getXMLData(HashMap args) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+
     public TableModel fillAddressTable(TableModel addressModel, List contactsList){       
         try{
             addressModel.reset();
@@ -550,11 +556,6 @@ public class ProviderService implements AppScreenFormServiceInt{
         return null;        
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
     public TableField getAddressModel(NumberObject providerId,TableField model){
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
@@ -645,12 +646,7 @@ public class ProviderService implements AppScreenFormServiceInt{
        return provAddDOList;    
     }
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-    
-    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table

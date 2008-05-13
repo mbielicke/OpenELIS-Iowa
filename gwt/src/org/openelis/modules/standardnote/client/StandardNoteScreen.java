@@ -41,7 +41,25 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		loaded = true;
 		setBpanel((ButtonPanel) getWidget("buttons"));
 		
-		initWidgets();
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+        
+        textArea = (ScreenTextArea)widgets.get("standardNote.text");
+        nameTextbox = (TextBox)getWidget("standardNote.name");
+
+        message.setText("Done");
+        
+        if(typeDropdown == null)
+            typeDropdown = (DataModel)initData.get("noteTypes");
+        
+//      load standard note type dropdowns
+        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");
+                   
+       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
 		
 		super.afterDraw(success);
 	}
@@ -86,27 +104,5 @@ public class StandardNoteScreen extends OpenELISScreenForm {
     
     		commitQuery(letterRPC);
     	}
-    }
-	
-	private void initWidgets(){
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
-        
-        textArea = (ScreenTextArea)widgets.get("standardNote.text");
-        nameTextbox = (TextBox)getWidget("standardNote.name");
-
-        message.setText("Done");
-        
-		if(typeDropdown == null)
-		    typeDropdown = (DataModel)initData.get("noteTypes");
-		
-//		load standard note type dropdowns
-        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");
-	               
-       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
-	}	
+    }	
 }

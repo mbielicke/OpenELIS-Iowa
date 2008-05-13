@@ -62,7 +62,31 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         
         setBpanel((ButtonPanel)getWidget("buttons"));
         
-        initWidgets();
+        message.setText("Done");
+
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+                
+        dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
+        ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
+
+        dictEntryController.setAutoAdd(false);
+
+        tname = (TextBox)getWidget("category.name");
+        removeEntryButton = (AppButton)getWidget("removeEntryButton");
+                
+        displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
+        
+        if (sectionDropDown == null) {
+            sectionDropDown = (DataModel)initData.get("sections");
+        }
+
+        ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
+        
         super.afterDraw(success);
 
     }
@@ -133,34 +157,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
             
             commitQuery(letterRPC);
         }
-    }
-
-    private void initWidgets() {
-        message.setText("Done");
-
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
-                
-        dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
-        ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
-
-        dictEntryController.setAutoAdd(false);
-
-        tname = (TextBox)getWidget("category.name");
-        removeEntryButton = (AppButton)getWidget("removeEntryButton");
-                
-        displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
-        
-        if (sectionDropDown == null) {
-            sectionDropDown = (DataModel)initData.get("categories");
-        }
-
-        ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
-        
     }
     
     private void onRemoveRowButtonClick(){

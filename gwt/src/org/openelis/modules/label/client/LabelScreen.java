@@ -51,7 +51,28 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         loaded = true;        
         setBpanel((ButtonPanel)getWidget("buttons"));
         
-        initWidgets();
+        message.setText("Done");
+
+        nameTextbox = (TextBox)getWidget("label.name");
+        
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+        
+        displayPType = (ScreenAutoDropdown)widgets.get("label.printerType");
+        displayScript = (ScreenAutoDropdown)widgets.get("label.scriptlet");
+        
+        //load dropdowns
+       if(scriptletDropdown == null){
+           printerTypeDropDown = (DataModel)initData.get("printer");               
+           scriptletDropdown = (DataModel)initData.get("scriptlet");
+       }                                             
+            
+       ((AutoCompleteDropdown)displayPType.getWidget()).setModel(printerTypeDropDown);
+       ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
         
         super.afterDraw(success);
     }
@@ -74,45 +95,18 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         nameTextbox.setFocus(true);
     }
     
-      private void getLabels(String query) {
-          // we only want to allow them to select a letter if they are in display
-          // mode..
-          if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
-
-              FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-             
-              letterRPC.setFieldValue("label.name", query);
-               
-              commitQuery(letterRPC);
-              
-             
-          }
+    private void getLabels(String query) {
+      // we only want to allow them to select a letter if they are in display
+      // mode..
+      if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+    
+          FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+         
+          letterRPC.setFieldValue("label.name", query);
+           
+          commitQuery(letterRPC);
+          
+         
       }
-
-      private void initWidgets(){
-          message.setText("Done");
-
-          nameTextbox = (TextBox)getWidget("label.name");
-          
-          AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-          modelWidget.addChangeListener(atozTable);
-          addChangeListener(atozTable);
-          
-          ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-          atozButtons.addChangeListener(this);
-          
-          displayPType = (ScreenAutoDropdown)widgets.get("label.printerType");
-          displayScript = (ScreenAutoDropdown)widgets.get("label.scriptlet");
-          
-          //load dropdowns
-             if(scriptletDropdown == null){
-                 printerTypeDropDown = (DataModel)initData.get("printer");               
-                 scriptletDropdown = (DataModel)initData.get("scriptlet");
-             }                                             
-                  ((AutoCompleteDropdown)displayPType.getWidget()).setModel(printerTypeDropDown);
-                  ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
-                                                            
-              }
-      
-            
+    }      
 }

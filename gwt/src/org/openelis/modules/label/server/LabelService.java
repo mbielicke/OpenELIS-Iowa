@@ -1,6 +1,12 @@
 package org.openelis.modules.label.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.LabelDO;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
@@ -25,37 +31,111 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-public class LabelService implements AppScreenFormServiceInt {
-
-    /**
-     * 
-     */    
+public class LabelService implements AppScreenFormServiceInt {   
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9; 
     
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
-                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
-                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = (Integer)key.getKey().getValue();
-        LabelDO labelDO =null;
-        try{
-            labelDO  = remote.getLabelAndUnlock(labelId);
-           } catch(Exception ex){
-               throw new RPCException(ex.getMessage());
-           }  
-           
-         setFieldsInRPC(rpcReturn, labelDO);   
-         return rpcReturn;
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        if(rpcSend == null){           
+            
+            
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Label");
+    
+            if(rpc == null)
+                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+    
+             List labels = null;
+                 
+             try{
+                 
+                 LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+                 labels = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                 
+             }catch(Exception e){
+                if(e instanceof LastPageException){
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
+                }else{
+                    throw new RPCException(e.getMessage()); 
+                }
+             }
+         
+         int i=0;
+         model.clear();
+    
+         while(i < labels.size() && i < leftTableRowsPerPage) {
+             Object[] result = (Object[])labels.get(i);
+             //qaEvent id
+             Integer idResult = (Integer)result[0];
+             //qaEvent name
+             String nameResult = (String)result[1];             
+    
+             DataSet row = new DataSet();
+             
+             NumberObject id = new NumberObject(NumberObject.INTEGER);
+    
+             StringObject svname = new StringObject();
+    
+             id.setValue(idResult);
+    
+              svname.setValue(nameResult);                   
+             row.setKey(id);          
+    
+             row.addObject(svname);
+    
+             model.add(row);
+             i++;
+          }         
+                 
+         return model;   
+         } else{
+             LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+             
+             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
+              
+    
+             List sysVarNames = new ArrayList();
+                 try{
+                     sysVarNames = remote.query(fields,0,leftTableRowsPerPage);
+    
+             }catch(Exception e){
+                 e.printStackTrace();
+                 throw new RPCException(e.getMessage());
+             }
+    
+             Iterator itraaa = sysVarNames.iterator();
+             model=  new DataModel();
+             while(itraaa.hasNext()){
+                 Object[] result = (Object[])itraaa.next();
+                 //qaEvent id
+                 Integer idResult = (Integer)result[0];
+                 //qaEvent name
+                 String nameResult = (String)result[1];
+                 
+    
+                 DataSet row = new DataSet();
+                 
+                 NumberObject id = new NumberObject(NumberObject.INTEGER);
+    
+                 StringObject svname = new StringObject();
+                 
+                 id.setValue(idResult);
+    
+                 svname.setValue(nameResult);                       
+    
+                     row.setKey(id);          
+    
+                 row.addObject(svname);                 
+                 model.add(row);
+    
+             } 
+             if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Label", rpcSend);          
+        }
+         return model;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -86,6 +166,35 @@ public class LabelService implements AppScreenFormServiceInt {
         return rpcReturn;
     }
 
+    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+        LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+        LabelDO labelDO = getLabelDOFromRPC(rpcSend);
+        
+        List<Exception> exceptionList = remote.validateForUpdate(labelDO);
+        if(exceptionList.size() > 0){
+            //we need to get the keys and look them up in the resource bundle for internationalization
+            setRpcErrors(exceptionList, rpcSend);              
+            return rpcSend;
+        } 
+                         
+        try{
+            remote.updateLabel(labelDO);        
+        }catch(Exception e){
+            if(e instanceof EntityLockedException)
+                throw new RPCException(e.getMessage());
+            
+            exceptionList = new ArrayList<Exception>();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList, rpcSend);
+            
+            return rpcSend;
+        }
+        
+         setFieldsInRPC(rpcReturn, labelDO);
+        return rpcReturn;
+    }
+
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         List<Exception> exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
@@ -108,130 +217,18 @@ public class LabelService implements AppScreenFormServiceInt {
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        if(rpcSend == null){           
-            
-            
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Label");
-
-            if(rpc == null)
-                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-
-             List labels = null;
-                 
-             try{
-                 
-                 LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-                 labels = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                 
-             }catch(Exception e){
-                if(e instanceof LastPageException){
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                }else{
-                    throw new RPCException(e.getMessage()); 
-                }
-             }
-         
-         int i=0;
-         model.clear();
-
-         while(i < labels.size() && i < leftTableRowsPerPage) {
-             Object[] result = (Object[])labels.get(i);
-             //qaEvent id
-             Integer idResult = (Integer)result[0];
-             //qaEvent name
-             String nameResult = (String)result[1];             
-
-             DataSet row = new DataSet();
-             
-             NumberObject id = new NumberObject(NumberObject.INTEGER);
-
-             StringObject svname = new StringObject();
-  
-             id.setValue(idResult);
-
-              svname.setValue(nameResult);                   
-             row.setKey(id);          
-
-             row.addObject(svname);
-
-             model.add(row);
-             i++;
-          }         
-                 
-         return model;   
-         } else{
-             LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-             
-             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
-              
-
-             List sysVarNames = new ArrayList();
-                 try{
-                     sysVarNames = remote.query(fields,0,leftTableRowsPerPage);
-
-             }catch(Exception e){
-                 e.printStackTrace();
-                 throw new RPCException(e.getMessage());
-             }
-
-             Iterator itraaa = sysVarNames.iterator();
-             model=  new DataModel();
-             while(itraaa.hasNext()){
-                 Object[] result = (Object[])itraaa.next();
-                 //qaEvent id
-                 Integer idResult = (Integer)result[0];
-                 //qaEvent name
-                 String nameResult = (String)result[1];
-                 
-
-                 DataSet row = new DataSet();
-                 
-                 NumberObject id = new NumberObject(NumberObject.INTEGER);
-
-                 StringObject svname = new StringObject();
-                 
-                 id.setValue(idResult);
-     
-                 svname.setValue(nameResult);                       
-
-                     row.setKey(id);          
-
-                 row.addObject(svname);                 
-                 model.add(row);
-
-             } 
-             if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Label", rpcSend);          
-        }
-         return model;
-    }
-
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        LabelDO labelDO = getLabelDOFromRPC(rpcSend);
-        
-        List<Exception> exceptionList = remote.validateForUpdate(labelDO);
-        if(exceptionList.size() > 0){
-            //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpcSend);              
-            return rpcSend;
-        } 
-                         
+        Integer labelId = (Integer)key.getKey().getValue();
+        LabelDO labelDO =null;
         try{
-            remote.updateLabel(labelDO);        
-        }catch(Exception e){
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, rpcSend);
-            
-            return rpcSend;
-        }
-        
-         setFieldsInRPC(rpcReturn, labelDO);
-        return rpcReturn;
+            labelDO  = remote.getLabelAndUnlock(labelId);
+           } catch(Exception ex){
+               throw new RPCException(ex.getMessage());
+           }  
+           
+         setFieldsInRPC(rpcReturn, labelDO);   
+         return rpcReturn;
     }
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
@@ -285,6 +282,11 @@ public class LabelService implements AppScreenFormServiceInt {
         return map;
     }
     
+    public HashMap getXMLData(HashMap args) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+
     public DataModel getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
@@ -371,12 +373,7 @@ public class LabelService implements AppScreenFormServiceInt {
        return labelDO;
     }
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-     private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
             //we need to get the keys and look them up in the resource bundle for internationalization
             for (int i=0; i<exceptionList.size();i++) {
                 //if the error is inside the org contacts table

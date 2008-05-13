@@ -1,10 +1,13 @@
 package org.openelis.modules.dictionary.server;
 
-import edu.uiowa.uhl.security.domain.SectionIdNameDO;
-import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
@@ -35,61 +38,112 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import edu.uiowa.uhl.security.domain.SectionIdNameDO;
+import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
 public class DictionaryService implements AppScreenFormServiceInt,
                                            AutoCompleteServiceInt{
 
-    /**
-     * 
-     */
-        
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;           
 
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
-                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
-                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
-
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"); 
-    }
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public HashMap getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {                      
+        if(rpcSend == null){          
+                
         
-        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData", "sectionDropDown");             
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category");
+    
+           if(rpc == null)
+               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+    
+            List categories = null;
+                
+            try{
+                
+                CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
+                categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                
+            }catch(Exception e){
+            	if(e instanceof LastPageException){
+            		throw new LastPageException(openElisConstants.getString("lastPageException"));
+            	}else{
+            		throw new RPCException(e.getMessage());	
+            	}
+            }
         
-        if(sectionDropDownField ==null)
-            sectionDropDownField = getInitialModel("section");                     
-        HashMap map = new HashMap();
-        map.put("xml", xml);
-        map.put("sections",sectionDropDownField);
-        return map;
-    }
-
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer categoryId = (Integer)key.getKey().getValue();
-
-        CategoryDO catDO = new CategoryDO();
-         try{
-            catDO = remote.getCategoryAndUnlock(categoryId);
-         }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
-         }  
-//      set the fields in the RPC
-         setFieldsInRPC(rpcReturn,catDO);           
-                                                   
-        List addressList = remote.getDictionaryEntries(categoryId);
-        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
-        
-        return rpcReturn;
+        int i=0;
+        model.clear();
+    
+        while(i < categories.size() && i < leftTableRowsPerPage) {
+    
+            Object[] result = (Object[])categories.get(i);
+            //category id
+            Integer idResult = (Integer)result[0];
+            //category name
+            String sysNameResult = (String)result[1];
+                        
+    
+            DataSet row = new DataSet();
+            
+            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            id.setValue(idResult);
+            
+            StringObject sysName = new StringObject();
+                        
+            sysName.setValue(sysNameResult);    
+            
+            row.setKey(id);                      
+            row.addObject(sysName);
+            model.add(row);
+            i++;
+         }        
+                
+        return model;   
+        } else{
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+            
+            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            fields.remove("dictEntTable");
+            
+            List systemNames = new ArrayList();
+                try{                                        
+                    systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
+            }catch(Exception e){
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());                
+            }
+    
+            Iterator itraaa = systemNames.iterator();
+            model=  new DataModel();
+            while(itraaa.hasNext()){
+                Object[] result = (Object[])itraaa.next();
+                //category id
+                Integer idResult = (Integer)result[0];
+                //category name
+                String sysNameResult = (String)result[1];
+                            
+                
+                DataSet row = new DataSet();
+                
+                NumberObject id = new NumberObject(NumberObject.INTEGER);                
+                StringObject sysName = new StringObject();
+                
+                sysName.setValue(sysNameResult);
+                id.setValue(idResult);
+                
+                row.setKey(id);          
+                
+                row.addObject(sysName);
+                model.add(row);
+    
+            } 
+            if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category", rpcSend);          
+       }
+        return model;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
@@ -132,101 +186,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
         return rpcReturn;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {                      
-        if(rpcSend == null){          
-                
-        
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category");
-
-           if(rpc == null)
-               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-
-            List categories = null;
-                
-            try{
-                
-                CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
-                categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                
-            }catch(Exception e){
-	        	if(e instanceof LastPageException){
-	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
-	        	}else{
-	        		throw new RPCException(e.getMessage());	
-	        	}
-            }
-        
-        int i=0;
-        model.clear();
-
-        while(i < categories.size() && i < leftTableRowsPerPage) {
-
-            Object[] result = (Object[])categories.get(i);
-            //category id
-            Integer idResult = (Integer)result[0];
-            //category name
-            String sysNameResult = (String)result[1];
-                        
-
-            DataSet row = new DataSet();
-            
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
-            id.setValue(idResult);
-            
-            StringObject sysName = new StringObject();
-                        
-            sysName.setValue(sysNameResult);    
-            
-            row.setKey(id);                      
-            row.addObject(sysName);
-            model.add(row);
-            i++;
-         }        
-                
-        return model;   
-        } else{
-            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-            List systemNames = new ArrayList();
-                try{                                        
-                    systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
-            }catch(Exception e){
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());                
-            }
-
-            Iterator itraaa = systemNames.iterator();
-            model=  new DataModel();
-            while(itraaa.hasNext()){
-                Object[] result = (Object[])itraaa.next();
-                //category id
-                Integer idResult = (Integer)result[0];
-                //category name
-                String sysNameResult = (String)result[1];
-                            
-                
-                DataSet row = new DataSet();
-                
-                NumberObject id = new NumberObject(NumberObject.INTEGER);                
-                StringObject sysName = new StringObject();
-                
-                sysName.setValue(sysNameResult);
-                id.setValue(idResult);
-                
-                row.setKey(id);          
-                
-                row.addObject(sysName);
-                model.add(row);
-
-            } 
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category", rpcSend);          
-       }
-        return model;
-    }
-
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
@@ -249,6 +208,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
        try{
            remote.updateCategory(categoryDO, dictDOList);          
        }catch(Exception ex){
+           if(ex instanceof EntityLockedException)
+               throw new RPCException(ex.getMessage());
+           
            exceptionList = new ArrayList<Exception>();
            exceptionList.add(ex);
            
@@ -266,6 +228,30 @@ public class DictionaryService implements AppScreenFormServiceInt,
     }
 
    
+
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+            Integer categoryId = (Integer)key.getKey().getValue();
+    
+            CategoryDO catDO = new CategoryDO();
+             try{
+                catDO = remote.getCategoryAndUnlock(categoryId);
+             }catch(Exception ex){
+                 throw new RPCException(ex.getMessage());
+             }  
+    //      set the fields in the RPC
+             setFieldsInRPC(rpcReturn,catDO);           
+                                                       
+            List addressList = remote.getDictionaryEntries(categoryId);
+            rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+            
+            return rpcReturn;
+        }
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {               
         
@@ -298,6 +284,29 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((TableModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
         
         return rpcReturn;
+    }
+
+    public String getXML() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"); 
+    }
+    
+    public HashMap getXMLData() throws RPCException {
+        StringObject xml = new StringObject();
+        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
+        
+        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData", "sectionDropDown");             
+        
+        if(sectionDropDownField ==null)
+            sectionDropDownField = getInitialModel("section");                     
+        HashMap map = new HashMap();
+        map.put("xml", xml);
+        map.put("sections",sectionDropDownField);
+        return map;
+    }
+
+    public HashMap getXMLData(HashMap args) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
     }
 
     public TableModel fillDictEntryTable(TableModel dictEntryModel, List contactsList){        
@@ -505,11 +514,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
       return null; 
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
     private void setFieldsInRPC(FormRPC rpcReturn, CategoryDO catDO){
         rpcReturn.setFieldValue(CategoryMeta.ID, catDO.getId());
         rpcReturn.setFieldValue(CategoryMeta.SYSTEM_NAME,catDO.getSystemName());
@@ -584,12 +588,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         return dictDOList;
     }
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	} 
-    
-    private void setRpcErrors(List exceptionList, TableModel entriesTable, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, TableModel entriesTable, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the entries table

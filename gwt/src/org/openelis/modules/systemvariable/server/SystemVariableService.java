@@ -1,6 +1,13 @@
 package org.openelis.modules.systemvariable.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
@@ -23,45 +30,111 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 public class SystemVariableService implements AppScreenFormServiceInt {
 
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9;  
     
-    private UTFResource openElisConstants= UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",
-                                                                new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
-                                                                        ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-     public String getXML() throws RPCException {
-            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/systemVariable.xsl"); 
-     } 
-           
-
-    public HashMap getXMLData() throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)key.getKey().getValue();
-        
-        SystemVariableDO svDO = null;
-        try{
-          svDO = remote.getSystemVariableAndUnlock(svId);
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
-        }  
-        
-        setFieldsInRPC(rpcReturn, svDO);
-        return rpcReturn;
+     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        if(rpcSend == null){           
+            
+            
+            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":SystemVariable");
+    
+            if(rpc == null)
+                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+    
+             List sysVars = null;
+                 
+             try{
+                 
+                 SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
+                 sysVars = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                 
+             }catch(Exception e){
+                if(e instanceof LastPageException){
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
+                }else{
+                    throw new RPCException(e.getMessage()); 
+                }
+             }
+         
+         int i=0;
+         model.clear();
+    
+         while(i < sysVars.size() && i < leftTableRowsPerPage) {
+             Object[] result = (Object[])sysVars.get(i);
+             //qaEvent id
+             Integer idResult = (Integer)result[0];
+             //qaEvent name
+             String nameResult = (String)result[1];             
+    
+             DataSet row = new DataSet();
+             
+             NumberObject id = new NumberObject(NumberObject.INTEGER);
+    
+             StringObject svname = new StringObject();
+    
+             id.setValue(idResult);
+    
+              svname.setValue(nameResult);                   
+             row.setKey(id);          
+    
+             row.addObject(svname);
+    
+             model.add(row);
+             i++;
+          }         
+                 
+         return model;   
+         } else{
+             SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
+             
+             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
+              
+    
+             List sysVarNames = new ArrayList();
+                 try{
+                     sysVarNames = remote.query(fields,0,leftTableRowsPerPage);
+    
+             }catch(Exception e){
+                 e.printStackTrace();
+                 throw new RPCException(e.getMessage());
+             }
+    
+             Iterator itraaa = sysVarNames.iterator();
+             model=  new DataModel();
+             while(itraaa.hasNext()){
+                 Object[] result = (Object[])itraaa.next();
+                 //qaEvent id
+                 Integer idResult = (Integer)result[0];
+                 //qaEvent name
+                 String nameResult = (String)result[1];
+                 
+    
+                 DataSet row = new DataSet();
+                 
+                 NumberObject id = new NumberObject(NumberObject.INTEGER);
+    
+                 StringObject svname = new StringObject();
+               
+                 id.setValue(idResult);
+    
+                 svname.setValue(nameResult);                       
+    
+                     row.setKey(id);          
+    
+                 row.addObject(svname);                 
+                 model.add(row);
+    
+             } 
+             if(SessionManager.getSession().getAttribute("systemUserId") == null)
+                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
+             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":SystemVariable", rpcSend);          
+        }
+         return model;
     }
 
 
@@ -93,120 +166,6 @@ public class SystemVariableService implements AppScreenFormServiceInt {
     }
 
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        try{
-            remote.deleteSystemVariable((Integer)key.getKey().getValue());
-        }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
-        }
-        
-        setFieldsInRPC(rpcReturn, new SystemVariableDO());
-        return rpcReturn;
-    }
-
-
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        if(rpcSend == null){           
-            
-            
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":SystemVariable");
-
-            if(rpc == null)
-                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-
-             List sysVars = null;
-                 
-             try{
-                 
-                 SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
-                 sysVars = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                 
-             }catch(Exception e){
-                if(e instanceof LastPageException){
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                }else{
-                    throw new RPCException(e.getMessage()); 
-                }
-             }
-         
-         int i=0;
-         model.clear();
-
-         while(i < sysVars.size() && i < leftTableRowsPerPage) {
-             Object[] result = (Object[])sysVars.get(i);
-             //qaEvent id
-             Integer idResult = (Integer)result[0];
-             //qaEvent name
-             String nameResult = (String)result[1];             
-
-             DataSet row = new DataSet();
-             
-             NumberObject id = new NumberObject(NumberObject.INTEGER);
-
-             StringObject svname = new StringObject();
-  
-             id.setValue(idResult);
-
-              svname.setValue(nameResult);                   
-             row.setKey(id);          
-
-             row.addObject(svname);
-
-             model.add(row);
-             i++;
-          }         
-                 
-         return model;   
-         } else{
-             SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
-             
-             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
-              
-
-             List sysVarNames = new ArrayList();
-                 try{
-                     sysVarNames = remote.query(fields,0,leftTableRowsPerPage);
-
-             }catch(Exception e){
-                 e.printStackTrace();
-                 throw new RPCException(e.getMessage());
-             }
-
-             Iterator itraaa = sysVarNames.iterator();
-             model=  new DataModel();
-             while(itraaa.hasNext()){
-                 Object[] result = (Object[])itraaa.next();
-                 //qaEvent id
-                 Integer idResult = (Integer)result[0];
-                 //qaEvent name
-                 String nameResult = (String)result[1];
-                 
-
-                 DataSet row = new DataSet();
-                 
-                 NumberObject id = new NumberObject(NumberObject.INTEGER);
-
-                 StringObject svname = new StringObject();
-               
-                 id.setValue(idResult);
-     
-                 svname.setValue(nameResult);                       
-
-                     row.setKey(id);          
-
-                 row.addObject(svname);                 
-                 model.add(row);
-
-             } 
-             if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":SystemVariable", rpcSend);          
-        }
-         return model;
-    }
-
-
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpcSend);
@@ -220,6 +179,9 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         try{ 
          svId = remote.updateSystemVariable(sysVarDO);
         }catch(Exception e){
+            if(e instanceof EntityLockedException)
+                throw new RPCException(e.getMessage());
+            
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
@@ -230,6 +192,35 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         
         setFieldsInRPC(rpcReturn, sysVarDO);
         
+        return rpcReturn;
+    }
+
+
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+        SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
+        try{
+            remote.deleteSystemVariable((Integer)key.getKey().getValue());
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        }
+        
+        setFieldsInRPC(rpcReturn, new SystemVariableDO());
+        return rpcReturn;
+    }
+
+
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+        SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
+        Integer svId = (Integer)key.getKey().getValue();
+        
+        SystemVariableDO svDO = null;
+        try{
+          svDO = remote.getSystemVariableAndUnlock(svId);
+        }catch(Exception ex){
+            throw new RPCException(ex.getMessage());
+        }  
+        
+        setFieldsInRPC(rpcReturn, svDO);
         return rpcReturn;
     }
 
@@ -257,7 +248,25 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         setFieldsInRPC(rpcReturn, svDO);
         return rpcReturn;
     }
-    
+
+
+    public String getXML() throws RPCException {
+            return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/systemVariable.xsl"); 
+     }
+
+
+    public HashMap getXMLData() throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public HashMap getXMLData(HashMap args) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+
+
     private void setFieldsInRPC(FormRPC rpcReturn, SystemVariableDO svDO){
         rpcReturn.setFieldValue(SystemVariableMeta.ID, svDO.getId());
         rpcReturn.setFieldValue(SystemVariableMeta.NAME,svDO.getName());
@@ -275,12 +284,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
     }
 
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-    private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table

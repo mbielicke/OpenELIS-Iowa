@@ -176,6 +176,7 @@
      <dropdown key="{categoryMeta:section()}" type="integer" required="false"/>    
 	</rpc>
 	<rpc key = "query">	 		
+     <table key="dictEntTable"/>	
 	 <queryString key="{categoryMeta:systemName()}"/>
 	 <queryString key="{categoryMeta:name()}"/>
 	 <queryString key="{categoryMeta:description()}"/>
