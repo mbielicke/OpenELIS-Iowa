@@ -214,6 +214,14 @@ public class StorageLocationBean implements StorageLocationRemote{
 
     @RolesAllowed("storagelocation-update")
 	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_location");
+        Integer storageLocationReferenceId = (Integer)query.getSingleResult();
+        
+        if(storageDO.getId() != null){
+            lockBean.getLock(storageLocationReferenceId,storageDO.getId());
+        }
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
 		
@@ -273,6 +281,8 @@ public class StorageLocationBean implements StorageLocationRemote{
 		    }
 		}
             
+        lockBean.giveUpLock(storageLocationReferenceId, storageLocation.getId()); 
+        
 		return storageLocation.getId();
 	}
 

@@ -169,13 +169,16 @@ public class AnalyteBean implements AnalyteRemote{
 
     @RolesAllowed("analyte-update")
 	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
-		manager.setFlushMode(FlushModeType.COMMIT);
-		Analyte analyte = null;
-
-		//analyte reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
         Integer analyteReferenceId = (Integer)query.getSingleResult();
+        
+        if(analyteDO.getId() != null){
+            lockBean.giveUpLock(analyteReferenceId, analyteDO.getId());
+        }
+        
+		manager.setFlushMode(FlushModeType.COMMIT);
+		Analyte analyte = null;
         
         //validate the analyte record
         List exceptionList = new ArrayList();

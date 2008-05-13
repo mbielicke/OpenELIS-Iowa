@@ -128,41 +128,40 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-update")
     public Integer updateLabel(LabelDO labelDO) throws Exception {
-        try{
-            manager.setFlushMode(FlushModeType.COMMIT);
-            
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "qaevent");
-            Integer labelReferenceId = (Integer)query.getSingleResult();
-            
-            Label label = null;
-            List<Exception> exceptionList = new ArrayList<Exception>();
-            validateLabel(labelDO,exceptionList);
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            } 
-            
-            if(labelDO.getId()==null){
-                label = new Label();            
-            }else{
-                label = manager.find(Label.class, labelDO.getId());
-            }                       
-            
-            label.setName(labelDO.getName());
-            label.setDescription(labelDO.getDescription());
-            label.setPrinterType(labelDO.getPrinterType());
-            label.setScriptlet(labelDO.getScriptlet());
-            
-            if(label.getId() == null){
-                manager.persist(label);
-            }
-                    
-            lockBean.giveUpLock(labelReferenceId,label.getId()); 
-            return label.getId();
-           }catch(Exception ex){
-               ex.printStackTrace();
-               throw ex;
-           } 
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "label");
+        Integer labelReferenceId = (Integer)query.getSingleResult();
+        
+        if(labelDO.getId() != null){
+            lockBean.getLock(labelReferenceId,labelDO.getId());
+        }
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Label label = null;
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateLabel(labelDO,exceptionList);
+        if(exceptionList.size() > 0){
+            throw (RPCException)exceptionList.get(0);
+        } 
+        
+        if(labelDO.getId()==null){
+            label = new Label();            
+        }else{
+            label = manager.find(Label.class, labelDO.getId());
+        }                       
+        
+        label.setName(labelDO.getName());
+        label.setDescription(labelDO.getDescription());
+        label.setPrinterType(labelDO.getPrinterType());
+        label.setScriptlet(labelDO.getScriptlet());
+        
+        if(label.getId() == null){
+            manager.persist(label);
+        }
+                
+        lockBean.giveUpLock(labelReferenceId,label.getId()); 
+        return label.getId();          
     }
     
     public List<Object[]> getScriptlets() {

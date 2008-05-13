@@ -97,6 +97,14 @@ public class StorageUnitBean implements StorageUnitRemote{
 
     @RolesAllowed("storageunit-update")
 	public Integer updateStorageUnit(StorageUnitDO unitDO) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "storage_unit");
+        Integer storageUnitReferenceId = (Integer)query.getSingleResult();
+        
+        if(unitDO.getId() != null){
+            lockBean.getLock(storageUnitReferenceId,unitDO.getId());
+        }
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
 		
@@ -107,11 +115,6 @@ public class StorageUnitBean implements StorageUnitRemote{
         	throw (RPCException)exceptionList.get(0);
         }
         
-        //storage unit reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_unit");
-        Integer storageUnitReferenceId = (Integer)query.getSingleResult();
-            
         if (unitDO.getId() == null)
         	storageUnit = new StorageUnit();
         else

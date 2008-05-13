@@ -126,39 +126,38 @@ public class SystemVariableBean implements SystemVariableRemote{
 
     @RolesAllowed("systemvariable-update")
     public Integer updateSystemVariable(SystemVariableDO sysVarDO) throws Exception {
-        try{
-            manager.setFlushMode(FlushModeType.COMMIT);
-            
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "system_variable");
-            Integer sysVarReferenceId = (Integer)query.getSingleResult();
-            
-            SystemVariable sysVar = null;
-            List<Exception> exceptionList = new ArrayList<Exception>();
-            validate(sysVarDO,exceptionList);
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            }
-            
-            if(sysVarDO.getId()==null){
-                sysVar = new SystemVariable();            
-            }else{
-                sysVar = manager.find(SystemVariable.class, sysVarDO.getId());
-            }
-                        
-            sysVar.setName(sysVarDO.getName());            
-            sysVar.setValue(sysVarDO.getValue());
-           
-            if(sysVar.getId() == null){
-                manager.persist(sysVar);
-            }
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "system_variable");
+        Integer sysVarReferenceId = (Integer)query.getSingleResult();
+        
+        if(sysVarDO.getId() != null){
+            lockBean.getLock(sysVarReferenceId, sysVarDO.getId());   
+        }
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        SystemVariable sysVar = null;
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validate(sysVarDO,exceptionList);
+        if(exceptionList.size() > 0){
+            throw (RPCException)exceptionList.get(0);
+        }
+        
+        if(sysVarDO.getId()==null){
+            sysVar = new SystemVariable();            
+        }else{
+            sysVar = manager.find(SystemVariable.class, sysVarDO.getId());
+        }
                     
-            lockBean.giveUpLock(sysVarReferenceId,sysVar.getId()); 
-            return sysVar.getId();
-           }catch(Exception ex){
-               ex.printStackTrace();
-               throw ex;
-      }
+        sysVar.setName(sysVarDO.getName());            
+        sysVar.setValue(sysVarDO.getValue());
+       
+        if(sysVar.getId() == null){
+            manager.persist(sysVar);
+        }
+                
+        lockBean.giveUpLock(sysVarReferenceId,sysVar.getId()); 
+        
+        return sysVar.getId();
     }  
     
     @RolesAllowed("systemvariable-delete")    

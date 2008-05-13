@@ -35,7 +35,6 @@ import org.openelis.meta.OrganizationNoteMeta;
 import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.util.Datetime;
 import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -98,11 +97,8 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	@RolesAllowed("organization-update")
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception{
-		 manager.setFlushMode(FlushModeType.COMMIT);
-		 Organization organization = null;
-    
-    	//organization reference table id
-    	Query query = manager.createNamedQuery("getTableId");
+	    //organization reference table id
+        Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
         Integer organizationReferenceId = (Integer)query.getSingleResult();
         
@@ -110,7 +106,15 @@ public class OrganizationBean implements OrganizationRemote {
         query.setParameter("name", "organization_contact");
         Integer organizationContactReferenceId = (Integer)query.getSingleResult();
         
-        if (organizationDO.getOrganizationId() == null)
+        if(organizationDO.getOrganizationId() != null){
+            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            lockBean.getLock(organizationReferenceId,organizationDO.getOrganizationId());
+        }
+        
+		 manager.setFlushMode(FlushModeType.COMMIT);
+		 Organization organization = null;
+    
+         if (organizationDO.getOrganizationId() == null)
         	organization = new Organization();
         else
             organization = manager.find(Organization.class, organizationDO.getOrganizationId());

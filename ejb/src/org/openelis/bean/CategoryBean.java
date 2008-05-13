@@ -128,13 +128,18 @@ public class CategoryBean implements CategoryRemote {
 
     @RolesAllowed("dictionary-update")
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception {
-        Category category  = null;
-       try{ 
-        manager.setFlushMode(FlushModeType.COMMIT);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
-        Integer categoryReferenceId = (Integer)query.getSingleResult();                
+        Integer categoryReferenceId = (Integer)query.getSingleResult();          
         
+        if(categoryDO.getId() != null){
+//          we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            lockBean.getLock(categoryReferenceId, categoryDO.getId());
+        }
+        
+        manager.setFlushMode(FlushModeType.COMMIT);      
+        
+        Category category  = null;
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateCategory(categoryDO,exceptionList);  
         if(exceptionList.size() > 0){
@@ -232,10 +237,6 @@ public class CategoryBean implements CategoryRemote {
       }  
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
         
-       }catch(Exception ex){ 
-           ex.printStackTrace();
-           throw ex;        
-       }
         return  category.getId();
     }
 
