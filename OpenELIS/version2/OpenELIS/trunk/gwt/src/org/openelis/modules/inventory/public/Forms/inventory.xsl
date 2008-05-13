@@ -135,6 +135,14 @@
 									</row>
 									<row>
 										<widget>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"extReference")'/>:</text>
+										</widget>
+										<widget colspan="3">
+											<textbox case="mixed" key="{inventoryItemMeta:description()}" width="340px" max="80" tab="{inventoryItemMeta:store()},{inventoryItemMeta:name()}"/>
+										</widget>									
+									</row>
+									<row>
+										<widget>
 											<panel xsi:type="Absolute" layout="absolute" style="VerticalSpacer"/>
 										</widget>
 									</row>		
@@ -407,11 +415,7 @@
 						            </widget>
 							</panel>
 					</tab>
-					<!-- start TAB 3 (Identifications) -->
-					<tab key="tab3" text="{resource:getString($constants,'identifications')}">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
-					</tab>
-					<!-- start TAB 4 (Manufacturing) -->
+					<!-- start TAB 3 (Manufacturing) -->
 					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
 						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
 					</tab>
