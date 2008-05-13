@@ -5,13 +5,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.TestTrailerDO;
 
 @Remote
 public interface TestTrailerRemote {
 	//commit a change to test trailer, or insert a new test trailer
-	public Integer updateTestTrailer(TestTrailerDO testTrailerDO);
+	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) throws Exception;
 	
 	//method to return a whole test trailer
 	public TestTrailerDO getTestTrailer(Integer testTrailerId);
