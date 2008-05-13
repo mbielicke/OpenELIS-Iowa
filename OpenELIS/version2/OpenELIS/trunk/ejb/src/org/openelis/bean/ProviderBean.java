@@ -164,13 +164,17 @@ public class ProviderBean implements ProviderRemote {
 
     @RolesAllowed("provider-update")
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "provider");
+        Integer providerReferenceId = (Integer)query.getSingleResult();
+        
+        if(providerDO.getId() != null){
+            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            lockBean.getLock(providerReferenceId, providerDO.getId());
+        }
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         Provider provider = null;
-        try{
-            
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "provider");
-            Integer providerReferenceId = (Integer)query.getSingleResult();
             
             if (providerDO.getId() == null){
                 provider = new Provider();
@@ -286,13 +290,9 @@ public class ProviderBean implements ProviderRemote {
                 manager.persist(note);               
              }
             }
-            lockBean.giveUpLock(providerReferenceId,provider.getId()); 
             
-        }catch(Exception ex){
-           ex.printStackTrace();
-           throw ex;
-        }
-        
+        lockBean.giveUpLock(providerReferenceId,provider.getId()); 
+            
         return provider.getId();
     }
 

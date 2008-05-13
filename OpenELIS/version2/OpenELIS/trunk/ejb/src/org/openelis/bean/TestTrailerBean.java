@@ -23,7 +23,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilder;
@@ -158,41 +157,40 @@ public class TestTrailerBean implements TestTrailerRemote{
 	}
 
     @RolesAllowed("testtrailer-update")
-	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) {
+	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "test_trailer");
+        Integer testTrailerReferenceId = (Integer)query.getSingleResult();
+        
+        if(testTrailerDO.getId() != null){
+            lockBean.getLock(testTrailerReferenceId, testTrailerDO.getId());
+        }
+        
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;
-		
-		try {
-			//test trailer reference table id
-        	Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "test_trailer");
-            Integer testTrailerReferenceId = (Integer)query.getSingleResult();
-            
-            //validate the test trailer record
-            List exceptionList = new ArrayList();
-            validateTestTrailer(testTrailerDO, exceptionList);
-            if(exceptionList.size() > 0){
-            	throw (RPCException)exceptionList.get(0);
-            }
-            
-            if (testTrailerDO.getId() == null)
-            	testTrailer = new TestTrailer();
-            else
-            	testTrailer = manager.find(TestTrailer.class, testTrailerDO.getId());
-            
-            testTrailer.setDescription(testTrailerDO.getDescription());
-            testTrailer.setName(testTrailerDO.getName());
-            testTrailer.setText(testTrailerDO.getText());
-            
-            if (testTrailer.getId() == null) {
-	        	manager.persist(testTrailer);
-            }
-         
-            lockBean.giveUpLock(testTrailerReferenceId,testTrailer.getId()); 
-		} catch (Exception e) {
-            e.printStackTrace();
+        
+        //validate the test trailer record
+        List exceptionList = new ArrayList();
+        validateTestTrailer(testTrailerDO, exceptionList);
+        if(exceptionList.size() > 0){
+        	throw (RPCException)exceptionList.get(0);
         }
-            
+        
+        if (testTrailerDO.getId() == null)
+        	testTrailer = new TestTrailer();
+        else
+        	testTrailer = manager.find(TestTrailer.class, testTrailerDO.getId());
+        
+        testTrailer.setDescription(testTrailerDO.getDescription());
+        testTrailer.setName(testTrailerDO.getName());
+        testTrailer.setText(testTrailerDO.getText());
+        
+        if (testTrailer.getId() == null) {
+        	manager.persist(testTrailer);
+        }
+     
+        lockBean.giveUpLock(testTrailerReferenceId,testTrailer.getId()); 
+		    
 		return testTrailer.getId();
 	}
 

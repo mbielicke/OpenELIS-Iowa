@@ -14,6 +14,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -60,7 +61,7 @@ public Integer getLock(Integer table, Integer row) throws Exception {
         try {
             Lock lock = (Lock)query.getSingleResult();
             SystemUserDO user = sysUser.getSystemUser(lock.getSystemUser());
-            throw new Exception("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
+            throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }catch(Exception e){
             e.printStackTrace();
             throw e;

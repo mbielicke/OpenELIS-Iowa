@@ -39,9 +39,6 @@ public class StandardNoteBean implements StandardNoteRemote{
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-    //private String className = this.getClass().getName();
-   // private Logger log = Logger.getLogger(className);
-	
 	
 	@EJB
 	private SystemUserUtilLocal sysUser;
@@ -162,15 +159,18 @@ public class StandardNoteBean implements StandardNoteRemote{
 
     @RolesAllowed("standardnote-update")
 	public Integer updateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
-		manager.setFlushMode(FlushModeType.COMMIT);
-		StandardNote standardNote = null;
-		
-		//organization reference table id
-		Query query = manager.createNamedQuery("getTableId");
+        Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "standard_note");
         Integer standardNoteReferenceId = (Integer)query.getSingleResult();
         
-        //validate the analyte record
+        if(standardNoteDO.getId() != null){
+            lockBean.getLock(standardNoteReferenceId, standardNoteDO.getId());
+        }
+        
+		manager.setFlushMode(FlushModeType.COMMIT);
+		StandardNote standardNote = null;
+        
+        //validate the standard note record
         List exceptionList = new ArrayList();
         validateStandardNote(standardNoteDO, exceptionList);
         if(exceptionList.size() > 0){

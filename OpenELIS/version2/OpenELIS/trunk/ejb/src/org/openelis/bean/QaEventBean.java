@@ -129,13 +129,16 @@ public class QaEventBean implements QaEventRemote{
    
     @RolesAllowed("qaevent-update")
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
-        
-       try{
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         Integer qaEventReferenceId = (Integer)query.getSingleResult();
+        
+        if(qaEventDO.getId() != null){
+            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            lockBean.getLock(qaEventReferenceId, qaEventDO.getId());
+        }
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
         
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateQaEvent(qaEventDO,exceptionList);  
@@ -165,10 +168,6 @@ public class QaEventBean implements QaEventRemote{
                 
         lockBean.giveUpLock(qaEventReferenceId,qaEvent.getId()); 
         return qaEvent.getId();
-       }catch(Exception ex){
-           ex.printStackTrace();
-           throw ex;
-       } 
     }
 
     @RolesAllowed("qaevent-update")
