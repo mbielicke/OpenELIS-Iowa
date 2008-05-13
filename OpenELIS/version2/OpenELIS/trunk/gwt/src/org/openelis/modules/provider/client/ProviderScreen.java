@@ -99,13 +99,63 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         setBpanel((ButtonPanel) getWidget("buttons"));        
         message.setText("Done");
                    
-        initWidgets();
+//      load other widgets
+        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        modelWidget.addChangeListener(atozTable);
+        addChangeListener(atozTable);
+        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        atozButtons.addChangeListener(this);
+        
+        removeContactButton = (AppButton) getWidget("removeAddressButton");
+        
+        standardNoteButton = (AppButton) getWidget("standardNoteButton");
+        
+        provId = (ScreenTextBox)widgets.get("provider.id");
+        lastName = (TextBox)getWidget("provider.lastName");
+        subjectBox = (TextBox)getWidget("note.subject");
+        noteArea = (ScreenTextArea)widgets.get("note.text");
+        svp = (ScreenVertical) widgets.get("notesPanel");
+        
+        noteTab = (TabPanel)getWidget("provTabPanel");  
+        
+        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
+        
+        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
+        provAddController.setAutoAdd(false);
+        
+        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
+        proAddManager.setProviderForm(this);
+        
+        //load dropdowns
+       if(typeDropDown == null){
+         typeDropDown = (DataModel) initData.get("providers");
+         stateDropDown = (DataModel) initData.get("states");
+         countryDropDown = (DataModel) initData.get("countries");
+        } 
+                                
+       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
+    
+       ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+       ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
+       
+       TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                    controller.editors[5];
+       displayContactState.setModel(stateDropDown);
+       
+       TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
+        queryContactState.setModel(stateDropDown);
+       
+       
+       TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
+                                                                                   controller.editors[6];
+       displayContactCountry.setModel(countryDropDown);
+       
+       TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
+       queryContactCountry.setModel(countryDropDown);              
         
         super.afterDraw(success);
-        
     }
-      
-   
         
     public void afterFetch(boolean success){       
     //      every time a fetch is done, data in both tabs should be loaded afresh
@@ -297,63 +347,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
             commitQuery(letterRPC); 
        }
     }
-
-    private void initWidgets(){
-//      load other widgets
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
-        
-        removeContactButton = (AppButton) getWidget("removeAddressButton");
-        
-        standardNoteButton = (AppButton) getWidget("standardNoteButton");
-        
-        provId = (ScreenTextBox)widgets.get("provider.id");
-        lastName = (TextBox)getWidget("provider.lastName");
-        subjectBox = (TextBox)getWidget("note.subject");
-        noteArea = (ScreenTextArea)widgets.get("note.text");
-        svp = (ScreenVertical) widgets.get("notesPanel");
-        
-        noteTab = (TabPanel)getWidget("provTabPanel");  
-        
-        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
-        
-        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddController.setAutoAdd(false);
-        
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.setProviderForm(this);
-        
-        //load dropdowns
-       if(typeDropDown == null){
-         typeDropDown = (DataModel) initData.get("providers");
-         stateDropDown = (DataModel) initData.get("states");
-         countryDropDown = (DataModel) initData.get("countries");
-        } 
-                                
-       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
-    
-       ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-       ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
-       
-       TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                    controller.editors[5];
-       displayContactState.setModel(stateDropDown);
-       
-       TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
-        queryContactState.setModel(stateDropDown);
-       
-       
-       TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                   controller.editors[6];
-       displayContactCountry.setModel(countryDropDown);
-       
-       TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
-       queryContactCountry.setModel(countryDropDown);              
-    } 
     
    private void fillNotesModel(){  
        

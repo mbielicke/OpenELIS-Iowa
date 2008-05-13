@@ -5,7 +5,6 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZPanel;
-import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -53,9 +52,35 @@ import com.google.gwt.user.client.ui.Widget;
         public void afterDraw(boolean success) {
              loaded = true;
              
-               setBpanel((ButtonPanel) getWidget("buttons"));          
-               initWidgets();                 
-               super.afterDraw(success); 
+             setBpanel((ButtonPanel) getWidget("buttons"));          
+             
+             message.setText("Done");                 
+             
+             AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+             modelWidget.addChangeListener(atozTable);
+             addChangeListener(atozTable);
+             
+             ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+             atozButtons.addChangeListener(this);
+             
+             tname = (TextBox)getWidget("qaevent.name");
+             displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
+             displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
+
+             reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");       
+         
+            //load type and test dropdowns
+           if(qaEventTypeDropDown == null){
+               qaEventTypeDropDown = (DataModel)initData.get("qaevent");               
+               testDropDown = (DataModel)initData.get("tests");
+           }       
+
+                                        
+            ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
+            ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
+                    
+                
+            super.afterDraw(success); 
         }                 
          
          public void query() {
@@ -96,35 +121,5 @@ import com.google.gwt.user.client.ui.Widget;
                  commitQuery(letterRPC);
              }
          }
-        
-     private void initWidgets(){
-         message.setText("done");                 
          
-         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-         modelWidget.addChangeListener(atozTable);
-         addChangeListener(atozTable);
-         
-         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-         atozButtons.addChangeListener(this);
-         
-         tname = (TextBox)getWidget("qaevent.name");
-         displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
-         displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
-
-         reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");       
-     
-        //load type and test dropdowns
-               if(qaEventTypeDropDown == null){
-                   qaEventTypeDropDown = (DataModel)initData.get("qaevent");               
-                   testDropDown = (DataModel)initData.get("tests");
-               }       
-
-                                    
-                ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-                ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
-                
-                                       
-            }                              
-                      
-              
  }
