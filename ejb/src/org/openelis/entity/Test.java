@@ -26,7 +26,8 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "getTestByTestTrailerId", query = "select t.id from Test t where t.testTrailer = :id")})
+	@NamedQueries({@NamedQuery(name = "getTestByTestTrailerId", query = "select t.id from Test t where t.testTrailer = :id"),
+                   @NamedQuery(name = "getReferringTestsForLabel", query =  "select distinct t.id from Test t where t.label = :id")})
 
 @Entity
 @Table(name="test")
