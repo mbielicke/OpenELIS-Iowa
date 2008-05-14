@@ -232,7 +232,7 @@ public class LabelBean implements LabelRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();        
         List <Object[]> tests  = null;
         try{               
-            Query query = manager.createNamedQuery("getReferringTests");
+            Query query = manager.createNamedQuery("getReferringTestsForLabel");
             query.setParameter("id", labelId);
             tests = query.getResultList();
         }catch(NoResultException nrex){
