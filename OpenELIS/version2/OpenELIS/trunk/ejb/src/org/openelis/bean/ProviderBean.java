@@ -130,7 +130,7 @@ public class ProviderBean implements ProviderRemote {
        
        qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
        
-       qb.setSelect("distinct "+ProviderMeta.ID+", "+ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME);
+       qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("+ProviderMeta.ID+", "+ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME + ") ");
        qb.addTable(providerMeta);
        
        //this method is going to throw an exception if a column doesnt match

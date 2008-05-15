@@ -98,7 +98,7 @@ public class CategoryBean implements CategoryRemote {
         
         qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
         
-        qb.setSelect("distinct "+CategoryMeta.ID+", "+CategoryMeta.NAME);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+CategoryMeta.ID+", "+CategoryMeta.NAME + ") ");
         
         qb.addTable(categoryMeta);
         

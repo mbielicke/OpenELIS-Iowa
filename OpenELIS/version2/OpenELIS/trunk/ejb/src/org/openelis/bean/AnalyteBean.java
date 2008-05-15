@@ -141,7 +141,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		qb.addMeta(new Meta[]{analyteMeta,parentMeta});
 		
-		 qb.setSelect("distinct "+AnalyteMeta.ID+", "+AnalyteMeta.NAME);
+		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+AnalyteMeta.ID+", "+AnalyteMeta.NAME + ") ");
 		 qb.addTable(analyteMeta);
 	        
 //	      this method is going to throw an exception if a column doesnt match
@@ -206,14 +206,7 @@ public class AnalyteBean implements AnalyteRemote{
 		    
 		return analyte.getId();
 	}
-
-	public List autoCompleteLookupById(Integer id) {
-		Query query = null;
-		query = manager.createNamedQuery("getAnalyteAutoCompleteById");
-		query.setParameter("id",id);
-		return query.getResultList();
-	}
-
+    
 	public List validateForAdd(AnalyteDO analyteDO) {
 		List exceptionList = new ArrayList();
 		

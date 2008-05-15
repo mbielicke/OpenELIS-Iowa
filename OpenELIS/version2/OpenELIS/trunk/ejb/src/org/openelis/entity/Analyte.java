@@ -29,10 +29,8 @@ import org.w3c.dom.Element;
 		       @NamedQuery(name = "getAnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
 		       @NamedQuery(name = "analyteUpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
 		       @NamedQuery(name = "analyteAddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
-	           @NamedQuery(name = "getAnalyteAutoCompleteByName", query = "select a.id, a.name " +
-			   											 " from Analyte a where a.name like :name order by a.name"),
-			   @NamedQuery(name = "getAnalyteAutoCompleteById", query = "select a.id, a.name " +
-			   											 " from Analyte a where a.id = :id order by a.name")})
+	           @NamedQuery(name = "getAnalyteAutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
+			   											 " from Analyte a where a.name like :name order by a.name")})
 			   											 
 @Entity
 @Table(name="analyte")
