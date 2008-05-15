@@ -2,10 +2,12 @@ package org.openelis.modules.qaevent.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameTestMethodDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.QaEventTestDropdownDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -33,9 +35,7 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 
-public class QAEventService implements
-                                   AppScreenFormServiceInt,
-                                   AutoCompleteServiceInt{
+public class QAEventService implements AppScreenFormServiceInt{
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;  
@@ -43,20 +43,18 @@ public class QAEventService implements
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List qaEventNames = new ArrayList();
+        
         if(rpcSend == null){           
-                
-         
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":QaEvent");
+            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("QaEventQuery");
     
             if(rpc == null)
                 throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    
-             List qaEvents = null;
-                 
+                     
              try{
                  
                  QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-                 qaEvents = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                 qaEventNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                  
              }catch(Exception e){
                 if(e instanceof LastPageException){
@@ -65,49 +63,12 @@ public class QAEventService implements
                     throw new RPCException(e.getMessage()); 
                 }
              }
-         
-         int i=0;
-         model.clear();
-    
-         while(i < qaEvents.size() && i < leftTableRowsPerPage) {
-             Object[] result = (Object[])qaEvents.get(i);
-             //qaEvent id
-             Integer idResult = (Integer)result[0];
-             //qaEvent name
-             String nameResult = (String)result[1];
-             String tnameResult = (String)result[2];
-             String mnameResult = (String)result[3];
-    
-             DataSet row = new DataSet();
-             
-             NumberObject id = new NumberObject(NumberObject.INTEGER);
-    
-             StringObject qaname = new StringObject();
-             StringObject tname = new StringObject();
-             StringObject mname = new StringObject();
-    
-             id.setValue(idResult);
-    
-                 qaname.setValue(nameResult);  
-                 tname.setValue(tnameResult);
-                 mname.setValue(mnameResult);
-             row.setKey(id);          
-    
-             row.addObject(qaname);
-             row.addObject(tname);
-             row.addObject(mname);
-             model.add(row);
-             i++;
-          }         
-                 
-         return model;   
+          
          } else{
              QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
              
              HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
-              
-    
-             List qaEventNames = new ArrayList();
+
                  try{
                      qaEventNames = remote.query(fields,0,leftTableRowsPerPage);
     
@@ -116,42 +77,44 @@ public class QAEventService implements
                  throw new RPCException(e.getMessage());
              }
     
-             Iterator itraaa = qaEventNames.iterator();
-             model=  new DataModel();
-             while(itraaa.hasNext()){
-                 Object[] result = (Object[])itraaa.next();
-                 //qaEvent id
-                 Integer idResult = (Integer)result[0];
-                 //qaEvent name
-                 String nameResult = (String)result[1];
-                 String tnameResult = (String)result[2];
-                 String mnameResult = (String)result[3];
-    
-                 DataSet row = new DataSet();
-                 
-                 NumberObject id = new NumberObject(NumberObject.INTEGER);
-    
-                 StringObject qaname = new StringObject();
-                 StringObject tname = new StringObject();
-                 StringObject mname = new StringObject();
-                 id.setValue(idResult);
-    
-                     qaname.setValue(nameResult);  
-                     tname.setValue(tnameResult);
-                     mname.setValue(mnameResult);
-    
-                     row.setKey(id);          
-    
-                 row.addObject(qaname);
-                 row.addObject(tname);
-                 row.addObject(mname);
-                 model.add(row);
-    
-             } 
-             if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                 SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-             CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":QaEvent", rpcSend);          
+             //need to save the rpc used to the encache
+            if(SessionManager.getSession().getAttribute("QaEventQuery") == null)
+                SessionManager.getSession().setAttribute("QaEventQuery", rpcSend);
         }
+        
+        int i=0;
+        model.clear();    
+        while(i < qaEventNames.size() && i < leftTableRowsPerPage) {
+            IdNameTestMethodDO resultDO = (IdNameTestMethodDO)qaEventNames.get(i);
+            //qaEvent id
+            Integer idResult = resultDO.getId();
+            //qaEvent name
+            String nameResult = resultDO.getName();
+            String tnameResult = resultDO.getTest();
+            String mnameResult = resultDO.getMethod();
+   
+            DataSet row = new DataSet();
+            
+            NumberObject id = new NumberObject(NumberObject.INTEGER);
+   
+            StringObject qaname = new StringObject();
+            StringObject tname = new StringObject();
+            StringObject mname = new StringObject();
+   
+            id.setValue(idResult);
+   
+            qaname.setValue((nameResult != null ? nameResult.trim() : null));  
+            tname.setValue((tnameResult != null ? tnameResult.trim() : null));
+            mname.setValue((mnameResult != null ? mnameResult.trim() : null));
+            row.setKey(id);          
+   
+            row.addObject(qaname);
+            row.addObject(tname);
+            row.addObject(mname);
+            model.add(row);
+            i++;
+         }         
+        
          return model;
     }
 
@@ -291,11 +254,6 @@ public class QAEventService implements
     	return null;
     }
 
-    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public DataModel getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
@@ -329,34 +287,37 @@ public class QAEventService implements
             model.add(blankset);        
    
         
-        for (Iterator iter = entries.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
-
-            DataSet set = new DataSet();
-
+            int i=0;
+            while(i < entries.size()){
+                DataSet set = new DataSet();
+                
             //id
-            Integer dropdownId = (Integer)idType[0];
+            Integer dropdownId = null;
             //entry
-            String dropDownText = (String)idType[1];
+            String dropDownText = null;
+            //method
             String methodName = null;
             
             if(cat.equals("test")){ 
-              methodName = (String)idType[2];
+                QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO) entries.get(i);
+                dropdownId = resultDO.getId();
+                dropDownText = resultDO.getTest();
+                methodName = resultDO.getMethod();
+            }else{
+                IdNameDO resultDO = (IdNameDO) entries.get(i);
+                dropdownId = resultDO.getId();
+                dropDownText = resultDO.getName();
             }
             
             StringObject textObject = new StringObject();
-            
-            
-
-            
+                        
             if(methodName!=null){
              textObject.setValue(dropDownText.trim()+" , "+methodName.trim());
             }else{
              textObject.setValue(dropDownText.trim());
             }
             
-            set.addObject(textObject);
-            
+            set.addObject(textObject);            
 
                 NumberObject numberId = new NumberObject(NumberObject.INTEGER);
 
@@ -365,15 +326,10 @@ public class QAEventService implements
                 set.setKey(numberId);           
             
             model.add(set);
-            
+            i++;
          }
            
         return model;
-    }
-
-    public DataModel getMatches(String cat, DataModel model, String match) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, QaEventDO qaeDO){

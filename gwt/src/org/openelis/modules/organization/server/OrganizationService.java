@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.ParentOrgAutoDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -59,6 +61,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 	private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List organizationNames;
     	//if the rpc is null then we need to get the page
     	if(rpcSend == null){
     		//need to get the query rpc out of the cache
@@ -66,85 +69,55 @@ public class OrganizationService implements AppScreenFormServiceInt,
     
             if(rpc == null)
             	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    
-            List organizations = null;
+
             OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
             try{
-            	organizations = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                organizationNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
             }catch(Exception e){
             	if(e instanceof LastPageException){
             		throw new LastPageException(openElisConstants.getString("lastPageException"));
             	}else{
             		throw new RPCException(e.getMessage());	
             	}			
-            }
-    
-            int i=0;
-            model.clear();
-            while(i < organizations.size() && i < leftTableRowsPerPage) {
-        	   	Object[] result = (Object[])organizations.get(i);
-    			//org id
-    			Integer idResult = (Integer)result[0];
-    			//org name
-    			String nameResult = (String)result[1];
-    
-    			DataSet row = new DataSet();
-    			NumberObject id = new NumberObject(NumberObject.INTEGER);
-    			StringObject name = new StringObject();
-    
-    			name.setValue(nameResult);
-    			id.setValue(idResult);
-    			
-    			row.setKey(id);			
-    			row.addObject(name);
-    			model.add(row);
-    			i++;
-             } 
-    
-            return model;
-    
+            }    
     	}else{
-    	OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+    	    OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     	
-    	HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-        fields.remove("contactsTable");
+    	    HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+    	    fields.remove("contactsTable");
+
+    	    try{	
+    	        organizationNames = remote.query(fields,0,leftTableRowsPerPage);
     
-    	List organizationNames = new ArrayList();
-    		try{
-    			
-    		organizationNames = remote.query(fields,0,leftTableRowsPerPage);
+    	    }catch(Exception e){
+    	        throw new RPCException(e.getMessage());
+    	    }
     
-    	}catch(Exception e){
-    		throw new RPCException(e.getMessage());
-    	}
-    
-    	Iterator itraaa = organizationNames.iterator();
-    	model=  new DataModel();
-    	while(itraaa.hasNext()){
-    		Object[] result = (Object[])itraaa.next();
-    		//org id
-    		Integer id = (Integer)result[0];
-    		//org name
-    		String name = (String)result[1];
-    
-    		DataSet row = new DataSet();
-    
-    		 NumberObject idField = new NumberObject(NumberObject.INTEGER);
-    		 StringObject nameField = new StringObject();
-    		 nameField.setValue(name);
-    
-    		 idField.setValue(id);
-    		 row.setKey(idField);
-    		 row.addObject(nameField);
-    
-    		 model.add(row);
-    
+        
+    	    //need to save the rpc used to the encache
+    	    if(SessionManager.getSession().getAttribute("OrganizationQuery") == null)
+    	        SessionManager.getSession().setAttribute("OrganizationQuery", rpcSend);
     	}
         
-        //need to save the rpc used to the encache
-        if(SessionManager.getSession().getAttribute("OrganizationQuery") == null)
-        	SessionManager.getSession().setAttribute("OrganizationQuery", rpcSend);
-    	}
+        //fill the model with the query results
+    	int i=0;
+        model.clear();
+        while(i < organizationNames.size() && i < leftTableRowsPerPage) {
+            IdNameDO resultDO = (IdNameDO)organizationNames.get(i);
+ 
+            DataSet row = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            StringObject name = new StringObject();
+ 
+            name.setValue(resultDO.getName());
+            id.setValue(resultDO.getId());
+            
+            row.setKey(id);         
+            row.addObject(name);
+            model.add(row);
+            i++;
+        } 
+ 
     	return model;
     }
 
@@ -512,29 +485,22 @@ public class OrganizationService implements AppScreenFormServiceInt,
     	else
     		blankset.setKey(blankStringId);			
     	
-    	//blankSelected.setValue(new Boolean(false));
-    	//blankset.addObject(blankSelected);
-    	
     	returnModel.add(blankset);
     	int i=0;
     	while(i < entries.size()){
     		DataSet set = new DataSet();
-    		Object[] result = (Object[]) entries.get(i);
+    		IdNameDO resultDO = (IdNameDO) entries.get(i);
     		//id
-    		Integer dropdownId = (Integer)result[0];
+    		Integer dropdownId = resultDO.getId();
     		//entry
-    		String dropdownText = (String)result[1];
+    		String dropdownText = resultDO.getName();
     		
     		StringObject textObject = new StringObject();
     		StringObject stringId = new StringObject();
     		NumberObject numberId = new NumberObject(NumberObject.INTEGER);
-    		BooleanObject selected = new BooleanObject();
-    	
-    		textObject.setValue(dropdownText);
+     	
+    		textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
     		set.addObject(textObject);
-            
-    
-            
     		
     		if(cat.equals("contactType")){
     			numberId.setValue(dropdownId);
@@ -544,24 +510,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
     			set.setKey(stringId);			
     		}
     		
-    		//selected.setValue(new Boolean(false));
-    		//set.addObject(selected);
-    		
     		returnModel.add(set);
     		
     		i++;
     	}		
     	
     	return returnModel;
-    }
-
-    //autocomplete textbox method	
-    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-    	if(cat.equals("parentOrg"))
-    		return getParentOrgDisplay((Integer)value.getValue());
-    	
-    	return null;		
-    	
     }
 
     //autocomplete textbox method
@@ -686,121 +640,57 @@ public class OrganizationService implements AppScreenFormServiceInt,
     	rpcSend.status = IForm.INVALID_FORM;
     }
 
-    private DataModel getParentOrgDisplay(Integer value){
-    	OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-    	
-    	List autoCompleteList = remote.autoCompleteLookupById(value);
-    	
-    	Object[] result = (Object[]) autoCompleteList.get(0);
-    	//org id
-    	Integer orgId = (Integer)result[0];
-    	//org name
-    	String name = (String)result[1];
-    	
-    	DataModel model = new DataModel();
-    	DataSet data = new DataSet();
-    	
-    	NumberObject id = new NumberObject(NumberObject.INTEGER);
-    	id.setValue(orgId);
-    	StringObject nameObject = new StringObject();
-    	nameObject.setValue(name.trim());
-    	
-    	data.addObject(id);
-    	data.addObject(nameObject);
-    	
-    	model.add(data);
-    
-    	return model;		
-    }
-
     private DataModel getParentOrgMatches(String match){
     	OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     	DataModel dataModel = new DataModel();
+        List autoCompleteList;
     
     	try{
     		int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
     		//lookup by id...should only bring back 1 result
-    		List autoCompleteList = remote.autoCompleteLookupById(id);
-    		if(autoCompleteList.size() > 0){
-    			Object[] result = (Object[]) autoCompleteList.get(0);
-    			//org id
-    			Integer orgId = (Integer)result[0];
-    			//org name
-    			String name = (String)result[1];
-    			//org street address
-    			String address = (String)result[2];
-    			//org city
-    			String city = (String)result[3];
-    			//org state
-    			String state = (String)result[4];
-    			DataSet data = new DataSet();
-    			//hidden id
-    			NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-    			idObject.setValue(orgId);
-    			data.setKey(idObject);
-    			//columns
-    			StringObject nameObject = new StringObject();
-    			nameObject.setValue(name);
-    			data.addObject(nameObject);
-    			StringObject addressObject = new StringObject();
-    			addressObject.setValue(address);
-    			data.addObject(addressObject);
-    			StringObject cityObject = new StringObject();
-    			cityObject.setValue(city);
-    			data.addObject(cityObject);
-    			StringObject stateObject = new StringObject();
-    			stateObject.setValue(state);
-    			data.addObject(stateObject);
-    			//display text
-    			
-    			//add the dataset to the datamodel
-    			dataModel.add(data);
-    							
-    		}		
+    		autoCompleteList = remote.autoCompleteLookupById(id);
     		
     	}catch(NumberFormatException e){
     		//it isnt an id
     		//lookup by name
-    		List autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
-    		Iterator itr = autoCompleteList.iterator();
-    		
-    		while(itr.hasNext()){
-    			Object[] result = (Object[]) itr.next();
-    			//org id
-    			Integer orgId = (Integer)result[0];
-    			//org name
-    			String name = (String)result[1];
-    			//org street address
-    			String address = (String)result[2];
-    			//org city
-    			String city = (String)result[3];
-    			//org state
-    			String state = (String)result[4];				
-    			
-    			DataSet data = new DataSet();
-    			//hidden id
-    			NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-    			idObject.setValue(orgId);
-    			data.setKey(idObject);
-    			//columns
-    			StringObject nameObject = new StringObject();
-    			nameObject.setValue((name != null ? name.trim() : null));
-    			data.addObject(nameObject);
-    			StringObject addressObject = new StringObject();
-    			addressObject.setValue((address != null ? address.trim() : null));
-    			data.addObject(addressObject);
-    			StringObject cityObject = new StringObject();
-    			cityObject.setValue((city != null ? city.trim() : null));
-    			data.addObject(cityObject);
-    			StringObject stateObject = new StringObject();
-    			stateObject.setValue((state != null ? state.trim() : null));
-    			data.addObject(stateObject);
-    			
-    			//add the dataset to the datamodel
-    			dataModel.add(data);
-    
-    		}
+    		autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
     	}
+        
+    	for(int i=0; i < autoCompleteList.size(); i++){
+            ParentOrgAutoDO resultDO = (ParentOrgAutoDO) autoCompleteList.get(i);
+            //org id
+            Integer orgId = resultDO.getId();
+            //org name
+            String name = resultDO.getName();
+            //org street address
+            String address = resultDO.getAddress();
+            //org city
+            String city = resultDO.getCity();
+            //org state
+            String state = resultDO.getState();
+            
+            DataSet data = new DataSet();
+            //hidden id
+            NumberObject idObject = new NumberObject(NumberObject.INTEGER);
+            idObject.setValue(orgId);
+            data.setKey(idObject);
+            //columns
+            StringObject nameObject = new StringObject();
+            nameObject.setValue((name != null ? name.trim() : null));
+            data.addObject(nameObject);
+            StringObject addressObject = new StringObject();
+            addressObject.setValue((address != null ? address.trim() : null));
+            data.addObject(addressObject);
+            StringObject cityObject = new StringObject();
+            cityObject.setValue((city != null ? city.trim() : null));
+            data.addObject(cityObject);
+            StringObject stateObject = new StringObject();
+            stateObject.setValue((state != null ? state.trim() : null));
+            data.addObject(stateObject);
+            
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
     	
     	return dataModel;		
     }

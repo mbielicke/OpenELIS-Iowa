@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -49,21 +50,19 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {                      
+    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List systemNames = new ArrayList();
         if(rpcSend == null){          
-                
-        
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category");
+//          need to get the query rpc out of the cache
+            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("DictionaryQuery");
     
            if(rpc == null)
                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    
-            List categories = null;
                 
             try{
                 
                 CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
-                categories = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                systemNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                 
             }catch(Exception e){
             	if(e instanceof LastPageException){
@@ -72,17 +71,34 @@ public class DictionaryService implements AppScreenFormServiceInt,
             		throw new RPCException(e.getMessage());	
             	}
             }
+
+        } else{
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+            
+            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            fields.remove("dictEntTable");
+           
+                try{                                        
+                    systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
+            }catch(Exception e){
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());                
+            }
+    
+//          need to save the rpc used to the encache
+            if(SessionManager.getSession().getAttribute("DictionaryQuery") == null)
+                SessionManager.getSession().setAttribute("DictionaryQuery", rpcSend);
+       }
         
         int i=0;
-        model.clear();
+        model.clear();    
+        while(i < systemNames.size() && i < leftTableRowsPerPage) {
     
-        while(i < categories.size() && i < leftTableRowsPerPage) {
-    
-            Object[] result = (Object[])categories.get(i);
+            IdNameDO resultDO = (IdNameDO)systemNames.get(i);
             //category id
-            Integer idResult = (Integer)result[0];
+            Integer idResult = resultDO.getId();
             //category name
-            String sysNameResult = (String)result[1];
+            String sysNameResult = resultDO.getName();
                         
     
             DataSet row = new DataSet();
@@ -92,57 +108,14 @@ public class DictionaryService implements AppScreenFormServiceInt,
             
             StringObject sysName = new StringObject();
                         
-            sysName.setValue(sysNameResult);    
+            sysName.setValue((sysNameResult != null ? sysNameResult.trim() : null));    
             
             row.setKey(id);                      
             row.addObject(sysName);
             model.add(row);
             i++;
          }        
-                
-        return model;   
-        } else{
-            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-            fields.remove("dictEntTable");
-            
-            List systemNames = new ArrayList();
-                try{                                        
-                    systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
-            }catch(Exception e){
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());                
-            }
-    
-            Iterator itraaa = systemNames.iterator();
-            model=  new DataModel();
-            while(itraaa.hasNext()){
-                Object[] result = (Object[])itraaa.next();
-                //category id
-                Integer idResult = (Integer)result[0];
-                //category name
-                String sysNameResult = (String)result[1];
-                            
-                
-                DataSet row = new DataSet();
-                
-                NumberObject id = new NumberObject(NumberObject.INTEGER);                
-                StringObject sysName = new StringObject();
-                
-                sysName.setValue(sysNameResult);
-                id.setValue(idResult);
-                
-                row.setKey(id);          
-                
-                row.addObject(sysName);
-                model.add(row);
-    
-            } 
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Category", rpcSend);          
-       }
+        
         return model;
     }
 
@@ -388,38 +361,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
              throw ex;
          }
       }
-       
-    // the method called to initialize the autocomplete box(es) on the screen
-    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {     
-      
-      DataModel dataModel = new DataModel(); 
-      try{
-        if(cat.equals("relatedEntry")){
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Object[] result  = (Object[])remote.autoCompleteLookupById((Integer)value.getValue()); 
-        
-        if(result !=null){              
-         Integer dictId = (Integer)result[0];
-         String entry = (String)result[1];
-         DataSet data = new DataSet();
-        
-         NumberObject id = new NumberObject(NumberObject.INTEGER);
-         id.setValue(dictId);
-         StringObject nameObject = new StringObject();
-         nameObject.setValue(entry.trim());
-                
-         data.setKey(id);        
-         data.addObject(nameObject);
-        
-        
-         dataModel.add(data);
-        }
-       }  
-      }catch(Exception ex){
-          ex.printStackTrace();
-      } 
-        return dataModel;
-    }
 
     // the method called to load the dropdowns on the screen
     public DataModel getInitialModel(String cat) { 
@@ -483,9 +424,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         DataModel dataModel = new DataModel();
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             
-            Object[] element = (Object[])iter.next();
-            Integer entryId = (Integer)element[0];                   
-            String entryText = element[1].toString();
+            IdNameDO element = (IdNameDO)iter.next();
+            Integer entryId = element.getId();                   
+            String entryText = element.getName();
             
             DataSet data = new DataSet();
             //hidden id
@@ -496,14 +437,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
             StringObject nameObject = new StringObject();
             nameObject.setValue(entryText.trim());
             data.addObject(nameObject);
-            
-            StringObject displayObject = new StringObject();
-            displayObject.setValue(entryText.trim());
-            data.addObject(displayObject);
-            
-            //StringObject selectedFlag = new StringObject();
-           // selectedFlag.setValue("N");
-           // data.addObject(selectedFlag);
             
             //add the dataset to the datamodel
             dataModel.add(data);

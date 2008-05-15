@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -25,7 +26,6 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.server.constants.Constants;
@@ -39,18 +39,18 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List analyteNames = new ArrayList();
     //		if the rpc is null then we need to get the page
     		if(rpcSend == null){
     //			need to get the query rpc out of the cache
-    	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Analyte");
+                FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("AnalyteQuery");
     
     	        if(rpc == null)
     	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    			
-    	        List analytes = null;
+
     	        AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     	        try{
-    	        	analytes = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                    analyteNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
     	        }catch(Exception e){
     	        	if(e instanceof LastPageException){
     	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -58,71 +58,45 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     	        		throw new RPCException(e.getMessage());	
     	        	}
     	        }
-    	        
-    	        int i=0;
-    	        model.clear();
-    	        while(i < analytes.size() && i < leftTableRowsPerPage) {
-    	    	   	Object[] result = (Object[])analytes.get(i);
-    				//org id
-    				Integer idResult = (Integer)result[0];
-    				//org name
-    				String nameResult = (String)result[1];
-    
-    				DataSet row = new DataSet();
-    				NumberObject id = new NumberObject(NumberObject.INTEGER);
-    				StringObject name = new StringObject();
-    				name.setValue(nameResult);
-    				id.setValue(idResult);
-    				
-    				row.setKey(id);			
-    				row.addObject(name);
-    				model.add(row);
-    				i++;
-    	         } 
-    
-    	        return model;
+
     		}else{
     			AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     			
     			HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
     			
-    			List analyteNames = new ArrayList();
     			try{
     				analyteNames = remote.query(fields,0,leftTableRowsPerPage);
     
     		}catch(Exception e){
     			throw new RPCException(e.getMessage());
     		}
-    		
-    		Iterator namesItr = analyteNames.iterator();
-    		model=  new DataModel();
-    		
-    		while(namesItr.hasNext()){
-    			Object[] result = (Object[])namesItr.next();
-    			//org id
-    			Integer id = (Integer)result[0];
-    			//org name
-    			String name = (String)result[1];
-    
-    			DataSet row = new DataSet();
-    
-    			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
-    			 StringObject nameField = new StringObject();
-    			 nameField.setValue(name);
-          
-    			 idField.setValue(id);
-    			 row.setKey(idField);
-    			 row.addObject(nameField);
-    
-    			 model.add(row);
-    		}
             
             //need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-            	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Analyte", rpcSend);
+            if(SessionManager.getSession().getAttribute("AnalyteQuery") == null)
+                SessionManager.getSession().setAttribute("AnalyteQuery", rpcSend);
     		}
     		
+            int i=0;
+            model.clear();
+            while(i < analyteNames.size() && i < leftTableRowsPerPage) {
+                IdNameDO resultDO = (IdNameDO)analyteNames.get(i);
+                //org id
+                Integer idResult = resultDO.getId();
+                //org name
+                String nameResult = resultDO.getName();
+
+                DataSet row = new DataSet();
+                NumberObject id = new NumberObject(NumberObject.INTEGER);
+                StringObject name = new StringObject();
+                name.setValue((nameResult != null ? nameResult.trim() : null));
+                id.setValue(idResult);
+                
+                row.setKey(id);         
+                row.addObject(name);
+                model.add(row);
+                i++;
+             } 
+            
     		return model;
     	}
 
@@ -338,11 +312,11 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		Iterator itr = autoCompleteList.iterator();
 		
 		while(itr.hasNext()){
-			Object[] result = (Object[]) itr.next();
-			//org id
-			Integer analyteId = (Integer)result[0];
-			//org name
-			String name = (String)result[1];			
+            IdNameDO resultDO = (IdNameDO) itr.next();
+			//parent id
+			Integer analyteId = resultDO.getId();
+			//parent name
+			String name = resultDO.getName();			
 			
 			DataSet data = new DataSet();
 			//hidden id

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.LabelDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -319,30 +320,27 @@ public class LabelService implements AppScreenFormServiceInt {
    
         
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
+            IdNameDO resultDO = (IdNameDO)iter.next();
 
             DataSet set = new DataSet();
 
             //id
-            Integer dropdownId = (Integer)idType[0];
+            Integer dropdownId = resultDO.getId();
             //entry
-            String dropDownText = (String)idType[1];
+            String dropDownText = resultDO.getName();
          
             
             StringObject textObject = new StringObject();
              textObject.setValue(dropDownText.trim());
-            //}
-            
+             
             set.addObject(textObject);
             
+            NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+            numberId.setValue(dropdownId);
 
-                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
-                numberId.setValue(dropdownId);
-
-                set.setKey(numberId);           
+            set.setKey(numberId);           
             
-            model.add(set);
-            
+            model.add(set);            
          }
            
         return model;

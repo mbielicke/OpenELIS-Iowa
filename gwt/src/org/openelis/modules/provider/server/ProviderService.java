@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
@@ -54,19 +56,16 @@ public class ProviderService implements AppScreenFormServiceInt{
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
+        List providers = new ArrayList();
         //ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");        
         if(rpcSend == null){
            //need to get the query rpc out of the cache        
-                       
-            FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider");
+            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("ProviderQuery");
     
            if(rpc == null)
                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    
-            List providers = null;
                 
             try{
-                
                 ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
                 providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
             }catch(Exception e){
@@ -76,86 +75,56 @@ public class ProviderService implements AppScreenFormServiceInt{
             		throw new RPCException(e.getMessage());	
             	}
             }
-        
-        int i=0;
-        model.clear();
-        
-        while(i < providers.size() && i < leftTableRowsPerPage) {
-    
-            Object[] result = (Object[])providers.get(i);
-            //org id
-            Integer idResult = (Integer)result[0];
-            //org name
-            String lnameResult = (String)result[1];
-            
-            String fnameResult = (String)result[2];
-    
-            DataSet row = new DataSet();
-            
-            NumberObject id = new NumberObject(NumberObject.INTEGER);            
-            StringObject lname = new StringObject();
-            StringObject fname = new StringObject();
-             lname.setValue(lnameResult);
-             fname.setValue(fnameResult);
-            
-            id.setValue(idResult);
-            
-            row.setKey(id); 
-            row.addObject(lname);
-            row.addObject(fname);
-            
-            model.add(row);
-            i++;
-         }
-        
-                
-        return model;   
+          
         } else{
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
             
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
             fields.remove("providerAddressTable");
             
-            List providerNames = new ArrayList();
                 try{
-                    providerNames = remote.query(fields,0,leftTableRowsPerPage);
+                    providers = remote.query(fields,0,leftTableRowsPerPage);
     
             }catch(Exception e){
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
+            }              
+             
+//          need to save the rpc used to the encache
+            if(SessionManager.getSession().getAttribute("ProviderQuery") == null)
+                SessionManager.getSession().setAttribute("ProviderQuery", rpcSend);
             }
-    
-            Iterator itraaa = providerNames.iterator();
-            model=  new DataModel();
-            while(itraaa.hasNext()){
-                Object[] result = (Object[])(Object[])itraaa.next();
+            
+            //fill the model with the query result
+            int i=0;
+            model.clear();        
+            while(i < providers.size() && i < leftTableRowsPerPage) {
+        
+                IdLastNameFirstNameDO resultDO = (IdLastNameFirstNameDO)providers.get(i);
                 //org id
-                Integer idResult = (Integer)result[0];
+                Integer idResult = resultDO.getId();
                 //org name
-                String lnameResult = (String)result[1];
+                String lnameResult = resultDO.getLastName();
                 
-                String fnameResult = (String)result[2];
-    
+                String fnameResult = resultDO.getFirstName();
+        
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject(NumberObject.INTEGER);                
+                NumberObject id = new NumberObject(NumberObject.INTEGER);            
                 StringObject lname = new StringObject();
                 StringObject fname = new StringObject();
-                 lname.setValue(lnameResult);
-                 fname.setValue(fnameResult);
+                 lname.setValue((lnameResult != null ? lnameResult.trim() : null));
+                 fname.setValue((fnameResult != null ? fnameResult.trim() : null));
                 
                 id.setValue(idResult);
                 
-                row.setKey(id);                   
+                row.setKey(id); 
                 row.addObject(lname);
                 row.addObject(fname);
+                
                 model.add(row);
-              
-            } 
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-                SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":Provider", rpcSend);         
-       }
+                i++;
+             }
         return model;
     }
 
@@ -430,36 +399,37 @@ public class ProviderService implements AppScreenFormServiceInt{
             model.add(blankset);        
           
         
-        for (Iterator iter = entries.iterator(); iter.hasNext();) {
-            Object[] idType = (Object[])iter.next();
-            DataSet set = new DataSet();
+            int i=0;
+            while(i < entries.size()){
+                DataSet set = new DataSet();
+                IdNameDO resultDO = (IdNameDO) entries.get(i);
 
-            //id
-            Integer dropdownId = (Integer)idType[0];
-            //entry
-            String dropdownText = (String)idType[1];
-            
-            StringObject textObject = new StringObject();
-
-            textObject.setValue(dropdownText);
-            set.addObject(textObject);
-            
-            if(cat.equals("providerType")){
-                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
-                numberId.setValue(dropdownId);
-
-                set.setKey(numberId);
-            }else{
-               StringObject stringId = new StringObject();
-               stringId.setValue(dropdownText);
-
-               set.setKey(stringId);
+                //id
+                Integer dropdownId = resultDO.getId();
+                //entry
+                String dropdownText = resultDO.getName();
+                
+                StringObject textObject = new StringObject();
+    
+                textObject.setValue(dropdownText);
+                set.addObject(textObject);
+                
+                if(cat.equals("providerType")){
+                    NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+                    numberId.setValue(dropdownId);
+    
+                    set.setKey(numberId);
+                }else{
+                   StringObject stringId = new StringObject();
+                   stringId.setValue((dropdownText != null ? dropdownText.trim() : null));
+    
+                   set.setKey(stringId);
+                }
+    
+                
+                model.add(set); 
+                i++;
             }
-
-            
-            model.add(set);
-            
-         }
         }        
         
         return model;

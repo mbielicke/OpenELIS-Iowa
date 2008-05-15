@@ -1,11 +1,11 @@
 package org.openelis.modules.main.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public class OpenELISScreenForm extends AppScreenForm {
     
@@ -20,11 +20,22 @@ public class OpenELISScreenForm extends AppScreenForm {
         target.setServiceEntryPoint(base);
         service = screenService;
         formService = screenService;
+        
+        String nullString = null;
         if(withData)
             getXMLData();
         else{
             getXML();
         }
         
+    }
+    
+    public OpenELISScreenForm(String serviceClass){
+        super();          
+        String base = GWT.getModuleBaseURL();
+        base += "OpenELISServlet?service="+serviceClass;        
+        target.setServiceEntryPoint(base);
+        service = screenService;
+        formService = screenService;       
     }
 }
