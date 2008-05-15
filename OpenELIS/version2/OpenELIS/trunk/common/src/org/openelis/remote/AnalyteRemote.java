@@ -30,9 +30,6 @@ public interface AnalyteRemote {
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String name, int maxResults);
 	 
-	 //auto complete lookup
-	 public List autoCompleteLookupById(Integer id);
-	 
 	 public void deleteAnalyte(Integer analyteId) throws Exception;
 	 
 	 //method to validate the fields before the backend updates it in the database
