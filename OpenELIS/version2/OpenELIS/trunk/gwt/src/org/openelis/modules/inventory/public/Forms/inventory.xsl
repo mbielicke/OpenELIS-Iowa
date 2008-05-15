@@ -42,7 +42,7 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+				<aToZ height="510px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -135,14 +135,6 @@
 									</row>
 									<row>
 										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"extReference")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<textbox case="mixed" key="{inventoryItemMeta:description()}" width="340px" max="80" tab="{inventoryItemMeta:store()},{inventoryItemMeta:name()}"/>
-										</widget>									
-									</row>
-									<row>
-										<widget>
 											<panel xsi:type="Absolute" layout="absolute" style="VerticalSpacer"/>
 										</widget>
 									</row>		
@@ -181,43 +173,20 @@
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnit")'/>:</text>
 										</widget>
-										<widget>
+										<widget colspan="3">
 											<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="90px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
 													<widths>167</widths>
 											</autoDropdown>
 										</widget>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
-										</widget>
-										<widget>
-											<textbox key="{inventoryItemMeta:averageLeadTime()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
-										</widget>		
 									</row>
 									<row>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnit")'/>:</text>
 										</widget>
-										<widget>
+										<widget colspan="3">
 											<autoDropdown key="{inventoryItemMeta:dispensedUnit()}" case="lower" width="90px" popWidth="auto" tab="{inventoryItemMeta:isActive()},{inventoryItemMeta:purchasedUnit()}">
 													<widths>167</widths>
 											</autoDropdown>
-										</widget>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
-										</widget>
-										<widget>
-											<textbox key="{inventoryItemMeta:averageCost()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
-										</widget>
-									</row>
-									<row>
-										<widget colspan="2">
-										<panel layout="vertical" xsi:type="Panel"/>
-										</widget>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
-										</widget>
-										<widget>
-											<textbox key="{inventoryItemMeta:averageDailyUse()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 										</widget>
 									</row>
 								</panel>
@@ -227,7 +196,7 @@
 								<content><panel layout="table" style="Form" xsi:type="Table">
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isActive()}" tab="{inventoryItemMeta:isReorderAuto()},{inventoryItemMeta:dispensedUnit()}"/>
@@ -235,7 +204,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isReorderAuto()}" tab="{inventoryItemMeta:isLotMaintained()},{inventoryItemMeta:isActive()}"/>
@@ -243,7 +212,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isLotMaintained()}" tab="{inventoryItemMeta:isSerialRequired()},{inventoryItemMeta:isReorderAuto()}"/>
@@ -251,7 +220,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isSerialRequired()}" tab="{inventoryItemMeta:isBulk()},{inventoryItemMeta:isLotMaintained()}"/>
@@ -259,7 +228,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isBulk()}" tab="{inventoryItemMeta:isNotForSale()},{inventoryItemMeta:isSerialRequired()}"/>
@@ -267,7 +236,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isNotForSale()}" tab="{inventoryItemMeta:isSubAssembly()},{inventoryItemMeta:isBulk()}"/>
@@ -275,7 +244,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isSubAssembly()}" tab="{inventoryItemMeta:isLabor()},{inventoryItemMeta:isNotForSale()}"/>
@@ -283,7 +252,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isLabor()}" tab="{inventoryItemMeta:name()},{inventoryItemMeta:isSubAssembly()}"/>
@@ -291,7 +260,7 @@
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
 									</widget>
 									<widget>
 										<check key="{inventoryItemMeta:isLabor()}" tab="{inventoryItemMeta:name()},{inventoryItemMeta:isSubAssembly()}"/>
@@ -415,11 +384,47 @@
 						            </widget>
 							</panel>
 					</tab>
-					<!-- start TAB 3 (Manufacturing) -->
+					<!-- start TAB 3 (Additional Info) -->
+					<tab key="tab4" text="{resource:getString($constants,'additionalInfo')}">
+						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel">
+						<panel layout="table" style="Form" xsi:type="Panel">
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
+							</widget>
+							<widget colspan="5">
+								<textbox case="mixed" key="{inventoryItemMeta:description()}" width="490px" max="80" tab="{inventoryItemMeta:store()},{inventoryItemMeta:name()}"/>
+							</widget>									
+						</row>
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
+							</widget>
+							<widget>
+								<textbox key="{inventoryItemMeta:averageLeadTime()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
+							</widget>
+							<widget>
+								<textbox key="{inventoryItemMeta:averageCost()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
+							</widget>
+							<widget>
+								<textbox key="{inventoryItemMeta:averageDailyUse()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
+						</row>
+						</panel>
+						</panel>
+					</tab>
+					
+					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
 						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
 					</tab>
-					<!-- start TAB 4 (Comments) -->
+					<!-- start TAB 5 (Comments) -->
 					<tab key="tab5" text="{resource:getString($constants,'comments')}">
 						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
 							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">

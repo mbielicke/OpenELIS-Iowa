@@ -114,8 +114,8 @@
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
 									<textbox/>																			
-									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="90px">												
-												<widths>100</widths>
+									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="auto">												
+												<widths>123</widths>
 											</autoDropdown>
 								</editors>
 								<fields>																											

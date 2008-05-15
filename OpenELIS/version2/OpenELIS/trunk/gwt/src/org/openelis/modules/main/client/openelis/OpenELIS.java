@@ -57,7 +57,7 @@ public class OpenELIS extends AppScreen implements ClickListener{
             return;
     	}
         if(item instanceof ScreenMenuItem){
-        	if(((String)((ScreenMenuItem)item).getUserObject()).equals("FavoritesMenu")){
+        	if(((String)((ScreenMenuItem)item).objClass).equals("FavoritesMenu")){
                 VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
                 if(fmp.getWidgetCount() == 1){
                 	fv = new FavoritesScreen();
@@ -66,7 +66,7 @@ public class OpenELIS extends AppScreen implements ClickListener{
                 fmp.setVisible(!fmp.isVisible());
                 browser.setBrowserHeight();
                 return;
-        	}else if(((String)((ScreenMenuItem)item).getUserObject()).equals("Logout")){
+        	}else if(((String)((ScreenMenuItem)item).objClass).equals("Logout")){
         		//FIXME logout code should go here soon
         		return;
         	}

@@ -13,6 +13,7 @@
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.inventory.Inventory"/>
     <inherits name="org.openelis.modules.label.Label"/> 
+    <inherits name="org.openelis.modules.order.Order"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>

@@ -112,11 +112,6 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return getThreadLocalRequest().getLocale().getLanguage();
     }
 
-    //auto complete service methods
-	public DataModel getDisplay(String cat, DataModel model, AbstractField value) throws RPCException{
-		return ((AutoCompleteServiceInt)getService()).getDisplay(cat,model,value);
-	}
-
 	public DataModel getMatches(String cat, DataModel model, String match) throws RPCException{
 		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match);
 	}
