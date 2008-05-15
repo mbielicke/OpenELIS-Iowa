@@ -99,7 +99,7 @@ public class QaEventBean implements QaEventRemote{
         QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
         
         qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
-        qb.setSelect("distinct "+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
+        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME + ") ");
         qb.addTable(qaEventMeta);
         
         //this method is going to throw an exception if a column doesnt match

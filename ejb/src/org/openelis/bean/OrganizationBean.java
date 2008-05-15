@@ -255,7 +255,7 @@ public class OrganizationBean implements OrganizationRemote {
 
         qb.addMeta(new Meta[]{orgMeta, parentOrgMeta, orgAddressMeta, orgContactAddressMeta, orgContactMeta, orgNoteMeta});
  
-        qb.setSelect("distinct "+orgMeta.ID+", "+orgMeta.NAME);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+orgMeta.ID+", "+orgMeta.NAME+") ");
         qb.addTable(orgMeta);
 
         //this method is going to throw an exception if a column doesnt match
