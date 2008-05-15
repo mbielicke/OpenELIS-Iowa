@@ -70,7 +70,12 @@ public class OpenELIS extends AppScreen implements ClickListener{
         		//FIXME logout code should go here soon
         		return;
         	}
-            OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName((String)((ScreenMenuItem)item).getUserObject()));
+            ScreenMenuItem menuItem = (ScreenMenuItem)item;
+            if(menuItem.args != null){
+                OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName(menuItem.objClass,menuItem.args),menuItem.key);
+            }else{    
+                OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName(menuItem.objClass),menuItem.key);
+            }
         }
     }
     
