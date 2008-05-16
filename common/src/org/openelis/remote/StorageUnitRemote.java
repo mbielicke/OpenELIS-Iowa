@@ -30,9 +30,6 @@ public interface StorageUnitRemote {
 //	auto complete lookup
 	 public List autoCompleteLookupByDescription(String desc, int maxResults);
 	 
-	 //auto complete lookup
-	 public Object[] autoCompleteLookupById(Integer id);
-	 
 	 public void deleteStorageUnit(Integer StorageUnitId) throws Exception;
 	 
 	 //method to validate the fields before the backend updates it in the database
