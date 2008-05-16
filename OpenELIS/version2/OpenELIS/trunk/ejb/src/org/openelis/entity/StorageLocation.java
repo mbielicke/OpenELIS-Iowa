@@ -27,20 +27,16 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "getStorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
-@NamedQuery(name = "getStorageLocationChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
-@NamedQuery(name = "getStorageLocationByParentId", query = "select s.id " +
-							 " from StorageLocation s where s.parentStorageLocationId = :id"),
-@NamedQuery(name = "getStorageLocationByName", query = "select s.id " +
-							 " from StorageLocation s where s.name = :name"),
-@NamedQuery(name = "getStorageLocationByStorageUnitId", query = "select s.id " +
-							 " from StorageLocation s where s.storageUnitId = :id"),
-@NamedQuery(name = "getStorageLocationAutoCompleteByName", query = "select s.id, s.name, s.location " +
+@NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
+@NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
+@NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select s.id, s.name, s.location " +
 							 " from StorageLocation s where s.name like :name order by s.name"),
-@NamedQuery(name = "storageLocationUpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
-@NamedQuery(name = "storageLocationAddNameCompare", query = "select s.id from StorageLocation s where s.name = :name"),})
+@NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
+@NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name"),})
 							 
 							 
 @Entity

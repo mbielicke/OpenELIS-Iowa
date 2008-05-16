@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "getTestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyte = :id")})
+	@NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyte = :id")})
 
 @Entity
 @Table(name="test_analyte")

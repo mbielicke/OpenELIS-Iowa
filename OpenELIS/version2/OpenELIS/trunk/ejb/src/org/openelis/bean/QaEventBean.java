@@ -63,7 +63,7 @@ public class QaEventBean implements QaEventRemote{
         
              
         
-        Query query = manager.createNamedQuery("getQaEvent");
+        Query query = manager.createNamedQuery("QaEvent.QaEvent");
         query.setParameter("id", qaEventId);
         QaEventDO qaEvent = (QaEventDO) query.getSingleResult();
         
@@ -85,7 +85,7 @@ public class QaEventBean implements QaEventRemote{
     }
 
     public List<Object[]> getTestNames() {
-        Query query = manager.createNamedQuery("getTestNames");                               
+        Query query = manager.createNamedQuery("Test.Names");                               
         List<Object[]> testNames = query.getResultList();         
         return testNames;
     }

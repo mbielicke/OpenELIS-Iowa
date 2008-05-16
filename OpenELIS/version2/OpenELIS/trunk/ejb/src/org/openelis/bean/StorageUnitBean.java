@@ -12,7 +12,6 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -24,7 +23,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.StorageUnitMeta;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilder;
@@ -134,7 +132,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 	}
 
 	public StorageUnitDO getStorageUnit(Integer StorageUnitId) {
-		Query query = manager.createNamedQuery("getStorageUnit");
+		Query query = manager.createNamedQuery("StorageUnit.StorageUnit");
 		query.setParameter("id", StorageUnitId);
 		StorageUnitDO storageUnitRecord = (StorageUnitDO) query.getResultList().get(0);// getting first storage unit record
 
@@ -203,7 +201,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 
 	public List autoCompleteLookupByDescription(String desc, int maxResults) {
 		Query query = null;
-		query = manager.createNamedQuery("getStorageUnitAutoCompleteByDesc");
+		query = manager.createNamedQuery("StorageUnit.AutoCompleteByDesc");
 		query.setParameter("desc",desc);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
@@ -221,7 +219,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 		List exceptionList = new ArrayList();
 		//make sure no analytes are pointing to this record
 		Query query = null;
-		query = manager.createNamedQuery("getStorageLocationByStorageUnitId");
+		query = manager.createNamedQuery("StorageLocation.IdByStorageUnit");
 		query.setParameter("id", storageUnitId);
 		List linkedRecords = query.getResultList();
 

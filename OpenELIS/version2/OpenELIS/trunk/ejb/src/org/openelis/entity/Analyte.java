@@ -24,12 +24,12 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "getAnalyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroup,a.parentAnalyteId,p.name,a.externalId) from " + 
+@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroup,a.parentAnalyteId,p.name,a.externalId) from " + 
 		                                                " Analyte a left join a.parentAnalyte p where a.id = :id"),
-		       @NamedQuery(name = "getAnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
-		       @NamedQuery(name = "analyteUpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
-		       @NamedQuery(name = "analyteAddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
-	           @NamedQuery(name = "getAnalyteAutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
+		       @NamedQuery(name = "Analyte.AnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
+		       @NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
+		       @NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
+	           @NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
 			   											 " from Analyte a where a.name like :name order by a.name")})
 			   											 
 @Entity

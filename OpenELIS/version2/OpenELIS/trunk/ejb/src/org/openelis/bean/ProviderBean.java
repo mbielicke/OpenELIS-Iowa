@@ -71,7 +71,7 @@ public class ProviderBean implements ProviderRemote {
     
     public ProviderDO getProvider(Integer providerId) {                 
         
-        Query query = manager.createNamedQuery("getProvider");
+        Query query = manager.createNamedQuery("Provider.Provider");
         query.setParameter("id", providerId);
         ProviderDO provider = (ProviderDO) query.getSingleResult();// getting provider 
 
@@ -79,7 +79,7 @@ public class ProviderBean implements ProviderRemote {
     }
 
     public List getProviderAddresses(Integer providerId) {
-        Query query = manager.createNamedQuery("getProviderAddresses");
+        Query query = manager.createNamedQuery("Provider.Addresses");
         query.setParameter("id", providerId);
         
         List providerAddresses = query.getResultList();// getting list of addresses from the 
@@ -91,7 +91,7 @@ public class ProviderBean implements ProviderRemote {
     public List getProviderNotes(Integer providerId) {
        Query query = null;
         
-       query = manager.createNamedQuery("getProviderNotes");
+       query = manager.createNamedQuery("Provider.Notes");
        query.setParameter("id", providerId);
         
        List provNotes = query.getResultList(); // getting list of noteDOs from the provider id
@@ -294,11 +294,6 @@ public class ProviderBean implements ProviderRemote {
         lockBean.giveUpLock(providerReferenceId,provider.getId()); 
             
         return provider.getId();
-    }
-
-    public List<Object[]> getProviderTypes() {
-        Query query = manager.createNamedQuery("getProviderTypes");        
-        return query.getResultList();
     }
 
     @RolesAllowed("provider-update")

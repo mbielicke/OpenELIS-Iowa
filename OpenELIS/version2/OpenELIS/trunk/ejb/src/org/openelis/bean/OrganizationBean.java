@@ -70,7 +70,7 @@ public class OrganizationBean implements OrganizationRemote {
     }
     
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
-		Query query = manager.createNamedQuery("getOrganizationAndAddress");
+		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
 		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
 
@@ -204,7 +204,7 @@ public class OrganizationBean implements OrganizationRemote {
     }
 
 	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) {
-		Query query = manager.createNamedQuery("getOrganizationContacts");
+		Query query = manager.createNamedQuery("Organization.Contacts");
 		query.setParameter("id", organizationId);
 		
 		List orgAddressContacts = query.getResultList();// getting list of contacts from the org id
@@ -215,7 +215,7 @@ public class OrganizationBean implements OrganizationRemote {
 	public List getOrganizationNotes(Integer organizationId) {
 		Query query = null;
 		
-		query = manager.createNamedQuery("getOrganizationNotes");	
+		query = manager.createNamedQuery("Organization.Notes");	
 		query.setParameter("id", organizationId);
 		
 		List orgNotes = query.getResultList();// getting list of noteDOs from the org id
@@ -291,14 +291,14 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	public List autoCompleteLookupById(Integer id){
 		Query query = null;
-		query = manager.createNamedQuery("getOrganizationAutoCompleteById");
+		query = manager.createNamedQuery("Organization.AutoCompleteById");
 		query.setParameter("id",id);
 		return query.getResultList();
 	}
 	
 	public List autoCompleteLookupByName(String orgName, int maxResults){
 		Query query = null;
-		query = manager.createNamedQuery("getOrganizationAutoCompleteByName");
+		query = manager.createNamedQuery("Organization.AutoCompleteByName");
 		query.setParameter("name",orgName);
 		query.setMaxResults(maxResults);
 		return query.getResultList();

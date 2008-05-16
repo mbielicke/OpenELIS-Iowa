@@ -16,11 +16,23 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+        @NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntryId, dre.entry, " +
+                                                                          "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                                                                          "  from  Dictionary d left join d.relatedEntry dre  where d.category = :id " +
+                                                                          " order by d.systemName "),
+                       @NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
+                                                                               " d.isActive='Y' and d.category = :id order by d.entry"),
+                       @NamedQuery(name = "Dictionary.autoCompleteByEntry", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
+                       @NamedQuery(name = "Dictionary.IdBySystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
+                       @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry")})
 
 @Entity
 @Table(name="dictionary")

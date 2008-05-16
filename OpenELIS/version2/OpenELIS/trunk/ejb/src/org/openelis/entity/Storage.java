@@ -24,7 +24,7 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-	@NamedQueries({@NamedQuery(name = "getStorageByStorageLocationId", query = "select s.id from Storage s where s.storageLocation = :id")})
+	@NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocation = :id")})
 
 @Entity
 @Table(name="storage")

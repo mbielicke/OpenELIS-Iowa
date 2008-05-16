@@ -88,7 +88,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	}
 
 	public StandardNoteDO getStandardNote(Integer standardNoteId) {		
-		Query query = manager.createNamedQuery("getStandardNote");
+		Query query = manager.createNamedQuery("StandardNote.StandardNote");
 		query.setParameter("id", standardNoteId);
 		StandardNoteDO standardNoteRecord = (StandardNoteDO) query.getResultList().get(0);// getting first storage unit record
 
@@ -197,7 +197,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	}
     
     public List queryForType(HashMap fields) throws Exception {
-        Query query = manager.createNamedQuery("getStandardNoteTypes");
+        Query query = manager.createNamedQuery("StandardNote.TypeByNameDesc");
         
         query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
         query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
@@ -211,7 +211,7 @@ public class StandardNoteBean implements StandardNoteRemote{
     }
     
     public List getStandardNoteByType(HashMap fields) throws Exception{
-    	Query query = manager.createNamedQuery("getStandardNoteByType");
+    	Query query = manager.createNamedQuery("StandardNote.StandardNoteByType");
         
         query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
         query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));

@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -65,7 +64,7 @@ public class StorageLocationBean implements StorageLocationRemote{
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
 		Query query = null;
-		query = manager.createNamedQuery("getStorageLocationAutoCompleteByName");
+		query = manager.createNamedQuery("StorageLocation.AutoCompleteByName");
 		query.setParameter("name",name);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
@@ -112,7 +111,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 
 	public StorageLocationDO getStorageLoc(Integer StorageId) {
-		Query query = manager.createNamedQuery("getStorageLocation");
+		Query query = manager.createNamedQuery("StorageLocation.StorageLocation");
 		query.setParameter("id", StorageId);
 		StorageLocationDO storageLocRecord = (StorageLocationDO) query.getResultList().get(0);// getting first storage location record
 
@@ -149,7 +148,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 	
 	public List getStorageLocChildren(Integer StorageId) {
-		Query query = manager.createNamedQuery("getStorageLocationChildren");
+		Query query = manager.createNamedQuery("StorageLocation.GetChildren");
 		query.setParameter("id", StorageId);
 		return query.getResultList();
 	}
@@ -274,7 +273,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 
 	public Integer getStorageLocByName(String name) {
-		Query query = manager.createNamedQuery("getStorageLocationByName");
+		Query query = manager.createNamedQuery("StorageLocation.IdByName");
 		query.setParameter("name", name);
 		return (Integer) query.getSingleResult();
 	}
@@ -297,7 +296,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 		List exceptionList = new ArrayList();
 		//make sure no storage rows are pointing to this record
 		Query query = null;
-		query = manager.createNamedQuery("getStorageByStorageLocationId");
+		query = manager.createNamedQuery("Storage.IdByStorageLocation");
 		query.setParameter("id", storageLocationId);
 		List linkedRecords = query.getResultList();
 
@@ -306,7 +305,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 		}
 		
 		//make sure no inventory locations are pointing to this record
-		query = manager.createNamedQuery("getInventoryLocationByStorageLocationId");
+		query = manager.createNamedQuery("InventoryLocation.IdByStorageLocation");
 		query.setParameter("id", storageLocationId);
 		linkedRecords = query.getResultList();
 
@@ -341,10 +340,10 @@ public class StorageLocationBean implements StorageLocationRemote{
 		Query query = null;
 		//its an add if its null
 		if(storageLocationDO.getId() == null){
-			query = manager.createNamedQuery("storageLocationAddNameCompare");
+			query = manager.createNamedQuery("StorageLocation.AddNameCompare");
 			query.setParameter("name", storageLocationDO.getName());
 		}else{
-			query = manager.createNamedQuery("storageLocationUpdateNameCompare");
+			query = manager.createNamedQuery("StorageLocation.UpdateNameCompare");
 			query.setParameter("name", storageLocationDO.getName());
 			query.setParameter("id",storageLocationDO.getId());
 		}
