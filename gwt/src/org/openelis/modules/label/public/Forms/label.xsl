@@ -86,10 +86,10 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{labelMeta:scriptlet()}" width = "180px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{labelMeta:name()},{labelMeta:printerType()}">													
-													<widths>190</widths>													 													
-										</autoDropdown>												
-										</widget>
+     	<autoDropdown key="{labelMeta:scriptlet()}" width = "180px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{labelMeta:name()},{labelMeta:printerType()}">													
+			<widths>190</widths>													 													
+		</autoDropdown>												
+	</widget>
 	  </row>			  												          
                                  					                         
    </panel>            
