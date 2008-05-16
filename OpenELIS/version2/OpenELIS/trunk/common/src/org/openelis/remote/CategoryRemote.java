@@ -40,8 +40,6 @@ public interface CategoryRemote {
     
     public List getDropdownValues(Integer categoryId);
     
-    public Object[] autoCompleteLookupById(Integer id)throws Exception;
-    
     public List validateForUpdate(CategoryDO categoryDO, List<DictionaryDO> dictDOList);
     
     public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList);
