@@ -366,11 +366,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       } 
         
        if(getModel){ 
-         final HTML loadingHtml = new HTML();
-         loadingHtml.setStyleName("ScreenLabel");
-         loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
-         svp.add(loadingHtml);
-           
+         window.setStatus("","spinnerIcon");
+         
          NumberObject provId = new NumberObject(NumberObject.INTEGER);
          provId.setValue(providerId);
          
@@ -389,6 +386,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
                     clearNotes = false;
                 }
                
+               window.setStatus("","");
            }
            
            public void onFailure(Throwable caught){
@@ -416,7 +414,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
      } 
      
       if(getModel){
-                 
+          window.setStatus("","spinnerIcon");
+          
           NumberObject provId = new NumberObject(NumberObject.INTEGER);
           provId.setValue(providerId);
           TableField tf = new TableField();
@@ -436,7 +435,9 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
                    clearAddresses = true;
                }else{
                    clearAddresses = false;
-               }               
+               }        
+               
+               window.setStatus("","");
            }
           
            public void onFailure(Throwable caught){
