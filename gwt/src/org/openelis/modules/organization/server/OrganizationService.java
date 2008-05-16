@@ -64,7 +64,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
         List organizationNames;
     	//if the rpc is null then we need to get the page
     	if(rpcSend == null){
-    		//need to get the query rpc out of the cache
+
             FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("OrganizationQuery");
     
             if(rpc == null)
@@ -95,8 +95,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     
         
     	    //need to save the rpc used to the encache
-    	    if(SessionManager.getSession().getAttribute("OrganizationQuery") == null)
-    	        SessionManager.getSession().setAttribute("OrganizationQuery", rpcSend);
+    	    SessionManager.getSession().setAttribute("OrganizationQuery", rpcSend);
     	}
         
         //fill the model with the query results

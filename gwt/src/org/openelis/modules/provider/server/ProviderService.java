@@ -91,8 +91,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             }              
              
 //          need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("ProviderQuery") == null)
-                SessionManager.getSession().setAttribute("ProviderQuery", rpcSend);
+            SessionManager.getSession().setAttribute("ProviderQuery", rpcSend);
             }
             
             //fill the model with the query result

@@ -1,6 +1,11 @@
 
 package org.openelis.modules.standardnote.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -27,12 +32,6 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 public class StandardNoteService implements AppScreenFormServiceInt, 
 																AutoCompleteServiceInt {
 	
@@ -42,15 +41,15 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-    //		if the rpc is null then we need to get the page
+        List standardNotes = new ArrayList();
+        //		if the rpc is null then we need to get the page
     		if(rpcSend == null){
-    //			need to get the query rpc out of the cache
-    	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StandardNote");
+                FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("StandardNoteQuery");
     
     	        if(rpc == null)
     	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
     			
-    	        List standardNotes = null;
+    	        
     	        StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     	        try{
     	        	standardNotes = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
@@ -61,71 +60,45 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     	        		throw new RPCException(e.getMessage());	
     	        	}
     	        }
-    	        
-    	        int i=0;
-    	        model.clear();
-    	        while(i < standardNotes.size() && i < leftTableRowsPerPage) {
-    	    	   	Object[] result = (Object[])standardNotes.get(i);
-    				//org id
-    				Integer idResult = (Integer)result[0];
-    				//org name
-    				String nameResult = (String)result[1];
-    
-    				DataSet row = new DataSet();
-    				NumberObject id = new NumberObject(NumberObject.INTEGER);
-    				StringObject name = new StringObject();
-    				name.setValue(nameResult);
-    				id.setValue(idResult);
-    				
-    				row.setKey(id);			
-    				row.addObject(name);
-    				model.add(row);
-    				i++;
-    	         } 
-    
-    	        return model;
+
     		}else{
     			StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     			
     			HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-    			
-    			List standardNoteNames = new ArrayList();
-    			try{
-    				standardNoteNames = remote.query(fields,0,leftTableRowsPerPage);
+
+                try{
+                    standardNotes = remote.query(fields,0,leftTableRowsPerPage);
     
-    		}catch(Exception e){
-    			throw new RPCException(e.getMessage());
-    		}
-    		
-    		Iterator namesItr = standardNoteNames.iterator();
-    		model=  new DataModel();
-    		
-    		while(namesItr.hasNext()){
-    			Object[] result = (Object[])namesItr.next();
-    			//org id
-    			Integer id = (Integer)result[0];
-    			//org name
-    			String name = (String)result[1];
-    
-    			DataSet row = new DataSet();
-    
-    			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
-    			 StringObject nameField = new StringObject();
-    			 nameField.setValue(name);
-          
-    			 idField.setValue(id);
-    			 row.setKey(idField);
-    			 row.addObject(nameField);
-    
-    			 model.add(row);
-    		}
+        		}catch(Exception e){
+        			throw new RPCException(e.getMessage());
+        		}
+        		
+                //need to save the rpc used to the encache
+                SessionManager.getSession().setAttribute("StandardNoteQuery", rpcSend);
             
-            //need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-            	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":StandardNote", rpcSend);
     		}
     		
+            int i=0;
+            model.clear();
+            while(i < standardNotes.size() && i < leftTableRowsPerPage) {
+                IdNameDO resultDO = (IdNameDO)standardNotes.get(i);
+                //org id
+                Integer idResult = resultDO.getId();
+                //org name
+                String nameResult = resultDO.getName();
+
+                DataSet row = new DataSet();
+                NumberObject id = new NumberObject(NumberObject.INTEGER);
+                StringObject name = new StringObject();
+                name.setValue((nameResult != null ? nameResult.trim() : null));
+                id.setValue(idResult);
+                
+                row.setKey(id);         
+                row.addObject(name);
+                model.add(row);
+                i++;
+             } 
+            
     		return model;
     	}
 
@@ -340,16 +313,16 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		int i=0;
 		while(i < entries.size()){
 			DataSet set = new DataSet();
-			Object[] result = (Object[]) entries.get(i);
+			IdNameDO resultDO = (IdNameDO) entries.get(i);
 			//id
-			Integer dropdownId = (Integer)result[0];
+			Integer dropdownId = resultDO.getId();
 			//entry
-			String dropdownText = (String)result[1];
+			String dropdownText = resultDO.getName();
 			
 			StringObject textObject = new StringObject();
 			NumberObject numberId = new NumberObject(NumberObject.INTEGER);
 			
-			textObject.setValue(dropdownText);
+			textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
 			set.addObject(textObject);
 			
 			numberId.setValue(dropdownId);

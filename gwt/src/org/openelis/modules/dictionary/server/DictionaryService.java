@@ -86,8 +86,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             }
     
 //          need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("DictionaryQuery") == null)
-                SessionManager.getSession().setAttribute("DictionaryQuery", rpcSend);
+            SessionManager.getSession().setAttribute("DictionaryQuery", rpcSend);
        }
         
         int i=0;

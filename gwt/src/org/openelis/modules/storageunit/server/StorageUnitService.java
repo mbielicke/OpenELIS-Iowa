@@ -2,10 +2,9 @@ package org.openelis.modules.storageunit.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -40,20 +39,17 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 
-	public DataModel commitQuery(FormRPC rpcSend, DataModel model)
-			throws RPCException {
+	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List storageUnits = new ArrayList();
 		// if the rpc is null then we need to get the page
 		if (rpcSend == null) {
-			// need to get the query rpc out of the cache
-			FormRPC rpc = (FormRPC) CachingManager.getElement("screenQueryRpc",
-					SessionManager.getSession().getAttribute("systemUserId")
-							+ ":StorageUnit");
+            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("StorageUnitQuery");
 
 			if (rpc == null)
 				throw new QueryNotFoundException(openElisConstants
 						.getString("queryExpiredException"));
 
-			List storageUnits = null;
+			
 			StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 					.lookup("openelis/StorageUnitBean/remote");
 			try {
@@ -69,74 +65,43 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 				}
 			}
 
-			int i = 0;
-			model.clear();
-			while (i < storageUnits.size() && i < leftTableRowsPerPage) {
-				Object[] result = (Object[]) storageUnits.get(i);
-				// org id
-				Integer idResult = (Integer) result[0];
-				// org name
-				String nameResult = (String) result[1];
-
-				DataSet row = new DataSet();
-				NumberObject id = new NumberObject(NumberObject.INTEGER);
-				StringObject name = new StringObject();
-				name.setValue(nameResult);
-				id.setValue(idResult);
-
-				row.setKey(id);
-				row.addObject(name);
-				model.add(row);
-				i++;
-			}
-
-			return model;
 		} else {
 			StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 					.lookup("openelis/StorageUnitBean/remote");
 
 			HashMap<String, AbstractField> fields = rpcSend.getFieldMap();
 
-			List storageUnitNames = new ArrayList();
 			try {
-				storageUnitNames = remote
-						.query(fields, 0, leftTableRowsPerPage);
+                storageUnits = remote.query(fields, 0, leftTableRowsPerPage);
 
 			} catch (Exception e) {
 				throw new RPCException(e.getMessage());
 			}
 
-			Iterator namesItr = storageUnitNames.iterator();
-			model = new DataModel();
-
-			while (namesItr.hasNext()) {
-				Object[] result = (Object[]) namesItr.next();
-				// org id
-				Integer id = (Integer) result[0];
-				// org name
-				String name = (String) result[1];
-
-				DataSet row = new DataSet();
-
-				NumberObject idField = new NumberObject(NumberObject.INTEGER);
-				StringObject nameField = new StringObject();
-				nameField.setValue(name);
-
-				idField.setValue(id);
-				row.setKey(idField);
-				row.addObject(nameField);
-
-				model.add(row);
-			}
-
-			// need to save the rpc used to the encache
-			if (SessionManager.getSession().getAttribute("systemUserId") == null)
-				SessionManager.getSession().setAttribute("systemUserId",
-						remote.getSystemUserId().toString());
-			CachingManager.putElement("screenQueryRpc", SessionManager
-					.getSession().getAttribute("systemUserId")
-					+ ":StorageUnit", rpcSend);
+            //need to save the rpc used to the encache
+            SessionManager.getSession().setAttribute("StorageUnitQuery", rpcSend);
 		}
+        
+        int i = 0;
+        model.clear();
+        while (i < storageUnits.size() && i < leftTableRowsPerPage) {
+            IdNameDO resultDO = (IdNameDO) storageUnits.get(i);
+            // org id
+            Integer idResult = resultDO.getId();
+            // org name
+            String nameResult = resultDO.getName();
+
+            DataSet row = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            StringObject name = new StringObject();
+            name.setValue((nameResult != null ? nameResult.trim() : null));
+            id.setValue(idResult);
+
+            row.setKey(id);
+            row.addObject(name);
+            model.add(row);
+            i++;
+        }
 
 		return model;
 	}
@@ -337,7 +302,6 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
 		if (cat.equals("category")) {
 			id = remote.getCategoryId("storage_unit_category");
-			// id = remote.getCategoryId("test");
 		}
 
 		List entries = new ArrayList();
@@ -364,26 +328,23 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		int i = 0;
 		while (i < entries.size()) {
 			DataSet set = new DataSet();
-			Object[] result = (Object[]) entries.get(i);
+			IdNameDO resultDO = (IdNameDO) entries.get(i);
 			// id
-			Integer dropdownId = (Integer) result[0];
+			Integer dropdownId = resultDO.getId();
 			// entry
-			String dropdownText = (String) result[1];
+			String dropdownText = resultDO.getName();
 
 			StringObject textObject = new StringObject();
 			StringObject stringId = new StringObject();
 			// BooleanObject selected = new BooleanObject();
 
-			textObject.setValue(dropdownText);
+			textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
 			set.setKey(textObject);
 
 			stringId.setValue(dropdownText);
 			set.addObject(stringId);
 
-			// selected.setValue(new Boolean(false));
-			// set.addObject(selected);
-
-			returnModel.add(set);
+            returnModel.add(set);
 
 			i++;
 		}

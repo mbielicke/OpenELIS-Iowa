@@ -67,12 +67,11 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     			try{
     				analyteNames = remote.query(fields,0,leftTableRowsPerPage);
     
-    		}catch(Exception e){
-    			throw new RPCException(e.getMessage());
-    		}
-            
-            //need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("AnalyteQuery") == null)
+        		}catch(Exception e){
+        			throw new RPCException(e.getMessage());
+        		}
+                
+                //need to save the rpc used to the encache
                 SessionManager.getSession().setAttribute("AnalyteQuery", rpcSend);
     		}
     		

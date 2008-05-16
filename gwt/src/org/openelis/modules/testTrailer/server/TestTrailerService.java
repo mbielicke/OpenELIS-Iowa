@@ -1,5 +1,11 @@
 package org.openelis.modules.testTrailer.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -24,12 +30,6 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 public class TestTrailerService implements AppScreenFormServiceInt {
 
 	private static final int leftTableRowsPerPage = 10;
@@ -37,15 +37,14 @@ public class TestTrailerService implements AppScreenFormServiceInt {
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+        List testTrailers = new ArrayList();
     //		if the rpc is null then we need to get the page
     		if(rpcSend == null){
-    //			need to get the query rpc out of the cache
-    	        FormRPC rpc = (FormRPC)CachingManager.getElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":TestTrailer");
+                FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("TestTrailerQuery");
     
     	        if(rpc == null)
     	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
-    			
-    	        List testTrailers = null;
+
     	        TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     	        try{
     	        	testTrailers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
@@ -56,71 +55,43 @@ public class TestTrailerService implements AppScreenFormServiceInt {
     	        		throw new RPCException(e.getMessage());	
     	        	}
     	        }
-    	        
-    	        int i=0;
-    	        model.clear();
-    	        while(i < testTrailers.size() && i < leftTableRowsPerPage) {
-    	    	   	Object[] result = (Object[])testTrailers.get(i);
-    				//org id
-    				Integer idResult = (Integer)result[0];
-    				//name
-    				String nameResult = (String)result[1];
-    
-    				DataSet row = new DataSet();
-    				NumberObject id = new NumberObject(NumberObject.INTEGER);
-    				StringObject name = new StringObject();
-    				name.setValue(nameResult);
-    				id.setValue(idResult);
-    				
-    				row.setKey(id);			
-    				row.addObject(name);
-    				model.add(row);
-    				i++;
-    	         } 
-    
-    	        return model;
-    		}else{
+            }else{
     			TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     			
     			HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
     			
-    			List testTrailerNames = new ArrayList();
     			try{
-    				testTrailerNames = remote.query(fields,0,leftTableRowsPerPage);
+                    testTrailers = remote.query(fields,0,leftTableRowsPerPage);
     
-    		}catch(Exception e){
-    			throw new RPCException(e.getMessage());
+        		}catch(Exception e){
+        			throw new RPCException(e.getMessage());
+        		}
+                
+                //need to save the rpc used to the encache
+                SessionManager.getSession().setAttribute("TestTrailerQuery", rpcSend);
     		}
     		
-    		Iterator namesItr = testTrailerNames.iterator();
-    		model=  new DataModel();
-    		
-    		while(namesItr.hasNext()){
-    			Object[] result = (Object[])namesItr.next();
-    			//org id
-    			Integer id = (Integer)result[0];
-    			//org name
-    			String name = (String)result[1];
-    
-    			DataSet row = new DataSet();
-    
-    			 NumberObject idField = new NumberObject(NumberObject.INTEGER);
-    			 StringObject nameField = new StringObject();
-    			 nameField.setValue(name);
-          
-    			 idField.setValue(id);
-    			 row.setKey(idField);
-    			 row.addObject(nameField);
-    
-    			 model.add(row);
-    		}
+            int i=0;
+            model.clear();
+            while(i < testTrailers.size() && i < leftTableRowsPerPage) {
+                IdNameDO resultDO = (IdNameDO)testTrailers.get(i);
+                //org id
+                Integer idResult = resultDO.getId();
+                //name
+                String nameResult = resultDO.getName();
+
+                DataSet row = new DataSet();
+                NumberObject id = new NumberObject(NumberObject.INTEGER);
+                StringObject name = new StringObject();
+                name.setValue((nameResult != null ? nameResult.trim() : null));
+                id.setValue(idResult);
+                
+                row.setKey(id);         
+                row.addObject(name);
+                model.add(row);
+                i++;
+             } 
             
-            //need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("systemUserId") == null)
-            	SessionManager.getSession().setAttribute("systemUserId", remote.getSystemUserId().toString());
-            CachingManager.putElement("screenQueryRpc", SessionManager.getSession().getAttribute("systemUserId")+":TestTrailer", rpcSend);
-    		}
-    		
     		return model;
     	}
 
