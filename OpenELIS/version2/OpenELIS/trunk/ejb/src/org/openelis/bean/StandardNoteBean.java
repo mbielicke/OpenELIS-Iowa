@@ -131,7 +131,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 		
 		qb.addMeta(snMeta);
 		
-		qb.setSelect("distinct " + snMeta.ID + ", " + snMeta.NAME);
+		qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + snMeta.ID + ", " + snMeta.NAME + ") ");
 		qb.addTable(snMeta);
 		
 //		this method is going to throw an exception if a column doesnt match

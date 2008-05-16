@@ -71,19 +71,6 @@ public class StorageLocationBean implements StorageLocationRemote{
 		return query.getResultList();
 	}
 
-	public Object[] autoCompleteLookupById(Integer id) {
-        Query query  = manager.createNamedQuery("getStorageLocationAutoCompleteById");
-        query.setParameter("id",id);
-        try{
-        	return (Object[])query.getSingleResult();
-        	
-        }catch(NoResultException e){
-        	//if we hit this exception we want to return an empty array for our servlet
-        	Object[] returnArray = new Object[3];
-        	return returnArray;
-        }
-	}
-
     @RolesAllowed("storagelocation-delete")
 	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
     	Query lockQuery = manager.createNamedQuery("getTableId");
@@ -178,7 +165,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         
         qb.addMeta(new Meta[]{storageLocationMeta, StorageLocationChildrenMeta, storageLocationChildrenStorageUnitMeta, storageUnitMeta});
         
-        qb.setSelect("distinct "+storageLocationMeta.ID+", "+storageLocationMeta.NAME);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+storageLocationMeta.ID+", "+storageLocationMeta.NAME + ") ");
         qb.addTable(storageLocationMeta);
         
 //      this method is going to throw an exception if a column doesnt match

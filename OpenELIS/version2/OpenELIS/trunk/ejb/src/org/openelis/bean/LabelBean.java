@@ -102,7 +102,7 @@ public class LabelBean implements LabelRemote {
         
         LabelMeta labelMeta = LabelMeta.getInstance();
         qb.addMeta(new Meta[]{labelMeta});
-        qb.setSelect("distinct "+ LabelMeta.ID + " , "+ LabelMeta.NAME);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+ LabelMeta.ID + " , "+ LabelMeta.NAME + ") ");
         qb.addTable(labelMeta);
         
         //this method is going to throw an exception if a column doesnt match
@@ -164,9 +164,9 @@ public class LabelBean implements LabelRemote {
         return label.getId();          
     }
     
-    public List<Object[]> getScriptlets() {
+    public List getScriptlets() {
         Query query = manager.createNamedQuery("getScriptlets");                               
-        List<Object[]> scriptlets = query.getResultList();         
+        List scriptlets = query.getResultList();         
         return scriptlets;
     }
     
