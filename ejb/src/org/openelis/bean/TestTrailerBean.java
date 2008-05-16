@@ -130,7 +130,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 		
 		qb.addMeta(testTrailerMeta);
 		
-		 qb.setSelect("distinct "+TestTrailerMeta.ID+", "+TestTrailerMeta.NAME);
+		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+TestTrailerMeta.ID+", "+TestTrailerMeta.NAME + ") ");
 		 qb.addTable(testTrailerMeta);
 	        
 //	      this method is going to throw an exception if a column doesnt match

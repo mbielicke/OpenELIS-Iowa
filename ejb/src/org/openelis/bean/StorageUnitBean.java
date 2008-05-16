@@ -69,7 +69,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 		
 		qb.addMeta(storageUnitMeta);
 		
-		 qb.setSelect("distinct "+storageUnitMeta.ID+", "+storageUnitMeta.DESCRIPTION);
+		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+storageUnitMeta.ID+", "+storageUnitMeta.DESCRIPTION + ") ");
 		 qb.addTable(storageUnitMeta);
 	        
 //	      this method is going to throw an exception if a column doesnt match
@@ -207,19 +207,6 @@ public class StorageUnitBean implements StorageUnitRemote{
 		query.setParameter("desc",desc);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
-	}
-
-	public Object[] autoCompleteLookupById(Integer id) {
-		Query query  = manager.createNamedQuery("getStorageUnitAutoCompleteById");
-        query.setParameter("id",id);
-        try{
-        	return (Object[])query.getSingleResult();
-        	
-        }catch(NoResultException e){
-        	//if we hit this exception we want to return an empty array for our servlet
-        	Object[] returnArray = new Object[3];
-        	return returnArray;
-        }
 	}
 
 	public List validateForAdd(StorageUnitDO storageUnitDO) {
