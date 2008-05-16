@@ -350,11 +350,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
          } 
             
            if(getModel){ 
-               final HTML loadingHtml = new HTML();
-               loadingHtml.setStyleName("ScreenLabel");
-               loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
-               svp.add(loadingHtml);
-               
+               window.setStatus("","spinnerIcon");
                NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
                orgIdObj.setValue(orgId);
                  
@@ -372,6 +368,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
                         }else {
                             clearNotes = false;
                         }
+                       window.setStatus("","");
                    }
                    
                    public void onFailure(Throwable caught){
@@ -406,6 +403,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             return;
         }
 
+        window.setStatus("","spinnerIcon");
+        
         orgId = (Integer)key.getKey().getValue();
         orgIdObj = new NumberObject(NumberObject.INTEGER);
         orgIdObj.setValue(orgId);
@@ -426,6 +425,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
                 orgContactController.loadModel((TableModel)((TableField)result).getValue());
 
                 clearContacts = orgContactController.model.numRows() > 0;
+                
+                window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {

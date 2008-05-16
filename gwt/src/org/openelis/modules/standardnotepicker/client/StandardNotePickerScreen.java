@@ -79,15 +79,15 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
         findTextBox.enable(true);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
-        final HTML loadingHtml = new HTML();
-        loadingHtml.setStyleName("ScreenLabel");
-        loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
+        //final HTML loadingHtml = new HTML();
+        //loadingHtml.setStyleName("ScreenLabel");
+        //loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
         vp.clear();
         vp.remove(tree);
-        vp.getPanel().add(loadingHtml);
+        //vp.getPanel().add(loadingHtml);
         //add(loadingHtml);
         
-        message.setText("Done");
+        window.setStatus("","spinnerIcon");
         
         StringObject name = new StringObject();
         StringObject desc = new StringObject();
@@ -102,6 +102,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
             	vp.getPanel().add(tree);
                 PagedTreeField treeField = (PagedTreeField)result;
                 tree.load(treeField);
+                
+                window.setStatus("Done","");
             }
             
             public void onFailure(Throwable caught){
@@ -128,11 +130,12 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			finalTreeItem.removeItems();
 			
 			final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-			final HTML loadingHtml = new HTML();
-            loadingHtml.setStyleName("ScreenLabel");
-	        loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
-			finalTreeItem.addItem(loadingHtml);
-			
+			//final HTML loadingHtml = new HTML();
+            //loadingHtml.setStyleName("ScreenLabel");
+	        //loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
+			//finalTreeItem.addItem(loadingHtml);
+            window.setStatus("","spinnerIcon");
+            
 			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
 
 			StringObject name = new StringObject();
@@ -149,7 +152,9 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
             screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback(){
 	            public void onSuccess(Object result){
 	               finalTreeItem.removeItems();
-	               tree.controller.model.addTextChildItems(finalTreeItem, (String)((StringObject)result).getValue());	           
+	               tree.controller.model.addTextChildItems(finalTreeItem, (String)((StringObject)result).getValue());	        
+                   
+                   window.setStatus("","");
 	            }
 	            
 	            public void onFailure(Throwable caught){
