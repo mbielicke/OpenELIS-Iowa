@@ -33,9 +33,6 @@ public interface StorageLocationRemote {
 //	auto complete lookup
 	 public List autoCompleteLookupByName(String name, int maxResults);
 	 
-	 //auto complete lookup
-	 public Object[] autoCompleteLookupById(Integer id);
-	 
 	 public void deleteStorageLoc(Integer StorageLocId) throws Exception;
 	 
 	 public Integer getStorageLocByName(String name);
