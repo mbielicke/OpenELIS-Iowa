@@ -22,6 +22,7 @@ import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
+import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
@@ -140,50 +141,15 @@ public class CategoryBean implements CategoryRemote {
         manager.setFlushMode(FlushModeType.COMMIT);      
         
         Category category  = null;
+        Dictionary dictionary = null;
+        
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateCategory(categoryDO,exceptionList);  
         if(exceptionList.size() > 0){
             throw (RPCException)exceptionList.get(0);
         }                             
-                                                 
-        ArrayList<DictionaryDO> updateList = null;
-        ArrayList<DictionaryDO> deleteList = null;
-        int index =0;
-         ArrayList<String> systemNames = new ArrayList<String>();
         
-        ArrayList<String> entries = new ArrayList<String>();
-        for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
-            DictionaryDO dictDO = (DictionaryDO)iter.next();
-            
-            exceptionList = new ArrayList<Exception>();
-                         
-             validateDictionary(dictDO, categoryDO.getId(),index,systemNames,entries,exceptionList);
-             if(exceptionList.size() > 0){
-                 throw (RPCException)exceptionList.get(0);
-             }                                     
-             
-             boolean update = false;
-          
-               if(new Boolean(true).equals(dictDO.getDelete())){
-                   if(deleteList==null){
-                       deleteList = new ArrayList<DictionaryDO>();                       
-                   }                   
-                   deleteList.add(dictDO);
-               }else{
-                   update = true;
-               }
-              
-             
-                         
-             if(update){
-                 if(updateList ==null){
-                     updateList = new ArrayList<DictionaryDO>();
-                 }
-                 updateList.add(dictDO);                                 
-             }
-            index++; 
-        }
-        
+        //update the category
         if (categoryDO.getId() == null){
             category = new Category();
         } 
@@ -200,41 +166,45 @@ public class CategoryBean implements CategoryRemote {
             manager.persist(category);
         }
         
-       if(updateList!=null){ 
-        for(int iter = 0; iter < updateList.size();iter++){
-            Dictionary dictionary = null;
-            DictionaryDO dictDO = updateList.get(iter); 
-            if(dictDO.getId() == null){
-                dictionary = new Dictionary();
-            }else{
-                 dictionary  = manager.find(Dictionary.class,dictDO.getId());
-           }
-            dictionary.setCategory(category.getId());
-            dictionary.setEntry(dictDO.getEntry());
-            dictionary.setIsActive(dictDO.getIsActive());
-            dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-            dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());                 
-            dictionary.setSystemName(dictDO.getSystemName());    
-                                     
-         if(dictionary.getId()==null){                  
-           manager.persist(dictionary);
-         }
-        }
-       }  
-       
-
-      if(deleteList!=null){  
-       for(int iter = 0; iter < deleteList.size(); iter++){
-           Dictionary dictionary = null;
-           DictionaryDO dictDO = deleteList.get(iter); 
-           
-           if (dictDO.getId() != null){
-               dictionary  = manager.find(Dictionary.class,dictDO.getId());
+        int index =0;
+         ArrayList<String> systemNames = new ArrayList<String>();
+        
+        ArrayList<String> entries = new ArrayList<String>();
+        for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
+            DictionaryDO dictDO = (DictionaryDO)iter.next();
+            
+            exceptionList = new ArrayList<Exception>();
+                         
+             validateDictionary(dictDO, categoryDO.getId(),index,systemNames,entries,exceptionList);
+             if(exceptionList.size() > 0){
+                 throw (RPCException)exceptionList.get(0);
+             }                            
+                          
+             if (dictDO.getId() == null)
+                 dictionary = new Dictionary();
+             else
+                 dictionary = manager.find(Dictionary.class, dictDO.getId());
+             
+             if(dictDO.getDelete() && dictDO.getId() != null){
+                //delete the dictionary record
+                manager.remove(dictionary);
+                
+             }else{                       
+                 dictionary.setCategory(category.getId());
+                 dictionary.setEntry(dictDO.getEntry());
+                 dictionary.setIsActive(dictDO.getIsActive());
+                 dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                 dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());                 
+                 dictionary.setSystemName(dictDO.getSystemName());    
                     
-                  manager.remove(dictionary);     
-          }    
-       } 
-      }  
+                if (dictionary.getId() == null) {
+                    manager.persist(dictionary);
+                }
+            }
+        
+            index++; 
+        }
+        
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
         
         return  category.getId();
