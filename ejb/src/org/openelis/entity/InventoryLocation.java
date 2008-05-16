@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 	@NamedQueries({/*	@NamedQuery(name = "getInventoryLocations", query = "select new org.openelis.domain.InventoryLocationDO() from InventoryLocation i where i.id = :id"),*/
-					@NamedQuery(name = "getInventoryLocationByStorageLocationId", query = "select i.id from InventoryLocation i where i.storageLocation = :id")})
+					@NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocation = :id")})
 
 @Entity
 @Table(name="inventory_location")

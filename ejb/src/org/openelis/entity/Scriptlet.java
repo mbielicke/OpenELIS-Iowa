@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "getScriptlets", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
+@NamedQuery(name = "Scriptlet.Scriptlet", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
         "order by script.name ")
 @Entity
 @Table(name="scriptlet")

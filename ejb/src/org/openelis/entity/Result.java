@@ -21,7 +21,7 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-	@NamedQueries({@NamedQuery(name = "getResultByAnalyteId", query = "select r.id from Result r where r.analyte = :id")})
+	@NamedQueries({@NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyte = :id")})
 
 @Entity
 @Table(name="result")

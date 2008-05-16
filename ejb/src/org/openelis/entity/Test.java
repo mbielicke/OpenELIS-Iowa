@@ -26,8 +26,9 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "getTestByTestTrailerId", query = "select t.id from Test t where t.testTrailer = :id"),
-                   @NamedQuery(name = "getReferringTestsForLabel", query =  "select distinct t.id from Test t where t.label = :id")})
+	@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailer = :id"),
+                   @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.label = :id"),
+                   @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.method  = m.id order by t.name, m.name")})
 
 @Entity
 @Table(name="test")

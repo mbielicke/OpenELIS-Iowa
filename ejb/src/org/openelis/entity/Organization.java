@@ -28,18 +28,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries( {
-        @NamedQuery(name = "getOrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,parentOrg.name,orgz.name,orgz.isActive,orgz.address.id,"
+        @NamedQuery(name = "Organization.OrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,parentOrg.name,orgz.name,orgz.isActive,orgz.address.id,"
                 + "orgz.address.multipleUnit,orgz.address.streetAddress,orgz.address.city,orgz.address.state,orgz.address.zipCode,orgz.address.country)"
                 + "  from Organization orgz left join orgz.parentOrganization parentOrg where orgz.id = :id"),
-        @NamedQuery(name = "getOrganizationContacts", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organization,contact.contactType,contact.name,addr.id,"
+        @NamedQuery(name = "Organization.Contacts", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organization,contact.contactType,contact.name,addr.id,"
                 + "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)"
                 + "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.address and "
                 + " orgz.id = contact.organization and orgz.id = :id"),
-        @NamedQuery(name = "getOrganizationNotes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
+        @NamedQuery(name = "Organization.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
                 + "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.referenceId = :id ORDER BY n.timestamp DESC"),
-        @NamedQuery(name = "getOrganizationAutoCompleteById", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
+        @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
                 + "  from Organization o where o.id = :id"),
-        @NamedQuery(name = "getOrganizationAutoCompleteByName", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
+        @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
                 + "  from Organization o where o.name like :name order by o.name") })
 @Entity
 @Table(name = "organization")

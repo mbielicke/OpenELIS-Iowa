@@ -60,7 +60,7 @@ public class AnalyteBean implements AnalyteRemote{
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
 		Query query = null;
-		query = manager.createNamedQuery("getAnalyteAutoCompleteByName");
+		query = manager.createNamedQuery("Analyte.AutoCompleteByName");
 		query.setParameter("name",name);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
@@ -97,7 +97,7 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
 	public AnalyteDO getAnalyte(Integer analyteId) {
-		Query query = manager.createNamedQuery("getAnalyte");
+		Query query = manager.createNamedQuery("Analyte.Analyte");
 		query.setParameter("id", analyteId);
 		AnalyteDO analyteRecord = (AnalyteDO) query.getResultList().get(0);// getting first analyte record
 
@@ -219,7 +219,7 @@ public class AnalyteBean implements AnalyteRemote{
 		List exceptionList = new ArrayList();
 		//make sure no analytes are pointing to this record
 		Query query = null;
-		query = manager.createNamedQuery("getAnalyteByParentId");
+		query = manager.createNamedQuery("Analyte.AnalyteByParentId");
 		query.setParameter("id", analyteId);
 		List linkedRecords = query.getResultList();
 
@@ -228,7 +228,7 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		//make sure no results are pointing to this record
-		query = manager.createNamedQuery("getResultByAnalyteId");
+		query = manager.createNamedQuery("Result.ResultByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 
@@ -237,7 +237,7 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		//make sure no tests are pointing to this record
-		query = manager.createNamedQuery("getTestAnalyteByAnalyteId");
+		query = manager.createNamedQuery("TestAnalyte.TestAnalyteByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 
@@ -246,7 +246,7 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		//make sure no methods are pointing to this record
-		query = manager.createNamedQuery("getMethodAnalyteByAnalyteId");
+		query = manager.createNamedQuery("MethodAnalyte.MethodAnalyteByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 
@@ -255,7 +255,7 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		//make sure no qcs are pointing to this record
-		query = manager.createNamedQuery("getQCAnalyteByAnalyteId");
+		query = manager.createNamedQuery("QCAnalyte.QCAnalyteByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 
@@ -267,7 +267,7 @@ public class AnalyteBean implements AnalyteRemote{
 		//FIXME table doesnt exist currently so this will have to be added later
 		
 		//make sure no aux fields are pointing to this record
-		query = manager.createNamedQuery("getAuxFieldByAnalyteId");
+		query = manager.createNamedQuery("AuxField.AuxFieldByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 
@@ -297,10 +297,10 @@ public class AnalyteBean implements AnalyteRemote{
 		Query query = null;
 		//its an add if its null
 		if(analyteDO.getId() == null){
-			query = manager.createNamedQuery("analyteAddNameCompare");
+			query = manager.createNamedQuery("Analyte.AddNameCompare");
 			query.setParameter("name", analyteDO.getName());
 		}else{
-			query = manager.createNamedQuery("analyteUpdateNameCompare");
+			query = manager.createNamedQuery("Analyte.UpdateNameCompare");
 			query.setParameter("name", analyteDO.getName());
 			query.setParameter("id",analyteDO.getId());
 		}

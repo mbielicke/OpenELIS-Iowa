@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "getLabel", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerType,l.scriptlet)" +                                                                                                  
+@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerType,l.scriptlet)" +                                                                                                  
                     "  from Label l where l.id = :id")
                               
 @Entity

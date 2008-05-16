@@ -24,10 +24,10 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "getStandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.id = :id"),
-	           @NamedQuery(name = "getStandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where "+
+@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.id = :id"),
+	           @NamedQuery(name = "StandardNote.StandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where "+
 	        		              " (s.name like :name OR s.description like :desc) and s.type = :type order by s.name"),
-	           @NamedQuery(name = "getStandardNoteTypes", query="SELECT distinct d.id, d.entry " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
+	           @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct d.id, d.entry " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
 			   											 
 @Entity
 @Table(name="standard_note")

@@ -21,8 +21,8 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "getStorageUnit", query = "select new org.openelis.domain.StorageUnitDO(s.id,s.category,s.description,s.isSingular) from StorageUnit s where s.id = :id"),
-			   @NamedQuery(name = "getStorageUnitAutoCompleteByDesc", query = "select new org.openelis.domain.StorageUnitAutoDO(s.id, s.description, s.category) " +
+@NamedQueries({@NamedQuery(name = "StorageUnit.StorageUnit", query = "select new org.openelis.domain.StorageUnitDO(s.id,s.category,s.description,s.isSingular) from StorageUnit s where s.id = :id"),
+			   @NamedQuery(name = "StorageUnit.AutoCompleteByDesc", query = "select new org.openelis.domain.StorageUnitAutoDO(s.id, s.description, s.category) " +
 					   											 " from StorageUnit s where s.description like :desc order by s.description")})
 @Entity
 @Table(name="storage_unit")

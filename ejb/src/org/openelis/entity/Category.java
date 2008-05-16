@@ -26,20 +26,9 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "getCategory", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "Category.Category", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
                               "  from Category c where c.id = :id"),
-              @NamedQuery(name = "getDictionaryEntries", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntryId, dre.entry, " +
-                             "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                              "  from  Dictionary d left join d.relatedEntry dre  where d.category = :id " +
-                              " order by d.systemName "),
-              @NamedQuery(name = "getDictionaryDropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.isActive='Y' and d.category = :id order by d.entry"),
-              @NamedQuery(name = "getMatchingEntries", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
-              @NamedQuery(name = "getEntryIdForSystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
-              @NamedQuery(name = "getEntryIdForEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
-              @NamedQuery(name = "getCategoryIdBySystemName", query = "select c.id from Category c where c.systemName = :systemName"),              
-              @NamedQuery(name = "getEntryAutoCompleteById", query = "select d.id, d.entry from Dictionary d " +"  where d.id = :id order by d.entry"),
-              @NamedQuery(name = "getCategoryIdForDictSysName", query = "select d.category from Dictionary d where d.systemName = :systemName"),
-              @NamedQuery(name = "getCategoryIdForCatSysName", query = "select c.id from Category c where c.systemName = :systemName")})
+              @NamedQuery(name = "Category.IdIdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
                
 @Entity
 @Table(name="category")

@@ -71,7 +71,7 @@ public class SystemVariableBean implements SystemVariableRemote{
     }
 
     public SystemVariableDO getSystemVariable(Integer sysVarId) {
-        Query query = manager.createNamedQuery("getSystemVariable");
+        Query query = manager.createNamedQuery("SystemVariable.SystemVariable");
         query.setParameter("id", sysVarId);
         SystemVariableDO sysVarDO = (SystemVariableDO) query.getSingleResult();
         

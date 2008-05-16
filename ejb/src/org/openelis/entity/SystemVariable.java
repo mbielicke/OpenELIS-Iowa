@@ -5,12 +5,6 @@ package org.openelis.entity;
   * SystemVariable Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -19,10 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-@NamedQuery(name = "getSystemVariable", query = "select new org.openelis.domain.SystemVariableDO(s.id, s.name, s.value)" +"  from SystemVariable s where s.id = :id")
+@NamedQuery(name = "SystemVariable.SystemVariable", query = "select new org.openelis.domain.SystemVariableDO(s.id, s.name, s.value)" +"  from SystemVariable s where s.id = :id")
 
 @Entity
 @Table(name="system_variable")

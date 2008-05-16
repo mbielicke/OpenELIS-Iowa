@@ -98,7 +98,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 	}
 
 	public TestTrailerDO getTestTrailer(Integer testTrailerId) {
-		Query query = manager.createNamedQuery("getTestTrailer");
+		Query query = manager.createNamedQuery("TestTrailer.TestTrailer");
 		query.setParameter("id", testTrailerId);
 		TestTrailerDO testTrailerRecord = (TestTrailerDO) query.getResultList().get(0);// getting first storage unit record
 
@@ -207,7 +207,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 		//make sure no tests are pointing to this record
 		//getTestByTestTrailerId
 		Query query = null;
-		query = manager.createNamedQuery("getTestByTestTrailerId");
+		query = manager.createNamedQuery("Test.IdByTestTrailer");
 		query.setParameter("id", testTrailerId);
 		List linkedRecords = query.getResultList();
 
@@ -237,10 +237,10 @@ public class TestTrailerBean implements TestTrailerRemote{
 		Query query = null;
 		//if null then it is an add
 		if(testTrailerDO.getId() == null){
-			query = manager.createNamedQuery("testTrailerAddNameCompare");
+			query = manager.createNamedQuery("TestTrailer.AddNameCompare");
 			query.setParameter("name", testTrailerDO.getName());
 		}else{
-			query = manager.createNamedQuery("testTrailerUpdateNameCompare");
+			query = manager.createNamedQuery("TestTrailer.UpdateNameCompare");
 			query.setParameter("name", testTrailerDO.getName());
 			query.setParameter("id",testTrailerDO.getId());
 		}

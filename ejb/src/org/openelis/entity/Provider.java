@@ -25,14 +25,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-@NamedQueries({@NamedQuery(name = "getProvider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "Provider.Provider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
                                "  from Provider p, Dictionary d where d.id = p.type and p.id = :id"),
-               @NamedQuery(name = "getProviderAddresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.provider, " +
+               @NamedQuery(name = "Provider.Addresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.provider, " +
                                            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
                                            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
                                            " where pa.provider = :id order by pa.location"),
-               @NamedQuery(name = "getProviderTypes", query = "select distinct d.id, d.entry from Dictionary d, Category c where c.systemName ='provider_type' and d.category = c.id"),
-               @NamedQuery(name = "getProviderNotes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) " + 
+               @NamedQuery(name = "Provider.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) " + 
                        "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id ORDER BY n.timestamp DESC")})               
 @Entity 
 @Table(name="provider")

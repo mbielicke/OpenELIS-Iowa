@@ -60,7 +60,7 @@ public class LabelBean implements LabelRemote {
     }
     
     public LabelDO getLabel(Integer labelId) {
-        Query query = manager.createNamedQuery("getLabel");
+        Query query = manager.createNamedQuery("Label.Label");
         query.setParameter("id", labelId);
         LabelDO label = (LabelDO)query.getSingleResult();  
         return label;
@@ -165,7 +165,7 @@ public class LabelBean implements LabelRemote {
     }
     
     public List getScriptlets() {
-        Query query = manager.createNamedQuery("getScriptlets");                               
+        Query query = manager.createNamedQuery("Scriptlet.Scriptlet");                               
         List scriptlets = query.getResultList();         
         return scriptlets;
     }
@@ -232,7 +232,7 @@ public class LabelBean implements LabelRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();        
         List <Object[]> tests  = null;
         try{               
-            Query query = manager.createNamedQuery("getReferringTestsForLabel");
+            Query query = manager.createNamedQuery("Test.IdByLabel");
             query.setParameter("id", labelId);
             tests = query.getResultList();
         }catch(NoResultException nrex){

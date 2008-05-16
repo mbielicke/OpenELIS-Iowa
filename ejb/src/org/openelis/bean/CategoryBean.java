@@ -22,7 +22,6 @@ import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
-import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
@@ -67,7 +66,7 @@ public class CategoryBean implements CategoryRemote {
    
     public CategoryDO getCategory(Integer categoryId) {        
         
-        Query query = manager.createNamedQuery("getCategory");
+        Query query = manager.createNamedQuery("Category.Category");
         query.setParameter("id", categoryId);
         CategoryDO category = (CategoryDO) query.getSingleResult();// getting category with address and contacts
 
@@ -211,7 +210,7 @@ public class CategoryBean implements CategoryRemote {
     }
 
     public List getDictionaryEntries(Integer categoryId) {
-        Query query = manager.createNamedQuery("getDictionaryEntries");
+        Query query = manager.createNamedQuery("Dictionary.Dictionary");
         query.setParameter("id", categoryId);
         
         List dictionaryEntries = query.getResultList();// getting list of dictionary entries  
@@ -220,14 +219,14 @@ public class CategoryBean implements CategoryRemote {
     }
     
     public List getDropdownValues(Integer categoryId) {
-    	Query query = manager.createNamedQuery("getDictionaryDropdownValues");
+    	Query query = manager.createNamedQuery("Dictionary.DropdownValues");
     	query.setParameter("id", categoryId);
     	
     	return query.getResultList();
     }
     
     public List getMatchingEntries(String entry, int maxResults){
-       Query query = manager.createNamedQuery("getMatchingEntries");  
+       Query query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");  
        query.setParameter("entry", entry);       
        query.setMaxResults(maxResults);       
        
@@ -242,7 +241,7 @@ public class CategoryBean implements CategoryRemote {
     }
     
     public Integer getEntryIdForSystemName(String systemName)throws Exception{ 
-        Query query = manager.createNamedQuery("getEntryIdForSystemName");  
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");  
         query.setParameter("systemName", systemName);
         Integer entryId = null;
         try{     
@@ -257,7 +256,7 @@ public class CategoryBean implements CategoryRemote {
     } 
      
     public Integer getEntryIdForEntry(String entry)throws Exception{
-        Query query = manager.createNamedQuery("getEntryIdForEntry");  
+        Query query = manager.createNamedQuery("Dictionary.IdByEntry");  
         query.setParameter("entry", entry);
         Integer entryId = null;
         try{ 
@@ -272,7 +271,7 @@ public class CategoryBean implements CategoryRemote {
     } 
         
     public Integer getCategoryId(String systemName){
-        Query query = manager.createNamedQuery("getCategoryIdBySystemName");  
+        Query query = manager.createNamedQuery("Category.IdIdBySystemName");  
         query.setParameter("systemName", systemName);
         Integer categoryId = null;
         try{ 
@@ -282,19 +281,6 @@ public class CategoryBean implements CategoryRemote {
             
         }   
         return categoryId;
-    }
-    
-    public Object[] autoCompleteLookupById(Integer id)throws Exception{
-      try{  
-        Query query  = manager.createNamedQuery("getEntryAutoCompleteById");
-        query.setParameter("id",id);
-        return (Object[])query.getSingleResult();
-      }catch(NoResultException ex){
-          return null;
-      } catch(Exception ex){
-          throw ex;
-      }
-      
     }
     
     @RolesAllowed("dictionary-update")
@@ -321,7 +307,7 @@ public class CategoryBean implements CategoryRemote {
     private void validateCategory(CategoryDO categoryDO,List<Exception> exceptionList){
 
             if(!("").equals(categoryDO.getSystemName())){
-                Query catIdQuery  = manager.createNamedQuery("getCategoryIdForCatSysName");
+                Query catIdQuery  = manager.createNamedQuery("Category.IdIdBySystemName");
                 catIdQuery.setParameter("systemName", categoryDO.getSystemName());
                 Integer catId = null;
                 try{
@@ -369,7 +355,7 @@ public class CategoryBean implements CategoryRemote {
             
              if(!("").equals(dictDO.getSystemName())){ 
                if(!systemNames.contains(dictDO.getSystemName())){     
-                 Query catIdQuery  = manager.createNamedQuery("getCategoryIdForDictSysName");
+                 Query catIdQuery  = manager.createNamedQuery("Dictionary.IdBySystemName");
                  catIdQuery.setParameter("systemName", dictDO.getSystemName());
                  Integer catId = null;
                  try{
