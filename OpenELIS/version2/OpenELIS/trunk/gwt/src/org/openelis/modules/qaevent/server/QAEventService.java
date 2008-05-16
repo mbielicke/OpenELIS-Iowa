@@ -24,7 +24,6 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -78,8 +77,7 @@ public class QAEventService implements AppScreenFormServiceInt{
              }
     
              //need to save the rpc used to the encache
-            if(SessionManager.getSession().getAttribute("QaEventQuery") == null)
-                SessionManager.getSession().setAttribute("QaEventQuery", rpcSend);
+             SessionManager.getSession().setAttribute("QaEventQuery", rpcSend);
         }
         
         int i=0;
