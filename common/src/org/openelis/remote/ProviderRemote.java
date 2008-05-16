@@ -34,9 +34,6 @@ public interface ProviderRemote {
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();
      
-     //method to get all the dicntionary entries for providers
-     public List<Object[]> getProviderTypes();  
-     
      //method to validate the fields before the backend updates it in the database
      public List validateForUpdate(ProviderDO providerDO, List<ProviderAddressDO> addresses);
      
