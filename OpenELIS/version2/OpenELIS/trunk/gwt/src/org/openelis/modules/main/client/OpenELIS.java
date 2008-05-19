@@ -345,7 +345,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       if(args == null)
                                           return new TableCalendar();
                                       else if(args[0] instanceof Node)
-                                          return new TableCalendar((Node)args[0]);
+                                          return new TableCalendar((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -365,7 +365,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                         if(args == null)
                             return new TableCheck();
                         else if(args[0] instanceof Node)
-                            return new TableCheck((Node)args[0]);
+                            return new TableCheck((Node)args[0],(ScreenBase)args[1]);
                         return null;
                     }
       });
@@ -375,7 +375,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       if(args == null)
                                           return new TableMaskedTextBox();
                                       else if(args[0] instanceof Node)
-                                          return new TableMaskedTextBox((Node)args[0]);
+                                          return new TableMaskedTextBox((Node)args[0], (ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -385,7 +385,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       if(args == null)
                                           return new TableTextBox();
                                       else if(args[0] instanceof Node)
-                                          return new TableTextBox((Node)args[0]);
+                                          return new TableTextBox((Node)args[0], (ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -395,7 +395,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       if(args == null)
                                           return new TableAutoDropdown();
                                       else if(args[0] instanceof Node)
-                                          return new TableAutoDropdown((Node)args[0]);
+                                          return new TableAutoDropdown((Node)args[0], (ScreenBase)args[1]);
                                       return null;
                                   }
       });
