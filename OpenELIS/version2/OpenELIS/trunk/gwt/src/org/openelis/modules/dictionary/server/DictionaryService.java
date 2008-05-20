@@ -107,7 +107,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             
             StringObject sysName = new StringObject();
                         
-            sysName.setValue((sysNameResult != null ? sysNameResult.trim() : null));    
+            sysName.setValue(sysNameResult);    
             
             row.setKey(id);                      
             row.addObject(sysName);
@@ -316,7 +316,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
                         NumberObject idObj = new NumberObject(NumberObject.INTEGER);
                         StringObject text = new StringObject();
                         idObj.setValue(dictDO.getRelatedEntryId());
-                        text.setValue(dictDO.getRelatedEntryText().trim());
+                        text.setValue(dictDO.getRelatedEntryText());
                         relEntrySet.setKey(id);
                         relEntrySet.addObject(text);
                         row.getColumn(4).setValue(relEntrySet);
@@ -434,7 +434,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             data.setKey(idObject);
             
             StringObject nameObject = new StringObject();
-            nameObject.setValue(entryText.trim());
+            nameObject.setValue(entryText);
             data.addObject(nameObject);
             
             //add the dataset to the datamodel
@@ -462,9 +462,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         NumberField categoryId = (NumberField) rpcSend.getField(CategoryMeta.ID);
         CategoryDO categoryDO = new CategoryDO();
         categoryDO.setId((Integer)categoryId.getValue());
-        categoryDO.setDescription(((String)rpcSend.getFieldValue(CategoryMeta.DESCRIPTION)).trim());
-        categoryDO.setName(((String)rpcSend.getFieldValue(CategoryMeta.NAME)).trim());
-        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME)).trim());
+        categoryDO.setDescription(((String)rpcSend.getFieldValue(CategoryMeta.DESCRIPTION)));
+        categoryDO.setName(((String)rpcSend.getFieldValue(CategoryMeta.NAME)));
+        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME)));
                 
         if(!new Integer(-1).equals(rpcSend.getFieldValue(CategoryMeta.SECTION)))
            categoryDO.setSection((Integer)rpcSend.getFieldValue(CategoryMeta.SECTION));
@@ -484,8 +484,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
          String sysName = (String)((StringField)row.getColumn(1)).getValue();
          String entry = (String)((StringField)row.getColumn(3)).getValue();
          
-           dictDO.setSystemName(sysName.trim());           
-           dictDO.setEntry(entry.trim());  
+           dictDO.setSystemName(sysName);           
+           dictDO.setEntry(entry);  
            NumberField id = (NumberField)row.getHidden("id");                 
          
             StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
@@ -513,7 +513,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
               dictDO.setIsActive((String)isActive.getValue());
               
              dictDO.setCategory(categoryId);         
-             dictDO.setLocalAbbrev(((String)((StringField)row.getColumn(2)).getValue()).trim());         
+             dictDO.setLocalAbbrev(((String)((StringField)row.getColumn(2)).getValue()));         
              dictDOList.add(dictDO);             
           }
         

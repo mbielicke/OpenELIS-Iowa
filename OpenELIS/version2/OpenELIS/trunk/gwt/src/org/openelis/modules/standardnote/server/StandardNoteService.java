@@ -90,7 +90,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
                 DataSet row = new DataSet();
                 NumberObject id = new NumberObject(NumberObject.INTEGER);
                 StringObject name = new StringObject();
-                name.setValue((nameResult != null ? nameResult.trim() : null));
+                name.setValue(nameResult);
                 id.setValue(idResult);
                 
                 row.setKey(id);         
@@ -322,7 +322,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			StringObject textObject = new StringObject();
 			NumberObject numberId = new NumberObject(NumberObject.INTEGER);
 			
-			textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
+			textObject.setValue(dropdownText);
 			set.addObject(textObject);
 			
 			numberId.setValue(dropdownId);
@@ -361,9 +361,9 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 
     private void setFieldsInRPC(FormRPC rpcReturn, StandardNoteDO standardNoteDO){
     	rpcReturn.setFieldValue(StandardNoteMeta.ID, standardNoteDO.getId());
-    	rpcReturn.setFieldValue(StandardNoteMeta.DESCRIPTION, (standardNoteDO.getDescription() == null ? null : standardNoteDO.getDescription().trim()));
-    	rpcReturn.setFieldValue(StandardNoteMeta.NAME, (standardNoteDO.getName() == null ? null : standardNoteDO.getName().trim()));
-    	rpcReturn.setFieldValue(StandardNoteMeta.TEXT, (standardNoteDO.getText() == null ? null : standardNoteDO.getText().trim()));
+    	rpcReturn.setFieldValue(StandardNoteMeta.DESCRIPTION, standardNoteDO.getDescription());
+    	rpcReturn.setFieldValue(StandardNoteMeta.NAME, standardNoteDO.getName());
+    	rpcReturn.setFieldValue(StandardNoteMeta.TEXT, standardNoteDO.getText());
     	rpcReturn.setFieldValue(StandardNoteMeta.TYPE, standardNoteDO.getType());
     }
 }

@@ -38,7 +38,7 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="VendorOrders" name="Vendor Orders" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="KitOrders" name="{resource:getString($constants,'vendorOrders')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
@@ -79,7 +79,9 @@
 		<!--end button panel-->
 
 					<panel layout="vertical" xsi:type="Panel">
+
 						<panel key="a" layout="vertical" xsi:type="Panel">
+			<panel layout="horizontal" xsi:type="Panel">
 							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
 								<row>
 									<widget>
@@ -89,12 +91,14 @@
 										<textbox case="lower" key="{inventoryItemMeta:name()}" width="75px" max="20" tab="{inventoryItemMeta:description()},{inventoryItemMeta:isLabor()}"/>
 									</widget>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
 									</widget>
-									<widget>
+									<widget colspan="3">
 										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
 									</widget>
-									<widget>
+								</row>
+								<row>
+								<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
 									</widget>
 									<widget>
@@ -102,47 +106,6 @@
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<textbox key="{inventoryItemMeta:id()}" width="255px"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
-									</widget>
-									<widget>
-										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
-									</widget>
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-									</widget>
-									<widget colspan="5">
-										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="284px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
-													<widths>167</widths>
-										</autoDropdown>
-									</widget>
-								</row>
-								</panel>
-								<panel layout="horizontal" xsi:type="Panel">
-								<panel layout="vertical" style="Form" xsi:type="Panel">
-								<titledPanel key="borderedPanel">
-								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"storeVendor")'/></text></legend>
-								<content>
-								<panel layout="table" style="Form" xsi:type="Table">
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendorOrder")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<check key="{inventoryItemMeta:isActive()}" tab="{inventoryItemMeta:isReorderAuto()},{inventoryItemMeta:dispensedUnit()}"/>
-									</widget>
-								</row>
-								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendor")'/>:</text>
 									</widget>
@@ -154,107 +117,69 @@
 								</row>
 								<row>
 									<widget>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
+									</widget>
+									<widget>
+										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
+									</widget>
+									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
-									</widget>		
+										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
+									</widget>	
+									
+										
 								</row>
 								<row>
+									<widget>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
+									</widget>
+									<widget>
+										<textbox key="{inventoryItemMeta:id()}" width="203px"/>
+									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
-									</widget>		
+										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
+									</widget>			
 								</row>
 								<row>
 									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
-									</widget>		
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="city" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="upper" key="city" width="60px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
-									</widget>		
-								</row>
-								</panel>
-								</content>
-								</titledPanel>
-								</panel>
-								<panel layout="vertical" style="Form" xsi:type="Panel">
-								<titledPanel key="borderedPanel">
-								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"shipTo")'/></text></legend>
-								<content><panel layout="table" style="Form" xsi:type="Table">
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"organization")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="172px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="187px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
-								</row>
-								<row>
-									<!-- empty row-->
-									<widget colspan="5">
-										<panel layout="vertical" height="19" spacing="0" xsi:type="Panel"/>
-									</widget>
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
-									</widget>		
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-									</widget>
-									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
-									</widget>		
-								</row>
-								<row>
-									<widget>
+									
+										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
-									</widget>		
+										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+									</widget>
 								</row>
 								<row>
-									<widget>
+									<widget colspan="2">
+										<panel layout="horizontal" xsi:type="Panel"/>
+									</widget>
+																		<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="city" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+										<textbox case="upper" key="city" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="city" width="60px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
-									</widget>		
+										<textbox case="upper" key="city" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+									</widget>	
+									
 								</row>
-								</panel>
-								</content>
-								</titledPanel>
 								</panel>
 								</panel>
 								
@@ -266,24 +191,21 @@
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="true">
-										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"component")'/>,
-										<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-										<widths>80,324,160</widths>
+										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"component")'/></headers>
+										<widths>83,484</widths>
 										<editors>
 											<autoDropdown case="mixed" width="90px" popWidth="auto">
 											  <widths>100</widths>
 											</autoDropdown>
 											<textbox case="upper"/>
-											<textbox case="upper"/>
 										</editors>
 										<fields>
 											<dropdown key="zxcvzdcvsdcvsd" required="true"/>
 											<string key="dvsvsdvsdvzdv " required="true"/>
-											<string key="zvsdvsdvzdvzxc"/>
 										</fields>
-										<sorts>true,true,true</sorts>
-										<filters>false,false,false</filters>
-										<colAligns>left,left,left</colAligns>
+										<sorts>true,true</sorts>
+										<filters>false,false</filters>
+										<colAligns>left,left</colAligns>
 									</table>
 									<query>
 									<queryTable width="auto" title="" maxRows="9" showError="false">
@@ -315,16 +237,9 @@
 						            </widget>
 							</panel>
 					</tab>			
-					<tab key="tab4" text="Tab 2">
+					<tab key="tab4" text="{resource:getString($constants,'receipt')}">
 						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
 					</tab>
-					<tab key="tab4" text="Tab 3">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
-					</tab>
-					<tab key="tab4" text="Tab 4">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
-					</tab>
-					
 				</panel>
 				</panel>
 			</panel>

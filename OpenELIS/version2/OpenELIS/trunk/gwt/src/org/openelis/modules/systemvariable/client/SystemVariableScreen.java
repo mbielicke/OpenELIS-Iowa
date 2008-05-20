@@ -15,7 +15,6 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     private TextBox nameTextBox;
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
-        name="System Variable";
     }
     
     public void onChange(Widget sender) {
@@ -37,7 +36,6 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
 
     public void afterDraw(boolean success) {
         setBpanel((ButtonPanel) getWidget("buttons"));        
-        message.setText("done");
 
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
         modelWidget.addChangeListener(atozTable);

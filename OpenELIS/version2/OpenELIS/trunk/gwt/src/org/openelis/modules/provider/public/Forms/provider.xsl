@@ -39,7 +39,7 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id= "Provider" name = "Provider" serviceUrl= "OpenElisService"
+<screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService"
 xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd"
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
@@ -84,7 +84,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/>:</text>
      </widget>
      <widget > 
-      <textbox key = "{providerMeta:lastName()}" max="30" width= "215px" case = "upper" tab="{providerMeta:firstName()},{providerMeta:npi()}"/>
+      <textbox key = "{providerMeta:lastName()}" max="30" width= "215px" case = "upper" tab="{providerMeta:firstName()},{providerMeta:id()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
@@ -106,7 +106,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "145px" tab="{providerMeta:lastName()},{providerMeta:type()}"/>
+      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "145px" tab="{providerMeta:id()},{providerMeta:type()}"/>
      </widget>
     </row>
     <row>

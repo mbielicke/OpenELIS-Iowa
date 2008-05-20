@@ -23,7 +23,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	
 	public StandardNoteScreen() {
     	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded);
-        name="Standard Note";
     }
 
     public void onChange(Widget sender) {
@@ -51,8 +50,6 @@ public class StandardNoteScreen extends OpenELISScreenForm {
         textArea = (ScreenTextArea)widgets.get("standardNote.text");
         nameTextbox = (TextBox)getWidget("standardNote.name");
 
-        message.setText("Done");
-        
         if(typeDropdown == null)
             typeDropdown = (DataModel)initData.get("noteTypes");
         

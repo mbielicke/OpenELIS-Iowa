@@ -21,12 +21,9 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	private EditTable childTable;
 	
     private AppButton removeEntryButton;
-    
-	private Widget selected;
-	
+   	
 	public StorageLocationScreen() {
 		super("org.openelis.modules.storage.server.StorageLocationService",false);
-        name = "Storage Location";
 	}
 	
 	public void onChange(Widget sender) {
@@ -64,8 +61,6 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
 		
 		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
-		
-		message.setText("Done");
 
 		super.afterDraw(success);
 	}

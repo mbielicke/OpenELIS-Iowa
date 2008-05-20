@@ -91,7 +91,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
          id.setValue(idResult);
 
-          svname.setValue((nameResult != null ? nameResult.trim() : null));                   
+          svname.setValue(nameResult);                   
          row.setKey(id);          
 
          row.addObject(svname);
@@ -242,8 +242,8 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         SystemVariableDO sysVarDO = new SystemVariableDO();
         Integer svId = (Integer) rpcsend.getFieldValue(SystemVariableMeta.ID);        
         sysVarDO.setId(svId);
-        sysVarDO.setName(((String)rpcsend.getFieldValue(SystemVariableMeta.NAME)).trim());
-        sysVarDO.setValue(((String)rpcsend.getFieldValue(SystemVariableMeta.VALUE)).trim());
+        sysVarDO.setName(((String)rpcsend.getFieldValue(SystemVariableMeta.NAME)));
+        sysVarDO.setValue(((String)rpcsend.getFieldValue(SystemVariableMeta.VALUE)));
         return sysVarDO;
     }
 

@@ -23,7 +23,7 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id= "Label" name = "Label" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id= "Label" name = "{resource:getString($constants,'label')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <panel layout= "horizontal" spacing= "0" padding= "0" height="225px" style="WhiteContentPanel" xsi:type= "Panel">  
   <aToZ height="225px" width="100%" key="hideablePanel" maxRows="9" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">   

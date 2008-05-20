@@ -17,7 +17,6 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	
 	public TestTrailerScreen() {
 		super("org.openelis.modules.testTrailer.server.TestTrailerService",false);
-        name="Trailer For Test";
 	}
 	
 	 public void onChange(Widget sender) {
@@ -43,8 +42,6 @@ public class TestTrailerScreen extends OpenELISScreenForm {
         
         nameTextBox = (TextBox) getWidget("testTrailer.name");
         textArea = (ScreenTextArea) widgets.get("testTrailer.text");
-        
-		message.setText("Done");
 
 		super.afterDraw(success);
 	}

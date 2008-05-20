@@ -19,7 +19,6 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	
 	public StorageUnitScreen() {
 		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded);
-        name="Storage Unit";
 	}
 	
 	 public void onChange(Widget sender) {
@@ -45,8 +44,6 @@ public class StorageUnitScreen extends OpenELISScreenForm {
         atozButtons.addChangeListener(this);
         
         cat = (AutoCompleteDropdown)getWidget("storageUnit.category");
-        
-		message.setText("Done");
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)

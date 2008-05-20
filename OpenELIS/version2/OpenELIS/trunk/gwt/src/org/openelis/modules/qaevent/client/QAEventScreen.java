@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
        
      public QAEventScreen(){
          super("org.openelis.modules.qaevent.server.QAEventService",!loaded);  
-         name="QA Event";
      }
      
          public void onChange(Widget sender) {
@@ -52,9 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
         public void afterDraw(boolean success) {
              loaded = true;
              
-             setBpanel((ButtonPanel) getWidget("buttons"));          
-             
-             message.setText("Done");                 
+             setBpanel((ButtonPanel) getWidget("buttons"));                           
              
              AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
              modelWidget.addChangeListener(atozTable);

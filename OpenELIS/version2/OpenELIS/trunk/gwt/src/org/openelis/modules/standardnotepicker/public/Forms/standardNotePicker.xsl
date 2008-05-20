@@ -23,14 +23,14 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="StandardNotePicker" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="StandardNotePicker" name="{resource:getString($constants,'standardNoteSelection')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="vertical" style="WhiteContentPanel" spacing="0" width="300px" xsi:type="Panel">
 		<panel layout="horizontal" spacing="0" xsi:type="Panel">
 		<panel layout="horizontal" spacing="3" xsi:type="Panel">
-		<textbox key="findTextBox" width="200px" showError="false"/>
+		<textbox key="findTextBox" width="200px" showError="false" alwaysEnabled="true"/>
 		</panel>
-		<appButton action="find" onclick="this" style="Button" key="findButton">
+		<appButton action="find" onclick="this" style="Button" key="findButton" alwaysEnabled="true">
 			<panel xsi:type="Panel" layout="horizontal">
             	<panel xsi:type="Absolute" layout="absolute" style="FindButtonImage"/>
 					<widget>

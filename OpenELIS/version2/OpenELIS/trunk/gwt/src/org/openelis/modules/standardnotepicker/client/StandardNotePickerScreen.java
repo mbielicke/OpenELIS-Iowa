@@ -5,9 +5,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.screen.ScreenAppButton;
 import org.openelis.gwt.screen.ScreenPagedTree;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -16,7 +14,6 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -25,7 +22,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener, ClickListener{
 
-	//ScreenWindow window;
 	public TextArea noteTextArea;
 	
 	public StandardNotePickerScreen(TextArea noteTextArea) {
@@ -71,21 +67,11 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
         final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
         tree.controller.setTreeListener(this);
         setBpanel((ButtonPanel) getWidget("buttons"));
-        super.afterDraw(sucess);
-        
-        ScreenAppButton findButton = (ScreenAppButton)widgets.get("findButton");
-        findButton.enable(true);
-        ScreenTextBox findTextBox = (ScreenTextBox)widgets.get("findTextBox");
-        findTextBox.enable(true);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
-        //final HTML loadingHtml = new HTML();
-        //loadingHtml.setStyleName("ScreenLabel");
-        //loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
+        
         vp.clear();
         vp.remove(tree);
-        //vp.getPanel().add(loadingHtml);
-        //add(loadingHtml);
         
         window.setStatus("","spinnerIcon");
         
@@ -103,7 +89,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
                 PagedTreeField treeField = (PagedTreeField)result;
                 tree.load(treeField);
                 
-                window.setStatus("Done","");
+                window.setStatus("","");
             }
             
             public void onFailure(Throwable caught){
@@ -112,7 +98,18 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
          });        
 	}
 	
-	public void onTreeItemSelected(TreeItem item) {
+	public void commit() {
+    	TextArea textArea = (TextArea)getWidget("noteText");
+    	noteTextArea.setText(noteTextArea.getText()+textArea.getText());
+    	
+    	window.close();
+    }
+
+    public void abort() {
+    	window.close();
+    }
+
+    public void onTreeItemSelected(TreeItem item) {
 		try{
 			int id = Integer.parseInt((String)item.getUserObject());
 			item.setState(!item.getState(), true);
@@ -130,10 +127,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			finalTreeItem.removeItems();
 			
 			final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-			//final HTML loadingHtml = new HTML();
-            //loadingHtml.setStyleName("ScreenLabel");
-	        //loadingHtml.setHTML("<img src=\"Images/OSXspinnerGIF.gif\"> Loading...");
-			//finalTreeItem.addItem(loadingHtml);
+
             window.setStatus("","spinnerIcon");
             
 			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
@@ -166,16 +160,5 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 		}catch(NumberFormatException e){
 			//this means that it is the bottom level...
 		}
-	}
-	
-	public void abort() {
-		window.close();
-	}
-	
-	public void commit() {
-		TextArea textArea = (TextArea)getWidget("noteText");
-		noteTextArea.setText(noteTextArea.getText()+textArea.getText());
-		
-		window.close();
 	}
 }

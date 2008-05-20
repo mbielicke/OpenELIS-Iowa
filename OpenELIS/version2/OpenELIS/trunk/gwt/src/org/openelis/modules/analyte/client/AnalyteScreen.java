@@ -15,7 +15,6 @@ public class AnalyteScreen extends OpenELISScreenForm {
 
 	public AnalyteScreen() {
 		super("org.openelis.modules.analyte.server.AnalyteService",false);
-        name="Analyte";
 	}
 	
 	 public void onChange(Widget sender) {
@@ -41,8 +40,6 @@ public class AnalyteScreen extends OpenELISScreenForm {
         atozButtons.addChangeListener(this);
         
         nameTextBox = (TextBox) getWidget("analyte.name");
-        
-		message.setText("Done");
 
 		super.afterDraw(success);
 	}

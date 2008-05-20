@@ -2,7 +2,6 @@ package org.openelis.modules.testTrailer.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
@@ -23,7 +22,6 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.meta.TestTrailerMeta;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.server.constants.Constants;
@@ -83,7 +81,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
                 DataSet row = new DataSet();
                 NumberObject id = new NumberObject(NumberObject.INTEGER);
                 StringObject name = new StringObject();
-                name.setValue((nameResult != null ? nameResult.trim() : null));
+                name.setValue(nameResult);
                 id.setValue(idResult);
                 
                 row.setKey(id);         
@@ -253,18 +251,18 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 
     private void setFieldsInRPC(FormRPC rpcReturn, TestTrailerDO testTrailerDO){
 		rpcReturn.setFieldValue(TestTrailerMeta.ID, testTrailerDO.getId());
-		rpcReturn.setFieldValue(TestTrailerMeta.NAME, (testTrailerDO.getName() == null ? null : testTrailerDO.getName().trim()));
-		rpcReturn.setFieldValue(TestTrailerMeta.DESCRIPTION, (testTrailerDO.getDescription() == null ? null : testTrailerDO.getDescription().trim()));
-		rpcReturn.setFieldValue(TestTrailerMeta.TEXT, (testTrailerDO.getText() == null ? null : testTrailerDO.getText().trim()));		
+		rpcReturn.setFieldValue(TestTrailerMeta.NAME, testTrailerDO.getName());
+		rpcReturn.setFieldValue(TestTrailerMeta.DESCRIPTION, testTrailerDO.getDescription());
+		rpcReturn.setFieldValue(TestTrailerMeta.TEXT, testTrailerDO.getText());		
 	}
 	
 	private TestTrailerDO getTestTrailerDOFromRPC(FormRPC rpcSend){
 		TestTrailerDO newTestTrailerDO = new TestTrailerDO();
 		
 		newTestTrailerDO.setId((Integer)rpcSend.getFieldValue(TestTrailerMeta.ID));
-		newTestTrailerDO.setName(((String) rpcSend.getFieldValue(TestTrailerMeta.NAME)).trim());
-		newTestTrailerDO.setDescription(((String)rpcSend.getFieldValue(TestTrailerMeta.DESCRIPTION)).trim());
-		newTestTrailerDO.setText(((String)rpcSend.getFieldValue(TestTrailerMeta.TEXT)).trim());
+		newTestTrailerDO.setName(((String) rpcSend.getFieldValue(TestTrailerMeta.NAME)));
+		newTestTrailerDO.setDescription(((String)rpcSend.getFieldValue(TestTrailerMeta.DESCRIPTION)));
+		newTestTrailerDO.setText(((String)rpcSend.getFieldValue(TestTrailerMeta.TEXT)));
 		
 		return newTestTrailerDO;
 	}

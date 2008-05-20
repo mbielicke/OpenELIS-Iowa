@@ -101,9 +101,9 @@ public class QAEventService implements AppScreenFormServiceInt{
    
             id.setValue(idResult);
    
-            qaname.setValue((nameResult != null ? nameResult.trim() : null));  
-            tname.setValue((tnameResult != null ? tnameResult.trim() : null));
-            mname.setValue((mnameResult != null ? mnameResult.trim() : null));
+            qaname.setValue(nameResult);  
+            tname.setValue(tnameResult);
+            mname.setValue(mnameResult);
             row.setKey(id);          
    
             row.addObject(qaname);
@@ -310,9 +310,9 @@ public class QAEventService implements AppScreenFormServiceInt{
             StringObject textObject = new StringObject();
                         
             if(methodName!=null){
-             textObject.setValue(dropDownText.trim()+" , "+methodName.trim());
+             textObject.setValue(dropDownText+" , "+methodName);
             }else{
-             textObject.setValue(dropDownText.trim());
+             textObject.setValue(dropDownText);
             }
             
             set.addObject(textObject);            
@@ -346,13 +346,13 @@ public class QAEventService implements AppScreenFormServiceInt{
         NumberField qaeIdField = (NumberField) rpcSend.getField(QaEventMeta.ID);
         
         qaeDO.setId((Integer)qaeIdField.getValue());
-        qaeDO.setDescription(((String)rpcSend.getFieldValue(QaEventMeta.DESCRIPTION)).trim());
+        qaeDO.setDescription(((String)rpcSend.getFieldValue(QaEventMeta.DESCRIPTION)));
         
 
-        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QaEventMeta.IS_BILLABLE)).trim());                                     
-        qaeDO.setName(((String)rpcSend.getFieldValue(QaEventMeta.NAME)).trim());         
+        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QaEventMeta.IS_BILLABLE)));                                     
+        qaeDO.setName(((String)rpcSend.getFieldValue(QaEventMeta.NAME)));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QaEventMeta.REPORTING_SEQUENCE));
-        qaeDO.setReportingText(((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT)).trim());    
+        qaeDO.setReportingText(((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT)));    
                 
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST_ID)))
             qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST_ID));   
