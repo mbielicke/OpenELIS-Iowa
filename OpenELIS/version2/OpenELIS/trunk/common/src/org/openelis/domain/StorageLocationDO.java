@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class StorageLocationDO implements Serializable{
 
 	private static final long serialVersionUID = 6315788445035701792L;
@@ -11,7 +13,6 @@ public class StorageLocationDO implements Serializable{
 	protected String name;
 	protected String location;
 	protected Integer parentStorageLocationId;
-	//String parentStorageLocation;
 	protected Integer storageUnitId;
 	protected String storageUnit;
 	protected String isAvailable;
@@ -23,15 +24,14 @@ public class StorageLocationDO implements Serializable{
 	}
 	
 	public StorageLocationDO(Integer id, Integer sortOrder, String name, String location, Integer parentStorageLocationId, Integer storageUnitId, String storageUnit, String isAvailable){
-		this.id = id;
-		this.sortOrder = sortOrder;
-		this.name = name;
-		this.location = location;
-		this.parentStorageLocationId = parentStorageLocationId;
-//		/this.parentStorageLocation = parentStorageLocation;
-		this.storageUnitId = storageUnitId;
-		this.storageUnit = storageUnit;
-		this.isAvailable = isAvailable;
+		setId(id);
+		setSortOrder(sortOrder);
+		setName(name);
+		setLocation(location);
+		setParentStorageLocationId(parentStorageLocationId);
+		setStorageUnitId(storageUnitId);
+		setStorageUnit(storageUnit);
+		setIsAvailable(isAvailable);
 	}
 	
 	public Integer getId() {
@@ -44,19 +44,19 @@ public class StorageLocationDO implements Serializable{
 		return isAvailable;
 	}
 	public void setIsAvailable(String isAvailable) {
-		this.isAvailable = isAvailable;
+		this.isAvailable = DataBaseUtil.trim(isAvailable);
 	}
 	public String getLocation() {
 		return location;
 	}
 	public void setLocation(String location) {
-		this.location = location;
+		this.location = DataBaseUtil.trim(location);
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = DataBaseUtil.trim(name);
 	}
 	public Integer getParentStorageLocationId() {
 		return parentStorageLocationId;
@@ -77,20 +77,12 @@ public class StorageLocationDO implements Serializable{
 		this.storageUnitId = storageUnitId;
 	}
 
-	/*public String getParentStorageLocation() {
-		return parentStorageLocation;
-	}
-
-	public void setParentStorageLocation(String parentStorageLocation) {
-		this.parentStorageLocation = parentStorageLocation;
-	}*/
-
 	public String getStorageUnit() {
 		return storageUnit;
 	}
 
 	public void setStorageUnit(String storageUnit) {
-		this.storageUnit = storageUnit;
+		this.storageUnit = DataBaseUtil.trim(storageUnit);
 	}
 
 	public Boolean getDelete() {

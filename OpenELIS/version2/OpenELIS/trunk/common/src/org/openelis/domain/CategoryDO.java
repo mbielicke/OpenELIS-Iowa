@@ -2,22 +2,17 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 public class CategoryDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
-    protected Integer id;             
-    
+    protected Integer id;                 
     protected String systemName;             
-
     protected String name;             
-
     protected String description;             
-
     protected Integer section;
     
     public CategoryDO(){
@@ -25,11 +20,11 @@ public class CategoryDO implements Serializable {
     } 
 
     public CategoryDO(Integer id,String systemName,String name,String description,Integer section){
-        this.id = id;
-        this.systemName = systemName;
-        this.name = name;
-        this.description = description;
-        this.section = section;
+        setId(id);
+        setSystemName(systemName);
+        setName(name);
+        setDescription(description);
+        setSection(section);
     } 
     
     public String getDescription() {
@@ -37,7 +32,7 @@ public class CategoryDO implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }
 
     public Integer getId() {
@@ -53,7 +48,7 @@ public class CategoryDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public Integer getSection() {
@@ -69,7 +64,7 @@ public class CategoryDO implements Serializable {
     }
 
     public void setSystemName(String systemName) {
-        this.systemName = systemName;
+        this.systemName = DataBaseUtil.trim(systemName);
     } 
 
 }

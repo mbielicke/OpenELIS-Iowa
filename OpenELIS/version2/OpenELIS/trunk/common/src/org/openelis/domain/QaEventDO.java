@@ -2,45 +2,35 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 public class QaEventDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
-    protected Integer id;             
-
-    protected String name;             
-    
-    protected String description;             
-
-    protected Integer test;             
-
-    protected Integer type;             
-
-    protected String isBillable;             
-
-    protected Integer reportingSequence;             
-
+    protected Integer id;    
+    protected String name;       
+    protected String description;        
+    protected Integer test;            
+    protected Integer type;            
+    protected String isBillable;       
+    protected Integer reportingSequence;
     protected String reportingText;
     
     public QaEventDO(){
         
-    }
-        
+    }        
 
     public QaEventDO(Integer id, String name, String description, Integer test, Integer type, String isBillable, Integer reportingSequence, String reportingText) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.test = test;
-        this.type = type;
-        this.isBillable = isBillable;
-        this.reportingSequence = reportingSequence;
-        this.reportingText = reportingText;
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setTest(test);
+        setType(type);
+        setIsBillable(isBillable);
+        setReportingSequence(reportingSequence);
+        setReportingText(reportingText);
     }
 
 
@@ -50,7 +40,7 @@ public class QaEventDO implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }
 
     public Integer getId() {
@@ -66,7 +56,7 @@ public class QaEventDO implements Serializable {
     }
 
     public void setIsBillable(String isBillable) {
-        this.isBillable = isBillable;
+        this.isBillable = DataBaseUtil.trim(isBillable);
     }
 
     public String getName() {
@@ -74,7 +64,7 @@ public class QaEventDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public Integer getReportingSequence() {
@@ -90,7 +80,7 @@ public class QaEventDO implements Serializable {
     }
 
     public void setReportingText(String reportingText) {
-        this.reportingText = reportingText;
+        this.reportingText = DataBaseUtil.trim(reportingText);
     }
 
     public Integer getTest() {
@@ -108,5 +98,4 @@ public class QaEventDO implements Serializable {
     public void setType(Integer type) {
         this.type = type;
     }
-
 }

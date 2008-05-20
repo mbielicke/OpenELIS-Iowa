@@ -2,6 +2,8 @@
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 public class OrganizationAddressDO implements Serializable{
 
@@ -28,11 +30,11 @@ public class OrganizationAddressDO implements Serializable{
 			Integer addressId, String multipleUnit, String streetAddress, String city, String state, String zipCode,
 			String country){
 		
-		this.organizationId = organizationId;
-		this.parentOrganizationId = parentOrganizationId;
-		this.parentOrganization = parentOrganization;
-		this.name = name;
-		this.isActive = isActive;
+		setOrganizationId(organizationId);
+		setParentOrganizationId(parentOrganizationId);
+		setParentOrganization(parentOrganization);
+		setName(name);
+		setIsActive(isActive);
 		addressDO.setId(addressId);
 		addressDO.setMultipleUnit(multipleUnit);
 		addressDO.setStreetAddress(streetAddress);
@@ -48,7 +50,7 @@ public class OrganizationAddressDO implements Serializable{
 	}
 
 	public void setIsActive(String isActive) {
-		this.isActive = isActive;
+		this.isActive = DataBaseUtil.trim(isActive);
 	}
 
 	public String getName() {
@@ -56,7 +58,7 @@ public class OrganizationAddressDO implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = DataBaseUtil.trim(name);
 	}
 
 	public Integer getOrganizationId() {
@@ -84,6 +86,6 @@ public class OrganizationAddressDO implements Serializable{
 	}
 
 	public void setParentOrganization(String parentOrganization) {
-		this.parentOrganization = parentOrganization;
+		this.parentOrganization = DataBaseUtil.trim(parentOrganization);
 	}
 }

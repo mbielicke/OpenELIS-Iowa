@@ -2,22 +2,17 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 public class LabelDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
-    
-    protected String name;             
-    
-    protected String description;             
-
-    protected Integer printerType;             
-    
+    protected Integer id;
+    protected String name; 
+    protected String description;  
+    protected Integer printerType; 
     protected Integer scriptlet;
     
     public LabelDO(){
@@ -25,11 +20,11 @@ public class LabelDO implements Serializable {
     }
     
     public LabelDO( Integer id,String name,String description,Integer printerType,Integer scriptlet){
-     this.id = id;
-     this.name = name;
-     this.description = description;
-     this.printerType = printerType;
-     this.scriptlet = scriptlet;     
+     setId(id);
+     setName(name);
+     setDescription(description);
+     setPrinterType(printerType);
+     setScriptlet(scriptlet);     
     }
 
     public Integer getId() {
@@ -45,7 +40,7 @@ public class LabelDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public Integer getPrinterType() {
@@ -69,6 +64,6 @@ public class LabelDO implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }    
 }

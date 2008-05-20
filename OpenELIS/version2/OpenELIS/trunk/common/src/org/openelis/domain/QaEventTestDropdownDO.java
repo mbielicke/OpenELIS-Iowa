@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class QaEventTestDropdownDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -11,9 +13,9 @@ public class QaEventTestDropdownDO implements Serializable{
     protected String method;
 
     public QaEventTestDropdownDO(Integer id, String test, String method){
-        this.id = id;
-        this.test = test;
-        this.method = method;
+        setId(id);
+        setTest(test);
+        setMethod(method);
     }
 
     public Integer getId() {
@@ -29,7 +31,7 @@ public class QaEventTestDropdownDO implements Serializable{
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        this.method = DataBaseUtil.trim(method);
     }
 
     public String getTest() {
@@ -37,6 +39,6 @@ public class QaEventTestDropdownDO implements Serializable{
     }
 
     public void setTest(String test) {
-        this.test = test;
+        this.test = DataBaseUtil.trim(test);
     }
 }

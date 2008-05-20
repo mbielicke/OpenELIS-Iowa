@@ -2,23 +2,18 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 
 public class ProviderAddressDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -1754500573676617534L;
     
     protected Integer id;             
-
-    protected String location;             
-
-    protected String externalId;             
-
-    protected Integer provider;       
-
+    protected String location;      
+    protected String externalId;   
+    protected Integer provider;    
     protected AddressDO addressDO = new AddressDO();
     
     protected Boolean delete;
@@ -39,10 +34,10 @@ public class ProviderAddressDO implements Serializable {
                             String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone, String cellPhone, String faxPhone,
                              String email, String country){
         
-        this.id = id;
-        this.location = location;
-        this.externalId = externalId;
-        this.provider = provider;       
+        setId(id);
+        setLocation(location);
+        setExternalId(externalId);
+        setProvider(provider);       
         addressDO.setId(addressId);
         addressDO.setMultipleUnit(multipleUnit);
         addressDO.setStreetAddress(streetAddress);
@@ -71,7 +66,7 @@ public class ProviderAddressDO implements Serializable {
     }
 
     public void setExternalId(String externalId) {
-        this.externalId = externalId;
+        this.externalId = DataBaseUtil.trim(externalId);
     }
 
     public Integer getId() {
@@ -87,7 +82,7 @@ public class ProviderAddressDO implements Serializable {
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        this.location = DataBaseUtil.trim(location);
     }
 
     public Integer getProvider() {

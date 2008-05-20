@@ -2,24 +2,18 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 
 public class ProviderDO implements Serializable{
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 3704651414103685347L;
 
-    protected Integer id;             
-
-    protected String lastName;             
-
-    protected String firstName;             
-
-    protected String middleName;                            
-
+    protected Integer id;   
+    protected String lastName;       
+    protected String firstName;   
+    protected String middleName;  
     protected String npi;
-    
     protected Integer typeId;
 
     public ProviderDO(){
@@ -27,12 +21,12 @@ public class ProviderDO implements Serializable{
     }
     
     public ProviderDO(Integer id,String lastName, String firstName, String middleName, Integer typeId,String npi){
-        this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.middleName= middleName;        
-        this.npi = npi;   
-        this.typeId = typeId;
+        setId(id);
+        setLastName(lastName);
+        setFirstName(firstName);
+        setMiddleName(middleName);        
+        setNpi(npi);   
+        setTypeId(typeId);
     }
     
     public String getFirstName() {
@@ -40,7 +34,7 @@ public class ProviderDO implements Serializable{
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = (String)DataBaseUtil.trim(firstName);
     }
 
     public Integer getId() {
@@ -56,7 +50,7 @@ public class ProviderDO implements Serializable{
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = DataBaseUtil.trim(lastName);
     }
 
     public String getMiddleName() {
@@ -64,7 +58,7 @@ public class ProviderDO implements Serializable{
     }
 
     public void setMiddleName(String middleName) {
-        this.middleName = middleName;
+        this.middleName = DataBaseUtil.trim(middleName);
     }
 
     public String getNpi() {
@@ -72,7 +66,7 @@ public class ProviderDO implements Serializable{
     }
 
     public void setNpi(String npi) {
-        this.npi = npi;
+        this.npi = DataBaseUtil.trim(npi);
     }    
 
     public Integer getTypeId() {

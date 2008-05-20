@@ -2,17 +2,14 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class SystemVariableDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
     protected Integer id;
-    
     protected String name;
-    
     protected String value;
     
     public SystemVariableDO(){
@@ -20,9 +17,9 @@ public class SystemVariableDO implements Serializable {
     }
     
     public SystemVariableDO(Integer id, String name, String value){       
-       this.id = id;
-       this.name = name;
-       this.value = value;
+       setId(id);
+       setName(name);
+       setValue(value);
     }
 
     public Integer getId() {
@@ -38,7 +35,7 @@ public class SystemVariableDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public String getValue() {
@@ -46,7 +43,7 @@ public class SystemVariableDO implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = DataBaseUtil.trim(value);
     }
 
     

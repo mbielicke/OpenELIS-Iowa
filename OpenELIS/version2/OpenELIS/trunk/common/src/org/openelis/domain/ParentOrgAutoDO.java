@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class ParentOrgAutoDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -13,11 +15,11 @@ public class ParentOrgAutoDO implements Serializable{
     protected String state;
     
     public ParentOrgAutoDO(Integer id, String name, String address, String city, String state){
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.city = city;
-        this.state = state;
+        setId(id);
+        setName(name);
+        setAddress(address);
+        setCity(city);
+        setState(state);
     }
 
     public String getAddress() {
@@ -25,7 +27,7 @@ public class ParentOrgAutoDO implements Serializable{
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = DataBaseUtil.trim(address);
     }
 
     public String getCity() {
@@ -33,7 +35,7 @@ public class ParentOrgAutoDO implements Serializable{
     }
 
     public void setCity(String city) {
-        this.city = city;
+        this.city = DataBaseUtil.trim(city);
     }
 
     public Integer getId() {
@@ -49,7 +51,7 @@ public class ParentOrgAutoDO implements Serializable{
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public String getState() {
@@ -57,7 +59,7 @@ public class ParentOrgAutoDO implements Serializable{
     }
 
     public void setState(String state) {
-        this.state = state;
+        this.state = DataBaseUtil.trim(state);
     }
 
 }

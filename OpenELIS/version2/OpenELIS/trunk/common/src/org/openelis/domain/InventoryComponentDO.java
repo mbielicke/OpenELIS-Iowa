@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class InventoryComponentDO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -12,15 +14,15 @@ public class InventoryComponentDO implements Serializable{
 	protected String componentName;
 	protected String componentDesc;
 	
-	protected double quantity;
+	protected Double quantity;
 	
-	public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentId, String componentName, String componentDesc, double quantity){
-		this.id = id;
-		this.inventoryItemId = inventoryItemId;
-		this.componentId = componentId;
-		this.componentName = componentName;
-		this.componentDesc = componentDesc;
-		this.quantity = quantity;
+	public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentId, String componentName, String componentDesc, Double quantity){
+		setId(id);
+		setInventoryItemId(inventoryItemId);
+		setComponentId(componentId);
+		setComponentName(componentName);
+		setComponentDesc(componentDesc);
+		setQuantity(quantity);
 	}
 
 	public String getComponentDesc() {
@@ -28,7 +30,7 @@ public class InventoryComponentDO implements Serializable{
 	}
 
 	public void setComponentDesc(String componentDesc) {
-		this.componentDesc = componentDesc;
+		this.componentDesc = DataBaseUtil.trim(componentDesc);
 	}
 
 	public Integer getComponentId() {
@@ -59,7 +61,7 @@ public class InventoryComponentDO implements Serializable{
 		return quantity;
 	}
 
-	public void setQuantity(double quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 
@@ -68,6 +70,6 @@ public class InventoryComponentDO implements Serializable{
 	}
 
 	public void setComponentName(String componentName) {
-		this.componentName = componentName;
+		this.componentName = DataBaseUtil.trim(componentName);
 	}
 }
