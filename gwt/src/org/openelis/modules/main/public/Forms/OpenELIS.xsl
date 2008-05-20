@@ -215,21 +215,21 @@
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				    <xsl:call-template name="menuItem">
 	 				  <xsl:with-param name="key">InternalOrder</xsl:with-param>
-				      <xsl:with-param name="label">order</xsl:with-param>
+				      <xsl:with-param name="label">internalOrders</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">internal</xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">ExternalOrder</xsl:with-param>
-				      <xsl:with-param name="label">order</xsl:with-param>
+				      <xsl:with-param name="label">vendorOrders</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">external</xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">KitOrder</xsl:with-param>
-				      <xsl:with-param name="label">order</xsl:with-param>
+				      <xsl:with-param name="label">kitOrders</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">kits</xsl:with-param>

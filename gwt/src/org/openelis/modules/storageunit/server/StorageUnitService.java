@@ -94,7 +94,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
             DataSet row = new DataSet();
             NumberObject id = new NumberObject(NumberObject.INTEGER);
             StringObject name = new StringObject();
-            name.setValue((nameResult != null ? nameResult.trim() : null));
+            name.setValue(nameResult);
             id.setValue(idResult);
 
             row.setKey(id);
@@ -338,7 +338,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 			StringObject stringId = new StringObject();
 			// BooleanObject selected = new BooleanObject();
 
-			textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
+			textObject.setValue(dropdownText);
 			set.setKey(textObject);
 
 			stringId.setValue(dropdownText);
@@ -376,15 +376,9 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
     private void setFieldsInRPC(FormRPC rpcReturn, StorageUnitDO storageUnitDO) {
     	rpcReturn.setFieldValue(StorageUnitMeta.ID, storageUnitDO.getId());
-    	rpcReturn.setFieldValue(StorageUnitMeta.CATEGORY, (storageUnitDO
-    			.getCategory() == null ? null : storageUnitDO.getCategory()
-    			.trim()));
-    	rpcReturn.setFieldValue(StorageUnitMeta.DESCRIPTION, (storageUnitDO
-    			.getDescription() == null ? null : storageUnitDO
-    			.getDescription().trim()));
-    	rpcReturn.setFieldValue(StorageUnitMeta.IS_SINGULAR, (storageUnitDO
-    			.getIsSingular() == null ? null : storageUnitDO.getIsSingular()
-    			.trim()));
+    	rpcReturn.setFieldValue(StorageUnitMeta.CATEGORY, storageUnitDO.getCategory());
+    	rpcReturn.setFieldValue(StorageUnitMeta.DESCRIPTION, storageUnitDO.getDescription());
+    	rpcReturn.setFieldValue(StorageUnitMeta.IS_SINGULAR, storageUnitDO.getIsSingular());
     }
 
     private StorageUnitDO getStorageUnitDOFromRPC(FormRPC rpcSend) {
@@ -395,9 +389,9 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     	newStorageUnitDO.setCategory(((String) rpcSend
     			.getFieldValue(StorageUnitMeta.CATEGORY)));
     	newStorageUnitDO.setDescription(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.DESCRIPTION)).trim());
+    			.getFieldValue(StorageUnitMeta.DESCRIPTION)));
     	newStorageUnitDO.setIsSingular(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.IS_SINGULAR)).trim());
+    			.getFieldValue(StorageUnitMeta.IS_SINGULAR)));
     
     	return newStorageUnitDO;
     }

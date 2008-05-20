@@ -32,7 +32,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
     public DictionaryScreen() {
         super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
-        name = "Dictionary";
     }
 
     public void onChange(Widget sender) {
@@ -61,8 +60,6 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         loaded = true;
         
         setBpanel((ButtonPanel)getWidget("buttons"));
-        
-        message.setText("Done");
 
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
         modelWidget.addChangeListener(atozTable);

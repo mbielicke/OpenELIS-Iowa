@@ -65,7 +65,7 @@ public class OrderService implements AppScreenFormServiceInt {
         if("internal".equals(action))
             xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/internalOrder.xsl"));
         else if("external".equals(action))
-            xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/externalOrder.xsl"));
+            xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/vendorOrder.xsl"));
         else if("kits".equals(action))
             xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/kitOrder.xsl"));
         

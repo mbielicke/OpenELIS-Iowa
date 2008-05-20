@@ -48,7 +48,7 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="Organization" name="Organization" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="Organization" name="{resource:getString($constants,'organization')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
@@ -105,7 +105,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="{organizationMeta:name()}" width="225px" max="40" tab="{orgAddressMeta:multipleUnit()},{organizationMeta:name()}"/>
+										<textbox case="upper" key="{organizationMeta:name()}" width="225px" max="40" tab="{orgAddressMeta:multipleUnit()},{organizationMeta:id()}"/>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
@@ -170,7 +170,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="{organizationMeta:isActive()}" tab="contactsTable,{parentOrgMeta:name()}"/>
+											<check key="{organizationMeta:isActive()}" tab="{organizationMeta:id()},{parentOrgMeta:name()}"/>
 										</widget>
 								</row>
 								</panel>

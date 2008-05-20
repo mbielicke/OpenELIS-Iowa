@@ -25,7 +25,6 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     
     public LabelScreen() {
         super("org.openelis.modules.label.server.LabelService",!loaded);
-        name = "Label";
     }
 
     public void onChange(Widget sender) {
@@ -50,8 +49,6 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
 
         loaded = true;        
         setBpanel((ButtonPanel)getWidget("buttons"));
-        
-        message.setText("Done");
 
         nameTextbox = (TextBox)getWidget("label.name");
         

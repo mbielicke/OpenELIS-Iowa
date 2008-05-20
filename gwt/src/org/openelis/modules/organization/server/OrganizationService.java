@@ -498,7 +498,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		StringObject stringId = new StringObject();
     		NumberObject numberId = new NumberObject(NumberObject.INTEGER);
      	
-    		textObject.setValue((dropdownText != null ? dropdownText.trim() : null));
+    		textObject.setValue(dropdownText);
     		set.addObject(textObject);
     		
     		if(cat.equals("contactType")){
@@ -546,7 +546,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
 			id.setValue(organizationDO.getParentOrganizationId());
-			text.setValue(organizationDO.getParentOrganization().trim());
+			text.setValue(organizationDO.getParentOrganization());
 			parentOrgSet.setKey(id);
 			parentOrgSet.addObject(text);
 			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, parentOrgSet);
@@ -675,16 +675,16 @@ public class OrganizationService implements AppScreenFormServiceInt,
             data.setKey(idObject);
             //columns
             StringObject nameObject = new StringObject();
-            nameObject.setValue((name != null ? name.trim() : null));
+            nameObject.setValue(name);
             data.addObject(nameObject);
             StringObject addressObject = new StringObject();
-            addressObject.setValue((address != null ? address.trim() : null));
+            addressObject.setValue(address);
             data.addObject(addressObject);
             StringObject cityObject = new StringObject();
-            cityObject.setValue((city != null ? city.trim() : null));
+            cityObject.setValue(city);
             data.addObject(cityObject);
             StringObject stateObject = new StringObject();
-            stateObject.setValue((state != null ? state.trim() : null));
+            stateObject.setValue(state);
             data.addObject(stateObject);
             
             //add the dataset to the datamodel

@@ -72,7 +72,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",!loaded);
-        name="Provider";
     }
     
     public void onChange(Widget sender) {
@@ -97,7 +96,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     public void afterDraw(boolean success) {
         loaded = true;
         setBpanel((ButtonPanel) getWidget("buttons"));        
-        message.setText("Done");
                    
 //      load other widgets
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");

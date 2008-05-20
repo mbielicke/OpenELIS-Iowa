@@ -33,7 +33,6 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 	
 	public InventoryScreen() {
         super("org.openelis.modules.inventory.server.InventoryService",false);
-        name = "Inventory";
 	}
 
     public void onChange(Widget sender) {

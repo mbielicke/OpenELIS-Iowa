@@ -96,7 +96,7 @@ public class LabelService implements AppScreenFormServiceInt {
    
             id.setValue(idResult);
    
-            svname.setValue((nameResult != null ? nameResult.trim() : null));                   
+            svname.setValue(nameResult);                   
             row.setKey(id);          
    
             row.addObject(svname);
@@ -301,7 +301,7 @@ public class LabelService implements AppScreenFormServiceInt {
          
             
             StringObject textObject = new StringObject();
-             textObject.setValue(dropDownText.trim());
+             textObject.setValue(dropDownText);
              
             set.addObject(textObject);
             
@@ -330,8 +330,8 @@ public class LabelService implements AppScreenFormServiceInt {
         NumberField labelIdField = (NumberField) rpcSend.getField(LabelMeta.ID);
         
         labelDO.setId((Integer)labelIdField.getValue());
-        labelDO.setName(((String)rpcSend.getFieldValue(LabelMeta.NAME)).trim());
-        labelDO.setDescription(((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION)).trim());
+        labelDO.setName(((String)rpcSend.getFieldValue(LabelMeta.NAME)));
+        labelDO.setDescription(((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION)));
               
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE)))
             labelDO.setPrinterType((Integer)rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE));   

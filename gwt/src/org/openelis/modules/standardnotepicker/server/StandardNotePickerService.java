@@ -32,22 +32,12 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 
 	private static final long serialVersionUID = -2489317407834940845L;
 
-	public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    	return null;
+    }
+
+    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -56,7 +46,17 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		return null;
 	}
 
-	public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+
+    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -71,14 +71,14 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 	}
     
     public HashMap getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl"));
-        HashMap map = new HashMap();
-        map.put("xml",xml);
-        return map;
+        return null;
     }
 	
-	public PagedTreeField getTreeModel(StringObject name, StringObject desc) throws RPCException{
+	public HashMap getXMLData(HashMap args) throws RPCException {
+    	return null;
+    }
+
+    public PagedTreeField getTreeModel(StringObject name, StringObject desc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		PagedTreeField returnTree = new PagedTreeField();
 		TreeModel treeModel = new TreeModel();
@@ -169,10 +169,5 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 			returnString.setValue("");
 			return returnString;
 		}
-	}
-
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

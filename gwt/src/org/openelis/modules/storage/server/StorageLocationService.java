@@ -99,7 +99,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
                 DataSet row = new DataSet();
                 NumberObject id = new NumberObject(NumberObject.INTEGER);
                 StringObject name = new StringObject();
-                name.setValue((nameResult != null ? nameResult.trim() : null));
+                name.setValue(nameResult);
                 id.setValue(idResult);
                 
                 row.setKey(id);         
@@ -328,7 +328,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     		       			NumberObject storageUnitId = new NumberObject(NumberObject.INTEGER);
     		       			StringObject storageUnitText = new StringObject();
     		       			storageUnitId.setValue(slDO.getStorageUnitId());
-    		       			storageUnitText.setValue(slDO.getStorageUnit().trim());
+    		       			storageUnitText.setValue(slDO.getStorageUnit());
     		       			storageUnitSet.setKey(storageUnitId);
     		       			storageUnitSet.addObject(storageUnitText);
     		       			row.getColumn(0).setValue(storageUnitSet);
@@ -364,9 +364,9 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 
     private void setFieldsInRPC(FormRPC rpcReturn, StorageLocationDO storageLocDO){
 		rpcReturn.setFieldValue(StorageLocationMeta.ID, storageLocDO.getId());
-		rpcReturn.setFieldValue(StorageLocationMeta.IS_AVAILABLE, (storageLocDO.getIsAvailable() == null ? null : storageLocDO.getIsAvailable().trim()));
-		rpcReturn.setFieldValue(StorageLocationMeta.LOCATION, (storageLocDO.getLocation() == null ? null : storageLocDO.getLocation().trim()));
-		rpcReturn.setFieldValue(StorageLocationMeta.NAME, (storageLocDO.getName() == null ? null : storageLocDO.getName().trim()));
+		rpcReturn.setFieldValue(StorageLocationMeta.IS_AVAILABLE, storageLocDO.getIsAvailable());
+		rpcReturn.setFieldValue(StorageLocationMeta.LOCATION, storageLocDO.getLocation());
+		rpcReturn.setFieldValue(StorageLocationMeta.NAME, storageLocDO.getName());
 		
 //		we need to create a dataset for the storage unit auto complete
 		if(storageLocDO.getStorageUnitId() == null)
@@ -376,7 +376,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
 			id.setValue(storageLocDO.getStorageUnitId());
-			text.setValue(storageLocDO.getStorageUnit().trim());
+			text.setValue(storageLocDO.getStorageUnit());
 			storageUnitSet.setKey(id);
 			storageUnitSet.addObject(text);
 			rpcReturn.setFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION, storageUnitSet);
@@ -388,8 +388,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		
 		newStorageLocDO.setId((Integer)rpcSend.getFieldValue(StorageLocationMeta.ID));
 		newStorageLocDO.setIsAvailable((String) rpcSend.getFieldValue(StorageLocationMeta.IS_AVAILABLE));
-		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.LOCATION)).trim());
-		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.NAME)).trim());
+		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.LOCATION)));
+		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.NAME)));
 		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationChildMeta.ID));
 		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION));
         newStorageLocDO.setStorageUnit((String)((DropDownField)rpcSend.getField(StorageLocationStorageUnitMeta.DESCRIPTION)).getTextValue());
@@ -422,7 +422,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 					childDO.setId((Integer)id.getValue());
 				
 				childDO.setStorageUnitId((Integer)((DropDownField)row.getColumn(0)).getValue());
-				childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()).trim());
+				childDO.setLocation(((String)((StringField)row.getColumn(1)).getValue()));
 				childDO.setIsAvailable(((String)((CheckField)row.getColumn(2)).getValue()));
 					
 				storageLocationChildren.add(childDO);	
@@ -445,12 +445,8 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			Integer id = resultDO.getId();
 			//desc
 			String desc = resultDO.getDescription();
-			if(desc != null)
-				desc = desc.trim();
 			//category
 			String category = resultDO.getCategory();
-			if(category != null)
-				category = category.trim();
 			
 			DataSet data = new DataSet();
 			//hidden id

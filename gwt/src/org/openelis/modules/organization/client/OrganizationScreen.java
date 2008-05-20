@@ -29,7 +29,6 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -62,7 +61,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     public OrganizationScreen() {
         super("org.openelis.modules.organization.server.OrganizationService",
               !loaded);
-        name = "Order";
     }
 
     public void onChange(Widget sender) {

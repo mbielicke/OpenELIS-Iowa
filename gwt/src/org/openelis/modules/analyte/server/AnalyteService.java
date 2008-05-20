@@ -87,7 +87,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
                 DataSet row = new DataSet();
                 NumberObject id = new NumberObject(NumberObject.INTEGER);
                 StringObject name = new StringObject();
-                name.setValue((nameResult != null ? nameResult.trim() : null));
+                name.setValue(nameResult);
                 id.setValue(idResult);
                 
                 row.setKey(id);         
@@ -268,10 +268,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 
     private void setFieldsInRPC(FormRPC rpcReturn, AnalyteDO analyteDO){
 		rpcReturn.setFieldValue(AnalyteMeta.ID, analyteDO.getId());
-		rpcReturn.setFieldValue(AnalyteMeta.NAME, (analyteDO.getName() == null ? null : analyteDO.getName().trim()));
-		rpcReturn.setFieldValue(AnalyteMeta.IS_ACTIVE, (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive().trim()));
+		rpcReturn.setFieldValue(AnalyteMeta.NAME, (analyteDO.getName() == null ? null : analyteDO.getName()));
+		rpcReturn.setFieldValue(AnalyteMeta.IS_ACTIVE, (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive()));
 		rpcReturn.setFieldValue(AnalyteMeta.ANALYTE_GROUP, analyteDO.getAnalyteGroup());
-		rpcReturn.setFieldValue(AnalyteMeta.EXTERNAL_ID, (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId().trim()));
+		rpcReturn.setFieldValue(AnalyteMeta.EXTERNAL_ID, (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId()));
 		
 //		we need to create a dataset for the parent organization auto complete
 		if(analyteDO.getParentAnalyteId() == null)
@@ -281,7 +281,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			NumberObject id = new NumberObject(NumberObject.INTEGER);
 			StringObject text = new StringObject();
 			id.setValue(analyteDO.getParentAnalyteId());
-			text.setValue(analyteDO.getParentAnalyte().trim());
+			text.setValue(analyteDO.getParentAnalyte());
 			parentAnalyteSet.setKey(id);
 			parentAnalyteSet.addObject(text);
 			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, parentAnalyteSet);
@@ -292,12 +292,12 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		AnalyteDO newAnalyteDO = new AnalyteDO();
 
 		newAnalyteDO.setId((Integer) rpcSend.getFieldValue(AnalyteMeta.ID));
-		newAnalyteDO.setName(((String) rpcSend.getFieldValue(AnalyteMeta.NAME)).trim());
-		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(AnalyteMeta.IS_ACTIVE)).trim());
+		newAnalyteDO.setName(((String) rpcSend.getFieldValue(AnalyteMeta.NAME)));
+		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(AnalyteMeta.IS_ACTIVE)));
 		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(AnalyteMeta.ANALYTE_GROUP));
 		newAnalyteDO.setParentAnalyteId((Integer) rpcSend.getFieldValue(AnalyteParentAnalyteMeta.NAME));
         newAnalyteDO.setParentAnalyte((String)((DropDownField)rpcSend.getField(AnalyteParentAnalyteMeta.NAME)).getTextValue());
-		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(AnalyteMeta.EXTERNAL_ID)).trim());		
+		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(AnalyteMeta.EXTERNAL_ID)));		
 
 		return newAnalyteDO;
 	}
@@ -324,7 +324,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			data.setKey(idObject);
 			//columns
 			StringObject nameObject = new StringObject();
-			nameObject.setValue(name.trim());
+			nameObject.setValue(name);
 			data.addObject(nameObject);
 			
 			//add the dataset to the datamodel
