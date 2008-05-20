@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class AnalyteDO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -20,13 +22,13 @@ public class AnalyteDO implements Serializable{
 
 	public AnalyteDO(Integer id, String name, String isActive, Integer analyteGroup, Integer parentAnalyteId, String parentAnalyte,
 						String externalId){
-		this.id = id;
-		this.name = name;
-		this.isActive = isActive;
-		this.analyteGroup = analyteGroup;
-		this.parentAnalyteId = parentAnalyteId;
-		this.parentAnalyte = parentAnalyte;
-		this.externalId = externalId;		
+		setId(id);
+		setName(name);
+		setIsActive(isActive);
+		setAnalyteGroup(analyteGroup);
+		setParentAnalyteId(parentAnalyteId);
+		setParentAnalyte(parentAnalyte);
+		setExternalId(externalId);		
 	}
 	
 	public Integer getAnalyteGroup() {
@@ -39,7 +41,7 @@ public class AnalyteDO implements Serializable{
 		return externalId;
 	}
 	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+		this.externalId = DataBaseUtil.trim(externalId);
 	}
 	public Integer getId() {
 		return id;
@@ -51,19 +53,19 @@ public class AnalyteDO implements Serializable{
 		return isActive;
 	}
 	public void setIsActive(String isActive) {
-		this.isActive = isActive;
+		this.isActive = DataBaseUtil.trim(isActive);
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = DataBaseUtil.trim(name);
 	}
 	public String getParentAnalyte() {
 		return parentAnalyte;
 	}
 	public void setParentAnalyte(String parentAnalyte) {
-		this.parentAnalyte = parentAnalyte;
+		this.parentAnalyte = DataBaseUtil.trim(parentAnalyte);
 	}
 	public Integer getParentAnalyteId() {
 		return parentAnalyteId;

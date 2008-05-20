@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class TestTrailerDO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -16,10 +18,10 @@ public class TestTrailerDO implements Serializable{
 	}
 
 	public TestTrailerDO(Integer id, String name, String description, String text){
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.text = text;
+		setId(id);
+		setName(name);
+		setDescription(description);
+		setText(text);
 	}
 
 	public String getDescription() {
@@ -27,7 +29,7 @@ public class TestTrailerDO implements Serializable{
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = DataBaseUtil.trim(description);
 	}
 
 	public Integer getId() {
@@ -43,7 +45,7 @@ public class TestTrailerDO implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = DataBaseUtil.trim(name);
 	}
 
 	public String getText() {
@@ -51,6 +53,6 @@ public class TestTrailerDO implements Serializable{
 	}
 
 	public void setText(String text) {
-		this.text = text;
+		this.text = DataBaseUtil.trim(text);
 	}
 }

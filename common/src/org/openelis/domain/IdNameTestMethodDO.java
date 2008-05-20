@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class IdNameTestMethodDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -12,10 +14,10 @@ public class IdNameTestMethodDO implements Serializable{
     protected String method;
     
     public IdNameTestMethodDO(Integer id, String name, String test, String method){
-        this.id = id;
-        this.name = name;
-        this.test = test;
-        this.method = method;        
+        setId(id);
+        setName(name);
+        setTest(test);
+        setMethod(method);        
     }
 
     public Integer getId() {
@@ -31,7 +33,7 @@ public class IdNameTestMethodDO implements Serializable{
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        this.method = DataBaseUtil.trim(method);
     }
 
     public String getName() {
@@ -39,7 +41,7 @@ public class IdNameTestMethodDO implements Serializable{
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public String getTest() {
@@ -47,7 +49,7 @@ public class IdNameTestMethodDO implements Serializable{
     }
 
     public void setTest(String test) {
-        this.test = test;
+        this.test = DataBaseUtil.trim(test);
     }
 
 }

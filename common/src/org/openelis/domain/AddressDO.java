@@ -2,11 +2,10 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class AddressDO implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6675858186327436797L;
 
 	protected Integer id; 
@@ -33,21 +32,21 @@ public class AddressDO implements Serializable{
     public AddressDO(Integer id, Integer referenceId, Integer referenceTable, Integer type, String multipleUnit,
     		String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone, 
     		String cellPhone, String faxPhone, String email, String country) {
-        this.id = id;
-        this.referenceId = referenceId;
-        this.referenceTable = referenceTable;
-        this.type = type;
-        this.multipleUnit = multipleUnit;
-        this.streetAddress = streetAddress;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.workPhone = workPhone;
-        this.homePhone = homePhone;
-        this.cellPhone = cellPhone;
-        this.faxPhone = faxPhone;
-        this.email = email;
-        this.country = country;
+        setId(id);
+        setReferenceId(referenceId);
+        setReferenceTable(referenceTable);
+        setType(type);
+        setMultipleUnit(multipleUnit);
+        setStreetAddress(streetAddress);
+        setCity(city);
+        setState(state);
+        setZipCode(zipCode);
+        setWorkPhone(workPhone);
+        setHomePhone(homePhone);
+        setCellPhone(cellPhone);
+        setFaxPhone(faxPhone);
+        setEmail(email);
+        setCountry(country);
     }
 
 	public String getCellPhone() {
@@ -55,7 +54,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setCellPhone(String cellPhone) {
-		this.cellPhone = cellPhone;
+		this.cellPhone = DataBaseUtil.trim(cellPhone);
 	}
 
 	public String getCity() {
@@ -63,7 +62,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setCity(String city) {
-		this.city = city;
+		this.city = DataBaseUtil.trim(city);
 	}
 
 	public String getCountry() {
@@ -71,7 +70,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setCountry(String country) {
-		this.country = country;
+		this.country = DataBaseUtil.trim(country);
 	}
 
 	public String getEmail() {
@@ -79,7 +78,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = DataBaseUtil.trim(email);
 	}
 
 	public String getFaxPhone() {
@@ -87,7 +86,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setFaxPhone(String faxPhone) {
-		this.faxPhone = faxPhone;
+		this.faxPhone = DataBaseUtil.trim(faxPhone);
 	}
 
 	public String getHomePhone() {
@@ -95,7 +94,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setHomePhone(String homePhone) {
-		this.homePhone = homePhone;
+		this.homePhone = DataBaseUtil.trim(homePhone);
 	}
 
 	public Integer getId() {
@@ -111,7 +110,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setMultipleUnit(String multipleUnit) {
-		this.multipleUnit = multipleUnit;
+		this.multipleUnit = DataBaseUtil.trim(multipleUnit);
 	}
 
 	public Integer getReferenceId() {
@@ -135,7 +134,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setState(String state) {
-		this.state = state;
+		this.state = DataBaseUtil.trim(state);
 	}
 
 	public String getStreetAddress() {
@@ -143,7 +142,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
+		this.streetAddress = DataBaseUtil.trim(streetAddress);
 	}
 
 	public Integer getType() {
@@ -159,7 +158,7 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setWorkPhone(String workPhone) {
-		this.workPhone = workPhone;
+		this.workPhone = DataBaseUtil.trim(workPhone);
 	}
 
 	public String getZipCode() {
@@ -167,6 +166,6 @@ public class AddressDO implements Serializable{
 	}
 
 	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
+		this.zipCode = DataBaseUtil.trim(zipCode);
 	}
 }

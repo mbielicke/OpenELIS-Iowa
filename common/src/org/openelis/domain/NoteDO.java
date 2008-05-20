@@ -3,6 +3,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
 public class NoteDO implements Serializable{
@@ -26,22 +27,22 @@ public class NoteDO implements Serializable{
     }
 
     public NoteDO(Integer id, Integer referenceId, Integer referenceTable, Date timestamp, String isExternal, Integer systemUser, String subject, String text) {
-    	this.id = id;
-    	this.referenceId = referenceId;
-    	this.referenceTable = referenceTable;
-    	this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
-    	this.isExternal = isExternal;
-    	this.systemUser = systemUser;
-    	this.subject = subject;
-    	this.text = text;
+    	setId(id);
+    	setReferenceId(referenceId);
+    	setReferenceTable(referenceTable);
+    	setTimestamp(new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp));
+    	setIsExternal(isExternal);
+    	setSystemUser(systemUser);
+    	setSubject(subject);
+    	setText(text);
     }
     
     public NoteDO(Integer id, Integer systemUser, String text, Date timestamp, String subject){
-    	this.id = id;
-    	this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
-    	this.systemUser = systemUser;
-    	this.subject = subject;
-    	this.text = text;
+    	setId(id);
+    	setTimestamp(new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp));
+    	setSystemUser(systemUser);
+    	setSubject(subject);
+    	setText(text);
     }
     
 	public Integer getId() {
@@ -54,7 +55,7 @@ public class NoteDO implements Serializable{
 		return isExternal;
 	}
 	public void setIsExternal(String isExternal) {
-		this.isExternal = isExternal;
+		this.isExternal = DataBaseUtil.trim(isExternal);
 	}
 	public Integer getReferenceId() {
 		return referenceId;
@@ -72,7 +73,7 @@ public class NoteDO implements Serializable{
 		return subject;
 	}
 	public void setSubject(String subject) {
-		this.subject = subject;
+		this.subject = DataBaseUtil.trim(subject);
 	}
 	public Integer getSystemUser() {
 		return systemUser;
@@ -84,13 +85,13 @@ public class NoteDO implements Serializable{
 		return text;
 	}
 	public void setText(String text) {
-		this.text = text;
+		this.text = DataBaseUtil.trim(text);
 	}
 	public Datetime getTimestamp() {
 		return timestamp;
 	}
 	public void setTimestamp(Datetime timestamp) {
-		this.timestamp = new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp);
+		this.timestamp = timestamp;
 	} 
 
 }

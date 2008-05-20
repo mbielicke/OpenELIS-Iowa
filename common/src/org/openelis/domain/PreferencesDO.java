@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class PreferencesDO implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -18,10 +20,10 @@ public class PreferencesDO implements Serializable {
                          Integer system_user,
                          String  key,
                          String  text) {
-        this.id = id;
-        this.system_user = system_user;
-        this.key = key;
-        this.text = text;
+        setId(id);
+        setSystem_user(system_user);
+        setKey(key);
+        setText(text);
     }
 
     public Integer getId() {
@@ -37,7 +39,7 @@ public class PreferencesDO implements Serializable {
     }
 
     public void setKey(String key) {
-        this.key = key;
+        this.key = DataBaseUtil.trim(key);
     }
 
     public Integer getSystem_user() {
@@ -53,7 +55,7 @@ public class PreferencesDO implements Serializable {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = DataBaseUtil.trim(text);
     }
     
 

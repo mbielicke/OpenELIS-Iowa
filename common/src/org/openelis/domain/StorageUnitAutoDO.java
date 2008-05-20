@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class StorageUnitAutoDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -11,9 +13,9 @@ public class StorageUnitAutoDO implements Serializable{
     protected String category;
     
     public StorageUnitAutoDO(Integer id, String description, String category){
-        this.id = id;
-        this.description = description;
-        this.category = category;        
+        setId(id);
+        setDescription(description);
+        setCategory(category);        
     }
 
     public String getCategory() {
@@ -21,7 +23,7 @@ public class StorageUnitAutoDO implements Serializable{
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        this.category = DataBaseUtil.trim(category);
     }
 
     public String getDescription() {
@@ -29,7 +31,7 @@ public class StorageUnitAutoDO implements Serializable{
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }
 
     public Integer getId() {

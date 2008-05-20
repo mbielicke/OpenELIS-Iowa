@@ -2,11 +2,10 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class StorageUnitDO implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -896897119790254351L;
 
 	protected Integer id; 
@@ -19,10 +18,10 @@ public class StorageUnitDO implements Serializable{
     }
 
     public StorageUnitDO(Integer id, String category, String description, String isSingular) {
-        this.id = id;
-        this.category = category;
-        this.description = description;
-        this.isSingular = isSingular;
+        setId(id);
+        setCategory(category);
+        setDescription(description);
+        setIsSingular(isSingular);
     }
 
 	public String getCategory() {
@@ -30,7 +29,7 @@ public class StorageUnitDO implements Serializable{
 	}
 
 	public void setCategory(String category) {
-		this.category = category;
+		this.category = DataBaseUtil.trim(category);
 	}
 
 	public String getDescription() {
@@ -38,7 +37,7 @@ public class StorageUnitDO implements Serializable{
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = DataBaseUtil.trim(description);
 	}
 
 	public Integer getId() {
@@ -54,6 +53,6 @@ public class StorageUnitDO implements Serializable{
 	}
 
 	public void setIsSingular(String isSingular) {
-		this.isSingular = isSingular;
+		this.isSingular = DataBaseUtil.trim(isSingular);
 	}
 }

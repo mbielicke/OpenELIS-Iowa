@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class IdNameDO implements Serializable{
     
     private static final long serialVersionUID = 1L;
@@ -10,8 +12,8 @@ public class IdNameDO implements Serializable{
     protected String name;
     
     public IdNameDO(Integer id, String name){
-        this.id = id;
-        this.name = name;
+        setId(id);
+        setName(name);
     }
 
     public Integer getId() {
@@ -27,7 +29,7 @@ public class IdNameDO implements Serializable{
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
 }
