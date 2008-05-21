@@ -271,7 +271,7 @@ public class CategoryBean implements CategoryRemote {
     } 
         
     public Integer getCategoryId(String systemName){
-        Query query = manager.createNamedQuery("Category.IdIdBySystemName");  
+        Query query = manager.createNamedQuery("Category.IdBySystemName");  
         query.setParameter("systemName", systemName);
         Integer categoryId = null;
         try{ 
@@ -307,7 +307,7 @@ public class CategoryBean implements CategoryRemote {
     private void validateCategory(CategoryDO categoryDO,List<Exception> exceptionList){
 
             if(!("").equals(categoryDO.getSystemName())){
-                Query catIdQuery  = manager.createNamedQuery("Category.IdIdBySystemName");
+                Query catIdQuery  = manager.createNamedQuery("Category.IdBySystemName");
                 catIdQuery.setParameter("systemName", categoryDO.getSystemName());
                 Integer catId = null;
                 try{
@@ -355,11 +355,10 @@ public class CategoryBean implements CategoryRemote {
             
              if(!("").equals(dictDO.getSystemName())){ 
                if(!systemNames.contains(dictDO.getSystemName())){     
-                 Query catIdQuery  = manager.createNamedQuery("Dictionary.IdBySystemName");
+                 Query catIdQuery  = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
                  catIdQuery.setParameter("systemName", dictDO.getSystemName());
                  Integer catId = null;
                  try{
-
                      catId = (Integer)catIdQuery.getSingleResult();
                  }catch(NoResultException ex){                     
                      ex.printStackTrace();
@@ -369,15 +368,16 @@ public class CategoryBean implements CategoryRemote {
                  
                   if(catId != null){
                       if(!catId.equals(categoryId)){                                                        
-
                           exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
                       }
-                  }
-                           
+                  }                           
                 systemNames.add(dictDO.getSystemName());                            
-            }else{      
-
-                exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.SYSTEM_NAME));
+            }else{
+                if(dictDO.getId() ==null){
+                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.SYSTEM_NAME));
+                }else {
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
+                }
             }
             
        }                 
