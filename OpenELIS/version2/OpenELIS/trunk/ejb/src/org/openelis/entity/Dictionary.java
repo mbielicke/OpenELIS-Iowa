@@ -32,7 +32,9 @@ import org.openelis.utils.Auditable;
                                                                                " d.isActive='Y' and d.category = :id order by d.entry"),
                        @NamedQuery(name = "Dictionary.autoCompleteByEntry", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
                        @NamedQuery(name = "Dictionary.IdBySystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
-                       @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry")})
+                       @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
+                       @NamedQuery(name = "Dictionary.CategoryIdBySystemName", query = "select d.category from Dictionary d where d.systemName = :systemName"),
+                       @NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.category from Dictionary d where d.entry = :entry")})
 
 @Entity
 @Table(name="dictionary")

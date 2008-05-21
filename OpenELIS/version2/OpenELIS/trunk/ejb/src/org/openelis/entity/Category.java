@@ -28,7 +28,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Category.Category", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
                               "  from Category c where c.id = :id"),
-              @NamedQuery(name = "Category.IdIdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
+              @NamedQuery(name = "Category.IdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
                
 @Entity
 @Table(name="category")
