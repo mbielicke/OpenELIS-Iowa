@@ -519,7 +519,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 
     //autocomplete textbox method
     //match is what they typed
-    public DataModel getMatches(String cat, DataModel model, String match) {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {
     	if(cat.equals("parentOrg"))
     		return getParentOrgMatches(match);
     	

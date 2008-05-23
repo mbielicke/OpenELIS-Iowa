@@ -354,7 +354,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     	return null;
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match) {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {
     	if(cat.equals("storageUnit"))
     		return getStorageUnitMatches(match);
     	

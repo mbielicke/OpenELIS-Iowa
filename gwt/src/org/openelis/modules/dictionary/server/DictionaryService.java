@@ -415,7 +415,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     }
 
    //  the method called to load the matching entries in the autocomplete box(es) on the screen
-    public DataModel getMatches(String cat, DataModel model, String match) {         
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {         
         
        if(("relatedEntry").equals(cat)){ 
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
