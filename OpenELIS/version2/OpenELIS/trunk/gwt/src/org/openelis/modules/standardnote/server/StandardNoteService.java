@@ -277,7 +277,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		return null;
 	}
 
-	public DataModel getMatches(String cat, DataModel model, String match) {
+	public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {
 		return null;
 	}
 

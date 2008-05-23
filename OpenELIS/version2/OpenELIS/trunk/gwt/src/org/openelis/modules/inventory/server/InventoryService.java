@@ -70,7 +70,7 @@ public class InventoryService implements AppScreenFormServiceInt,
 		return null;
 	}
 
-	public DataModel getMatches(String cat, DataModel model, String match) throws RPCException {
+	public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}

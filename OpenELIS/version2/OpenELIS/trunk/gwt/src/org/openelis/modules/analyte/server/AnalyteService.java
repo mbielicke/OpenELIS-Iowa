@@ -17,6 +17,7 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -259,7 +260,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     	return null;
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
     	if(cat.equals("parentAnalyte"))
     		return getParentAnalyteMatches(match);
     	
