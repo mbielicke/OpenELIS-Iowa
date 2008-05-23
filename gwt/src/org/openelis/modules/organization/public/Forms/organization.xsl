@@ -126,9 +126,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
 												<widget>
-													<autoDropdown key="{orgAddressMeta:state()}" case="upper" width="40px" popWidth="auto" tab="{orgAddressMeta:zipCode()},{orgAddressMeta:city()}">
-													<widths>32</widths>
-													</autoDropdown>
+													<autoDropdown key="{orgAddressMeta:state()}" case="upper" width="40px" tab="{orgAddressMeta:zipCode()},{orgAddressMeta:city()}"/>
 												</widget>
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
@@ -148,9 +146,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown key="{orgAddressMeta:country()}" case="mixed" width="175px" popWidth="auto" tab="{parentOrgMeta:name()},{orgAddressMeta:zipCode()}">
-													<widths>167</widths>
-												</autoDropdown>
+												<autoDropdown key="{orgAddressMeta:country()}" case="mixed" width="175px" tab="{parentOrgMeta:name()},{orgAddressMeta:zipCode()}"/>
 										</widget>					
 									</row>
 								<row>
@@ -158,7 +154,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" popWidth="423px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}">
+										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" tab="{organizationMeta:isActive()},{orgAddressMeta:country()}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
@@ -189,20 +185,14 @@
 										<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,<xsl:value-of select='resource:getString($constants,"email")'/></headers>
 										<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" popWidth="auto">
-											  <widths>100</widths>
-											</autoDropdown>
+											<autoDropdown case="mixed" width="90px"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown case="upper" width="40px" popWidth="auto">
-												 <widths>32</widths>
-											</autoDropdown>
+											<autoDropdown case="upper" width="40px"/>
 										 	<textbox case="mixed"/>
-										 	<autoDropdown case="mixed" width="110px" popWidth="auto">
-											  <widths>102</widths>
-											</autoDropdown>
+										 	<autoDropdown case="mixed" width="110px"/>
 										 	<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
@@ -239,20 +229,14 @@
 										<xsl:value-of select='resource:getString($constants,"email")'/></headers>
 										<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" popWidth="auto" multiSelect="true">
-											  <widths>90</widths>
-											</autoDropdown>
+											<autoDropdown case="mixed" width="90px" multiSelect="true"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
 											<textbox case="upper"/>
-											<autoDropdown case="upper" width="40px" popWidth="auto" multiSelect="true" >
-												<widths>40</widths>
-											</autoDropdown>
+											<autoDropdown case="upper" width="40px" multiSelect="true"/>
 										 	<textbox case="mixed"/>
-										 	<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect="true">
-											  <widths>110</widths>
-											</autoDropdown>		
+										 	<autoDropdown case="mixed" width="110px" multiSelect="true"/>
 										 	<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
