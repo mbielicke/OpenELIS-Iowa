@@ -2,6 +2,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class InventoryItemDO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -9,220 +11,243 @@ public class InventoryItemDO implements Serializable{
 	protected Integer id;
 	protected String name;
 	protected String description;
+    protected Integer category;
+    protected Integer store;
 	protected Integer quantityMinLevel;
 	protected Integer quantityMaxLevel;
 	protected Integer quantityToReorder;
-	protected Integer unitOfMeasure;
+    protected Integer purchasedUnits;
+    protected Integer dispensedUnits;
 	protected String isReorderAuto;
 	protected String isLotMaintained;
+    protected String isSerialMaintained;
 	protected String isActive;
-	protected Integer aveLeadTime;
+    protected String isBulk;
+    protected String isNotForSale;
+    protected String isSubAssembly;
+    protected String isLabor;
+    protected String isNoInventory;
+    protected String productUri;
+    protected Integer aveLeadTime;
 	protected double aveCost;
 	protected Integer aveDailyUse;
 	
-	//FIXME fields not yet in database
-	protected Integer store;
-	protected String purchasedUnit;
-	protected String dispensedUnit;
-	protected String isBulk;
-	protected String isNotForSale;
-	protected String isSubAssembly;
-	protected String isComponent;
-	
-	public InventoryItemDO(Integer id, String name, String description, Integer quantityMinLevel, Integer quantityMaxLevel,
-							Integer quantityToReorder, Integer unitOfMeasure, String isReorderAuto, String isLotMaintained,
-							String isActive, Integer aveLeadTime, double aveCost, Integer aveDailyUse){
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.quantityMinLevel = quantityMinLevel;
-		this.quantityMaxLevel = quantityMaxLevel;
-		this.quantityToReorder = quantityToReorder;
-		this.unitOfMeasure = unitOfMeasure;
-		this.isReorderAuto = isReorderAuto;
-		this.isLotMaintained = isLotMaintained;
-		this.isActive = isActive;
-		this.aveLeadTime = aveLeadTime;
-		this.aveCost = aveCost;
-		this.aveDailyUse = aveDailyUse;
+	public InventoryItemDO(){
+        
+    }
+    
+	public InventoryItemDO(Integer id, String name, String description, Integer category, Integer store,
+                           Integer quantityMinLevel, Integer quantityMaxLevel, Integer quantityToReorder, Integer purchasedUnits,
+                           Integer dispensedUnits, String isReorderAuto, String isLotMaintained, String isSerialMaintained,
+                           String isActive, String isBulk, String isNotForSale, String isSubAssembly, String isLabor, String isNoInventory,
+                           String productUri, Integer aveLeadTime, double aveCost, Integer aveDailyUse){
+        
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setCategory(category);
+        setStore(store);
+        setQuantityMinLevel(quantityMinLevel);
+        setQuantityMaxLevel(quantityMaxLevel);
+        setQuantityToReorder(quantityToReorder);
+        setPurchasedUnits(purchasedUnits);
+        setDispensedUnits(dispensedUnits);
+        setIsReorderAuto(isReorderAuto);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
+        setIsActive(isActive);
+        setIsBulk(isBulk);
+        setIsNotForSale(isNotForSale);
+        setIsSubAssembly(isSubAssembly);
+        setIsLabor(isLabor);
+        setIsNoInventory(isNoInventory);
+        setProductUri(productUri);
+        setAveLeadTime(aveLeadTime);
+        setAveCost(aveCost);
+        setAveDailyUse(aveDailyUse);
 	}
-	
-	//this will be the contructor when all the items get in the database
-	public InventoryItemDO(Integer id, String name, String description, Integer quantityMinLevel, Integer quantityMaxLevel,
-			Integer quantityToReorder, Integer unitOfMeasure, String isReorderAuto, String isLotMaintained, String isActive,
-			Integer aveLeadTime, double aveCost, Integer aveDailyUse, Integer store, String purchasedUnit, String dispensedUnit,
-			String isBulk, String isNotForSale, String isSubAssembly, String isComponent){
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.quantityMinLevel = quantityMinLevel;
-		this.quantityMaxLevel = quantityMaxLevel;
-		this.quantityToReorder = quantityToReorder;
-		this.unitOfMeasure = unitOfMeasure;
-		this.isReorderAuto = isReorderAuto;
-		this.isLotMaintained = isLotMaintained;
-		this.isActive = isActive;
-		this.aveLeadTime = aveLeadTime;
-		this.aveCost = aveCost;
-		this.aveDailyUse = aveDailyUse;
-		this.store = store;
-		this.purchasedUnit = purchasedUnit;
-		this.dispensedUnit = dispensedUnit;
-		this.isBulk = isBulk;
-		this.isNotForSale = isNotForSale;
-		this.isSubAssembly = isSubAssembly;
-		this.isComponent = isComponent;
-	}
+    
+    public double getAveCost() {
+        return aveCost;
+    }
 
-	public double getAveCost() {
-		return aveCost;
-	}
+    public void setAveCost(double aveCost) {
+        this.aveCost = aveCost;
+    }
 
-	public void setAveCost(double aveCost) {
-		this.aveCost = aveCost;
-	}
+    public Integer getAveDailyUse() {
+        return aveDailyUse;
+    }
 
-	public Integer getAveDailyUse() {
-		return aveDailyUse;
-	}
+    public void setAveDailyUse(Integer aveDailyUse) {
+        this.aveDailyUse = aveDailyUse;
+    }
 
-	public void setAveDailyUse(Integer aveDailyUse) {
-		this.aveDailyUse = aveDailyUse;
-	}
+    public Integer getAveLeadTime() {
+        return aveLeadTime;
+    }
 
-	public Integer getAveLeadTime() {
-		return aveLeadTime;
-	}
+    public void setAveLeadTime(Integer aveLeadTime) {
+        this.aveLeadTime = aveLeadTime;
+    }
 
-	public void setAveLeadTime(Integer aveLeadTime) {
-		this.aveLeadTime = aveLeadTime;
-	}
+    public Integer getCategory() {
+        return category;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getDispensedUnit() {
-		return dispensedUnit;
-	}
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+    }
 
-	public void setDispensedUnit(String dispensedUnit) {
-		this.dispensedUnit = dispensedUnit;
-	}
+    public Integer getDispensedUnits() {
+        return dispensedUnits;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public void setDispensedUnits(Integer dispensedUnits) {
+        this.dispensedUnits = dispensedUnits;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getIsBulk() {
-		return isBulk;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setIsBulk(String isBulk) {
-		this.isBulk = isBulk;
-	}
+    public String getIsActive() {
+        return isActive;
+    }
 
-	public String getIsComponent() {
-		return isComponent;
-	}
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
+    }
 
-	public void setIsComponent(String isComponent) {
-		this.isComponent = isComponent;
-	}
+    public String getIsBulk() {
+        return isBulk;
+    }
 
-	public String getIsLotMaintained() {
-		return isLotMaintained;
-	}
+    public void setIsBulk(String isBulk) {
+        this.isBulk = DataBaseUtil.trim(isBulk);
+    }
 
-	public void setIsLotMaintained(String isLotMaintained) {
-		this.isLotMaintained = isLotMaintained;
-	}
+    public String getIsLabor() {
+        return isLabor;
+    }
 
-	public String getIsNotForSale() {
-		return isNotForSale;
-	}
+    public void setIsLabor(String isLabor) {
+        this.isLabor = DataBaseUtil.trim(isLabor);
+    }
 
-	public void setIsNotForSale(String isNotForSale) {
-		this.isNotForSale = isNotForSale;
-	}
+    public String getIsLotMaintained() {
+        return isLotMaintained;
+    }
 
-	public String getIsReorderAuto() {
-		return isReorderAuto;
-	}
+    public void setIsLotMaintained(String isLotMaintained) {
+        this.isLotMaintained = DataBaseUtil.trim(isLotMaintained);
+    }
 
-	public void setIsReorderAuto(String isReorderAuto) {
-		this.isReorderAuto = isReorderAuto;
-	}
+    public String getIsNoInventory() {
+        return isNoInventory;
+    }
 
-	public String getIsSubAssembly() {
-		return isSubAssembly;
-	}
+    public void setIsNoInventory(String isNoInventory) {
+        this.isNoInventory = DataBaseUtil.trim(isNoInventory);
+    }
 
-	public void setIsSubAssembly(String isSubAssembly) {
-		this.isSubAssembly = isSubAssembly;
-	}
+    public String getIsNotForSale() {
+        return isNotForSale;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setIsNotForSale(String isNotForSale) {
+        this.isNotForSale = DataBaseUtil.trim(isNotForSale);
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getIsReorderAuto() {
+        return isReorderAuto;
+    }
 
-	public String getPurchasedUnit() {
-		return purchasedUnit;
-	}
+    public void setIsReorderAuto(String isReorderAuto) {
+        this.isReorderAuto = DataBaseUtil.trim(isReorderAuto);
+    }
 
-	public void setPurchasedUnit(String purchasedUnit) {
-		this.purchasedUnit = purchasedUnit;
-	}
+    public String getIsSerialMaintained() {
+        return isSerialMaintained;
+    }
 
-	public Integer getQuantityMaxLevel() {
-		return quantityMaxLevel;
-	}
+    public void setIsSerialMaintained(String isSerialMaintained) {
+        this.isSerialMaintained = DataBaseUtil.trim(isSerialMaintained);
+    }
 
-	public void setQuantityMaxLevel(Integer quantityMaxLevel) {
-		this.quantityMaxLevel = quantityMaxLevel;
-	}
+    public String getIsSubAssembly() {
+        return isSubAssembly;
+    }
 
-	public Integer getQuantityMinLevel() {
-		return quantityMinLevel;
-	}
+    public void setIsSubAssembly(String isSubAssembly) {
+        this.isSubAssembly = DataBaseUtil.trim(isSubAssembly);
+    }
 
-	public void setQuantityMinLevel(Integer quantityMinLevel) {
-		this.quantityMinLevel = quantityMinLevel;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Integer getQuantityToReorder() {
-		return quantityToReorder;
-	}
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
+    }
 
-	public void setQuantityToReorder(Integer quantityToReorder) {
-		this.quantityToReorder = quantityToReorder;
-	}
+    public String getProductUri() {
+        return productUri;
+    }
 
-	public Integer getStore() {
-		return store;
-	}
+    public void setProductUri(String productUri) {
+        this.productUri = DataBaseUtil.trim(productUri);
+    }
 
-	public void setStore(Integer store) {
-		this.store = store;
-	}
+    public Integer getPurchasedUnits() {
+        return purchasedUnits;
+    }
 
-	public Integer getUnitOfMeasure() {
-		return unitOfMeasure;
-	}
+    public void setPurchasedUnits(Integer purchasedUnits) {
+        this.purchasedUnits = purchasedUnits;
+    }
 
-	public void setUnitOfMeasure(Integer unitOfMeasure) {
-		this.unitOfMeasure = unitOfMeasure;
-	}
+    public Integer getQuantityMaxLevel() {
+        return quantityMaxLevel;
+    }
+
+    public void setQuantityMaxLevel(Integer quantityMaxLevel) {
+        this.quantityMaxLevel = quantityMaxLevel;
+    }
+
+    public Integer getQuantityMinLevel() {
+        return quantityMinLevel;
+    }
+
+    public void setQuantityMinLevel(Integer quantityMinLevel) {
+        this.quantityMinLevel = quantityMinLevel;
+    }
+
+    public Integer getQuantityToReorder() {
+        return quantityToReorder;
+    }
+
+    public void setQuantityToReorder(Integer quantityToReorder) {
+        this.quantityToReorder = quantityToReorder;
+    }
+
+    public Integer getStore() {
+        return store;
+    }
+
+    public void setStore(Integer store) {
+        this.store = store;
+    }   
 }
