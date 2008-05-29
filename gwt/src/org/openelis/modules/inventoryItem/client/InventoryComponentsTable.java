@@ -7,20 +7,18 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.CheckBox;
 
 public class InventoryComponentsTable implements TableManager {
-    private InventoryScreen userForm;
+    private InventoryItemScreen userForm;
     public boolean disableRows = false;
     
-    public void setInventoryForm(InventoryScreen form) {
+    public void setInventoryForm(InventoryItemScreen form) {
         userForm = form;
     }
     

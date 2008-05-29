@@ -94,7 +94,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" popWidth="364px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}">
+									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}">
 										<headers>Desc,Category</headers>
 										<widths>267,90</widths>	
 									</autoDropdown>
@@ -122,7 +122,7 @@
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
 										<editors>
-											<autoDropdown cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px" popWidth="257px">
+											<autoDropdown cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px">
 												<headers>Desc,Category</headers>
 												<widths>180,70</widths>
 											</autoDropdown>

@@ -6,6 +6,7 @@
                 xmlns:inventoryComponentMeta="xalan://org.openelis.meta.InventoryComponentMeta"
                 xmlns:inventoryComponentItemMeta="xalan://org.openelis.meta.InventoryComponentItemMeta"
                 xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
+                xmlns:inventoryLocationStorageLocationMeta="xalan://org.openelis.meta.InventoryLocationStorageLocationMeta"
                 xmlns:inventoryItemNoteMeta="xalan://org.openelis.meta.InventoryItemNoteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
@@ -34,8 +35,12 @@
   <xalan:component prefix="inventoryLocationMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMeta"/>
   </xalan:component>
+
+  <xalan:component prefix="inventoryLocationStorageLocationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationStorageLocationMeta"/>
+  </xalan:component>
   
-    <xalan:component prefix="inventoryItemNoteMeta">
+  <xalan:component prefix="inventoryItemNoteMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemNoteMeta"/>
   </xalan:component>
   
@@ -47,7 +52,7 @@
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<!--left table goes here -->
-				<aToZ height="510px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+				<aToZ height="510px" width="100%" key="hideablePanel" maxRows="24" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -273,11 +278,11 @@
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
 										<editors>
-											<autoDropdown cat="component" case="lower" autoParams="InventoryComponentAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventory.server.InventoryService" width="125px">												
+											<autoDropdown cat="component" case="lower" autoParams="InventoryComponentAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="125px">												
 												<widths>118</widths>
 											</autoDropdown>
 											<label/>
-											<textbox case="upper"/>
+											<textbox case="mixed"/>
 										</editors>
 										<fields>
 											<dropdown key="{inventoryComponentMeta:component()}" required="true"/>
@@ -294,8 +299,10 @@
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,353,104</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" multiSelect="true"/>
-											<textbox case="upper"/>
+											<autoDropdown cat="queryComponent" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="125px">												
+												<widths>118</widths>
+											</autoDropdown>
+											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 										</editors>
 										<fields><xsl:value-of select='inventoryComponentMeta:component()'/>,<xsl:value-of select='inventoryComponentItemMeta:description()'/>,
@@ -304,7 +311,6 @@
 									</queryTable>
 									</query>
 								</widget>
-
 									<widget style="WhiteContentPanel" halign="center">
 									<appButton action="removeComponentRow" onclick="this" style="Button" key="removeComponentButton">
 									<panel xsi:type="Panel" layout="horizontal">
@@ -321,7 +327,7 @@
 					<tab key="tab2" text="{resource:getString($constants,'locationQuantity')}">
 						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
-								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="9" title="" showError="false" showScroll="true">
+								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
 										<widths>212,90,136,123</widths>
@@ -341,35 +347,27 @@
 										<filters>false,false,false,false</filters>
 										<colAligns>left,left,left,left</colAligns>
 									</table>
-									<!--<query>
-									<queryTable width="auto" title="" maxRows="9" showError="false">
+									<query>
+									<queryTable width="auto" title="" maxRows="10" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>230,90,136,123</widths>
+										<widths>212,108,136,123</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" popWidth="auto" multiSelect="true">
-											  <widths>90</widths>
-											</autoDropdown>
-											<textbox case="upper"/>
-											<textbox case="upper"/>
-											<textbox case="upper"/>	
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<label/>
+											<textbox case="mixed"/>	
 										</editors>
-										<fields>test1,w2,w3,e4
+										<fields>
+											<xsl:value-of select='inventoryLocationStorageLocationMeta:location()'/>,<xsl:value-of select='inventoryLocationMeta:lotNumber()'/>,
+    										<xsl:value-of select='inventoryLocationMeta:expirationDate()'/>,<xsl:value-of select='inventoryLocationMeta:quantityOnhand()'/>
 										</fields>							
 									</queryTable>
-									</query>-->
-								</widget>{inventoryItemMeta:description()}
-
-									<widget style="WhiteContentPanel" halign="center">
-									<appButton action="removeLocationRow" onclick="this" style="Button" key="removeLocationButton">
-									<panel xsi:type="Panel" layout="horizontal">
-              						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
-						              <widget>
-                						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							              </widget>
-							              </panel>
-						            </appButton>
-						            </widget>
+									</query>
+								</widget>
+								<widget>
+									<panel xsi:type="Panel" layout="horizontal" height="10px"/>
+    				            </widget>
 							</panel>
 					</tab>
 					<!-- start TAB 3 (Additional Info) -->
@@ -497,36 +495,47 @@
       
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{inventoryItemMeta:id()}" type="integer"/>
-      <string key="{inventoryItemMeta:name()}"/>
-      <string key="{inventoryItemMeta:description()}"/>
-      <dropdown key="{inventoryItemMeta:store()}" type="integer"/> 
-      <dropdown key="{inventoryItemMeta:category()}" type="integer"/> 
-      <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer"/>
-      <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer"/>
-      <number key="{inventoryItemMeta:quantityToReorder()}" type="integer"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer"/> 
-      <number key="{inventoryItemMeta:averageLeadTime()}" type="integer"/>
-      <number key="{inventoryItemMeta:averageCost()}" type="double"/>
-      <number key="{inventoryItemMeta:averageDailyUse()}" type="integer"/>
-      <check key="{inventoryItemMeta:isActive()}"/>
-      <check key="{inventoryItemMeta:isReorderAuto()}"/>
-      <check key="{inventoryItemMeta:isLotMaintained()}"/>
-      <check key="{inventoryItemMeta:isSerialMaintained()}"/>
-      <check key="{inventoryItemMeta:isBulk()}"/>
-      <check key="{inventoryItemMeta:isNotForSale()}"/>
-      <check key="{inventoryItemMeta:isSubAssembly()}"/>
-      <check key="{inventoryItemMeta:isLabor()}"/>
-      <string key="{inventoryItemNoteMeta:subject()}"/>
+      <queryNumber key="{inventoryItemMeta:id()}" type="integer" required="false"/>
+      <queryString key="{inventoryItemMeta:name()}" max="20" required="false"/>
+      <queryString key="{inventoryItemMeta:description()}" max="60" required="false"/>
+      <dropdown key="{inventoryItemMeta:store()}" type="integer" required="false"/> 
+      <dropdown key="{inventoryItemMeta:category()}" type="integer" required="false"/> 
+      <queryNumber key="{inventoryItemMeta:quantityMinLevel()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:quantityMaxLevel()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:quantityToReorder()}" type="integer" required="false"/>
+      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer" required="false"/> 
+      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer" required="false"/> 
+      <queryCheck key="{inventoryItemMeta:isActive()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isReorderAuto()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isLotMaintained()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isSerialMaintained()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isBulk()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isNotForSale()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isSubAssembly()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isLabor()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:isNoInventory()}" required="false"/>
+
+      <!--Additional info tab-->
+      <queryNumber key="{inventoryItemMeta:averageLeadTime()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:averageCost()}" type="double" required="false"/>
+      <queryNumber key="{inventoryItemMeta:averageDailyUse()}" type="integer" required="false"/>
+      <queryString key="{inventoryItemMeta:productUri()}" required="false"/>
       
+      <!--comments tab-->
+      <queryString key="{inventoryItemNoteMeta:subject()}" max="60" required="false"/>
+      
+      <table key="componentsTable"/>
       <!--component table values-->
       <dropdown key="{inventoryComponentMeta:component()}" required="false"/>
 	  <queryString key="{inventoryComponentItemMeta:description()}" required="false"/>
-	  <queryNumber key="{inventoryComponentMeta:quantity()}" type="integer" required="false"/>
-											
-      <!--location table values-->
-      
+	  <queryNumber key="{inventoryComponentMeta:quantity()}" type="double" required="false"/>   
+
+      <table key="locQuantitiesTable"/>	  
+	  <!--location table values-->
+	  <queryString key="{inventoryLocationStorageLocationMeta:location()}" required="false"/>
+	  <queryString key="{inventoryLocationMeta:lotNumber()}" required="false"/>
+	  <queryString key="{inventoryLocationMeta:expirationDate()}" required="false"/>
+	  <queryNumber key="{inventoryLocationMeta:quantityOnhand()}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="{inventoryItemMeta:name()}"/>

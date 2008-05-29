@@ -90,9 +90,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>           
 		<widget>
-		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" popWidth="auto" tab="{providerMeta:npi()},{providerMeta:middleName()}">
-			<widths>90</widths>
-		  </autoDropdown>
+		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" tab="{providerMeta:npi()},{providerMeta:middleName()}"/>
 		</widget>								
     </row>
     <row>
@@ -137,12 +135,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>		  
-			<autoDropdown  case="upper" width="45px" popWidth="auto">
-				<widths>37</widths>
-			</autoDropdown>
-			<autoDropdown case="mixed" width="110px" popWidth="auto">
-				<widths>105</widths>
-			</autoDropdown>
+			<autoDropdown  case="upper" width="45px"/>
+			<autoDropdown case="mixed" width="110px"/>
 			<textbox case= "mixed" max="10"/>
 			<textbox case= "mixed" max="21"/>
 			<textbox case= "mixed" max="16"/>
@@ -184,12 +178,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>		  
-			<autoDropdown case="upper"  width="45px" popWidth="auto" multiSelect = "true">
-				<widths>37</widths>
-			</autoDropdown>
-			<autoDropdown case="mixed" width="110px" popWidth="auto" multiSelect = "true">
-				<widths>105</widths>
-			</autoDropdown>		  
+			<autoDropdown case="upper"  width="45px" multiSelect = "true"/>
+			<autoDropdown case="mixed" width="110px" multiSelect = "true"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>

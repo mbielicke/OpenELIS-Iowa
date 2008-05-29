@@ -96,6 +96,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
                 Window.alert(caught.getMessage());
             }
          });        
+        super.afterDraw(sucess);
 	}
 	
 	public void commit() {

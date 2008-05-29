@@ -82,7 +82,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="parentAnalyte" key="{parentAnalyteMeta:name()}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" popWidth="198px" tab="{analyteMeta:externalId()},{analyteMeta:analyteGroup()}">
+									<autoDropdown cat="parentAnalyte" key="{parentAnalyteMeta:name()}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{analyteMeta:externalId()},{analyteMeta:analyteGroup()}">
 										<headers>Name</headers>
 										<widths>194</widths>
 										</autoDropdown>

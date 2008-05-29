@@ -215,31 +215,38 @@
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				    <xsl:call-template name="menuItem">
 	 				  <xsl:with-param name="key">InternalOrder</xsl:with-param>
-				      <xsl:with-param name="label">internalOrders</xsl:with-param>
+				      <xsl:with-param name="label">internalOrder</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">internal</xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">ExternalOrder</xsl:with-param>
-				      <xsl:with-param name="label">vendorOrders</xsl:with-param>
+				      <xsl:with-param name="label">vendorOrder</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">external</xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">KitOrder</xsl:with-param>
-				      <xsl:with-param name="label">kitOrders</xsl:with-param>
+				      <xsl:with-param name="label">kitOrder</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">kits</xsl:with-param>
 				    </xsl:call-template>	
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">InventoryReceipt</xsl:with-param>
+				      <xsl:with-param name="label">inventoryReceipt</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">InventoryReceiptScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>	
 				    <xsl:if test="contains($modules,'Inventory')">			
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">Inventory</xsl:with-param>
-				      <xsl:with-param name="label">inventory</xsl:with-param>
+				      <xsl:with-param name="label">inventoryItem</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="class">InventoryScreen</xsl:with-param>
+				      <xsl:with-param name="class">InventoryItemScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    </xsl:if>

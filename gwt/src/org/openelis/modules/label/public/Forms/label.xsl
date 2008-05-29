@@ -75,10 +75,8 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"printerType")'/>:</text>
      </widget>
      <widget>
-										<autoDropdown key="{labelMeta:printerType()}" width = "90px" case="mixed" popWidth="auto"  multiSelect="false" fromModel="true"  type="integer" tab="{labelMeta:scriptlet()},{labelMeta:description()}">													
-													 <widths>100</widths>													 													
-										</autoDropdown>												
-										</widget>  
+		<autoDropdown key="{labelMeta:printerType()}" width = "90px" case="mixed" tab="{labelMeta:scriptlet()},{labelMeta:description()}"/>
+	</widget>  
 										        
      </row>
      <row>
@@ -86,9 +84,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
      </widget>
      <widget>
-     	<autoDropdown key="{labelMeta:scriptlet()}" width = "180px"  popWidth="auto" case="mixed" multiSelect="false" fromModel="true"    type="integer" tab="{labelMeta:name()},{labelMeta:printerType()}">													
-			<widths>190</widths>													 													
-		</autoDropdown>												
+     	<autoDropdown key="{labelMeta:scriptlet()}" width = "180px" case="mixed" tab="{labelMeta:name()},{labelMeta:printerType()}"/>
 	</widget>
 	  </row>			  												          
                                  					                         
