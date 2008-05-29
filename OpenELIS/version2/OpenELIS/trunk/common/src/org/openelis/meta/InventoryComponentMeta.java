@@ -6,7 +6,7 @@ import org.openelis.util.Meta;
 
 public class InventoryComponentMeta implements Meta {
 	private String tableName = "inventoryComponent";
-	private String entityName = "InventoryComponent";
+	private String entityName = "inventoryItem.inventoryComponent";
 	private boolean includeInFrom = true;
 	
 	public static final String
@@ -28,7 +28,7 @@ public class InventoryComponentMeta implements Meta {
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(14), "");
+	     columnHashList.put(columnNames[i].substring(19), "");
 	}
 
 	private InventoryComponentMeta() {

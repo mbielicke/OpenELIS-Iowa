@@ -6,9 +6,10 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.NoteDO;
 
 @Remote
-public interface InventoryRemote {
+public interface InventoryItemRemote {
 	//method to return parent inventory item
 	public InventoryItemDO getInventoryItem(Integer inventoryItemId);
 	
@@ -19,7 +20,7 @@ public interface InventoryRemote {
 	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId) throws Exception;
 	
 	//commit a change to inventory, or insert a new inventory
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, List locations) throws Exception;
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO) throws Exception;
 	
 	//method to return just notes
 	public List getInventoryNotes(Integer inventoryItemId);
@@ -29,22 +30,22 @@ public interface InventoryRemote {
 	
 	//method to return just locations
 	public List getInventoryLocations(Integer inventoryItemId);
+    
+    //method to return item description by component id
+    public String getInventoryDescription(Integer inventoryItemId);
 	
 	//method to query for inventories
 	 public List query(HashMap fields, int first, int max) throws Exception;
 	 
 	 //auto complete lookup
-	 //public List autoCompleteLookupByName(String orgName, int maxResults);
-	 
-	 //auto complete lookup
-	 //public List autoCompleteLookupById(Integer id);
-	 
+	 public List inventoryComponentAutoCompleteLookupByName(String itemName, Integer storeId, String currentName, int maxResults);
+	  
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();
 	 
 	 //method to validate the fields before the backend updates it in the database
-	 public List validateForUpdate(InventoryItemDO inventoryItemDO, List components, List locations);
+	 public List validateForUpdate(InventoryItemDO inventoryItemDO, List components);
 	 
 	 //method to validate the fields before the backend updates it in the database
-	 public List validateForAdd(InventoryItemDO inventoryItemDO, List components, List locations);
+	 public List validateForAdd(InventoryItemDO inventoryItemDO, List components);
 }

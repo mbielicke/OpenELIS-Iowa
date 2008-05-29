@@ -10,16 +10,21 @@ public class InventoryComponentDO implements Serializable{
 	
 	protected Integer id;
 	protected Integer inventoryItemId;
-	protected Integer componentId;
+	protected Integer componentNameId;
 	protected String componentName;
-	protected String componentDesc;
-	
+	protected String componentDesc;	
 	protected Double quantity;
+    
+    protected boolean delete = false;
 	
-	public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentId, String componentName, String componentDesc, Double quantity){
+    public InventoryComponentDO(){
+        
+    }
+    
+	public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentNameId, String componentName, String componentDesc, Double quantity){
 		setId(id);
 		setInventoryItemId(inventoryItemId);
-		setComponentId(componentId);
+		setComponentNameId(componentNameId);
 		setComponentName(componentName);
 		setComponentDesc(componentDesc);
 		setQuantity(quantity);
@@ -33,12 +38,12 @@ public class InventoryComponentDO implements Serializable{
 		this.componentDesc = DataBaseUtil.trim(componentDesc);
 	}
 
-	public Integer getComponentId() {
-		return componentId;
+	public Integer getComponentNameId() {
+		return componentNameId;
 	}
 
-	public void setComponentId(Integer componentId) {
-		this.componentId = componentId;
+	public void setComponentNameId(Integer componentNameId) {
+		this.componentNameId = componentNameId;
 	}
 
 	public Integer getId() {
@@ -72,4 +77,12 @@ public class InventoryComponentDO implements Serializable{
 	public void setComponentName(String componentName) {
 		this.componentName = DataBaseUtil.trim(componentName);
 	}
+
+    public boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
+    }
 }

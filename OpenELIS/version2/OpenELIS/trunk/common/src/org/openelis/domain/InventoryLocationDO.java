@@ -3,6 +3,9 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.DataBaseUtil;
+import org.openelis.util.Datetime;
+
 public class InventoryLocationDO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -10,31 +13,48 @@ public class InventoryLocationDO implements Serializable{
 	protected Integer id;
 	protected Integer inventoryItem;
 	protected String lotNumber;
-	protected Integer storageLocationId;
+	//protected Integer storageLocationId;
 	protected String storageLocation;
 	protected Integer quantityOnHand;
-	protected Date expirationDate;
+	protected Datetime expirationDate;
 	
     public InventoryLocationDO(){
         
     }
     
-	public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, Integer storageLocationId, String storageLocation,
+	public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, String storageLocation,
 									Integer quantityOnHand, Date expirationDate){
-		this.id = id;
-		this.inventoryItem = inventoryItem;
-		this.lotNumber = lotNumber;
-		this.storageLocationId = storageLocationId;
-		this.storageLocation = storageLocation;
-		this.quantityOnHand = quantityOnHand;
-		this.expirationDate = expirationDate;		
+		setId(id);
+		setInventoryItem(inventoryItem);
+		setLotNumber(lotNumber);
+		setStorageLocation(storageLocation);
+		setQuantityOnHand(quantityOnHand);
+		setExpirationDate(new Datetime(Datetime.YEAR,Datetime.DAY,expirationDate));		
 	}
 
-	public Date getExpirationDate() {
+    public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, String childStorageLocName, String childStorageLocLocation,  
+                               String parentStorageLocName, String parentStorageLocLocation, String childStorageUnit, Integer quantityOnHand, Date expirationDate){
+    setId(id);
+    setInventoryItem(inventoryItem);
+    setLotNumber(lotNumber);
+    setQuantityOnHand(quantityOnHand);
+    setExpirationDate(new Datetime(Datetime.YEAR,Datetime.DAY,expirationDate));
+    
+    //build the storage location string
+    String storageLocation = "";
+    if(parentStorageLocName != null)
+        storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+    else
+        storageLocation += childStorageLocName.trim();    
+    
+    setStorageLocation(storageLocation);
+}
+    
+	public Datetime getExpirationDate() {
 		return expirationDate;
 	}
 
-	public void setExpirationDate(Date expirationDate) {
+	public void setExpirationDate(Datetime expirationDate) {
 		this.expirationDate = expirationDate;
 	}
 
@@ -59,7 +79,7 @@ public class InventoryLocationDO implements Serializable{
 	}
 
 	public void setLotNumber(String lotNumber) {
-		this.lotNumber = lotNumber;
+		this.lotNumber = DataBaseUtil.trim(lotNumber);
 	}
 
 	public Integer getQuantityOnHand() {
@@ -75,15 +95,14 @@ public class InventoryLocationDO implements Serializable{
 	}
 
 	public void setStorageLocation(String storageLocation) {
-		this.storageLocation = storageLocation;
+		this.storageLocation = DataBaseUtil.trim(storageLocation);
 	}
 
-	public Integer getStorageLocationId() {
-		return storageLocationId;
+	/*public Integer getChildStorageLocationId() {
+		return childStorageLocationId;
 	}
 
-	public void setStorageLocationId(Integer storageLocationId) {
-		this.storageLocationId = storageLocationId;
-	}
-
+	public void setChildStorageLocationId(Integer childStorageLocationId) {
+		this.childStorageLocationId = childStorageLocationId;
+	}*/
 }
