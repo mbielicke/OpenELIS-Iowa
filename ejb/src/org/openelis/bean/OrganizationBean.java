@@ -35,6 +35,7 @@ import org.openelis.meta.OrganizationNoteMeta;
 import org.openelis.meta.OrganizationParentOrganizationMeta;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.util.Datetime;
 import org.openelis.util.Meta;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -182,15 +183,15 @@ public class OrganizationBean implements OrganizationRemote {
 //          update note
         Note note = null;
         //we need to make sure the note is filled out...
-        if(!("".equals(noteDO.getText())) ||   !("".equals(noteDO.getSubject()))){
+        if(noteDO.getText() != null || noteDO.getSubject() != null){
         	note = new Note();
             note.setIsExternal(noteDO.getIsExternal());
             note.setReferenceId(organization.getId());
             note.setReferenceTable(organizationReferenceId);
             note.setSubject(noteDO.getSubject());
-            note.setSystemUser(noteDO.getSystemUser());
+            note.setSystemUser(getSystemUserId());
             note.setText(noteDO.getText());
-        	note.setTimestamp(noteDO.getTimestamp());
+        	note.setTimestamp(Datetime.getInstance());
     	}
         
 //          insert into note table if necessary
@@ -305,7 +306,6 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 
 	public List validateForAdd(OrganizationAddressDO organizationDO, List contacts) {
-		//im not going to validate note for now...the user can input whatever they want
 		List exceptionList = new ArrayList();
 		
 		validateOrganizationAndAddress(organizationDO, exceptionList);
@@ -320,7 +320,6 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 
 	public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts) {
-		//im not going to validate note for now...the user can input whatever they want
 		List exceptionList = new ArrayList();
 		
 		validateOrganizationAndAddress(organizationDO, exceptionList);

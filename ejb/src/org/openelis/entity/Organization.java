@@ -91,11 +91,6 @@ public class Organization implements Auditable, Cloneable {
         this.organizationContact = organizationContact;
     }
 
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "reference_table", insertable = false, updatable =
-    // false)
-    // private OrganizationContact referenceTable;
-
     @Transient
     private Organization original;
 
