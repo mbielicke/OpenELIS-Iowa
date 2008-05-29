@@ -273,7 +273,7 @@ public class ProviderBean implements ProviderRemote {
             //update note
             Note note = null;
             //we need to make sure the note is filled out...
-            if(!("".equals(noteDO.getText())) ||   !("".equals(noteDO.getSubject()))){
+            if(noteDO.getText() != null || noteDO.getSubject() != null){
                 note = new Note();
                 note.setIsExternal(noteDO.getIsExternal());
                 note.setReferenceId(provider.getId());

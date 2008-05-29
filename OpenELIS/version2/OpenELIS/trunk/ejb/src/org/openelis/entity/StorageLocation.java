@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -36,7 +37,7 @@ import org.w3c.dom.Element;
 @NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select s.id, s.name, s.location " +
 							 " from StorageLocation s where s.name like :name order by s.name"),
 @NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
-@NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name"),})
+@NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name")})
 							 
 							 
 @Entity
@@ -67,10 +68,13 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="is_available")
   private String isAvailable;             
 
-  
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_storage_location")
+  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
   private Collection<StorageLocation> childLocations;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
+  private StorageLocation parentStorageLocation;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
@@ -228,6 +232,12 @@ public StorageUnit getStorageUnit() {
 }
 public void setStorageUnit(StorageUnit storageUnitName) {
 	this.storageUnit = storageUnitName;
+}
+public StorageLocation getParentStorageLocation() {
+    return parentStorageLocation;
+}
+public void setParentStorageLocation(StorageLocation parentStorageLocation) {
+    this.parentStorageLocation = parentStorageLocation;
 }
   
 }   

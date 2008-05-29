@@ -26,16 +26,21 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-	/*@NamedQueries({	@NamedQuery(name = "getInventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
-			"					i.unitOfMeasure,i.isReorderAuto,i.isLotMaintained,i.isActive, i.averageLeadTime, i.averageCost, i.averageDailyUse) from InventoryItem i where i.id = :id")})
-		*/	
-			/*QUERY AFTER THE FIELDS GET PUT INTO THE DB
-			 * 
-			 * select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.quantityMinLevel,i.quantityMaxLevel,i.quantityToReorder," +
-						" i.unitOfMeasure,i.isReorderAuto,i.isLotMaintained,i.isActive, i.averageLeadTime, i.averageCost, i.averageDailyUse, i.store" +
-						" i.purchasedUnit, i.dispensedUnit, i.isBulk, i.isNotForSale, i.isSubassembly, i.isComponent) from InventoryItem i where i.id = :id
-			 * 
-			 */
+	@NamedQueries({	@NamedQuery(name = "InventoryItem.InventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.category,i.store,i.quantityMinLevel, " +
+	               	                       " i.quantityMaxLevel,i.quantityToReorder, i.purchasedUnits,i.dispensedUnits,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
+                                           " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse) " +
+                                           " from InventoryItem i where i.id = :id"),
+                    @NamedQuery(name = "InventoryItem.AutocompleteByNameStoreCurrentName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
+                                           "  from InventoryItem i where i.name like :name and i.store = :store and i.name != :currentName and i.isActive = 'Y' order by i.name"),
+                     @NamedQuery(name = "InventoryItem.AutocompleteByName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
+                                           "  from InventoryItem i where i.name like :name and i.isActive = 'Y' order by i.name"),
+                    @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description " +
+                                           "  from InventoryItem i where i.id = :id"),
+                    @NamedQuery(name = "InventoryItem.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
+                                         + "  from Note n where n.referenceTable = (select id from ReferenceTable where name='inventory_item') and n.referenceId = :id ORDER BY n.timestamp DESC"),
+                    @NamedQuery(name = "InventoryItem.UpdateNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name and i.store = :store AND i.id != :id"),
+                    @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.store = :store")})
+	
 			   
 @Entity
 @Table(name="inventory_item")
@@ -51,7 +56,13 @@ public class InventoryItem implements Auditable, Cloneable {
   private String name;             
 
   @Column(name="description")
-  private String description;             
+  private String description; 
+  
+  @Column(name="category")
+  private Integer category;
+  
+  @Column(name="store")
+  private Integer store;
 
   @Column(name="quantity_min_level")
   private Integer quantityMinLevel;             
@@ -62,18 +73,42 @@ public class InventoryItem implements Auditable, Cloneable {
   @Column(name="quantity_to_reorder")
   private Integer quantityToReorder;             
 
-  @Column(name="unit_of_measure")
-  private Integer unitOfMeasure;             
-
+  @Column(name="purchased_units")
+  private Integer purchasedUnits;
+  
+  @Column(name="dispensed_units")
+  private Integer dispensedUnits;
+  
   @Column(name="is_reorder_auto")
   private String isReorderAuto;             
 
   @Column(name="is_lot_maintained")
   private String isLotMaintained;             
 
+  @Column(name="is_serial_maintained")
+  private String isSerialMaintained;
+  
   @Column(name="is_active")
   private String isActive;             
 
+  @Column(name="is_bulk")
+  private String isBulk;
+  
+  @Column(name="is_not_for_sale")
+  private String isNotForSale;
+  
+  @Column(name=" is_sub_assembly")
+  private String isSubAssembly;
+  
+  @Column(name="is_labor")
+  private String isLabor;
+  
+  @Column(name="is_no_inventory")
+  private String isNoInventory;
+  
+  @Column(name="product_uri")
+  private String productUri;
+  
   @Column(name="average_lead_time")
   private Integer averageLeadTime;             
 
@@ -83,6 +118,14 @@ public class InventoryItem implements Auditable, Cloneable {
   @Column(name="average_daily_use")
   private Integer averageDailyUse;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_item")
+  private Collection<InventoryComponent> inventoryComponent;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_item")
+  private Collection<InventoryLocation> inventoryLocation;
+  
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "reference_id", insertable = false, updatable = false)
   private Collection<Note> note;
@@ -144,18 +187,100 @@ public class InventoryItem implements Auditable, Cloneable {
        (quantityToReorder != null && !quantityToReorder.equals(this.quantityToReorder)))
       this.quantityToReorder = quantityToReorder;
   }
-
-  public Integer getUnitOfMeasure() {
-    return unitOfMeasure;
+  
+  public Integer getCategory() {
+    return category;
   }
-  public void setUnitOfMeasure(Integer unitOfMeasure) {
-    if((unitOfMeasure == null && this.unitOfMeasure != null) || 
-       (unitOfMeasure != null && !unitOfMeasure.equals(this.unitOfMeasure)))
-      this.unitOfMeasure = unitOfMeasure;
-  }
-
-  public String getIsReorderAuto() {
-    return isReorderAuto;
+  
+    public void setCategory(Integer category) {
+        if((category == null && this.category != null) || 
+           (category != null && !category.equals(this.category)))
+         this.category = category;
+    }
+    
+    public Integer getDispensedUnits() {
+        return dispensedUnits;
+    }
+    
+    public void setDispensedUnits(Integer dispensedUnits) {
+        if((dispensedUnits == null && this.dispensedUnits != null) || 
+           (dispensedUnits != null && !dispensedUnits.equals(this.dispensedUnits)))
+          this.dispensedUnits = dispensedUnits;
+    }
+    public String getIsBulk() {
+        return isBulk;
+    }
+    public void setIsBulk(String isBulk) {
+        if((isBulk == null && this.isBulk != null) || 
+           (isBulk != null && !isBulk.equals(this.isBulk)))
+          this.isBulk = isBulk;
+    }
+    public String getIsLabor() {
+        return isLabor;
+    }
+    public void setIsLabor(String isLabor) {
+        if((isLabor == null && this.isLabor != null) || 
+           (isLabor != null && !isLabor.equals(this.isLabor)))
+          this.isLabor = isLabor;
+    }
+    public String getIsNoInventory() {
+        return isNoInventory;
+    }
+    public void setIsNoInventory(String isNoInventory) {
+        if((isNoInventory == null && this.isNoInventory != null) || 
+           (isNoInventory != null && !isNoInventory.equals(this.isNoInventory)))
+          this.isNoInventory = isNoInventory;
+    }
+    public String getIsNotForSale() {
+        return isNotForSale;
+    }
+    public void setIsNotForSale(String isNotForSale) {
+        if((isNotForSale == null && this.isNotForSale != null) || 
+           (isNotForSale != null && !isNotForSale.equals(this.isNotForSale)))
+          this.isNotForSale = isNotForSale;
+    }
+    public String getIsSerialMaintained() {
+        return isSerialMaintained;
+    }
+    public void setIsSerialMaintained(String isSerialMaintained) {
+        if((isSerialMaintained == null && this.isSerialMaintained != null) || 
+           (isSerialMaintained != null && !isSerialMaintained.equals(this.isSerialMaintained)))
+          this.isSerialMaintained = isSerialMaintained;
+    }
+    public String getIsSubAssembly() {
+        return isSubAssembly;
+    }
+    public void setIsSubAssembly(String isSubAssembly) {
+        if((isSubAssembly == null && this.isSubAssembly != null) || 
+           (isSubAssembly != null && !isSubAssembly.equals(this.isSubAssembly)))
+          this.isSubAssembly = isSubAssembly;
+    }
+    public String getProductUri() {
+        return productUri;
+    }
+    public void setProductUri(String productUri) {
+        if((productUri == null && this.productUri != null) || 
+           (productUri != null && !productUri.equals(this.productUri)))
+          this.productUri = productUri;
+    }
+    public Integer getPurchasedUnits() {
+        return purchasedUnits;
+    }
+    public void setPurchasedUnits(Integer purchasedUnits) {
+        if((purchasedUnits == null && this.purchasedUnits != null) || 
+           (purchasedUnits != null && !purchasedUnits.equals(this.purchasedUnits)))
+          this.purchasedUnits = purchasedUnits;
+    }
+    public Integer getStore() {
+        return store;
+    }
+    public void setStore(Integer store) {
+        if((store == null && this.store != null) || 
+           (store != null && !store.equals(this.store)))
+          this.store = store;
+    }
+    public String getIsReorderAuto() {
+        return isReorderAuto;
   }
   public void setIsReorderAuto(String isReorderAuto) {
     if((isReorderAuto == null && this.isReorderAuto != null) || 
@@ -239,7 +364,21 @@ public class InventoryItem implements Auditable, Cloneable {
         Element elem = doc.createElement("description");
         elem.appendChild(doc.createTextNode(original.description.toString().trim()));
         root.appendChild(elem);
-      }      
+      }
+      
+      if((category == null && original.category != null) || 
+         (category != null && !category.equals(original.category))){
+        Element elem = doc.createElement("category");
+        elem.appendChild(doc.createTextNode(original.category.toString().trim()));
+        root.appendChild(elem);
+      }
+      
+      if((store == null && original.store != null) || 
+         (store != null && !store.equals(original.store))){
+        Element elem = doc.createElement("store");
+        elem.appendChild(doc.createTextNode(original.store.toString().trim()));
+        root.appendChild(elem);
+     }
 
       if((quantityMinLevel == null && original.quantityMinLevel != null) || 
          (quantityMinLevel != null && !quantityMinLevel.equals(original.quantityMinLevel))){
@@ -260,14 +399,21 @@ public class InventoryItem implements Auditable, Cloneable {
         Element elem = doc.createElement("quantity_to_reorder");
         elem.appendChild(doc.createTextNode(original.quantityToReorder.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((unitOfMeasure == null && original.unitOfMeasure != null) || 
-         (unitOfMeasure != null && !unitOfMeasure.equals(original.unitOfMeasure))){
-        Element elem = doc.createElement("unit_of_measure");
-        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString().trim()));
+      }
+      
+      if((purchasedUnits == null && original.purchasedUnits != null) || 
+         (purchasedUnits != null && !purchasedUnits.equals(original.purchasedUnits))){
+        Element elem = doc.createElement("purchased_units");
+        elem.appendChild(doc.createTextNode(original.purchasedUnits.toString().trim()));
         root.appendChild(elem);
-      }      
+      }
+      
+      if((dispensedUnits == null && original.dispensedUnits != null) || 
+         (dispensedUnits != null && !dispensedUnits.equals(original.dispensedUnits))){
+        Element elem = doc.createElement("dispensed_units");
+        elem.appendChild(doc.createTextNode(original.dispensedUnits.toString().trim()));
+        root.appendChild(elem);
+      }
 
       if((isReorderAuto == null && original.isReorderAuto != null) || 
          (isReorderAuto != null && !isReorderAuto.equals(original.isReorderAuto))){
@@ -281,14 +427,63 @@ public class InventoryItem implements Auditable, Cloneable {
         Element elem = doc.createElement("is_lot_maintained");
         elem.appendChild(doc.createTextNode(original.isLotMaintained.toString().trim()));
         root.appendChild(elem);
-      }      
-
+      } 
+      
+      if((isSerialMaintained == null && original.isSerialMaintained != null) || 
+         (isSerialMaintained != null && !isSerialMaintained.equals(original.isSerialMaintained))){
+        Element elem = doc.createElement("is_serial_maintained");
+        elem.appendChild(doc.createTextNode(original.isSerialMaintained.toString().trim()));
+        root.appendChild(elem);
+      } 
+    
       if((isActive == null && original.isActive != null) || 
          (isActive != null && !isActive.equals(original.isActive))){
         Element elem = doc.createElement("is_active");
         elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
         root.appendChild(elem);
-      }      
+      }  
+      
+      if((isBulk == null && original.isBulk != null) || 
+         (isBulk != null && !isBulk.equals(original.isBulk))){
+        Element elem = doc.createElement("is_bulk");
+        elem.appendChild(doc.createTextNode(original.isBulk.toString().trim()));
+        root.appendChild(elem);
+      }  
+      
+      if((isNotForSale == null && original.isNotForSale != null) || 
+         (isNotForSale != null && !isNotForSale.equals(original.isNotForSale))){
+        Element elem = doc.createElement("is_not_for_sale");
+        elem.appendChild(doc.createTextNode(original.isNotForSale.toString().trim()));
+        root.appendChild(elem);
+      } 
+      
+      if((isSubAssembly == null && original.isSubAssembly != null) || 
+         (isSubAssembly != null && !isSubAssembly.equals(original.isSubAssembly))){
+        Element elem = doc.createElement("is_sub_assembly");
+        elem.appendChild(doc.createTextNode(original.isSubAssembly.toString().trim()));
+        root.appendChild(elem);
+      } 
+      
+      if((isLabor == null && original.isLabor != null) || 
+         (isLabor != null && !isLabor.equals(original.isLabor))){
+        Element elem = doc.createElement("is_labor");
+        elem.appendChild(doc.createTextNode(original.isLabor.toString().trim()));
+        root.appendChild(elem);
+      } 
+      
+      if((isNoInventory == null && original.isNoInventory != null) || 
+         (isNoInventory != null && !isNoInventory.equals(original.isNoInventory))){
+        Element elem = doc.createElement("is_no_inventory");
+        elem.appendChild(doc.createTextNode(original.isNoInventory.toString().trim()));
+        root.appendChild(elem);
+      }
+
+      if((productUri == null && original.productUri != null) || 
+         (productUri != null && !productUri.equals(original.productUri))){
+        Element elem = doc.createElement("product_uri");
+        elem.appendChild(doc.createTextNode(original.productUri.toString().trim()));
+        root.appendChild(elem);
+      }
 
       if((averageLeadTime == null && original.averageLeadTime != null) || 
          (averageLeadTime != null && !averageLeadTime.equals(original.averageLeadTime))){
@@ -327,6 +522,18 @@ public Collection<Note> getNote() {
 }
 public void setNote(Collection<Note> note) {
 	this.note = note;
+}
+public Collection<InventoryComponent> getInventoryComponent() {
+    return inventoryComponent;
+}
+public void setInventoryComponent(Collection<InventoryComponent> inventoryComponent) {
+    this.inventoryComponent = inventoryComponent;
+}
+public Collection<InventoryLocation> getInventoryLocation() {
+    return inventoryLocation;
+}
+public void setInventoryLocation(Collection<InventoryLocation> inventoryLocation) {
+    this.inventoryLocation = inventoryLocation;
 }
   
 }   

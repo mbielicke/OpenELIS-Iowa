@@ -10,10 +10,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -24,7 +27,14 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-	@NamedQueries({/*	@NamedQuery(name = "getInventoryLocations", query = "select new org.openelis.domain.InventoryLocationDO() from InventoryLocation i where i.id = :id"),*/
+	@NamedQueries({	@NamedQuery(name = "InventoryLocation.InventoryLocation", query = "select new org.openelis.domain.InventoryLocationDO(i.id,i.inventoryItem,i.lotNumber, " +
+                                                           " s.name,i.quantityOnhand, i.expirationDate) from InventoryLocation i left join i.storageLocation s " +
+                                                           " where i.id = :id"),
+                    @NamedQuery(name = "InventoryLocation.InventoryLocationByItem", query = "select new org.openelis.domain.InventoryLocationDO(i.id,i.inventoryItem,i.lotNumber, " +
+                                                                       " childLoc.name,childLoc.location, parentLoc.name, parentLoc.location, childLoc.storageUnit.description, i.quantityOnhand, i.expirationDate) " +
+                                                                       " from InventoryLocation i left join i.storageLocation childLoc " +
+                                                                       " left join childLoc.parentStorageLocation parentLoc " +
+                                                                       " where i.inventoryItem = :id and i.quantityOnhand > 0"),
 					@NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocation = :id")})
 
 @Entity
@@ -44,14 +54,17 @@ public class InventoryLocation implements Auditable, Cloneable {
   private String lotNumber;             
 
   @Column(name="storage_location")
-  private Integer storageLocation;             
+  private Integer storageLocationId;             
 
   @Column(name="quantity_onhand")
   private Integer quantityOnhand;             
 
   @Column(name="expiration_date")
-  private Date expirationDate;             
-
+  private Date expirationDate;      
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "storage_location", insertable = false, updatable = false)
+  private StorageLocation storageLocation;
 
   @Transient
   private InventoryLocation original;
@@ -84,13 +97,13 @@ public class InventoryLocation implements Auditable, Cloneable {
       this.lotNumber = lotNumber;
   }
 
-  public Integer getStorageLocation() {
-    return storageLocation;
+  public Integer getStorageLocationId() {
+    return storageLocationId;
   }
-  public void setStorageLocation(Integer storageLocation) {
-    if((storageLocation == null && this.storageLocation != null) || 
-       (storageLocation != null && !storageLocation.equals(this.storageLocation)))
-      this.storageLocation = storageLocation;
+  public void setStorageLocationId(Integer storageLocationId) {
+    if((storageLocationId == null && this.storageLocationId != null) || 
+       (storageLocationId != null && !storageLocationId.equals(this.storageLocationId)))
+      this.storageLocationId = storageLocationId;
   }
 
   public Integer getQuantityOnhand() {
@@ -146,10 +159,10 @@ public class InventoryLocation implements Auditable, Cloneable {
         root.appendChild(elem);
       }      
 
-      if((storageLocation == null && original.storageLocation != null) || 
-         (storageLocation != null && !storageLocation.equals(original.storageLocation))){
+      if((storageLocationId == null && original.storageLocationId != null) || 
+         (storageLocationId != null && !storageLocationId.equals(original.storageLocationId))){
         Element elem = doc.createElement("storage_location");
-        elem.appendChild(doc.createTextNode(original.storageLocation.toString().trim()));
+        elem.appendChild(doc.createTextNode(original.storageLocationId.toString().trim()));
         root.appendChild(elem);
       }      
 
@@ -178,5 +191,11 @@ public class InventoryLocation implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_location";
   }
+public StorageLocation getStorageLocation() {
+    return storageLocation;
+}
+public void setStorageLocation(StorageLocation storageLocation) {
+    this.storageLocation = storageLocation;
+}
   
 }   

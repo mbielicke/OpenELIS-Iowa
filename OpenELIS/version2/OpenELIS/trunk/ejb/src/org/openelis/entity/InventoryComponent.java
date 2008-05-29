@@ -12,9 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -24,9 +24,13 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-/*	@NamedQueries({	@NamedQuery(name = "getInventoryComponents", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
-			 											" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id")})
-*/
+	@NamedQueries({	@NamedQuery(name = "InventoryComponent.InventoryComponent", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
+			 											" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
+                    @NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
+                                                        " c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItem = :id"),
+                    @NamedQuery(name = "InventoryComponent.ValidateComponentWithItemStore", query = "select c.id from InventoryComponent c left join c.componentInventoryItem i where " +
+                                                        " i.store = :store AND c.id = :id")})
+
 @Entity
 @Table(name="inventory_component")
 @EntityListeners({AuditUtil.class})
@@ -46,9 +50,9 @@ public class InventoryComponent implements Auditable, Cloneable {
   @Column(name="quantity")
   private Double quantity;             
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "component", insertable = false, updatable = false)
-  private Organization componentInventoryItem;
+  private InventoryItem componentInventoryItem;
   
   @Transient
   private InventoryComponent original;
@@ -141,10 +145,10 @@ public class InventoryComponent implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_component";
   }
-public Organization getComponentInventoryItem() {
+public InventoryItem getComponentInventoryItem() {
 	return componentInventoryItem;
 }
-public void setComponentInventoryItem(Organization componentInventoryItem) {
+public void setComponentInventoryItem(InventoryItem componentInventoryItem) {
 	this.componentInventoryItem = componentInventoryItem;
 }
   
