@@ -6,10 +6,10 @@ import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 
 public class InventoryLocationsTable implements TableManager {
-    private InventoryScreen userForm;
+    private InventoryItemScreen userForm;
     public boolean disableRows = false;
     
-    public void setInventoryForm(InventoryScreen form) {
+    public void setInventoryForm(InventoryItemScreen form) {
         userForm = form;
     }
     

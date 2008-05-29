@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public class OpenELISScreenForm extends AppScreenForm {
     
-    protected OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync) GWT
+    public OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync) GWT
     .create(OpenELISServiceInt.class);
     protected ServiceDefTarget target = (ServiceDefTarget) screenService; 
          

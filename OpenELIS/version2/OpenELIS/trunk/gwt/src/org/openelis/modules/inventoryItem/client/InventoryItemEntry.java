@@ -5,7 +5,7 @@ import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationContactsTable;
 
-public class InventoryEntry implements AppModule {
+public class InventoryItemEntry implements AppModule {
 
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(getModuleName());
@@ -34,10 +34,10 @@ public class InventoryEntry implements AppModule {
                                }
        );
         
-        ClassFactory.addClass(new String[] {"InventoryScreen"}, 
+        ClassFactory.addClass(new String[] {"InventoryItemScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new InventoryScreen();
+                                       return new InventoryItemScreen();
                                    }
                                 }
         );

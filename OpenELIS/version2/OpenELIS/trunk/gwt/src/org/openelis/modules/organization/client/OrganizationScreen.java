@@ -3,6 +3,7 @@ package org.openelis.modules.organization.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -212,7 +213,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     public void abort() {
         contactsController.setAutoAdd(false);
         
-        if(state == FormInt.ADD){
+        if(state == FormInt.ADD || state == FormInt.QUERY){
             loadContacts = false;
             clearContacts = true;
             
@@ -237,6 +238,23 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         if(success){ 
             loadNotes = true;
             clearNotes = true;
+            
+            loadContacts = true;
+            clearContacts = false;
+            
+            Integer orgId = (Integer)rpc.getFieldValue("organization.id");
+            NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
+            orgIdObj.setValue(orgId);
+            
+//          done because key is set to null in AppScreenForm for the add operation 
+            if(key ==null){  
+                key = new DataSet();
+                key.setKey(orgIdObj);
+                
+            }else{
+                key.setKey(orgIdObj);
+                
+            }
             
             loadTabs();
             

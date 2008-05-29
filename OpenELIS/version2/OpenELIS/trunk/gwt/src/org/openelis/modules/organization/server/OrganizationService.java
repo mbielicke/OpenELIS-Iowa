@@ -55,7 +55,6 @@ import edu.uiowa.uhl.security.remote.SystemUserRemote;
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {
 
-	private static final long serialVersionUID = -7945448239944359285L;
 	private static final int leftTableRowsPerPage = 19;
     
 	private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
@@ -371,10 +370,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
             Integer userId = noteRow.getSystemUser();
             //body
             String body = noteRow.getText();
+            
+            if(body == null)
+                body = "";
+            
             //date
             String date = noteRow.getTimestamp().toString();
             //subject
             String subject = noteRow.getSubject();
+            
+            if(subject == null)
+                subject = "";
                         
             
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");

@@ -38,7 +38,7 @@
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="KitOrders" name="{resource:getString($constants,'internalOrders')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="KitOrder" name="{resource:getString($constants,'internalOrder')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
 			<panel layout="vertical" spacing="0" xsi:type="Panel">
@@ -102,7 +102,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="90px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="90px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -110,7 +110,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="172px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="172px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -136,7 +136,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnit()}" case="lower" width="187px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnit()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="187px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -212,8 +212,8 @@
       <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer" required="true"/>
       <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer" required="true"/>
       <number key="{inventoryItemMeta:quantityToReorder()}" type="integer" required="true"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnit()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnit()}" type="integer" required="true"/> 
+      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer" required="true"/> 
+      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer" required="true"/> 
       <number key="{inventoryItemMeta:averageLeadTime()}" type="integer" required="false"/>
       <number key="{inventoryItemMeta:averageCost()}" type="double" required="false"/>
       <number key="{inventoryItemMeta:averageDailyUse()}" type="integer" required="false"/>
@@ -222,7 +222,7 @@
       <check key="{inventoryItemMeta:isActive()}" required="false"/>
       <check key="{inventoryItemMeta:isReorderAuto()}" required="false"/>
       <check key="{inventoryItemMeta:isLotMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:isSerialRequired()}" required="false"/>locsController
+      <check key="{inventoryItemMeta:isSerialMaintained()}" required="false"/>locsController
       <check key="{inventoryItemMeta:isBulk()}" required="false"/>
       <check key="{inventoryItemMeta:isNotForSale()}" required="false"/>
       <check key="{inventoryItemMeta:isSubAssembly()}" required="false"/>
@@ -240,8 +240,8 @@
       <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer"/>
       <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer"/>
       <number key="{inventoryItemMeta:quantityToReorder()}" type="integer"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnit()}" type="integer"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnit()}" type="integer"/> 
+      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer"/> 
+      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer"/> 
       <number key="{inventoryItemMeta:averageLeadTime()}" type="integer"/>
       <number key="{inventoryItemMeta:averageCost()}" type="double"/>
       <number key="{inventoryItemMeta:averageDailyUse()}" type="integer"/>
@@ -250,7 +250,7 @@
       <check key="{inventoryItemMeta:isActive()}"/>
       <check key="{inventoryItemMeta:isReorderAuto()}"/>
       <check key="{inventoryItemMeta:isLotMaintained()}"/>
-      <check key="{inventoryItemMeta:isSerialRequired()}"/>
+      <check key="{inventoryItemMeta:isSerialMaintained()}"/>
       <check key="{inventoryItemMeta:isBulk()}"/>
       <check key="{inventoryItemMeta:isNotForSale()}"/>
       <check key="{inventoryItemMeta:isSubAssembly()}"/>

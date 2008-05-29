@@ -74,9 +74,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>  		
-		<autoDropdown key="{qaEventMeta:type()}" width = "120px" case="mixed" popWidth="auto"  tab="{qaEventMeta:testId()},{qaEventMeta:description()}">
-			<widths>115</widths>													 													
-		</autoDropdown>
+		<autoDropdown key="{qaEventMeta:type()}" width = "120px" case="mixed" tab="{qaEventMeta:testId()},{qaEventMeta:description()}"/>
 	</widget>  									        
      </row>
      <row>
@@ -84,9 +82,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-		<autoDropdown key="{qaEventMeta:testId()}" width = "140px"  popWidth="auto" case="mixed" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}">													
-			<widths>132</widths>													 													
-		</autoDropdown>
+		<autoDropdown key="{qaEventMeta:testId()}" width = "140px"  case="mixed" tab="{qaEventMeta:isBillable()},{qaEventMeta:type()}"/>
 	 </widget>
 	  </row>		
 	  						

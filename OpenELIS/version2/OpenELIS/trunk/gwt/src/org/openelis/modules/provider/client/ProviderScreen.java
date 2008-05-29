@@ -4,6 +4,7 @@ package org.openelis.modules.provider.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -168,7 +169,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
          }
 
     public void query(){
-    	svp.clear();    	       
+    	clearNotes();   	       
        super.query();
     
         //    set focus to the last name field
@@ -242,7 +243,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
       provAddController.setAutoAdd(false);      
       
-      if(state == FormInt.ADD){
+      if(state == FormInt.ADD || state == FormInt.QUERY){
           loadAddresses = false;
           clearAddresses = true;
           
@@ -282,7 +283,24 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         // we need to load the notes tab if it has been already loaded
        if(success){  
         loadNotes = true;
-        clearNotes = true;                
+        clearNotes = true;    
+        
+        loadAddresses = true;
+        clearAddresses = false;
+        
+        Integer provId = (Integer)rpc.getFieldValue("provider.id");
+        NumberObject provIdObj = new NumberObject(NumberObject.INTEGER);
+        provIdObj.setValue(provId);
+        
+//      done because key is set to null in AppScreenForm for the add operation 
+        if(key ==null){  
+            key = new DataSet();
+            key.setKey(provIdObj);
+            
+        }else{
+            key.setKey(provIdObj);
+            
+        }
         
         loadTabs();
                 

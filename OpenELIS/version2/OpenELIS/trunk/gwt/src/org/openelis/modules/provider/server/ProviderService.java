@@ -451,11 +451,17 @@ public class ProviderService implements AppScreenFormServiceInt{
             Integer userId = noteRow.getSystemUser();
             //body
             String body = noteRow.getText();
+            
+            if(body == null)
+                body = "";
+            
             //date
             String date = noteRow.getTimestamp().toString();
             //subject
             String subject = noteRow.getSubject();
-                        
+            
+            if(subject == null)
+                subject = "";                        
             
             SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
             SystemUserDO user = securityRemote.getSystemUser(userId,false);

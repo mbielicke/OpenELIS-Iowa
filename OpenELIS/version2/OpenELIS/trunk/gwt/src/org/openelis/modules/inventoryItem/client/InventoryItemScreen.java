@@ -1,13 +1,19 @@
 package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenMenuItem;
+import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -34,13 +40,16 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryScreen extends OpenELISScreenForm implements ClickListener, TabListener{
+public class InventoryItemScreen extends OpenELISScreenForm implements ClickListener, TabListener{
 
+    private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
 	
 	private EditTable componentsController, locsController;
+    
+    private ScreenMenuPanel duplicateMenuPanel;
     
     private static boolean loaded = false;
     private static DataModel storesDropdown, categoriesDropdown,
@@ -55,8 +64,8 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
     
     private ScreenVertical   svp       = null;
 	
-	public InventoryScreen() {
-        super("org.openelis.modules.inventory.server.InventoryService",!loaded);
+	public InventoryItemScreen() {
+        super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded);
 	}
 
     public void onChange(Widget sender) {
@@ -72,14 +81,13 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
     
 	public void onClick(Widget sender) {
 		if(sender instanceof ScreenMenuItem){
-        	if(((String)((ScreenMenuItem)sender).getUserObject()).equals("duplicateRecord")){
-                Window.alert("clicked duplicate record");
-                return;
+        	if("duplicateRecord".equals(((String)((ScreenMenuItem)sender).objClass))){
+                onDuplicateRecordClick();
         	}
-		}else if(sender instanceof AppButton){
-			String action = ((AppButton)sender).action;
-			if(action.equals("standardNote"))
-				onStandardNoteButtonClick();
+        }else if(sender == removeComponentButton){
+            onRemoveComponentRowButtonClick();
+		}else if(sender == standardNoteButton){
+			onStandardNoteButtonClick();
 		}
 	}
 	
@@ -96,6 +104,11 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
+        
+        removeComponentButton = (AppButton)getWidget("removeComponentButton");
+        standardNoteButton = (AppButton)getWidget("standardNoteButton");
+        
+        duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
         nameTextbox = (ScreenTextBox) widgets.get("inventoryItem.name");
         idTextBox = (ScreenTextBox) widgets.get("inventoryItem.id");
@@ -154,6 +167,7 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 		nameTextbox.setFocus(true);
 		
 		idTextBox.enable(false);
+        clearComments();
 	}
 	
 	public void afterUpdate(boolean success) {
@@ -175,13 +189,18 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 		
 		nameTextbox.setFocus(true);
 		
-		noteText.enable(false);
+        //
+        // disable notes and contact remove button
+        //
+        noteText.enable(false);
+        //removeContactButton.changeState(AppButton.DISABLED);
+        clearComments();
 	}
 	
 	public void abort() {
 		componentsController.setAutoAdd(false);
         
-        if(state == FormInt.ADD){
+        if(state == FormInt.ADD || state == FormInt.QUERY){
             loadComponents = false;
             clearComponents = true;
             
@@ -235,6 +254,26 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
             loadComments = true;
             clearComments = true;
             
+            loadComponents = true;
+            clearComponents = false;
+            
+            loadLocations = true;
+            clearLocations = false;
+            
+            Integer itemId = (Integer)rpc.getFieldValue("inventoryItem.id");
+            NumberObject itemIdObj = new NumberObject(NumberObject.INTEGER);
+            itemIdObj.setValue(itemId);
+            
+            // done because key is set to null in AppScreenForm for the add operation 
+            if(key ==null){  
+                key = new DataSet();
+                key.setKey(itemIdObj);
+                
+            }else{
+                key.setKey(itemIdObj);
+                
+            }
+            
             loadTabs();
             
             //the note subject and body fields need to be refeshed after every successful commit
@@ -249,7 +288,7 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
         if (index == 0 && loadComponents) {
             if (clearComponents)
                 clearComponents();
-            fillComponentsModel();
+            fillComponentsModel(false);
             loadComponents = false;
         } else if (index == 1 && loadLocations) {
             if (clearLocations)
@@ -271,6 +310,9 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 	}
     
     private void loadTabs() {
+        loadTabs(false);
+    }
+    private void loadTabs(boolean forDuplicates) {
         TabPanel tabPanel = (TabPanel)getWidget("tabPanel");
         int selectedTab = tabPanel.getTabBar().getSelectedTab();
 
@@ -281,7 +323,7 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
                 clearComponents();
             }
             // load the components table
-            fillComponentsModel();
+            fillComponentsModel(forDuplicates);
             // don't load it again unless the mode changes or a new fetch is
             // done
             loadComponents = false;
@@ -323,9 +365,10 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
           rpc.setFieldValue("note.text", null);  
        }
     
-    private void fillComponentsModel(){
+    private void fillComponentsModel(boolean forDuplicate){
         Integer itemId = null;
         NumberObject itemIdObj;
+        BooleanObject duplicateObj;
         TableField f;
 
         if (key == null || key.getKey() == null) {
@@ -338,12 +381,19 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
         itemId = (Integer)key.getKey().getValue();
         itemIdObj = new NumberObject(NumberObject.INTEGER);
         itemIdObj.setValue(itemId);
+        duplicateObj = new BooleanObject();
+        
+        if(forDuplicate)
+            duplicateObj.setValue("Y");
+        else
+            duplicateObj.setValue("N");
+
 
         f = new TableField();
         f.setValue(componentsController.model);
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {itemIdObj, f};
+        DataObject[] args = new DataObject[] {itemIdObj, duplicateObj, f};
 
         screenService.getObject("getComponentsModel", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -466,11 +516,11 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
         svp.clear();
     }
     
-	private void getInventories(String letter, Widget sender) {
+	private void getInventories(String query, Widget sender) {
 		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			letterRPC.setFieldValue("inventoryItem.name", letter.toUpperCase() + "*");
+			letterRPC.setFieldValue("inventoryItem.name", query);
 
 			commitQuery(letterRPC);
 		}
@@ -488,4 +538,63 @@ public class InventoryScreen extends OpenELISScreenForm implements ClickListener
 		standardNotePopupPanel.show();
      }
 
+    private void onRemoveComponentRowButtonClick() {
+        TableWidget componentsTable = (TableWidget)getWidget("componentsTable");
+        int selectedRow = componentsTable.controller.selected;
+        if (selectedRow > -1 && componentsTable.controller.model.numRows() > 1) {
+            TableRow row = componentsTable.controller.model.getRow(selectedRow);
+            componentsTable.controller.model.hideRow(row);
+
+            // reset the model
+            componentsTable.controller.reset();
+            // need to set the deleted flag to "Y" also
+            StringField deleteFlag = new StringField();
+            deleteFlag.setValue("Y");
+
+            row.addHidden("deleteFlag", deleteFlag);
+        }
+    }
+    
+    private void onDuplicateRecordClick(){
+        if(state == FormInt.DISPLAY){
+            //we need to do the duplicate method
+            FormRPC displayRPC = rpc.clone();
+            displayRPC.setFieldValue("inventoryItem.id", null);
+            displayRPC.setFieldValue("locQuantitiesTable", null);
+            displayRPC.setFieldValue("inventoryItem.averageLeadTime",null);
+            displayRPC.setFieldValue("inventoryItem.averageCost",null);
+            displayRPC.setFieldValue("inventoryItem.averageDailyUse",null);
+            displayRPC.setFieldValue("note.subject",null);
+            displayRPC.setFieldValue("note.text",null);   
+                       
+            add();
+            
+            clearComponents = false;
+            loadComponents = true;
+            
+            clearLocations = false;
+            loadLocations = false;
+            
+            clearComments = false;
+            loadComments = false;
+            
+            rpc = displayRPC;
+            
+            load();
+            
+            fillComponentsModel(true);
+        }
+    }
+    
+    
+    public void changeState(int state) {
+        if(state == FormInt.DISPLAY){
+            ((ScreenMenuItem)((ScreenMenuItem) duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+
+        }else{
+            ((ScreenMenuItem)((ScreenMenuItem)duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+        } 
+        
+        super.changeState(state);
+    }
 }

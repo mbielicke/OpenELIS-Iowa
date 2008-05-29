@@ -61,9 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" popWidth="auto" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}">
-											<widths>120</widths>
-										</autoDropdown>
+										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}"/>
 									</widget>
 								</row>
 								<row>								

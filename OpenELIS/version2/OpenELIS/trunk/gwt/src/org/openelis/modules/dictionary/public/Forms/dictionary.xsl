@@ -84,9 +84,7 @@
 									 </widget>
 									 									 									  
 									           <widget>
-												   <autoDropdown key="{categoryMeta:section()}" case="lower" width="100px" popWidth="auto" tab="{categoryMeta:systemName()},{categoryMeta:description()}">
-													 <widths>92</widths>
-												   </autoDropdown>
+												   <autoDropdown key="{categoryMeta:section()}" case="lower" width="100px" tab="{categoryMeta:systemName()},{categoryMeta:description()}"/>
 												</widget>
 								     							   						
 								</row>	
@@ -114,7 +112,7 @@
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
 									<textbox/>																			
-									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px" popWidth="auto">												
+									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
 												<widths>123</widths>
 											</autoDropdown>
 								</editors>

@@ -77,9 +77,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" popWidth="auto" tab="{standardNoteMeta:text()},{standardNoteMeta:description()}">
-											<widths>131</widths>
-										</autoDropdown>
+										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" tab="{standardNoteMeta:text()},{standardNoteMeta:description()}"/>
 									</widget>
 								</row>
 							<!--	<row>
