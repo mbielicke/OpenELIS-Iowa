@@ -164,7 +164,7 @@ public class OpenELISService implements OpenELISServiceInt {
         return cmap;
     }
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
+	public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
 		try {
 			Document doc = XMLUtil.createNew("doc");
 			Element root = doc.getDocumentElement();
