@@ -16,9 +16,11 @@ import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.QueryTable;
@@ -89,15 +91,17 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         QueryTable q;
         ScreenTableWidget sw;
         AutoCompleteDropdown drop;
-        AToZPanel atozTable;
+        AToZTable atozTable;
 
         //
         // we are interested in in getting button actions in two places,
         // modelwidget and us.
         //
-        atozTable = (AToZPanel)getWidget("hideablePanel");
+        atozTable = (AToZTable)getWidget("azTable");
         modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         removeContactButton = (AppButton)getWidget("removeContactButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");

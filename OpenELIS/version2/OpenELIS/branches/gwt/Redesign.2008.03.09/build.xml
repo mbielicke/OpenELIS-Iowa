@@ -17,7 +17,7 @@ Builds the a servlet warfile.
       <property name="bin.dir"        value="bin" />
       <property name="build.dir"      value="build" />
       <property name="build.compiler" value="modern" />
-   	  <property name="openelis.dir"   value="www/org.openelis.OpenELIS"  />
+   	  <property name="openelis.dir"   value="www/org.openelis.OpenELIS/"  />
    	  <property name="webapp.dir"     value="/usr/pub/http/Application" />
    </target>
 
@@ -40,6 +40,7 @@ Builds the a servlet warfile.
 	  	       <include name="org/openelis/remote/*.class"/>
 	  	       <include name="org/openelis/local/*.class"/>
 	  	       <include name="org/openelis/util/*.class"/>
+	  	       <include name="org/openelis/meta/*.class"/>	
 	  	    </fileset>
 	    </jar>
 	   	  <delete file="${build.dir}/openelis.war" />
@@ -55,7 +56,7 @@ Builds the a servlet warfile.
 	          <classes dir="${bin.dir}"
 	      	           includes="org/openelis/**/*" />
 	          <lib dir="lib"/>
-	      	  <lib dir="../UHL-GWT-tools/gwt-linux-UHL.1.4"
+	      	  <lib dir="../OpenELIS-Lib-tools/gwt-linux-UHL.1.5"
 	      	  	       includes="gwt-servlet.jar"/>
 	      	  <lib dir="../OpenELIS-Lib"
 	      	           includes="openelis-lib.jar"/>
