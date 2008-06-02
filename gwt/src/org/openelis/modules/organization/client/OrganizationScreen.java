@@ -177,7 +177,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         // disable notes and contact remove button
         //
         noteText.enable(false);
-        removeContactButton.changeState(AppButton.DISABLED);
+        removeContactButton.changeState(AppButton.ButtonState.DISABLED);
     }
 
     public void add() {
@@ -217,7 +217,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     public void abort() {
         contactsController.setAutoAdd(false);
         
-        if(state == FormInt.ADD || state == FormInt.QUERY){
+        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
             loadContacts = false;
             clearContacts = true;
             
@@ -308,7 +308,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     private void getOrganizations(String query) {
-        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
             
             FormRPC rpc;
 

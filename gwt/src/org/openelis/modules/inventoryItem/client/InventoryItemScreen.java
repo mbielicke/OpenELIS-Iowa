@@ -200,7 +200,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 	public void abort() {
 		componentsController.setAutoAdd(false);
         
-        if(state == FormInt.ADD || state == FormInt.QUERY){
+        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
             loadComponents = false;
             clearComponents = true;
             
@@ -517,7 +517,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     }
     
 	private void getInventories(String query, Widget sender) {
-		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			letterRPC.setFieldValue("inventoryItem.name", query);
@@ -556,7 +556,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     }
     
     private void onDuplicateRecordClick(){
-        if(state == FormInt.DISPLAY){
+        if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
             FormRPC displayRPC = rpc.clone();
             displayRPC.setFieldValue("inventoryItem.id", null);
@@ -587,8 +587,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     }
     
     
-    public void changeState(int state) {
-        if(state == FormInt.DISPLAY){
+    public void changeState(FormInt.State state) {
+        if(state == FormInt.State.DISPLAY){
             ((ScreenMenuItem)((ScreenMenuItem) duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
 
         }else{

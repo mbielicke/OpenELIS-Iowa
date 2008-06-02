@@ -95,7 +95,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     private void getLabels(String query) {
       // we only want to allow them to select a letter if they are in display
       // mode..
-      if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+      if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
     
           FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
          

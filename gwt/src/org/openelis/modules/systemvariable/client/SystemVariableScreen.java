@@ -68,7 +68,7 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     }
     
     private void getSystemVariables(String query) {
-        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
             letterRPC.setFieldValue("systemVariable.name", query);

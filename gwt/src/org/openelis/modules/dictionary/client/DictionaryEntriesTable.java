@@ -43,7 +43,9 @@ public class DictionaryEntriesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {   
-       if(dictionaryForm.state == FormInt.ADD || dictionaryForm.state == FormInt.UPDATE || dictionaryForm.state == FormInt.QUERY) 
+       if(dictionaryForm.state == FormInt.State.ADD 
+                       || dictionaryForm.state == FormInt.State.UPDATE 
+                       || dictionaryForm.state == FormInt.State.QUERY) 
         return true;
        
        return false;

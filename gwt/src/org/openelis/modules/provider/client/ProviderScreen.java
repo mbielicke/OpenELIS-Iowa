@@ -175,16 +175,16 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         //    set focus to the last name field
         provId.setFocus(true);
         noteArea.enable(false);
-         removeContactButton.changeState(AppButton.DISABLED);
+         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
          
-         standardNoteButton.changeState(AppButton.DISABLED);
+         standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
     }
 
     public void add(){                                       
     
-        removeContactButton.changeState(AppButton.UNPRESSED);
+        removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
         
-        standardNoteButton.changeState(AppButton.UNPRESSED);
+        standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
         
         svp.clear();
         
@@ -222,9 +222,9 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         super.afterUpdate(success);
                 
-        removeContactButton.changeState(AppButton.UNPRESSED);
+        removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
         
-        standardNoteButton.changeState(AppButton.UNPRESSED);
+        standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
         
         provId.enable(false);
         
@@ -243,7 +243,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
       provAddController.setAutoAdd(false);      
       
-      if(state == FormInt.ADD || state == FormInt.QUERY){
+      if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
           loadAddresses = false;
           clearAddresses = true;
           
@@ -272,9 +272,9 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
                
         super.commitAdd();                              
         
-        removeContactButton.changeState(AppButton.DISABLED);
+        removeContactButton.changeState(AppButton.ButtonState.DISABLED);
         
-        standardNoteButton.changeState(AppButton.DISABLED);
+        standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
         
         provAddController.setAutoAdd(false);      
     }
@@ -356,7 +356,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     }
     
     private void getProviders(String query) {
-        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
             
             letterRPC.setFieldValue("provider.lastName", query);            

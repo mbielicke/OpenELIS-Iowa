@@ -187,7 +187,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
             setRpcErrors(exceptionList, addressTable, rpcSend);   
-            rpcSend.status = IForm.INVALID_FORM;
+            rpcSend.status = IForm.Status.invalid;
             return rpcSend;
         } 
                          
@@ -633,6 +633,6 @@ public class ProviderService implements AppScreenFormServiceInt{
             else if(exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }   
-        rpcSend.status = IForm.INVALID_FORM;
+        rpcSend.status = IForm.Status.invalid;
     }
 }
