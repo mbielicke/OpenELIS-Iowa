@@ -110,7 +110,7 @@ import com.google.gwt.user.client.ui.Widget;
         }
          
          private void getQAEvents(String query) {
-             if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+             if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
                  letterRPC.setFieldValue("qaevent.name", query);

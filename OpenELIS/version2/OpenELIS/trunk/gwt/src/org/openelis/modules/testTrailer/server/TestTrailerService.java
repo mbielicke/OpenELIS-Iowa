@@ -275,7 +275,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 			else if(exceptionList.get(i) instanceof FormErrorException)
 				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
 		}	
-		rpcSend.status = IForm.INVALID_FORM;
+		rpcSend.status = IForm.Status.invalid;
     }
 
 }

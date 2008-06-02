@@ -31,7 +31,7 @@ public class ProviderAddressesTable implements TableManager {
     }
 
     public boolean canSelect(int row, TableController controller) {
-        if(providerForm.state == FormInt.ADD || providerForm.state == FormInt.UPDATE || providerForm.state == FormInt.QUERY){      
+        if(providerForm.state == FormInt.State.ADD || providerForm.state == FormInt.State.UPDATE || providerForm.state == FormInt.State.QUERY){      
 
             return true;
         } 

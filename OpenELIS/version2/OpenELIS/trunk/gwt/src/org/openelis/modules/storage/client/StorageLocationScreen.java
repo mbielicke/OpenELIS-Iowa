@@ -71,7 +71,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		//set focus to the name field
 		nameTextbox.setFocus(true);
 		
-		removeEntryButton.changeState(AppButton.DISABLED);
+		removeEntryButton.changeState(AppButton.ButtonState.DISABLED);
 	}
 	
 	public void add() {
@@ -132,7 +132,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
     }
 
     private void getStorageLocs(String query) {
-    	if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+    	if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
     		

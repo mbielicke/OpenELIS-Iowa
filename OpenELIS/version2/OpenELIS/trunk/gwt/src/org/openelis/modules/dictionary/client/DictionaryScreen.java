@@ -11,6 +11,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -95,7 +96,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         tname.setFocus(true);
     
     
-        removeEntryButton.changeState(AppButton.DISABLED);
+        removeEntryButton.changeState(ButtonState.DISABLED);
     }
 
     public void add() {
@@ -147,7 +148,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
     private void getCategories(String query) {
-        if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
             letterRPC.setFieldValue("category.name", query);

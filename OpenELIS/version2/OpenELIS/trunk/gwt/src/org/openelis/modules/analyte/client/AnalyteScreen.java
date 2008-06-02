@@ -66,7 +66,7 @@ public class AnalyteScreen extends OpenELISScreenForm {
 	}
 	
 	private void getAnalytes(String query) {
-		if (state == FormInt.DISPLAY || state == FormInt.DEFAULT) {
+		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 
