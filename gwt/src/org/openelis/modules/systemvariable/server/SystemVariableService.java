@@ -85,7 +85,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
          DataSet row = new DataSet();
          
-         NumberObject id = new NumberObject(NumberObject.INTEGER);
+         NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
 
          StringObject svname = new StringObject();
 

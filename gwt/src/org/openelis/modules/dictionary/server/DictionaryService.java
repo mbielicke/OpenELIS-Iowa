@@ -102,8 +102,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
-            id.setValue(idResult);
+            NumberObject id = new NumberObject(idResult);
             
             StringObject sysName = new StringObject();
                         
@@ -290,13 +289,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
                  DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
 
                     TableRow row = dictEntryModel.createRow();
-                    NumberField id = new NumberField(NumberObject.INTEGER);
-                     id.setValue(dictDO.getId());
+                    NumberField id = new NumberField(dictDO.getId());
                    
                      row.addHidden("id", id);
                      
-                     NumberField relEntryId = new NumberField(NumberObject.INTEGER);
-                     relEntryId.setValue(dictDO.getRelatedEntryId());
+                     NumberField relEntryId = new NumberField(dictDO.getRelatedEntryId());
 
                      row.addHidden("relEntryId", relEntryId);
                      
@@ -313,10 +310,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
                        row.getColumn(4).setValue(null);
                     else{
                         DataSet relEntrySet = new DataSet();
-                        NumberObject idObj = new NumberObject(NumberObject.INTEGER);
-                        StringObject text = new StringObject();
-                        idObj.setValue(dictDO.getRelatedEntryId());
-                        text.setValue(dictDO.getRelatedEntryText());
+                        NumberObject idObj = new NumberObject(dictDO.getRelatedEntryId());
+                        StringObject text = new StringObject(dictDO.getRelatedEntryText());
                         relEntrySet.setKey(id);
                         relEntrySet.addObject(text);
                         row.getColumn(4).setValue(relEntrySet);
@@ -339,8 +334,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         try{
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
           Integer entryId = remote.getEntryIdForSystemName((String)systemName.getValue());
-          NumberField idField = new NumberField(NumberObject.INTEGER);
-          idField.setValue(entryId);          
+          NumberField idField = new NumberField(entryId);          
           return idField;
         }catch(Exception ex){
             throw ex;
@@ -353,8 +347,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
          try{ 
           CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
           Integer entryId = remote.getEntryIdForEntry((String)entry.getValue());        
-          NumberField idField = new NumberField(NumberObject.INTEGER);
-          idField.setValue(entryId);          
+          NumberField idField = new NumberField(entryId);          
           return idField;
          }catch(Exception ex){
              throw ex;
@@ -373,8 +366,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         blankset.addObject(blankStringId);
         
         if(cat.equals("section")){
-         NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
-         blankNumberId.setValue(-1);
+         NumberObject blankNumberId = new NumberObject(-1);
          blankset.setKey(blankNumberId);
         }                        
         
@@ -397,13 +389,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
                 //entry
                 String dropdownText = sectionDO.getName();
                 
-                StringObject textObject = new StringObject();
-                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+                StringObject textObject = new StringObject(dropdownText);
+                NumberObject numberId = new NumberObject(dropdownId);
                 
-                textObject.setValue(dropdownText);
                 set.addObject(textObject);
              
-                numberId.setValue(dropdownId);
                 set.setKey(numberId);              
                 
                 model.add(set);                          
@@ -429,12 +419,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
             
             DataSet data = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-            idObject.setValue(entryId);
+            NumberObject idObject = new NumberObject(entryId);
             data.setKey(idObject);
             
-            StringObject nameObject = new StringObject();
-            nameObject.setValue(entryText);
+            StringObject nameObject = new StringObject(entryText);
             data.addObject(nameObject);
             
             //add the dataset to the datamodel

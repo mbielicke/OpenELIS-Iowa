@@ -92,7 +92,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
             String nameResult = resultDO.getName();
 
             DataSet row = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
             StringObject name = new StringObject();
             name.setValue(nameResult);
             id.setValue(idResult);

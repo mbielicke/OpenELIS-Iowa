@@ -289,8 +289,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         clearAddresses = false;
         
         Integer provId = (Integer)rpc.getFieldValue("provider.id");
-        NumberObject provIdObj = new NumberObject(NumberObject.INTEGER);
-        provIdObj.setValue(provId);
+        NumberObject provIdObj = new NumberObject(provId);
         
 //      done because key is set to null in AppScreenForm for the add operation 
         if(key ==null){  
@@ -384,8 +383,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        if(getModel){ 
          window.setStatus("","spinnerIcon");
          
-         NumberObject provId = new NumberObject(NumberObject.INTEGER);
-         provId.setValue(providerId);
+         NumberObject provId = new NumberObject(providerId);
          
         // prepare the argument list for the getObject function
          DataObject[] args = new DataObject[] {provId}; 
@@ -432,8 +430,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       if(getModel){
           window.setStatus("","spinnerIcon");
           
-          NumberObject provId = new NumberObject(NumberObject.INTEGER);
-          provId.setValue(providerId);
+          NumberObject provId = new NumberObject(providerId);
           TableField tf = new TableField();
           tf.setValue(provAddController.model);
           

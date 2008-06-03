@@ -57,8 +57,7 @@ public class InventoryComponentsTable implements TableManager {
             componentField = (DropDownField)controller.model.getFieldAt(row, col);
             if(componentField.getValue() != null){
                 userForm.window.setStatus("","spinnerIcon");
-                NumberObject componentIdObj = new NumberObject(NumberObject.INTEGER);
-                componentIdObj.setValue((Integer)componentField.getValue());
+                NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
                   
                 // prepare the argument list for the getObject function
                 DataObject[] args = new DataObject[] {componentIdObj}; 

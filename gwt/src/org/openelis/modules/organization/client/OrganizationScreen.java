@@ -247,8 +247,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             clearContacts = false;
             
             Integer orgId = (Integer)rpc.getFieldValue("organization.id");
-            NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
-            orgIdObj.setValue(orgId);
+            NumberObject orgIdObj = new NumberObject(orgId);
             
 //          done because key is set to null in AppScreenForm for the add operation 
             if(key ==null){  
@@ -371,8 +370,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             
            if(getModel){ 
                window.setStatus("","spinnerIcon");
-               NumberObject orgIdObj = new NumberObject(NumberObject.INTEGER);
-               orgIdObj.setValue(orgId);
+               NumberObject orgIdObj = new NumberObject(orgId);
                  
                // prepare the argument list for the getObject function
                DataObject[] args = new DataObject[] {orgIdObj}; 
@@ -426,8 +424,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         window.setStatus("","spinnerIcon");
         
         orgId = (Integer)key.getKey().getValue();
-        orgIdObj = new NumberObject(NumberObject.INTEGER);
-        orgIdObj.setValue(orgId);
+        orgIdObj = new NumberObject(orgId);
 
         f = new TableField();
         f.setValue(contactsController.model);

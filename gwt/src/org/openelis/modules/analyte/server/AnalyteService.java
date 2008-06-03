@@ -1,10 +1,5 @@
 package org.openelis.modules.analyte.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.EntityLockedException;
@@ -17,7 +12,6 @@ import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -32,6 +26,11 @@ import org.openelis.remote.AnalyteRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
 
@@ -86,10 +85,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
                 String nameResult = resultDO.getName();
 
                 DataSet row = new DataSet();
-                NumberObject id = new NumberObject(NumberObject.INTEGER);
-                StringObject name = new StringObject();
-                name.setValue(nameResult);
-                id.setValue(idResult);
+                NumberObject id = new NumberObject(idResult);
+                StringObject name = new StringObject(nameResult);
                 
                 row.setKey(id);         
                 row.addObject(name);
@@ -279,10 +276,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, null);
 		else{
 			DataSet parentAnalyteSet = new DataSet();
-			NumberObject id = new NumberObject(NumberObject.INTEGER);
-			StringObject text = new StringObject();
-			id.setValue(analyteDO.getParentAnalyteId());
-			text.setValue(analyteDO.getParentAnalyte());
+			NumberObject id = new NumberObject(analyteDO.getParentAnalyteId());
+			StringObject text = new StringObject(analyteDO.getParentAnalyte());
 			parentAnalyteSet.setKey(id);
 			parentAnalyteSet.addObject(text);
 			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, parentAnalyteSet);
@@ -320,8 +315,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			
 			DataSet data = new DataSet();
 			//hidden id
-			NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-			idObject.setValue(analyteId);
+			NumberObject idObject = new NumberObject(analyteId);
 			data.setKey(idObject);
 			//columns
 			StringObject nameObject = new StringObject();

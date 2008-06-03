@@ -1,9 +1,7 @@
 package org.openelis.modules.inventoryItem.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -22,6 +20,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
@@ -47,8 +46,10 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class InventoryItemService implements AppScreenFormServiceInt, 
 									     AutoCompleteServiceInt {
@@ -101,17 +102,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         model.clear();
         while(i < inventoryItemNames.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)inventoryItemNames.get(i);
- 
-            DataSet row = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
-            StringObject name = new StringObject();
- 
-            name.setValue(resultDO.getName());
-            id.setValue(resultDO.getId());
-            
-            row.setKey(id);         
-            row.addObject(name);
-            model.add(row);
+            model.add(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName()));
             i++;
         } 
  
@@ -270,7 +261,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
     }
 
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,DataObject> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl"));
         
@@ -294,7 +285,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             CachingManager.putElement("InitialData", "inventoryItemUnitsDropdown", unitsDropdownField);
         }
         
-        HashMap map = new HashMap();
+        HashMap<String,DataObject> map = new HashMap<String,DataObject>();
         map.put("xml", xml);
         map.put("categories", categoriesDropdownField);
         map.put("stores", storesDropdownField);
@@ -303,7 +294,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return map;
     }
 
-    public HashMap getXMLData(HashMap args) throws RPCException {
+    public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
@@ -428,7 +419,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                 InventoryComponentDO componentRow = (InventoryComponentDO)componentsList.get(iter);
     
                    TableRow row = componentsModel.createRow();
-                   NumberField id = new NumberField(NumberObject.INTEGER);
+                   NumberField id = new NumberField(NumberObject.Type.INTEGER);
                     
                    if(forDuplicate)
                        id.setValue(null);
@@ -442,10 +433,8 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                         row.getColumn(0).setValue(null);
                     else{
                         DataSet componentSet = new DataSet();
-                        NumberObject componentId = new NumberObject(NumberObject.INTEGER);
-                        StringObject componentText = new StringObject();
-                        componentId.setValue(componentRow.getComponentNameId());
-                        componentText.setValue(componentRow.getComponentName());
+                        NumberObject componentId = new NumberObject(componentRow.getComponentNameId());
+                        StringObject componentText = new StringObject(componentRow.getComponentName());
                         componentSet.setKey(componentId);
                         componentSet.addObject(componentText);
                         row.getColumn(0).setValue(componentSet);
@@ -474,8 +463,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                 InventoryLocationDO locationRow = (InventoryLocationDO)locationsList.get(iter);
     
                    TableRow row = locationsModel.createRow();
-                   NumberField id = new NumberField(NumberObject.INTEGER);
-                   id.setValue(locationRow.getId());
+                   NumberField id = new NumberField(locationRow.getId());
            
                     row.addHidden("id", id);
                     
@@ -538,18 +526,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             //org name
             String name = resultDO.getName();
           
-            DataSet data = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-            idObject.setValue(itemId);
-            data.setKey(idObject);
-            //columns
-            StringObject nameObject = new StringObject();
-            nameObject.setValue(name);
-            data.addObject(nameObject);
-            
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
+            dataModel.add(new NumberObject(itemId), new StringObject(name));
+
         }       
         
         return dataModel;       
@@ -566,48 +545,17 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         else if(cat.equals("itemUnits"))
             id = remote.getCategoryId("inventory_item_units");
         
-        List entries = new ArrayList();
+        List<IdNameDO> entries = new ArrayList<IdNameDO>();
         if(id > -1)
-            entries = remote.getDropdownValues(id);
+            entries = (List<IdNameDO>)remote.getDropdownValues(id);
         
         //we need to build the model to return
         DataModel returnModel = new DataModel();
-            
-        //create a blank entry to begin the list
-        DataSet blankset = new DataSet();
+                    
+        returnModel.add(new NumberObject(0),new StringObject(""));
         
-        StringObject blankStringId = new StringObject();
-        NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
-        
-        blankStringId.setValue("");
-        blankset.addObject(blankStringId);
-        
-        blankNumberId.setValue(new Integer(0));
-
-        blankset.setKey(blankNumberId);
-        
-        returnModel.add(blankset);
-        int i=0;
-        while(i < entries.size()){
-            DataSet set = new DataSet();
-            IdNameDO resultDO = (IdNameDO) entries.get(i);
-            //id
-            Integer dropdownId = resultDO.getId();
-            //entry
-            String dropdownText = resultDO.getName();
-            
-            StringObject textObject = new StringObject();
-            NumberObject numberId = new NumberObject(NumberObject.INTEGER);
-        
-            textObject.setValue(dropdownText);
-            set.addObject(textObject);
-            
-            numberId.setValue(dropdownId);
-            set.setKey(numberId);
-            
-            returnModel.add(set);
-            
-            i++;
+        for(IdNameDO resultDO : entries) { 
+            returnModel.add(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName()));
         }       
         
         return returnModel;
