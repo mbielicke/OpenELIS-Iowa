@@ -88,7 +88,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
                 String nameResult = resultDO.getName();
 
                 DataSet row = new DataSet();
-                NumberObject id = new NumberObject(NumberObject.INTEGER);
+                NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
                 StringObject name = new StringObject();
                 name.setValue(nameResult);
                 id.setValue(idResult);
@@ -300,7 +300,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		DataSet blankset = new DataSet();
 		
 		StringObject blankStringId = new StringObject();
-		NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
+		NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
 				
 		blankStringId.setValue("");
 		blankset.addObject(blankStringId);
@@ -320,7 +320,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			String dropdownText = resultDO.getName();
 			
 			StringObject textObject = new StringObject();
-			NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+			NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
 			
 			textObject.setValue(dropdownText);
 			set.addObject(textObject);

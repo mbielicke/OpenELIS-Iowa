@@ -138,7 +138,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	        name.setValue(queryRPC.getFieldValue("standardNote.name")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
 	        desc.setValue(queryRPC.getFieldValue("standardNote.description")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
 	        
-	        NumberObject idObj = new NumberObject(NumberObject.INTEGER);
+	        NumberObject idObj = new NumberObject(NumberObject.Type.INTEGER);
 			idObj.setValue(id);
 	        
 	       // prepare the argument list for the getObject function

@@ -261,8 +261,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             clearLocations = false;
             
             Integer itemId = (Integer)rpc.getFieldValue("inventoryItem.id");
-            NumberObject itemIdObj = new NumberObject(NumberObject.INTEGER);
-            itemIdObj.setValue(itemId);
+            NumberObject itemIdObj = new NumberObject(itemId);
             
             // done because key is set to null in AppScreenForm for the add operation 
             if(key ==null){  
@@ -379,8 +378,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         window.setStatus("","spinnerIcon");
         
         itemId = (Integer)key.getKey().getValue();
-        itemIdObj = new NumberObject(NumberObject.INTEGER);
-        itemIdObj.setValue(itemId);
+        itemIdObj = new NumberObject(itemId);
         duplicateObj = new BooleanObject();
         
         if(forDuplicate)
@@ -428,8 +426,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         window.setStatus("","spinnerIcon");
         
         itemId = (Integer)key.getKey().getValue();
-        itemIdObj = new NumberObject(NumberObject.INTEGER);
-        itemIdObj.setValue(itemId);
+        itemIdObj = new NumberObject(itemId);
 
         f = new TableField();
         f.setValue(locsController.model);
@@ -472,8 +469,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             
            if(getModel){ 
                window.setStatus("","spinnerIcon");
-               NumberObject itemIdObj = new NumberObject(NumberObject.INTEGER);
-               itemIdObj.setValue(itemId);
+               NumberObject itemIdObj = new NumberObject(itemId);
                  
                // prepare the argument list for the getObject function
                DataObject[] args = new DataObject[] {itemIdObj}; 

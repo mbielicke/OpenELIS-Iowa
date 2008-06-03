@@ -97,7 +97,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
                 String nameResult = resultDO.getName();
 
                 DataSet row = new DataSet();
-                NumberObject id = new NumberObject(NumberObject.INTEGER);
+                NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
                 StringObject name = new StringObject();
                 name.setValue(nameResult);
                 id.setValue(idResult);
@@ -315,7 +315,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     
     	               TableRow row = childModel.createRow();
     	               
-    	               NumberField id = new NumberField(NumberObject.INTEGER);
+    	               NumberField id = new NumberField(NumberObject.Type.INTEGER);
     	               id.setValue(slDO.getId());
     	               
     	               row.addHidden("id", id);
@@ -325,7 +325,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     		       			row.getColumn(0).setValue(null);
     		       		else{
     		       			DataSet storageUnitSet = new DataSet();
-    		       			NumberObject storageUnitId = new NumberObject(NumberObject.INTEGER);
+    		       			NumberObject storageUnitId = new NumberObject(NumberObject.Type.INTEGER);
     		       			StringObject storageUnitText = new StringObject();
     		       			storageUnitId.setValue(slDO.getStorageUnitId());
     		       			storageUnitText.setValue(slDO.getStorageUnit());
@@ -373,7 +373,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			rpcReturn.setFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION, null);
 		else{
 			DataSet storageUnitSet = new DataSet();
-			NumberObject id = new NumberObject(NumberObject.INTEGER);
+			NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
 			StringObject text = new StringObject();
 			id.setValue(storageLocDO.getStorageUnitId());
 			text.setValue(storageLocDO.getStorageUnit());
@@ -450,7 +450,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			
 			DataSet data = new DataSet();
 			//hidden id
-			NumberObject idObject = new NumberObject(NumberObject.INTEGER);
+			NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
 			idObject.setValue(id);
 			data.setKey(idObject);
 			//columns

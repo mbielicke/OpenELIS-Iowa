@@ -104,11 +104,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
             IdNameDO resultDO = (IdNameDO)organizationNames.get(i);
  
             DataSet row = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
-            StringObject name = new StringObject();
- 
-            name.setValue(resultDO.getName());
-            id.setValue(resultDO.getId());
+            NumberObject id = new NumberObject(resultDO.getId());
+            StringObject name = new StringObject(resultDO.getName());
             
             row.setKey(id);         
             row.addObject(name);
@@ -318,10 +315,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
                    TableRow row = contactsModel.createRow();
-                   NumberField id = new NumberField(NumberObject.INTEGER);
-                   NumberField addId = new NumberField(NumberObject.INTEGER);
-                    id.setValue(contactRow.getId());
-                    addId.setValue(contactRow.getAddressDO().getId());
+                   NumberField id = new NumberField(contactRow.getId());
+                   NumberField addId = new NumberField(contactRow.getAddressDO().getId());
                     row.addHidden("contactId", id);
                     row.addHidden("addId", addId);
                     row.getColumn(0).setValue(contactRow.getContactType());
@@ -476,14 +471,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
     	//create a blank entry to begin the list
     	DataSet blankset = new DataSet();
     	
-    	StringObject blankStringId = new StringObject();
-    	NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
+    	StringObject blankStringId = new StringObject("");
+    	NumberObject blankNumberId = new NumberObject(0);
     	BooleanObject blankSelected = new BooleanObject();
         
-    	blankStringId.setValue("");
     	blankset.addObject(blankStringId);
     	
-    	blankNumberId.setValue(new Integer(0));
     	
     	if(cat.equals("contactType"))
     		blankset.setKey(blankNumberId);
@@ -502,7 +495,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		
     		StringObject textObject = new StringObject();
     		StringObject stringId = new StringObject();
-    		NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+    		NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
      	
     		textObject.setValue(dropdownText);
     		set.addObject(textObject);
@@ -549,7 +542,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, null);
 		else{
 			DataSet parentOrgSet = new DataSet();
-			NumberObject id = new NumberObject(NumberObject.INTEGER);
+			NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
 			StringObject text = new StringObject();
 			id.setValue(organizationDO.getParentOrganizationId());
 			text.setValue(organizationDO.getParentOrganization());
@@ -676,8 +669,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
             
             DataSet data = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject(NumberObject.INTEGER);
-            idObject.setValue(orgId);
+            NumberObject idObject = new NumberObject(orgId);
             data.setKey(idObject);
             //columns
             StringObject nameObject = new StringObject();

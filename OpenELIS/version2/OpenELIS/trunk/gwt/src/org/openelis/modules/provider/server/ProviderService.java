@@ -109,13 +109,12 @@ public class ProviderService implements AppScreenFormServiceInt{
         
                 DataSet row = new DataSet();
                 
-                NumberObject id = new NumberObject(NumberObject.INTEGER);            
+                NumberObject id = new NumberObject(idResult);            
                 StringObject lname = new StringObject();
                 StringObject fname = new StringObject();
                  lname.setValue(lnameResult);
                  fname.setValue(fnameResult);
                 
-                id.setValue(idResult);
                 
                 row.setKey(id); 
                 row.addObject(lname);
@@ -309,8 +308,8 @@ public class ProviderService implements AppScreenFormServiceInt{
                 ProviderAddressDO addressRow = (ProviderAddressDO)contactsList.get(iter);
 
                    TableRow row = addressModel.createRow();
-                   NumberField id = new NumberField(NumberObject.INTEGER);
-                   NumberField addId = new NumberField(NumberObject.INTEGER);
+                   NumberField id = new NumberField(NumberObject.Type.INTEGER);
+                   NumberField addId = new NumberField(NumberObject.Type.INTEGER);
                     id.setValue(addressRow.getId());
                     addId.setValue(addressRow.getAddressDO().getId());
                     row.addHidden("provAddId", id);
@@ -381,7 +380,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
+            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
             blankNumberId.setValue(new Integer(-1));
             if(cat.equals("providerType")){
 
@@ -411,7 +410,7 @@ public class ProviderService implements AppScreenFormServiceInt{
                 set.addObject(textObject);
                 
                 if(cat.equals("providerType")){
-                    NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+                    NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
                     numberId.setValue(dropdownId);
     
                     set.setKey(numberId);

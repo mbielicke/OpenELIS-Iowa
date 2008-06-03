@@ -93,7 +93,7 @@ public class QAEventService implements AppScreenFormServiceInt{
    
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
    
             StringObject qaname = new StringObject();
             StringObject tname = new StringObject();
@@ -276,7 +276,7 @@ public class QAEventService implements AppScreenFormServiceInt{
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
+            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
             blankNumberId.setValue(new Integer(-1));
             
 
@@ -317,7 +317,7 @@ public class QAEventService implements AppScreenFormServiceInt{
             
             set.addObject(textObject);            
 
-                NumberObject numberId = new NumberObject(NumberObject.INTEGER);
+                NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
 
                 numberId.setValue(dropdownId);
 

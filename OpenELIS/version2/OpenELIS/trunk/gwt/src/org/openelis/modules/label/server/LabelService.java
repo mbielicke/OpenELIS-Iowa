@@ -90,13 +90,10 @@ public class LabelService implements AppScreenFormServiceInt {
    
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject(NumberObject.INTEGER);
+            NumberObject id = new NumberObject(idResult);
    
-            StringObject svname = new StringObject();
-   
-            id.setValue(idResult);
-   
-            svname.setValue(nameResult);                   
+            StringObject svname = new StringObject(nameResult);
+            
             row.setKey(id);          
    
             row.addObject(svname);
@@ -280,9 +277,7 @@ public class LabelService implements AppScreenFormServiceInt {
             blankStringId.setValue("");
             blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject(NumberObject.INTEGER);
-            blankNumberId.setValue(new Integer(-1));
-            
+            NumberObject blankNumberId = new NumberObject(-1);
 
             blankset.setKey(blankNumberId);
     
@@ -305,8 +300,7 @@ public class LabelService implements AppScreenFormServiceInt {
              
             set.addObject(textObject);
             
-            NumberObject numberId = new NumberObject(NumberObject.INTEGER);
-            numberId.setValue(dropdownId);
+            NumberObject numberId = new NumberObject(dropdownId);
 
             set.setKey(numberId);           
             
