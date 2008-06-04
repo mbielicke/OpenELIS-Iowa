@@ -33,7 +33,6 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -47,12 +46,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
 
     
     private boolean loadNotes = true; // tells whether notes tab is to be filled with data
-    private boolean loadAddresses = true; // tells whether table tab is to be filled with data
+    private boolean loadAddresses = true; // tells whether addresses tab is to be filled with data
     private boolean clearNotes = false; // tells whether notes panel is to be cleared 
-    private boolean clearAddresses = false; // tells whether table tab is to be cleared
+    private boolean clearAddresses = false; // tells whether addresses tab is to be cleared
     
     private ScreenVertical svp = null;
-    private AppButton        removeContactButton, standardNoteButton;
+    private AppButton removeContactButton, standardNoteButton;
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private TextBox subjectBox = null;
@@ -73,6 +72,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",!loaded);
+        name="Provider";
     }
     
     public void onChange(Widget sender) {
@@ -97,6 +97,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     public void afterDraw(boolean success) {
         loaded = true;
         setBpanel((ButtonPanel) getWidget("buttons"));        
+        message.setText("Done");
                    
 //      load other widgets
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
