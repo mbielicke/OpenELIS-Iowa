@@ -278,7 +278,7 @@
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
 										<editors>
-											<autoDropdown cat="component" case="lower" autoParams="InventoryComponentAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="125px">												
+											<autoDropdown cat="component" case="lower" autoParams="InventoryComponentAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
 												<widths>118</widths>
 											</autoDropdown>
 											<label/>
