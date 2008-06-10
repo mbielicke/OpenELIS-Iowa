@@ -10,17 +10,34 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Order.OrderInternal", query = "select new org.openelis.domain.OrderDO(o.id, o.status, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenter, o.organizationId, " +
+                            " o.isExternal, o.externalOrderNumber, o.reportToId, o.billToId) from Order o where o.id = :id"),
+    @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.status, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenter, o.organizationId, " +
+                            " oo.name, oo.address.multipleUnit, oo.address.streetAddress, oo.address.city, oo.address.state, oo.address.zipCode, o.isExternal, o.externalOrderNumber, " +
+                            " o.reportToId, o.billToId) from Order o left join o.organization oo where o.id = :id"),
+    @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
+                            " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
+                            " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id")})
+            
 @Entity
 @Table(name="order")
 @EntityListeners({AuditUtil.class})
@@ -31,45 +48,51 @@ public class Order implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="organization")
-  private Integer organization;             
-
+  @Column(name="status")
+  private Integer status;
+  
   @Column(name="ordered_date")
   private Date orderedDate;             
 
-  @Column(name="neededby_date")
-  private Date neededbyDate;             
+  @Column(name="needed_in_days")
+  private Integer neededInDays;             
 
   @Column(name="requested_by")
   private String requestedBy;             
 
   @Column(name="cost_center")
-  private String costCenter;             
+  private Integer costCenter;             
 
-  @Column(name="processed_by")
-  private Integer processedBy;             
-
-  @Column(name="shipping_type")
-  private Integer shippingType;             
-
-  @Column(name="shipping_carrier")
-  private Integer shippingCarrier;             
-
-  @Column(name="shipping_cost")
-  private Double shippingCost;             
-
-  @Column(name="delivered_date")
-  private Date deliveredDate;             
-
+  @Column(name="organization")
+  private Integer organizationId;
+  
   @Column(name="is_external")
   private String isExternal;             
 
   @Column(name="external_order_number")
   private String externalOrderNumber;             
 
-  @Column(name="is_filled")
-  private String isFilled;             
-
+  @Column(name="report_to")
+  private Integer reportToId;
+  
+  @Column(name="bill_to")
+  private Integer billToId;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "organization", insertable = false, updatable = false)
+  private Organization organization;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "report_to", insertable = false, updatable = false)
+  private Organization reportTo;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "bill_to", insertable = false, updatable = false)
+  private Organization billTo;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order")
+  private Collection<OrderItem> orderItem;
 
   @Transient
   private Order original;
@@ -84,35 +107,24 @@ public class Order implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getOrganization() {
-    return organization;
+  public Integer getOrganizationId() {
+    return organizationId;
   }
-  public void setOrganization(Integer organization) {
-    if((organization == null && this.organization != null) || 
-       (organization != null && !organization.equals(this.organization)))
-      this.organization = organization;
+  public void setOrganizationId(Integer organization) {
+    if((organization == null && this.organizationId != null) || 
+       (organization != null && !organization.equals(this.organizationId)))
+      this.organizationId = organization;
   }
 
   public Datetime getOrderedDate() {
     if(orderedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,orderedDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,orderedDate);
   }
-  public void setOrderedDate (Datetime ordered_date){
-    if((orderedDate == null && this.orderedDate != null) || 
-       (orderedDate != null && !orderedDate.equals(this.orderedDate)))
-      this.orderedDate = ordered_date.getDate();
-  }
-
-  public Datetime getNeededbyDate() {
-    if(neededbyDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,neededbyDate);
-  }
-  public void setNeededbyDate (Datetime neededby_date){
-    if((neededbyDate == null && this.neededbyDate != null) || 
-       (neededbyDate != null && !neededbyDate.equals(this.neededbyDate)))
-      this.neededbyDate = neededby_date.getDate();
+  public void setOrderedDate (Datetime orderedDate){
+    if((orderedDate == null && this.orderedDate != null) || (orderedDate != null && this.orderedDate == null) || 
+       (orderedDate != null && !orderedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.orderedDate))))
+        this.orderedDate = orderedDate.getDate();
   }
 
   public String getRequestedBy() {
@@ -122,62 +134,6 @@ public class Order implements Auditable, Cloneable {
     if((requestedBy == null && this.requestedBy != null) || 
        (requestedBy != null && !requestedBy.equals(this.requestedBy)))
       this.requestedBy = requestedBy;
-  }
-
-  public String getCostCenter() {
-    return costCenter;
-  }
-  public void setCostCenter(String costCenter) {
-    if((costCenter == null && this.costCenter != null) || 
-       (costCenter != null && !costCenter.equals(this.costCenter)))
-      this.costCenter = costCenter;
-  }
-
-  public Integer getProcessedBy() {
-    return processedBy;
-  }
-  public void setProcessedBy(Integer processedBy) {
-    if((processedBy == null && this.processedBy != null) || 
-       (processedBy != null && !processedBy.equals(this.processedBy)))
-      this.processedBy = processedBy;
-  }
-
-  public Integer getShippingType() {
-    return shippingType;
-  }
-  public void setShippingType(Integer shippingType) {
-    if((shippingType == null && this.shippingType != null) || 
-       (shippingType != null && !shippingType.equals(this.shippingType)))
-      this.shippingType = shippingType;
-  }
-
-  public Integer getShippingCarrier() {
-    return shippingCarrier;
-  }
-  public void setShippingCarrier(Integer shippingCarrier) {
-    if((shippingCarrier == null && this.shippingCarrier != null) || 
-       (shippingCarrier != null && !shippingCarrier.equals(this.shippingCarrier)))
-      this.shippingCarrier = shippingCarrier;
-  }
-
-  public Double getShippingCost() {
-    return shippingCost;
-  }
-  public void setShippingCost(Double shippingCost) {
-    if((shippingCost == null && this.shippingCost != null) || 
-       (shippingCost != null && !shippingCost.equals(this.shippingCost)))
-      this.shippingCost = shippingCost;
-  }
-
-  public Datetime getDeliveredDate() {
-    if(deliveredDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,deliveredDate);
-  }
-  public void setDeliveredDate (Datetime delivered_date){
-    if((deliveredDate == null && this.deliveredDate != null) || 
-       (deliveredDate != null && !deliveredDate.equals(this.deliveredDate)))
-      this.deliveredDate = delivered_date.getDate();
   }
 
   public String getIsExternal() {
@@ -197,16 +153,6 @@ public class Order implements Auditable, Cloneable {
        (externalOrderNumber != null && !externalOrderNumber.equals(this.externalOrderNumber)))
       this.externalOrderNumber = externalOrderNumber;
   }
-
-  public String getIsFilled() {
-    return isFilled;
-  }
-  public void setIsFilled(String isFilled) {
-    if((isFilled == null && this.isFilled != null) || 
-       (isFilled != null && !isFilled.equals(this.isFilled)))
-      this.isFilled = isFilled;
-  }
-
   
   public void setClone() {
     try {
@@ -224,28 +170,28 @@ public class Order implements Auditable, Cloneable {
         Element elem = doc.createElement("id");
         elem.appendChild(doc.createTextNode(original.id.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((organization == null && original.organization != null) || 
-         (organization != null && !organization.equals(original.organization))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
+      }    
+      
+      if((status == null && original.status != null) || 
+         (status != null && !status.equals(original.status))){
+        Element elem = doc.createElement("status");
+        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
         root.appendChild(elem);
-      }      
+      }          
 
       if((orderedDate == null && original.orderedDate != null) || 
          (orderedDate != null && !orderedDate.equals(original.orderedDate))){
         Element elem = doc.createElement("ordered_date");
         elem.appendChild(doc.createTextNode(original.orderedDate.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((neededbyDate == null && original.neededbyDate != null) || 
-         (neededbyDate != null && !neededbyDate.equals(original.neededbyDate))){
-        Element elem = doc.createElement("neededby_date");
-        elem.appendChild(doc.createTextNode(original.neededbyDate.toString().trim()));
+      }
+      
+      if((neededInDays == null && original.neededInDays != null) || 
+         (neededInDays != null && !neededInDays.equals(original.neededInDays))){
+        Element elem = doc.createElement("needed_in_days");
+        elem.appendChild(doc.createTextNode(original.neededInDays.toString().trim()));
         root.appendChild(elem);
-      }      
+     } 
 
       if((requestedBy == null && original.requestedBy != null) || 
          (requestedBy != null && !requestedBy.equals(original.requestedBy))){
@@ -259,42 +205,14 @@ public class Order implements Auditable, Cloneable {
         Element elem = doc.createElement("cost_center");
         elem.appendChild(doc.createTextNode(original.costCenter.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((processedBy == null && original.processedBy != null) || 
-         (processedBy != null && !processedBy.equals(original.processedBy))){
-        Element elem = doc.createElement("processed_by");
-        elem.appendChild(doc.createTextNode(original.processedBy.toString().trim()));
+      }    
+      
+      if((organizationId == null && original.organizationId != null) || 
+         (organizationId != null && !organizationId.equals(original.organizationId))){
+        Element elem = doc.createElement("organization");
+        elem.appendChild(doc.createTextNode(original.organizationId.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((shippingType == null && original.shippingType != null) || 
-         (shippingType != null && !shippingType.equals(original.shippingType))){
-        Element elem = doc.createElement("shipping_type");
-        elem.appendChild(doc.createTextNode(original.shippingType.toString().trim()));
-        root.appendChild(elem);
-      }      
-
-      if((shippingCarrier == null && original.shippingCarrier != null) || 
-         (shippingCarrier != null && !shippingCarrier.equals(original.shippingCarrier))){
-        Element elem = doc.createElement("shipping_carrier");
-        elem.appendChild(doc.createTextNode(original.shippingCarrier.toString().trim()));
-        root.appendChild(elem);
-      }      
-
-      if((shippingCost == null && original.shippingCost != null) || 
-         (shippingCost != null && !shippingCost.equals(original.shippingCost))){
-        Element elem = doc.createElement("shipping_cost");
-        elem.appendChild(doc.createTextNode(original.shippingCost.toString().trim()));
-        root.appendChild(elem);
-      }      
-
-      if((deliveredDate == null && original.deliveredDate != null) || 
-         (deliveredDate != null && !deliveredDate.equals(original.deliveredDate))){
-        Element elem = doc.createElement("delivered_date");
-        elem.appendChild(doc.createTextNode(original.deliveredDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      }   
 
       if((isExternal == null && original.isExternal != null) || 
          (isExternal != null && !isExternal.equals(original.isExternal))){
@@ -308,14 +226,21 @@ public class Order implements Auditable, Cloneable {
         Element elem = doc.createElement("external_order_number");
         elem.appendChild(doc.createTextNode(original.externalOrderNumber.toString().trim()));
         root.appendChild(elem);
-      }      
-
-      if((isFilled == null && original.isFilled != null) || 
-         (isFilled != null && !isFilled.equals(original.isFilled))){
-        Element elem = doc.createElement("is_filled");
-        elem.appendChild(doc.createTextNode(original.isFilled.toString().trim()));
+      }     
+      
+      if((reportToId == null && original.reportToId != null) || 
+         (reportToId != null && !reportToId.equals(original.reportToId))){
+        Element elem = doc.createElement("report_to");
+        elem.appendChild(doc.createTextNode(original.reportToId.toString().trim()));
         root.appendChild(elem);
-      }      
+      } 
+      
+      if((billToId == null && original.billToId != null) || 
+         (billToId != null && !billToId.equals(original.billToId))){
+        Element elem = doc.createElement("bill_to");
+        elem.appendChild(doc.createTextNode(original.billToId.toString().trim()));
+        root.appendChild(elem);
+      }
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -328,5 +253,61 @@ public class Order implements Auditable, Cloneable {
   public String getTableName() {
     return "order";
   }
-  
+public Integer getBillToId() {
+    return billToId;
+}
+public void setBillToId(Integer billTo) {
+    if((billTo == null && this.billToId != null) || 
+       (billTo != null && !billTo.equals(this.billToId)))
+    this.billToId = billTo;
+}
+public Integer getNeededInDays() {
+    return neededInDays;
+}
+public void setNeededInDays(Integer neededInDays) {
+    if((neededInDays == null && this.neededInDays != null) || 
+         (neededInDays != null && !neededInDays.equals(this.neededInDays)))
+    this.neededInDays = neededInDays;
+}
+public Integer getReportToId() {
+    return reportToId;
+}
+public void setReportToId(Integer reportTo) {
+    if((reportTo == null && this.reportToId != null) || 
+         (reportTo != null && !reportTo.equals(this.reportToId)))
+    this.reportToId = reportTo;
+}
+public Integer getStatus() {
+    return status;
+}
+public void setStatus(Integer status) {
+    if((status == null && this.status != null) || 
+            (status != null && !status.equals(this.status)))
+    this.status = status;
+}
+public void setCostCenter(Integer costCenter) {
+    if((costCenter == null && this.costCenter != null) || 
+          (costCenter != null && !costCenter.equals(this.costCenter)))
+    this.costCenter = costCenter;
+}
+public Integer getCostCenter() {
+    return costCenter;
+}
+public Organization getBillTo() {
+    return billTo;
+}
+
+public Organization getOrganization() {
+    return organization;
+}
+
+public Organization getReportTo() {
+    return reportTo;
+}
+public Collection<OrderItem> getOrderItem() {
+    return orderItem;
+}
+public void setOrderItem(Collection<OrderItem> orderItem) {
+    this.orderItem = orderItem;
+} 
 }   
