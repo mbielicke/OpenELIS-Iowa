@@ -32,8 +32,14 @@ import org.w3c.dom.Element;
                                            " from InventoryItem i where i.id = :id"),
                     @NamedQuery(name = "InventoryItem.AutocompleteByNameStoreCurrentName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
                                            "  from InventoryItem i where i.name like :name and i.store = :store and i.name != :currentName and i.isActive = 'Y' order by i.name"),
-                     @NamedQuery(name = "InventoryItem.AutocompleteByName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
+                    @NamedQuery(name = "InventoryItem.AutocompleteByName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
                                            "  from InventoryItem i where i.name like :name and i.isActive = 'Y' order by i.name"),
+                    @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
+                                           " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.quantityOnhand) " +
+                                           "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
+                                           " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.store = d.id and i.name like :name and i.isActive = 'Y' and il.quantityOnhand > 0 order by i.name"),
+                    @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry) " +
+                                           "  from InventoryItem i, Dictionary d where i.store = d.id and i.name like :name and i.isActive = 'Y' order by i.name"),
                     @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description " +
                                            "  from InventoryItem i where i.id = :id"),
                     @NamedQuery(name = "InventoryItem.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "

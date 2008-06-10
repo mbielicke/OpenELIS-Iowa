@@ -37,10 +37,10 @@ import org.w3c.dom.Element;
                 + " orgz.id = contact.organization and orgz.id = :id"),
         @NamedQuery(name = "Organization.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
                 + "  from Note n where n.referenceTable = (select id from ReferenceTable where name='organization') and n.referenceId = :id ORDER BY n.timestamp DESC"),
-        @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
-                + "  from Organization o where o.id = :id"),
-        @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.ParentOrgAutoDO(o.id, o.name, o.address.streetAddress, o.address.city, o.address.state) "
-                + "  from Organization o where o.name like :name order by o.name") })
+        @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
+                  " o.address.zipCode) from Organization o where o.id = :id"),
+        @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
+                  " o.address.zipCode) from Organization o where o.name like :name order by o.name") })
 @Entity
 @Table(name = "organization")
 @EntityListeners( { AuditUtil.class })

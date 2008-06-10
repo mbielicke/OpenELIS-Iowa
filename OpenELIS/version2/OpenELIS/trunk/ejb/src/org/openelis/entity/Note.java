@@ -16,11 +16,17 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Note.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
+            + "  from Note n where n.referenceTable = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC")})
+              
 @Entity
 @Table(name="note")
 @EntityListeners({AuditUtil.class})
