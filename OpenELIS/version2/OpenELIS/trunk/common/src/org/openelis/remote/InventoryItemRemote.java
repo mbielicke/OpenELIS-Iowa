@@ -37,8 +37,11 @@ public interface InventoryItemRemote {
 	//method to query for inventories
 	 public List query(HashMap fields, int first, int max) throws Exception;
 	 
-	 //auto complete lookup
+	 //auto complete  component lookup
 	 public List inventoryComponentAutoCompleteLookupByName(String itemName, Integer storeId, String currentName, int maxResults);
+     
+	 //auto complete  component lookup
+     public List inventoryItemStoreLocAutoCompleteLookupByName(String itemName, int maxResults, boolean withLocation);
 	  
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();

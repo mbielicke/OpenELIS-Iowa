@@ -33,7 +33,7 @@ public class InventoryLocationDO implements Serializable{
 	}
 
     public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, String childStorageLocName, String childStorageLocLocation,  
-                               String parentStorageLocName, String parentStorageLocLocation, String childStorageUnit, Integer quantityOnHand, Date expirationDate){
+                               String parentStorageLocName, String childStorageUnit, Integer quantityOnHand, Date expirationDate){
     setId(id);
     setInventoryItem(inventoryItem);
     setLotNumber(lotNumber);
