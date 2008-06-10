@@ -2,10 +2,15 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:inventoryItemMeta="xalan://org.openelis.meta.InventoryItemMeta" 
-                xmlns:inventoryComponentMeta="xalan://org.openelis.meta.InventoryComponentMeta"
-                xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
-                xmlns:inventoryItemNoteMeta="xalan://org.openelis.meta.InventoryItemNoteMeta"
+                xmlns:orderMeta="xalan://org.openelis.meta.OrderMeta" 
+                xmlns:orderItemMeta="xalan://org.openelis.meta.OrderItemMeta"
+                xmlns:orderOrganizationAddressMeta="xalan://org.openelis.meta.OrderOrganizationAddressMeta"
+                xmlns:orderReportToAddressMeta="xalan://org.openelis.meta.OrderReportToAddressMeta"
+                xmlns:orderBillToAddressMeta="xalan://org.openelis.meta.OrderBillToAddressMeta"
+                xmlns:orderShippingNoteMeta="xalan://org.openelis.meta.OrderShippingNoteMeta"
+                xmlns:orderCustomerNoteMeta="xalan://org.openelis.meta.OrderCustomerNoteMeta"
+                xmlns:orderItemInventoryItemMeta="xalan://org.openelis.meta.OrderItemInventoryItemMeta"
+                xmlns:orderItemStoreMeta="xalan://org.openelis.meta.OrderItemStoreMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -18,20 +23,40 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
+  <xalan:component prefix="orderMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMeta"/>
   </xalan:component>
 
-  <xalan:component prefix="inventoryComponentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryComponentMeta"/>
+  <xalan:component prefix="orderItemMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMeta"/>
+  <xalan:component prefix="orderOrganizationAddressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationAddressMeta"/>
   </xalan:component>
   
-    <xalan:component prefix="inventoryItemNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemNoteMeta"/>
+  <xalan:component prefix="orderReportToAddressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderReportToAddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderBillToAddressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderBillToAddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderShippingNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderShippingNoteMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderCustomerNoteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderCustomerNoteMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderItemInventoryItemMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemInventoryItemMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderItemStoreMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemStoreMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
@@ -69,10 +94,6 @@
     			<xsl:call-template name="abortButton">
     			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
     			</xsl:call-template>
-    			<!--<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="optionsButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>-->
 				</buttonPanel>
  			</widget>
 		</panel>
@@ -88,13 +109,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{inventoryItemMeta:name()}" width="75px" max="20" tab="{inventoryItemMeta:description()},{inventoryItemMeta:isLabor()}"/>
+										<textbox case="lower" key="{orderMeta:id()}" width="75px" max="20" tab="{orderMeta:neededInDays()},{orderMeta:costCenter()}"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
+										<textbox key="{orderMeta:neededInDays()}" width="75px" tab="{orderMeta:status()},{orderMeta:id()}"/>
 									</widget>
 								</row>
 								<row>
@@ -102,7 +123,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="90px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{orderMeta:status()}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:organization()},{orderMeta:neededInDays()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -110,23 +131,27 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"shipTo")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="172px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
-													<widths>167</widths>
-										</autoDropdown>
-									</widget>
+										<autoDropdown cat="organization" key="{orderMeta:organization()}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:orderedDate()},{orderMeta:status()}">
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoDropdown>
+								<query>
+									<textbox case="upper" width="188px" tab="{orderMeta:orderedDate()},{orderMeta:status()}"/>
+								</query>
+								</widget>
 								</row>
 								<row>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
+										<textbox key="{orderMeta:orderedDate()}" width="75px" tab="{orderMeta:requestedBy()},{orderMeta:organization()}"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
+										<textbox case="upper" key="{orderOrganizationAddressMeta:multipleUnit()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>	
 									
 										
@@ -136,13 +161,13 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="{inventoryItemMeta:id()}" width="203px"/>
+										<textbox key="{orderMeta:requestedBy()}" width="203px" tab="{orderMeta:costCenter()},{orderMeta:orderedDate()}"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="??,??"/>
+										<textbox case="upper" key="{orderOrganizationAddressMeta:streetAddress()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>			
 								</row>
 								<row>
@@ -150,7 +175,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="187px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
+										<autoDropdown key="{orderMeta:costCenter()}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:id()},{orderMeta:requestedBy()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -159,29 +184,24 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox case="upper" key="city" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+										<textbox case="upper" key="{orderOrganizationAddressMeta:city()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
 								</row>
 								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
+									<widget colspan="2">
+									<panel layout="horizontal" width="15px" xsi:type="Panel"/>
 									</widget>
 									<widget>
-										<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="lower" width="187px" popWidth="auto" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}">
-													<widths>167</widths>
-										</autoDropdown>
-									</widget>
-																		<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="city" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+										<textbox case="upper" key="{orderOrganizationAddressMeta:state()}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="upper" key="city" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" tab="?,??"/>
+										<textbox case="upper" key="{orderOrganizationAddressMeta:zipCode()}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>	
 									
 								</row>
@@ -190,48 +210,57 @@
 								
 								</panel>
 <!-- tabbed panel needs to go here -->
-				<panel height="200px" key="orgTabPanel" halign="center" layout="tab" xsi:type="Tab">
+				<panel height="200px" key="tabPanel" halign="center" layout="tab" xsi:type="Tab">
 					<!-- TAB 1 (Components) -->
 					<tab key="tab1" text="{resource:getString($constants,'items')}">
 							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
-								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="true">
-										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"component")'/></headers>
-										<widths>83,484</widths>
+								<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="true">
+										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
+										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
+										<widths>83,160,159,159</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" popWidth="auto">
-											  <widths>100</widths>
+											<textbox case="mixed"/>
+											<autoDropdown cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
+												<headers>Name,Store,Location, Qty</headers>
+												<widths>100,150,150,40</widths>
 											</autoDropdown>
-											<textbox case="upper"/>
+											<label/>
+											<label/>
 										</editors>
 										<fields>
-											<dropdown key="zxcvzdcvsdcvsd" required="true"/>
-											<string key="dvsvsdvsdvzdv " required="true"/>
+											<number key="{orderItemMeta:quantityRequested()}" type="integer" required="true"/>
+											<dropdown key="{orderItemInventoryItemMeta:name()}" required="true"/>
+											<string key="{orderItemStoreMeta:entry()}" required="false"/>
+											<string key="location" required="false"/>
 										</fields>
-										<sorts>true,true</sorts>
-										<filters>false,false</filters>
-										<colAligns>left,left</colAligns>
+										<sorts>true,true,true,true</sorts>
+										<filters>false,false,false,false</filters>
+										<colAligns>left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" title="" maxRows="9" showError="false">
-										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
-										<widths>125,353,104</widths>
+									<queryTable width="auto" maxRows="9" title="" showError="false">
+										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
+									<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
+										<widths>83,178,159,159</widths>
 										<editors>
-											<autoDropdown case="mixed" width="90px" popWidth="auto" multiSelect="true">
-											  <widths>90</widths>
-											</autoDropdown>
-											<textbox case="upper"/>
-											<textbox case="upper"/>
+											<textbox case="mixed"/>
+											<textbox case="lower"/>
+											<textbox case="mixed"/>
+											<label/>
 										</editors>
-										<fields>test1,test2,test3
-										</fields>										
+										<fields>
+											<xsl:value-of select='orderItemMeta:quantityRequested()'/>,
+											<xsl:value-of select='orderItemInventoryItemMeta:name()'/>,
+											<xsl:value-of select='orderItemStoreMeta:entry()'/>,
+											label1
+										</fields>							
 									</queryTable>
 									</query>
 								</widget>
 
 									<widget style="WhiteContentPanel" halign="center">
-									<appButton action="removeComponentRow" onclick="this" style="Button" key="removeComponentButton">
+									<appButton action="removeItemRow" onclick="this" style="Button" key="removeItemButton">
 									<panel xsi:type="Panel" layout="horizontal">
               						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
 						              <widget>
@@ -241,15 +270,164 @@
 						            </appButton>
 						            </widget>
 							</panel>
-					</tab>			
-					<tab key="tab4" text="{resource:getString($constants,'customerNotes')}">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
+					</tab>	
+					<!-- TAB 2 -->		
+					<tab key="tab2" text="{resource:getString($constants,'customerNotes')}">
+						<panel key="secMod3" layout="vertical" width="100%" height="229px" spacing="0" padding="0" xsi:type="Panel">
+							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">
+										<row>
+										<widget colspan="2" align="center">
+										<appButton action="standardNoteCustomer" onclick="this" key="standardNoteCustomerButton" style="Button">
+										<panel xsi:type="Panel" layout="horizontal">
+              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+						              <widget>
+                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+							              </widget>
+							              </panel>
+						            </appButton>
+						            </widget>
+										</row>
+										<row>
+										<widget>
+											<panel layout="horizontal" width="14px" xsi:type="Panel"/>
+										</widget>
+										<widget colspan="2">
+										<textarea width="576px" height="179px" case="mixed" key="{orderCustomerNoteMeta:text()}"/>
+										</widget>
+										</row>
+										</panel>
+										</panel>
 					</tab>
-					<tab key="tab4" text="{resource:getString($constants,'orderShippingNotes')}">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
+					<!-- TAB 3 -->
+					<tab key="tab3" text="{resource:getString($constants,'orderShippingNotes')}">
+						<panel key="secMod3" layout="vertical" width="100%" height="229px" spacing="0" padding="0" xsi:type="Panel">
+							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">
+										<row>
+										<widget colspan="2" align="center">
+										<appButton action="standardNoteShipping" onclick="this" key="standardNoteShippingButton" style="Button">
+										<panel xsi:type="Panel" layout="horizontal">
+              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+						              <widget>
+                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+							              </widget>
+							              </panel>
+						            </appButton>
+						            </widget>
+										</row>
+										<row>
+										<widget>
+											<panel layout="horizontal" width="14px" xsi:type="Panel"/>
+										</widget>
+										<widget colspan="2">
+										<textarea width="576px" height="179px" case="mixed" key="{orderShippingNoteMeta:text()}"/>
+										</widget>
+										</row>
+										</panel>
+										</panel>
 					</tab>
-					<tab key="tab4" text="Tab 4">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
+					<!-- TAB 4 -->
+					<tab key="tab4" text="{resource:getString($constants,'reportToBillTo')}">
+						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel">
+						<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reportTo")'/>:</text>
+							</widget>
+							<widget colspan="4">
+								<autoDropdown cat="reportTo" key="{orderMeta:reportTo()}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:reportTo()},{orderMeta:reportTo()}">
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoDropdown>
+								<query>
+									<textbox case="upper" width="188px" tab="{orderMeta:reportTo()},{orderMeta:reportTo()}"/>
+								</query>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"billTo")'/>:</text>
+							</widget>
+							<widget colspan="3">
+								<autoDropdown cat="billTo" key="{orderMeta:billTo()}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:billTo()},{orderMeta:billTo()}">
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoDropdown>
+								<query>
+									<textbox case="upper" width="188px" tab="{orderMeta:billTo()},{orderMeta:billTo()}"/>
+								</query>
+							</widget>
+						</row>
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+							</widget>
+							<widget colspan="4">
+								<textbox case="upper" key="{orderReportToAddressMeta:multipleUnit()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+							</widget>
+							<widget colspan="3">
+								<textbox case="upper" key="{orderBillToAddressMeta:multipleUnit()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>	
+						</row>
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+							</widget>
+							<widget colspan="4">
+								<textbox case="upper" key="{orderReportToAddressMeta:streetAddress()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+							</widget>
+							<widget colspan="3">
+								<textbox case="upper" key="{orderBillToAddressMeta:streetAddress()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>			
+						</row>
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+							</widget>
+							<widget colspan="4">
+								<textbox case="upper" key="{orderReportToAddressMeta:city()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+							</widget>
+							<widget colspan="3">
+								<textbox case="upper" key="{orderBillToAddressMeta:city()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+						</row>
+						<row>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							</widget>
+							<widget>
+								<textbox case="upper" key="{orderReportToAddressMeta:state()}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							</widget>
+							<widget>
+								<textbox case="upper" key="{orderReportToAddressMeta:zipCode()}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+							<panel layout="horizontal" width="15px" xsi:type="Panel"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							</widget>
+							<widget>
+								<textbox case="upper" key="{orderBillToAddressMeta:state()}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							</widget>
+							<widget>
+								<textbox case="upper" key="{orderBillToAddressMeta:zipCode()}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>	
+						</row>
+						</panel>
+						</panel>
 					</tab>
 					<tab key="tab4" text="Tab 5">
 						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
@@ -263,66 +441,69 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	  <number key="{inventoryItemMeta:id()}" type="integer" required="false"/>
-      <string key="{inventoryItemMeta:name()}" max="20" required="true"/>
-      <string key="{inventoryItemMeta:description()}" max="60" required="true"/>
-      <dropdown key="{inventoryItemMeta:store()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:category()}" type="integer" required="true"/> 
-      <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer" required="true"/>
-      <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer" required="true"/>
-      <number key="{inventoryItemMeta:quantityToReorder()}" type="integer" required="true"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer" required="true"/> 
-      <number key="{inventoryItemMeta:averageLeadTime()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:averageCost()}" type="double" required="false"/>
-      <number key="{inventoryItemMeta:averageDailyUse()}" type="integer" required="false"/>
-      <table key="componentsTable"/>
-      <table key="locQuantitiesTable"/>
-      <check key="{inventoryItemMeta:isActive()}" required="false"/>
-      <check key="{inventoryItemMeta:isReorderAuto()}" required="false"/>
-      <check key="{inventoryItemMeta:isLotMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:isSerialMaintained()}" required="false"/>locsController
-      <check key="{inventoryItemMeta:isBulk()}" required="false"/>
-      <check key="{inventoryItemMeta:isNotForSale()}" required="false"/>
-      <check key="{inventoryItemMeta:isSubAssembly()}" required="false"/>
-      <check key="{inventoryItemMeta:isLabor()}" required="false"/>
-      <string key="{inventoryItemNoteMeta:subject()}" max="60" required="false"/>
-      <string key="{inventoryItemNoteMeta:text()}" required="false"/>
+  	  <!-- values on the screen -->
+  	  <number key="{orderMeta:id()}" type="integer" required="false"/>
+      <number key="{orderMeta:neededInDays()}" type="integer" required="true"/>
+      <dropdown key="{orderMeta:status()}" type="integer" required="true"/> 
+      <dropdown key="{orderMeta:organization()}" required="true"/>
+      <string key="{orderMeta:orderedDate()}" required="true"/>
+      <string key="{orderMeta:requestedBy()}" required="true"/>
+      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
+      <dropdown key="{orderMeta:reportTo()}" required="false"/>
+      <dropdown key="{orderMeta:billTo()}" required="false"/>
+      <string key="{orderShippingNoteMeta:text()}" required="false"/>
+      <string key="{orderCustomerNoteMeta:text()}" required="false"/>
       
-	</rpc>
-	<rpc key="query">
-      <queryNumber key="{inventoryItemMeta:id()}" type="integer"/>
-      <string key="{inventoryItemMeta:name()}"/>
-      <string key="{inventoryItemMeta:description()}"/>
-      <dropdown key="{inventoryItemMeta:store()}" type="integer"/> 
-      <dropdown key="{inventoryItemMeta:category()}" type="integer"/> 
-      <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer"/>
-      <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer"/>
-      <number key="{inventoryItemMeta:quantityToReorder()}" type="integer"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer"/> 
-      <number key="{inventoryItemMeta:averageLeadTime()}" type="integer"/>
-      <number key="{inventoryItemMeta:averageCost()}" type="double"/>
-      <number key="{inventoryItemMeta:averageDailyUse()}" type="integer"/>
-<!--      <table key="componentsTable"/>-->
-<!--      <table key="locQuantitiesTable"/>-->
-      <check key="{inventoryItemMeta:isActive()}"/>
-      <check key="{inventoryItemMeta:isReorderAuto()}"/>
-      <check key="{inventoryItemMeta:isLotMaintained()}"/>
-      <check key="{inventoryItemMeta:isSerialMaintained()}"/>
-      <check key="{inventoryItemMeta:isBulk()}"/>
-      <check key="{inventoryItemMeta:isNotForSale()}"/>
-      <check key="{inventoryItemMeta:isSubAssembly()}"/>
-      <check key="{inventoryItemMeta:isLabor()}"/>
-      <string key="{inventoryItemNoteMeta:subject()}"/>
-      <!--<string key="text" required="false"/>-->
+      <!-- organization address-->
+      <string key="{orderOrganizationAddressMeta:multipleUnit()}" required="false"/>
+      <string key="{orderOrganizationAddressMeta:streetAddress()}" required="false"/>
+      <string key="{orderOrganizationAddressMeta:city()}" required="false"/>
+      <string key="{orderOrganizationAddressMeta:state()}" required="false"/>
+      <string key="{orderOrganizationAddressMeta:zipCode()}" required="false"/>
       
-      <dropdown key="test1"/>
-      <queryString key="test2"/>
-      <queryNumber key="test3" type="integer"/>
+      <!--report to address-->
+      <string key="{orderReportToAddressMeta:multipleUnit()}" required="false"/>
+      <string key="{orderReportToAddressMeta:streetAddress()}" required="false"/>
+      <string key="{orderReportToAddressMeta:city()}" required="false"/>
+      <string key="{orderReportToAddressMeta:state()}" required="false"/>
+      <string key="{orderReportToAddressMeta:zipCode()}" required="false"/>
+      
+      <!--bill to address -->
+      <string key="{orderBillToAddressMeta:multipleUnit()}" required="false"/>
+      <string key="{orderBillToAddressMeta:streetAddress()}" required="false"/>
+      <string key="{orderBillToAddressMeta:city()}" required="false"/>
+      <string key="{orderBillToAddressMeta:state()}" required="false"/>
+      <string key="{orderBillToAddressMeta:zipCode()}" required="false"/>
+            
+      <table key="itemsTable"/>
+            
+      <!-- defaulted values -->
+	  <!--<string key="{orderMeta:isExternal()}" required="false">N</string>-->
+ 	  <string key="orderType" required="false"/>
+      
+      <!-- values not on this screen -->
+      <string key="{orderMeta:externalOrderNumber()}" required="false"/>      
 	</rpc>
-	<rpc key="queryByLetter">
-		<queryString key="{inventoryItemMeta:name()}"/>
+	<rpc key="query">  
+	  <queryNumber key="{orderMeta:id()}" type="integer" required="false"/>
+      <queryNumber key="{orderMeta:neededInDays()}" type="integer" required="false"/>
+      <dropdown key="{orderMeta:status()}" type="integer" required="false"/> 
+      <queryString key="{orderMeta:organization()}" required="false"/>
+      <queryString key="{orderMeta:orderedDate()}" required="false"/>
+      <queryString key="{orderMeta:requestedBy()}" required="false"/>
+      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
+      <queryString key="{orderMeta:reportTo()}" required="false"/>
+      <queryString key="{orderMeta:billTo()}" required="false"/>
+      <queryString key="{orderMeta:externalOrderNumber()}" required="false"/>
+      
+      <string key="orderType" required="false"/>
+            
+      <table key="itemsTable"/>
+      <queryNumber key="{orderItemMeta:quantityRequested()}" type="integer" required="false"/>
+	  <queryString key="{orderItemInventoryItemMeta:name()}" required="false"/>
+	  <queryString key="{orderItemStoreMeta:entry()}" required="false"/>
+      <queryString key="label1" required="false"/>
+      
 	</rpc>
 </screen>
   </xsl:template>

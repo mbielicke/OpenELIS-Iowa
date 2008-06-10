@@ -241,6 +241,13 @@
 				      <xsl:with-param name="class">InventoryReceiptScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">InventoryAdjustment</xsl:with-param>
+				      <xsl:with-param name="label">inventoryAdjustment</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">InventoryAdjustmentScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>	
 				    <xsl:if test="contains($modules,'Inventory')">			
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">Inventory</xsl:with-param>

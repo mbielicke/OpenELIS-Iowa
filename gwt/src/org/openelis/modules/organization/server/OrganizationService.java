@@ -9,7 +9,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.domain.ParentOrgAutoDO;
+import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -655,7 +655,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     	}
         
     	for(int i=0; i < autoCompleteList.size(); i++){
-            ParentOrgAutoDO resultDO = (ParentOrgAutoDO) autoCompleteList.get(i);
+            OrganizationAutoDO resultDO = (OrganizationAutoDO) autoCompleteList.get(i);
             //org id
             Integer orgId = resultDO.getId();
             //org name

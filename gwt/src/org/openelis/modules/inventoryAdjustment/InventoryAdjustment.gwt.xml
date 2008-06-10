@@ -1,0 +1,3 @@
+<module>
+    <entry-point class="org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentEntry"/>
+</module>
