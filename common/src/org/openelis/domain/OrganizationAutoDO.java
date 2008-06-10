@@ -4,22 +4,26 @@ import java.io.Serializable;
 
 import org.openelis.util.DataBaseUtil;
 
-public class ParentOrgAutoDO implements Serializable{
+public class OrganizationAutoDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
     
     protected Integer id;
     protected String name;
+    protected String aptSuite;
     protected String address;
     protected String city;
     protected String state;
+    protected String zipCode;
     
-    public ParentOrgAutoDO(Integer id, String name, String address, String city, String state){
+    public OrganizationAutoDO(Integer id, String name, String aptSuite, String address, String city, String state, String zipCode){
         setId(id);
         setName(name);
+        setAptSuite(aptSuite);
         setAddress(address);
         setCity(city);
         setState(state);
+        setZipCode(zipCode);
     }
 
     public String getAddress() {
@@ -60,6 +64,22 @@ public class ParentOrgAutoDO implements Serializable{
 
     public void setState(String state) {
         this.state = DataBaseUtil.trim(state);
+    }
+
+    public String getAptSuite() {
+        return aptSuite;
+    }
+
+    public void setAptSuite(String aptSuite) {
+        this.aptSuite = DataBaseUtil.trim(aptSuite);
+    }
+    
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = DataBaseUtil.trim(zipCode);
     }
 
 }
