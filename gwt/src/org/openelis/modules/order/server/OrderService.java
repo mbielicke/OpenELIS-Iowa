@@ -7,6 +7,7 @@ import java.util.List;
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
+import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
@@ -734,6 +735,16 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return model;
     }
     
+    public TableField getReceiptsModel(NumberObject orderId, TableField model){
+        OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
+        
+        List receiptsList = remote.getOrderReceipts((Integer)orderId.getValue());
+        
+        model.setValue(fillReceiptsTable((TableModel)model.getValue(),receiptsList));
+        
+        return model;
+    }
+    
     public StringField getCustomerNotes(NumberObject orderId){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -887,5 +898,33 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         }       
         
         return orderItemsModel;
+    }
+    
+    public TableModel fillReceiptsTable(TableModel receiptsModel, List receiptsList){
+        try 
+        {
+            receiptsModel.reset();
+            
+            for(int iter = 0;iter < receiptsList.size();iter++) {
+                InventoryReceiptDO receiptRow = (InventoryReceiptDO)receiptsList.get(iter);
+    
+                   TableRow row = receiptsModel.createRow();
+                    
+                    row.getColumn(0).setValue(receiptRow.getReceivedDate().toString());
+                    row.getColumn(1).setValue(receiptRow.getUpc());
+                    row.getColumn(2).setValue(receiptRow.getQuantityReceived());
+                    row.getColumn(3).setValue(receiptRow.getUnitCost());
+                    row.getColumn(4).setValue(receiptRow.getQcReference());
+                    
+                    receiptsModel.addRow(row);
+           } 
+            
+        } catch (Exception e) {
+    
+            e.printStackTrace();
+            return null;
+        }       
+        
+        return receiptsModel;
     }
 }

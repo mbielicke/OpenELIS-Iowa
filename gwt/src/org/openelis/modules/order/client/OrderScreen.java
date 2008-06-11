@@ -27,8 +27,10 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableCellWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableTextBox;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
@@ -64,7 +66,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     private ScreenAutoDropdown status;
     
-    private EditTable itemsController;
+    private EditTable itemsController, receiptsController;
     
     private String orderType;
     
@@ -72,10 +74,12 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                         loadCustomerNotes   = true, 
                         loadShippingNotes   = true,
                         loadReportToBillTo  = true,
+                        loadReceipts        = true,
                         clearItems          = false, 
                         clearCustomerNotes  = false, 
                         clearShippingNotes  = false,
-                        clearReportToBillTo = false;
+                        clearReportToBillTo = false,
+                        clearReceipts       = false;
     
     public OrderScreen(DataObject[] args) {                
         super("org.openelis.modules.order.server.OrderService");
@@ -166,6 +170,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
+        
+        if("external".equals(orderType)){
+            receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
+            receiptsController.setAutoAdd(false);
+        }
         
         //buttons
         removeItemButton = (AppButton)getWidget("removeItemButton");
@@ -287,6 +296,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if (success) {
             loadCustomerNotes = true;
             loadItems = true;
+            loadReceipts = true;
             loadReportToBillTo = true;
             loadShippingNotes = true;
             
@@ -307,6 +317,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
             loadItems = false;
             clearItems = true;
+            
+            loadReceipts = false;
+            clearReceipts = true;
             
             loadCustomerNotes = false;
             clearCustomerNotes = true;
@@ -336,6 +349,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if(success){ 
             loadItems = true;
             clearItems = false;
+            
+            loadReceipts = true;
+            clearReceipts = false;
             
             loadCustomerNotes = true;
             clearCustomerNotes = false;
@@ -375,6 +391,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     public void afterFetch(boolean success) {
         if (success) {
             loadItems = true; 
+            loadReceipts = true;
             loadCustomerNotes = true; 
             loadShippingNotes = true;
             loadReportToBillTo = true;
@@ -413,7 +430,19 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             // done
             loadCustomerNotes = false;
 
-        } else if (selectedTab == 2 && loadShippingNotes) {
+        } else if ((selectedTab == 1 && "external".equals(orderType) && loadReceipts)) {
+            // if there was data previously then clear the locations table otherwise
+            // don't
+            if (clearReceipts) {
+                clearReceipts();
+            }
+            // load the customer notes
+            fillReceipts();
+            // don't load it again unless the mode changes or a new fetch is
+            // done
+            loadReceipts = false;
+
+        }else if (selectedTab == 2 && loadShippingNotes) {
             // if there was data previously then clear the comments panel otherwise
             // don't
             if (clearShippingNotes) {
@@ -450,6 +479,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             }
             fillCustomerNotes();
             loadCustomerNotes = false;
+        } else if ((index == 1 && "external".equals(orderType) && loadReceipts)) {
+            if (clearReceipts)
+                clearReceipts();
+            fillReceipts();
+            loadReceipts = false;
         } else if (index == 2 && loadShippingNotes) {
             if (clearShippingNotes)
                 clearShippingNotes();
@@ -495,7 +529,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(col == 0)
+        if(col == 0 && row > -1 && !"".equals(((TableTextBox)((EditTable)controller).view.table.getWidget(row, col)).editor.getText()))
             return true;
         else
             return false;
@@ -506,19 +540,23 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             TableWidget d = (TableWidget)getWidget("itemsTable");
             if(((TableAutoDropdown)d.controller.editors[1]).editor.getSelected().size() > 0){
                 DataSet selectedRow = (DataSet)((TableAutoDropdown)d.controller.editors[1]).editor.getSelected().get(0);
-                StringField storeLabel = new StringField();
-                StringField locationLabel = new StringField();
-                NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
-                storeLabel.setValue((String)((StringObject)selectedRow.getObject(1)).getValue());
-                locationLabel.setValue((String)((StringObject)selectedRow.getObject(2)).getValue());
-                TableRow tableRow = itemsController.model.getRow(row);
-                tableRow.setColumn(2, storeLabel);
-                tableRow.setColumn(3, locationLabel);
-                locationId.setValue((Integer)((NumberObject)selectedRow.getObject(4)).getValue());
-                
-                tableRow.addHidden("locationId", locationId);
-                
-                controller.scrollLoad(-1);
+                if(selectedRow.size() > 1){
+                    StringField storeLabel = new StringField();
+                    StringField locationLabel = new StringField();
+                    NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
+                    storeLabel.setValue((String)((StringObject)selectedRow.getObject(1)).getValue());
+                    TableRow tableRow = itemsController.model.getRow(row);
+                    tableRow.setColumn(2, storeLabel);
+                    
+                    if(tableRow.numColumns() == 4){
+                        locationLabel.setValue((String)((StringObject)selectedRow.getObject(2)).getValue());
+                        tableRow.setColumn(3, locationLabel);
+                        locationId.setValue((Integer)((NumberObject)selectedRow.getObject(4)).getValue());
+                        tableRow.addHidden("locationId", locationId);
+                    }
+                    
+                    controller.scrollLoad(-1);
+                }
             }
         }
     }
@@ -608,10 +646,45 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                 // in the table
                 rpc.setFieldValue("itemsTable",
                                   (TableModel)((TableField)result).getValue());
-                EditTable itemController = (EditTable)(((TableWidget)getWidget("itemsTable")).controller);
-                itemController.loadModel((TableModel)((TableField)result).getValue());
+                itemsController.loadModel((TableModel)((TableField)result).getValue());
 
-                clearItems = itemController.model.numRows() > 0;
+                clearItems = itemsController.model.numRows() > 0;
+                
+                window.setStatus("","");
+            }
+
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+        });
+    }
+    
+    private void fillReceipts() {
+        Integer orderId = null;
+        NumberObject orderIdObj;
+        TableField f;
+
+        if (key == null || key.getKey() == null) {
+            clearReceipts = false;
+            return;
+        }
+
+        window.setStatus("","spinnerIcon");
+        
+        orderId = (Integer)key.getKey().getValue();
+        orderIdObj = new NumberObject(orderId);
+
+        f = new TableField();
+        f.setValue(receiptsController.model);
+
+        // prepare the argument list for the getObject function
+        DataObject[] args = new DataObject[] {orderIdObj, f};
+
+        screenService.getObject("getReceiptsModel", args, new AsyncCallback() {
+            public void onSuccess(Object result) {
+                receiptsController.loadModel((TableModel)((TableField)result).getValue());
+
+                clearReceipts = receiptsController.model.numRows() > 0;
                 
                 window.setStatus("","");
             }
@@ -745,6 +818,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         itemsController.model.reset();
         itemsController.setModel(itemsController.model);
         rpc.setFieldValue("itemsTable", itemsController.model);
+    }
+    
+    private void clearReceipts() {
+        receiptsController.model.reset();
+        receiptsController.setModel(receiptsController.model);
     }
     
     private void clearCustomerNotes() {
