@@ -113,8 +113,13 @@ public class OrderBean implements OrderRemote{
     }
 
     public List getOrderReceipts(Integer orderId) {
-        // TODO Auto-generated method stub
-        return null;
+        Query query = manager.createNamedQuery("Order.ReceiptsForOrder");
+        
+        query.setParameter("id", orderId);
+        
+        List receipts = query.getResultList();// getting list of receipts
+    
+        return receipts;
     }
 
     public NoteDO getOrderShippingNote(Integer orderId) {
