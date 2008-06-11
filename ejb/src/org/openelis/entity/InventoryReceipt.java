@@ -16,11 +16,17 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+/*@NamedQueries( {
+    @NamedQuery(name = "InventoryReceipt.InventoryReceiptsBy??", query = "select new org.openelis.domain.InventoryReceiptDO() " +
+                                       "  from InventoryReceipt r where orgz.id = :id")})
+  */            
 @Entity
 @Table(name="inventory_receipt")
 @EntityListeners({AuditUtil.class})
@@ -50,8 +56,10 @@ public class InventoryReceipt implements Auditable, Cloneable {
   private String qcReference;             
 
   @Column(name="external_reference")
-  private String externalReference;             
-
+  private String externalReference;   
+  
+  @Column(name="upc")
+  private String upc;
 
   @Transient
   private InventoryReceipt original;
@@ -197,7 +205,14 @@ public class InventoryReceipt implements Auditable, Cloneable {
         Element elem = doc.createElement("external_reference");
         elem.appendChild(doc.createTextNode(original.externalReference.toString().trim()));
         root.appendChild(elem);
-      }      
+      } 
+      
+      if((upc == null && original.upc != null) || 
+         (upc != null && !upc.equals(original.upc))){
+        Element elem = doc.createElement("upc");
+        elem.appendChild(doc.createTextNode(original.upc.toString().trim()));
+        root.appendChild(elem);
+     } 
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -210,5 +225,13 @@ public class InventoryReceipt implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_receipt";
   }
+public String getUpc() {
+    return upc;
+}
+public void setUpc(String upc) {
+    if((upc == null && this.upc != null) || 
+       (upc != null && !upc.equals(this.upc)))
+      this.upc = upc;
+}
   
 }   

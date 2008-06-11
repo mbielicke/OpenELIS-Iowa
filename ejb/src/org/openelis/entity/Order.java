@@ -36,7 +36,9 @@ import org.openelis.utils.Auditable;
                             " o.reportToId, o.billToId) from Order o left join o.organization oo where o.id = :id"),
     @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
-                            " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id")})
+                            " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
+    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItem,r.organization,r.receivedDate,r.quantityReceived, " +
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryTransaction i left join i.fromReceipt r left join i.toOrder o where o.order = :id")})
             
 @Entity
 @Table(name="order")

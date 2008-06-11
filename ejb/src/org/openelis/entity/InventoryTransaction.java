@@ -52,6 +52,10 @@ public class InventoryTransaction implements Auditable, Cloneable {
     private InventoryLocation fromLocation;
     
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_receipt", insertable = false, updatable = false)
+    private InventoryReceipt fromReceipt;
+    
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_order", insertable = false, updatable = false)
     private OrderItem toOrder;
     
@@ -215,5 +219,13 @@ public class InventoryTransaction implements Auditable, Cloneable {
 
     public void setToOrder(OrderItem toOrder) {
         this.toOrder = toOrder;
+    }
+
+    public InventoryReceipt getFromReceipt() {
+        return fromReceipt;
+    }
+
+    public void setFromReceipt(InventoryReceipt fromReceipt) {
+        this.fromReceipt = fromReceipt;
     }
 }
