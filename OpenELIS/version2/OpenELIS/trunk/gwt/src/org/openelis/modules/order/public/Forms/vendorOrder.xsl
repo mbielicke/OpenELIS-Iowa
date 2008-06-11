@@ -274,25 +274,26 @@
 					<tab key="tab2" text="{resource:getString($constants,'receipt')}">
 						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
 							<widget valign="top">
-								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
+								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers>Date Rec, UPC, Qty, Cost, QC</headers>
-										561
 										<widths>110,130,70,90,158</widths>
 										<editors>
 											<label/>
 											<label/>
 											<label/>
 											<label/>
+											<label/>
 										</editors>
 										<fields>
-											<string key="aa"/>
-											<string key="ab"/>
-											<string key="ac"/>
-											<number key="ad" type="integer"/>
+											<string/>
+											<string/>
+											<number type="integer"/>
+											<number type="double"/>
+											<string/>
 										</fields>
-										<sorts>true,true,true,true</sorts>
-										<filters>false,false,false,false</filters>
-										<colAligns>left,left,left,left</colAligns>
+										<sorts>true,true,true,true,true</sorts>
+										<filters>false,false,false,false,false</filters>
+										<colAligns>left,left,left,left,left</colAligns>
 									</table>
 								</widget>
 								<widget>
