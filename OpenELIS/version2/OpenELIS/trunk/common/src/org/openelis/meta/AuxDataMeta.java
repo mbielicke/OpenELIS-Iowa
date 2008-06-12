@@ -2,31 +2,34 @@
 package org.openelis.meta;
 
 /**
-  * StandardNote META Data
+  * AuxData META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class StandardNoteMeta implements Meta {
-  	private static final String tableName = "standard_note";
-	private static final String entityName = "StandardNote";
+public class AuxDataMeta implements Meta {
+  	private static final String tableName = "aux_data";
+	private static final String entityName = "AuxData";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="standard_note.id",
-              NAME					="standard_note.name",
-              DESCRIPTION					="standard_note.description",
-              TYPE_ID					="standard_note.type_id",
-              TEXT					="standard_note.text";
+              ID					="aux_data.id",
+              SORT_ORDER_ID					="aux_data.sort_order_id",
+              AUX_FIELD_ID					="aux_data.aux_field_id",
+              REFERENCE_ID					="aux_data.reference_id",
+              REFERENCE_TABLE_ID					="aux_data.reference_table_id",
+              IS_REPORTABLE					="aux_data.is_reportable",
+              TYPE_ID					="aux_data.type_id",
+              VALUE					="aux_data.value";
 
 
   	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,TYPE_ID,TEXT};
+  	  ID,SORT_ORDER_ID,AUX_FIELD_ID,REFERENCE_ID,REFERENCE_TABLE_ID,IS_REPORTABLE,TYPE_ID,VALUE};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final StandardNoteMeta standard_noteMeta = new StandardNoteMeta();
+	private static final AuxDataMeta aux_dataMeta = new AuxDataMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -35,12 +38,12 @@ public class StandardNoteMeta implements Meta {
         }
     }
     
-    private StandardNoteMeta() {
+    private AuxDataMeta() {
         
     }
     
-    public static StandardNoteMeta getInstance() {
-        return standard_noteMeta;
+    public static AuxDataMeta getInstance() {
+        return aux_dataMeta;
     }
 
     public String[] getColumnList() {
@@ -73,20 +76,32 @@ public class StandardNoteMeta implements Meta {
     return ID;
   } 
 
-  public static String getName() {
-    return NAME;
+  public static String getSortOrderId() {
+    return SORT_ORDER_ID;
   } 
 
-  public static String getDescription() {
-    return DESCRIPTION;
+  public static String getAuxFieldId() {
+    return AUX_FIELD_ID;
+  } 
+
+  public static String getReferenceId() {
+    return REFERENCE_ID;
+  } 
+
+  public static String getReferenceTableId() {
+    return REFERENCE_TABLE_ID;
+  } 
+
+  public static String getIsReportable() {
+    return IS_REPORTABLE;
   } 
 
   public static String getTypeId() {
     return TYPE_ID;
   } 
 
-  public static String getText() {
-    return TEXT;
+  public static String getValue() {
+    return VALUE;
   } 
 
   

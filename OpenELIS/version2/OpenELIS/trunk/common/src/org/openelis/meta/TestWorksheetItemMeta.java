@@ -2,30 +2,31 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * TestWorksheetItem META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class TestWorksheetItemMeta implements Meta {
+  	private static final String tableName = "test_worksheet_item";
+	private static final String entityName = "TestWorksheetItem";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="test_worksheet_item.id",
+              TEST_WORKSHEET_ID					="test_worksheet_item.test_worksheet_id",
+              POSITION					="test_worksheet_item.position",
+              TYPE_ID					="test_worksheet_item.type_id",
+              QC_NAME					="test_worksheet_item.qc_name";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,TEST_WORKSHEET_ID,POSITION,TYPE_ID,QC_NAME};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final TestWorksheetItemMeta test_worksheet_itemMeta = new TestWorksheetItemMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +35,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private TestWorksheetItemMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static TestWorksheetItemMeta getInstance() {
+        return test_worksheet_itemMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +73,20 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getTestWorksheetId() {
+    return TEST_WORKSHEET_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getPosition() {
+    return POSITION;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getTypeId() {
+    return TYPE_ID;
+  } 
+
+  public static String getQcName() {
+    return QC_NAME;
   } 
 
   

@@ -1,36 +1,46 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * Label META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class LabelMeta implements Meta {
-    
-    private String tableName = "label";
-    private String entityName = "Label";
-    private boolean includeInFrom = true;
-    
-    private static LabelMeta labelMeta = new LabelMeta();   
-    
-    public static final String
-    ID                      = "label.id",
-    NAME                    = "label.name",
-    DESCRIPTION             = "label.description",
-    PRINTER_TYPE            = "label.printerType",
-    SCRIPTLET               = "label.scriptlet";
-    
-    private static final String[] columnNames = {ID, NAME, DESCRIPTION, PRINTER_TYPE,SCRIPTLET};
-    
-    private static HashMap<String,String> columnHashList;
+  	private static final String tableName = "label";
+	private static final String entityName = "Label";
+	private boolean includeInFrom = true;
+	
+	public static final String
+              ID					="label.id",
+              NAME					="label.name",
+              DESCRIPTION					="label.description",
+              PRINTER_TYPE_ID					="label.printer_type_id",
+              SCRIPTLET_ID					="label.scriptlet_id";
+
+
+  	private static final String[] columnNames = {
+  	  ID,NAME,DESCRIPTION,PRINTER_TYPE_ID,SCRIPTLET_ID};
+  	  
+	private static HashMap<String,String> columnHashList;
+
+	private static final LabelMeta labelMeta = new LabelMeta();
     
     static {
-        columnHashList = new HashMap<String, String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++)
-            columnHashList.put(columnNames[i].substring(6), "");
-       }
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
     
-    private LabelMeta(){
+    private LabelMeta() {
         
+    }
+    
+    public static LabelMeta getInstance() {
+        return labelMeta;
     }
 
     public String[] getColumnList() {
@@ -54,32 +64,30 @@ public class LabelMeta implements Meta {
     }
 
     public boolean includeInFrom() {
+        // TODO Auto-generated method stub
         return includeInFrom;
     }
     
-    public static LabelMeta getInstance(){
-        return labelMeta;
-    }
     
-    public static String id(){
-        return columnNames[0];
-    }
-    
-    public static String name(){
-        return columnNames[1];
-    }
-    
-    public static String description(){
-        return columnNames[2];
-    }
-    
-    public static String printerType(){
-        return columnNames[3];
-        
-    }
-    
-    public static String scriptlet(){
-        return columnNames[4];
-    }
+  public static String getId() {
+    return ID;
+  } 
 
-}
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getDescription() {
+    return DESCRIPTION;
+  } 
+
+  public static String getPrinterTypeId() {
+    return PRINTER_TYPE_ID;
+  } 
+
+  public static String getScriptletId() {
+    return SCRIPTLET_ID;
+  } 
+
+  
+}   

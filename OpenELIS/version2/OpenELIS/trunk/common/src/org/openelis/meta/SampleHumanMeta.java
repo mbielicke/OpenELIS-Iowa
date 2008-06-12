@@ -2,30 +2,31 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * SampleHuman META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class SampleHumanMeta implements Meta {
+  	private static final String tableName = "sample_human";
+	private static final String entityName = "SampleHuman";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="sample_human.id",
+              SAMPLE_ID					="sample_human.sample_id",
+              PATIENT_ID					="sample_human.patient_id",
+              PROVIDER_ID					="sample_human.provider_id",
+              PROVIDER_PHONE					="sample_human.provider_phone";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,SAMPLE_ID,PATIENT_ID,PROVIDER_ID,PROVIDER_PHONE};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final SampleHumanMeta sample_humanMeta = new SampleHumanMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +35,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private SampleHumanMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static SampleHumanMeta getInstance() {
+        return sample_humanMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +73,20 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getSampleId() {
+    return SAMPLE_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getPatientId() {
+    return PATIENT_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getProviderId() {
+    return PROVIDER_ID;
+  } 
+
+  public static String getProviderPhone() {
+    return PROVIDER_PHONE;
   } 
 
   

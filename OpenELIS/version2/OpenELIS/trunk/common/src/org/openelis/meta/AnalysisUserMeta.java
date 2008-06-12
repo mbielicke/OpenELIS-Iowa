@@ -2,30 +2,30 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * AnalysisUser META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class AnalysisUserMeta implements Meta {
+  	private static final String tableName = "analysis_user";
+	private static final String entityName = "AnalysisUser";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="analysis_user.id",
+              ANALYSIS_ID					="analysis_user.analysis_id",
+              SYSTEM_USER_ID					="analysis_user.system_user_id",
+              ACTION_ID					="analysis_user.action_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,ANALYSIS_ID,SYSTEM_USER_ID,ACTION_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final AnalysisUserMeta analysis_userMeta = new AnalysisUserMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +34,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private AnalysisUserMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static AnalysisUserMeta getInstance() {
+        return analysis_userMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +72,16 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getAnalysisId() {
+    return ANALYSIS_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getSystemUserId() {
+    return SYSTEM_USER_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getActionId() {
+    return ACTION_ID;
   } 
 
   

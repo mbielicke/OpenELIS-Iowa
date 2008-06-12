@@ -1,96 +1,103 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * StorageLocation META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class StorageLocationMeta implements Meta{
-	private String tableName = "storageLocation";
-	private String entityName = "StorageLocation";
+public class StorageLocationMeta implements Meta {
+  	private static final String tableName = "storage_location";
+	private static final String entityName = "StorageLocation";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID               			= "storageLocation.id",
-     SORT_ORDER					= "storageLocation.sortOrder",
-     NAME   					= "storageLocation.name",
-     LOCATION  					= "storageLocation.location",
-     PARENT_STORAGE_LOCATION	= "storageLocation.parentStorageLocationId",
-     STORAGE_UNIT 				= "storageLocation.storageUnit",
-     IS_AVAILABLE 				= "storageLocation.isAvailable";
+              ID					="storage_location.id",
+              SORT_ORDER_ID					="storage_location.sort_order_id",
+              NAME					="storage_location.name",
+              LOCATION					="storage_location.location",
+              PARENT_STORAGE_LOCATION_ID					="storage_location.parent_storage_location_id",
+              STORAGE_UNIT_ID					="storage_location.storage_unit_id",
+              IS_AVAILABLE					="storage_location.is_available";
 
-	//
-	// Array of column names used for building select/insert/update strings
-	//
-	private static final String[] columnNames = {
-	     ID, SORT_ORDER, NAME, LOCATION, PARENT_STORAGE_LOCATION, STORAGE_UNIT, IS_AVAILABLE};
-	
+
+  	private static final String[] columnNames = {
+  	  ID,SORT_ORDER_ID,NAME,LOCATION,PARENT_STORAGE_LOCATION_ID,STORAGE_UNIT_ID,IS_AVAILABLE};
+  	  
 	private static HashMap<String,String> columnHashList;
-	
-	private static final StorageLocationMeta storageLocationMeta = new StorageLocationMeta();
-	
-	static {
-	 columnHashList = new HashMap<String, String>(columnNames.length);
-	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(16), "");
-	}
 
-	private StorageLocationMeta() {
+	private static final StorageLocationMeta storage_locationMeta = new StorageLocationMeta();
+    
+    static {
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
+    
+    private StorageLocationMeta() {
+        
+    }
+    
+    public static StorageLocationMeta getInstance() {
+        return storage_locationMeta;
+    }
 
-	}
-	
-	public static StorageLocationMeta getInstance(){
-		return storageLocationMeta;
-	}
-	
-	public String[] getColumnList() {
-		return columnNames;
-	}
+    public String[] getColumnList() {
+        return columnNames;
+    }
 
-	public String getTable() {
-		return tableName;
-	}
-	
-	public String getEntity(){
-		return entityName;
-	}
-	
-	public boolean includeInFrom(){
-		return includeInFrom;
-	}
-	
-	public boolean hasColumn(String columnName){
-		if(columnName == null || !columnName.startsWith(tableName))
-			return false;
-		String column = columnName.substring(tableName.length()+1);
-		
-		return columnHashList.containsKey(column);
-	}
-	
-	public static String id(){
-		return columnNames[0];
-	}
-	
-	public static String sortOrder(){
-		return columnNames[1];
-	}
-	
-	public static String name(){
-		return columnNames[2];
-	}
-	
-	public static String location(){
-		return columnNames[3];
-	}
-	
-	public static String parentStorageLocation(){
-		return columnNames[4];
-	}
-	
-	public static String storageUnit(){
-		return columnNames[5];
-	}
-	
-	public static String isAvailable(){
-		return columnNames[6];
-	}
-}
+    public String getEntity() {
+        return entityName;
+    }
+
+    public String getTable() {
+        return tableName;
+    }
+
+    public boolean hasColumn(String columnName) {
+        if(columnName == null || !columnName.startsWith(tableName))
+            return false;
+        String column = columnName.substring(tableName.length()+1);
+        
+        return columnHashList.containsKey(column);
+    }
+
+    public boolean includeInFrom() {
+        // TODO Auto-generated method stub
+        return includeInFrom;
+    }
+    
+    
+  public static String getId() {
+    return ID;
+  } 
+
+  public static String getSortOrderId() {
+    return SORT_ORDER_ID;
+  } 
+
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getLocation() {
+    return LOCATION;
+  } 
+
+  public static String getParentStorageLocationId() {
+    return PARENT_STORAGE_LOCATION_ID;
+  } 
+
+  public static String getStorageUnitId() {
+    return STORAGE_UNIT_ID;
+  } 
+
+  public static String getIsAvailable() {
+    return IS_AVAILABLE;
+  } 
+
+  
+}   

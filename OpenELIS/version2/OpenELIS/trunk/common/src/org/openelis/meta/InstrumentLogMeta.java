@@ -2,30 +2,32 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * InstrumentLog META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class InstrumentLogMeta implements Meta {
+  	private static final String tableName = "instrument_log";
+	private static final String entityName = "InstrumentLog";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="instrument_log.id",
+              INSTRUMENT_ID					="instrument_log.instrument_id",
+              TYPE_ID					="instrument_log.type_id",
+              WORKSHEET_ID					="instrument_log.worksheet_id",
+              EVENT_BEGIN					="instrument_log.event_begin",
+              EVENT_END					="instrument_log.event_end";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,INSTRUMENT_ID,TYPE_ID,WORKSHEET_ID,EVENT_BEGIN,EVENT_END};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final InstrumentLogMeta instrument_logMeta = new InstrumentLogMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +36,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private InstrumentLogMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static InstrumentLogMeta getInstance() {
+        return instrument_logMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +74,24 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getInstrumentId() {
+    return INSTRUMENT_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getTypeId() {
+    return TYPE_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getWorksheetId() {
+    return WORKSHEET_ID;
+  } 
+
+  public static String getEventBegin() {
+    return EVENT_BEGIN;
+  } 
+
+  public static String getEventEnd() {
+    return EVENT_END;
   } 
 
   

@@ -1,85 +1,93 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * OrganizationContact META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class OrganizationContactMeta implements Meta{
-	private String tableName = "organizationContact";
-	private String entityName = "organization.organizationContact";
+public class OrganizationContactMeta implements Meta {
+  	private static final String tableName = "organization_contact";
+	private static final String entityName = "OrganizationContact";
 	private boolean includeInFrom = true;
 	
 	public static final String
-    ID             	= "organizationContact.id",
-    ORGANIZATION	= "organizationContact.organization",
-    CONTACT_TYPE	= "organizationContact.contactType",
-    NAME  			= "organizationContact.name",
-    ADDRESS			= "organizationContact.address";
+              ID					="organization_contact.id",
+              ORGANIZATION_ID					="organization_contact.organization_id",
+              CONTACT_TYPE_ID					="organization_contact.contact_type_id",
+              NAME					="organization_contact.name",
+              ADDRESS_ID					="organization_contact.address_id";
 
-	//
-	// Array of column names used for building select/insert/update strings
-	//
-	private static final String[] columnNames = {
-	     ID, ORGANIZATION, CONTACT_TYPE, NAME, ADDRESS};
-	
-	private static HashMap<String, String> columnHashList;
-	private static final OrganizationContactMeta organizationContactMeta = new OrganizationContactMeta();
-	
-	static {
-	 columnHashList = new HashMap<String, String>(columnNames.length);
-	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(20), "");
-	}
 
-	private OrganizationContactMeta() {
-		
-	}
+  	private static final String[] columnNames = {
+  	  ID,ORGANIZATION_ID,CONTACT_TYPE_ID,NAME,ADDRESS_ID};
+  	  
+	private static HashMap<String,String> columnHashList;
 
-	public static OrganizationContactMeta getInstance(){
-		return organizationContactMeta;
-	}
-	
-	public String[] getColumnList() {
-		return columnNames;
-	}
+	private static final OrganizationContactMeta organization_contactMeta = new OrganizationContactMeta();
+    
+    static {
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
+    
+    private OrganizationContactMeta() {
+        
+    }
+    
+    public static OrganizationContactMeta getInstance() {
+        return organization_contactMeta;
+    }
 
-	public String getEntity() {
-		return entityName;
-	}
+    public String[] getColumnList() {
+        return columnNames;
+    }
 
-	public String getTable() {
-		return tableName;
-	}
-	
-	public boolean includeInFrom(){
-		return includeInFrom;
-	}
-	
-	public boolean hasColumn(String columnName) {
-		if(columnName == null || !columnName.startsWith(tableName))
-			return false;
-		String column = columnName.substring(tableName.length()+1);
-		
-		return columnHashList.containsKey(column);
-	}
-	
-	public static String id(){
-		return columnNames[0];
-	}
-	
-	public static String organization(){
-		return columnNames[1];
-	}
-	
-	public static String contactType(){
-		return columnNames[2];
-	}
-	
-	public static String name(){
-		return columnNames[3];
-	}
-	
-	public static String address(){
-		return columnNames[4];
-	}
-}
+    public String getEntity() {
+        return entityName;
+    }
+
+    public String getTable() {
+        return tableName;
+    }
+
+    public boolean hasColumn(String columnName) {
+        if(columnName == null || !columnName.startsWith(tableName))
+            return false;
+        String column = columnName.substring(tableName.length()+1);
+        
+        return columnHashList.containsKey(column);
+    }
+
+    public boolean includeInFrom() {
+        // TODO Auto-generated method stub
+        return includeInFrom;
+    }
+    
+    
+  public static String getId() {
+    return ID;
+  } 
+
+  public static String getOrganizationId() {
+    return ORGANIZATION_ID;
+  } 
+
+  public static String getContactTypeId() {
+    return CONTACT_TYPE_ID;
+  } 
+
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getAddressId() {
+    return ADDRESS_ID;
+  } 
+
+  
+}   

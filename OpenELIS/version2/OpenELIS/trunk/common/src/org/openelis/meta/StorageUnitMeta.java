@@ -1,81 +1,88 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * StorageUnit META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class StorageUnitMeta implements Meta{
-	private String tableName = "storageUnit";
-	private String entityName = "StorageUnit";
+public class StorageUnitMeta implements Meta {
+  	private static final String tableName = "storage_unit";
+	private static final String entityName = "StorageUnit";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID             = "storageUnit.id",
-     CATEGORY		= "storageUnit.category",
-     DESCRIPTION   	= "storageUnit.description",
-     IS_SINGULAR  	= "storageUnit.isSingular";
+              ID					="storage_unit.id",
+              CATEGORY					="storage_unit.category",
+              DESCRIPTION					="storage_unit.description",
+              IS_SINGULAR					="storage_unit.is_singular";
 
-	//
-	// Array of column names used for building select/insert/update strings
-	//
-	private static final String[] columnNames = {
-	     ID, CATEGORY, DESCRIPTION, IS_SINGULAR};
-	
+
+  	private static final String[] columnNames = {
+  	  ID,CATEGORY,DESCRIPTION,IS_SINGULAR};
+  	  
 	private static HashMap<String,String> columnHashList;
-	
-	private static final StorageUnitMeta storageUnitMeta = new StorageUnitMeta();
-	
-	static {
-	 columnHashList = new HashMap<String, String>(columnNames.length);
-	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(12), "");
-	}
 
-	private StorageUnitMeta() {
+	private static final StorageUnitMeta storage_unitMeta = new StorageUnitMeta();
+    
+    static {
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
+    
+    private StorageUnitMeta() {
+        
+    }
+    
+    public static StorageUnitMeta getInstance() {
+        return storage_unitMeta;
+    }
 
-	}
-	
-	public static StorageUnitMeta getInstance(){
-		return storageUnitMeta;
-	}
-	
-	public String[] getColumnList() {
-		return columnNames;
-	}
+    public String[] getColumnList() {
+        return columnNames;
+    }
 
-	public String getTable() {
-		return tableName;
-	}
-	
-	public String getEntity(){
-		return entityName;
-	}
-	
-	public boolean includeInFrom(){
-		return includeInFrom;
-	}
+    public String getEntity() {
+        return entityName;
+    }
 
-	public boolean hasColumn(String columnName){
-		if(columnName == null || !columnName.startsWith(tableName))
-			return false;
-		String column = columnName.substring(tableName.length()+1);
-		
-		return columnHashList.containsKey(column);
-	}
-	
-	public static String id(){
-		return columnNames[0];
-	}
-	
-	public static String category(){
-		return columnNames[1];
-	}
-	
-	public static String description(){
-		return columnNames[2];
-	}
-	
-	public static String isSingular(){
-		return columnNames[3];
-	}
-}
+    public String getTable() {
+        return tableName;
+    }
+
+    public boolean hasColumn(String columnName) {
+        if(columnName == null || !columnName.startsWith(tableName))
+            return false;
+        String column = columnName.substring(tableName.length()+1);
+        
+        return columnHashList.containsKey(column);
+    }
+
+    public boolean includeInFrom() {
+        // TODO Auto-generated method stub
+        return includeInFrom;
+    }
+    
+    
+  public static String getId() {
+    return ID;
+  } 
+
+  public static String getCategory() {
+    return CATEGORY;
+  } 
+
+  public static String getDescription() {
+    return DESCRIPTION;
+  } 
+
+  public static String getIsSingular() {
+    return IS_SINGULAR;
+  } 
+
+  
+}   

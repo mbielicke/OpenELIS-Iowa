@@ -2,30 +2,32 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * Section META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class SectionMeta implements Meta {
+  	private static final String tableName = "section";
+	private static final String entityName = "Section";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="section.id",
+              PARENT_SECTION_ID					="section.parent_section_id",
+              NAME					="section.name",
+              DESCRIPTION					="section.description",
+              IS_EXTERNAL					="section.is_external",
+              ORGANIZATION_ID					="section.organization_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,PARENT_SECTION_ID,NAME,DESCRIPTION,IS_EXTERNAL,ORGANIZATION_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final SectionMeta sectionMeta = new SectionMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +36,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private SectionMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static SectionMeta getInstance() {
+        return sectionMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +74,24 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getParentSectionId() {
+    return PARENT_SECTION_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getName() {
+    return NAME;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getDescription() {
+    return DESCRIPTION;
+  } 
+
+  public static String getIsExternal() {
+    return IS_EXTERNAL;
+  } 
+
+  public static String getOrganizationId() {
+    return ORGANIZATION_ID;
   } 
 
   

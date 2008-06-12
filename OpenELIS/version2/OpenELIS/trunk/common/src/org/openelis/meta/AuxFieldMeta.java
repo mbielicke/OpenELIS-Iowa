@@ -2,33 +2,34 @@
 package org.openelis.meta;
 
 /**
-  * Dictionary META Data
+  * AuxField META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class DictionaryMeta implements Meta {
-  	private static final String tableName = "dictionary";
-	private static final String entityName = "Dictionary";
+public class AuxFieldMeta implements Meta {
+  	private static final String tableName = "aux_field";
+	private static final String entityName = "AuxField";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="dictionary.id",
-              CATEGORY_ID					="dictionary.category_id",
-              RELATED_ENTRY_ID					="dictionary.related_entry_id",
-              SYSTEM_NAME					="dictionary.system_name",
-              IS_ACTIVE					="dictionary.is_active",
-              LOCAL_ABBREV					="dictionary.local_abbrev",
-              ENTRY					="dictionary.entry";
+              ID					="aux_field.id",
+              SORT_ORDER_ID					="aux_field.sort_order_id",
+              ANALYTE_ID					="aux_field.analyte_id",
+              REFERENCE_TABLE_ID					="aux_field.reference_table_id",
+              IS_REQUIRED					="aux_field.is_required",
+              IS_ACTIVE					="aux_field.is_active",
+              IS_REPORTABLE					="aux_field.is_reportable",
+              SCRIPTLET_ID					="aux_field.scriptlet_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,CATEGORY_ID,RELATED_ENTRY_ID,SYSTEM_NAME,IS_ACTIVE,LOCAL_ABBREV,ENTRY};
+  	  ID,SORT_ORDER_ID,ANALYTE_ID,REFERENCE_TABLE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final DictionaryMeta dictionaryMeta = new DictionaryMeta();
+	private static final AuxFieldMeta aux_fieldMeta = new AuxFieldMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -37,12 +38,12 @@ public class DictionaryMeta implements Meta {
         }
     }
     
-    private DictionaryMeta() {
+    private AuxFieldMeta() {
         
     }
     
-    public static DictionaryMeta getInstance() {
-        return dictionaryMeta;
+    public static AuxFieldMeta getInstance() {
+        return aux_fieldMeta;
     }
 
     public String[] getColumnList() {
@@ -75,28 +76,32 @@ public class DictionaryMeta implements Meta {
     return ID;
   } 
 
-  public static String getCategoryId() {
-    return CATEGORY_ID;
+  public static String getSortOrderId() {
+    return SORT_ORDER_ID;
   } 
 
-  public static String getRelatedEntryId() {
-    return RELATED_ENTRY_ID;
+  public static String getAnalyteId() {
+    return ANALYTE_ID;
   } 
 
-  public static String getSystemName() {
-    return SYSTEM_NAME;
+  public static String getReferenceTableId() {
+    return REFERENCE_TABLE_ID;
+  } 
+
+  public static String getIsRequired() {
+    return IS_REQUIRED;
   } 
 
   public static String getIsActive() {
     return IS_ACTIVE;
   } 
 
-  public static String getLocalAbbrev() {
-    return LOCAL_ABBREV;
+  public static String getIsReportable() {
+    return IS_REPORTABLE;
   } 
 
-  public static String getEntry() {
-    return ENTRY;
+  public static String getScriptletId() {
+    return SCRIPTLET_ID;
   } 
 
   

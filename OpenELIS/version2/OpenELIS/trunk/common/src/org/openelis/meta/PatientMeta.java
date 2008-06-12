@@ -2,32 +2,36 @@
 package org.openelis.meta;
 
 /**
-  * Provider META Data
+  * Patient META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class ProviderMeta implements Meta {
-  	private static final String tableName = "provider";
-	private static final String entityName = "Provider";
+public class PatientMeta implements Meta {
+  	private static final String tableName = "patient";
+	private static final String entityName = "Patient";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="provider.id",
-              LAST_NAME					="provider.last_name",
-              FIRST_NAME					="provider.first_name",
-              MIDDLE_NAME					="provider.middle_name",
-              TYPE_ID					="provider.type_id",
-              NPI					="provider.npi";
+              ID					="patient.id",
+              LAST_NAME					="patient.last_name",
+              FIRST_NAME					="patient.first_name",
+              MIDDLE_NAME					="patient.middle_name",
+              ADDRESS_ID					="patient.address_id",
+              BIRTH_DATE					="patient.birth_date",
+              BIRTH_TIME					="patient.birth_time",
+              GENDER_ID					="patient.gender_id",
+              RACE					="patient.race",
+              ETHNICITY_ID					="patient.ethnicity_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,TYPE_ID,NPI};
+  	  ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,ADDRESS_ID,BIRTH_DATE,BIRTH_TIME,GENDER_ID,RACE,ETHNICITY_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final ProviderMeta providerMeta = new ProviderMeta();
+	private static final PatientMeta patientMeta = new PatientMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -36,12 +40,12 @@ public class ProviderMeta implements Meta {
         }
     }
     
-    private ProviderMeta() {
+    private PatientMeta() {
         
     }
     
-    public static ProviderMeta getInstance() {
-        return providerMeta;
+    public static PatientMeta getInstance() {
+        return patientMeta;
     }
 
     public String[] getColumnList() {
@@ -86,12 +90,28 @@ public class ProviderMeta implements Meta {
     return MIDDLE_NAME;
   } 
 
-  public static String getTypeId() {
-    return TYPE_ID;
+  public static String getAddressId() {
+    return ADDRESS_ID;
   } 
 
-  public static String getNpi() {
-    return NPI;
+  public static String getBirthDate() {
+    return BIRTH_DATE;
+  } 
+
+  public static String getBirthTime() {
+    return BIRTH_TIME;
+  } 
+
+  public static String getGenderId() {
+    return GENDER_ID;
+  } 
+
+  public static String getRace() {
+    return RACE;
+  } 
+
+  public static String getEthnicityId() {
+    return ETHNICITY_ID;
   } 
 
   

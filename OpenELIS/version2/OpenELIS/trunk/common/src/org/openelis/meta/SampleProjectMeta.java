@@ -2,30 +2,30 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * SampleProject META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class SampleProjectMeta implements Meta {
+  	private static final String tableName = "sample_project";
+	private static final String entityName = "SampleProject";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="sample_project.id",
+              SAMPLE_ID					="sample_project.sample_id",
+              PROJECT_ID					="sample_project.project_id",
+              IS_PERMANENT					="sample_project.is_permanent";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,SAMPLE_ID,PROJECT_ID,IS_PERMANENT};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final SampleProjectMeta sample_projectMeta = new SampleProjectMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +34,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private SampleProjectMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static SampleProjectMeta getInstance() {
+        return sample_projectMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +72,16 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getSampleId() {
+    return SAMPLE_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getProjectId() {
+    return PROJECT_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getIsPermanent() {
+    return IS_PERMANENT;
   } 
 
   
