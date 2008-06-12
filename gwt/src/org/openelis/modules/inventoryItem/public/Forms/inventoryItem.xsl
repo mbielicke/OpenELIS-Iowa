@@ -102,13 +102,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{inventoryItemMeta:name()}" width="150px" max="20" tab="{inventoryItemMeta:description()},{inventoryItemMeta:isNoInventory()}"/>
+										<textbox case="lower" key="{inventoryItemMeta:getName()}" width="150px" max="20" tab="{inventoryItemMeta:getDescription()},{inventoryItemMeta:getIsNoInventory()}"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="{inventoryItemMeta:id()}" width="75px"/>
+										<textbox key="{inventoryItemMeta:getId()}" width="75px"/>
 									</widget>
 									
 								</row>
@@ -117,7 +117,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 										</widget>
 										<widget colspan="3">
-										<textbox case="mixed" key="{inventoryItemMeta:description()}" width="340px" max="60" tab="{inventoryItemMeta:store()},{inventoryItemMeta:name()}"/>
+										<textbox case="mixed" key="{inventoryItemMeta:getDescription()}" width="340px" max="60" tab="{inventoryItemMeta:getStoreId()},{inventoryItemMeta:getName()}"/>
 										</widget>									
 									</row>
 									<row>
@@ -125,7 +125,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:store()}" case="mixed" width="225px" tab="{inventoryItemMeta:category()},{inventoryItemMeta:description()}"/>
+											<autoDropdown key="{inventoryItemMeta:getStoreId()}" case="mixed" width="225px" tab="{inventoryItemMeta:getCategoryId()},{inventoryItemMeta:getDescription()}"/>
 										</widget>	
 									</row>
 									<row>
@@ -133,7 +133,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:category()}" case="mixed" width="180px" tab="{inventoryItemMeta:quantityMinLevel()},{inventoryItemMeta:store()}"/>
+											<autoDropdown key="{inventoryItemMeta:getCategoryId()}" case="mixed" width="180px" tab="{inventoryItemMeta:getQuantityMinLevel()},{inventoryItemMeta:getStoreId()}"/>
 										</widget>	
 									</row>
 									<row>
@@ -147,13 +147,13 @@
 									</widget>
 										
 										<widget>
-											<textbox key="{inventoryItemMeta:quantityMinLevel()}" width="55px" tab="{inventoryItemMeta:quantityToReorder()},{inventoryItemMeta:category()}"/>
+											<textbox key="{inventoryItemMeta:getQuantityMinLevel()}" width="55px" tab="{inventoryItemMeta:getQuantityToReorder()},{inventoryItemMeta:getCategoryId()}"/>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reorderLevel")'/>:</text>
 										</widget>
 										<widget>
-											<textbox key="{inventoryItemMeta:quantityToReorder()}" width="55px" tab="{inventoryItemMeta:quantityMaxLevel()},{inventoryItemMeta:quantityMinLevel()}"/>
+											<textbox key="{inventoryItemMeta:getQuantityToReorder()}" width="55px" tab="{inventoryItemMeta:getQuantityMaxLevel()},{inventoryItemMeta:getQuantityMinLevel()}"/>
 										</widget>													
 									</row>	
 									<row>
@@ -161,7 +161,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"maxOrderLevel")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<textbox key="{inventoryItemMeta:quantityMaxLevel()}" width="55px" tab="{inventoryItemMeta:purchasedUnits()},{inventoryItemMeta:quantityToReorder()}"/>
+											<textbox key="{inventoryItemMeta:getQuantityMaxLevel()}" width="55px" tab="{inventoryItemMeta:getPurchasedUnitsId()},{inventoryItemMeta:getQuantityToReorder()}"/>
 										</widget>	
 									</row>
 									<row>
@@ -174,7 +174,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnits")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:purchasedUnits()}" case="mixed" width="90px" tab="{inventoryItemMeta:dispensedUnits()},{inventoryItemMeta:quantityMaxLevel()}"/>
+											<autoDropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" case="mixed" width="90px" tab="{inventoryItemMeta:getDispensedUnitsId()},{inventoryItemMeta:getQuantityMaxLevel()}"/>
 										</widget>
 									</row>
 									<row>
@@ -182,7 +182,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:dispensedUnits()}" case="mixed" width="90px" tab="{inventoryItemMeta:isActive()},{inventoryItemMeta:purchasedUnits()}"/>
+											<autoDropdown key="{inventoryItemMeta:getDispensedUnitsId()}" case="mixed" width="90px" tab="{inventoryItemMeta:getIsActive()},{inventoryItemMeta:getPurchasedUnitsId()}"/>
 										</widget>
 									</row>
 								</panel>
@@ -195,7 +195,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isActive()}" tab="{inventoryItemMeta:isReorderAuto()},{inventoryItemMeta:dispensedUnits()}"/>
+										<check key="{inventoryItemMeta:getIsActive()}" tab="{inventoryItemMeta:getIsReorderAuto()},{inventoryItemMeta:getPurchasedUnitsId()}"/>
 									</widget>
 								</row>
 								<row>
@@ -203,7 +203,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isReorderAuto()}" tab="{inventoryItemMeta:isLotMaintained()},{inventoryItemMeta:isActive()}"/>
+										<check key="{inventoryItemMeta:getIsReorderAuto()}" tab="{inventoryItemMeta:getIsLotMaintained()},{inventoryItemMeta:getIsActive()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -211,7 +211,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isLotMaintained()}" tab="{inventoryItemMeta:isSerialMaintained()},{inventoryItemMeta:isReorderAuto()}"/>
+										<check key="{inventoryItemMeta:getIsLotMaintained()}" tab="{inventoryItemMeta:getIsSerialMaintained()},{inventoryItemMeta:getIsReorderAuto()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -219,7 +219,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isSerialMaintained()}" tab="{inventoryItemMeta:isBulk()},{inventoryItemMeta:isLotMaintained()}"/>
+										<check key="{inventoryItemMeta:getIsSerialMaintained()}" tab="{inventoryItemMeta:getIsBulk()},{inventoryItemMeta:getIsLotMaintained()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -227,7 +227,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isBulk()}" tab="{inventoryItemMeta:isNotForSale()},{inventoryItemMeta:isSerialMaintained()}"/>
+										<check key="{inventoryItemMeta:getIsBulk()}" tab="{inventoryItemMeta:getIsNotForSale()},{inventoryItemMeta:getIsSerialMaintained()}"/>
 									</widget>
 								</row>
 								<row>
@@ -235,7 +235,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isNotForSale()}" tab="{inventoryItemMeta:isSubAssembly()},{inventoryItemMeta:isBulk()}"/>
+										<check key="{inventoryItemMeta:getIsNotForSale()}" tab="{inventoryItemMeta:getIsSubAssembly()},{inventoryItemMeta:getIsBulk()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -243,7 +243,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isSubAssembly()}" tab="{inventoryItemMeta:isLabor()},{inventoryItemMeta:isNotForSale()}"/>
+										<check key="{inventoryItemMeta:getIsSubAssembly()}" tab="{inventoryItemMeta:getIsLabor()},{inventoryItemMeta:getIsNotForSale()}"/>
 									</widget>
 								</row>
 								<row>
@@ -251,7 +251,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isLabor()}" tab="{inventoryItemMeta:isNoInventory()},{inventoryItemMeta:isSubAssembly()}"/>
+										<check key="{inventoryItemMeta:getIsLabor()}" tab="{inventoryItemMeta:getIsNoInventory()},{inventoryItemMeta:getIsSubAssembly()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -259,7 +259,7 @@
 										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{inventoryItemMeta:isNoInventory()}" tab="{inventoryItemMeta:name()},{inventoryItemMeta:isLabor()}"/>
+										<check key="{inventoryItemMeta:getIsNoInventory()}" tab="{inventoryItemMeta:getName()},{inventoryItemMeta:getIsLabor()}"/>
 									</widget>	
 								</row>
 								</panel>
@@ -285,9 +285,9 @@
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<dropdown key="{inventoryComponentMeta:component()}" required="true"/>
-											<string key="{inventoryComponentItemMeta:description()}"/>
-											<number key="{inventoryComponentMeta:quantity()}" type="double" required="true"/>
+											<dropdown key="{inventoryComponentMeta:getComponentId()}" required="true"/>
+											<string key="{inventoryComponentItemMeta:getDescription()}"/>
+											<number key="{inventoryComponentMeta:getQuantity()}" type="double" required="true"/>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false,false</filters>
@@ -305,8 +305,8 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 										</editors>
-										<fields><xsl:value-of select='inventoryComponentMeta:component()'/>,<xsl:value-of select='inventoryComponentItemMeta:description()'/>,
-										<xsl:value-of select='inventoryComponentMeta:quantity()'/>
+										<fields><xsl:value-of select='inventoryComponentMeta:getComponentId()'/>,<xsl:value-of select='inventoryComponentItemMeta:getDescription()'/>,
+										<xsl:value-of select='inventoryComponentMeta:getQuantity()'/>
 										</fields>										
 									</queryTable>
 									</query>
@@ -338,10 +338,10 @@
 											<label/>
 										</editors>
 										<fields>
-											<string key="{inventoryLocationMeta:storageLocation()}"/>
-											<string key="{inventoryLocationMeta:lotNumber()}"/>
-											<string key="{inventoryLocationMeta:expirationDate()}"/>
-											<number key="{inventoryLocationMeta:quantityOnhand()}" type="integer"/>
+											<string key="{inventoryLocationMeta:getStorageLocationId()}"/>
+											<string key="{inventoryLocationMeta:getLotNumber()}"/>
+											<string key="{inventoryLocationMeta:getExpirationDate()}"/>
+											<number key="{inventoryLocationMeta:getQuantityOnhand()}" type="integer"/>
 										</fields>
 										<sorts>true,true,true,true</sorts>
 										<filters>false,false,false,false</filters>
@@ -359,8 +359,8 @@
 											<textbox case="mixed"/>	
 										</editors>
 										<fields>
-											<xsl:value-of select='inventoryLocationStorageLocationMeta:location()'/>,<xsl:value-of select='inventoryLocationMeta:lotNumber()'/>,
-    										<xsl:value-of select='inventoryLocationMeta:expirationDate()'/>,<xsl:value-of select='inventoryLocationMeta:quantityOnhand()'/>
+											<xsl:value-of select='inventoryLocationStorageLocationMeta:getLocation()'/>,<xsl:value-of select='inventoryLocationMeta:getLotNumber()'/>,
+    										<xsl:value-of select='inventoryLocationMeta:getExpirationDate()'/>,<xsl:value-of select='inventoryLocationMeta:getQuantityOnhand()'/>
 										</fields>							
 									</queryTable>
 									</query>
@@ -379,7 +379,7 @@
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
 							</widget>
 							<widget colspan="5">
-								<textbox case="mixed" key="{inventoryItemMeta:productUri()}" width="490px" max="80"/>
+								<textbox case="mixed" key="{inventoryItemMeta:getProductUri()}" width="490px" max="80"/>
 							</widget>									
 						</row>
 						<row>
@@ -387,19 +387,19 @@
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
 							</widget>
 							<widget>
-								<textbox key="{inventoryItemMeta:averageLeadTime()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+								<textbox key="{inventoryItemMeta:getAverageLeadTime()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 							</widget>
 							<widget>
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
 							</widget>
 							<widget>
-								<textbox key="{inventoryItemMeta:averageCost()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+								<textbox key="{inventoryItemMeta:getAverageCost()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 							</widget>
 							<widget>
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
 							</widget>
 							<widget>
-								<textbox key="{inventoryItemMeta:averageDailyUse()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+								<textbox key="{inventoryItemMeta:getAverageDailyUse()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 							</widget>
 						</row>
 						</panel>
@@ -419,7 +419,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{inventoryItemNoteMeta:subject()}" width="435px" max="60" showError="false"/>
+										<textbox case="mixed" key="{inventoryItemNoteMeta:getSubject()}" width="435px" max="60" showError="false"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -437,7 +437,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>locsController
 										<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{inventoryItemNoteMeta:text()}" showError="false"/>
+										<textarea width="549px" height="50px" case="mixed" key="{inventoryItemNoteMeta:getText()}" showError="false"/>
 										</widget>
 										</row>
 								 
@@ -465,77 +465,77 @@
 	<rpc key="display">
   	  <number key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
       <string key="{inventoryItemMeta:getName()}" max="20" required="true"/>
-      <string key="{inventoryItemMeta:description()}" max="60" required="false"/>
-      <dropdown key="{inventoryItemMeta:store()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:category()}" type="integer" required="false"/> 
-      <number key="{inventoryItemMeta:quantityMinLevel()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:quantityMaxLevel()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:quantityToReorder()}" type="integer" required="false"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer" required="true"/> 
-      <number key="{inventoryItemMeta:averageLeadTime()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:averageCost()}" type="double" required="false"/>
-      <number key="{inventoryItemMeta:averageDailyUse()}" type="integer" required="false"/>
+      <string key="{inventoryItemMeta:getDescription()}" max="60" required="false"/>
+      <dropdown key="{inventoryItemMeta:getStoreId()}" type="integer" required="true"/> 
+      <dropdown key="{inventoryItemMeta:getCategoryId()}" type="integer" required="false"/> 
+      <number key="{inventoryItemMeta:getQuantityMinLevel()}" type="integer" required="false"/>
+      <number key="{inventoryItemMeta:getQuantityMaxLevel()}" type="integer" required="false"/>
+      <number key="{inventoryItemMeta:getQuantityToReorder()}" type="integer" required="false"/>
+      <dropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" type="integer" required="true"/> 
+      <dropdown key="{inventoryItemMeta:getDispensedUnitsId()}" type="integer" required="true"/> 
+      <number key="{inventoryItemMeta:getAverageLeadTime()}" type="integer" required="false"/>
+      <number key="{inventoryItemMeta:getAverageCost()}" type="double" required="false"/>
+      <number key="{inventoryItemMeta:getAverageDailyUse()}" type="integer" required="false"/>
       <table key="componentsTable"/>
       <table key="locQuantitiesTable"/>
-      <check key="{inventoryItemMeta:isActive()}" required="false"/>
-      <check key="{inventoryItemMeta:isReorderAuto()}" required="false"/>
-      <check key="{inventoryItemMeta:isLotMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:isSerialMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:isBulk()}" required="false"/>
-      <check key="{inventoryItemMeta:isNotForSale()}" required="false"/>
-      <check key="{inventoryItemMeta:isSubAssembly()}" required="false"/>
-      <check key="{inventoryItemMeta:isLabor()}" required="false"/>
-      <check key="{inventoryItemMeta:isNoInventory()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsActive()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsReorderAuto()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsLotMaintained()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsSerialMaintained()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsBulk()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsNotForSale()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsSubAssembly()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsLabor()}" required="false"/>
+      <check key="{inventoryItemMeta:getIsNoInventory()}" required="false"/>
       
-      <string key="{inventoryItemMeta:productUri()}" required="false"/>
+      <string key="{inventoryItemMeta:getProductUri()}" required="false"/>
       
-      <string key="{inventoryItemNoteMeta:subject()}" max="60" required="false"/>
-      <string key="{inventoryItemNoteMeta:text()}" required="false"/>
+      <string key="{inventoryItemNoteMeta:getSubject()}" max="60" required="false"/>
+      <string key="{inventoryItemNoteMeta:getText()}" required="false"/>
       
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
       <queryString key="{inventoryItemMeta:getName()}" max="20" required="false"/>
-      <queryString key="{inventoryItemMeta:description()}" max="60" required="false"/>
-      <dropdown key="{inventoryItemMeta:store()}" type="integer" required="false"/> 
-      <dropdown key="{inventoryItemMeta:category()}" type="integer" required="false"/> 
-      <queryNumber key="{inventoryItemMeta:quantityMinLevel()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:quantityMaxLevel()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:quantityToReorder()}" type="integer" required="false"/>
-      <dropdown key="{inventoryItemMeta:purchasedUnits()}" type="integer" required="false"/> 
-      <dropdown key="{inventoryItemMeta:dispensedUnits()}" type="integer" required="false"/> 
-      <queryCheck key="{inventoryItemMeta:isActive()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isReorderAuto()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isLotMaintained()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isSerialMaintained()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isBulk()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isNotForSale()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isSubAssembly()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isLabor()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:isNoInventory()}" required="false"/>
+      <queryString key="{inventoryItemMeta:getDescription()}" max="60" required="false"/>
+      <dropdown key="{inventoryItemMeta:getStoreId()}" type="integer" required="false"/> 
+      <dropdown key="{inventoryItemMeta:getCategoryId()}" type="integer" required="false"/> 
+      <queryNumber key="{inventoryItemMeta:getQuantityMinLevel()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getQuantityMaxLevel()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getQuantityToReorder()}" type="integer" required="false"/>
+      <dropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" type="integer" required="false"/> 
+      <dropdown key="{inventoryItemMeta:getDispensedUnitsId()}" type="integer" required="false"/> 
+      <queryCheck key="{inventoryItemMeta:getIsActive()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsReorderAuto()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsLotMaintained()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsSerialMaintained()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsBulk()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsNotForSale()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsSubAssembly()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsLabor()}" required="false"/>
+      <queryCheck key="{inventoryItemMeta:getIsNoInventory()}" required="false"/>
 
       <!--Additional info tab-->
-      <queryNumber key="{inventoryItemMeta:averageLeadTime()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:averageCost()}" type="double" required="false"/>
-      <queryNumber key="{inventoryItemMeta:averageDailyUse()}" type="integer" required="false"/>
-      <queryString key="{inventoryItemMeta:productUri()}" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getAverageLeadTime()}" type="integer" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getAverageCost()}" type="double" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getAverageDailyUse()}" type="integer" required="false"/>
+      <queryString key="{inventoryItemMeta:getProductUri()}" required="false"/>
       
       <!--comments tab-->
-      <queryString key="{inventoryItemNoteMeta:subject()}" max="60" required="false"/>
+      <queryString key="{inventoryItemNoteMeta:getSubject()}" max="60" required="false"/>
       
       <table key="componentsTable"/>
       <!--component table values-->
-      <dropdown key="{inventoryComponentMeta:component()}" required="false"/>
-	  <queryString key="{inventoryComponentItemMeta:description()}" required="false"/>
-	  <queryNumber key="{inventoryComponentMeta:quantity()}" type="double" required="false"/>   
+      <dropdown key="{inventoryComponentMeta:getComponentId()}" required="false"/>
+	  <queryString key="{inventoryComponentItemMeta:getDescription()}" required="false"/>
+	  <queryNumber key="{inventoryComponentMeta:getQuantity()}" type="double" required="false"/>   
 
       <table key="locQuantitiesTable"/>	  
 	  <!--location table values-->
-	  <queryString key="{inventoryLocationStorageLocationMeta:location()}" required="false"/>
-	  <queryString key="{inventoryLocationMeta:lotNumber()}" required="false"/>
-	  <queryString key="{inventoryLocationMeta:expirationDate()}" required="false"/>
-	  <queryNumber key="{inventoryLocationMeta:quantityOnhand()}" type="integer" required="false"/>
+	  <queryString key="{inventoryLocationStorageLocationMeta:getLocation()}" required="false"/>
+	  <queryString key="{inventoryLocationMeta:getLotNumber()}" required="false"/>
+	  <queryString key="{inventoryLocationMeta:getExpirationDate()}" required="false"/>
+	  <queryNumber key="{inventoryLocationMeta:getQuantityOnhand()}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
 		<queryString key="{inventoryItemMeta:getName()}"/>

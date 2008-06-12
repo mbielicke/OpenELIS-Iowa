@@ -110,8 +110,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
-        nameTextbox = (ScreenTextBox) widgets.get("inventoryItem.name");
-        idTextBox = (ScreenTextBox) widgets.get("inventoryItem.id");
+        nameTextbox = (ScreenTextBox) widgets.get("inventory_item.name");
+        idTextBox = (ScreenTextBox) widgets.get("inventory_item.id");
         noteText = (ScreenTextArea) widgets.get("note.text");
         
         locsController = ((TableWidget)getWidget("locQuantitiesTable")).controller;
@@ -131,16 +131,16 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             dispensedUnitsDropdown = (DataModel)initData.get("units");
         }
         
-        drop = (AutoCompleteDropdown)getWidget("inventoryItem.store");
+        drop = (AutoCompleteDropdown)getWidget("inventory_item.storeId");
         drop.setModel(storesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("inventoryItem.category");
+        drop = (AutoCompleteDropdown)getWidget("inventory_item.categoryId");
         drop.setModel(categoriesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("inventoryItem.purchasedUnits");
+        drop = (AutoCompleteDropdown)getWidget("inventory_item.purchasedUnitsId");
         drop.setModel(purchasedUnitsDropdown);
-        
-        drop = (AutoCompleteDropdown)getWidget("inventoryItem.dispensedUnits");
+
+        drop = (AutoCompleteDropdown)getWidget("inventory_item.dispensedUnitsId");
         drop.setModel(dispensedUnitsDropdown);
         
 		super.afterDraw(success);			
@@ -260,7 +260,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             loadLocations = true;
             clearLocations = false;
             
-            Integer itemId = (Integer)rpc.getFieldValue("inventoryItem.id");
+            Integer itemId = (Integer)rpc.getFieldValue("inventory_item.id");
             NumberObject itemIdObj = new NumberObject(itemId);
             
             // done because key is set to null in AppScreenForm for the add operation 
@@ -516,7 +516,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			letterRPC.setFieldValue("inventoryItem.name", query);
+			letterRPC.setFieldValue("inventory_item.name", query);
 
 			commitQuery(letterRPC);
 		}
@@ -555,11 +555,11 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
             FormRPC displayRPC = rpc.clone();
-            displayRPC.setFieldValue("inventoryItem.id", null);
+            displayRPC.setFieldValue("inventory_item.id", null);
             displayRPC.setFieldValue("locQuantitiesTable", null);
-            displayRPC.setFieldValue("inventoryItem.averageLeadTime",null);
-            displayRPC.setFieldValue("inventoryItem.averageCost",null);
-            displayRPC.setFieldValue("inventoryItem.averageDailyUse",null);
+            displayRPC.setFieldValue("inventory_item.averageLeadTime",null);
+            displayRPC.setFieldValue("inventory_item.averageCost",null);
+            displayRPC.setFieldValue("inventory_item.averageDailyUse",null);
             displayRPC.setFieldValue("note.subject",null);
             displayRPC.setFieldValue("note.text",null);   
                        

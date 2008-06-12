@@ -99,7 +99,7 @@
 										<widths>267,90</widths>	
 									</autoDropdown>
 										<query>
-										<textbox case="upper" width="366px" tab="{storageLocationMeta:getIsAvailable()},{storageLocationMeta:getLocation()}"/>
+										<textbox case="lower" width="366px" tab="{storageLocationMeta:getIsAvailable()},{storageLocationMeta:getLocation()}"/>
 										</query>
 									</widget>	
 									
@@ -109,7 +109,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{storageLocationMeta:getIsAvailable()}" tab="{storageLocationMeta:getName()},{storageLocationStorageUnitMeta:description()}"/>
+										<check key="{storageLocationMeta:getIsAvailable()}" tab="{storageLocationMeta:getName()},{storageLocationStorageUnitMeta:getDescription()}"/>
 									</widget>
 								</row>
 								</panel>
@@ -130,9 +130,9 @@
 											<check/>
 										</editors>
 										<fields>
-											<dropdown key="{storageLocationChildStorageUnitMeta:description()}" required="true"/>
-											<string key="{storageLocationChildMeta:location()}" required="true"/>
-											<check key="{storageLocationChildMeta:isAvailable()}">Y</check>
+											<dropdown key="{storageLocationChildStorageUnitMeta:getDescription()}" required="true"/>
+											<string key="{storageLocationChildMeta:getLocation()}" required="true"/>
+											<check key="{storageLocationChildMeta:getIsAvailable()}">Y</check>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false ,false</filters>
@@ -149,8 +149,9 @@
 											<check threeState="true"/>
 										</editors>
 										<fields>
-											<xsl:value-of select='storageLocationChildStorageUnitMeta:description()'/>,<xsl:value-of select='storageLocationChildMeta:location()'/>,
-											<xsl:value-of select='storageLocationChildMeta:isAvailable()'/>
+											<xsl:value-of select='storageLocationChildStorageUnitMeta:getDescription()'/>,
+											<xsl:value-of select='storageLocationChildMeta:getLocation()'/>,
+											<xsl:value-of select='storageLocationChildMeta:getIsAvailable()'/>
 										</fields>
 									</queryTable>
 									</query>             
@@ -174,7 +175,7 @@
 	<rpc key="display">
 	<number key="{storageLocationMeta:getId()}" required="false" type="integer"/>
     <string key="{storageLocationMeta:getName()}" max="20" required="true"/>
-    <dropdown  key="{storageLocationStorageUnitMeta:description()}" type="integer" required="true"/>
+    <dropdown  key="{storageLocationStorageUnitMeta:getDescription()}" type="integer" required="true"/>
     <string key="{storageLocationMeta:getLocation()}" max="80" required="true"/>
     <check key="{storageLocationMeta:getIsAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
@@ -184,17 +185,17 @@
 	<queryNumber key="{storageLocationMeta:getId()}" type="integer" required="false"/>
     <queryString key="{storageLocationMeta:getName()}" required="false"/>
     <queryString key="{storageLocationMeta:getLocation()}" required="false"/>
-    <queryString key="{storageLocationStorageUnitMeta:description()}" required="false"/>
+    <queryString key="{storageLocationStorageUnitMeta:getDescription()}" required="false"/>
     <queryCheck key="{storageLocationMeta:getIsAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
     
 	<!-- table values -->
-	<queryString key="{storageLocationChildStorageUnitMeta:description()}" required="false"/>
-	<queryString key="{storageLocationChildMeta:location()}" required="false"/>
-	<queryCheck key="{storageLocationChildMeta:isAvailable()}" required="false"/>
+	<queryString key="{storageLocationChildStorageUnitMeta:getDescription()}" required="false"/>
+	<queryString key="{storageLocationChildMeta:getLocation()}" required="false"/>
+	<queryCheck key="{storageLocationChildMeta:getIsAvailable()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="storageLocation.name"/>
+		<queryString key="{storageLocationMeta:getName()}"/>
 	</rpc>
 </screen>
   </xsl:template>

@@ -57,7 +57,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
         
         removeEntryButton = (AppButton) getWidget("removeEntryButton");
         
-        nameTextbox = (TextBox)getWidget("storageLocation.name");
+        nameTextbox = (TextBox)getWidget("storage_location.name");
 		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
 		
 		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
@@ -136,7 +136,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
     		
-    		letterRPC.setFieldValue("storageLocation.name", query);
+    		letterRPC.setFieldValue("storage_location.name", query);
     
     		commitQuery(letterRPC);
     	}
