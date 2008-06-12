@@ -63,19 +63,19 @@ public class StorageLocationChildStorageUnitMeta implements Meta{
 		return columnHashList.containsKey(column);
 	}
 	
-	public static String id(){
+	public static String getId(){
 		return columnNames[0];
 	}
 	
-	public static String category(){
+	public static String getCategory(){
 		return columnNames[1];
 	}
 	
-	public static String description(){
+	public static String getDescription(){
 		return columnNames[2];
 	}
 	
-	public static String isSingular(){
+	public static String getIsSingular(){
 		return columnNames[3];
 	}
 

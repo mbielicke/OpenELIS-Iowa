@@ -10,14 +10,14 @@ import org.openelis.util.Meta;
 
 public class InventoryComponentMeta implements Meta {
   	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+	private static final String entityName = "inventory_item.inventoryComponent";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventoryItemId",
-              COMPONENT_ID					="inventory_component.componentId",
-              QUANTITY					="inventory_component.quantity";
+              ID					= "inventory_component.id",
+              INVENTORY_ITEM_ID     = "inventory_component.inventoryItemId",
+              COMPONENT_ID			= "inventory_component.componentId",
+              QUANTITY				= "inventory_component.quantity";
 
 
   	private static final String[] columnNames = {

@@ -14,29 +14,29 @@ public class InventoryItemMeta implements Meta {
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_item.id",
-              NAME					="inventory_item.name",
-              DESCRIPTION					="inventory_item.description",
-              CATEGORY_ID					="inventory_item.categoryId",
-              STORE_ID					="inventory_item.storeId",
-              QUANTITY_MIN_LEVEL					="inventory_item.quantityMinLevel",
-              QUANTITY_MAX_LEVEL					="inventory_item.quantityMaxLevel",
-              QUANTITY_TO_REORDER					="inventory_item.quantityToReorder",
-              PURCHASED_UNITS_ID					="inventory_item.purchasedUnitsId",
-              DISPENSED_UNITS_ID					="inventory_item.dispensedUnitsId",
-              IS_REORDER_AUTO					="inventory_item.isReorderAuto",
-              IS_LOT_MAINTAINED					="inventory_item.isLotMaintained",
-              IS_SERIAL_MAINTAINED					="inventory_item.isSerialMaintained",
-              IS_ACTIVE					="inventory_item.isActive",
-              IS_BULK					="inventory_item.isBulk",
-              IS_NOT_FOR_SALE					="inventory_item.isNotForSale",
-              IS_SUB_ASSEMBLY					="inventory_item.isSubAssembly",
-              IS_LABOR					="inventory_item.isLabor",
-              IS_NO_INVENTORY					="inventory_item.isNoInventory",
-              PRODUCT_URI					="inventory_item.productUri",
-              AVERAGE_LEAD_TIME					="inventory_item.averageLeadTime",
-              AVERAGE_COST					="inventory_item.averageCost",
-              AVERAGE_DAILY_USE					="inventory_item.averageDailyUse";
+              ID					= "inventory_item.id",
+              NAME					= "inventory_item.name",
+              DESCRIPTION			= "inventory_item.description",
+              CATEGORY_ID			= "inventory_item.categoryId",
+              STORE_ID				= "inventory_item.storeId",
+              QUANTITY_MIN_LEVEL	= "inventory_item.quantityMinLevel",
+              QUANTITY_MAX_LEVEL	= "inventory_item.quantityMaxLevel",
+              QUANTITY_TO_REORDER	= "inventory_item.quantityToReorder",
+              PURCHASED_UNITS_ID	= "inventory_item.purchasedUnitsId",
+              DISPENSED_UNITS_ID	= "inventory_item.dispensedUnitsId",
+              IS_REORDER_AUTO		= "inventory_item.isReorderAuto",
+              IS_LOT_MAINTAINED		= "inventory_item.isLotMaintained",
+              IS_SERIAL_MAINTAINED  = "inventory_item.isSerialMaintained",
+              IS_ACTIVE				= "inventory_item.isActive",
+              IS_BULK			    = "inventory_item.isBulk",
+              IS_NOT_FOR_SALE		= "inventory_item.isNotForSale",
+              IS_SUB_ASSEMBLY		= "inventory_item.isSubAssembly",
+              IS_LABOR				= "inventory_item.isLabor",
+              IS_NO_INVENTORY		= "inventory_item.isNoInventory",
+              PRODUCT_URI			= "inventory_item.productUri",
+              AVERAGE_LEAD_TIME		= "inventory_item.averageLeadTime",
+              AVERAGE_COST			= "inventory_item.averageCost",
+              AVERAGE_DAILY_USE		= "inventory_item.averageDailyUse";
 
 
   	private static final String[] columnNames = {
@@ -177,7 +177,5 @@ public class InventoryItemMeta implements Meta {
 
   public static String getAverageDailyUse() {
     return AVERAGE_DAILY_USE;
-  } 
-
-  
+  }   
 }   

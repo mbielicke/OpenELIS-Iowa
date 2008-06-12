@@ -10,16 +10,16 @@ import org.openelis.util.Meta;
 
 public class InventoryLocationMeta implements Meta {
   	private static final String tableName = "inventory_location";
-	private static final String entityName = "InventoryLocation";
+	private static final String entityName = "inventory_item.inventoryLocation";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_location.id",
-              INVENTORY_ITEM_ID					="inventory_location.inventoryItemId",
-              LOT_NUMBER					="inventory_location.lotNumber",
-              STORAGE_LOCATION_ID					="inventory_location.storageLocationId",
-              QUANTITY_ONHAND					="inventory_location.quantityOnhand",
-              EXPIRATION_DATE					="inventory_location.expirationDate";
+              ID					= "inventory_location.id",
+              INVENTORY_ITEM_ID		= "inventory_location.inventoryItemId",
+              LOT_NUMBER			= "inventory_location.lotNumber",
+              STORAGE_LOCATION_ID   = "inventory_location.storageLocationId",
+              QUANTITY_ONHAND		= "inventory_location.quantityOnhand",
+              EXPIRATION_DATE		= "inventory_location.expirationDate";
 
 
   	private static final String[] columnNames = {
