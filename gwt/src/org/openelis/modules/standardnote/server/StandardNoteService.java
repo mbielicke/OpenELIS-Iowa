@@ -343,7 +343,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     	newStandardNoteDO.setDescription((String)rpcSend.getFieldValue(StandardNoteMeta.DESCRIPTION));
     	newStandardNoteDO.setName((String)rpcSend.getFieldValue(StandardNoteMeta.NAME));
     	newStandardNoteDO.setText((String)rpcSend.getFieldValue(StandardNoteMeta.TEXT));
-    	newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.TYPE));
+    	newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.TYPE_ID));
     	
     	return newStandardNoteDO;
     }
@@ -364,6 +364,6 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     	rpcReturn.setFieldValue(StandardNoteMeta.DESCRIPTION, standardNoteDO.getDescription());
     	rpcReturn.setFieldValue(StandardNoteMeta.NAME, standardNoteDO.getName());
     	rpcReturn.setFieldValue(StandardNoteMeta.TEXT, standardNoteDO.getText());
-    	rpcReturn.setFieldValue(StandardNoteMeta.TYPE, standardNoteDO.getType());
+    	rpcReturn.setFieldValue(StandardNoteMeta.TYPE_ID, standardNoteDO.getType());
     }
 }

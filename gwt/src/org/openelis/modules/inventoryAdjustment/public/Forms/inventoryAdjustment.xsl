@@ -127,12 +127,12 @@
 											<textbox case="upper"/>
 										</editors>
 										<fields>
-											<string key="{orgContactMeta:name()}" required="false"/>
-											<string key="{orgContactMeta:name()}" required="false"/>
-											<string key="{orgContactMeta:name()}" required="false"/>
-											<string key="{orgContactMeta:name()}" required="false"/>
-											<string key="{orgContactMeta:name()}" required="false"/>
-											<string key="{orgContactMeta:name()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
+											<string key="{orgContactMeta:getName()}" required="false"/>
 										</fields>
 										<sorts>true,true,true,true,true,true</sorts>
 										<filters>false,false,false,false,false,false</filters>
@@ -301,34 +301,34 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	  <number key="{organizationMeta:id()}" type="integer" required="false"/>
-      <number key="{organizationMeta:addressId()}" required="false" type="integer"/>
-      <string key="{organizationMeta:name()}" max="40" required="true"/>
+  	  <number key="{organizationMeta:getId()}" type="integer" required="false"/>
+      <number key="{organizationMeta:getAddressId()}" required="false" type="integer"/>
+      <string key="{organizationMeta:getName()}" max="40" required="true"/>
       <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
       <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
       <string key="{orgAddressMeta:city()}" max="30" required="true"/>
       <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
-      <check key="{organizationMeta:isActive()}" required="false"/>
+      <check key="{organizationMeta:getIsActive()}" required="false"/>
       <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
       <string key="{orgNoteMeta:text()}" required="false"/>
-      <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
+      <dropdown key="{parentOrgMeta:getName()}" type="integer" required="false"/> 
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="true"/>
       <table key="contactsTable"/>
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{organizationMeta:id()}" type="integer"/>
-      <queryString key="{organizationMeta:name()}"/>
+      <queryNumber key="{organizationMeta:getId()}" type="integer"/>
+      <queryString key="{organizationMeta:getName()}"/>
       <queryString key="{orgAddressMeta:streetAddress()}"/>
       <queryString key="{orgAddressMeta:multipleUnit()}" value="query"/>
       <queryString key="{orgAddressMeta:city()}"/>
       <queryString key="{orgAddressMeta:zipCode()}"/>
-      <queryString key="{parentOrgMeta:name()}"/>
+      <queryString key="{parentOrgMeta:getName()}"/>
       <queryString key="{orgNoteMeta:subject()}"/>
       <queryString key="{orgNoteMeta:text()}"/>
       <dropdown key="{orgAddressMeta:state()}" required="false"/>
       <dropdown key="{orgAddressMeta:country()}" required="false"/>
-      <queryCheck key="{organizationMeta:isActive()}" required="false"/>
+      <queryCheck key="{organizationMeta:getIsActive()}" required="false"/>
       <table key="contactsTable"/>
       <dropdown key="{orgContactMeta:contactType()}" required="false"/>
 	  <queryString key="{orgContactMeta:name()}" required="false"/>
@@ -345,7 +345,7 @@
 	  <dropdown key="{orgContactAddressMeta:country()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{organizationMeta:name()}"/>
+		<queryString key="{organizationMeta:getName()}"/>
 	</rpc>
 </screen>
   </xsl:template>

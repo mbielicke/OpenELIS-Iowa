@@ -99,13 +99,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{orderMeta:id()}" width="75px" max="20" tab="{orderMeta:neededInDays()},{orderMeta:costCenter()}"/>
+										<textbox case="lower" key="{orderMeta:getId()}" width="75px" max="20" tab="{orderMeta:getNeededInDays()},{orderMeta:getCostCenterId()}"/>
 									</widget>
 									<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
 									</widget>
 									<widget colspan="3">
-										<textbox key="{orderMeta:neededInDays()}" width="75px" tab="{orderMeta:status()},{orderMeta:id()}"/>
+										<textbox key="{orderMeta:getNeededInDays()}" width="75px" tab="{orderMeta:getStatusId()},{orderMeta:getId()}"/>
 									</widget>
 								</row>
 								<row>
@@ -113,7 +113,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{orderMeta:status()}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:requestedBy()},{orderMeta:neededInDays()}">
+										<autoDropdown key="{orderMeta:getStatusId()}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:getRequestedById()},{orderMeta:getNeededInDays()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>
@@ -121,7 +121,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="{orderMeta:requestedBy()}" width="175px" tab="{orderMeta:orderedDate()},{orderMeta:status()}"/>
+										<textbox key="{orderMeta:getRequestedBy()}" width="175px" tab="{orderMeta:getOrderedDate()},{orderMeta:getStatusId()}"/>
 									</widget>	
 								</row>
 								<row>
@@ -129,7 +129,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
 									</widget>
 									<widget>
-										<textbox key="{orderMeta:orderedDate()}" width="75px" tab="{orderMeta:costCenter()},{orderMeta:requestedBy()}"/>
+										<textbox key="{orderMeta:getOrderedDate()}" width="75px" tab="{orderMeta:getCostCenterId()},{orderMeta:getRequestedBy()}"/>
 									</widget>
 								</row>
 								<row>
@@ -137,7 +137,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{orderMeta:costCenter()}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:id()},{orderMeta:requestedBy()}">
+										<autoDropdown key="{orderMeta:getCostCenterId()}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId()},{orderMeta:getRequestedBy()}">
 													<widths>167</widths>
 										</autoDropdown>
 									</widget>									
@@ -165,7 +165,7 @@
 											<label/>
 										</editors>
 										<fields>
-											<number key="{orderItemMeta:quantityRequested()}" type="integer" required="true"/>
+											<number key="{orderItemMeta:getQuantityRequested()}" type="integer" required="true"/>
 											<dropdown key="{orderItemInventoryItemMeta:name()}" required="true"/>
 											<string key="{orderItemStoreMeta:entry()}" required="false"/>
 											<string key="location" required="false"/>
@@ -186,7 +186,7 @@
 											<label/>
 										</editors>
 										<fields>
-											<xsl:value-of select='orderItemMeta:quantityRequested()'/>,
+											<xsl:value-of select='orderItemMeta:getQuantityRequested()'/>,
 											<xsl:value-of select='orderItemInventoryItemMeta:name()'/>,
 											<xsl:value-of select='orderItemStoreMeta:entry()'/>,
 											label1
@@ -211,12 +211,12 @@
 	</display>
 	<rpc key="display">
 	  <!-- values on the screen -->
-  	  <number key="{orderMeta:id()}" type="integer" required="false"/>
-      <number key="{orderMeta:neededInDays()}" type="integer" required="true"/>
-      <dropdown key="{orderMeta:status()}" type="integer" required="true"/>  
-      <string key="{orderMeta:orderedDate()}" required="true"/>
-      <string key="{orderMeta:requestedBy()}" required="true"/>
-      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
+  	  <number key="{orderMeta:getId()}" type="integer" required="false"/>
+      <number key="{orderMeta:getNeededInDays()}" type="integer" required="true"/>
+      <dropdown key="{orderMeta:getStatusId()}" type="integer" required="true"/>  
+      <string key="{orderMeta:getOrderedDate()}" required="true"/>
+      <string key="{orderMeta:getRequestedBy()}" required="true"/>
+      <dropdown key="{orderMeta:getCostCenterId()}" type="integer" required="false"/>
       <table key="itemsTable"/>
             
       <!-- defaulted values -->
@@ -224,10 +224,10 @@
       <string key="orderType" required="false"/>
       
       <!-- values not on this screen -->
-      <dropdown key="{orderMeta:organization()}" required="false"/>
-      <string key="{orderMeta:externalOrderNumber()}" required="false"/>
-	  <dropdown key="{orderMeta:reportTo()}" required="false"/>
-      <dropdown key="{orderMeta:billTo()}" required="false"/>
+      <dropdown key="{orderMeta:getOrganization_Id()}" required="false"/>
+      <string key="{orderMeta:getExternalOrderNumber()}" required="false"/>
+	  <dropdown key="{orderMeta:getReportToId()}" required="false"/>
+      <dropdown key="{orderMeta:getBillToId()}" required="false"/>
 
       <!-- organization address-->
       <string key="{orderOrganizationAddressMeta:multipleUnit()}" required="false"/>
@@ -252,12 +252,12 @@
       
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{orderMeta:id()}" type="integer" required="false"/>
-      <queryNumber key="{orderMeta:neededInDays()}" type="integer" required="false"/>
-      <dropdown key="{orderMeta:status()}" type="integer" required="false"/> 
-      <queryString key="{orderMeta:orderedDate()}" required="false"/>
+      <queryNumber key="{orderMeta:getId()}" type="integer" required="false"/>
+      <queryNumber key="{orderMeta:getNeededInDays()}" type="integer" required="false"/>
+      <dropdown key="{orderMeta:getStatusId()}" type="integer" required="false"/> 
+      <queryString key="{orderMeta:getOrderedDate()}" required="false"/>
       <queryString key="{orderMeta:requestedBy()}" required="false"/>
-      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
+      <dropdown key="{orderMeta:getCostCenterId()}" type="integer" required="false"/>
       
       <string key="orderType" required="false"/>
 

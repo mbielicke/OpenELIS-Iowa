@@ -76,7 +76,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
      </widget>
      <widget> 
-      <textbox  width= "50px"  key = "{providerMeta:id()}"  tab="{providerMeta:lastName()},{providerMeta:npi()}"/>
+      <textbox  width= "50px"  key = "{providerMeta:getId()}"  tab="{providerMeta:getLastName()},{providerMeta:getNpi()}"/>
      </widget>                 
     </row>
     <row>
@@ -84,13 +84,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/>:</text>
      </widget>
      <widget > 
-      <textbox key = "{providerMeta:lastName()}" max="30" width= "215px" case = "upper" tab="{providerMeta:firstName()},{providerMeta:id()}"/>
+      <textbox key = "{providerMeta:getLastName()}" max="30" width= "215px" case = "upper" tab="{providerMeta:getFirstName()},{providerMeta:getId()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>           
 		<widget>
-		  <autoDropdown key="{providerMeta:type()}" case="mixed" width="80px" tab="{providerMeta:npi()},{providerMeta:middleName()}"/>
+		  <autoDropdown key="{providerMeta:getTypeId()}" case="mixed" width="80px" tab="{providerMeta:Npi()},{providerMeta:getMiddleName()}"/>
 		</widget>								
     </row>
     <row>
@@ -98,13 +98,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:firstName()}" max="20"  case = "upper"   width= "145px" tab="{providerMeta:middleName()},{providerMeta:lastName()}"/>
+      <textbox key= "{providerMeta:getFirstName()}" max="20"  case = "upper"   width= "145px" tab="{providerMeta:getMiddleName()},{providerMeta:getLastName()}"/>
      </widget>     
      <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{providerMeta:npi()}" max="20"  width= "145px" tab="{providerMeta:id()},{providerMeta:type()}"/>
+      <textbox case= "mixed"   key= "{providerMeta:getNpi()}" max="20"  width= "145px" tab="{providerMeta:getId()},{providerMeta:getType()}"/>
      </widget>
     </row>
     <row>
@@ -112,7 +112,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:middleName()}" max="20" case = "upper" width= "145px" tab="{providerMeta:type()},{providerMeta:firstName()}"/>
+      <textbox key= "{providerMeta:getMiddleName()}" max="20" case = "upper" width= "145px" tab="{providerMeta:getType()},{providerMeta:getFirstName()}"/>
      </widget>
     </row>
    </panel>
@@ -269,26 +269,26 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 </display>
 							  
 <rpc key= "display">	
-  <number key="{providerMeta:id()}" type="integer" required="false"/>				
-  <string key="{providerMeta:lastName()}"  required = "true"/>
-  <string key="{providerMeta:firstName()}"  required="false"/> 
-  <string key="{providerMeta:npi()}" required="false"/>
-  <string key="{providerMeta:middleName()}"  required="false"/>	
+  <number key="{providerMeta:getId()}" type="integer" required="false"/>				
+  <string key="{providerMeta:getLastName()}"  required = "true"/>
+  <string key="{providerMeta:getFirstName()}"  required="false"/> 
+  <string key="{providerMeta:getNpi()}" required="false"/>
+  <string key="{providerMeta:getMiddleName()}"  required="false"/>	
   <table key="providerAddressTable"/>						      		       
   <string key="{providerNoteMeta:subject()}" required="false"/>
   <string key="{providerNoteMeta:text()}" required="false"/>
-  <dropdown key="{providerMeta:type()}" type="integer" required = "true"/>
+  <dropdown key="{providerMeta:getTypeId()}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
-  <queryNumber key="{providerMeta:id()}" type="integer" />				
-  <queryString key="{providerMeta:lastName()}" />
-  <queryString key="{providerMeta:firstName()}" /> 
-  <queryString key="{providerMeta:npi()}" />
-  <queryString key="{providerMeta:middleName()}" />	  
+  <queryNumber key="{providerMeta:getId()}" type="integer" />				
+  <queryString key="{providerMeta:getLastName()}" />
+  <queryString key="{providerMeta:getFirstName()}" /> 
+  <queryString key="{providerMeta:getNpi()}" />
+  <queryString key="{providerMeta:getMiddleName()}" />	  
   <queryString key="{providerNoteMeta:subject()}" />
   <queryString key="{providerNoteMeta:text()}" /> 
-  <dropdown key="{providerMeta:type()}" type="integer" required = "false"/>                            
+  <dropdown key="{providerMeta:getTypeId()}" type="integer" required = "false"/>                            
     <table key="providerAddressTable"/>	
   <queryString key="{providerAddrMeta:location()}" required="false"/>
 	  <queryString key="{providerAddrMeta:externalId()}" required="false"/>
@@ -306,7 +306,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 </rpc>
 
 <rpc key="queryByLetter">
-  <queryString key="{providerMeta:lastName()}"/>
+  <queryString key="{providerMeta:getLastName()}"/>
 </rpc> 
 </screen>
 </xsl:template>

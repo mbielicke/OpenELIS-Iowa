@@ -604,16 +604,16 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         orderDO.setId((Integer) rpcSend.getFieldValue(OrderMeta.ID));
         orderDO.setNeededInDays((Integer) rpcSend.getFieldValue(OrderMeta.NEEDED_IN_DAYS));
-        orderDO.setStatus((Integer) rpcSend.getFieldValue(OrderMeta.STATUS));
-        orderDO.setOrganization((String)((DropDownField)rpcSend.getField(OrderMeta.ORGANIZATION)).getTextValue());
-        orderDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrderMeta.ORGANIZATION));
+        orderDO.setStatus((Integer) rpcSend.getFieldValue(OrderMeta.STATUS_ID));
+        orderDO.setOrganization((String)((DropDownField)rpcSend.getField(OrderMeta.ORGANIZATION_ID)).getTextValue());
+        orderDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrderMeta.ORGANIZATION_ID));
         orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, (String)rpcSend.getFieldValue(OrderMeta.ORDERED_DATE)).getDate());
         orderDO.setRequestedBy((String)rpcSend.getFieldValue(OrderMeta.REQUESTED_BY));
-        orderDO.setCostCenter((Integer) rpcSend.getFieldValue(OrderMeta.COST_CENTER));
-        orderDO.setReportTo((String)((DropDownField)rpcSend.getField(OrderMeta.REPORT_TO)).getTextValue());
-        orderDO.setReportToId((Integer) rpcSend.getFieldValue(OrderMeta.REPORT_TO));
-        orderDO.setBillTo((String)((DropDownField)rpcSend.getField(OrderMeta.BILL_TO)).getTextValue());
-        orderDO.setBillToId((Integer) rpcSend.getFieldValue(OrderMeta.BILL_TO));
+        orderDO.setCostCenter((Integer) rpcSend.getFieldValue(OrderMeta.COST_CENTER_ID));
+        orderDO.setReportTo((String)((DropDownField)rpcSend.getField(OrderMeta.REPORT_TO_ID)).getTextValue());
+        orderDO.setReportToId((Integer) rpcSend.getFieldValue(OrderMeta.REPORT_TO_ID));
+        orderDO.setBillTo((String)((DropDownField)rpcSend.getField(OrderMeta.BILL_TO_ID)).getTextValue());
+        orderDO.setBillToId((Integer) rpcSend.getFieldValue(OrderMeta.BILL_TO_ID));
         orderDO.setExternalOrderNumber((String)rpcSend.getFieldValue(OrderMeta.EXTERNAL_ORDER_NUMBER));
         
         return orderDO;
@@ -622,15 +622,15 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
     private void setFieldsInRPC(FormRPC rpcReturn, OrderDO orderDO){
         rpcReturn.setFieldValue(OrderMeta.ID, orderDO.getId());
         rpcReturn.setFieldValue(OrderMeta.NEEDED_IN_DAYS, orderDO.getNeededInDays());
-        rpcReturn.setFieldValue(OrderMeta.STATUS, orderDO.getStatus());
+        rpcReturn.setFieldValue(OrderMeta.STATUS_ID, orderDO.getStatus());
         rpcReturn.setFieldValue(OrderMeta.ORDERED_DATE, orderDO.getOrderedDate().toString());
         rpcReturn.setFieldValue(OrderMeta.REQUESTED_BY, orderDO.getRequestedBy());
-        rpcReturn.setFieldValue(OrderMeta.COST_CENTER, orderDO.getCostCenter());
+        rpcReturn.setFieldValue(OrderMeta.COST_CENTER_ID, orderDO.getCostCenter());
          rpcReturn.setFieldValue(OrderMeta.EXTERNAL_ORDER_NUMBER, orderDO.getExternalOrderNumber());
         
         //create dataset for organization auto complete
         if(orderDO.getOrganizationId() == null)
-            rpcReturn.setFieldValue(OrderMeta.ORGANIZATION, null);
+            rpcReturn.setFieldValue(OrderMeta.ORGANIZATION_ID, null);
         else{
             DataSet orgSet = new DataSet();
             NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
@@ -639,12 +639,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             text.setValue(orderDO.getOrganization());
             orgSet.setKey(id);
             orgSet.addObject(text);
-            rpcReturn.setFieldValue(OrderMeta.ORGANIZATION, orgSet);
+            rpcReturn.setFieldValue(OrderMeta.ORGANIZATION_ID, orgSet);
         }
         
         //create dataset for report to auto complete
         if(orderDO.getReportToId() == null)
-            rpcReturn.setFieldValue(OrderMeta.REPORT_TO, null);
+            rpcReturn.setFieldValue(OrderMeta.REPORT_TO_ID, null);
         else{
             DataSet reportToSet = new DataSet();
             NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
@@ -653,12 +653,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             text.setValue(orderDO.getReportTo());
             reportToSet.setKey(id);
             reportToSet.addObject(text);
-            rpcReturn.setFieldValue(OrderMeta.REPORT_TO, reportToSet);
+            rpcReturn.setFieldValue(OrderMeta.REPORT_TO_ID, reportToSet);
         }
         
         //create dataset for bill to auto complete
         if(orderDO.getBillToId() == null)
-            rpcReturn.setFieldValue(OrderMeta.BILL_TO, null);
+            rpcReturn.setFieldValue(OrderMeta.BILL_TO_ID, null);
         else{
             DataSet billToSet = new DataSet();
             NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
@@ -667,7 +667,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             text.setValue(orderDO.getBillTo());
             billToSet.setKey(id);
             billToSet.addObject(text);
-            rpcReturn.setFieldValue(OrderMeta.BILL_TO, billToSet);
+            rpcReturn.setFieldValue(OrderMeta.BILL_TO_ID, billToSet);
         }
         
         //organization address values

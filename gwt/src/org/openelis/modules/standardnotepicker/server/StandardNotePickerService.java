@@ -133,7 +133,7 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		nameField.setValue(name.getValue());
 		descField.setValue(desc.getValue());
 		HashMap<String,AbstractField> fields = new HashMap<String, AbstractField>();
-		fields.put(StandardNoteMeta.TYPE, typeField);
+		fields.put(StandardNoteMeta.TYPE_ID, typeField);
 		fields.put(StandardNoteMeta.NAME, nameField);
 		fields.put(StandardNoteMeta.DESCRIPTION, descField);
 		List list = new ArrayList();

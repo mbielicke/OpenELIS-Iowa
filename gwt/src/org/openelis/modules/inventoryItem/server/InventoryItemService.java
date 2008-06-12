@@ -565,9 +565,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InventoryItemMeta.AVERAGE_COST, inventoryItemDO.getAveCost());
         rpcReturn.setFieldValue(InventoryItemMeta.AVERAGE_DAILY_USE, inventoryItemDO.getAveDailyUse());
         rpcReturn.setFieldValue(InventoryItemMeta.AVERAGE_LEAD_TIME, inventoryItemDO.getAveLeadTime());
-        rpcReturn.setFieldValue(InventoryItemMeta.CATEGORY, inventoryItemDO.getCategory());
+        rpcReturn.setFieldValue(InventoryItemMeta.CATEGORY_ID, inventoryItemDO.getCategory());
         rpcReturn.setFieldValue(InventoryItemMeta.DESCRIPTION, inventoryItemDO.getDescription());
-        rpcReturn.setFieldValue(InventoryItemMeta.DISPENSED_UNITS, inventoryItemDO.getDispensedUnits());
+        rpcReturn.setFieldValue(InventoryItemMeta.DISPENSED_UNITS_ID, inventoryItemDO.getDispensedUnits());
         rpcReturn.setFieldValue(InventoryItemMeta.ID, inventoryItemDO.getId());
         rpcReturn.setFieldValue(InventoryItemMeta.IS_ACTIVE, inventoryItemDO.getIsActive());
         rpcReturn.setFieldValue(InventoryItemMeta.IS_BULK, inventoryItemDO.getIsBulk());
@@ -580,12 +580,11 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InventoryItemMeta.IS_SUB_ASSEMBLY, inventoryItemDO.getIsSubAssembly());
         rpcReturn.setFieldValue(InventoryItemMeta.NAME, inventoryItemDO.getName());
         rpcReturn.setFieldValue(InventoryItemMeta.PRODUCT_URI, inventoryItemDO.getProductUri());
-        rpcReturn.setFieldValue(InventoryItemMeta.PURCHASED_UNITS, inventoryItemDO.getPurchasedUnits());
+        rpcReturn.setFieldValue(InventoryItemMeta.PURCHASED_UNITS_ID, inventoryItemDO.getPurchasedUnits());
         rpcReturn.setFieldValue(InventoryItemMeta.QUANTITY_MAX_LEVEL, inventoryItemDO.getQuantityMaxLevel());
-        rpcReturn.setFieldValue(InventoryItemMeta.QUANITY_MIN_LEVEL, inventoryItemDO.getQuantityMinLevel());
+        rpcReturn.setFieldValue(InventoryItemMeta.QUANTITY_MIN_LEVEL, inventoryItemDO.getQuantityMinLevel());
         rpcReturn.setFieldValue(InventoryItemMeta.QUANTITY_TO_REORDER, inventoryItemDO.getQuantityToReorder());
-        rpcReturn.setFieldValue(InventoryItemMeta.STORE, inventoryItemDO.getStore());
-    }
+        rpcReturn.setFieldValue(InventoryItemMeta.STORE_ID, inventoryItemDO.getStore());    }
     
     private InventoryItemDO getInventoryItemDOFromRPC(FormRPC rpcSend){
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
@@ -594,9 +593,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             inventoryItemDO.setAveCost((Double)rpcSend.getFieldValue(InventoryItemMeta.AVERAGE_COST));
         inventoryItemDO.setAveDailyUse((Integer)rpcSend.getFieldValue(InventoryItemMeta.AVERAGE_DAILY_USE));
         inventoryItemDO.setAveLeadTime((Integer)rpcSend.getFieldValue(InventoryItemMeta.AVERAGE_LEAD_TIME));
-        inventoryItemDO.setCategory((Integer)rpcSend.getFieldValue(InventoryItemMeta.CATEGORY));
+        inventoryItemDO.setCategory((Integer)rpcSend.getFieldValue(InventoryItemMeta.CATEGORY_ID));
         inventoryItemDO.setDescription((String)rpcSend.getFieldValue(InventoryItemMeta.DESCRIPTION));
-        inventoryItemDO.setDispensedUnits((Integer)rpcSend.getFieldValue(InventoryItemMeta.DISPENSED_UNITS));
+        inventoryItemDO.setDispensedUnits((Integer)rpcSend.getFieldValue(InventoryItemMeta.DISPENSED_UNITS_ID));
         inventoryItemDO.setId((Integer)rpcSend.getFieldValue(InventoryItemMeta.ID));
         inventoryItemDO.setIsActive((String)rpcSend.getFieldValue(InventoryItemMeta.IS_ACTIVE));
         inventoryItemDO.setIsBulk((String)rpcSend.getFieldValue(InventoryItemMeta.IS_BULK));
@@ -609,11 +608,11 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO.setIsSubAssembly((String)rpcSend.getFieldValue(InventoryItemMeta.IS_SUB_ASSEMBLY));
         inventoryItemDO.setName((String)rpcSend.getFieldValue(InventoryItemMeta.NAME));
         inventoryItemDO.setProductUri((String)rpcSend.getFieldValue(InventoryItemMeta.PRODUCT_URI));
-        inventoryItemDO.setPurchasedUnits((Integer)rpcSend.getFieldValue(InventoryItemMeta.PURCHASED_UNITS));
+        inventoryItemDO.setPurchasedUnits((Integer)rpcSend.getFieldValue(InventoryItemMeta.PURCHASED_UNITS_ID));
         inventoryItemDO.setQuantityMaxLevel((Integer)rpcSend.getFieldValue(InventoryItemMeta.QUANTITY_MAX_LEVEL));
-        inventoryItemDO.setQuantityMinLevel((Integer)rpcSend.getFieldValue(InventoryItemMeta.QUANITY_MIN_LEVEL));
+        inventoryItemDO.setQuantityMinLevel((Integer)rpcSend.getFieldValue(InventoryItemMeta.QUANTITY_MIN_LEVEL));
         inventoryItemDO.setQuantityToReorder((Integer)rpcSend.getFieldValue(InventoryItemMeta.QUANTITY_TO_REORDER));
-        inventoryItemDO.setStore((Integer)rpcSend.getFieldValue(InventoryItemMeta.STORE));
+        inventoryItemDO.setStore((Integer)rpcSend.getFieldValue(InventoryItemMeta.STORE_ID));
         
         return inventoryItemDO;
     }

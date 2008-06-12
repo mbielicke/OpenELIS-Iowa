@@ -66,8 +66,8 @@
 	<tree key="noteTree"/>
 	</rpc>
 	<rpc key="queryByNameDescription">
- 	<queryString key="{standardNoteMeta:name()}" type="string" required="false"/>
-  	<queryString key="{standardNoteMeta:description()}" required="false"/>
+ 	<queryString key="{standardNoteMeta:getName()}" type="string" required="false"/>
+  	<queryString key="{standardNoteMeta:getDescription()}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>

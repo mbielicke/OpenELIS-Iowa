@@ -61,7 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{standardNoteMeta:name()}" width="155px" max="20" tab="{standardNoteMeta:description()},{standardNoteMeta:text()}"/>
+										<textbox case="lower" key="{standardNoteMeta:getName()}" width="155px" max="20" tab="{standardNoteMeta:getDescription()},{standardNoteMeta:getText()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -69,7 +69,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{standardNoteMeta:description()}" width="300px" max="60" tab="{standardNoteMeta:type()},{standardNoteMeta:name()}"/>
+										<textbox case="mixed" key="{standardNoteMeta:getDescription()}" width="300px" max="60" tab="{standardNoteMeta:getTypeId()},{standardNoteMeta:getName()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -77,7 +77,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{standardNoteMeta:type()}" case="mixed" width="121px" tab="{standardNoteMeta:text()},{standardNoteMeta:description()}"/>
+										<autoDropdown key="{standardNoteMeta:getTypeId()}" case="mixed" width="121px" tab="{standardNoteMeta:getText()},{standardNoteMeta:getDescription()}"/>
 									</widget>
 								</row>
 							<!--	<row>
@@ -93,7 +93,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="{standardNoteMeta:text()}" width="300px" height="180px" tab="{standardNoteMeta:name()},{standardNoteMeta:type()}"/>
+										<textarea key="{standardNoteMeta:getText()}" width="300px" height="180px" tab="{standardNoteMeta:getName()},{standardNoteMeta:getTypeId()}"/>
 									</widget>
 								</row>
 								
@@ -103,21 +103,21 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="{standardNoteMeta:id()}" type="integer" required="false"/>
-  	<string key="{standardNoteMeta:name()}" required="true" max="20"/>
-  	<string key="{standardNoteMeta:description()}" required="true" max="60"/>
-  	<dropdown key="{standardNoteMeta:type()}" required="true"/>
-  	<string key="{standardNoteMeta:text()}" required="true"/>
+  	<number key="{standardNoteMeta:getId()}" type="integer" required="false"/>
+  	<string key="{standardNoteMeta:getName()}" required="true" max="20"/>
+  	<string key="{standardNoteMeta:getDescription()}" required="true" max="60"/>
+  	<dropdown key="{standardNoteMeta:getTypeID()}" required="true"/>
+  	<string key="{standardNoteMeta:getText()}" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="{standardNoteMeta:id()}" type="integer" required="false"/>
- 	<queryString key="{standardNoteMeta:name()}" type="string" required="false"/>
-  	<queryString key="{standardNoteMeta:description()}" required="false"/>
-  	<dropdown key="{standardNoteMeta:type()}" required="false"/>
-	<queryString key="{standardNoteMeta:text()}" required="false"/>
+ 	<queryNumber key="{standardNoteMeta:getId()}" type="integer" required="false"/>
+ 	<queryString key="{standardNoteMeta:getName()}" type="string" required="false"/>
+  	<queryString key="{standardNoteMeta:getDescription()}" required="false"/>
+  	<dropdown key="{standardNoteMeta:getTypeId()}" required="false"/>
+	<queryString key="{standardNoteMeta:getText()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{standardNoteMeta:name()}"/>
+		<queryString key="{standardNoteMeta:getName()}"/>
 	</rpc>
 </screen>
   </xsl:template>

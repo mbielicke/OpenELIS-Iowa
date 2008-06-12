@@ -78,7 +78,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{storageLocationMeta:name()}" width="150px" max="20" tab="{storageLocationMeta:location()},{storageLocationMeta:isAvailable()}"/>
+										<textbox case="lower" key="{storageLocationMeta:getName()}" width="150px" max="20" tab="{storageLocationMeta:getLocation()},{storageLocationMeta:getIsAvailable()}"/>
 									</widget>
 								</row>
 								<row>
@@ -86,7 +86,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{storageLocationMeta:location()}" max="80" width="395px" tab="{storageLocationStorageUnitMeta:description()},{storageLocationMeta:name()}"/>
+										<textbox case="mixed" key="{storageLocationMeta:getLocation()}" max="80" width="395px" tab="{storageLocationStorageUnitMeta:getDescription()},{storageLocationMeta:getName()}"/>
 									</widget>
 								</row>
 								<row>
@@ -94,12 +94,12 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:description()}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}">
+									<autoDropdown cat="storageUnit" key="{storageLocationStorageUnitMeta:getDescription()}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:getIsAvailable()},{storageLocationMeta:getLocation()}">
 										<headers>Desc,Category</headers>
 										<widths>267,90</widths>	
 									</autoDropdown>
 										<query>
-										<textbox case="upper" width="366px" tab="{storageLocationMeta:isAvailable()},{storageLocationMeta:location()}"/>
+										<textbox case="upper" width="366px" tab="{storageLocationMeta:getIsAvailable()},{storageLocationMeta:getLocation()}"/>
 										</query>
 									</widget>	
 									
@@ -109,7 +109,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isAvailable")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{storageLocationMeta:isAvailable()}" tab="{storageLocationMeta:name()},{storageLocationStorageUnitMeta:description()}"/>
+										<check key="{storageLocationMeta:getIsAvailable()}" tab="{storageLocationMeta:getName()},{storageLocationStorageUnitMeta:description()}"/>
 									</widget>
 								</row>
 								</panel>
@@ -172,20 +172,20 @@
 		</panel>
 	</display>
 	<rpc key="display">
-	<number key="{storageLocationMeta:id()}" required="false" type="integer"/>
-    <string key="{storageLocationMeta:name()}" max="20" required="true"/>
+	<number key="{storageLocationMeta:getId()}" required="false" type="integer"/>
+    <string key="{storageLocationMeta:getName()}" max="20" required="true"/>
     <dropdown  key="{storageLocationStorageUnitMeta:description()}" type="integer" required="true"/>
-    <string key="{storageLocationMeta:location()}" max="80" required="true"/>
-    <check key="{storageLocationMeta:isAvailable()}" required="false"/>
+    <string key="{storageLocationMeta:getLocation()}" max="80" required="true"/>
+    <check key="{storageLocationMeta:getIsAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>
 	
 	<rpc key="query">
-	<queryNumber key="{storageLocationMeta:id()}" type="integer" required="false"/>
-    <queryString key="{storageLocationMeta:name()}" required="false"/>
-    <queryString key="{storageLocationMeta:location()}" required="false"/>
+	<queryNumber key="{storageLocationMeta:getId()}" type="integer" required="false"/>
+    <queryString key="{storageLocationMeta:getName()}" required="false"/>
+    <queryString key="{storageLocationMeta:getLocation()}" required="false"/>
     <queryString key="{storageLocationStorageUnitMeta:description()}" required="false"/>
-    <queryCheck key="{storageLocationMeta:isAvailable()}" required="false"/>
+    <queryCheck key="{storageLocationMeta:getIsAvailable()}" required="false"/>
     <table key="childStorageLocsTable"/>
     
 	<!-- table values -->
