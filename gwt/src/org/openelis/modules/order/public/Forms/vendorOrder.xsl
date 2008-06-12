@@ -11,6 +11,7 @@
                 xmlns:orderCustomerNoteMeta="xalan://org.openelis.meta.OrderCustomerNoteMeta"
                 xmlns:orderItemInventoryItemMeta="xalan://org.openelis.meta.OrderItemInventoryItemMeta"
                 xmlns:orderItemStoreMeta="xalan://org.openelis.meta.OrderItemStoreMeta"
+                xmlns:orderInventoryReceiptMeta="xalan://org.openelis.meta.OrderInventoryReceiptMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -57,6 +58,10 @@
   
   <xalan:component prefix="orderItemStoreMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemStoreMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orderInventoryReceiptMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderInventoryReceiptMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
@@ -295,6 +300,26 @@
 										<filters>false,false,false,false,false</filters>
 										<colAligns>left,left,left,left,left</colAligns>
 									</table>
+									<query>
+									<queryTable width="auto" maxRows="10" title="" showError="false">
+										<headers>Date Rec, UPC, Qty, Cost, QC</headers>
+										<widths>110,138,75,95,158</widths>
+										<editors>
+											<label/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
+										</editors>
+										<fields>
+										<xsl:value-of select='orderInventoryReceiptMeta:recievedDate()'/>,
+										<xsl:value-of select='orderInventoryReceiptMeta:upc()'/>,
+										<xsl:value-of select='orderInventoryReceiptMeta:quantityRecieved()'/>,
+										<xsl:value-of select='orderInventoryReceiptMeta:unitCost()'/>,
+										<xsl:value-of select='orderInventoryReceiptMeta:qcReference()'/>
+										</fields>
+									</queryTable>
+									</query>
 								</widget>
 								<widget>
 									<panel xsi:type="Panel" layout="horizontal" height="10px"/>
@@ -392,6 +417,14 @@
       <queryNumber key="{orderItemMeta:quantityRequested()}" type="integer" required="false"/>
 	  <queryString key="{orderItemInventoryItemMeta:name()}" required="false"/>
 	  <queryString key="{orderItemStoreMeta:entry()}" required="false"/>
+
+	  <!-- receipts table -->
+      <table key="receiptsTable"/>
+	  <queryString key="{orderInventoryReceiptMeta:recievedDate()}" required="false"/>
+	  <queryString key="{orderInventoryReceiptMeta:upc()}" required="false"/>
+	  <queryNumber key="{orderInventoryReceiptMeta:quantityRecieved()}" type="integer" required="false"/>
+	  <queryNumber key="{orderInventoryReceiptMeta:unitCost()}" type="double" required="false"/>
+	  <queryString key="{orderInventoryReceiptMeta:qcReference()}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>

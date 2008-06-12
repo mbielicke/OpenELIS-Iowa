@@ -36,8 +36,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			TextBox findTextBox = (TextBox)getWidget("findTextBox");
 			 String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
 			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
-			queryRPC.setFieldValue("standardNote.name", queryString);
-			queryRPC.setFieldValue("standardNote.description", queryString);
+			queryRPC.setFieldValue("standard_note.name", queryString);
+			queryRPC.setFieldValue("standard_note.description", queryString);
 
 			StringObject name = new StringObject();
 	        StringObject desc = new StringObject();
@@ -135,8 +135,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 
 			StringObject name = new StringObject();
 	        StringObject desc = new StringObject();
-	        name.setValue(queryRPC.getFieldValue("standardNote.name")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
-	        desc.setValue(queryRPC.getFieldValue("standardNote.description")+(((String)queryRPC.getFieldValue("standardNote.name")).endsWith("*") ? "" : "*"));
+	        name.setValue(queryRPC.getFieldValue("standard_note.name")+(((String)queryRPC.getFieldValue("standard_note.name")).endsWith("*") ? "" : "*"));
+	        desc.setValue(queryRPC.getFieldValue("standard_note.description")+(((String)queryRPC.getFieldValue("standard_note.name")).endsWith("*") ? "" : "*"));
 	        
 	        NumberObject idObj = new NumberObject(NumberObject.Type.INTEGER);
 			idObj.setValue(id);
