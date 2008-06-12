@@ -1,81 +1,88 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * TestTrailer META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class TestTrailerMeta implements Meta{
-	private String tableName = "testTrailer";
-	private String entityName = "TestTrailer";
+public class TestTrailerMeta implements Meta {
+  	private static final String tableName = "test_trailer";
+	private static final String entityName = "TestTrailer";
 	private boolean includeInFrom = true;
 	
 	public static final String
-     ID            	= "testTrailer.id",
-     NAME			= "testTrailer.name",
-     DESCRIPTION   	= "testTrailer.description",
-     TEXT  			= "testTrailer.text";
+              ID					="test_trailer.id",
+              NAME					="test_trailer.name",
+              DESCRIPTION					="test_trailer.description",
+              TEXT					="test_trailer.text";
 
-	//
-	// Array of column names used for building select/insert/update strings
-	//
-	private static final String[] columnNames = {
-	     ID, NAME, DESCRIPTION, TEXT};
-	
+
+  	private static final String[] columnNames = {
+  	  ID,NAME,DESCRIPTION,TEXT};
+  	  
 	private static HashMap<String,String> columnHashList;
-	
-	private static final TestTrailerMeta testTrailerMeta = new TestTrailerMeta();
-	
-	static {
-	 columnHashList = new HashMap<String, String>(columnNames.length);
-	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(12), "");
-	}
 
-	private TestTrailerMeta() {
+	private static final TestTrailerMeta test_trailerMeta = new TestTrailerMeta();
+    
+    static {
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
+    
+    private TestTrailerMeta() {
+        
+    }
+    
+    public static TestTrailerMeta getInstance() {
+        return test_trailerMeta;
+    }
 
-	}
-	
-	public static TestTrailerMeta getInstance(){
-		return testTrailerMeta;
-	}
-	
-	public String[] getColumnList() {
-		return columnNames;
-	}
+    public String[] getColumnList() {
+        return columnNames;
+    }
 
-	public String getTable() {
-		return tableName;
-	}
-	
-	public String getEntity(){
-		return entityName;
-	}
-	
-	public boolean includeInFrom(){
-		return includeInFrom;
-	}
-	
-	public boolean hasColumn(String columnName){
-		if(columnName == null || !columnName.startsWith(tableName))
-			return false;
-		String column = columnName.substring(tableName.length()+1);
-		
-		return columnHashList.containsKey(column);
-	}
-    
-    public static String id(){
-        return columnNames[0];
+    public String getEntity() {
+        return entityName;
+    }
+
+    public String getTable() {
+        return tableName;
+    }
+
+    public boolean hasColumn(String columnName) {
+        if(columnName == null || !columnName.startsWith(tableName))
+            return false;
+        String column = columnName.substring(tableName.length()+1);
+        
+        return columnHashList.containsKey(column);
+    }
+
+    public boolean includeInFrom() {
+        // TODO Auto-generated method stub
+        return includeInFrom;
     }
     
-    public static String name(){
-        return columnNames[1];
-    }
     
-    public static String description(){
-        return columnNames[2];
-    }
-    
-    public static String text(){
-        return columnNames[3];
-    }
-}
+  public static String getId() {
+    return ID;
+  } 
+
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getDescription() {
+    return DESCRIPTION;
+  } 
+
+  public static String getText() {
+    return TEXT;
+  } 
+
+  
+}   

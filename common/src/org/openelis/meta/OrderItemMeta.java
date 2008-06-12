@@ -1,86 +1,88 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * OrderItem META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class OrderItemMeta implements Meta{
-    private String tableName = "orderItem";
-    private String entityName = "ordr.orderItem";
-    private boolean includeInFrom = true;
-    
-    public static final String
-     ID                     = "orderItem.id",
-     ORDER                  = "orderItem.order",
-     INVENTORY_LOCATION     = "orderItem.inventoryLocation",
-     QUANTITY_REQUESTED     = "orderItem.quantityRequested",
-     QUANTITY_RECEIVED      = "orderItem.quantityReceived";
+public class OrderItemMeta implements Meta {
+  	private static final String tableName = "order_item";
+	private static final String entityName = "OrderItem";
+	private boolean includeInFrom = true;
+	
+	public static final String
+              ID					="order_item.id",
+              ORDER_ID					="order_item.order_id",
+              INVENTORY_ITEM_ID					="order_item.inventory_item_id",
+              QUANTITY_REQUESTED					="order_item.quantity_requested";
 
-    //
-    // Array of column names used for building select/insert/update strings
-    //
-    private static final String[] columnNames = {
-         ID, ORDER, INVENTORY_LOCATION, QUANTITY_REQUESTED, QUANTITY_RECEIVED};
-    
-    private static HashMap<String,String> columnHashList;
-    
-    private static final OrderItemMeta orderItemMeta = new OrderItemMeta();
+
+  	private static final String[] columnNames = {
+  	  ID,ORDER_ID,INVENTORY_ITEM_ID,QUANTITY_REQUESTED};
+  	  
+	private static HashMap<String,String> columnHashList;
+
+	private static final OrderItemMeta order_itemMeta = new OrderItemMeta();
     
     static {
-     columnHashList = new HashMap<String, String>(columnNames.length);
-     for (int i = 0; i < columnNames.length; i++)
-         columnHashList.put(columnNames[i].substring(10), "");
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
     }
-
+    
     private OrderItemMeta() {
+        
+    }
+    
+    public static OrderItemMeta getInstance() {
+        return order_itemMeta;
+    }
 
-    }
-    
-    public static OrderItemMeta getInstance(){
-        return orderItemMeta;
-    }
-    
     public String[] getColumnList() {
         return columnNames;
+    }
+
+    public String getEntity() {
+        return entityName;
     }
 
     public String getTable() {
         return tableName;
     }
-    
-    public String getEntity(){
-        return entityName;
-    }
-    
-    public boolean includeInFrom(){
-        return includeInFrom;
-    }
-    
-    public boolean hasColumn(String columnName){
+
+    public boolean hasColumn(String columnName) {
         if(columnName == null || !columnName.startsWith(tableName))
             return false;
         String column = columnName.substring(tableName.length()+1);
         
         return columnHashList.containsKey(column);
     }
-    
-    public static String id(){
-        return columnNames[0];
+
+    public boolean includeInFrom() {
+        // TODO Auto-generated method stub
+        return includeInFrom;
     }
     
-    public static String order(){
-        return columnNames[1];
-    }
     
-    public static String inventoryLocation(){
-        return columnNames[2];
-    }
-    
-    public static String quantityRequested(){
-        return columnNames[3];
-    }
-    
-    public static String quantityReceived(){
-        return columnNames[4];
-    }
-}
+  public static String getId() {
+    return ID;
+  } 
+
+  public static String getOrderId() {
+    return ORDER_ID;
+  } 
+
+  public static String getInventoryItemId() {
+    return INVENTORY_ITEM_ID;
+  } 
+
+  public static String getQuantityRequested() {
+    return QUANTITY_REQUESTED;
+  } 
+
+  
+}   

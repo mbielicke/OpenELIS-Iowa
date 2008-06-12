@@ -2,30 +2,32 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * TestReflex META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class TestReflexMeta implements Meta {
+  	private static final String tableName = "test_reflex";
+	private static final String entityName = "TestReflex";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="test_reflex.id",
+              TEST_ID					="test_reflex.test_id",
+              TEST_ANALYTE_ID					="test_reflex.test_analyte_id",
+              TEST_RESULT_ID					="test_reflex.test_result_id",
+              FLAGS_ID					="test_reflex.flags_id",
+              ADD_TEST_ID					="test_reflex.add_test_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,TEST_ID,TEST_ANALYTE_ID,TEST_RESULT_ID,FLAGS_ID,ADD_TEST_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final TestReflexMeta test_reflexMeta = new TestReflexMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +36,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private TestReflexMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static TestReflexMeta getInstance() {
+        return test_reflexMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +74,24 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getTestId() {
+    return TEST_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getTestAnalyteId() {
+    return TEST_ANALYTE_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getTestResultId() {
+    return TEST_RESULT_ID;
+  } 
+
+  public static String getFlagsId() {
+    return FLAGS_ID;
+  } 
+
+  public static String getAddTestId() {
+    return ADD_TEST_ID;
   } 
 
   

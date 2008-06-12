@@ -2,30 +2,31 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * ProjectParameter META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class ProjectParameterMeta implements Meta {
+  	private static final String tableName = "project_parameter";
+	private static final String entityName = "ProjectParameter";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="project_parameter.id",
+              PROJECT_ID					="project_parameter.project_id",
+              PARAMETER					="project_parameter.parameter",
+              OPERATION					="project_parameter.operation",
+              VALUE					="project_parameter.value";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,PROJECT_ID,PARAMETER,OPERATION,VALUE};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final ProjectParameterMeta project_parameterMeta = new ProjectParameterMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +35,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private ProjectParameterMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static ProjectParameterMeta getInstance() {
+        return project_parameterMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +73,20 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getProjectId() {
+    return PROJECT_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getParameter() {
+    return PARAMETER;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getOperation() {
+    return OPERATION;
+  } 
+
+  public static String getValue() {
+    return VALUE;
   } 
 
   

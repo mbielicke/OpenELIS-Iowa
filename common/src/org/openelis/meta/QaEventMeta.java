@@ -1,48 +1,46 @@
 package org.openelis.meta;
 
 import java.util.HashMap;
-
 import org.openelis.util.Meta;
 
 public class QaEventMeta implements Meta {
-        
-    private String tableName = "qaevent";
-    private String entityName = "QaEvent";
+    private static final String tableName = "qaevent";
+    private static final String entityName = "Qaevent";
     private boolean includeInFrom = true;
     
     public static final String
-    ID                      = "qaevent.id",
-    NAME                    = "qaevent.name",
-    DESCRIPTION             = "qaevent.description",  
-    TEST_ID                 = "qaevent.testId",
-    TYPE                    = "qaevent.type", 
-    IS_BILLABLE             = "qaevent.isBillable",
-    REPORTING_SEQUENCE      = "qaevent.reportingSequence",
-    REPORTING_TEXT          = "qaevent.reportingText";
-        
-    
-    //
-    // Array of column names used for building select/insert/update strings
-    //
-    private static final String[] columnNames = {
-         ID, NAME, DESCRIPTION, TEST_ID, TYPE, IS_BILLABLE,REPORTING_SEQUENCE,REPORTING_TEXT};
-    
-   
+              ID                    ="qaevent.id",
+              NAME                  ="qaevent.name",
+              DESCRIPTION                   ="qaevent.description",
+              TEST_ID                   ="qaevent.test_id",
+              TYPE_ID                   ="qaevent.type_id",
+              IS_BILLABLE                   ="qaevent.is_billable",
+              REPORTING_SEQUENCE                    ="qaevent.reporting_sequence",
+              REPORTING_TEXT                    ="qaevent.reporting_text";
 
-    private static QaEventMeta qaEventMeta =  new QaEventMeta();
+
+    private static final String[] columnNames = {
+      ID,NAME,DESCRIPTION,TEST_ID,TYPE_ID,IS_BILLABLE,REPORTING_SEQUENCE,REPORTING_TEXT};
+      
+    private static HashMap<String,String> columnHashList;
+
+    private static final QaEventMeta qaEventMeta = new QaEventMeta();
     
-    private QaEventMeta(){
+    static {
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
+    
+    private QaEventMeta() {
         
     }
     
-    private static HashMap<String,String> columnHashList;
-    
-    static {
-        columnHashList = new HashMap<String, String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++)
-            columnHashList.put(columnNames[i].substring(8), "");
-       }
-    
+    public static QaEventMeta getInstance() {
+        return qaEventMeta;
+    }
+
     public String[] getColumnList() {
         return columnNames;
     }
@@ -64,44 +62,41 @@ public class QaEventMeta implements Meta {
     }
 
     public boolean includeInFrom() {
+        // TODO Auto-generated method stub
         return includeInFrom;
     }
     
-    public static QaEventMeta getInstance(){
-        return qaEventMeta;
-    }
     
-    public static String id(){
-        return columnNames[0];
-    }
-    
-    public static String name(){
-        return columnNames[1];
-    }
-    
-    public static String description(){
-        return columnNames[2];
-    }
-    
-    public static String testId(){
-        return columnNames[3];
-    }       
-    
-    public static String type(){
-        return columnNames[4];
-    }
-    
-    public static String isBillable(){
-        return columnNames[5];
-    }
-    
-    public static String reportingSequence(){
-        return columnNames[6];
-    }
-    
-    public static String reportingText(){
-        return columnNames[7];
-    }
+  public static String getId() {
+    return ID;
+  } 
 
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getDescription() {
+    return DESCRIPTION;
+  } 
+
+  public static String getTestId() {
+    return TEST_ID;
+  } 
+
+  public static String getTypeId() {
+    return TYPE_ID;
+  } 
+
+  public static String getIsBillable() {
+    return IS_BILLABLE;
+  } 
+
+  public static String getReportingSequence() {
+    return REPORTING_SEQUENCE;
+  } 
+
+  public static String getReportingText() {
+    return REPORTING_TEXT;
+  } 
 
 }

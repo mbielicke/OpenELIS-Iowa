@@ -2,30 +2,32 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * MethodResult META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class MethodResultMeta implements Meta {
+  	private static final String tableName = "method_result";
+	private static final String entityName = "MethodResult";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="method_result.id",
+              METHOD_ID					="method_result.method_id",
+              RESULT_GROUP_ID					="method_result.result_group_id",
+              FLAGS					="method_result.flags",
+              TYPE					="method_result.type",
+              VALUE					="method_result.value";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,METHOD_ID,RESULT_GROUP_ID,FLAGS,TYPE,VALUE};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final MethodResultMeta method_resultMeta = new MethodResultMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +36,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private MethodResultMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static MethodResultMeta getInstance() {
+        return method_resultMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +74,24 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getMethodId() {
+    return METHOD_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
+  public static String getResultGroupId() {
+    return RESULT_GROUP_ID;
   } 
 
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getFlags() {
+    return FLAGS;
+  } 
+
+  public static String getType() {
+    return TYPE;
+  } 
+
+  public static String getValue() {
+    return VALUE;
   } 
 
   

@@ -2,30 +2,29 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * AnalysisQaevent META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class AnalysisQaeventMeta implements Meta {
+  	private static final String tableName = "analysis_qaevent";
+	private static final String entityName = "AnalysisQaevent";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="analysis_qaevent.id",
+              ANALYSIS_ID					="analysis_qaevent.analysis_id",
+              QAEVENT_ID					="analysis_qaevent.qaevent_id";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,ANALYSIS_ID,QAEVENT_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final AnalysisQaeventMeta analysis_qaeventMeta = new AnalysisQaeventMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +33,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private AnalysisQaeventMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static AnalysisQaeventMeta getInstance() {
+        return analysis_qaeventMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +71,12 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getAnalysisId() {
+    return ANALYSIS_ID;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
-  } 
-
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getQaeventId() {
+    return QAEVENT_ID;
   } 
 
   

@@ -1,42 +1,47 @@
+
 package org.openelis.meta;
 
-import java.util.HashMap;
+/**
+  * SystemVariable META Data
+  */
 
+import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class SystemVariableMeta implements Meta {
+  	private static final String tableName = "system_variable";
+	private static final String entityName = "SystemVariable";
+	private boolean includeInFrom = true;
+	
+	public static final String
+              ID					="system_variable.id",
+              NAME					="system_variable.name",
+              VALUE					="system_variable.value";
 
-    private String tableName = "systemVariable";
-    private String entityName = "SystemVariable";
-    private boolean includeInFrom = true;
-    
-    public static final String
-    ID                      = "systemVariable.id",
-    NAME                    = "systemVariable.name",
-    VALUE                   = "systemVariable.value";     
-        
-    
-    //
-    // Array of column names used for building select/insert/update strings
-    //
-    private static final String[] columnNames = {ID, NAME, VALUE};
-    
-    private static HashMap<String,String> columnHashList;
-    
+
+  	private static final String[] columnNames = {
+  	  ID,NAME,VALUE};
+  	  
+	private static HashMap<String,String> columnHashList;
+
+	private static final SystemVariableMeta system_variableMeta = new SystemVariableMeta();
     
     static {
-        columnHashList = new HashMap<String, String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++)
-            columnHashList.put(columnNames[i].substring(15), "");
-       }
+        columnHashList = new HashMap<String,String>(columnNames.length);
+        for(int i = 0; i < columnNames.length; i++){
+            columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
+        }
+    }
     
-    private static SystemVariableMeta sysVarMeta = new SystemVariableMeta();      
-    
-    private SystemVariableMeta(){
+    private SystemVariableMeta() {
         
     }
     
-    public String[] getColumnList() {        
+    public static SystemVariableMeta getInstance() {
+        return system_variableMeta;
+    }
+
+    public String[] getColumnList() {
         return columnNames;
     }
 
@@ -44,7 +49,7 @@ public class SystemVariableMeta implements Meta {
         return entityName;
     }
 
-    public String getTable() {        
+    public String getTable() {
         return tableName;
     }
 
@@ -57,24 +62,22 @@ public class SystemVariableMeta implements Meta {
     }
 
     public boolean includeInFrom() {
+        // TODO Auto-generated method stub
         return includeInFrom;
     }
     
-    public static String id(){
-        return columnNames[0];
-    }
     
-    public static String name(){
-        return columnNames[1];
-    }
-    
-    public static String value(){
-        return columnNames[2];
-    }
-    
-    public static SystemVariableMeta getInstance(){
-        return sysVarMeta;
-    }
-    
+  public static String getId() {
+    return ID;
+  } 
 
-}
+  public static String getName() {
+    return NAME;
+  } 
+
+  public static String getValue() {
+    return VALUE;
+  } 
+
+  
+}   

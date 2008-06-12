@@ -2,30 +2,29 @@
 package org.openelis.meta;
 
 /**
-  * InventoryComponent META Data
+  * Panel META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryComponentMeta implements Meta {
-  	private static final String tableName = "inventory_component";
-	private static final String entityName = "InventoryComponent";
+public class PanelMeta implements Meta {
+  	private static final String tableName = "panel";
+	private static final String entityName = "Panel";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
-              QUANTITY					="inventory_component.quantity";
+              ID					="panel.id",
+              NAME					="panel.name",
+              DESCRIPTION					="panel.description";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,COMPONENT_ID,QUANTITY};
+  	  ID,NAME,DESCRIPTION};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryComponentMeta inventory_componentMeta = new InventoryComponentMeta();
+	private static final PanelMeta panelMeta = new PanelMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +33,12 @@ public class InventoryComponentMeta implements Meta {
         }
     }
     
-    private InventoryComponentMeta() {
+    private PanelMeta() {
         
     }
     
-    public static InventoryComponentMeta getInstance() {
-        return inventory_componentMeta;
+    public static PanelMeta getInstance() {
+        return panelMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +71,12 @@ public class InventoryComponentMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getName() {
+    return NAME;
   } 
 
-  public static String getComponentId() {
-    return COMPONENT_ID;
-  } 
-
-  public static String getQuantity() {
-    return QUANTITY;
+  public static String getDescription() {
+    return DESCRIPTION;
   } 
 
   

@@ -2,31 +2,34 @@
 package org.openelis.meta;
 
 /**
-  * StandardNote META Data
+  * Note META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class StandardNoteMeta implements Meta {
-  	private static final String tableName = "standard_note";
-	private static final String entityName = "StandardNote";
+public class NoteMeta implements Meta {
+  	private static final String tableName = "note";
+	private static final String entityName = "Note";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="standard_note.id",
-              NAME					="standard_note.name",
-              DESCRIPTION					="standard_note.description",
-              TYPE_ID					="standard_note.type_id",
-              TEXT					="standard_note.text";
+              ID					="note.id",
+              REFERENCE_ID					="note.reference_id",
+              REFERENCE_TABLE_ID					="note.reference_table_id",
+              TIMESTAMP					="note.timestamp",
+              IS_EXTERNAL					="note.is_external",
+              SYSTEM_USER_ID					="note.system_user_id",
+              SUBJECT					="note.subject",
+              TEXT					="note.text";
 
 
   	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,TYPE_ID,TEXT};
+  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,TIMESTAMP,IS_EXTERNAL,SYSTEM_USER_ID,SUBJECT,TEXT};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final StandardNoteMeta standard_noteMeta = new StandardNoteMeta();
+	private static final NoteMeta noteMeta = new NoteMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -35,12 +38,12 @@ public class StandardNoteMeta implements Meta {
         }
     }
     
-    private StandardNoteMeta() {
+    private NoteMeta() {
         
     }
     
-    public static StandardNoteMeta getInstance() {
-        return standard_noteMeta;
+    public static NoteMeta getInstance() {
+        return noteMeta;
     }
 
     public String[] getColumnList() {
@@ -73,16 +76,28 @@ public class StandardNoteMeta implements Meta {
     return ID;
   } 
 
-  public static String getName() {
-    return NAME;
+  public static String getReferenceId() {
+    return REFERENCE_ID;
   } 
 
-  public static String getDescription() {
-    return DESCRIPTION;
+  public static String getReferenceTableId() {
+    return REFERENCE_TABLE_ID;
   } 
 
-  public static String getTypeId() {
-    return TYPE_ID;
+  public static String getTimestamp() {
+    return TIMESTAMP;
+  } 
+
+  public static String getIsExternal() {
+    return IS_EXTERNAL;
+  } 
+
+  public static String getSystemUserId() {
+    return SYSTEM_USER_ID;
+  } 
+
+  public static String getSubject() {
+    return SUBJECT;
   } 
 
   public static String getText() {

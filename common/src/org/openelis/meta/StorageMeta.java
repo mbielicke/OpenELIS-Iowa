@@ -2,32 +2,32 @@
 package org.openelis.meta;
 
 /**
-  * InventoryLocation META Data
+  * Storage META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class InventoryLocationMeta implements Meta {
-  	private static final String tableName = "inventory_location";
-	private static final String entityName = "InventoryLocation";
+public class StorageMeta implements Meta {
+  	private static final String tableName = "storage";
+	private static final String entityName = "Storage";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="inventory_location.id",
-              INVENTORY_ITEM_ID					="inventory_location.inventory_item_id",
-              LOT_NUMBER					="inventory_location.lot_number",
-              STORAGE_LOCATION_ID					="inventory_location.storage_location_id",
-              QUANTITY_ONHAND					="inventory_location.quantity_onhand",
-              EXPIRATION_DATE					="inventory_location.expiration_date";
+              ID					="storage.id",
+              REFERENCE_ID					="storage.reference_id",
+              REFERENCE_TABLE_ID					="storage.reference_table_id",
+              STORAGE_LOCATION_ID					="storage.storage_location_id",
+              CHECKIN					="storage.checkin",
+              CHECKOUT					="storage.checkout";
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,LOT_NUMBER,STORAGE_LOCATION_ID,QUANTITY_ONHAND,EXPIRATION_DATE};
+  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,STORAGE_LOCATION_ID,CHECKIN,CHECKOUT};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final InventoryLocationMeta inventory_locationMeta = new InventoryLocationMeta();
+	private static final StorageMeta storageMeta = new StorageMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -36,12 +36,12 @@ public class InventoryLocationMeta implements Meta {
         }
     }
     
-    private InventoryLocationMeta() {
+    private StorageMeta() {
         
     }
     
-    public static InventoryLocationMeta getInstance() {
-        return inventory_locationMeta;
+    public static StorageMeta getInstance() {
+        return storageMeta;
     }
 
     public String[] getColumnList() {
@@ -74,24 +74,24 @@ public class InventoryLocationMeta implements Meta {
     return ID;
   } 
 
-  public static String getInventoryItemId() {
-    return INVENTORY_ITEM_ID;
+  public static String getReferenceId() {
+    return REFERENCE_ID;
   } 
 
-  public static String getLotNumber() {
-    return LOT_NUMBER;
+  public static String getReferenceTableId() {
+    return REFERENCE_TABLE_ID;
   } 
 
   public static String getStorageLocationId() {
     return STORAGE_LOCATION_ID;
   } 
 
-  public static String getQuantityOnhand() {
-    return QUANTITY_ONHAND;
+  public static String getCheckin() {
+    return CHECKIN;
   } 
 
-  public static String getExpirationDate() {
-    return EXPIRATION_DATE;
+  public static String getCheckout() {
+    return CHECKOUT;
   } 
 
   
