@@ -13,15 +13,15 @@ public class AnalyteParentAnalyteMeta implements Meta{
      ID            		= "parentAnalyte.id",
      NAME				= "parentAnalyte.name",
      IS_ACTIVE   		= "parentAnalyte.isActive",
-     ANALYTE_GROUP  	= "parentAnalyte.analyteGroup",
-     PARENT_ANALYTE		= "parentAnalyte.parentAnalyte",
+     ANALYTE_GROUP_ID  	= "parentAnalyte.analyteGroupId",
+     PARENT_ANALYTE_ID	= "parentAnalyte.parentAnalyteId",
      EXTERNAL_ID		= "parentAnalyte.externalId";
 
 	//
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, NAME, IS_ACTIVE, ANALYTE_GROUP, PARENT_ANALYTE, EXTERNAL_ID};
+	     ID, NAME, IS_ACTIVE, ANALYTE_GROUP_ID, PARENT_ANALYTE_ID, EXTERNAL_ID};
 	
 	private static HashMap<String,String> columnHashList;
 	
@@ -65,27 +65,27 @@ public class AnalyteParentAnalyteMeta implements Meta{
 		return columnHashList.containsKey(column);
 	}
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String name(){
+    public static String getName(){
         return columnNames[1];
     }
     
-    public static String isActive(){
+    public static String getIsActive(){
         return columnNames[2];
     }
     
-    public static String analyteGroup(){
+    public static String getAnalyteGroupId(){
         return columnNames[3];
     }
     
-    public static String parentAnalyte(){
+    public static String getParentAnalyteId(){
         return columnNames[4];
     }
     
-    public static String externalId(){
+    public static String getExternalId(){
     	return columnNames[5];
     }
 }

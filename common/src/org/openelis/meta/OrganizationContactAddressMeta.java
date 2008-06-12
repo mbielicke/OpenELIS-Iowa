@@ -5,23 +5,23 @@ import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class OrganizationContactAddressMeta implements Meta{
-	private String tableName = "organizationContact.address";
-	private String entityName = "organizationContact.address";
+	private static final String tableName = "organization_contact.address";
+	private static final String entityName = "organization_contact.address";
 	private boolean includeInFrom = false;
 	
 	public static final String
-    ID             	= "organizationContact.address.id",
-    MULTIPLE_UNIT	= "organizationContact.address.multipleUnit",
-    STREET_ADDRESS	= "organizationContact.address.streetAddress",
-    CITY  			= "organizationContact.address.city",
-    STATE			= "organizationContact.address.state",
-    ZIP_CODE 		= "organizationContact.address.zipCode",
-    WORK_PHONE 		= "organizationContact.address.workPhone",
-    HOME_PHONE 		= "organizationContact.address.homePhone",
-    CELL_PHONE 		= "organizationContact.address.cellPhone",
-    FAX_PHONE 		= "organizationContact.address.faxPhone",
-    EMAIL 			= "organizationContact.address.email",
-    COUNTRY 		= "organizationContact.address.country";
+    ID             	= "organization_contact.address.id",
+    MULTIPLE_UNIT	= "organization_contact.address.multipleUnit",
+    STREET_ADDRESS	= "organization_contact.address.streetAddress",
+    CITY  			= "organization_contact.address.city",
+    STATE			= "organization_contact.address.state",
+    ZIP_CODE 		= "organization_contact.address.zipCode",
+    WORK_PHONE 		= "organization_contact.address.workPhone",
+    HOME_PHONE 		= "organization_contact.address.homePhone",
+    CELL_PHONE 		= "organization_contact.address.cellPhone",
+    FAX_PHONE 		= "organization_contact.address.faxPhone",
+    EMAIL 			= "organization_contact.address.email",
+    COUNTRY 		= "organization_contact.address.country";
 
 	//
 	// Array of column names used for building select/insert/update strings
@@ -36,7 +36,7 @@ public class OrganizationContactAddressMeta implements Meta{
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(28), "");
+	     columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
 	}
 	
 	private OrganizationContactAddressMeta() {

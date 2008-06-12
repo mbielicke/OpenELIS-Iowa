@@ -90,7 +90,7 @@ public class InventoryReceiptDO implements Serializable{
         return upc;
     }
     public void setUpc(String upc) {
-        upc = DataBaseUtil.trim(upc);
+        this.upc = DataBaseUtil.trim(upc);
     }
 
 }

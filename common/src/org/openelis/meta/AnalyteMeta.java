@@ -14,12 +14,12 @@ public class AnalyteMeta implements Meta {
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="analyte.id",
-              NAME					="analyte.name",
-              IS_ACTIVE					="analyte.is_active",
-              ANALYTE_GROUP_ID					="analyte.analyte_group_id",
-              PARENT_ANALYTE_ID					="analyte.parent_analyte_id",
-              EXTERNAL_ID					="analyte.external_id";
+              ID					= "analyte.id",
+              NAME					= "analyte.name",
+              IS_ACTIVE				= "analyte.is_active",
+              ANALYTE_GROUP_ID		= "analyte.analyte_group_id",
+              PARENT_ANALYTE_ID     = "analyte.parent_analyte_id",
+              EXTERNAL_ID			= "analyte.external_id";
 
 
   	private static final String[] columnNames = {
