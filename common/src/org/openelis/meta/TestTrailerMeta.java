@@ -14,10 +14,10 @@ public class TestTrailerMeta implements Meta {
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID			= "test_trailer.id",
-              NAME			= "test_trailer.name",
-              DESCRIPTION   = "test_trailer.description",
-              TEXT			= "test_trailer.text";
+              ID					="test_trailer.id",
+              NAME					="test_trailer.name",
+              DESCRIPTION					="test_trailer.description",
+              TEXT					="test_trailer.text";
 
 
   	private static final String[] columnNames = {

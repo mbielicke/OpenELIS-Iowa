@@ -15,14 +15,14 @@ public class ResultMeta implements Meta {
 	
 	public static final String
               ID					="result.id",
-              ANALYSIS_ID					="result.analysis_id",
-              SORT_ORDER_ID					="result.sort_order_id",
-              IS_REPORTABLE					="result.is_reportable",
-              ANALYTE_ID					="result.analyte_id",
-              TYPE_ID					="result.type_id",
+              ANALYSIS_ID					="result.analysisId",
+              SORT_ORDER_ID					="result.sortOrderId",
+              IS_REPORTABLE					="result.isReportable",
+              ANALYTE_ID					="result.analyteId",
+              TYPE_ID					="result.typeId",
               VALUE					="result.value",
-              TEST_RESULT_ID					="result.test_result_id",
-              QUANT_LIMIT					="result.quant_limit";
+              TEST_RESULT_ID					="result.testResultId",
+              QUANT_LIMIT					="result.quantLimit";
 
 
   	private static final String[] columnNames = {

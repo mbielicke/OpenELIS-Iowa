@@ -15,10 +15,10 @@ public class PanelItemMeta implements Meta {
 	
 	public static final String
               ID					="panel_item.id",
-              PANEL_ID					="panel_item.panel_id",
-              SORT_ORDER_ID					="panel_item.sort_order_id",
-              TEST_NAME					="panel_item.test_name",
-              METHOD_NAME					="panel_item.method_name";
+              PANEL_ID					="panel_item.panelId",
+              SORT_ORDER_ID					="panel_item.sortOrderId",
+              TEST_NAME					="panel_item.testName",
+              METHOD_NAME					="panel_item.methodName";
 
 
   	private static final String[] columnNames = {

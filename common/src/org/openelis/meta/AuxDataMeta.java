@@ -15,12 +15,12 @@ public class AuxDataMeta implements Meta {
 	
 	public static final String
               ID					="aux_data.id",
-              SORT_ORDER_ID					="aux_data.sort_order_id",
-              AUX_FIELD_ID					="aux_data.aux_field_id",
-              REFERENCE_ID					="aux_data.reference_id",
-              REFERENCE_TABLE_ID					="aux_data.reference_table_id",
-              IS_REPORTABLE					="aux_data.is_reportable",
-              TYPE_ID					="aux_data.type_id",
+              SORT_ORDER_ID					="aux_data.sortOrderId",
+              AUX_FIELD_ID					="aux_data.auxFieldId",
+              REFERENCE_ID					="aux_data.referenceId",
+              REFERENCE_TABLE_ID					="aux_data.referenceTableId",
+              IS_REPORTABLE					="aux_data.isReportable",
+              TYPE_ID					="aux_data.typeId",
               VALUE					="aux_data.value";
 
 

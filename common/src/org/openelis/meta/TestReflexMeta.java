@@ -15,11 +15,11 @@ public class TestReflexMeta implements Meta {
 	
 	public static final String
               ID					="test_reflex.id",
-              TEST_ID					="test_reflex.test_id",
-              TEST_ANALYTE_ID					="test_reflex.test_analyte_id",
-              TEST_RESULT_ID					="test_reflex.test_result_id",
-              FLAGS_ID					="test_reflex.flags_id",
-              ADD_TEST_ID					="test_reflex.add_test_id";
+              TEST_ID					="test_reflex.testId",
+              TEST_ANALYTE_ID					="test_reflex.testAnalyteId",
+              TEST_RESULT_ID					="test_reflex.testResultId",
+              FLAGS_ID					="test_reflex.flagsId",
+              ADD_TEST_ID					="test_reflex.addTestId";
 
 
   	private static final String[] columnNames = {

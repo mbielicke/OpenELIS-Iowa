@@ -15,9 +15,9 @@ public class AnalysisUserMeta implements Meta {
 	
 	public static final String
               ID					="analysis_user.id",
-              ANALYSIS_ID					="analysis_user.analysis_id",
-              SYSTEM_USER_ID					="analysis_user.system_user_id",
-              ACTION_ID					="analysis_user.action_id";
+              ANALYSIS_ID					="analysis_user.analysisId",
+              SYSTEM_USER_ID					="analysis_user.systemUserId",
+              ACTION_ID					="analysis_user.actionId";
 
 
   	private static final String[] columnNames = {

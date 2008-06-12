@@ -15,12 +15,12 @@ public class StorageLocationMeta implements Meta {
 	
 	public static final String
               ID					="storage_location.id",
-              SORT_ORDER_ID					="storage_location.sort_order_id",
+              SORT_ORDER_ID					="storage_location.sortOrderId",
               NAME					="storage_location.name",
               LOCATION					="storage_location.location",
-              PARENT_STORAGE_LOCATION_ID					="storage_location.parent_storage_location_id",
-              STORAGE_UNIT_ID					="storage_location.storage_unit_id",
-              IS_AVAILABLE					="storage_location.is_available";
+              PARENT_STORAGE_LOCATION_ID					="storage_location.parentStorageLocationId",
+              STORAGE_UNIT_ID					="storage_location.storageUnitId",
+              IS_AVAILABLE					="storage_location.isAvailable";
 
 
   	private static final String[] columnNames = {

@@ -15,7 +15,7 @@ public class ProjectParameterMeta implements Meta {
 	
 	public static final String
               ID					="project_parameter.id",
-              PROJECT_ID					="project_parameter.project_id",
+              PROJECT_ID					="project_parameter.projectId",
               PARAMETER					="project_parameter.parameter",
               OPERATION					="project_parameter.operation",
               VALUE					="project_parameter.value";

@@ -2,30 +2,31 @@
 package org.openelis.meta;
 
 /**
-  * AttachmentItem META Data
+  * Lock META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class AttachmentItemMeta implements Meta {
-  	private static final String tableName = "attachment_item";
-	private static final String entityName = "AttachmentItem";
+public class LockMeta implements Meta {
+  	private static final String tableName = "lock";
+	private static final String entityName = "Lock";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="attachment_item.id",
-              REFERENCE_ID					="attachment_item.referenceId",
-              REFERENCE_TABLE_ID					="attachment_item.referenceTableId",
-              ATTACHMENT_ID					="attachment_item.attachmentId";
+              ID					="lock.id",
+              REFERENCE_TABLE_ID					="lock.referenceTableId",
+              REFERENCE_ID					="lock.referenceId",
+              EXPIRES					="lock.expires",
+              SYSTEM_USER_ID					="lock.systemUserId";
 
 
   	private static final String[] columnNames = {
-  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,ATTACHMENT_ID};
+  	  ID,REFERENCE_TABLE_ID,REFERENCE_ID,EXPIRES,SYSTEM_USER_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final AttachmentItemMeta attachment_itemMeta = new AttachmentItemMeta();
+	private static final LockMeta lockMeta = new LockMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +35,12 @@ public class AttachmentItemMeta implements Meta {
         }
     }
     
-    private AttachmentItemMeta() {
+    private LockMeta() {
         
     }
     
-    public static AttachmentItemMeta getInstance() {
-        return attachment_itemMeta;
+    public static LockMeta getInstance() {
+        return lockMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +73,20 @@ public class AttachmentItemMeta implements Meta {
     return ID;
   } 
 
-  public static String getReferenceId() {
-    return REFERENCE_ID;
-  } 
-
   public static String getReferenceTableId() {
     return REFERENCE_TABLE_ID;
   } 
 
-  public static String getAttachmentId() {
-    return ATTACHMENT_ID;
+  public static String getReferenceId() {
+    return REFERENCE_ID;
+  } 
+
+  public static String getExpires() {
+    return EXPIRES;
+  } 
+
+  public static String getSystemUserId() {
+    return SYSTEM_USER_ID;
   } 
 
   

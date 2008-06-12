@@ -15,11 +15,11 @@ public class DictionaryMeta implements Meta {
 	
 	public static final String
               ID					="dictionary.id",
-              CATEGORY_ID					="dictionary.category_id",
-              RELATED_ENTRY_ID					="dictionary.related_entry_id",
-              SYSTEM_NAME					="dictionary.system_name",
-              IS_ACTIVE					="dictionary.is_active",
-              LOCAL_ABBREV					="dictionary.local_abbrev",
+              CATEGORY_ID					="dictionary.categoryId",
+              RELATED_ENTRY_ID					="dictionary.relatedEntryId",
+              SYSTEM_NAME					="dictionary.systemName",
+              IS_ACTIVE					="dictionary.isActive",
+              LOCAL_ABBREV					="dictionary.localAbbrev",
               ENTRY					="dictionary.entry";
 
 

@@ -15,8 +15,8 @@ public class AnalysisQaeventMeta implements Meta {
 	
 	public static final String
               ID					="analysis_qaevent.id",
-              ANALYSIS_ID					="analysis_qaevent.analysis_id",
-              QAEVENT_ID					="analysis_qaevent.qaevent_id";
+              ANALYSIS_ID					="analysis_qaevent.analysisId",
+              QAEVENT_ID					="analysis_qaevent.qaeventId";
 
 
   	private static final String[] columnNames = {

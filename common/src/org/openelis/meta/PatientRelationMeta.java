@@ -15,9 +15,9 @@ public class PatientRelationMeta implements Meta {
 	
 	public static final String
               ID					="patient_relation.id",
-              RELATION_ID					="patient_relation.relation_id",
-              FROM_PATIENT_ID					="patient_relation.from_patient_id",
-              TO_PATIENT_ID					="patient_relation.to_patient_id";
+              RELATION_ID					="patient_relation.relationId",
+              FROM_PATIENT_ID					="patient_relation.fromPatientId",
+              TO_PATIENT_ID					="patient_relation.toPatientId";
 
 
   	private static final String[] columnNames = {

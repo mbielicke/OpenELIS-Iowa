@@ -15,13 +15,13 @@ public class SampleAnimalMeta implements Meta {
 	
 	public static final String
               ID					="sample_animal.id",
-              SAMPLE_ID					="sample_animal.sample_id",
-              ANIMAL_COMMON_NAME_ID					="sample_animal.animal_common_name_id",
-              ANIMAL_SCIENTIFIC_NAME_ID					="sample_animal.animal_scientific_name_id",
+              SAMPLE_ID					="sample_animal.sampleId",
+              ANIMAL_COMMON_NAME_ID					="sample_animal.animalCommonNameId",
+              ANIMAL_SCIENTIFIC_NAME_ID					="sample_animal.animalScientificNameId",
               COLLECTOR					="sample_animal.collector",
-              COLLECTOR_PHONE					="sample_animal.collector_phone",
-              SAMPLING_LOCATION					="sample_animal.sampling_location",
-              ADDRESS_ID					="sample_animal.address_id";
+              COLLECTOR_PHONE					="sample_animal.collectorPhone",
+              SAMPLING_LOCATION					="sample_animal.samplingLocation",
+              ADDRESS_ID					="sample_animal.addressId";
 
 
   	private static final String[] columnNames = {

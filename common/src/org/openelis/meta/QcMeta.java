@@ -16,16 +16,16 @@ public class QcMeta implements Meta {
 	public static final String
               ID					="qc.id",
               NAME					="qc.name",
-              TYPE_ID					="qc.type_id",
+              TYPE_ID					="qc.typeId",
               SOURCE					="qc.source",
-              LOT_NUMBER					="qc.lot_number",
-              PREPARED_DATE					="qc.prepared_date",
-              PREPARED_VOLUME					="qc.prepared_volume",
-              PREPARED_UNIT_ID					="qc.prepared_unit_id",
-              PREPARED_BY_ID					="qc.prepared_by_id",
-              USABLE_DATE					="qc.usable_date",
-              EXPIRE_DATE					="qc.expire_date",
-              IS_SINGLE_USE					="qc.is_single_use";
+              LOT_NUMBER					="qc.lotNumber",
+              PREPARED_DATE					="qc.preparedDate",
+              PREPARED_VOLUME					="qc.preparedVolume",
+              PREPARED_UNIT_ID					="qc.preparedUnitId",
+              PREPARED_BY_ID					="qc.preparedById",
+              USABLE_DATE					="qc.usableDate",
+              EXPIRE_DATE					="qc.expireDate",
+              IS_SINGLE_USE					="qc.isSingleUse";
 
 
   	private static final String[] columnNames = {

@@ -15,8 +15,8 @@ public class AuxFieldValueMeta implements Meta {
 	
 	public static final String
               ID					="aux_field_value.id",
-              AUX_FIELD_ID					="aux_field_value.aux_field_id",
-              TYPE_ID					="aux_field_value.type_id",
+              AUX_FIELD_ID					="aux_field_value.auxFieldId",
+              TYPE_ID					="aux_field_value.typeId",
               VALUE					="aux_field_value.value";
 
 

@@ -15,11 +15,11 @@ public class MethodAnalyteMeta implements Meta {
 	
 	public static final String
               ID					="method_analyte.id",
-              METHOD_ID					="method_analyte.method_id",
-              RESULT_GROUP_ID					="method_analyte.result_group_id",
-              SORT_ORDER_ID					="method_analyte.sort_order_id",
+              METHOD_ID					="method_analyte.methodId",
+              RESULT_GROUP_ID					="method_analyte.resultGroupId",
+              SORT_ORDER_ID					="method_analyte.sortOrderId",
               TYPE					="method_analyte.type",
-              ANALYTE_ID					="method_analyte.analyte_id";
+              ANALYTE_ID					="method_analyte.analyteId";
 
 
   	private static final String[] columnNames = {

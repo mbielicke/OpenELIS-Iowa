@@ -17,8 +17,8 @@ public class LabelMeta implements Meta {
               ID					="label.id",
               NAME					="label.name",
               DESCRIPTION					="label.description",
-              PRINTER_TYPE_ID					="label.printer_type_id",
-              SCRIPTLET_ID					="label.scriptlet_id";
+              PRINTER_TYPE_ID					="label.printerTypeId",
+              SCRIPTLET_ID					="label.scriptletId";
 
 
   	private static final String[] columnNames = {

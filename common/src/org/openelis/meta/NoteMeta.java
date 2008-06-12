@@ -15,11 +15,11 @@ public class NoteMeta implements Meta {
 	
 	public static final String
               ID					="note.id",
-              REFERENCE_ID					="note.reference_id",
-              REFERENCE_TABLE_ID					="note.reference_table_id",
+              REFERENCE_ID					="note.referenceId",
+              REFERENCE_TABLE_ID					="note.referenceTableId",
               TIMESTAMP					="note.timestamp",
-              IS_EXTERNAL					="note.is_external",
-              SYSTEM_USER_ID					="note.system_user_id",
+              IS_EXTERNAL					="note.isExternal",
+              SYSTEM_USER_ID					="note.systemUserId",
               SUBJECT					="note.subject",
               TEXT					="note.text";
 

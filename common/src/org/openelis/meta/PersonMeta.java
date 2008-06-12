@@ -15,10 +15,10 @@ public class PersonMeta implements Meta {
 	
 	public static final String
               ID					="person.id",
-              LAST_NAME					="person.last_name",
-              FIRST_NAME					="person.first_name",
-              MIDDLE_NAME					="person.middle_name",
-              ADDRESS_ID					="person.address_id";
+              LAST_NAME					="person.lastName",
+              FIRST_NAME					="person.firstName",
+              MIDDLE_NAME					="person.middleName",
+              ADDRESS_ID					="person.addressId";
 
 
   	private static final String[] columnNames = {

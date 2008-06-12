@@ -15,10 +15,10 @@ public class OrganizationMeta implements Meta {
 	
 	public static final String
               ID					="organization.id",
-              PARENT_ORGANIZATION_ID					="organization.parent_organization_id",
+              PARENT_ORGANIZATION_ID					="organization.parentOrganizationId",
               NAME					="organization.name",
-              IS_ACTIVE					="organization.is_active",
-              ADDRESS_ID					="organization.address_id";
+              IS_ACTIVE					="organization.isActive",
+              ADDRESS_ID					="organization.addressId";
 
 
   	private static final String[] columnNames = {

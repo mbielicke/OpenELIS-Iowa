@@ -5,18 +5,18 @@ import org.openelis.util.Meta;
 
 public class QaEventMeta implements Meta {
     private static final String tableName = "qaevent";
-    private static final String entityName = "Qaevent";
+    private static final String entityName = "QaEvent";
     private boolean includeInFrom = true;
     
     public static final String
               ID                    ="qaevent.id",
               NAME                  ="qaevent.name",
               DESCRIPTION                   ="qaevent.description",
-              TEST_ID                   ="qaevent.test_id",
-              TYPE_ID                   ="qaevent.type_id",
-              IS_BILLABLE                   ="qaevent.is_billable",
-              REPORTING_SEQUENCE                    ="qaevent.reporting_sequence",
-              REPORTING_TEXT                    ="qaevent.reporting_text";
+              TEST_ID                   ="qaevent.testId",
+              TYPE_ID                   ="qaevent.typeId",
+              IS_BILLABLE                   ="qaevent.isBillable",
+              REPORTING_SEQUENCE                    ="qaevent.reportingSequence",
+              REPORTING_TEXT                    ="qaevent.reportingText";
 
 
     private static final String[] columnNames = {
@@ -98,5 +98,4 @@ public class QaEventMeta implements Meta {
   public static String getReportingText() {
     return REPORTING_TEXT;
   } 
-
 }

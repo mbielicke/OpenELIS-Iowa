@@ -15,13 +15,13 @@ public class SampleEnvironmentalMeta implements Meta {
 	
 	public static final String
               ID					="sample_environmental.id",
-              SAMPLE_ID					="sample_environmental.sample_id",
-              IS_HAZARDOUS					="sample_environmental.is_hazardous",
+              SAMPLE_ID					="sample_environmental.sampleId",
+              IS_HAZARDOUS					="sample_environmental.isHazardous",
               DESCRIPTION					="sample_environmental.description",
               COLLECTOR					="sample_environmental.collector",
-              COLLECTOR_PHONE					="sample_environmental.collector_phone",
-              SAMPLING_LOCATION					="sample_environmental.sampling_location",
-              ADDRESS_ID					="sample_environmental.address_id";
+              COLLECTOR_PHONE					="sample_environmental.collectorPhone",
+              SAMPLING_LOCATION					="sample_environmental.samplingLocation",
+              ADDRESS_ID					="sample_environmental.addressId";
 
 
   	private static final String[] columnNames = {

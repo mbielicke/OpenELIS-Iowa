@@ -14,11 +14,11 @@ public class StandardNoteMeta implements Meta {
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID			= "standard_note.id",
-              NAME			= "standard_note.name",
-              DESCRIPTION   = "standard_note.description",
-              TYPE_ID		= "standard_note.typeId",
-              TEXT			= "standard_note.text";
+              ID					="standard_note.id",
+              NAME					="standard_note.name",
+              DESCRIPTION					="standard_note.description",
+              TYPE_ID					="standard_note.typeId",
+              TEXT					="standard_note.text";
 
 
   	private static final String[] columnNames = {

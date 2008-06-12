@@ -15,8 +15,8 @@ public class InventoryComponentMeta implements Meta {
 	
 	public static final String
               ID					="inventory_component.id",
-              INVENTORY_ITEM_ID					="inventory_component.inventory_item_id",
-              COMPONENT_ID					="inventory_component.component_id",
+              INVENTORY_ITEM_ID					="inventory_component.inventoryItemId",
+              COMPONENT_ID					="inventory_component.componentId",
               QUANTITY					="inventory_component.quantity";
 
 

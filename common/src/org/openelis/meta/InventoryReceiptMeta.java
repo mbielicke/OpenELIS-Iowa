@@ -15,13 +15,13 @@ public class InventoryReceiptMeta implements Meta {
 	
 	public static final String
               ID					="inventory_receipt.id",
-              INVENTORY_ITEM_ID					="inventory_receipt.inventory_item_id",
-              ORGANIZATION_ID					="inventory_receipt.organization_id",
-              RECEIVED_DATE					="inventory_receipt.received_date",
-              QUANTITY_RECEIVED					="inventory_receipt.quantity_received",
-              UNIT_COST					="inventory_receipt.unit_cost",
-              QC_REFERENCE					="inventory_receipt.qc_reference",
-              EXTERNAL_REFERENCE					="inventory_receipt.external_reference",
+              INVENTORY_ITEM_ID					="inventory_receipt.inventoryItemId",
+              ORGANIZATION_ID					="inventory_receipt.organizationId",
+              RECEIVED_DATE					="inventory_receipt.receivedDate",
+              QUANTITY_RECEIVED					="inventory_receipt.quantityReceived",
+              UNIT_COST					="inventory_receipt.unitCost",
+              QC_REFERENCE					="inventory_receipt.qcReference",
+              EXTERNAL_REFERENCE					="inventory_receipt.externalReference",
               UPC					="inventory_receipt.upc";
 
 

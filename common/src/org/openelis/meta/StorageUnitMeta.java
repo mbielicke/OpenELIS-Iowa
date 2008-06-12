@@ -14,10 +14,10 @@ public class StorageUnitMeta implements Meta {
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID			= "storage_unit.id",
-              CATEGORY		= "storage_unit.category",
-              DESCRIPTION   = "storage_unit.description",
-              IS_SINGULAR	= "storage_unit.is_singular";
+              ID					="storage_unit.id",
+              CATEGORY					="storage_unit.category",
+              DESCRIPTION					="storage_unit.description",
+              IS_SINGULAR					="storage_unit.isSingular";
 
 
   	private static final String[] columnNames = {
