@@ -129,11 +129,11 @@ public class InventoryItem implements Auditable, Cloneable {
   private Integer averageDailyUse;             
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_item")
+  @JoinColumn(name = "inventory_item_id")
   private Collection<InventoryComponent> inventoryComponent;
   
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_item")
+  @JoinColumn(name = "inventory_item_id")
   private Collection<InventoryLocation> inventoryLocation;
   
   @OneToMany(fetch = FetchType.LAZY)

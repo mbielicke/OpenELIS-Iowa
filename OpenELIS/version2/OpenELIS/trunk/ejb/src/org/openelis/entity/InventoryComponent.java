@@ -55,7 +55,7 @@ public class InventoryComponent implements Auditable, Cloneable {
   private Double quantity; 
   
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "component", insertable = false, updatable = false)
+  @JoinColumn(name = "component_id", insertable = false, updatable = false)
   private InventoryItem componentInventoryItem;
 
 

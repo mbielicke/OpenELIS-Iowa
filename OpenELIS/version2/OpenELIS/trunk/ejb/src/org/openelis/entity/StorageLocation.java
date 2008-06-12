@@ -70,15 +70,15 @@ public class StorageLocation implements Auditable, Cloneable {
   private String isAvailable;             
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
+  @JoinColumn(name = "parent_storage_location_id", insertable = false, updatable = false)
   private Collection<StorageLocation> childLocations;
   
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_storage_location", insertable = false, updatable = false)
+  @JoinColumn(name = "parent_storage_location_id", insertable = false, updatable = false)
   private StorageLocation parentStorageLocation;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
+  @JoinColumn(name = "storage_unit_id", insertable = false, updatable = false)
   private StorageUnit storageUnit;
 
   @Transient
