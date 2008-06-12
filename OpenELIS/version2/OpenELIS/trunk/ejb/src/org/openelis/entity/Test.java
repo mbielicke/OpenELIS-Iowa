@@ -1,12 +1,14 @@
 
 package org.openelis.entity;
 
+
 /**
   * Test Entity POJO for database 
   */
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Method;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
@@ -26,9 +28,9 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailer = :id"),
-                   @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.label = :id"),
-                   @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.method  = m.id order by t.name, m.name")})
+@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailerId = :id"),
+    @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
+    @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.methodId  = m.id order by t.name, m.name")})
 
 @Entity
 @Table(name="test")
@@ -49,7 +51,7 @@ public class Test implements Auditable, Cloneable {
   @Column(name="reporting_description")
   private String reportingDescription;             
 
-  @Column(name="method")
+  @Column(name="method_id")
   private Integer methodId;             
 
   @Column(name="is_active")
@@ -79,34 +81,34 @@ public class Test implements Auditable, Cloneable {
   @Column(name="time_ta_max")
   private Integer timeTaMax;             
 
-  @Column(name="label")
-  private Integer label;             
+  @Column(name="label_id")
+  private Integer labelId;             
 
   @Column(name="label_qty")
   private Integer labelQty;             
 
-  @Column(name="test_trailer")
-  private Integer testTrailer;             
+  @Column(name="test_trailer_id")
+  private Integer testTrailerId;             
 
-  @Column(name="section")
-  private Integer section;             
+  @Column(name="section_id")
+  private Integer sectionId;             
 
-  @Column(name="scriptlet")
-  private Integer scriptlet;             
+  @Column(name="scriptlet_id")
+  private Integer scriptletId;             
 
-  @Column(name="test_format")
-  private Integer testFormat;             
+  @Column(name="test_format_id")
+  private Integer testFormatId;             
 
-  @Column(name="revision_method")
-  private Integer revisionMethod;             
+  @Column(name="revision_method_id")
+  private Integer revisionMethodId;             
 
-
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "method_id",insertable = false, updatable = false)
+  private Method method;
+  
   @Transient
   private Test original;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "method",insertable = false, updatable = false)
-  private Method method;
   
   public Integer getId() {
     return id;
@@ -238,13 +240,13 @@ public class Test implements Auditable, Cloneable {
       this.timeTaMax = timeTaMax;
   }
 
-  public Integer getLabel() {
-    return label;
+  public Integer getLabelId() {
+    return labelId;
   }
-  public void setLabel(Integer label) {
-    if((label == null && this.label != null) || 
-       (label != null && !label.equals(this.label)))
-      this.label = label;
+  public void setLabelId(Integer labelId) {
+    if((labelId == null && this.labelId != null) || 
+       (labelId != null && !labelId.equals(this.labelId)))
+      this.labelId = labelId;
   }
 
   public Integer getLabelQty() {
@@ -256,49 +258,49 @@ public class Test implements Auditable, Cloneable {
       this.labelQty = labelQty;
   }
 
-  public Integer getTestTrailer() {
-    return testTrailer;
+  public Integer getTestTrailerId() {
+    return testTrailerId;
   }
-  public void setTestTrailer(Integer testTrailer) {
-    if((testTrailer == null && this.testTrailer != null) || 
-       (testTrailer != null && !testTrailer.equals(this.testTrailer)))
-      this.testTrailer = testTrailer;
-  }
-
-  public Integer getSection() {
-    return section;
-  }
-  public void setSection(Integer section) {
-    if((section == null && this.section != null) || 
-       (section != null && !section.equals(this.section)))
-      this.section = section;
+  public void setTestTrailerId(Integer testTrailerId) {
+    if((testTrailerId == null && this.testTrailerId != null) || 
+       (testTrailerId != null && !testTrailerId.equals(this.testTrailerId)))
+      this.testTrailerId = testTrailerId;
   }
 
-  public Integer getScriptlet() {
-    return scriptlet;
+  public Integer getSectionId() {
+    return sectionId;
   }
-  public void setScriptlet(Integer scriptlet) {
-    if((scriptlet == null && this.scriptlet != null) || 
-       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
-      this.scriptlet = scriptlet;
-  }
-
-  public Integer getTestFormat() {
-    return testFormat;
-  }
-  public void setTestFormat(Integer testFormat) {
-    if((testFormat == null && this.testFormat != null) || 
-       (testFormat != null && !testFormat.equals(this.testFormat)))
-      this.testFormat = testFormat;
+  public void setSectionId(Integer sectionId) {
+    if((sectionId == null && this.sectionId != null) || 
+       (sectionId != null && !sectionId.equals(this.sectionId)))
+      this.sectionId = sectionId;
   }
 
-  public Integer getRevisionMethod() {
-    return revisionMethod;
+  public Integer getScriptletId() {
+    return scriptletId;
   }
-  public void setRevisionMethod(Integer revisionMethod) {
-    if((revisionMethod == null && this.revisionMethod != null) || 
-       (revisionMethod != null && !revisionMethod.equals(this.revisionMethod)))
-      this.revisionMethod = revisionMethod;
+  public void setScriptletId(Integer scriptletId) {
+    if((scriptletId == null && this.scriptletId != null) || 
+       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+      this.scriptletId = scriptletId;
+  }
+
+  public Integer getTestFormatId() {
+    return testFormatId;
+  }
+  public void setTestFormatId(Integer testFormatId) {
+    if((testFormatId == null && this.testFormatId != null) || 
+       (testFormatId != null && !testFormatId.equals(this.testFormatId)))
+      this.testFormatId = testFormatId;
+  }
+
+  public Integer getRevisionMethodId() {
+    return revisionMethodId;
+  }
+  public void setRevisionMethodId(Integer revisionMethodId) {
+    if((revisionMethodId == null && this.revisionMethodId != null) || 
+       (revisionMethodId != null && !revisionMethodId.equals(this.revisionMethodId)))
+      this.revisionMethodId = revisionMethodId;
   }
 
   
@@ -313,152 +315,47 @@ public class Test implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((reportingDescription == null && original.reportingDescription != null) || 
-         (reportingDescription != null && !reportingDescription.equals(original.reportingDescription))){
-        Element elem = doc.createElement("reporting_description");
-        elem.appendChild(doc.createTextNode(original.reportingDescription.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(reportingDescription,original.reportingDescription,doc,"reporting_description");
 
-      if((method == null && original.method != null) || 
-         (method != null && !method.equals(original.method))){
-        Element elem = doc.createElement("method");
-        elem.appendChild(doc.createTextNode(original.method.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(methodId,original.methodId,doc,"method_id");
 
-      if((isActive == null && original.isActive != null) || 
-         (isActive != null && !isActive.equals(original.isActive))){
-        Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
 
-      if((activeBegin == null && original.activeBegin != null) || 
-         (activeBegin != null && !activeBegin.equals(original.activeBegin))){
-        Element elem = doc.createElement("active_begin");
-        elem.appendChild(doc.createTextNode(original.activeBegin.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(activeBegin,original.activeBegin,doc,"active_begin");
 
-      if((activeEnd == null && original.activeEnd != null) || 
-         (activeEnd != null && !activeEnd.equals(original.activeEnd))){
-        Element elem = doc.createElement("active_end");
-        elem.appendChild(doc.createTextNode(original.activeEnd.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(activeEnd,original.activeEnd,doc,"active_end");
 
-      if((isReportable == null && original.isReportable != null) || 
-         (isReportable != null && !isReportable.equals(original.isReportable))){
-        Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
 
-      if((timeTransit == null && original.timeTransit != null) || 
-         (timeTransit != null && !timeTransit.equals(original.timeTransit))){
-        Element elem = doc.createElement("time_transit");
-        elem.appendChild(doc.createTextNode(original.timeTransit.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timeTransit,original.timeTransit,doc,"time_transit");
 
-      if((timeHolding == null && original.timeHolding != null) || 
-         (timeHolding != null && !timeHolding.equals(original.timeHolding))){
-        Element elem = doc.createElement("time_holding");
-        elem.appendChild(doc.createTextNode(original.timeHolding.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timeHolding,original.timeHolding,doc,"time_holding");
 
-      if((timeTaAverage == null && original.timeTaAverage != null) || 
-         (timeTaAverage != null && !timeTaAverage.equals(original.timeTaAverage))){
-        Element elem = doc.createElement("time_ta_average");
-        elem.appendChild(doc.createTextNode(original.timeTaAverage.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timeTaAverage,original.timeTaAverage,doc,"time_ta_average");
 
-      if((timeTaWarning == null && original.timeTaWarning != null) || 
-         (timeTaWarning != null && !timeTaWarning.equals(original.timeTaWarning))){
-        Element elem = doc.createElement("time_ta_warning");
-        elem.appendChild(doc.createTextNode(original.timeTaWarning.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timeTaWarning,original.timeTaWarning,doc,"time_ta_warning");
 
-      if((timeTaMax == null && original.timeTaMax != null) || 
-         (timeTaMax != null && !timeTaMax.equals(original.timeTaMax))){
-        Element elem = doc.createElement("time_ta_max");
-        elem.appendChild(doc.createTextNode(original.timeTaMax.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timeTaMax,original.timeTaMax,doc,"time_ta_max");
 
-      if((label == null && original.label != null) || 
-         (label != null && !label.equals(original.label))){
-        Element elem = doc.createElement("label");
-        elem.appendChild(doc.createTextNode(original.label.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(labelId,original.labelId,doc,"label_id");
 
-      if((labelQty == null && original.labelQty != null) || 
-         (labelQty != null && !labelQty.equals(original.labelQty))){
-        Element elem = doc.createElement("label_qty");
-        elem.appendChild(doc.createTextNode(original.labelQty.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(labelQty,original.labelQty,doc,"label_qty");
 
-      if((testTrailer == null && original.testTrailer != null) || 
-         (testTrailer != null && !testTrailer.equals(original.testTrailer))){
-        Element elem = doc.createElement("test_trailer");
-        elem.appendChild(doc.createTextNode(original.testTrailer.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testTrailerId,original.testTrailerId,doc,"test_trailer_id");
 
-      if((section == null && original.section != null) || 
-         (section != null && !section.equals(original.section))){
-        Element elem = doc.createElement("section");
-        elem.appendChild(doc.createTextNode(original.section.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
 
-      if((scriptlet == null && original.scriptlet != null) || 
-         (scriptlet != null && !scriptlet.equals(original.scriptlet))){
-        Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
-      if((testFormat == null && original.testFormat != null) || 
-         (testFormat != null && !testFormat.equals(original.testFormat))){
-        Element elem = doc.createElement("test_format");
-        elem.appendChild(doc.createTextNode(original.testFormat.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testFormatId,original.testFormatId,doc,"test_format_id");
 
-      if((revisionMethod == null && original.revisionMethod != null) || 
-         (revisionMethod != null && !revisionMethod.equals(original.revisionMethod))){
-        Element elem = doc.createElement("revision_method");
-        elem.appendChild(doc.createTextNode(original.revisionMethod.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(revisionMethodId,original.revisionMethodId,doc,"revision_method_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -471,11 +368,12 @@ public class Test implements Auditable, Cloneable {
   public String getTableName() {
     return "test";
   }
-public Method getMethod() {
-    return method;
-}
-public void setMethod(Method method) {
-    this.method = method;
-}
+  
+  public Method getMethod() {
+      return method;
+  }
+  public void setMethod(Method method) {
+      this.method = method;
+  }
   
 }   

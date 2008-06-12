@@ -31,17 +31,17 @@ public class TestResult implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="test")
-  private Integer test;             
+  @Column(name="test_id")
+  private Integer testId;             
 
-  @Column(name="result_group")
-  private Integer resultGroup;             
+  @Column(name="result_group_id")
+  private Integer resultGroupId;             
 
-  @Column(name="flag")
-  private Integer flag;             
+  @Column(name="flag_id")
+  private Integer flagId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="value")
   private String value;             
@@ -69,40 +69,40 @@ public class TestResult implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
-  }
-
-  public Integer getResultGroup() {
-    return resultGroup;
-  }
-  public void setResultGroup(Integer resultGroup) {
-    if((resultGroup == null && this.resultGroup != null) || 
-       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
-      this.resultGroup = resultGroup;
+  public void setTestId(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
-  public Integer getFlag() {
-    return flag;
+  public Integer getResultGroupId() {
+    return resultGroupId;
   }
-  public void setFlag(Integer flag) {
-    if((flag == null && this.flag != null) || 
-       (flag != null && !flag.equals(this.flag)))
-      this.flag = flag;
+  public void setResultGroupId(Integer resultGroupId) {
+    if((resultGroupId == null && this.resultGroupId != null) || 
+       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
+      this.resultGroupId = resultGroupId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getFlagId() {
+    return flagId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setFlagId(Integer flagId) {
+    if((flagId == null && this.flagId != null) || 
+       (flagId != null && !flagId.equals(this.flagId)))
+      this.flagId = flagId;
+  }
+
+  public Integer getTypeId() {
+    return typeId;
+  }
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getValue() {
@@ -153,68 +153,23 @@ public class TestResult implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      if((resultGroup == null && original.resultGroup != null) || 
-         (resultGroup != null && !resultGroup.equals(original.resultGroup))){
-        Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
 
-      if((flag == null && original.flag != null) || 
-         (flag != null && !flag.equals(original.flag))){
-        Element elem = doc.createElement("flag");
-        elem.appendChild(doc.createTextNode(original.flag.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(flagId,original.flagId,doc,"flag_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
-      if((significantDigits == null && original.significantDigits != null) || 
-         (significantDigits != null && !significantDigits.equals(original.significantDigits))){
-        Element elem = doc.createElement("significant_digits");
-        elem.appendChild(doc.createTextNode(original.significantDigits.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(significantDigits,original.significantDigits,doc,"significant_digits");
 
-      if((quantLimit == null && original.quantLimit != null) || 
-         (quantLimit != null && !quantLimit.equals(original.quantLimit))){
-        Element elem = doc.createElement("quant_limit");
-        elem.appendChild(doc.createTextNode(original.quantLimit.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(quantLimit,original.quantLimit,doc,"quant_limit");
 
-      if((contLevel == null && original.contLevel != null) || 
-         (contLevel != null && !contLevel.equals(original.contLevel))){
-        Element elem = doc.createElement("cont_level");
-        elem.appendChild(doc.createTextNode(original.contLevel.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(contLevel,original.contLevel,doc,"cont_level");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

@@ -225,9 +225,9 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setAverageCost(inventoryItemDO.getAveCost());
          inventoryItem.setAverageDailyUse(inventoryItemDO.getAveDailyUse());
          inventoryItem.setAverageLeadTime(inventoryItemDO.getAveLeadTime());
-         inventoryItem.setCategory(inventoryItemDO.getCategory());
+         inventoryItem.setCategoryId(inventoryItemDO.getCategory());
          inventoryItem.setDescription(inventoryItemDO.getDescription());
-         inventoryItem.setDispensedUnits(inventoryItemDO.getDispensedUnits());
+         inventoryItem.setDispensedUnitsId(inventoryItemDO.getDispensedUnits());
          inventoryItem.setIsActive(inventoryItemDO.getIsActive());
          inventoryItem.setIsBulk(inventoryItemDO.getIsBulk());
          inventoryItem.setIsLabor(inventoryItemDO.getIsLabor());
@@ -239,11 +239,11 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setIsSubAssembly(inventoryItemDO.getIsSubAssembly());
          inventoryItem.setName(inventoryItemDO.getName());
          inventoryItem.setProductUri(inventoryItemDO.getProductUri());
-         inventoryItem.setPurchasedUnits(inventoryItemDO.getPurchasedUnits());
+         inventoryItem.setPurchasedUnitsId(inventoryItemDO.getPurchasedUnits());
          inventoryItem.setQuantityMaxLevel(inventoryItemDO.getQuantityMaxLevel());
          inventoryItem.setQuantityMinLevel(inventoryItemDO.getQuantityMinLevel());
          inventoryItem.setQuantityToReorder(inventoryItemDO.getQuantityToReorder());
-         inventoryItem.setStore(inventoryItemDO.getStore());
+         inventoryItem.setStoreId(inventoryItemDO.getStore());
          
          if (inventoryItem.getId() == null) {
             manager.persist(inventoryItem);
@@ -273,8 +273,8 @@ public class InventoryItemBean implements InventoryItemRemote{
                 
              }else{
                 //update the record
-                component.setComponent(componentDO.getComponentNameId());
-                component.setInventoryItem(inventoryItem.getId());
+                component.setComponentId(componentDO.getComponentNameId());
+                component.setInventoryItemId(inventoryItem.getId());
                 component.setQuantity(componentDO.getQuantity());
                     
                 if (component.getId() == null) {
@@ -290,9 +290,9 @@ public class InventoryItemBean implements InventoryItemRemote{
             note = new Note();
              note.setIsExternal(noteDO.getIsExternal());
              note.setReferenceId(inventoryItem.getId());
-             note.setReferenceTable(inventoryItemReferenceId);
+             note.setReferenceTableId(inventoryItemReferenceId);
              note.setSubject(noteDO.getSubject());
-             note.setSystemUser(getSystemUserId());
+             note.setSystemUserId(getSystemUserId());
              note.setText(noteDO.getText());
             note.setTimestamp(Datetime.getInstance());
         }
@@ -383,17 +383,17 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         //store required
         if(inventoryItemDO.getStore() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.STORE));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.STORE_ID));
         }
         
         //purchased units required
         if(inventoryItemDO.getPurchasedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.PURCHASED_UNITS));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.PURCHASED_UNITS_ID));
         }
         
         //dispensed units required
         if(inventoryItemDO.getDispensedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.DISPENSED_UNITS));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.DISPENSED_UNITS_ID));
         }
         
         //item has to have unique name,store duplicates
@@ -417,7 +417,7 @@ public class InventoryItemBean implements InventoryItemRemote{
     private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, List exceptionList){
         //component required
         if(componentDO.getComponentNameId() == null){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryComponentMeta.COMPONENT));
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryComponentMeta.COMPONENT_ID));
         }
         
         //quantity required
@@ -433,7 +433,7 @@ public class InventoryItemBean implements InventoryItemRemote{
                 query.setParameter("store", inventoryItemStoreId);
             
             if(query.getResultList().size() == 0)
-                exceptionList.add(new TableFieldErrorException("inventoryComponentStoreException", rowIndex, InventoryComponentMeta.COMPONENT));
+                exceptionList.add(new TableFieldErrorException("inventoryComponentStoreException", rowIndex, InventoryComponentMeta.COMPONENT_ID));
         }
     }
 }

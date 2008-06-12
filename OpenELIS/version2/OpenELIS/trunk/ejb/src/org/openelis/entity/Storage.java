@@ -5,8 +5,12 @@ package org.openelis.entity;
   * Storage Entity POJO for database 
   */
 
-import java.util.Date;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -16,15 +20,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-	@NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocation = :id")})
+@NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocationId = :id")})
 
 @Entity
 @Table(name="storage")
@@ -39,11 +38,11 @@ public class Storage implements Auditable, Cloneable {
   @Column(name="reference_id")
   private Integer referenceId;             
 
-  @Column(name="reference_table")
-  private Integer referenceTable;             
+  @Column(name="reference_table_id")
+  private Integer referenceTableId;             
 
-  @Column(name="storage_location")
-  private Integer storageLocation;             
+  @Column(name="storage_location_id")
+  private Integer storageLocationId;             
 
   @Column(name="checkin")
   private Date checkin;             
@@ -74,22 +73,22 @@ public class Storage implements Auditable, Cloneable {
       this.referenceId = referenceId;
   }
 
-  public Integer getReferenceTable() {
-    return referenceTable;
+  public Integer getReferenceTableId() {
+    return referenceTableId;
   }
-  public void setReferenceTable(Integer referenceTable) {
-    if((referenceTable == null && this.referenceTable != null) || 
-       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
-      this.referenceTable = referenceTable;
+  public void setReferenceTableId(Integer referenceTableId) {
+    if((referenceTableId == null && this.referenceTableId != null) || 
+       (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
+      this.referenceTableId = referenceTableId;
   }
 
-  public Integer getStorageLocation() {
-    return storageLocation;
+  public Integer getStorageLocationId() {
+    return storageLocationId;
   }
-  public void setStorageLocation(Integer storageLocation) {
-    if((storageLocation == null && this.storageLocation != null) || 
-       (storageLocation != null && !storageLocation.equals(this.storageLocation)))
-      this.storageLocation = storageLocation;
+  public void setStorageLocationId(Integer storageLocationId) {
+    if((storageLocationId == null && this.storageLocationId != null) || 
+       (storageLocationId != null && !storageLocationId.equals(this.storageLocationId)))
+      this.storageLocationId = storageLocationId;
   }
 
   public Datetime getCheckin() {
@@ -122,59 +121,29 @@ public class Storage implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((referenceId == null && original.referenceId != null) || 
-           (referenceId != null && !referenceId.equals(original.referenceId))){
-          Element elem = doc.createElement("reference_id");
-          elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
 
-        if((referenceTable == null && original.referenceTable != null) || 
-           (referenceTable != null && !referenceTable.equals(original.referenceTable))){
-          Element elem = doc.createElement("reference_table");
-          elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
 
-        if((storageLocation == null && original.storageLocation != null) || 
-           (storageLocation != null && !storageLocation.equals(original.storageLocation))){
-          Element elem = doc.createElement("storage_location");
-          elem.appendChild(doc.createTextNode(original.storageLocation.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(storageLocationId,original.storageLocationId,doc,"storage_location_id");
 
-        if((checkin == null && original.checkin != null) || 
-           (checkin != null && !checkin.equals(original.checkin))){
-          Element elem = doc.createElement("checkin");
-          elem.appendChild(doc.createTextNode(original.checkin.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(checkin,original.checkin,doc,"checkin");
 
-        if((checkout == null && original.checkout != null) || 
-           (checkout != null && !checkout.equals(original.checkout))){
-          Element elem = doc.createElement("checkout");
-          elem.appendChild(doc.createTextNode(original.checkout.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(checkout,original.checkout,doc,"checkout");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "storage";

@@ -27,6 +27,7 @@
   	       <include name="org/openelis/remote/*.class"/>
   	       <include name="org/openelis/local/*.class"/>
   	       <include name="org/openelis/util/*.class"/>
+  	       <include name="org/openelis/meta/*.class"/>
   	    </fileset>
     </jar>
     <jar jarfile="build/openelis.ear"> 

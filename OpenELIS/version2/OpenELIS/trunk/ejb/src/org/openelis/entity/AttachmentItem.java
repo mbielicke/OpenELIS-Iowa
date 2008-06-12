@@ -34,11 +34,11 @@ public class AttachmentItem implements Auditable, Cloneable {
   @Column(name="reference_id")
   private Integer referenceId;             
 
-  @Column(name="reference_table")
-  private Integer referenceTable;             
+  @Column(name="reference_table_id")
+  private Integer referenceTableId;             
 
-  @Column(name="attachment")
-  private Integer attachment;             
+  @Column(name="attachment_id")
+  private Integer attachmentId;             
 
 
   @Transient
@@ -63,22 +63,22 @@ public class AttachmentItem implements Auditable, Cloneable {
       this.referenceId = referenceId;
   }
 
-  public Integer getReferenceTable() {
-    return referenceTable;
+  public Integer getReferenceTableId() {
+    return referenceTableId;
   }
-  public void setReferenceTable(Integer referenceTable) {
-    if((referenceTable == null && this.referenceTable != null) || 
-       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
-      this.referenceTable = referenceTable;
+  public void setReferenceTableId(Integer referenceTableId) {
+    if((referenceTableId == null && this.referenceTableId != null) || 
+       (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
+      this.referenceTableId = referenceTableId;
   }
 
-  public Integer getAttachment() {
-    return attachment;
+  public Integer getAttachmentId() {
+    return attachmentId;
   }
-  public void setAttachment(Integer attachment) {
-    if((attachment == null && this.attachment != null) || 
-       (attachment != null && !attachment.equals(this.attachment)))
-      this.attachment = attachment;
+  public void setAttachmentId(Integer attachmentId) {
+    if((attachmentId == null && this.attachmentId != null) || 
+       (attachmentId != null && !attachmentId.equals(this.attachmentId)))
+      this.attachmentId = attachmentId;
   }
 
   
@@ -93,33 +93,13 @@ public class AttachmentItem implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((referenceId == null && original.referenceId != null) || 
-         (referenceId != null && !referenceId.equals(original.referenceId))){
-        Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
 
-      if((referenceTable == null && original.referenceTable != null) || 
-         (referenceTable != null && !referenceTable.equals(original.referenceTable))){
-        Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
 
-      if((attachment == null && original.attachment != null) || 
-         (attachment != null && !attachment.equals(original.attachment))){
-        Element elem = doc.createElement("attachment");
-        elem.appendChild(doc.createTextNode(original.attachment.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(attachmentId,original.attachmentId,doc,"attachment_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

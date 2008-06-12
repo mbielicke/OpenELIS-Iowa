@@ -31,8 +31,8 @@ public class SampleEnvironmental implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sample")
-  private Integer sample;             
+  @Column(name="sample_id")
+  private Integer sampleId;             
 
   @Column(name="is_hazardous")
   private String isHazardous;             
@@ -49,8 +49,8 @@ public class SampleEnvironmental implements Auditable, Cloneable {
   @Column(name="sampling_location")
   private String samplingLocation;             
 
-  @Column(name="address")
-  private Integer address;             
+  @Column(name="address_id")
+  private Integer addressId;             
 
 
   @Transient
@@ -66,13 +66,13 @@ public class SampleEnvironmental implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSample() {
-    return sample;
+  public Integer getSampleId() {
+    return sampleId;
   }
-  public void setSample(Integer sample) {
-    if((sample == null && this.sample != null) || 
-       (sample != null && !sample.equals(this.sample)))
-      this.sample = sample;
+  public void setSampleId(Integer sampleId) {
+    if((sampleId == null && this.sampleId != null) || 
+       (sampleId != null && !sampleId.equals(this.sampleId)))
+      this.sampleId = sampleId;
   }
 
   public String getIsHazardous() {
@@ -120,13 +120,13 @@ public class SampleEnvironmental implements Auditable, Cloneable {
       this.samplingLocation = samplingLocation;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer addressId) {
+    if((addressId == null && this.addressId != null) || 
+       (addressId != null && !addressId.equals(this.addressId)))
+      this.addressId = addressId;
   }
 
   
@@ -141,61 +141,21 @@ public class SampleEnvironmental implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((sample == null && original.sample != null) || 
-         (sample != null && !sample.equals(original.sample))){
-        Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
 
-      if((isHazardous == null && original.isHazardous != null) || 
-         (isHazardous != null && !isHazardous.equals(original.isHazardous))){
-        Element elem = doc.createElement("is_hazardous");
-        elem.appendChild(doc.createTextNode(original.isHazardous.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isHazardous,original.isHazardous,doc,"is_hazardous");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((collector == null && original.collector != null) || 
-         (collector != null && !collector.equals(original.collector))){
-        Element elem = doc.createElement("collector");
-        elem.appendChild(doc.createTextNode(original.collector.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(collector,original.collector,doc,"collector");
 
-      if((collectorPhone == null && original.collectorPhone != null) || 
-         (collectorPhone != null && !collectorPhone.equals(original.collectorPhone))){
-        Element elem = doc.createElement("collector_phone");
-        elem.appendChild(doc.createTextNode(original.collectorPhone.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(collectorPhone,original.collectorPhone,doc,"collector_phone");
 
-      if((samplingLocation == null && original.samplingLocation != null) || 
-         (samplingLocation != null && !samplingLocation.equals(original.samplingLocation))){
-        Element elem = doc.createElement("sampling_location");
-        elem.appendChild(doc.createTextNode(original.samplingLocation.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(samplingLocation,original.samplingLocation,doc,"sampling_location");
 
-      if((address == null && original.address != null) || 
-         (address != null && !address.equals(original.address))){
-        Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

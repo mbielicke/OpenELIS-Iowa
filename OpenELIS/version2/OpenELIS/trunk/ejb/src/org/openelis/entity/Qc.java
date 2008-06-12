@@ -34,8 +34,8 @@ public class Qc implements Auditable, Cloneable {
   @Column(name="name")
   private String name;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="source")
   private String source;             
@@ -49,11 +49,11 @@ public class Qc implements Auditable, Cloneable {
   @Column(name="prepared_volume")
   private Double preparedVolume;             
 
-  @Column(name="prepared_unit")
-  private Integer preparedUnit;             
+  @Column(name="prepared_unit_id")
+  private Integer preparedUnitId;             
 
-  @Column(name="prepared_by")
-  private Integer preparedBy;             
+  @Column(name="prepared_by_id")
+  private Integer preparedById;             
 
   @Column(name="usable_date")
   private Date usableDate;             
@@ -87,13 +87,13 @@ public class Qc implements Auditable, Cloneable {
       this.name = name;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getSource() {
@@ -134,22 +134,22 @@ public class Qc implements Auditable, Cloneable {
       this.preparedVolume = preparedVolume;
   }
 
-  public Integer getPreparedUnit() {
-    return preparedUnit;
+  public Integer getPreparedUnitId() {
+    return preparedUnitId;
   }
-  public void setPreparedUnit(Integer preparedUnit) {
-    if((preparedUnit == null && this.preparedUnit != null) || 
-       (preparedUnit != null && !preparedUnit.equals(this.preparedUnit)))
-      this.preparedUnit = preparedUnit;
+  public void setPreparedUnitId(Integer preparedUnitId) {
+    if((preparedUnitId == null && this.preparedUnitId != null) || 
+       (preparedUnitId != null && !preparedUnitId.equals(this.preparedUnitId)))
+      this.preparedUnitId = preparedUnitId;
   }
 
-  public Integer getPreparedBy() {
-    return preparedBy;
+  public Integer getPreparedById() {
+    return preparedById;
   }
-  public void setPreparedBy(Integer preparedBy) {
-    if((preparedBy == null && this.preparedBy != null) || 
-       (preparedBy != null && !preparedBy.equals(this.preparedBy)))
-      this.preparedBy = preparedBy;
+  public void setPreparedById(Integer preparedById) {
+    if((preparedById == null && this.preparedById != null) || 
+       (preparedById != null && !preparedById.equals(this.preparedById)))
+      this.preparedById = preparedById;
   }
 
   public Datetime getUsableDate() {
@@ -195,89 +195,29 @@ public class Qc implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((source == null && original.source != null) || 
-         (source != null && !source.equals(original.source))){
-        Element elem = doc.createElement("source");
-        elem.appendChild(doc.createTextNode(original.source.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(source,original.source,doc,"source");
 
-      if((lotNumber == null && original.lotNumber != null) || 
-         (lotNumber != null && !lotNumber.equals(original.lotNumber))){
-        Element elem = doc.createElement("lot_number");
-        elem.appendChild(doc.createTextNode(original.lotNumber.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(lotNumber,original.lotNumber,doc,"lot_number");
 
-      if((preparedDate == null && original.preparedDate != null) || 
-         (preparedDate != null && !preparedDate.equals(original.preparedDate))){
-        Element elem = doc.createElement("prepared_date");
-        elem.appendChild(doc.createTextNode(original.preparedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(preparedDate,original.preparedDate,doc,"prepared_date");
 
-      if((preparedVolume == null && original.preparedVolume != null) || 
-         (preparedVolume != null && !preparedVolume.equals(original.preparedVolume))){
-        Element elem = doc.createElement("prepared_volume");
-        elem.appendChild(doc.createTextNode(original.preparedVolume.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(preparedVolume,original.preparedVolume,doc,"prepared_volume");
 
-      if((preparedUnit == null && original.preparedUnit != null) || 
-         (preparedUnit != null && !preparedUnit.equals(original.preparedUnit))){
-        Element elem = doc.createElement("prepared_unit");
-        elem.appendChild(doc.createTextNode(original.preparedUnit.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(preparedUnitId,original.preparedUnitId,doc,"prepared_unit_id");
 
-      if((preparedBy == null && original.preparedBy != null) || 
-         (preparedBy != null && !preparedBy.equals(original.preparedBy))){
-        Element elem = doc.createElement("prepared_by");
-        elem.appendChild(doc.createTextNode(original.preparedBy.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(preparedById,original.preparedById,doc,"prepared_by_id");
 
-      if((usableDate == null && original.usableDate != null) || 
-         (usableDate != null && !usableDate.equals(original.usableDate))){
-        Element elem = doc.createElement("usable_date");
-        elem.appendChild(doc.createTextNode(original.usableDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(usableDate,original.usableDate,doc,"usable_date");
 
-      if((expireDate == null && original.expireDate != null) || 
-         (expireDate != null && !expireDate.equals(original.expireDate))){
-        Element elem = doc.createElement("expire_date");
-        elem.appendChild(doc.createTextNode(original.expireDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(expireDate,original.expireDate,doc,"expire_date");
 
-      if((isSingleUse == null && original.isSingleUse != null) || 
-         (isSingleUse != null && !isSingleUse.equals(original.isSingleUse))){
-        Element elem = doc.createElement("is_single_use");
-        elem.appendChild(doc.createTextNode(original.isSingleUse.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isSingleUse,original.isSingleUse,doc,"is_single_use");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

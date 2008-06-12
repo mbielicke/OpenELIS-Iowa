@@ -31,8 +31,8 @@ public class Section implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="parent_section")
-  private Integer parentSection;             
+  @Column(name="parent_section_id")
+  private Integer parentSectionId;             
 
   @Column(name="name")
   private String name;             
@@ -43,8 +43,8 @@ public class Section implements Auditable, Cloneable {
   @Column(name="is_external")
   private String isExternal;             
 
-  @Column(name="organization")
-  private Integer organization;             
+  @Column(name="organization_id")
+  private Integer organizationId;             
 
 
   @Transient
@@ -60,13 +60,13 @@ public class Section implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getParentSection() {
-    return parentSection;
+  public Integer getParentSectionId() {
+    return parentSectionId;
   }
-  public void setParentSection(Integer parentSection) {
-    if((parentSection == null && this.parentSection != null) || 
-       (parentSection != null && !parentSection.equals(this.parentSection)))
-      this.parentSection = parentSection;
+  public void setParentSectionId(Integer parentSectionId) {
+    if((parentSectionId == null && this.parentSectionId != null) || 
+       (parentSectionId != null && !parentSectionId.equals(this.parentSectionId)))
+      this.parentSectionId = parentSectionId;
   }
 
   public String getName() {
@@ -96,13 +96,13 @@ public class Section implements Auditable, Cloneable {
       this.isExternal = isExternal;
   }
 
-  public Integer getOrganization() {
-    return organization;
+  public Integer getOrganizationId() {
+    return organizationId;
   }
-  public void setOrganization(Integer organization) {
-    if((organization == null && this.organization != null) || 
-       (organization != null && !organization.equals(this.organization)))
-      this.organization = organization;
+  public void setOrganizationId(Integer organizationId) {
+    if((organizationId == null && this.organizationId != null) || 
+       (organizationId != null && !organizationId.equals(this.organizationId)))
+      this.organizationId = organizationId;
   }
 
   
@@ -117,47 +117,17 @@ public class Section implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((parentSection == null && original.parentSection != null) || 
-         (parentSection != null && !parentSection.equals(original.parentSection))){
-        Element elem = doc.createElement("parent_section");
-        elem.appendChild(doc.createTextNode(original.parentSection.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(parentSectionId,original.parentSectionId,doc,"parent_section_id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((isExternal == null && original.isExternal != null) || 
-         (isExternal != null && !isExternal.equals(original.isExternal))){
-        Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isExternal,original.isExternal,doc,"is_external");
 
-      if((organization == null && original.organization != null) || 
-         (organization != null && !organization.equals(original.organization))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

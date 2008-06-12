@@ -34,8 +34,8 @@ public class Sample implements Auditable, Cloneable {
   @Column(name="next_item_sequence")
   private Integer nextItemSequence;             
 
-  @Column(name="domain")
-  private Integer domain;             
+  @Column(name="domain_id")
+  private Integer domainId;             
 
   @Column(name="accession_number")
   private Integer accessionNumber;             
@@ -49,17 +49,17 @@ public class Sample implements Auditable, Cloneable {
   @Column(name="received_date")
   private Date receivedDate;             
 
-  @Column(name="received_by")
-  private Integer receivedBy;             
+  @Column(name="received_by_id")
+  private Integer receivedById;             
 
   @Column(name="collection_date")
   private Date collectionDate;             
 
-  @Column(name="status")
-  private Integer status;             
+  @Column(name="status_id")
+  private Integer statusId;             
 
-  @Column(name="package")
-  private Integer _package;             
+  @Column(name="package_id")
+  private Integer packageId;             
 
   @Column(name="client_reference")
   private String clientReference;             
@@ -90,13 +90,13 @@ public class Sample implements Auditable, Cloneable {
       this.nextItemSequence = nextItemSequence;
   }
 
-  public Integer getDomain() {
-    return domain;
+  public Integer getDomainId() {
+    return domainId;
   }
-  public void setDomain(Integer domain) {
-    if((domain == null && this.domain != null) || 
-       (domain != null && !domain.equals(this.domain)))
-      this.domain = domain;
+  public void setDomainId(Integer domainId) {
+    if((domainId == null && this.domainId != null) || 
+       (domainId != null && !domainId.equals(this.domainId)))
+      this.domainId = domainId;
   }
 
   public Integer getAccessionNumber() {
@@ -139,13 +139,13 @@ public class Sample implements Auditable, Cloneable {
       this.receivedDate = received_date.getDate();
   }
 
-  public Integer getReceivedBy() {
-    return receivedBy;
+  public Integer getReceivedById() {
+    return receivedById;
   }
-  public void setReceivedBy(Integer receivedBy) {
-    if((receivedBy == null && this.receivedBy != null) || 
-       (receivedBy != null && !receivedBy.equals(this.receivedBy)))
-      this.receivedBy = receivedBy;
+  public void setReceivedById(Integer receivedById) {
+    if((receivedById == null && this.receivedById != null) || 
+       (receivedById != null && !receivedById.equals(this.receivedById)))
+      this.receivedById = receivedById;
   }
 
   public Datetime getCollectionDate() {
@@ -159,22 +159,22 @@ public class Sample implements Auditable, Cloneable {
       this.collectionDate = collection_date.getDate();
   }
 
-  public Integer getStatus() {
-    return status;
+  public Integer getStatusId() {
+    return statusId;
   }
-  public void setStatus(Integer status) {
-    if((status == null && this.status != null) || 
-       (status != null && !status.equals(this.status)))
-      this.status = status;
+  public void setStatusId(Integer statusId) {
+    if((statusId == null && this.statusId != null) || 
+       (statusId != null && !statusId.equals(this.statusId)))
+      this.statusId = statusId;
   }
 
-  public Integer getPackage() {
-    return _package;
+  public Integer getPackageId() {
+    return packageId;
   }
-  public void setPackage(Integer _package) {
-    if((_package == null && this._package != null) || 
-       (_package != null && !_package.equals(this._package)))
-      this._package = _package;
+  public void setPackageId(Integer packageId) {
+    if((packageId == null && this.packageId != null) || 
+       (packageId != null && !packageId.equals(this.packageId)))
+      this.packageId = packageId;
   }
 
   public String getClientReference() {
@@ -209,96 +209,31 @@ public class Sample implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((nextItemSequence == null && original.nextItemSequence != null) || 
-         (nextItemSequence != null && !nextItemSequence.equals(original.nextItemSequence))){
-        Element elem = doc.createElement("next_item_sequence");
-        elem.appendChild(doc.createTextNode(original.nextItemSequence.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(nextItemSequence,original.nextItemSequence,doc,"next_item_sequence");
 
-      if((domain == null && original.domain != null) || 
-         (domain != null && !domain.equals(original.domain))){
-        Element elem = doc.createElement("domain");
-        elem.appendChild(doc.createTextNode(original.domain.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(domainId,original.domainId,doc,"domain_id");
 
-      if((accessionNumber == null && original.accessionNumber != null) || 
-         (accessionNumber != null && !accessionNumber.equals(original.accessionNumber))){
-        Element elem = doc.createElement("accession_number");
-        elem.appendChild(doc.createTextNode(original.accessionNumber.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(accessionNumber,original.accessionNumber,doc,"accession_number");
 
-      if((revision == null && original.revision != null) || 
-         (revision != null && !revision.equals(original.revision))){
-        Element elem = doc.createElement("revision");
-        elem.appendChild(doc.createTextNode(original.revision.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
 
-      if((enteredDate == null && original.enteredDate != null) || 
-         (enteredDate != null && !enteredDate.equals(original.enteredDate))){
-        Element elem = doc.createElement("entered_date");
-        elem.appendChild(doc.createTextNode(original.enteredDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(enteredDate,original.enteredDate,doc,"entered_date");
 
-      if((receivedDate == null && original.receivedDate != null) || 
-         (receivedDate != null && !receivedDate.equals(original.receivedDate))){
-        Element elem = doc.createElement("received_date");
-        elem.appendChild(doc.createTextNode(original.receivedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(receivedDate,original.receivedDate,doc,"received_date");
 
-      if((receivedBy == null && original.receivedBy != null) || 
-         (receivedBy != null && !receivedBy.equals(original.receivedBy))){
-        Element elem = doc.createElement("received_by");
-        elem.appendChild(doc.createTextNode(original.receivedBy.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(receivedById,original.receivedById,doc,"received_by_id");
 
-      if((collectionDate == null && original.collectionDate != null) || 
-         (collectionDate != null && !collectionDate.equals(original.collectionDate))){
-        Element elem = doc.createElement("collection_date");
-        elem.appendChild(doc.createTextNode(original.collectionDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(collectionDate,original.collectionDate,doc,"collection_date");
 
-      if((status == null && original.status != null) || 
-         (status != null && !status.equals(original.status))){
-        Element elem = doc.createElement("status");
-        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
 
-      if((_package == null && original._package != null) || 
-         (_package != null && !_package.equals(original._package))){
-        Element elem = doc.createElement("package");
-        elem.appendChild(doc.createTextNode(original._package.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(packageId,original.packageId,doc,"package_id");
 
-      if((clientReference == null && original.clientReference != null) || 
-         (clientReference != null && !clientReference.equals(original.clientReference))){
-        Element elem = doc.createElement("client_reference");
-        elem.appendChild(doc.createTextNode(original.clientReference.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(clientReference,original.clientReference,doc,"client_reference");
 
-      if((releasedDate == null && original.releasedDate != null) || 
-         (releasedDate != null && !releasedDate.equals(original.releasedDate))){
-        Element elem = doc.createElement("released_date");
-        elem.appendChild(doc.createTextNode(original.releasedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

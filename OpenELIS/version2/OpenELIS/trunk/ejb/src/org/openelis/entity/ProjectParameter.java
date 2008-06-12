@@ -31,8 +31,8 @@ public class ProjectParameter implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="project")
-  private Integer project;             
+  @Column(name="project_id")
+  private Integer projectId;             
 
   @Column(name="parameter")
   private String parameter;             
@@ -57,13 +57,13 @@ public class ProjectParameter implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getProject() {
-    return project;
+  public Integer getProjectId() {
+    return projectId;
   }
-  public void setProject(Integer project) {
-    if((project == null && this.project != null) || 
-       (project != null && !project.equals(this.project)))
-      this.project = project;
+  public void setProjectId(Integer projectId) {
+    if((projectId == null && this.projectId != null) || 
+       (projectId != null && !projectId.equals(this.projectId)))
+      this.projectId = projectId;
   }
 
   public String getParameter() {
@@ -105,40 +105,15 @@ public class ProjectParameter implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((project == null && original.project != null) || 
-         (project != null && !project.equals(original.project))){
-        Element elem = doc.createElement("project");
-        elem.appendChild(doc.createTextNode(original.project.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(projectId,original.projectId,doc,"project_id");
 
-      if((parameter == null && original.parameter != null) || 
-         (parameter != null && !parameter.equals(original.parameter))){
-        Element elem = doc.createElement("parameter");
-        elem.appendChild(doc.createTextNode(original.parameter.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(parameter,original.parameter,doc,"parameter");
 
-      if((operation == null && original.operation != null) || 
-         (operation != null && !operation.equals(original.operation))){
-        Element elem = doc.createElement("operation");
-        elem.appendChild(doc.createTextNode(original.operation.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(operation,original.operation,doc,"operation");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

@@ -7,10 +7,10 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Address;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +19,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -36,20 +35,20 @@ public class OrganizationContact implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="organization")
-  private Integer organization;             
+  @Column(name="organization_id")
+  private Integer organizationId;             
 
-  @Column(name="contact_type")
-  private Integer contactType;             
+  @Column(name="contact_type_id")
+  private Integer contactTypeId;             
 
   @Column(name="name")
   private String name;             
 
-  @Column(name="address")
+  @Column(name="address_id")
   private Integer addressId;             
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "address", insertable = false, updatable = false)
+  @JoinColumn(name = "address_id", insertable = false, updatable = false)
   private Address address;
 
   @Transient
@@ -65,22 +64,22 @@ public class OrganizationContact implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getOrganization() {
-    return organization;
+  public Integer getOrganizationId() {
+    return organizationId;
   }
-  public void setOrganization(Integer organization) {
-    if((organization == null && this.organization != null) || 
-       (organization != null && !organization.equals(this.organization)))
-      this.organization = organization;
+  public void setOrganizationId(Integer organizationId) {
+    if((organizationId == null && this.organizationId != null) || 
+       (organizationId != null && !organizationId.equals(this.organizationId)))
+      this.organizationId = organizationId;
   }
 
-  public Integer getContactType() {
-    return contactType;
+  public Integer getContactTypeId() {
+    return contactTypeId;
   }
-  public void setContactType(Integer contactType) {
-    if((contactType == null && this.contactType != null) || 
-       (contactType != null && !contactType.equals(this.contactType)))
-      this.contactType = contactType;
+  public void setContactTypeId(Integer contactTypeId) {
+    if((contactTypeId == null && this.contactTypeId != null) || 
+       (contactTypeId != null && !contactTypeId.equals(this.contactTypeId)))
+      this.contactTypeId = contactTypeId;
   }
 
   public String getName() {
@@ -95,10 +94,10 @@ public class OrganizationContact implements Auditable, Cloneable {
   public Integer getAddressId() {
     return addressId;
   }
-  public void setAddressId(Integer address) {
-    if((address == null && this.addressId != null) || 
-       (address != null && !address.equals(this.addressId)))
-      this.addressId = address;
+  public void setAddressId(Integer addressId) {
+    if((addressId == null && this.addressId != null) || 
+       (addressId != null && !addressId.equals(this.addressId)))
+      this.addressId = addressId;
   }
 
   
@@ -109,61 +108,37 @@ public class OrganizationContact implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((organization == null && original.organization != null) || 
-           (organization != null && !organization.equals(original.organization))){
-          Element elem = doc.createElement("organization");
-          elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
 
-        if((contactType == null && original.contactType != null) || 
-           (contactType != null && !contactType.equals(original.contactType))){
-          Element elem = doc.createElement("contact_type");
-          elem.appendChild(doc.createTextNode(original.contactType.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(contactTypeId,original.contactTypeId,doc,"contact_type_id");
 
-        if((name == null && original.name != null) || 
-           (name != null && !name.equals(original.name))){
-          Element elem = doc.createElement("name");
-          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-        if((addressId == null && original.addressId != null) || 
-           (addressId != null && !addressId.equals(original.addressId))){
-          Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.addressId.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "organization_contact";
   }
-public Address getAddressTable() {
-	return address;
-}
-public void setAddressTable(Address addressTable) {
-	this.address = addressTable;
-}
+  
+  public Address getAddressTable() {
+    return address;
+  }
+  public void setAddressTable(Address addressTable) {
+    this.address = addressTable;
+  }
   
 }   

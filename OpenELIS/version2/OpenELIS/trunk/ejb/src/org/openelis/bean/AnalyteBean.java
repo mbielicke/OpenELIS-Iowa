@@ -192,7 +192,7 @@ public class AnalyteBean implements AnalyteRemote{
         else
           	analyte = manager.find(Analyte.class, analyteDO.getId());
             
-        analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
+        analyte.setAnalyteGroupId(analyteDO.getAnalyteGroup());
         analyte.setExternalId(analyteDO.getExternalId());
         analyte.setIsActive(analyteDO.getIsActive());
         analyte.setName(analyteDO.getName());

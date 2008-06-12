@@ -167,9 +167,9 @@ public class OrganizationBean implements OrganizationRemote {
 //	            	send the contact address to the address bean
 	            Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
 		                
-	            orgContact.setContactType(contactDO.getContactType());
+	            orgContact.setContactTypeId(contactDO.getContactType());
 		        orgContact.setName(contactDO.getName());
-		        orgContact.setOrganization(organization.getId());
+		        orgContact.setOrganizationId(organization.getId());
 		        orgContact.setAddressId(contactAddressId);
 		            
 		        if (orgContact.getId() == null) {
@@ -187,9 +187,9 @@ public class OrganizationBean implements OrganizationRemote {
         	note = new Note();
             note.setIsExternal(noteDO.getIsExternal());
             note.setReferenceId(organization.getId());
-            note.setReferenceTable(organizationReferenceId);
+            note.setReferenceTableId(organizationReferenceId);
             note.setSubject(noteDO.getSubject());
-            note.setSystemUser(getSystemUserId());
+            note.setSystemUserId(getSystemUserId());
             note.setText(noteDO.getText());
         	note.setTimestamp(Datetime.getInstance());
     	}
@@ -363,7 +363,7 @@ public class OrganizationBean implements OrganizationRemote {
 	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, List exceptionList){
 		//contact type required
 		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.CONTACT_TYPE));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.CONTACT_TYPE_ID));
 		}
 
 		//name required

@@ -185,7 +185,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         standardNote.setDescription(standardNoteDO.getDescription());
         standardNote.setName(standardNoteDO.getName());
         standardNote.setText(standardNoteDO.getText());
-        standardNote.setType(standardNoteDO.getType());
+        standardNote.setTypeId(standardNoteDO.getType());
          
         if (standardNote.getId() == null) {
 	       	manager.persist(standardNote);
@@ -215,7 +215,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         
         query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
         query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
-        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMeta.TYPE)).getValue()).trim()));
+        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMeta.TYPE_ID)).getValue()).trim()));
         
         List returnList = query.getResultList();
         
@@ -259,7 +259,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 		
 		//type required
 		if(standardNoteDO.getType() == null || "".equals(standardNoteDO.getType())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.TYPE));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.TYPE_ID));
 		}
 		
 		//text required

@@ -5,6 +5,13 @@ package org.openelis.entity;
   * InventoryComponent Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.entity.InventoryItem;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -17,19 +24,16 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-	@NamedQueries({	@NamedQuery(name = "InventoryComponent.InventoryComponent", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
-			 											" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
-                    @NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItem,c.component,i.name,i.description, " +
-                                                        " c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItem = :id"),
-                    @NamedQuery(name = "InventoryComponent.ValidateComponentWithItemStore", query = "select c.id from InventoryComponent c left join c.componentInventoryItem i where " +
-                                                        " i.store = :store AND c.id = :id")})
+@NamedQueries({ @NamedQuery(name = "InventoryComponent.InventoryComponent", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
+    " c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
+@NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
+" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItemId = :id"),
+@NamedQuery(name = "InventoryComponent.ValidateComponentWithItemStore", query = "select c.id from InventoryComponent c left join c.componentInventoryItem i where " +
+" i.storeId = :store AND c.id = :id")})
+
 
 @Entity
 @Table(name="inventory_component")
@@ -41,19 +45,20 @@ public class InventoryComponent implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="inventory_item")
-  private Integer inventoryItem;             
+  @Column(name="inventory_item_id")
+  private Integer inventoryItemId;             
 
-  @Column(name="component")
-  private Integer component;             
+  @Column(name="component_id")
+  private Integer componentId;             
 
   @Column(name="quantity")
-  private Double quantity;             
-
+  private Double quantity; 
+  
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "component", insertable = false, updatable = false)
   private InventoryItem componentInventoryItem;
-  
+
+
   @Transient
   private InventoryComponent original;
 
@@ -67,22 +72,22 @@ public class InventoryComponent implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getInventoryItem() {
-    return inventoryItem;
+  public Integer getInventoryItemId() {
+    return inventoryItemId;
   }
-  public void setInventoryItem(Integer inventoryItem) {
-    if((inventoryItem == null && this.inventoryItem != null) || 
-       (inventoryItem != null && !inventoryItem.equals(this.inventoryItem)))
-      this.inventoryItem = inventoryItem;
+  public void setInventoryItemId(Integer inventoryItemId) {
+    if((inventoryItemId == null && this.inventoryItemId != null) || 
+       (inventoryItemId != null && !inventoryItemId.equals(this.inventoryItemId)))
+      this.inventoryItemId = inventoryItemId;
   }
 
-  public Integer getComponent() {
-    return component;
+  public Integer getComponentId() {
+    return componentId;
   }
-  public void setComponent(Integer component) {
-    if((component == null && this.component != null) || 
-       (component != null && !component.equals(this.component)))
-      this.component = component;
+  public void setComponentId(Integer componentId) {
+    if((componentId == null && this.componentId != null) || 
+       (componentId != null && !componentId.equals(this.componentId)))
+      this.componentId = componentId;
   }
 
   public Double getQuantity() {
@@ -106,33 +111,13 @@ public class InventoryComponent implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((inventoryItem == null && original.inventoryItem != null) || 
-         (inventoryItem != null && !inventoryItem.equals(original.inventoryItem))){
-        Element elem = doc.createElement("inventory_item");
-        elem.appendChild(doc.createTextNode(original.inventoryItem.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
 
-      if((component == null && original.component != null) || 
-         (component != null && !component.equals(original.component))){
-        Element elem = doc.createElement("component");
-        elem.appendChild(doc.createTextNode(original.component.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(componentId,original.componentId,doc,"component_id");
 
-      if((quantity == null && original.quantity != null) || 
-         (quantity != null && !quantity.equals(original.quantity))){
-        Element elem = doc.createElement("quantity");
-        elem.appendChild(doc.createTextNode(original.quantity.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -145,11 +130,12 @@ public class InventoryComponent implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_component";
   }
-public InventoryItem getComponentInventoryItem() {
-	return componentInventoryItem;
-}
-public void setComponentInventoryItem(InventoryItem componentInventoryItem) {
-	this.componentInventoryItem = componentInventoryItem;
-}
+  
+  public InventoryItem getComponentInventoryItem() {
+    return componentInventoryItem;
+  }
+  public void setComponentInventoryItem(InventoryItem componentInventoryItem) {
+    this.componentInventoryItem = componentInventoryItem;
+  }
   
 }   

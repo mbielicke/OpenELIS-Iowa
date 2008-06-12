@@ -7,8 +7,10 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,9 +22,9 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerType,l.scriptlet)" +                                                                                                  
-                    "  from Label l where l.id = :id")
-                              
+@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerTypeId,l.scriptletId)" +                                                                                                  
+"  from Label l where l.id = :id")
+
 @Entity
 @Table(name="label")
 @EntityListeners({AuditUtil.class})
@@ -39,11 +41,11 @@ public class Label implements Auditable, Cloneable {
   @Column(name="description")
   private String description;             
 
-  @Column(name="printer_type")
-  private Integer printerType;             
+  @Column(name="printer_type_id")
+  private Integer printerTypeId;             
 
-  @Column(name="scriptlet")
-  private Integer scriptlet;             
+  @Column(name="scriptlet_id")
+  private Integer scriptletId;             
 
 
   @Transient
@@ -77,22 +79,22 @@ public class Label implements Auditable, Cloneable {
       this.description = description;
   }
 
-  public Integer getPrinterType() {
-    return printerType;
+  public Integer getPrinterTypeId() {
+    return printerTypeId;
   }
-  public void setPrinterType(Integer printerType) {
-    if((printerType == null && this.printerType != null) || 
-       (printerType != null && !printerType.equals(this.printerType)))
-      this.printerType = printerType;
+  public void setPrinterTypeId(Integer printerTypeId) {
+    if((printerTypeId == null && this.printerTypeId != null) || 
+       (printerTypeId != null && !printerTypeId.equals(this.printerTypeId)))
+      this.printerTypeId = printerTypeId;
   }
 
-  public Integer getScriptlet() {
-    return scriptlet;
+  public Integer getScriptletId() {
+    return scriptletId;
   }
-  public void setScriptlet(Integer scriptlet) {
-    if((scriptlet == null && this.scriptlet != null) || 
-       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
-      this.scriptlet = scriptlet;
+  public void setScriptletId(Integer scriptletId) {
+    if((scriptletId == null && this.scriptletId != null) || 
+       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+      this.scriptletId = scriptletId;
   }
 
   
@@ -107,40 +109,15 @@ public class Label implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((printerType == null && original.printerType != null) || 
-         (printerType != null && !printerType.equals(original.printerType))){
-        Element elem = doc.createElement("printer_type");
-        elem.appendChild(doc.createTextNode(original.printerType.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(printerTypeId,original.printerTypeId,doc,"printer_type_id");
 
-      if((scriptlet == null && original.scriptlet != null) || 
-         (scriptlet != null && !scriptlet.equals(original.scriptlet))){
-        Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

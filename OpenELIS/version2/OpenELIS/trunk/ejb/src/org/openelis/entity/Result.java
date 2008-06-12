@@ -5,6 +5,12 @@ package org.openelis.entity;
   * Result Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,14 +20,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-	@NamedQueries({@NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyte = :id")})
+@NamedQueries({@NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyteId = :id")})
 
 @Entity
 @Table(name="result")
@@ -33,26 +35,26 @@ public class Result implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="analysis")
-  private Integer analysis;             
+  @Column(name="analysis_id")
+  private Integer analysisId;             
 
-  @Column(name="sort_order")
-  private Integer sortOrder;             
+  @Column(name="sort_order_id")
+  private Integer sortOrderId;             
 
   @Column(name="is_reportable")
   private String isReportable;             
 
-  @Column(name="analyte")
-  private Integer analyte;             
+  @Column(name="analyte_id")
+  private Integer analyteId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="value")
   private String value;             
 
-  @Column(name="test_result")
-  private Integer testResult;             
+  @Column(name="test_result_id")
+  private Integer testResultId;             
 
   @Column(name="quant_limit")
   private String quantLimit;             
@@ -71,22 +73,22 @@ public class Result implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
-  public void setAnalysis(Integer analysis) {
-    if((analysis == null && this.analysis != null) || 
-       (analysis != null && !analysis.equals(this.analysis)))
-      this.analysis = analysis;
+  public void setAnalysisId(Integer analysisId) {
+    if((analysisId == null && this.analysisId != null) || 
+       (analysisId != null && !analysisId.equals(this.analysisId)))
+      this.analysisId = analysisId;
   }
 
-  public Integer getSortOrder() {
-    return sortOrder;
+  public Integer getSortOrderId() {
+    return sortOrderId;
   }
-  public void setSortOrder(Integer sortOrder) {
-    if((sortOrder == null && this.sortOrder != null) || 
-       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
-      this.sortOrder = sortOrder;
+  public void setSortOrderId(Integer sortOrderId) {
+    if((sortOrderId == null && this.sortOrderId != null) || 
+       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
+      this.sortOrderId = sortOrderId;
   }
 
   public String getIsReportable() {
@@ -98,22 +100,22 @@ public class Result implements Auditable, Cloneable {
       this.isReportable = isReportable;
   }
 
-  public Integer getAnalyte() {
-    return analyte;
+  public Integer getAnalyteId() {
+    return analyteId;
   }
-  public void setAnalyte(Integer analyte) {
-    if((analyte == null && this.analyte != null) || 
-       (analyte != null && !analyte.equals(this.analyte)))
-      this.analyte = analyte;
+  public void setAnalyteId(Integer analyteId) {
+    if((analyteId == null && this.analyteId != null) || 
+       (analyteId != null && !analyteId.equals(this.analyteId)))
+      this.analyteId = analyteId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getValue() {
@@ -125,13 +127,13 @@ public class Result implements Auditable, Cloneable {
       this.value = value;
   }
 
-  public Integer getTestResult() {
-    return testResult;
+  public Integer getTestResultId() {
+    return testResultId;
   }
-  public void setTestResult(Integer testResult) {
-    if((testResult == null && this.testResult != null) || 
-       (testResult != null && !testResult.equals(this.testResult)))
-      this.testResult = testResult;
+  public void setTestResultId(Integer testResultId) {
+    if((testResultId == null && this.testResultId != null) || 
+       (testResultId != null && !testResultId.equals(this.testResultId)))
+      this.testResultId = testResultId;
   }
 
   public String getQuantLimit() {
@@ -155,68 +157,23 @@ public class Result implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((analysis == null && original.analysis != null) || 
-         (analysis != null && !analysis.equals(original.analysis))){
-        Element elem = doc.createElement("analysis");
-        elem.appendChild(doc.createTextNode(original.analysis.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
 
-      if((sortOrder == null && original.sortOrder != null) || 
-         (sortOrder != null && !sortOrder.equals(original.sortOrder))){
-        Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
 
-      if((isReportable == null && original.isReportable != null) || 
-         (isReportable != null && !isReportable.equals(original.isReportable))){
-        Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
 
-      if((analyte == null && original.analyte != null) || 
-         (analyte != null && !analyte.equals(original.analyte))){
-        Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
-      if((testResult == null && original.testResult != null) || 
-         (testResult != null && !testResult.equals(original.testResult))){
-        Element elem = doc.createElement("test_result");
-        elem.appendChild(doc.createTextNode(original.testResult.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testResultId,original.testResultId,doc,"test_result_id");
 
-      if((quantLimit == null && original.quantLimit != null) || 
-         (quantLimit != null && !quantLimit.equals(original.quantLimit))){
-        Element elem = doc.createElement("quant_limit");
-        elem.appendChild(doc.createTextNode(original.quantLimit.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(quantLimit,original.quantLimit,doc,"quant_limit");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

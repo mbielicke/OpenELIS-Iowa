@@ -31,20 +31,20 @@ public class TestReflex implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="test")
-  private Integer test;             
+  @Column(name="test_id")
+  private Integer testId;             
 
-  @Column(name="test_analyte")
-  private Integer testAnalyte;             
+  @Column(name="test_analyte_id")
+  private Integer testAnalyteId;             
 
-  @Column(name="test_result")
-  private Integer testResult;             
+  @Column(name="test_result_id")
+  private Integer testResultId;             
 
-  @Column(name="flags")
-  private Integer flags;             
+  @Column(name="flags_id")
+  private Integer flagsId;             
 
-  @Column(name="add_test")
-  private Integer addTest;             
+  @Column(name="add_test_id")
+  private Integer addTestId;             
 
 
   @Transient
@@ -60,49 +60,49 @@ public class TestReflex implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
-  }
-
-  public Integer getTestAnalyte() {
-    return testAnalyte;
-  }
-  public void setTestAnalyte(Integer testAnalyte) {
-    if((testAnalyte == null && this.testAnalyte != null) || 
-       (testAnalyte != null && !testAnalyte.equals(this.testAnalyte)))
-      this.testAnalyte = testAnalyte;
+  public void setTestId(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
-  public Integer getTestResult() {
-    return testResult;
+  public Integer getTestAnalyteId() {
+    return testAnalyteId;
   }
-  public void setTestResult(Integer testResult) {
-    if((testResult == null && this.testResult != null) || 
-       (testResult != null && !testResult.equals(this.testResult)))
-      this.testResult = testResult;
-  }
-
-  public Integer getFlags() {
-    return flags;
-  }
-  public void setFlags(Integer flags) {
-    if((flags == null && this.flags != null) || 
-       (flags != null && !flags.equals(this.flags)))
-      this.flags = flags;
+  public void setTestAnalyteId(Integer testAnalyteId) {
+    if((testAnalyteId == null && this.testAnalyteId != null) || 
+       (testAnalyteId != null && !testAnalyteId.equals(this.testAnalyteId)))
+      this.testAnalyteId = testAnalyteId;
   }
 
-  public Integer getAddTest() {
-    return addTest;
+  public Integer getTestResultId() {
+    return testResultId;
   }
-  public void setAddTest(Integer addTest) {
-    if((addTest == null && this.addTest != null) || 
-       (addTest != null && !addTest.equals(this.addTest)))
-      this.addTest = addTest;
+  public void setTestResultId(Integer testResultId) {
+    if((testResultId == null && this.testResultId != null) || 
+       (testResultId != null && !testResultId.equals(this.testResultId)))
+      this.testResultId = testResultId;
+  }
+
+  public Integer getFlagsId() {
+    return flagsId;
+  }
+  public void setFlagsId(Integer flagsId) {
+    if((flagsId == null && this.flagsId != null) || 
+       (flagsId != null && !flagsId.equals(this.flagsId)))
+      this.flagsId = flagsId;
+  }
+
+  public Integer getAddTestId() {
+    return addTestId;
+  }
+  public void setAddTestId(Integer addTestId) {
+    if((addTestId == null && this.addTestId != null) || 
+       (addTestId != null && !addTestId.equals(this.addTestId)))
+      this.addTestId = addTestId;
   }
 
   
@@ -117,47 +117,17 @@ public class TestReflex implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      if((testAnalyte == null && original.testAnalyte != null) || 
-         (testAnalyte != null && !testAnalyte.equals(original.testAnalyte))){
-        Element elem = doc.createElement("test_analyte");
-        elem.appendChild(doc.createTextNode(original.testAnalyte.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testAnalyteId,original.testAnalyteId,doc,"test_analyte_id");
 
-      if((testResult == null && original.testResult != null) || 
-         (testResult != null && !testResult.equals(original.testResult))){
-        Element elem = doc.createElement("test_result");
-        elem.appendChild(doc.createTextNode(original.testResult.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testResultId,original.testResultId,doc,"test_result_id");
 
-      if((flags == null && original.flags != null) || 
-         (flags != null && !flags.equals(original.flags))){
-        Element elem = doc.createElement("flags");
-        elem.appendChild(doc.createTextNode(original.flags.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(flagsId,original.flagsId,doc,"flags_id");
 
-      if((addTest == null && original.addTest != null) || 
-         (addTest != null && !addTest.equals(original.addTest))){
-        Element elem = doc.createElement("add_test");
-        elem.appendChild(doc.createTextNode(original.addTest.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(addTestId,original.addTestId,doc,"add_test_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

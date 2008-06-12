@@ -159,7 +159,7 @@ public class CategoryBean implements CategoryRemote {
         category.setDescription(categoryDO.getDescription());                       
         category.setSystemName(categoryDO.getSystemName());
         category.setName(categoryDO.getName());
-        category.setSection(categoryDO.getSection());
+        category.setSectionId(categoryDO.getSection());
         
         if(category.getId()==null){
             manager.persist(category);
@@ -189,7 +189,7 @@ public class CategoryBean implements CategoryRemote {
                 manager.remove(dictionary);
                 
              }else{                       
-                 dictionary.setCategory(category.getId());
+                 dictionary.setCategoryId(category.getId());
                  dictionary.setEntry(dictDO.getEntry());
                  dictionary.setIsActive(dictDO.getIsActive());
                  dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());

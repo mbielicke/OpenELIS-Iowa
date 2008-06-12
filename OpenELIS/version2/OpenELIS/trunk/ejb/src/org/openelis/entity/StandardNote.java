@@ -5,6 +5,13 @@ package org.openelis.entity;
   * StandardNote Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.entity.Dictionary;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -17,18 +24,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where s.id = :id"),
-	           @NamedQuery(name = "StandardNote.StandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.type,s.text) from StandardNote s where "+
-	        		              " (s.name like :name OR s.description like :desc) and s.type = :type order by s.name"),
-	           @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct d.id, d.entry " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
-			   											 
+@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id"),
+    @NamedQuery(name = "StandardNote.StandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where "+
+                      " (s.name like :name OR s.description like :desc) and s.typeId = :type order by s.name"),
+    @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct d.id, d.entry " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
+            
+    
 @Entity
 @Table(name="standard_note")
 @EntityListeners({AuditUtil.class})
@@ -45,16 +48,16 @@ public class StandardNote implements Auditable, Cloneable {
   @Column(name="description")
   private String description;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="text")
-  private String text;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type", insertable = false, updatable = false)
-  private Dictionary dictionary;
+  private String text;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_id", insertable = false, updatable = false)
+  private Dictionary dictionary;
+  
   @Transient
   private StandardNote original;
 
@@ -86,13 +89,13 @@ public class StandardNote implements Auditable, Cloneable {
       this.description = description;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getText() {
@@ -116,40 +119,15 @@ public class StandardNote implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((text == null && original.text != null) || 
-         (text != null && !text.equals(original.text))){
-        Element elem = doc.createElement("text");
-        elem.appendChild(doc.createTextNode(original.text.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

@@ -40,8 +40,8 @@ public class Person implements Auditable, Cloneable {
   @Column(name="middle_name")
   private String middleName;             
 
-  @Column(name="address")
-  private Integer address;             
+  @Column(name="address_id")
+  private Integer addressId;             
 
 
   @Transient
@@ -84,13 +84,13 @@ public class Person implements Auditable, Cloneable {
       this.middleName = middleName;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer addressId) {
+    if((addressId == null && this.addressId != null) || 
+       (addressId != null && !addressId.equals(this.addressId)))
+      this.addressId = addressId;
   }
 
   
@@ -105,40 +105,15 @@ public class Person implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((lastName == null && original.lastName != null) || 
-         (lastName != null && !lastName.equals(original.lastName))){
-        Element elem = doc.createElement("last_name");
-        elem.appendChild(doc.createTextNode(original.lastName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(lastName,original.lastName,doc,"last_name");
 
-      if((firstName == null && original.firstName != null) || 
-         (firstName != null && !firstName.equals(original.firstName))){
-        Element elem = doc.createElement("first_name");
-        elem.appendChild(doc.createTextNode(original.firstName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(firstName,original.firstName,doc,"first_name");
 
-      if((middleName == null && original.middleName != null) || 
-         (middleName != null && !middleName.equals(original.middleName))){
-        Element elem = doc.createElement("middle_name");
-        elem.appendChild(doc.createTextNode(original.middleName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(middleName,original.middleName,doc,"middle_name");
 
-      if((address == null && original.address != null) || 
-         (address != null && !address.equals(original.address))){
-        Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

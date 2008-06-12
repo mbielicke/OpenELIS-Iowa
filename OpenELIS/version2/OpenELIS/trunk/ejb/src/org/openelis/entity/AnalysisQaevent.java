@@ -31,11 +31,11 @@ public class AnalysisQaevent implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="analysis")
-  private Integer analysis;             
+  @Column(name="analysis_id")
+  private Integer analysisId;             
 
-  @Column(name="qaevent")
-  private Integer qaevent;             
+  @Column(name="qaevent_id")
+  private Integer qaeventId;             
 
 
   @Transient
@@ -51,22 +51,22 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
-  public void setAnalysis(Integer analysis) {
-    if((analysis == null && this.analysis != null) || 
-       (analysis != null && !analysis.equals(this.analysis)))
-      this.analysis = analysis;
+  public void setAnalysisId(Integer analysisId) {
+    if((analysisId == null && this.analysisId != null) || 
+       (analysisId != null && !analysisId.equals(this.analysisId)))
+      this.analysisId = analysisId;
   }
 
-  public Integer getQaevent() {
-    return qaevent;
+  public Integer getQaeventId() {
+    return qaeventId;
   }
-  public void setQaevent(Integer qaevent) {
-    if((qaevent == null && this.qaevent != null) || 
-       (qaevent != null && !qaevent.equals(this.qaevent)))
-      this.qaevent = qaevent;
+  public void setQaeventId(Integer qaeventId) {
+    if((qaeventId == null && this.qaeventId != null) || 
+       (qaeventId != null && !qaeventId.equals(this.qaeventId)))
+      this.qaeventId = qaeventId;
   }
 
   
@@ -81,26 +81,11 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((analysis == null && original.analysis != null) || 
-         (analysis != null && !analysis.equals(original.analysis))){
-        Element elem = doc.createElement("analysis");
-        elem.appendChild(doc.createTextNode(original.analysis.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
 
-      if((qaevent == null && original.qaevent != null) || 
-         (qaevent != null && !qaevent.equals(original.qaevent))){
-        Element elem = doc.createElement("qaevent");
-        elem.appendChild(doc.createTextNode(original.qaevent.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(qaeventId,original.qaeventId,doc,"qaevent_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

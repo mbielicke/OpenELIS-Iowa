@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
+import org.openelis.util.Datetime;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
 import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
@@ -41,10 +42,10 @@ public boolean isLocked(Integer table, Integer row){
     boolean locked = false;
     try {
         Lock lock = (Lock)query.getSingleResult();
-        if(lock.getExpires().after(Calendar.getInstance().getTime()) && !lock.getSystemUser().equals(getSystemUserId())){
+        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId())){
             locked = true;
         }
-        if((locked && lock.getSystemUser().equals(getSystemUserId())) || !locked){
+        if((locked && lock.getSystemUserId().equals(getSystemUserId())) || !locked){
             manager.remove(lock);
             manager.flush();
             locked = false;
@@ -60,7 +61,7 @@ public Integer getLock(Integer table, Integer row) throws Exception {
         Query query = manager.createQuery("from Lock where referenceTable = "+table+" and referenceId = "+row);
         try {
             Lock lock = (Lock)query.getSingleResult();
-            SystemUserDO user = sysUser.getSystemUser(lock.getSystemUser());
+            SystemUserDO user = sysUser.getSystemUser(lock.getSystemUserId());
             throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }catch(Exception e){
             e.printStackTrace();
@@ -68,13 +69,13 @@ public Integer getLock(Integer table, Integer row) throws Exception {
         }
     }
     Lock lock = new Lock();
-    lock.setReferenceTable(table);
+    lock.setReferenceTableId(table);
     lock.setReferenceId(row);
-    lock.setSystemUser(getSystemUserId());
+    lock.setSystemUserId(getSystemUserId());
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MINUTE,10);
     Date expires = cal.getTime();
-    lock.setExpires(expires);
+    lock.setExpires(new Datetime(Datetime.YEAR,Datetime.MINUTE,expires));
     manager.persist(lock);
     return lock.getId();
 }

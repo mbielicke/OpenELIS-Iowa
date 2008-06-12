@@ -31,14 +31,14 @@ public class InstrumentLog implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="instrument")
-  private Integer instrument;             
+  @Column(name="instrument_id")
+  private Integer instrumentId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
-  @Column(name="worksheet")
-  private Integer worksheet;             
+  @Column(name="worksheet_id")
+  private Integer worksheetId;             
 
   @Column(name="event_begin")
   private Date eventBegin;             
@@ -60,31 +60,31 @@ public class InstrumentLog implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getInstrument() {
-    return instrument;
+  public Integer getInstrumentId() {
+    return instrumentId;
   }
-  public void setInstrument(Integer instrument) {
-    if((instrument == null && this.instrument != null) || 
-       (instrument != null && !instrument.equals(this.instrument)))
-      this.instrument = instrument;
-  }
-
-  public Integer getType() {
-    return type;
-  }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setInstrumentId(Integer instrumentId) {
+    if((instrumentId == null && this.instrumentId != null) || 
+       (instrumentId != null && !instrumentId.equals(this.instrumentId)))
+      this.instrumentId = instrumentId;
   }
 
-  public Integer getWorksheet() {
-    return worksheet;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setWorksheet(Integer worksheet) {
-    if((worksheet == null && this.worksheet != null) || 
-       (worksheet != null && !worksheet.equals(this.worksheet)))
-      this.worksheet = worksheet;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
+  }
+
+  public Integer getWorksheetId() {
+    return worksheetId;
+  }
+  public void setWorksheetId(Integer worksheetId) {
+    if((worksheetId == null && this.worksheetId != null) || 
+       (worksheetId != null && !worksheetId.equals(this.worksheetId)))
+      this.worksheetId = worksheetId;
   }
 
   public Datetime getEventBegin() {
@@ -121,47 +121,17 @@ public class InstrumentLog implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((instrument == null && original.instrument != null) || 
-         (instrument != null && !instrument.equals(original.instrument))){
-        Element elem = doc.createElement("instrument");
-        elem.appendChild(doc.createTextNode(original.instrument.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(instrumentId,original.instrumentId,doc,"instrument_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((worksheet == null && original.worksheet != null) || 
-         (worksheet != null && !worksheet.equals(original.worksheet))){
-        Element elem = doc.createElement("worksheet");
-        elem.appendChild(doc.createTextNode(original.worksheet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(worksheetId,original.worksheetId,doc,"worksheet_id");
 
-      if((eventBegin == null && original.eventBegin != null) || 
-         (eventBegin != null && !eventBegin.equals(original.eventBegin))){
-        Element elem = doc.createElement("event_begin");
-        elem.appendChild(doc.createTextNode(original.eventBegin.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(eventBegin,original.eventBegin,doc,"event_begin");
 
-      if((eventEnd == null && original.eventEnd != null) || 
-         (eventEnd != null && !eventEnd.equals(original.eventEnd))){
-        Element elem = doc.createElement("event_end");
-        elem.appendChild(doc.createTextNode(original.eventEnd.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(eventEnd,original.eventEnd,doc,"event_end");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

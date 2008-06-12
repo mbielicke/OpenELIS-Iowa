@@ -31,14 +31,14 @@ public class PatientRelation implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="relation")
-  private Integer relation;             
+  @Column(name="relation_id")
+  private Integer relationId;             
 
-  @Column(name="from_patient")
-  private Integer fromPatient;             
+  @Column(name="from_patient_id")
+  private Integer fromPatientId;             
 
-  @Column(name="to_patient")
-  private Integer toPatient;             
+  @Column(name="to_patient_id")
+  private Integer toPatientId;             
 
 
   @Transient
@@ -54,31 +54,31 @@ public class PatientRelation implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getRelation() {
-    return relation;
+  public Integer getRelationId() {
+    return relationId;
   }
-  public void setRelation(Integer relation) {
-    if((relation == null && this.relation != null) || 
-       (relation != null && !relation.equals(this.relation)))
-      this.relation = relation;
-  }
-
-  public Integer getFromPatient() {
-    return fromPatient;
-  }
-  public void setFromPatient(Integer fromPatient) {
-    if((fromPatient == null && this.fromPatient != null) || 
-       (fromPatient != null && !fromPatient.equals(this.fromPatient)))
-      this.fromPatient = fromPatient;
+  public void setRelationId(Integer relationId) {
+    if((relationId == null && this.relationId != null) || 
+       (relationId != null && !relationId.equals(this.relationId)))
+      this.relationId = relationId;
   }
 
-  public Integer getToPatient() {
-    return toPatient;
+  public Integer getFromPatientId() {
+    return fromPatientId;
   }
-  public void setToPatient(Integer toPatient) {
-    if((toPatient == null && this.toPatient != null) || 
-       (toPatient != null && !toPatient.equals(this.toPatient)))
-      this.toPatient = toPatient;
+  public void setFromPatientId(Integer fromPatientId) {
+    if((fromPatientId == null && this.fromPatientId != null) || 
+       (fromPatientId != null && !fromPatientId.equals(this.fromPatientId)))
+      this.fromPatientId = fromPatientId;
+  }
+
+  public Integer getToPatientId() {
+    return toPatientId;
+  }
+  public void setToPatientId(Integer toPatientId) {
+    if((toPatientId == null && this.toPatientId != null) || 
+       (toPatientId != null && !toPatientId.equals(this.toPatientId)))
+      this.toPatientId = toPatientId;
   }
 
   
@@ -93,33 +93,13 @@ public class PatientRelation implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((relation == null && original.relation != null) || 
-         (relation != null && !relation.equals(original.relation))){
-        Element elem = doc.createElement("relation");
-        elem.appendChild(doc.createTextNode(original.relation.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(relationId,original.relationId,doc,"relation_id");
 
-      if((fromPatient == null && original.fromPatient != null) || 
-         (fromPatient != null && !fromPatient.equals(original.fromPatient))){
-        Element elem = doc.createElement("from_patient");
-        elem.appendChild(doc.createTextNode(original.fromPatient.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(fromPatientId,original.fromPatientId,doc,"from_patient_id");
 
-      if((toPatient == null && original.toPatient != null) || 
-         (toPatient != null && !toPatient.equals(original.toPatient))){
-        Element elem = doc.createElement("to_patient");
-        elem.appendChild(doc.createTextNode(original.toPatient.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(toPatientId,original.toPatientId,doc,"to_patient_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

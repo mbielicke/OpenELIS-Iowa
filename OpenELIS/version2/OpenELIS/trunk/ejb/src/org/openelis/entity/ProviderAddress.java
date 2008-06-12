@@ -7,8 +7,11 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Address;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -38,18 +41,16 @@ public class ProviderAddress implements Auditable, Cloneable {
   @Column(name="external_id")
   private String externalId;             
 
-  @Column(name="provider")
-  private Integer provider;             
+  @Column(name="provider_id")
+  private Integer providerId;             
 
-  @Column(name="address")
+  @Column(name="address_id")
   private Integer addressId;             
 
-
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "address", insertable = false, updatable = false)
+  @JoinColumn(name = "address_id", insertable = false, updatable = false)
   private Address address;
-  
-  
+
   @Transient
   private ProviderAddress original;
 
@@ -81,13 +82,13 @@ public class ProviderAddress implements Auditable, Cloneable {
       this.externalId = externalId;
   }
 
-  public Integer getProvider() {
-    return provider;
+  public Integer getProviderId() {
+    return providerId;
   }
-  public void setProvider(Integer provider) {
-    if((provider == null && this.provider != null) || 
-       (provider != null && !provider.equals(this.provider)))
-      this.provider = provider;
+  public void setProviderId(Integer providerId) {
+    if((providerId == null && this.providerId != null) || 
+       (providerId != null && !providerId.equals(this.providerId)))
+      this.providerId = providerId;
   }
 
   public Integer getAddressId() {
@@ -107,63 +108,37 @@ public class ProviderAddress implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((location == null && original.location != null) || 
-           (location != null && !location.equals(original.location))){
-          Element elem = doc.createElement("location");
-          elem.appendChild(doc.createTextNode(original.location.toString()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(location,original.location,doc,"location");
 
-        if((externalId == null && original.externalId != null) || 
-           (externalId != null && !externalId.equals(original.externalId))){
-          Element elem = doc.createElement("external_id");
-          elem.appendChild(doc.createTextNode(original.externalId.toString()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(externalId,original.externalId,doc,"external_id");
 
-        if((provider == null && original.provider != null) || 
-           (provider != null && !provider.equals(original.provider))){
-          Element elem = doc.createElement("provider");
-          elem.appendChild(doc.createTextNode(original.provider.toString()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(providerId,original.providerId,doc,"provider_id");
 
-        if((addressId == null && original.addressId != null) || 
-           (addressId != null && !addressId.equals(original.addressId))){
-          Element elem = doc.createElement("address");
-          elem.appendChild(doc.createTextNode(original.addressId.toString()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "provider_address";
   }
-public Address getAddress() {
-    return address;
-}
-public void setAddress(Address address) {
-    this.address = address;
-}
   
- 
+  public Address getAddress() {
+      return address;
+  }
+  public void setAddress(Address address) {
+      this.address = address;
+  }
   
 }   

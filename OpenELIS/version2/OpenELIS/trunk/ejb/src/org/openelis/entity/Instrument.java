@@ -43,8 +43,8 @@ public class Instrument implements Auditable, Cloneable {
   @Column(name="serial_number")
   private String serialNumber;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="location")
   private String location;             
@@ -58,8 +58,8 @@ public class Instrument implements Auditable, Cloneable {
   @Column(name="active_end")
   private Date activeEnd;             
 
-  @Column(name="scriptlet")
-  private Integer scriptlet;             
+  @Column(name="scriptlet_id")
+  private Integer scriptletId;             
 
 
   @Transient
@@ -111,13 +111,13 @@ public class Instrument implements Auditable, Cloneable {
       this.serialNumber = serialNumber;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getLocation() {
@@ -160,13 +160,13 @@ public class Instrument implements Auditable, Cloneable {
       this.activeEnd = active_end.getDate();
   }
 
-  public Integer getScriptlet() {
-    return scriptlet;
+  public Integer getScriptletId() {
+    return scriptletId;
   }
-  public void setScriptlet(Integer scriptlet) {
-    if((scriptlet == null && this.scriptlet != null) || 
-       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
-      this.scriptlet = scriptlet;
+  public void setScriptletId(Integer scriptletId) {
+    if((scriptletId == null && this.scriptletId != null) || 
+       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+      this.scriptletId = scriptletId;
   }
 
   
@@ -181,82 +181,27 @@ public class Instrument implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((modelNumber == null && original.modelNumber != null) || 
-         (modelNumber != null && !modelNumber.equals(original.modelNumber))){
-        Element elem = doc.createElement("model_number");
-        elem.appendChild(doc.createTextNode(original.modelNumber.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(modelNumber,original.modelNumber,doc,"model_number");
 
-      if((serialNumber == null && original.serialNumber != null) || 
-         (serialNumber != null && !serialNumber.equals(original.serialNumber))){
-        Element elem = doc.createElement("serial_number");
-        elem.appendChild(doc.createTextNode(original.serialNumber.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(serialNumber,original.serialNumber,doc,"serial_number");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((location == null && original.location != null) || 
-         (location != null && !location.equals(original.location))){
-        Element elem = doc.createElement("location");
-        elem.appendChild(doc.createTextNode(original.location.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(location,original.location,doc,"location");
 
-      if((isActive == null && original.isActive != null) || 
-         (isActive != null && !isActive.equals(original.isActive))){
-        Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
 
-      if((activeBegin == null && original.activeBegin != null) || 
-         (activeBegin != null && !activeBegin.equals(original.activeBegin))){
-        Element elem = doc.createElement("active_begin");
-        elem.appendChild(doc.createTextNode(original.activeBegin.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(activeBegin,original.activeBegin,doc,"active_begin");
 
-      if((activeEnd == null && original.activeEnd != null) || 
-         (activeEnd != null && !activeEnd.equals(original.activeEnd))){
-        Element elem = doc.createElement("active_end");
-        elem.appendChild(doc.createTextNode(original.activeEnd.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(activeEnd,original.activeEnd,doc,"active_end");
 
-      if((scriptlet == null && original.scriptlet != null) || 
-         (scriptlet != null && !scriptlet.equals(original.scriptlet))){
-        Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

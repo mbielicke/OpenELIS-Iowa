@@ -7,7 +7,10 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,8 +23,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name="getPreference", query="select new org.openelis.domain.PreferencesDO(id,systemUser,key,text) from Preferences where systemUser = :systemUser and key = :key")})
-
+@NamedQueries({@NamedQuery(name="getPreference", query="select new org.openelis.domain.PreferencesDO(id,systemUserId,key,text) from Preferences where systemUserId = :systemUser and key = :key")})
 @Entity
 @Table(name="preferences")
 @EntityListeners({AuditUtil.class})
@@ -32,8 +34,8 @@ public class Preferences implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="system_user")
-  private Integer systemUser;             
+  @Column(name="system_user_id")
+  private Integer systemUserId;             
 
   @Column(name="key")
   private String key;             
@@ -55,13 +57,13 @@ public class Preferences implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSystemUser() {
-    return systemUser;
+  public Integer getSystemUserId() {
+    return systemUserId;
   }
-  public void setSystemUser(Integer systemUser) {
-    if((systemUser == null && this.systemUser != null) || 
-       (systemUser != null && !systemUser.equals(this.systemUser)))
-      this.systemUser = systemUser;
+  public void setSystemUserId(Integer systemUserId) {
+    if((systemUserId == null && this.systemUserId != null) || 
+       (systemUserId != null && !systemUserId.equals(this.systemUserId)))
+      this.systemUserId = systemUserId;
   }
 
   public String getKey() {
@@ -94,33 +96,13 @@ public class Preferences implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((systemUser == null && original.systemUser != null) || 
-         (systemUser != null && !systemUser.equals(original.systemUser))){
-        Element elem = doc.createElement("system_user");
-        elem.appendChild(doc.createTextNode(original.systemUser.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
 
-      if((key == null && original.key != null) || 
-         (key != null && !key.equals(original.key))){
-        Element elem = doc.createElement("key");
-        elem.appendChild(doc.createTextNode(original.key.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(key,original.key,doc,"key");
 
-      if((text == null && original.text != null) || 
-         (text != null && !text.equals(original.text))){
-        Element elem = doc.createElement("text");
-        elem.appendChild(doc.createTextNode(original.text.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

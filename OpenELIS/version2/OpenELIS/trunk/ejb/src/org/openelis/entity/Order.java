@@ -7,6 +7,8 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.OrderItem;
+import org.openelis.entity.Organization;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
@@ -29,16 +31,16 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Order.OrderInternal", query = "select new org.openelis.domain.OrderDO(o.id, o.status, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenter, o.organizationId, " +
+    @NamedQuery(name = "Order.OrderInternal", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
                             " o.isExternal, o.externalOrderNumber, o.reportToId, o.billToId) from Order o where o.id = :id"),
-    @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.status, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenter, o.organizationId, " +
+    @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
                             " oo.name, oo.address.multipleUnit, oo.address.streetAddress, oo.address.city, oo.address.state, oo.address.zipCode, o.isExternal, o.externalOrderNumber, " +
                             " o.reportToId, o.billToId) from Order o left join o.organization oo where o.id = :id"),
     @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
-    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItem,r.organization,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryTransaction i left join i.fromReceipt r left join i.toOrder o where o.order = :id")})
+    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId,r.organizationId,r.receivedDate,r.quantityReceived, " +
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryTransaction i left join i.fromReceipt r left join i.toOrder o where o.orderId = :id")})
             
 @Entity
 @Table(name="order")
@@ -50,9 +52,9 @@ public class Order implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="status")
-  private Integer status;
-  
+  @Column(name="status_id")
+  private Integer statusId;             
+
   @Column(name="ordered_date")
   private Date orderedDate;             
 
@@ -62,34 +64,34 @@ public class Order implements Auditable, Cloneable {
   @Column(name="requested_by")
   private String requestedBy;             
 
-  @Column(name="cost_center")
-  private Integer costCenter;             
+  @Column(name="cost_center_id")
+  private Integer costCenterId;             
 
-  @Column(name="organization")
-  private Integer organizationId;
-  
+  @Column(name="organization_id")
+  private Integer organizationId;             
+
   @Column(name="is_external")
   private String isExternal;             
 
   @Column(name="external_order_number")
   private String externalOrderNumber;             
 
-  @Column(name="report_to")
-  private Integer reportToId;
-  
-  @Column(name="bill_to")
-  private Integer billToId;
-  
+  @Column(name="report_to_id")
+  private Integer reportToId;             
+
+  @Column(name="bill_to_id")
+  private Integer billToId;             
+
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "organization", insertable = false, updatable = false)
+  @JoinColumn(name = "organization_id", insertable = false, updatable = false)
   private Organization organization;
   
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "report_to", insertable = false, updatable = false)
+  @JoinColumn(name = "report_to_id", insertable = false, updatable = false)
   private Organization reportTo;
   
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "bill_to", insertable = false, updatable = false)
+  @JoinColumn(name = "bill_to_id", insertable = false, updatable = false)
   private Organization billTo;
   
   @OneToMany(fetch = FetchType.LAZY)
@@ -109,24 +111,33 @@ public class Order implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getOrganizationId() {
-    return organizationId;
+  public Integer getStatusId() {
+    return statusId;
   }
-  public void setOrganizationId(Integer organization) {
-    if((organization == null && this.organizationId != null) || 
-       (organization != null && !organization.equals(this.organizationId)))
-      this.organizationId = organization;
+  public void setStatusId(Integer statusId) {
+    if((statusId == null && this.statusId != null) || 
+       (statusId != null && !statusId.equals(this.statusId)))
+      this.statusId = statusId;
   }
 
   public Datetime getOrderedDate() {
     if(orderedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.DAY,orderedDate);
+    return new Datetime(Datetime.YEAR,Datetime.SECOND,orderedDate);
   }
-  public void setOrderedDate (Datetime orderedDate){
-    if((orderedDate == null && this.orderedDate != null) || (orderedDate != null && this.orderedDate == null) || 
-       (orderedDate != null && !orderedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.orderedDate))))
-        this.orderedDate = orderedDate.getDate();
+  public void setOrderedDate (Datetime ordered_date){
+    if((orderedDate == null && this.orderedDate != null) || 
+       (orderedDate != null && !orderedDate.equals(this.orderedDate)))
+      this.orderedDate = ordered_date.getDate();
+  }
+
+  public Integer getNeededInDays() {
+    return neededInDays;
+  }
+  public void setNeededInDays(Integer neededInDays) {
+    if((neededInDays == null && this.neededInDays != null) || 
+       (neededInDays != null && !neededInDays.equals(this.neededInDays)))
+      this.neededInDays = neededInDays;
   }
 
   public String getRequestedBy() {
@@ -136,6 +147,24 @@ public class Order implements Auditable, Cloneable {
     if((requestedBy == null && this.requestedBy != null) || 
        (requestedBy != null && !requestedBy.equals(this.requestedBy)))
       this.requestedBy = requestedBy;
+  }
+
+  public Integer getCostCenterId() {
+    return costCenterId;
+  }
+  public void setCostCenterId(Integer costCenterId) {
+    if((costCenterId == null && this.costCenterId != null) || 
+       (costCenterId != null && !costCenterId.equals(this.costCenterId)))
+      this.costCenterId = costCenterId;
+  }
+
+  public Integer getOrganizationId() {
+    return organizationId;
+  }
+  public void setOrganizationId(Integer organizationId) {
+    if((organizationId == null && this.organizationId != null) || 
+       (organizationId != null && !organizationId.equals(this.organizationId)))
+      this.organizationId = organizationId;
   }
 
   public String getIsExternal() {
@@ -155,6 +184,25 @@ public class Order implements Auditable, Cloneable {
        (externalOrderNumber != null && !externalOrderNumber.equals(this.externalOrderNumber)))
       this.externalOrderNumber = externalOrderNumber;
   }
+
+  public Integer getReportToId() {
+    return reportToId;
+  }
+  public void setReportToId(Integer reportToId) {
+    if((reportToId == null && this.reportToId != null) || 
+       (reportToId != null && !reportToId.equals(this.reportToId)))
+      this.reportToId = reportToId;
+  }
+
+  public Integer getBillToId() {
+    return billToId;
+  }
+  public void setBillToId(Integer billToId) {
+    if((billToId == null && this.billToId != null) || 
+       (billToId != null && !billToId.equals(this.billToId)))
+      this.billToId = billToId;
+  }
+
   
   public void setClone() {
     try {
@@ -167,82 +215,27 @@ public class Order implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }    
-      
-      if((status == null && original.status != null) || 
-         (status != null && !status.equals(original.status))){
-        Element elem = doc.createElement("status");
-        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
-        root.appendChild(elem);
-      }          
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((orderedDate == null && original.orderedDate != null) || 
-         (orderedDate != null && !orderedDate.equals(original.orderedDate))){
-        Element elem = doc.createElement("ordered_date");
-        elem.appendChild(doc.createTextNode(original.orderedDate.toString().trim()));
-        root.appendChild(elem);
-      }
-      
-      if((neededInDays == null && original.neededInDays != null) || 
-         (neededInDays != null && !neededInDays.equals(original.neededInDays))){
-        Element elem = doc.createElement("needed_in_days");
-        elem.appendChild(doc.createTextNode(original.neededInDays.toString().trim()));
-        root.appendChild(elem);
-     } 
+      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
 
-      if((requestedBy == null && original.requestedBy != null) || 
-         (requestedBy != null && !requestedBy.equals(original.requestedBy))){
-        Element elem = doc.createElement("requested_by");
-        elem.appendChild(doc.createTextNode(original.requestedBy.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(orderedDate,original.orderedDate,doc,"ordered_date");
 
-      if((costCenter == null && original.costCenter != null) || 
-         (costCenter != null && !costCenter.equals(original.costCenter))){
-        Element elem = doc.createElement("cost_center");
-        elem.appendChild(doc.createTextNode(original.costCenter.toString().trim()));
-        root.appendChild(elem);
-      }    
-      
-      if((organizationId == null && original.organizationId != null) || 
-         (organizationId != null && !organizationId.equals(original.organizationId))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organizationId.toString().trim()));
-        root.appendChild(elem);
-      }   
+      AuditUtil.getChangeXML(neededInDays,original.neededInDays,doc,"needed_in_days");
 
-      if((isExternal == null && original.isExternal != null) || 
-         (isExternal != null && !isExternal.equals(original.isExternal))){
-        Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(requestedBy,original.requestedBy,doc,"requested_by");
 
-      if((externalOrderNumber == null && original.externalOrderNumber != null) || 
-         (externalOrderNumber != null && !externalOrderNumber.equals(original.externalOrderNumber))){
-        Element elem = doc.createElement("external_order_number");
-        elem.appendChild(doc.createTextNode(original.externalOrderNumber.toString().trim()));
-        root.appendChild(elem);
-      }     
-      
-      if((reportToId == null && original.reportToId != null) || 
-         (reportToId != null && !reportToId.equals(original.reportToId))){
-        Element elem = doc.createElement("report_to");
-        elem.appendChild(doc.createTextNode(original.reportToId.toString().trim()));
-        root.appendChild(elem);
-      } 
-      
-      if((billToId == null && original.billToId != null) || 
-         (billToId != null && !billToId.equals(original.billToId))){
-        Element elem = doc.createElement("bill_to");
-        elem.appendChild(doc.createTextNode(original.billToId.toString().trim()));
-        root.appendChild(elem);
-      }
+      AuditUtil.getChangeXML(costCenterId,original.costCenterId,doc,"cost_center_id");
+
+      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
+
+      AuditUtil.getChangeXML(isExternal,original.isExternal,doc,"is_external");
+
+      AuditUtil.getChangeXML(externalOrderNumber,original.externalOrderNumber,doc,"external_order_number");
+
+      AuditUtil.getChangeXML(reportToId,original.reportToId,doc,"report_to_id");
+
+      AuditUtil.getChangeXML(billToId,original.billToId,doc,"bill_to_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -255,61 +248,22 @@ public class Order implements Auditable, Cloneable {
   public String getTableName() {
     return "order";
   }
-public Integer getBillToId() {
-    return billToId;
-}
-public void setBillToId(Integer billTo) {
-    if((billTo == null && this.billToId != null) || 
-       (billTo != null && !billTo.equals(this.billToId)))
-    this.billToId = billTo;
-}
-public Integer getNeededInDays() {
-    return neededInDays;
-}
-public void setNeededInDays(Integer neededInDays) {
-    if((neededInDays == null && this.neededInDays != null) || 
-         (neededInDays != null && !neededInDays.equals(this.neededInDays)))
-    this.neededInDays = neededInDays;
-}
-public Integer getReportToId() {
-    return reportToId;
-}
-public void setReportToId(Integer reportTo) {
-    if((reportTo == null && this.reportToId != null) || 
-         (reportTo != null && !reportTo.equals(this.reportToId)))
-    this.reportToId = reportTo;
-}
-public Integer getStatus() {
-    return status;
-}
-public void setStatus(Integer status) {
-    if((status == null && this.status != null) || 
-            (status != null && !status.equals(this.status)))
-    this.status = status;
-}
-public void setCostCenter(Integer costCenter) {
-    if((costCenter == null && this.costCenter != null) || 
-          (costCenter != null && !costCenter.equals(this.costCenter)))
-    this.costCenter = costCenter;
-}
-public Integer getCostCenter() {
-    return costCenter;
-}
-public Organization getBillTo() {
-    return billTo;
-}
+  public Organization getBillTo() {
+      return billTo;
+  }
 
-public Organization getOrganization() {
-    return organization;
-}
+  public Organization getOrganization() {
+      return organization;
+  }
 
-public Organization getReportTo() {
-    return reportTo;
-}
-public Collection<OrderItem> getOrderItem() {
-    return orderItem;
-}
-public void setOrderItem(Collection<OrderItem> orderItem) {
-    this.orderItem = orderItem;
-} 
+  public Organization getReportTo() {
+      return reportTo;
+  }
+  public Collection<OrderItem> getOrderItem() {
+      return orderItem;
+  }
+  public void setOrderItem(Collection<OrderItem> orderItem) {
+      this.orderItem = orderItem;
+  } 
+  
 }   

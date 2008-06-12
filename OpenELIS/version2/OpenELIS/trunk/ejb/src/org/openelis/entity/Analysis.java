@@ -31,35 +31,35 @@ public class Analysis implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sample_item")
-  private Integer sampleItem;             
+  @Column(name="sample_item_id")
+  private Integer sampleItemId;             
 
   @Column(name="revision")
   private Integer revision;             
 
-  @Column(name="test")
-  private Integer test;             
+  @Column(name="test_id")
+  private Integer testId;             
 
-  @Column(name="section")
-  private Integer section;             
+  @Column(name="section_id")
+  private Integer sectionId;             
 
-  @Column(name="pre_analysis")
-  private Integer preAnalysis;             
+  @Column(name="pre_analysis_id")
+  private Integer preAnalysisId;             
 
-  @Column(name="parent_analysis")
-  private Integer parentAnalysis;             
+  @Column(name="parent_analysis_id")
+  private Integer parentAnalysisId;             
 
-  @Column(name="parent_result")
-  private Integer parentResult;             
+  @Column(name="parent_result_id")
+  private Integer parentResultId;             
 
   @Column(name="is_reportable")
   private String isReportable;             
 
-  @Column(name="unit_of_measure")
-  private Integer unitOfMeasure;             
+  @Column(name="unit_of_measure_id")
+  private Integer unitOfMeasureId;             
 
-  @Column(name="status")
-  private Integer status;             
+  @Column(name="status_id")
+  private Integer statusId;             
 
   @Column(name="available_date")
   private Date availableDate;             
@@ -90,13 +90,13 @@ public class Analysis implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSampleItem() {
-    return sampleItem;
+  public Integer getSampleItemId() {
+    return sampleItemId;
   }
-  public void setSampleItem(Integer sampleItem) {
-    if((sampleItem == null && this.sampleItem != null) || 
-       (sampleItem != null && !sampleItem.equals(this.sampleItem)))
-      this.sampleItem = sampleItem;
+  public void setSampleItemId(Integer sampleItemId) {
+    if((sampleItemId == null && this.sampleItemId != null) || 
+       (sampleItemId != null && !sampleItemId.equals(this.sampleItemId)))
+      this.sampleItemId = sampleItemId;
   }
 
   public Integer getRevision() {
@@ -108,49 +108,49 @@ public class Analysis implements Auditable, Cloneable {
       this.revision = revision;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
-  }
-
-  public Integer getSection() {
-    return section;
-  }
-  public void setSection(Integer section) {
-    if((section == null && this.section != null) || 
-       (section != null && !section.equals(this.section)))
-      this.section = section;
+  public void setTestId(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
-  public Integer getPreAnalysis() {
-    return preAnalysis;
+  public Integer getSectionId() {
+    return sectionId;
   }
-  public void setPreAnalysis(Integer preAnalysis) {
-    if((preAnalysis == null && this.preAnalysis != null) || 
-       (preAnalysis != null && !preAnalysis.equals(this.preAnalysis)))
-      this.preAnalysis = preAnalysis;
-  }
-
-  public Integer getParentAnalysis() {
-    return parentAnalysis;
-  }
-  public void setParentAnalysis(Integer parentAnalysis) {
-    if((parentAnalysis == null && this.parentAnalysis != null) || 
-       (parentAnalysis != null && !parentAnalysis.equals(this.parentAnalysis)))
-      this.parentAnalysis = parentAnalysis;
+  public void setSectionId(Integer sectionId) {
+    if((sectionId == null && this.sectionId != null) || 
+       (sectionId != null && !sectionId.equals(this.sectionId)))
+      this.sectionId = sectionId;
   }
 
-  public Integer getParentResult() {
-    return parentResult;
+  public Integer getPreAnalysisId() {
+    return preAnalysisId;
   }
-  public void setParentResult(Integer parentResult) {
-    if((parentResult == null && this.parentResult != null) || 
-       (parentResult != null && !parentResult.equals(this.parentResult)))
-      this.parentResult = parentResult;
+  public void setPreAnalysisId(Integer preAnalysisId) {
+    if((preAnalysisId == null && this.preAnalysisId != null) || 
+       (preAnalysisId != null && !preAnalysisId.equals(this.preAnalysisId)))
+      this.preAnalysisId = preAnalysisId;
+  }
+
+  public Integer getParentAnalysisId() {
+    return parentAnalysisId;
+  }
+  public void setParentAnalysisId(Integer parentAnalysisId) {
+    if((parentAnalysisId == null && this.parentAnalysisId != null) || 
+       (parentAnalysisId != null && !parentAnalysisId.equals(this.parentAnalysisId)))
+      this.parentAnalysisId = parentAnalysisId;
+  }
+
+  public Integer getParentResultId() {
+    return parentResultId;
+  }
+  public void setParentResultId(Integer parentResultId) {
+    if((parentResultId == null && this.parentResultId != null) || 
+       (parentResultId != null && !parentResultId.equals(this.parentResultId)))
+      this.parentResultId = parentResultId;
   }
 
   public String getIsReportable() {
@@ -162,22 +162,22 @@ public class Analysis implements Auditable, Cloneable {
       this.isReportable = isReportable;
   }
 
-  public Integer getUnitOfMeasure() {
-    return unitOfMeasure;
+  public Integer getUnitOfMeasureId() {
+    return unitOfMeasureId;
   }
-  public void setUnitOfMeasure(Integer unitOfMeasure) {
-    if((unitOfMeasure == null && this.unitOfMeasure != null) || 
-       (unitOfMeasure != null && !unitOfMeasure.equals(this.unitOfMeasure)))
-      this.unitOfMeasure = unitOfMeasure;
+  public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+    if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
+       (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+      this.unitOfMeasureId = unitOfMeasureId;
   }
 
-  public Integer getStatus() {
-    return status;
+  public Integer getStatusId() {
+    return statusId;
   }
-  public void setStatus(Integer status) {
-    if((status == null && this.status != null) || 
-       (status != null && !status.equals(this.status)))
-      this.status = status;
+  public void setStatusId(Integer statusId) {
+    if((statusId == null && this.statusId != null) || 
+       (statusId != null && !statusId.equals(this.statusId)))
+      this.statusId = statusId;
   }
 
   public Datetime getAvailableDate() {
@@ -247,117 +247,37 @@ public class Analysis implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((sampleItem == null && original.sampleItem != null) || 
-         (sampleItem != null && !sampleItem.equals(original.sampleItem))){
-        Element elem = doc.createElement("sample_item");
-        elem.appendChild(doc.createTextNode(original.sampleItem.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
 
-      if((revision == null && original.revision != null) || 
-         (revision != null && !revision.equals(original.revision))){
-        Element elem = doc.createElement("revision");
-        elem.appendChild(doc.createTextNode(original.revision.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(revision,original.revision,doc,"revision");
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      if((section == null && original.section != null) || 
-         (section != null && !section.equals(original.section))){
-        Element elem = doc.createElement("section");
-        elem.appendChild(doc.createTextNode(original.section.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
 
-      if((preAnalysis == null && original.preAnalysis != null) || 
-         (preAnalysis != null && !preAnalysis.equals(original.preAnalysis))){
-        Element elem = doc.createElement("pre_analysis");
-        elem.appendChild(doc.createTextNode(original.preAnalysis.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(preAnalysisId,original.preAnalysisId,doc,"pre_analysis_id");
 
-      if((parentAnalysis == null && original.parentAnalysis != null) || 
-         (parentAnalysis != null && !parentAnalysis.equals(original.parentAnalysis))){
-        Element elem = doc.createElement("parent_analysis");
-        elem.appendChild(doc.createTextNode(original.parentAnalysis.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(parentAnalysisId,original.parentAnalysisId,doc,"parent_analysis_id");
 
-      if((parentResult == null && original.parentResult != null) || 
-         (parentResult != null && !parentResult.equals(original.parentResult))){
-        Element elem = doc.createElement("parent_result");
-        elem.appendChild(doc.createTextNode(original.parentResult.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(parentResultId,original.parentResultId,doc,"parent_result_id");
 
-      if((isReportable == null && original.isReportable != null) || 
-         (isReportable != null && !isReportable.equals(original.isReportable))){
-        Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
 
-      if((unitOfMeasure == null && original.unitOfMeasure != null) || 
-         (unitOfMeasure != null && !unitOfMeasure.equals(original.unitOfMeasure))){
-        Element elem = doc.createElement("unit_of_measure");
-        elem.appendChild(doc.createTextNode(original.unitOfMeasure.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
 
-      if((status == null && original.status != null) || 
-         (status != null && !status.equals(original.status))){
-        Element elem = doc.createElement("status");
-        elem.appendChild(doc.createTextNode(original.status.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
 
-      if((availableDate == null && original.availableDate != null) || 
-         (availableDate != null && !availableDate.equals(original.availableDate))){
-        Element elem = doc.createElement("available_date");
-        elem.appendChild(doc.createTextNode(original.availableDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(availableDate,original.availableDate,doc,"available_date");
 
-      if((startedDate == null && original.startedDate != null) || 
-         (startedDate != null && !startedDate.equals(original.startedDate))){
-        Element elem = doc.createElement("started_date");
-        elem.appendChild(doc.createTextNode(original.startedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(startedDate,original.startedDate,doc,"started_date");
 
-      if((completedDate == null && original.completedDate != null) || 
-         (completedDate != null && !completedDate.equals(original.completedDate))){
-        Element elem = doc.createElement("completed_date");
-        elem.appendChild(doc.createTextNode(original.completedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(completedDate,original.completedDate,doc,"completed_date");
 
-      if((releasedDate == null && original.releasedDate != null) || 
-         (releasedDate != null && !releasedDate.equals(original.releasedDate))){
-        Element elem = doc.createElement("released_date");
-        elem.appendChild(doc.createTextNode(original.releasedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(releasedDate,original.releasedDate,doc,"released_date");
 
-      if((printedDate == null && original.printedDate != null) || 
-         (printedDate != null && !printedDate.equals(original.printedDate))){
-        Element elem = doc.createElement("printed_date");
-        elem.appendChild(doc.createTextNode(original.printedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(printedDate,original.printedDate,doc,"printed_date");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

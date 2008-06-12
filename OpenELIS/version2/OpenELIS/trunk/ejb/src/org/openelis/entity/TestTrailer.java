@@ -5,6 +5,12 @@ package org.openelis.entity;
   * TestTrailer Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,19 +20,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-	@NamedQueries({@NamedQuery(name = "TestTrailer.TestTrailer", query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text) from " + 
-															" TestTrailer t where t.id = :id"),
-				   @NamedQuery(name = "TestTrailer.UpdateNameCompare", query = "select t.id from TestTrailer t where t.name = :name and t.id != :id"),
-				   @NamedQuery(name = "TestTrailer.AddNameCompare", query = "select t.id from TestTrailer t where t.name = :name")})
-				   
-	 
+@NamedQueries({@NamedQuery(name = "TestTrailer.TestTrailer", query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text) from " + 
+" TestTrailer t where t.id = :id"),
+@NamedQuery(name = "TestTrailer.UpdateNameCompare", query = "select t.id from TestTrailer t where t.name = :name and t.id != :id"),
+@NamedQuery(name = "TestTrailer.AddNameCompare", query = "select t.id from TestTrailer t where t.name = :name")})
+
 @Entity
 @Table(name="test_trailer")
 @EntityListeners({AuditUtil.class})
@@ -99,33 +100,13 @@ public class TestTrailer implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((text == null && original.text != null) || 
-         (text != null && !text.equals(original.text))){
-        Element elem = doc.createElement("text");
-        elem.appendChild(doc.createTextNode(original.text.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
