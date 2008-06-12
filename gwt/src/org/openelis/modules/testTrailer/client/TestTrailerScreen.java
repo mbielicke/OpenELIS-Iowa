@@ -40,8 +40,8 @@ public class TestTrailerScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        nameTextBox = (TextBox) getWidget("testTrailer.name");
-        textArea = (ScreenTextArea) widgets.get("testTrailer.text");
+        nameTextBox = (TextBox) getWidget("test_trailer.name");
+        textArea = (ScreenTextArea) widgets.get("test_trailer.text");
 
 		super.afterDraw(success);
 	}
@@ -75,7 +75,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue("testTrailer.name", query);
+			letterRPC.setFieldValue("test_trailer.name", query);
 
 			commitQuery(letterRPC);
 		}

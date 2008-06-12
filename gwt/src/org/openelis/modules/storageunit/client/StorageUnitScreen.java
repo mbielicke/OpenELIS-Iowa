@@ -43,13 +43,13 @@ public class StorageUnitScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        cat = (AutoCompleteDropdown)getWidget("storageUnit.category");
+        cat = (AutoCompleteDropdown)getWidget("storage_unit.category");
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)
             storageUnitCategoryDropdown = (DataModel)initData.get("categories");
         
-        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storageUnit.category");
+        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storage_unit.category");
                    
         ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
         
@@ -82,7 +82,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue("storageUnit.description", query);
+			letterRPC.setFieldValue("storage_unit.description", query);
 
 			commitQuery(letterRPC);
 		}
