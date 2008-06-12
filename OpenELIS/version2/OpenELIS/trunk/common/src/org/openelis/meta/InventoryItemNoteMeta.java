@@ -6,16 +6,16 @@ import org.openelis.util.Meta;
 
 public class InventoryItemNoteMeta implements Meta{
 	private String tableName = "note";
-	private String entityName = "inventoryItem.note";
+	private String entityName = "inventory_item.note";
 	private boolean includeInFrom = true;
 	
 	public static final String
     ID             		= "note.id",
     REFERENCE_ID		= "note.referenceId",
-    REFERENCE_TABLE		= "note.referenceTable",
+    REFERENCE_TABLE_ID	= "note.referenceTableId",
     TIMESTAMP  			= "note.timestamp",
     IS_EXTERNAL			= "note.isExternal",
-    SYSTEM_USER			= "note.systemUser",
+    SYSTEM_USER_ID		= "note.systemUserId",
     SUBJECT 			= "note.subject",
     TEXT				= "note.text";
 
@@ -23,7 +23,7 @@ public class InventoryItemNoteMeta implements Meta{
 	// Array of column names used for building select/insert/update strings
 	//
 	private static final String[] columnNames = {
-	     ID, REFERENCE_ID, REFERENCE_TABLE, TIMESTAMP, IS_EXTERNAL, SYSTEM_USER, SUBJECT, TEXT};
+	     ID, REFERENCE_ID, REFERENCE_TABLE_ID, TIMESTAMP, IS_EXTERNAL, SYSTEM_USER_ID, SUBJECT, TEXT};
 	
 	private static HashMap<String, String> columnHashList;
 	private static final InventoryItemNoteMeta inventoryItemNoteMeta = new InventoryItemNoteMeta();
@@ -66,35 +66,35 @@ public class InventoryItemNoteMeta implements Meta{
 		return columnHashList.containsKey(column);
 	}
 	
-	public static String id(){
+	public static String getId(){
 		return columnNames[0];
 	}
 	
-	public static String referenceId(){
+	public static String getReferenceId(){
 		return columnNames[1];
 	}
 	
-	public static String referenceTable(){
+	public static String getReferenceTableId(){
 		return columnNames[2];
 	}
 	
-	public static String timestamp(){
+	public static String getTimestamp(){
 		return columnNames[3];
 	}
 	
-	public static String isExternal(){
+	public static String getIsExternal(){
 		return columnNames[4];
 	}
 	
-	public static String systemUser(){
+	public static String getSystemUserId(){
 		return columnNames[5];
 	}
 	
-	public static String subject(){
+	public static String getSubject(){
 		return columnNames[6];
 	}
 	
-	public static String text(){
+	public static String getText(){
 		return columnNames[7];
 	}
 

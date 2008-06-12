@@ -6,23 +6,23 @@ import org.openelis.util.Meta;
 
 public class InventoryLocationStorageLocationMeta implements Meta{
     private String tableName = "storageLocation";
-    private String entityName = "inventoryLocation.storageLocation";
+    private String entityName = "inventory_location.storageLocation";
     private boolean includeInFrom = true;
     
     public static final String
      ID                         = "storageLocation.id",
-     SORT_ORDER                 = "storageLocation.sortOrder",
+     SORT_ORDER_ID              = "storageLocation.sortOrder",
      NAME                       = "storageLocation.name",
      LOCATION                   = "storageLocation.location",
-     PARENT_STORAGE_LOCATION    = "storageLocation.parentStorageLocationId",
-     STORAGE_UNIT               = "storageLocation.storageUnit",
+     PARENT_STORAGE_LOCATION_ID = "storageLocation.parentStorageLocationId",
+     STORAGE_UNIT_ID            = "storageLocation.storageUnit",
      IS_AVAILABLE               = "storageLocation.isAvailable";
 
     //
     // Array of column names used for building select/insert/update strings
     //
     private static final String[] columnNames = {
-         ID, SORT_ORDER, NAME, LOCATION, PARENT_STORAGE_LOCATION, STORAGE_UNIT, IS_AVAILABLE};
+         ID, SORT_ORDER_ID, NAME, LOCATION, PARENT_STORAGE_LOCATION_ID, STORAGE_UNIT_ID, IS_AVAILABLE};
     
     private static HashMap<String,String> columnHashList;
     
@@ -66,31 +66,31 @@ public class InventoryLocationStorageLocationMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String sortOrder(){
+    public static String getSortOrderId(){
         return columnNames[1];
     }
     
-    public static String name(){
+    public static String getName(){
         return columnNames[2];
     }
     
-    public static String location(){
+    public static String getLocation(){
         return columnNames[3];
     }
     
-    public static String parentStorageLocation(){
+    public static String getParentStorageLocationId(){
         return columnNames[4];
     }
     
-    public static String storageUnit(){
+    public static String getStorageUnitId(){
         return columnNames[5];
     }
     
-    public static String isAvailable(){
+    public static String getIsAvailable(){
         return columnNames[6];
     }
 }

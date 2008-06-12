@@ -5,15 +5,15 @@ import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class StorageLocationStorageUnitMeta implements Meta{
-	private String tableName = "storageLocation.storageUnit";
-	private String entityName = "storageLocation.storageUnit";
+	private final static String tableName = "storage_location.storageUnit";
+	private final static String entityName = "storage_location.storageUnit";
 	private boolean includeInFrom = false;
 	
 	public static final String
-     ID             = "storageLocation.storageUnit.id",
-     CATEGORY		= "storageLocation.storageUnit.category",
-     DESCRIPTION   	= "storageLocation.storageUnit.description",
-     IS_SINGULAR  	= "storageLocation.storageUnit.isSingular";
+     ID             = "storage_location.storageUnit.id",
+     CATEGORY		= "storage_location.storageUnit.category",
+     DESCRIPTION   	= "storage_location.storageUnit.description",
+     IS_SINGULAR  	= "storage_location.storageUnit.isSingular";
 
 	//
 	// Array of column names used for building select/insert/update strings
@@ -28,7 +28,7 @@ public class StorageLocationStorageUnitMeta implements Meta{
 	static {
 	 columnHashList = new HashMap<String, String>(columnNames.length);
 	 for (int i = 0; i < columnNames.length; i++)
-	     columnHashList.put(columnNames[i].substring(28), "");
+	     columnHashList.put(columnNames[i].substring(tableName.length()+1), "");
 	}
 
 	private StorageLocationStorageUnitMeta() {
@@ -63,19 +63,19 @@ public class StorageLocationStorageUnitMeta implements Meta{
 		return columnHashList.containsKey(column);
 	}
 	
-	public static String id(){
+	public static String getId(){
 		return columnNames[0];
 	}
 	
-	public static String category(){
+	public static String getCategory(){
 		return columnNames[1];
 	}
 	
-	public static String description(){
+	public static String getDescription(){
 		return columnNames[2];
 	}
 	
-	public static String isSingular(){
+	public static String getIsSingular(){
 		return columnNames[3];
 	}
 }
