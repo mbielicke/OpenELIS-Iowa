@@ -440,9 +440,9 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(CategoryMeta.NAME,catDO.getName());
         rpcReturn.setFieldValue(CategoryMeta.DESCRIPTION,catDO.getDescription());    
         if(catDO.getSection()!=null){
-            rpcReturn.setFieldValue(CategoryMeta.SECTION,catDO.getSection());
+            rpcReturn.setFieldValue(CategoryMeta.SECTION_ID,catDO.getSection());
          }else{
-            rpcReturn.setFieldValue(CategoryMeta.SECTION,new Integer(-1));  
+            rpcReturn.setFieldValue(CategoryMeta.SECTION_ID,new Integer(-1));  
          }
     }
     
@@ -454,8 +454,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setName(((String)rpcSend.getFieldValue(CategoryMeta.NAME)));
         categoryDO.setSystemName(((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME)));
                 
-        if(!new Integer(-1).equals(rpcSend.getFieldValue(CategoryMeta.SECTION)))
-           categoryDO.setSection((Integer)rpcSend.getFieldValue(CategoryMeta.SECTION));
+        if(!new Integer(-1).equals(rpcSend.getFieldValue(CategoryMeta.SECTION_ID)))
+           categoryDO.setSection((Integer)rpcSend.getFieldValue(CategoryMeta.SECTION_ID));
         
         return categoryDO; 
     }

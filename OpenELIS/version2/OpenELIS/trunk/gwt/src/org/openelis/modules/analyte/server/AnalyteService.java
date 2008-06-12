@@ -268,7 +268,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		rpcReturn.setFieldValue(AnalyteMeta.ID, analyteDO.getId());
 		rpcReturn.setFieldValue(AnalyteMeta.NAME, (analyteDO.getName() == null ? null : analyteDO.getName()));
 		rpcReturn.setFieldValue(AnalyteMeta.IS_ACTIVE, (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive()));
-		rpcReturn.setFieldValue(AnalyteMeta.ANALYTE_GROUP, analyteDO.getAnalyteGroup());
+		rpcReturn.setFieldValue(AnalyteMeta.ANALYTE_GROUP_ID, analyteDO.getAnalyteGroup());
 		rpcReturn.setFieldValue(AnalyteMeta.EXTERNAL_ID, (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId()));
 		
 //		we need to create a dataset for the parent organization auto complete
@@ -290,7 +290,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		newAnalyteDO.setId((Integer) rpcSend.getFieldValue(AnalyteMeta.ID));
 		newAnalyteDO.setName(((String) rpcSend.getFieldValue(AnalyteMeta.NAME)));
 		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(AnalyteMeta.IS_ACTIVE)));
-		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(AnalyteMeta.ANALYTE_GROUP));
+		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(AnalyteMeta.ANALYTE_GROUP_ID));
 		newAnalyteDO.setParentAnalyteId((Integer) rpcSend.getFieldValue(AnalyteParentAnalyteMeta.NAME));
         newAnalyteDO.setParentAnalyte((String)((DropDownField)rpcSend.getField(AnalyteParentAnalyteMeta.NAME)).getTextValue());
 		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(AnalyteMeta.EXTERNAL_ID)));		

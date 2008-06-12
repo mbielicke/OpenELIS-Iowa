@@ -338,7 +338,7 @@ public class QAEventService implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue(QaEventMeta.DESCRIPTION,qaeDO.getDescription());
         rpcReturn.setFieldValue(QaEventMeta.REPORTING_TEXT,qaeDO.getReportingText());   
         rpcReturn.setFieldValue(QaEventMeta.TEST_ID,qaeDO.getTest());        
-        rpcReturn.setFieldValue(QaEventMeta.TYPE,qaeDO.getType());
+        rpcReturn.setFieldValue(QaEventMeta.TYPE_ID,qaeDO.getType());
     }
     
     private QaEventDO getQaEventDOFromRPC(FormRPC rpcSend){
@@ -356,8 +356,8 @@ public class QAEventService implements AppScreenFormServiceInt{
                 
         if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST_ID)))
             qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST_ID));   
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TYPE)))
-            qaeDO.setType((Integer)rpcSend.getFieldValue(QaEventMeta.TYPE));        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TYPE_ID)))
+            qaeDO.setType((Integer)rpcSend.getFieldValue(QaEventMeta.TYPE_ID));        
      
        return qaeDO;
     }

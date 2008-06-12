@@ -61,7 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{testTrailerMeta:name()}" max="60" width="150px" tab="{testTrailerMeta:description()},{testTrailerMeta:text()}"/>
+										<textbox case="lower" key="{testTrailerMeta:getName()}" max="60" width="150px" tab="{testTrailerMeta:getDescription()},{testTrailerMeta:getText()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -69,7 +69,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{testTrailerMeta:description()}" max="60" width="300px" tab="{testTrailerMeta:text()},{testTrailerMeta:name()}"/>
+										<textbox case="mixed" key="{testTrailerMeta:getDescription()}" max="60" width="300px" tab="{testTrailerMeta:getText()},{testTrailerMeta:getName()}"/>
 									</widget>
 								</row>
 								<row>
@@ -77,7 +77,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 									</widget>
 									<widget>
-										<textarea key="{testTrailerMeta:text()}" width="300px" height="170px" tab="{testTrailerMeta:name()},{testTrailerMeta:description()}"/>
+										<textarea key="{testTrailerMeta:getText()}" width="300px" height="170px" tab="{testTrailerMeta:getName()},{testTrailerMeta:getDescription()}"/>
 									</widget>
 								</row>
 							</panel>
@@ -86,20 +86,20 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="{testTrailerMeta:id()}" type="integer" required="false"/>
-  	<string key="{testTrailerMeta:name()}" max="20" required="true"/>
-  	<string key="{testTrailerMeta:description()}" max="60" required="true"/>
-  	<string key="{testTrailerMeta:text()}" required="true"/>
+  	<number key="{testTrailerMeta:getId()}" type="integer" required="false"/>
+  	<string key="{testTrailerMeta:getName()}" max="20" required="true"/>
+  	<string key="{testTrailerMeta:getDescription()}" max="60" required="true"/>
+  	<string key="{testTrailerMeta:getText()}" required="true"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="{testTrailerMeta:id()}" type="integer" required="false"/>
-  	<queryString key="{testTrailerMeta:name()}" max="20" required="true"/>
-  	<queryString key="{testTrailerMeta:description()}" max="60" required="true"/>
-  	<queryString key="{testTrailerMeta:text()}" required="true"/>
+ 	<queryNumber key="{testTrailerMeta:getId()}" type="integer" required="false"/>
+  	<queryString key="{testTrailerMeta:getName()}" max="20" required="true"/>
+  	<queryString key="{testTrailerMeta:getDescription()}" max="60" required="true"/>
+  	<queryString key="{testTrailerMeta:getText()}" required="true"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{testTrailerMeta:name()}"/>
+		<queryString key="{testTrailerMeta:getName()}"/>
 	</rpc>
 </screen>
   </xsl:template>

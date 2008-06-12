@@ -61,7 +61,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									</widget>
 									<widget>
-										<autoDropdown key="{storageUnitMeta:category()}" case="mixed" width="110px" tab="{storageUnitMeta:description()},{storageUnitMeta:id()}"/>
+										<autoDropdown key="{storageUnitMeta:getCategory()}" case="mixed" width="110px" tab="{storageUnitMeta:getDescription()},{storageUnitMeta:getId()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -69,7 +69,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="lower" key="{storageUnitMeta:description()}" max="60" width="300px" tab="{storageUnitMeta:isSingular()},{storageUnitMeta:category()}"/>
+										<textbox case="lower" key="{storageUnitMeta:getDescription()}" max="60" width="300px" tab="{storageUnitMeta:getIsSingular()},{storageUnitMeta:getCategory()}"/>
 									</widget>
 								</row>
 								<row>
@@ -77,7 +77,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"isSingular")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{storageUnitMeta:isSingular()}" tab="{storageUnitMeta:id()},{storageUnitMeta:description()}"/>
+										<check key="{storageUnitMeta:getIsSingular()}" tab="{storageUnitMeta:getId()},{storageUnitMeta:getDescription()}"/>
 									</widget>
 								</row>
 							</panel>
@@ -86,20 +86,20 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="{storageUnitMeta:id()}" type="integer" required="false"/>
-  	<dropdown key="{storageUnitMeta:category()}" required="false"/><!---->
-  	<string key="{storageUnitMeta:description()}" max="60" required="false"/><!---->
-  	<check key="{storageUnitMeta:isSingular()}" required="false"/>
+  	<number key="{storageUnitMeta:getId()}" type="integer" required="false"/>
+  	<dropdown key="{storageUnitMeta:getCategory()}" required="false"/><!---->
+  	<string key="{storageUnitMeta:getDescription()}" max="60" required="false"/><!---->
+  	<check key="{storageUnitMeta:getIsSingular()}" required="false"/>
 	</rpc>
 	<rpc key="query">
- 	<queryNumber key="{storageUnitMeta:id()}" type="integer" required="false"/>
- 	<dropdown key="{storageUnitMeta:category()}" required="false"/>
-  	<queryString key="{storageUnitMeta:description()}" required="false"/>
-  	<queryCheck key="{storageUnitMeta:isSingular()}" type="string" required="false"/>
+ 	<queryNumber key="{storageUnitMeta:getId()}" type="integer" required="false"/>
+ 	<dropdown key="{storageUnitMeta:getCategory()}" required="false"/>
+  	<queryString key="{storageUnitMeta:getDescription()}" required="false"/>
+  	<queryCheck key="{storageUnitMeta:getIsSingular()}" type="string" required="false"/>
 
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{storageUnitMeta:description()}"/>
+		<queryString key="{storageUnitMeta:getDescription()}"/>
 	</rpc>
 </screen>
   </xsl:template>

@@ -67,7 +67,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="50" width="355px" key="{categoryMeta:name()}" tab="{categoryMeta:description()},{categoryMeta:systemName()}"/>
+										<textbox case="mixed" max="50" width="355px" key="{categoryMeta:getName()}" tab="{categoryMeta:getDescription()},{categoryMeta:getSystemName()}"/>
 									</widget>
 								</row>
 								<row>
@@ -75,7 +75,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="60" key="{categoryMeta:description()}" width="425px" tab="{categoryMeta:section()},{categoryMeta:name()}"/>
+										<textbox case="mixed" max="60" key="{categoryMeta:getDescription()}" width="425px" tab="{categoryMeta:getSectionId()},{categoryMeta:getName()}"/>
 									</widget>
 								</row>
 								<row>								
@@ -84,7 +84,7 @@
 									 </widget>
 									 									 									  
 									           <widget>
-												   <autoDropdown key="{categoryMeta:section()}" case="lower" width="100px" tab="{categoryMeta:systemName()},{categoryMeta:description()}"/>
+												   <autoDropdown key="{categoryMeta:getSectionId()}" case="lower" width="100px" tab="{categoryMeta:getSystemName()},{categoryMeta:getDescription()}"/>
 												</widget>
 								     							   						
 								</row>	
@@ -93,7 +93,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="30" width="215px" key="{categoryMeta:systemName()}" tab="{categoryMeta:name()},{categoryMeta:section()}"/>
+										<textbox case="mixed" max="30" width="215px" key="{categoryMeta:SystemName()}" tab="{categoryMeta:getName()},{categoryMeta:getSection()}"/>
 									</widget>
 								</row>						  							
 						</panel>
@@ -117,11 +117,11 @@
 											</autoDropdown>
 								</editors>
 								<fields>																											
-									<check key="{dictionaryMeta:isActive()}">Y</check>
-									<string key="{dictionaryMeta:systemName()}"/>									
-									<string key="{dictionaryMeta:localAbbrev()}"/>
-									<string key="{dictionaryMeta:entry()}" required = "true"/>
-									<dropdown key="{dictRelEntryMeta:entry()}"/>									
+									<check key="{dictionaryMeta:getIsActive()}">Y</check>
+									<string key="{dictionaryMeta:getSystemName()}"/>									
+									<string key="{dictionaryMeta:getLocalAbbrev()}"/>
+									<string key="{dictionaryMeta:getEntry()}" required = "true"/>
+									<dropdown key="{dictRelEntryMeta:getEntry()}"/>									
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
@@ -141,8 +141,8 @@
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>																		
-									<xsl:value-of select='dictionaryMeta:isActive()'/>,<xsl:value-of select='dictionaryMeta:systemName()'/>,
-		                            <xsl:value-of select='dictionaryMeta:localAbbrev()'/>,<xsl:value-of select='dictionaryMeta:entry()'/>,
+									<xsl:value-of select='dictionaryMeta:isActive()'/>,<xsl:value-of select='dictionaryMeta:getSystemName()'/>,
+		                            <xsl:value-of select='dictionaryMeta:localAbbrev()'/>,<xsl:value-of select='dictionaryMeta:getEntry()'/>,
 		                            <xsl:value-of select='dictRelEntryMeta:entry()'/>
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
@@ -166,27 +166,27 @@
 		</panel>
 	</display>
 	<rpc key = "display">
-	 <number key="{categoryMeta:id()}" type="integer" required="false"/>	
-	 <string key="{categoryMeta:systemName()}" max="30" required = "true"/>
-	 <string key="{categoryMeta:name()}" max="50" required = "true"/>
-	 <string key="{categoryMeta:description()}" max="60" required="false"/>
+	 <number key="{categoryMeta:getId()}" type="integer" required="false"/>	
+	 <string key="{categoryMeta:getSystemName()}" max="30" required = "true"/>
+	 <string key="{categoryMeta:getName()}" max="50" required = "true"/>
+	 <string key="{categoryMeta:getDescription()}" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <dropdown key="{categoryMeta:section()}" type="integer" required="false"/>    
+     <dropdown key="{categoryMeta:getSectionId()}" type="integer" required="false"/>    
 	</rpc>
 	<rpc key = "query">	 		
      <table key="dictEntTable"/>	
-	 <queryString key="{categoryMeta:systemName()}"/>
-	 <queryString key="{categoryMeta:name()}"/>
-	 <queryString key="{categoryMeta:description()}"/>
-	 <dropdown key="{categoryMeta:section()}" type="integer" required="false"/> 
+	 <queryString key="{categoryMeta:getSystemName()}"/>
+	 <queryString key="{categoryMeta:getName()}"/>
+	 <queryString key="{categoryMeta:getDescription()}"/>
+	 <dropdown key="{categoryMeta:getSectionId()}" type="integer" required="false"/> 
 	 <queryCheck key="{dictionaryMeta:isActive()}" required="false"/>
-	  <queryString key="{dictionaryMeta:systemName()}" required="false"/>
-	  <queryString key="{dictionaryMeta:localAbbrev()}" required="false"/>
-	  <queryString key="{dictionaryMeta:entry()}" required="false"/>
-	  <queryString key="{dictRelEntryMeta:entry()}" required="false"/>
+	  <queryString key="{dictionaryMeta:getSystemName()}" required="false"/>
+	  <queryString key="{dictionaryMeta:getLocalAbbrev()}" required="false"/>
+	  <queryString key="{dictionaryMeta:getEntry()}" required="false"/>
+	  <queryString key="{dictRelEntryMeta:getEntry()}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-      <queryString key="{categoryMeta:name()}"/>
+      <queryString key="{categoryMeta:getName()}"/>
     </rpc>
 </screen>
 </xsl:template>

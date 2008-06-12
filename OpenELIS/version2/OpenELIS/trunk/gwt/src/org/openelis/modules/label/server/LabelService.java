@@ -315,8 +315,8 @@ public class LabelService implements AppScreenFormServiceInt {
         rpcReturn.setFieldValue(LabelMeta.ID, qaeDO.getId());
         rpcReturn.setFieldValue(LabelMeta.NAME,qaeDO.getName());
         rpcReturn.setFieldValue(LabelMeta.DESCRIPTION,qaeDO.getDescription());
-        rpcReturn.setFieldValue(LabelMeta.PRINTER_TYPE,qaeDO.getPrinterType());     
-        rpcReturn.setFieldValue(LabelMeta.SCRIPTLET,qaeDO.getScriptlet());        
+        rpcReturn.setFieldValue(LabelMeta.PRINTER_TYPE_ID,qaeDO.getPrinterType());     
+        rpcReturn.setFieldValue(LabelMeta.SCRIPTLET_ID,qaeDO.getScriptlet());        
     }
     
     private LabelDO getLabelDOFromRPC(FormRPC rpcSend){
@@ -327,10 +327,10 @@ public class LabelService implements AppScreenFormServiceInt {
         labelDO.setName(((String)rpcSend.getFieldValue(LabelMeta.NAME)));
         labelDO.setDescription(((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION)));
               
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE)))
-            labelDO.setPrinterType((Integer)rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE));   
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.SCRIPTLET)))
-            labelDO.setScriptlet((Integer)rpcSend.getFieldValue(LabelMeta.SCRIPTLET));        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE_ID)))
+            labelDO.setPrinterType((Integer)rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE_ID));   
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.SCRIPTLET_ID)))
+            labelDO.setScriptlet((Integer)rpcSend.getFieldValue(LabelMeta.SCRIPTLET_ID));        
      
        return labelDO;
     }

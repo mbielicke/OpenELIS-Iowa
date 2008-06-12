@@ -540,7 +540,7 @@ public class ProviderService implements AppScreenFormServiceInt{
         rpcReturn.setFieldValue(ProviderMeta.FIRST_NAME,provDO.getFirstName());
         rpcReturn.setFieldValue(ProviderMeta.NPI,provDO.getNpi());        
         rpcReturn.setFieldValue(ProviderMeta.MIDDLE_NAME,provDO.getMiddleName());                              
-        rpcReturn.setFieldValue(ProviderMeta.TYPE,provDO.getTypeId());         
+        rpcReturn.setFieldValue(ProviderMeta.TYPE_ID,provDO.getTypeId());         
     }
     
     private ProviderDO getProviderDOFromRPC(FormRPC rpcSend){
@@ -553,8 +553,8 @@ public class ProviderService implements AppScreenFormServiceInt{
      providerDO.setMiddleName(((String)rpcSend.getFieldValue(ProviderMeta.MIDDLE_NAME)));
      providerDO.setNpi(((String)rpcSend.getFieldValue(ProviderMeta.NPI)));
      
-     if(!new Integer(-1).equals(rpcSend.getFieldValue(ProviderMeta.TYPE)))
-      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProviderMeta.TYPE));
+     if(!new Integer(-1).equals(rpcSend.getFieldValue(ProviderMeta.TYPE_ID)))
+      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProviderMeta.TYPE_ID));
      
      return providerDO;
     }

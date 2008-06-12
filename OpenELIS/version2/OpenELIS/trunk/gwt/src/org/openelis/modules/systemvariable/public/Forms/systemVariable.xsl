@@ -56,7 +56,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key ="{systemVariableMeta:name()}" max = "30" width= "215px" case = "lower" tab="{systemVariableMeta:value()},{systemVariableMeta:value()}"/>
+      <textbox key ="{systemVariableMeta:getName()}" max = "30" width= "215px" case = "lower" tab="{systemVariableMeta:getValue()},{systemVariableMeta:getValue()}"/>
      </widget>
      </row>     
      <row>     
@@ -64,7 +64,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"value")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" key= "{systemVariableMeta:value()}" width= "425px" tab="{systemVariableMeta:name()},{systemVariableMeta:name()}"/>
+      <textbox case= "mixed" key= "{systemVariableMeta:getValue()}" width= "425px" tab="{systemVariableMeta:getName()},{systemVariableMeta:getName()}"/>
      </widget>     
     </row>     						          
                                  					                         
@@ -75,18 +75,18 @@
 </display>
 							  
 <rpc key= "display">
- <number key="{systemVariableMeta:id()}" type="integer" required = "false" />
- <string key="{systemVariableMeta:name()}" required="false"/> <!--required = "true"-->
- <string key="{systemVariableMeta:value()}" required="false"/> <!--required = "true"--> 	 
+ <number key="{systemVariableMeta:getId()}" type="integer" required = "false" />
+ <string key="{systemVariableMeta:getName()}" required="false"/> <!--required = "true"-->
+ <string key="{systemVariableMeta:getValue()}" required="false"/> <!--required = "true"--> 	 
 </rpc>
 					   
 <rpc key= "query">     
- <queryString key="{systemVariableMeta:name()}" />
- <queryString key="{systemVariableMeta:value()}"  /> 	
+ <queryString key="{systemVariableMeta:getName()}" />
+ <queryString key="{systemVariableMeta:getValue()}"  /> 	
 </rpc>
 
 <rpc key= "queryByLetter">     
- <queryString key="{systemVariableMeta:name()}"/>
+ <queryString key="{systemVariableMeta:getName()}"/>
 </rpc>
  
 </screen>
