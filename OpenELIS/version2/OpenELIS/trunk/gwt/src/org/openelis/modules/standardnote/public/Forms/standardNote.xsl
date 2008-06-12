@@ -106,7 +106,7 @@
   	<number key="{standardNoteMeta:getId()}" type="integer" required="false"/>
   	<string key="{standardNoteMeta:getName()}" required="true" max="20"/>
   	<string key="{standardNoteMeta:getDescription()}" required="true" max="60"/>
-  	<dropdown key="{standardNoteMeta:getTypeID()}" required="true"/>
+  	<dropdown key="{standardNoteMeta:getTypeId()}" required="true"/>
   	<string key="{standardNoteMeta:getText()}" required="true"/>
 	</rpc>
 	<rpc key="query">

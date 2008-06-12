@@ -47,14 +47,14 @@ public class StandardNoteScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        textArea = (ScreenTextArea)widgets.get("standardNote.text");
-        nameTextbox = (TextBox)getWidget("standardNote.name");
+        textArea = (ScreenTextArea)widgets.get("standard_note.text");
+        nameTextbox = (TextBox)getWidget("standard_note.name");
 
         if(typeDropdown == null)
             typeDropdown = (DataModel)initData.get("noteTypes");
         
 //      load standard note type dropdowns
-        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standardNote.type");
+        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standard_note.typeId");
                    
        ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
 		
@@ -97,7 +97,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
     		
-    		letterRPC.setFieldValue("standardNote.name", query);
+    		letterRPC.setFieldValue("standard_note.name", query);
     
     		commitQuery(letterRPC);
     	}

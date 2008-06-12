@@ -463,8 +463,8 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	  <number key="{inventoryItemMeta:id()}" type="integer" required="false"/>
-      <string key="{inventoryItemMeta:name()}" max="20" required="true"/>
+  	  <number key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
+      <string key="{inventoryItemMeta:getName()}" max="20" required="true"/>
       <string key="{inventoryItemMeta:description()}" max="60" required="false"/>
       <dropdown key="{inventoryItemMeta:store()}" type="integer" required="true"/> 
       <dropdown key="{inventoryItemMeta:category()}" type="integer" required="false"/> 
@@ -495,8 +495,8 @@
       
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{inventoryItemMeta:id()}" type="integer" required="false"/>
-      <queryString key="{inventoryItemMeta:name()}" max="20" required="false"/>
+      <queryNumber key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
+      <queryString key="{inventoryItemMeta:getName()}" max="20" required="false"/>
       <queryString key="{inventoryItemMeta:description()}" max="60" required="false"/>
       <dropdown key="{inventoryItemMeta:store()}" type="integer" required="false"/> 
       <dropdown key="{inventoryItemMeta:category()}" type="integer" required="false"/> 
@@ -538,7 +538,7 @@
 	  <queryNumber key="{inventoryLocationMeta:quantityOnhand()}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{inventoryItemMeta:name()}"/>
+		<queryString key="{inventoryItemMeta:getName()}"/>
 	</rpc>
 </screen>
   </xsl:template>

@@ -36,6 +36,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.OrderCustomerNoteMeta;
+import org.openelis.meta.OrderInventoryReceiptMeta;
 import org.openelis.meta.OrderMeta;
 import org.openelis.meta.OrderOrganizationAddressMeta;
 import org.openelis.meta.OrderShippingNoteMeta;
@@ -102,6 +103,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             fields.remove("orderType");
             fields.remove("itemsTable");
             fields.remove("label1");
+            fields.remove(OrderInventoryReceiptMeta.RECIEVED_DATE);
 
             try{    
                 orderIds = remote.query(fields,0,leftTableRowsPerPage, orderType);
