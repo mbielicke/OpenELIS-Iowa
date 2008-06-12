@@ -10,15 +10,15 @@ import org.openelis.util.Meta;
 
 public class OrganizationContactMeta implements Meta {
   	private static final String tableName = "organization_contact";
-	private static final String entityName = "OrganizationContact";
+	private static final String entityName = "organization.organizationContact";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="organization_contact.id",
-              ORGANIZATION_ID					="organization_contact.organization_id",
-              CONTACT_TYPE_ID					="organization_contact.contact_type_id",
-              NAME					="organization_contact.name",
-              ADDRESS_ID					="organization_contact.address_id";
+              ID				= "organization_contact.id",
+              ORGANIZATION_ID   = "organization_contact.organizationId",
+              CONTACT_TYPE_ID	= "organization_contact.contactTypeId",
+              NAME				= "organization_contact.name",
+              ADDRESS_ID		= "organization_contact.addressId";
 
 
   	private static final String[] columnNames = {
