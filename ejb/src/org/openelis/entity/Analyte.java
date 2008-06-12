@@ -60,7 +60,7 @@ public class Analyte implements Auditable, Cloneable {
   private String externalId;  
   
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_analyte", insertable = false, updatable = false)
+  @JoinColumn(name = "parent_analyte_id", insertable = false, updatable = false)
   private Analyte parentAnalyte;
 
 

@@ -96,7 +96,7 @@ public class QaEvent implements Auditable, Cloneable {
   public Integer getTestId() {
     return testId;
   }
-  public void setTest(Integer testId) {
+  public void setTestId(Integer testId) {
     if((testId == null && this.testId != null) || 
        (testId != null && !testId.equals(this.testId)))
       this.testId = testId;
@@ -105,7 +105,7 @@ public class QaEvent implements Auditable, Cloneable {
   public Integer getType() {
     return type;
   }
-  public void setType(Integer type) {
+  public void setTypeId(Integer type) {
     if((type == null && this.type != null) || 
        (type != null && !type.equals(this.type)))
       this.type = type;
