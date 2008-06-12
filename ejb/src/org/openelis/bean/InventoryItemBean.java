@@ -169,7 +169,7 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         //TODO we need to put these values in cache to remove this from where statement
         if(qb.hasTable(noteMeta.getTable()))
-        	qb.addWhere(noteMeta.REFERENCE_TABLE+" = "+inventoryItemReferenceId+" or "+noteMeta.REFERENCE_TABLE+" is null");
+        	qb.addWhere(noteMeta.REFERENCE_TABLE_ID+" = "+inventoryItemReferenceId+" or "+noteMeta.REFERENCE_TABLE_ID+" is null");
         
         if(qb.hasTable(componentItemMeta.getTable()))
             qb.addTable(componentMeta);
