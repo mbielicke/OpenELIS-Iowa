@@ -38,7 +38,7 @@ private Logger log = Logger.getLogger(this.getClass());
 
 
 public boolean isLocked(Integer table, Integer row){
-    Query query = manager.createQuery("from Lock where referenceTable = "+table+" and referenceId = "+row);
+    Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
     boolean locked = false;
     try {
         Lock lock = (Lock)query.getSingleResult();
@@ -58,7 +58,7 @@ public boolean isLocked(Integer table, Integer row){
 
 public Integer getLock(Integer table, Integer row) throws Exception {
     if(isLocked(table, row)){
-        Query query = manager.createQuery("from Lock where referenceTable = "+table+" and referenceId = "+row);
+        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
         try {
             Lock lock = (Lock)query.getSingleResult();
             SystemUserDO user = sysUser.getSystemUser(lock.getSystemUserId());
@@ -82,7 +82,7 @@ public Integer getLock(Integer table, Integer row) throws Exception {
 
 public void giveUpLock(Integer table, Integer row){
     try {
-        Query query = manager.createQuery("from Lock where referenceTable = "+table+" and referenceId = "+row+" and systemUser = "+getSystemUserId());
+        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row+" and systemUserId = "+getSystemUserId());
         Lock lock = (Lock)query.getSingleResult();
         manager.remove(lock);
     }catch(Exception e){
