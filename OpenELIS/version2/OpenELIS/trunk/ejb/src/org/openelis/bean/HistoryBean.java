@@ -45,19 +45,19 @@ public class HistoryBean implements HistoryLocal {
 	            history.setReferenceId(aud.getId());
 	            Query query = manager.createNamedQuery("getTableId");
 	            query.setParameter("name", aud.getTableName());
-	            history.setReferenceTable((Integer)query.getSingleResult());
+	            history.setReferenceTableId((Integer)query.getSingleResult());
 	            
 	            //FIXME activity will be a dictionary entry eventually
-	            history.setActivity(operation);
+	            history.setActivityId(operation);
 	            history.setTimestamp(new Date());
 	            try{
 	                String princ = ctx.getCallerPrincipal().getName();
 	                if(princ.equals(""))
-	                    history.setSystemUser(0);
+	                    history.setSystemUserId(0);
 	                else
-	                    history.setSystemUser(getSystemUserId());
+	                    history.setSystemUserId(getSystemUserId());
 	            }catch(Exception e){
-	                history.setSystemUser(0);
+	                history.setSystemUserId(0);
 	            }
 	            if (change != null){
 	                history.setChanges(change);
