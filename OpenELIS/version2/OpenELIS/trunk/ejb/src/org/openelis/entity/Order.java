@@ -125,10 +125,10 @@ public class Order implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,orderedDate);
   }
-  public void setOrderedDate (Datetime ordered_date){
-    if((orderedDate == null && this.orderedDate != null) || 
-       (orderedDate != null && !orderedDate.equals(this.orderedDate)))
-      this.orderedDate = ordered_date.getDate();
+  public void setOrderedDate (Datetime orderedDate){
+    if((orderedDate == null && this.orderedDate != null) || (orderedDate != null && this.orderedDate == null) || 
+       (orderedDate != null && !orderedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.orderedDate))))
+        this.orderedDate = orderedDate.getDate();
   }
 
   public Integer getNeededInDays() {

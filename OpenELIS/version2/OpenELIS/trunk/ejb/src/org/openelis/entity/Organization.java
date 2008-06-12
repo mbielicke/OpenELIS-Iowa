@@ -68,7 +68,7 @@ public class Organization implements Auditable, Cloneable {
 
   // address table is mapped in the organizationContact entity
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "organization")
+  @JoinColumn(name = "organization_id")
   private Collection<OrganizationContact> organizationContact;
 
   @OneToOne(fetch = FetchType.LAZY)
