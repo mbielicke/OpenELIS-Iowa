@@ -7,8 +7,11 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Dictionary;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -24,17 +27,17 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-        @NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.category, d.relatedEntryId, dre.entry, " +
-                                                                          "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                                                                          "  from  Dictionary d left join d.relatedEntry dre  where d.category = :id " +
-                                                                          " order by d.systemName "),
-                       @NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
-                                                                               " d.isActive='Y' and d.category = :id order by d.entry"),
-                       @NamedQuery(name = "Dictionary.autoCompleteByEntry", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
-                       @NamedQuery(name = "Dictionary.IdBySystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
-                       @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
-                       @NamedQuery(name = "Dictionary.CategoryIdBySystemName", query = "select d.category from Dictionary d where d.systemName = :systemName"),
-                       @NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.category from Dictionary d where d.entry = :entry")})
+@NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+                           "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                           "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id " +
+                           " order by d.systemName "),
+@NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
+                                " d.isActive='Y' and d.categoryId = :id order by d.entry"),
+@NamedQuery(name = "Dictionary.autoCompleteByEntry", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
+@NamedQuery(name = "Dictionary.IdBySystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
+@NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
+@NamedQuery(name = "Dictionary.CategoryIdBySystemName", query = "select d.categoryId from Dictionary d where d.systemName = :systemName"),
+@NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.categoryId from Dictionary d where d.entry = :entry")})
 
 @Entity
 @Table(name="dictionary")
@@ -46,10 +49,10 @@ public class Dictionary implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="category")
-  private Integer category;             
+  @Column(name="category_id")
+  private Integer categoryId;             
 
-  @Column(name="related_entry")
+  @Column(name="related_entry_id")
   private Integer relatedEntryId;             
 
   @Column(name="system_name")
@@ -62,12 +65,13 @@ public class Dictionary implements Auditable, Cloneable {
   private String localAbbrev;             
 
   @Column(name="entry")
-  private String entry;             
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "related_entry",insertable = false, updatable = false)
-  private Dictionary relatedEntry;
+  private String entry;   
   
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "related_entry_id",insertable = false, updatable = false)
+  private Dictionary relatedEntry;
+
+
   @Transient
   private Dictionary original;
 
@@ -81,15 +85,23 @@ public class Dictionary implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getCategory() {
-    return category;
+  public Integer getCategoryId() {
+    return categoryId;
   }
-  public void setCategory(Integer category) {
-    if((category == null && this.category != null) || 
-       (category != null && !category.equals(this.category)))
-      this.category = category;
+  public void setCategoryId(Integer categoryId) {
+    if((categoryId == null && this.categoryId != null) || 
+       (categoryId != null && !categoryId.equals(this.categoryId)))
+      this.categoryId = categoryId;
   }
-  
+
+  public Integer getRelatedEntryId() {
+    return relatedEntryId;
+  }
+  public void setRelatedEntryId(Integer relatedEntryId) {
+    if((relatedEntryId == null && this.relatedEntryId != null) || 
+       (relatedEntryId != null && !relatedEntryId.equals(this.relatedEntryId)))
+      this.relatedEntryId = relatedEntryId;
+  }
 
   public String getSystemName() {
     return systemName;
@@ -135,84 +147,42 @@ public class Dictionary implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((category == null && original.category != null) || 
-           (category != null && !category.equals(original.category))){
-          Element elem = doc.createElement("category");
-          elem.appendChild(doc.createTextNode(original.category.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(categoryId,original.categoryId,doc,"category_id");
 
-        if((relatedEntryId == null && original.relatedEntryId != null) || 
-           (relatedEntryId != null && !relatedEntryId.equals(original.relatedEntryId))){
-          Element elem = doc.createElement("related_entry");
-          elem.appendChild(doc.createTextNode(original.relatedEntryId.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(relatedEntryId,original.relatedEntryId,doc,"related_entry_id");
 
-        if((systemName == null && original.systemName != null) || 
-           (systemName != null && !systemName.equals(original.systemName))){
-          Element elem = doc.createElement("system_name");
-          elem.appendChild(doc.createTextNode(original.systemName.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(systemName,original.systemName,doc,"system_name");
 
-        if((isActive == null && original.isActive != null) || 
-           (isActive != null && !isActive.equals(original.isActive))){
-          Element elem = doc.createElement("is_active");
-          elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
 
-        if((localAbbrev == null && original.localAbbrev != null) || 
-           (localAbbrev != null && !localAbbrev.equals(original.localAbbrev))){
-          Element elem = doc.createElement("local_abbrev");
-          elem.appendChild(doc.createTextNode(original.localAbbrev.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(localAbbrev,original.localAbbrev,doc,"local_abbrev");
 
-        if((entry == null && original.entry != null) || 
-           (entry != null && !entry.equals(original.entry))){
-          Element elem = doc.createElement("entry");
-          elem.appendChild(doc.createTextNode(original.entry.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(entry,original.entry,doc,"entry");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "dictionary";
   }
   
-  public Integer getRelatedEntryId() {
-    return relatedEntryId;
-  }
-  
-  public void setRelatedEntryId(Integer relatedEntryKey) {
-    this.relatedEntryId = relatedEntryKey;
-   }
-  
-  public Dictionary getRelatedEntry() {
-    return relatedEntry;
-  }
-  public void setRelatedEntry(Dictionary relatedEntryRow) {
-    this.relatedEntry = relatedEntryRow;
-  }
+    
+    public Dictionary getRelatedEntry() {
+      return relatedEntry;
+    }
+    public void setRelatedEntry(Dictionary relatedEntryRow) {
+      this.relatedEntry = relatedEntryRow;
+    }
   
 }   

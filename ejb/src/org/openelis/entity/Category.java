@@ -5,12 +5,15 @@ package org.openelis.entity;
   * Category Entity POJO for database 
   */
 
-import java.util.Collection;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Category;
+import org.openelis.entity.Dictionary;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -26,10 +29,10 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Category.Category", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.section)" +                                                                                                  
-                              "  from Category c where c.id = :id"),
-              @NamedQuery(name = "Category.IdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
-               
+@NamedQueries({@NamedQuery(name = "Category.Category", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)" +                                                                                                  
+"  from Category c where c.id = :id"),
+@NamedQuery(name = "Category.IdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
+
 @Entity
 @Table(name="category")
 @EntityListeners({AuditUtil.class})
@@ -49,13 +52,14 @@ public class Category implements Auditable, Cloneable {
   @Column(name="description")
   private String description;             
 
-  @Column(name="section")
-  private Integer section;             
-
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category")
-  private Collection<Dictionary> dictionary;
+  @Column(name="section_id")
+  private Integer sectionId;   
   
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "category_id")
+  private Collection<Dictionary> dictionary;
+
+
   @Transient
   private Category original;
 
@@ -96,13 +100,13 @@ public class Category implements Auditable, Cloneable {
       this.description = description;
   }
 
-  public Integer getSection() {
-    return section;
+  public Integer getSectionId() {
+    return sectionId;
   }
-  public void setSection(Integer section) {
-    if((section == null && this.section != null) || 
-       (section != null && !section.equals(this.section)))
-      this.section = section;
+  public void setSectionId(Integer sectionId) {
+    if((sectionId == null && this.sectionId != null) || 
+       (sectionId != null && !sectionId.equals(this.sectionId)))
+      this.sectionId = sectionId;
   }
 
   
@@ -113,67 +117,43 @@ public class Category implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((systemName == null && original.systemName != null) || 
-           (systemName != null && !systemName.equals(original.systemName))){
-          Element elem = doc.createElement("system_name");
-          elem.appendChild(doc.createTextNode(original.systemName.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(systemName,original.systemName,doc,"system_name");
 
-        if((name == null && original.name != null) || 
-           (name != null && !name.equals(original.name))){
-          Element elem = doc.createElement("name");
-          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-        if((description == null && original.description != null) || 
-           (description != null && !description.equals(original.description))){
-          Element elem = doc.createElement("description");
-          elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-        if((section == null && original.section != null) || 
-           (section != null && !section.equals(original.section))){
-          Element elem = doc.createElement("section");
-          elem.appendChild(doc.createTextNode(original.section.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "category";
   }
-public Collection<Dictionary> getDictionary() {
-    return dictionary;
-}
-public void setDictionary(Collection<Dictionary> dictionary) {
-    this.dictionary = dictionary;
-}
-public Category getOriginal() {
-    return original;
-}
-public void setOriginal(Category original) {
-    this.original = original;
-}
+  
+  public Collection<Dictionary> getDictionary() {
+      return dictionary;
+  }
+  public void setDictionary(Collection<Dictionary> dictionary) {
+      this.dictionary = dictionary;
+  }
+  public Category getOriginal() {
+      return original;
+  }
+  public void setOriginal(Category original) {
+      this.original = original;
+  }
   
 }   

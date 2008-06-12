@@ -31,14 +31,14 @@ public class AnalysisUser implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="analysis")
-  private Integer analysis;             
+  @Column(name="analysis_id")
+  private Integer analysisId;             
 
-  @Column(name="system_user")
-  private Integer systemUser;             
+  @Column(name="system_user_id")
+  private Integer systemUserId;             
 
-  @Column(name="action")
-  private Integer action;             
+  @Column(name="action_id")
+  private Integer actionId;             
 
 
   @Transient
@@ -54,31 +54,31 @@ public class AnalysisUser implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
-  public void setAnalysis(Integer analysis) {
-    if((analysis == null && this.analysis != null) || 
-       (analysis != null && !analysis.equals(this.analysis)))
-      this.analysis = analysis;
-  }
-
-  public Integer getSystemUser() {
-    return systemUser;
-  }
-  public void setSystemUser(Integer systemUser) {
-    if((systemUser == null && this.systemUser != null) || 
-       (systemUser != null && !systemUser.equals(this.systemUser)))
-      this.systemUser = systemUser;
+  public void setAnalysisId(Integer analysisId) {
+    if((analysisId == null && this.analysisId != null) || 
+       (analysisId != null && !analysisId.equals(this.analysisId)))
+      this.analysisId = analysisId;
   }
 
-  public Integer getAction() {
-    return action;
+  public Integer getSystemUserId() {
+    return systemUserId;
   }
-  public void setAction(Integer action) {
-    if((action == null && this.action != null) || 
-       (action != null && !action.equals(this.action)))
-      this.action = action;
+  public void setSystemUserId(Integer systemUserId) {
+    if((systemUserId == null && this.systemUserId != null) || 
+       (systemUserId != null && !systemUserId.equals(this.systemUserId)))
+      this.systemUserId = systemUserId;
+  }
+
+  public Integer getActionId() {
+    return actionId;
+  }
+  public void setActionId(Integer actionId) {
+    if((actionId == null && this.actionId != null) || 
+       (actionId != null && !actionId.equals(this.actionId)))
+      this.actionId = actionId;
   }
 
   
@@ -93,33 +93,13 @@ public class AnalysisUser implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((analysis == null && original.analysis != null) || 
-         (analysis != null && !analysis.equals(original.analysis))){
-        Element elem = doc.createElement("analysis");
-        elem.appendChild(doc.createTextNode(original.analysis.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
 
-      if((systemUser == null && original.systemUser != null) || 
-         (systemUser != null && !systemUser.equals(original.systemUser))){
-        Element elem = doc.createElement("system_user");
-        elem.appendChild(doc.createTextNode(original.systemUser.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
 
-      if((action == null && original.action != null) || 
-         (action != null && !action.equals(original.action))){
-        Element elem = doc.createElement("action");
-        elem.appendChild(doc.createTextNode(original.action.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(actionId,original.actionId,doc,"action_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

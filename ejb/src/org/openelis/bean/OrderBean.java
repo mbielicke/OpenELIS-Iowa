@@ -200,15 +200,15 @@ public class OrderBean implements OrderRemote{
         
         if(orderType.equals(OrderRemote.EXTERNAL)){
             qb.addWhere(orderMeta.IS_EXTERNAL + " = 'Y'");
-            qb.addWhere(orderMeta.ORGANIZATION + " is not null");
+            qb.addWhere(orderMeta.ORGANIZATION_ID + " is not null");
             
         }else if(orderType.equals(OrderRemote.INTERNAL)){
             qb.addWhere(orderMeta.IS_EXTERNAL + " = 'N'");
-            qb.addWhere(orderMeta.ORGANIZATION + " is null");
+            qb.addWhere(orderMeta.ORGANIZATION_ID + " is null");
             
         }else if(orderType.equals(OrderRemote.KITS)){
             qb.addWhere(orderMeta.IS_EXTERNAL + " = 'N'");
-            qb.addWhere(orderMeta.ORGANIZATION + " is not null");
+            qb.addWhere(orderMeta.ORGANIZATION_ID + " is not null");
             
         }
         
@@ -275,7 +275,7 @@ public class OrderBean implements OrderRemote{
         
         //update order record
          order.setBillToId(orderDO.getBillToId());
-         order.setCostCenter(orderDO.getCostCenter());
+         order.setCostCenterId(orderDO.getCostCenter());
          order.setExternalOrderNumber(orderDO.getExternalOrderNumber());
          order.setIsExternal(orderDO.getIsExternal());
          order.setNeededInDays(orderDO.getNeededInDays());
@@ -283,7 +283,7 @@ public class OrderBean implements OrderRemote{
          order.setOrganizationId(orderDO.getOrganizationId());
          order.setReportToId(orderDO.getReportToId());
          order.setRequestedBy(orderDO.getRequestedBy());
-         order.setStatus(orderDO.getStatus());
+         order.setStatusId(orderDO.getStatus());
 
         if (order.getId() == null) {
             manager.persist(order);
@@ -317,7 +317,7 @@ public class OrderBean implements OrderRemote{
                 
             }else{   
                 orderItem.setInventoryItemId(orderItemDO.getInventoryItemId());
-                orderItem.setOrder(order.getId());
+                orderItem.setOrderId(order.getId());
                 orderItem.setQuantityRequested(orderItemDO.getQuantityRequested());
                     
                 if (orderItem.getId() == null) {
@@ -335,8 +335,8 @@ public class OrderBean implements OrderRemote{
                
                trans.setFromLocationId(orderItemDO.getLocationId());
                trans.setToOrderId(orderItem.getId());
-               trans.setType(orderTypeId);
-               trans.setQuantity(orderItem.getQuantityRequested());
+               trans.setTypeId(orderTypeId);
+               trans.setQuantity(orderItem.getQuantityRequested().doubleValue());
                
                if (trans.getId() == null) {
                    manager.persist(trans);
@@ -356,11 +356,11 @@ public class OrderBean implements OrderRemote{
             
             custNote.setIsExternal(customerNoteDO.getIsExternal());
             custNote.setReferenceId(order.getId());
-            custNote.setReferenceTable(orderCustNoteReferenceId);
+            custNote.setReferenceTableId(orderCustNoteReferenceId);
             custNote.setText(customerNoteDO.getText());
             if(custNote.getId() == null){
                 systemUserId = getSystemUserId();
-                custNote.setSystemUser(systemUserId);
+                custNote.setSystemUserId(systemUserId);
             }
             custNote.setTimestamp(Datetime.getInstance());
             
@@ -380,12 +380,12 @@ public class OrderBean implements OrderRemote{
             
             shippingNote.setIsExternal(orderShippingNotes.getIsExternal());
             shippingNote.setReferenceId(order.getId());
-            shippingNote.setReferenceTable(orderShipNoteReferenceId);
+            shippingNote.setReferenceTableId(orderShipNoteReferenceId);
             shippingNote.setText(orderShippingNotes.getText());
             if(shippingNote.getId() == null){
                 if(systemUserId == null)
                     systemUserId = getSystemUserId();
-                shippingNote.setSystemUser(systemUserId);
+                shippingNote.setSystemUserId(systemUserId);
             }
             shippingNote.setTimestamp(Datetime.getInstance());
             

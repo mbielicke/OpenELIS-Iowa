@@ -7,6 +7,8 @@ import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
 import org.openelis.local.HistoryLocal;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class AuditUtil {
 
@@ -53,6 +55,15 @@ public class AuditUtil {
             Auditable aud = (Auditable)entity;
             getHistory().write(aud, 3, "entity deleted");
         }
+    }
+    
+    public static void getChangeXML(Object field, Object original, Document doc, String key){
+        if((field == null && original != null) || 
+           (field != null && !field.equals(original))){
+             Element elem = doc.createElement(key);
+             elem.appendChild(doc.createTextNode(original.toString().trim()));
+             doc.getDocumentElement().appendChild(elem);
+        }      
     }
 
 }

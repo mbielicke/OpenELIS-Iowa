@@ -5,6 +5,12 @@ package org.openelis.entity;
   * StorageUnit Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,16 +20,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @NamedQueries({@NamedQuery(name = "StorageUnit.StorageUnit", query = "select new org.openelis.domain.StorageUnitDO(s.id,s.category,s.description,s.isSingular) from StorageUnit s where s.id = :id"),
-			   @NamedQuery(name = "StorageUnit.AutoCompleteByDesc", query = "select new org.openelis.domain.StorageUnitAutoDO(s.id, s.description, s.category) " +
-					   											 " from StorageUnit s where s.description like :desc order by s.description")})
+       @NamedQuery(name = "StorageUnit.AutoCompleteByDesc", query = "select new org.openelis.domain.StorageUnitAutoDO(s.id, s.description, s.category) " +
+                                                         " from StorageUnit s where s.description like :desc order by s.description")})
+                                                         
 @Entity
 @Table(name="storage_unit")
 @EntityListeners({AuditUtil.class})
@@ -92,45 +95,25 @@ public class StorageUnit implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((category == null && original.category != null) || 
-           (category != null && !category.equals(original.category))){
-          Element elem = doc.createElement("category");
-          elem.appendChild(doc.createTextNode(original.category.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(category,original.category,doc,"category");
 
-        if((description == null && original.description != null) || 
-           (description != null && !description.equals(original.description))){
-          Element elem = doc.createElement("description");
-          elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-        if((isSingular == null && original.isSingular != null) || 
-           (isSingular != null && !isSingular.equals(original.isSingular))){
-          Element elem = doc.createElement("is_singular");
-          elem.appendChild(doc.createTextNode(original.isSingular.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(isSingular,original.isSingular,doc,"is_singular");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "storage_unit";

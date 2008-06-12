@@ -5,6 +5,12 @@ package org.openelis.entity;
   * Analyte Entity POJO for database 
   */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -17,21 +23,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroup,a.parentAnalyteId,p.name,a.externalId) from " + 
-		                                                " Analyte a left join a.parentAnalyte p where a.id = :id"),
-		       @NamedQuery(name = "Analyte.AnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
-		       @NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
-		       @NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
-	           @NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
-			   											 " from Analyte a where a.name like :name order by a.name")})
-			   											 
+@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroupId,a.parentAnalyteId,p.name,a.externalId) from " + 
+" Analyte a left join a.parentAnalyte p where a.id = :id"),
+@NamedQuery(name = "Analyte.AnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
+@NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
+@NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
+@NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
+     " from Analyte a where a.name like :name order by a.name")})
+     
 @Entity
 @Table(name="analyte")
 @EntityListeners({AuditUtil.class})
@@ -48,18 +50,19 @@ public class Analyte implements Auditable, Cloneable {
   @Column(name="is_active")
   private String isActive;             
 
-  @Column(name="analyte_group")
-  private Integer analyteGroup;             
+  @Column(name="analyte_group_id")
+  private Integer analyteGroupId;             
 
-  @Column(name="parent_analyte")
+  @Column(name="parent_analyte_id")
   private Integer parentAnalyteId;             
 
   @Column(name="external_id")
-  private String externalId;             
-
+  private String externalId;  
+  
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_analyte", insertable = false, updatable = false)
   private Analyte parentAnalyte;
+
 
   @Transient
   private Analyte original;
@@ -92,22 +95,22 @@ public class Analyte implements Auditable, Cloneable {
       this.isActive = isActive;
   }
 
-  public Integer getAnalyteGroup() {
-    return analyteGroup;
+  public Integer getAnalyteGroupId() {
+    return analyteGroupId;
   }
-  public void setAnalyteGroup(Integer analyteGroup) {
-    if((analyteGroup == null && this.analyteGroup != null) || 
-       (analyteGroup != null && !analyteGroup.equals(this.analyteGroup)))
-      this.analyteGroup = analyteGroup;
+  public void setAnalyteGroupId(Integer analyteGroupId) {
+    if((analyteGroupId == null && this.analyteGroupId != null) || 
+       (analyteGroupId != null && !analyteGroupId.equals(this.analyteGroupId)))
+      this.analyteGroupId = analyteGroupId;
   }
 
   public Integer getParentAnalyteId() {
     return parentAnalyteId;
   }
-  public void setParentAnalyteId(Integer parentAnalyte) {
-    if((parentAnalyte == null && this.parentAnalyteId != null) || 
-       (parentAnalyte != null && !parentAnalyte.equals(this.parentAnalyteId)))
-      this.parentAnalyteId = parentAnalyte;
+  public void setParentAnalyteId(Integer parentAnalyteId) {
+    if((parentAnalyteId == null && this.parentAnalyteId != null) || 
+       (parentAnalyteId != null && !parentAnalyteId.equals(this.parentAnalyteId)))
+      this.parentAnalyteId = parentAnalyteId;
   }
 
   public String getExternalId() {
@@ -131,47 +134,17 @@ public class Analyte implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((isActive == null && original.isActive != null) || 
-         (isActive != null && !isActive.equals(original.isActive))){
-        Element elem = doc.createElement("is_active");
-        elem.appendChild(doc.createTextNode(original.isActive.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
 
-      if((analyteGroup == null && original.analyteGroup != null) || 
-         (analyteGroup != null && !analyteGroup.equals(original.analyteGroup))){
-        Element elem = doc.createElement("analyte_group");
-        elem.appendChild(doc.createTextNode(original.analyteGroup.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analyteGroupId,original.analyteGroupId,doc,"analyte_group_id");
 
-      if((parentAnalyteId == null && original.parentAnalyteId != null) || 
-         (parentAnalyteId != null && !parentAnalyteId.equals(original.parentAnalyteId))){
-        Element elem = doc.createElement("parent_analyte");
-        elem.appendChild(doc.createTextNode(original.parentAnalyteId.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(parentAnalyteId,original.parentAnalyteId,doc,"parent_analyte_id");
 
-      if((externalId == null && original.externalId != null) || 
-         (externalId != null && !externalId.equals(original.externalId))){
-        Element elem = doc.createElement("external_id");
-        elem.appendChild(doc.createTextNode(original.externalId.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(externalId,original.externalId,doc,"external_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -184,11 +157,12 @@ public class Analyte implements Auditable, Cloneable {
   public String getTableName() {
     return "analyte";
   }
-public Analyte getParentAnalyte() {
-	return parentAnalyte;
-}
-public void setParentAnalyte(Analyte parentAnalyte) {
-	this.parentAnalyte = parentAnalyte;
-}
+  
+  public Analyte getParentAnalyte() {
+    return parentAnalyte;
+  }
+  public void setParentAnalyte(Analyte parentAnalyte) {
+    this.parentAnalyte = parentAnalyte;
+  }
   
 }   

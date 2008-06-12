@@ -31,11 +31,11 @@ public class AuxFieldValue implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="aux_field")
-  private Integer auxField;             
+  @Column(name="aux_field_id")
+  private Integer auxFieldId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="value")
   private String value;             
@@ -54,22 +54,22 @@ public class AuxFieldValue implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getAuxField() {
-    return auxField;
+  public Integer getAuxFieldId() {
+    return auxFieldId;
   }
-  public void setAuxField(Integer auxField) {
-    if((auxField == null && this.auxField != null) || 
-       (auxField != null && !auxField.equals(this.auxField)))
-      this.auxField = auxField;
+  public void setAuxFieldId(Integer auxFieldId) {
+    if((auxFieldId == null && this.auxFieldId != null) || 
+       (auxFieldId != null && !auxFieldId.equals(this.auxFieldId)))
+      this.auxFieldId = auxFieldId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getValue() {
@@ -93,33 +93,13 @@ public class AuxFieldValue implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((auxField == null && original.auxField != null) || 
-         (auxField != null && !auxField.equals(original.auxField))){
-        Element elem = doc.createElement("aux_field");
-        elem.appendChild(doc.createTextNode(original.auxField.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(auxFieldId,original.auxFieldId,doc,"aux_field_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

@@ -31,8 +31,8 @@ public class TestWorksheet implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="test")
-  private Integer test;             
+  @Column(name="test_id")
+  private Integer testId;             
 
   @Column(name="batch_capacity")
   private Integer batchCapacity;             
@@ -40,11 +40,11 @@ public class TestWorksheet implements Auditable, Cloneable {
   @Column(name="total_capacity")
   private Integer totalCapacity;             
 
-  @Column(name="number_format")
-  private Integer numberFormat;             
+  @Column(name="number_format_id")
+  private Integer numberFormatId;             
 
-  @Column(name="scriptlet")
-  private Integer scriptlet;             
+  @Column(name="scriptlet_id")
+  private Integer scriptletId;             
 
 
   @Transient
@@ -60,13 +60,13 @@ public class TestWorksheet implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
+  public void setTestId(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
   public Integer getBatchCapacity() {
@@ -87,22 +87,22 @@ public class TestWorksheet implements Auditable, Cloneable {
       this.totalCapacity = totalCapacity;
   }
 
-  public Integer getNumberFormat() {
-    return numberFormat;
+  public Integer getNumberFormatId() {
+    return numberFormatId;
   }
-  public void setNumberFormat(Integer numberFormat) {
-    if((numberFormat == null && this.numberFormat != null) || 
-       (numberFormat != null && !numberFormat.equals(this.numberFormat)))
-      this.numberFormat = numberFormat;
+  public void setNumberFormatId(Integer numberFormatId) {
+    if((numberFormatId == null && this.numberFormatId != null) || 
+       (numberFormatId != null && !numberFormatId.equals(this.numberFormatId)))
+      this.numberFormatId = numberFormatId;
   }
 
-  public Integer getScriptlet() {
-    return scriptlet;
+  public Integer getScriptletId() {
+    return scriptletId;
   }
-  public void setScriptlet(Integer scriptlet) {
-    if((scriptlet == null && this.scriptlet != null) || 
-       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
-      this.scriptlet = scriptlet;
+  public void setScriptletId(Integer scriptletId) {
+    if((scriptletId == null && this.scriptletId != null) || 
+       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+      this.scriptletId = scriptletId;
   }
 
   
@@ -117,47 +117,17 @@ public class TestWorksheet implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      if((batchCapacity == null && original.batchCapacity != null) || 
-         (batchCapacity != null && !batchCapacity.equals(original.batchCapacity))){
-        Element elem = doc.createElement("batch_capacity");
-        elem.appendChild(doc.createTextNode(original.batchCapacity.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(batchCapacity,original.batchCapacity,doc,"batch_capacity");
 
-      if((totalCapacity == null && original.totalCapacity != null) || 
-         (totalCapacity != null && !totalCapacity.equals(original.totalCapacity))){
-        Element elem = doc.createElement("total_capacity");
-        elem.appendChild(doc.createTextNode(original.totalCapacity.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(totalCapacity,original.totalCapacity,doc,"total_capacity");
 
-      if((numberFormat == null && original.numberFormat != null) || 
-         (numberFormat != null && !numberFormat.equals(original.numberFormat))){
-        Element elem = doc.createElement("number_format");
-        elem.appendChild(doc.createTextNode(original.numberFormat.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(numberFormatId,original.numberFormatId,doc,"number_format_id");
 
-      if((scriptlet == null && original.scriptlet != null) || 
-         (scriptlet != null && !scriptlet.equals(original.scriptlet))){
-        Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

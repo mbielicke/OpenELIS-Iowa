@@ -31,8 +31,8 @@ public class Attachment implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="filename")
   private String filename;             
@@ -57,13 +57,13 @@ public class Attachment implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getFilename() {
@@ -105,40 +105,15 @@ public class Attachment implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((filename == null && original.filename != null) || 
-         (filename != null && !filename.equals(original.filename))){
-        Element elem = doc.createElement("filename");
-        elem.appendChild(doc.createTextNode(original.filename.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(filename,original.filename,doc,"filename");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
-      if((storageReference == null && original.storageReference != null) || 
-         (storageReference != null && !storageReference.equals(original.storageReference))){
-        Element elem = doc.createElement("storage_reference");
-        elem.appendChild(doc.createTextNode(original.storageReference.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(storageReference,original.storageReference,doc,"storage_reference");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

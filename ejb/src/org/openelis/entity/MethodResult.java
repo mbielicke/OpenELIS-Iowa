@@ -31,11 +31,11 @@ public class MethodResult implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="method")
-  private Integer method;             
+  @Column(name="method_id")
+  private Integer methodId;             
 
-  @Column(name="result_group")
-  private Integer resultGroup;             
+  @Column(name="result_group_id")
+  private Integer resultGroupId;             
 
   @Column(name="flags")
   private String flags;             
@@ -60,22 +60,22 @@ public class MethodResult implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getMethod() {
-    return method;
+  public Integer getMethodId() {
+    return methodId;
   }
-  public void setMethod(Integer method) {
-    if((method == null && this.method != null) || 
-       (method != null && !method.equals(this.method)))
-      this.method = method;
+  public void setMethodId(Integer methodId) {
+    if((methodId == null && this.methodId != null) || 
+       (methodId != null && !methodId.equals(this.methodId)))
+      this.methodId = methodId;
   }
 
-  public Integer getResultGroup() {
-    return resultGroup;
+  public Integer getResultGroupId() {
+    return resultGroupId;
   }
-  public void setResultGroup(Integer resultGroup) {
-    if((resultGroup == null && this.resultGroup != null) || 
-       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
-      this.resultGroup = resultGroup;
+  public void setResultGroupId(Integer resultGroupId) {
+    if((resultGroupId == null && this.resultGroupId != null) || 
+       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
+      this.resultGroupId = resultGroupId;
   }
 
   public String getFlags() {
@@ -117,47 +117,17 @@ public class MethodResult implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((method == null && original.method != null) || 
-         (method != null && !method.equals(original.method))){
-        Element elem = doc.createElement("method");
-        elem.appendChild(doc.createTextNode(original.method.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(methodId,original.methodId,doc,"method_id");
 
-      if((resultGroup == null && original.resultGroup != null) || 
-         (resultGroup != null && !resultGroup.equals(original.resultGroup))){
-        Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
 
-      if((flags == null && original.flags != null) || 
-         (flags != null && !flags.equals(original.flags))){
-        Element elem = doc.createElement("flags");
-        elem.appendChild(doc.createTextNode(original.flags.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(flags,original.flags,doc,"flags");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(type,original.type,doc,"type");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

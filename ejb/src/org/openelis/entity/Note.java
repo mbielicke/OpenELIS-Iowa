@@ -24,9 +24,10 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Note.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) "
-            + "  from Note n where n.referenceTable = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC")})
+    @NamedQuery(name = "Note.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
+            + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC")})
               
+            
 @Entity
 @Table(name="note")
 @EntityListeners({AuditUtil.class})
@@ -40,8 +41,8 @@ public class Note implements Auditable, Cloneable {
   @Column(name="reference_id")
   private Integer referenceId;             
 
-  @Column(name="reference_table")
-  private Integer referenceTable;             
+  @Column(name="reference_table_id")
+  private Integer referenceTableId;             
 
   @Column(name="timestamp")
   private Date timestamp;             
@@ -49,8 +50,8 @@ public class Note implements Auditable, Cloneable {
   @Column(name="is_external")
   private String isExternal;             
 
-  @Column(name="system_user")
-  private Integer systemUser;             
+  @Column(name="system_user_id")
+  private Integer systemUserId;             
 
   @Column(name="subject")
   private String subject;             
@@ -81,13 +82,13 @@ public class Note implements Auditable, Cloneable {
       this.referenceId = referenceId;
   }
 
-  public Integer getReferenceTable() {
-    return referenceTable;
+  public Integer getReferenceTableId() {
+    return referenceTableId;
   }
-  public void setReferenceTable(Integer referenceTable) {
-    if((referenceTable == null && this.referenceTable != null) || 
-       (referenceTable != null && !referenceTable.equals(this.referenceTable)))
-      this.referenceTable = referenceTable;
+  public void setReferenceTableId(Integer referenceTableId) {
+    if((referenceTableId == null && this.referenceTableId != null) || 
+       (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
+      this.referenceTableId = referenceTableId;
   }
 
   public Datetime getTimestamp() {
@@ -110,13 +111,13 @@ public class Note implements Auditable, Cloneable {
       this.isExternal = isExternal;
   }
 
-  public Integer getSystemUser() {
-    return systemUser;
+  public Integer getSystemUserId() {
+    return systemUserId;
   }
-  public void setSystemUser(Integer systemUser) {
-    if((systemUser == null && this.systemUser != null) || 
-       (systemUser != null && !systemUser.equals(this.systemUser)))
-      this.systemUser = systemUser;
+  public void setSystemUserId(Integer systemUserId) {
+    if((systemUserId == null && this.systemUserId != null) || 
+       (systemUserId != null && !systemUserId.equals(this.systemUserId)))
+      this.systemUserId = systemUserId;
   }
 
   public String getSubject() {
@@ -149,61 +150,21 @@ public class Note implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((referenceId == null && original.referenceId != null) || 
-         (referenceId != null && !referenceId.equals(original.referenceId))){
-        Element elem = doc.createElement("reference_id");
-        elem.appendChild(doc.createTextNode(original.referenceId.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
 
-      if((referenceTable == null && original.referenceTable != null) || 
-         (referenceTable != null && !referenceTable.equals(original.referenceTable))){
-        Element elem = doc.createElement("reference_table");
-        elem.appendChild(doc.createTextNode(original.referenceTable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
 
-      if((timestamp == null && original.timestamp != null) || 
-         (timestamp != null && !timestamp.equals(original.timestamp))){
-        Element elem = doc.createElement("timestamp");
-        elem.appendChild(doc.createTextNode(original.timestamp.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(timestamp,original.timestamp,doc,"timestamp");
 
-      if((isExternal == null && original.isExternal != null) || 
-         (isExternal != null && !isExternal.equals(original.isExternal))){
-        Element elem = doc.createElement("is_external");
-        elem.appendChild(doc.createTextNode(original.isExternal.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isExternal,original.isExternal,doc,"is_external");
 
-      if((systemUser == null && original.systemUser != null) || 
-         (systemUser != null && !systemUser.equals(original.systemUser))){
-        Element elem = doc.createElement("system_user");
-        elem.appendChild(doc.createTextNode(original.systemUser.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
 
-      if((subject == null && original.subject != null) || 
-         (subject != null && !subject.equals(original.subject))){
-        Element elem = doc.createElement("subject");
-        elem.appendChild(doc.createTextNode(original.subject.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(subject,original.subject,doc,"subject");
 
-      if((text == null && original.text != null) || 
-         (text != null && !text.equals(original.text))){
-        Element elem = doc.createElement("text");
-        elem.appendChild(doc.createTextNode(original.text.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

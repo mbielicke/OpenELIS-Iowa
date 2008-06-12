@@ -16,17 +16,11 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-/*@NamedQueries( {
-    @NamedQuery(name = "InventoryReceipt.InventoryReceiptsBy??", query = "select new org.openelis.domain.InventoryReceiptDO() " +
-                                       "  from InventoryReceipt r where orgz.id = :id")})
-  */            
 @Entity
 @Table(name="inventory_receipt")
 @EntityListeners({AuditUtil.class})
@@ -37,11 +31,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="inventory_item")
-  private Integer inventoryItem;             
+  @Column(name="inventory_item_id")
+  private Integer inventoryItemId;             
 
-  @Column(name="organization")
-  private Integer organization;             
+  @Column(name="organization_id")
+  private Integer organizationId;             
 
   @Column(name="received_date")
   private Date receivedDate;             
@@ -56,10 +50,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
   private String qcReference;             
 
   @Column(name="external_reference")
-  private String externalReference;   
-  
+  private String externalReference;             
+
   @Column(name="upc")
-  private String upc;
+  private String upc;             
+
 
   @Transient
   private InventoryReceipt original;
@@ -74,22 +69,22 @@ public class InventoryReceipt implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getInventoryItem() {
-    return inventoryItem;
+  public Integer getInventoryItemId() {
+    return inventoryItemId;
   }
-  public void setInventoryItem(Integer inventoryItem) {
-    if((inventoryItem == null && this.inventoryItem != null) || 
-       (inventoryItem != null && !inventoryItem.equals(this.inventoryItem)))
-      this.inventoryItem = inventoryItem;
+  public void setInventoryItemId(Integer inventoryItemId) {
+    if((inventoryItemId == null && this.inventoryItemId != null) || 
+       (inventoryItemId != null && !inventoryItemId.equals(this.inventoryItemId)))
+      this.inventoryItemId = inventoryItemId;
   }
 
-  public Integer getOrganization() {
-    return organization;
+  public Integer getOrganizationId() {
+    return organizationId;
   }
-  public void setOrganization(Integer organization) {
-    if((organization == null && this.organization != null) || 
-       (organization != null && !organization.equals(this.organization)))
-      this.organization = organization;
+  public void setOrganizationId(Integer organizationId) {
+    if((organizationId == null && this.organizationId != null) || 
+       (organizationId != null && !organizationId.equals(this.organizationId)))
+      this.organizationId = organizationId;
   }
 
   public Datetime getReceivedDate() {
@@ -139,6 +134,15 @@ public class InventoryReceipt implements Auditable, Cloneable {
       this.externalReference = externalReference;
   }
 
+  public String getUpc() {
+    return upc;
+  }
+  public void setUpc(String upc) {
+    if((upc == null && this.upc != null) || 
+       (upc != null && !upc.equals(this.upc)))
+      this.upc = upc;
+  }
+
   
   public void setClone() {
     try {
@@ -151,68 +155,23 @@ public class InventoryReceipt implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((inventoryItem == null && original.inventoryItem != null) || 
-         (inventoryItem != null && !inventoryItem.equals(original.inventoryItem))){
-        Element elem = doc.createElement("inventory_item");
-        elem.appendChild(doc.createTextNode(original.inventoryItem.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
 
-      if((organization == null && original.organization != null) || 
-         (organization != null && !organization.equals(original.organization))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
 
-      if((receivedDate == null && original.receivedDate != null) || 
-         (receivedDate != null && !receivedDate.equals(original.receivedDate))){
-        Element elem = doc.createElement("received_date");
-        elem.appendChild(doc.createTextNode(original.receivedDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(receivedDate,original.receivedDate,doc,"received_date");
 
-      if((quantityReceived == null && original.quantityReceived != null) || 
-         (quantityReceived != null && !quantityReceived.equals(original.quantityReceived))){
-        Element elem = doc.createElement("quantity_received");
-        elem.appendChild(doc.createTextNode(original.quantityReceived.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(quantityReceived,original.quantityReceived,doc,"quantity_received");
 
-      if((unitCost == null && original.unitCost != null) || 
-         (unitCost != null && !unitCost.equals(original.unitCost))){
-        Element elem = doc.createElement("unit_cost");
-        elem.appendChild(doc.createTextNode(original.unitCost.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(unitCost,original.unitCost,doc,"unit_cost");
 
-      if((qcReference == null && original.qcReference != null) || 
-         (qcReference != null && !qcReference.equals(original.qcReference))){
-        Element elem = doc.createElement("qc_reference");
-        elem.appendChild(doc.createTextNode(original.qcReference.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(qcReference,original.qcReference,doc,"qc_reference");
 
-      if((externalReference == null && original.externalReference != null) || 
-         (externalReference != null && !externalReference.equals(original.externalReference))){
-        Element elem = doc.createElement("external_reference");
-        elem.appendChild(doc.createTextNode(original.externalReference.toString().trim()));
-        root.appendChild(elem);
-      } 
-      
-      if((upc == null && original.upc != null) || 
-         (upc != null && !upc.equals(original.upc))){
-        Element elem = doc.createElement("upc");
-        elem.appendChild(doc.createTextNode(original.upc.toString().trim()));
-        root.appendChild(elem);
-     } 
+      AuditUtil.getChangeXML(externalReference,original.externalReference,doc,"external_reference");
+
+      AuditUtil.getChangeXML(upc,original.upc,doc,"upc");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -225,13 +184,5 @@ public class InventoryReceipt implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_receipt";
   }
-public String getUpc() {
-    return upc;
-}
-public void setUpc(String upc) {
-    if((upc == null && this.upc != null) || 
-       (upc != null && !upc.equals(this.upc)))
-      this.upc = upc;
-}
   
 }   

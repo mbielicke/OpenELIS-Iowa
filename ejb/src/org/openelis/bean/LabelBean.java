@@ -153,8 +153,8 @@ public class LabelBean implements LabelRemote {
         
         label.setName(labelDO.getName());
         label.setDescription(labelDO.getDescription());
-        label.setPrinterType(labelDO.getPrinterType());
-        label.setScriptlet(labelDO.getScriptlet());
+        label.setPrinterTypeId(labelDO.getPrinterType());
+        label.setScriptletId(labelDO.getScriptlet());
         
         if(label.getId() == null){
             manager.persist(label);
@@ -178,11 +178,11 @@ public class LabelBean implements LabelRemote {
           }                       
                                 
           if(labelDO.getPrinterType()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.PRINTER_TYPE));          
+              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.PRINTER_TYPE_ID));          
           } 
           
           if(labelDO.getScriptlet()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.SCRIPTLET));
+              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.SCRIPTLET_ID));
          }
                    
           

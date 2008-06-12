@@ -172,7 +172,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 
         qb.setOrderBy(storageLocationMeta.NAME);
         
-        qb.addWhere(storageLocationMeta.PARENT_STORAGE_LOCATION + " is null");    
+        qb.addWhere(storageLocationMeta.PARENT_STORAGE_LOCATION_ID + " is null");    
         
         if(qb.hasTable(storageLocationChildrenStorageUnitMeta.getTable()))
         	qb.addTable(StorageLocationChildrenMeta);
@@ -254,7 +254,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 		    	//delete the child record from the database
 			    manager.remove(childStorageLoc);        	
 		    }else{
-		    	childStorageLoc.setSortOrder(sortOrder);
+		    	childStorageLoc.setSortOrderId(sortOrder);
 				childStorageLoc.setLocation(childDO.getLocation());
 				childStorageLoc.setParentStorageLocationId(storageLocation.getId());
 				childStorageLoc.setStorageUnitId(childDO.getStorageUnitId());

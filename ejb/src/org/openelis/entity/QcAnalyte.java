@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-	@NamedQueries({@NamedQuery(name = "QCAnalyte.QCAnalyteByAnalyteId", query = "select q.id from QcAnalyte q where q.analyte = :id")})
+@NamedQueries({@NamedQuery(name = "QCAnalyte.QCAnalyteByAnalyteId", query = "select q.id from QcAnalyte q where q.analyteId = :id")})
 
 @Entity
 @Table(name="qc_analyte")
@@ -35,14 +35,14 @@ public class QcAnalyte implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="qc")
-  private Integer qc;             
+  @Column(name="qc_id")
+  private Integer qcId;             
 
-  @Column(name="analyte")
-  private Integer analyte;             
+  @Column(name="analyte_id")
+  private Integer analyteId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="value")
   private String value;             
@@ -64,31 +64,31 @@ public class QcAnalyte implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getQc() {
-    return qc;
+  public Integer getQcId() {
+    return qcId;
   }
-  public void setQc(Integer qc) {
-    if((qc == null && this.qc != null) || 
-       (qc != null && !qc.equals(this.qc)))
-      this.qc = qc;
-  }
-
-  public Integer getAnalyte() {
-    return analyte;
-  }
-  public void setAnalyte(Integer analyte) {
-    if((analyte == null && this.analyte != null) || 
-       (analyte != null && !analyte.equals(this.analyte)))
-      this.analyte = analyte;
+  public void setQcId(Integer qcId) {
+    if((qcId == null && this.qcId != null) || 
+       (qcId != null && !qcId.equals(this.qcId)))
+      this.qcId = qcId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getAnalyteId() {
+    return analyteId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setAnalyteId(Integer analyteId) {
+    if((analyteId == null && this.analyteId != null) || 
+       (analyteId != null && !analyteId.equals(this.analyteId)))
+      this.analyteId = analyteId;
+  }
+
+  public Integer getTypeId() {
+    return typeId;
+  }
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getValue() {
@@ -121,47 +121,17 @@ public class QcAnalyte implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((qc == null && original.qc != null) || 
-         (qc != null && !qc.equals(original.qc))){
-        Element elem = doc.createElement("qc");
-        elem.appendChild(doc.createTextNode(original.qc.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(qcId,original.qcId,doc,"qc_id");
 
-      if((analyte == null && original.analyte != null) || 
-         (analyte != null && !analyte.equals(original.analyte))){
-        Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((value == null && original.value != null) || 
-         (value != null && !value.equals(original.value))){
-        Element elem = doc.createElement("value");
-        elem.appendChild(doc.createTextNode(original.value.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
-      if((isTrendable == null && original.isTrendable != null) || 
-         (isTrendable != null && !isTrendable.equals(original.isTrendable))){
-        Element elem = doc.createElement("is_trendable");
-        elem.appendChild(doc.createTextNode(original.isTrendable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isTrendable,original.isTrendable,doc,"is_trendable");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

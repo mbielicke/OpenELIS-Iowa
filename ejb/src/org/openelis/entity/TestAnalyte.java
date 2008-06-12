@@ -22,8 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
-	@NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyte = :id")})
+@NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id")})
 
 @Entity
 @Table(name="test_analyte")
@@ -35,26 +34,26 @@ public class TestAnalyte implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="test")
-  private Integer test;             
+  @Column(name="test_id")
+  private Integer testId;             
 
-  @Column(name="result_group")
-  private Integer resultGroup;             
+  @Column(name="result_group_id")
+  private Integer resultGroupId;             
 
-  @Column(name="sort_order")
-  private Integer sortOrder;             
+  @Column(name="sort_order_id")
+  private Integer sortOrderId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
-  @Column(name="analyte")
-  private Integer analyte;             
+  @Column(name="analyte_id")
+  private Integer analyteId;             
 
   @Column(name="is_reportable")
   private String isReportable;             
 
-  @Column(name="scriptlet")
-  private Integer scriptlet;             
+  @Column(name="scriptlet_id")
+  private Integer scriptletId;             
 
 
   @Transient
@@ -70,49 +69,49 @@ public class TestAnalyte implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getTest() {
-    return test;
+  public Integer getTestId() {
+    return testId;
   }
-  public void setTest(Integer test) {
-    if((test == null && this.test != null) || 
-       (test != null && !test.equals(this.test)))
-      this.test = test;
-  }
-
-  public Integer getResultGroup() {
-    return resultGroup;
-  }
-  public void setResultGroup(Integer resultGroup) {
-    if((resultGroup == null && this.resultGroup != null) || 
-       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
-      this.resultGroup = resultGroup;
+  public void setTestId(Integer testId) {
+    if((testId == null && this.testId != null) || 
+       (testId != null && !testId.equals(this.testId)))
+      this.testId = testId;
   }
 
-  public Integer getSortOrder() {
-    return sortOrder;
+  public Integer getResultGroupId() {
+    return resultGroupId;
   }
-  public void setSortOrder(Integer sortOrder) {
-    if((sortOrder == null && this.sortOrder != null) || 
-       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
-      this.sortOrder = sortOrder;
-  }
-
-  public Integer getType() {
-    return type;
-  }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setResultGroupId(Integer resultGroupId) {
+    if((resultGroupId == null && this.resultGroupId != null) || 
+       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
+      this.resultGroupId = resultGroupId;
   }
 
-  public Integer getAnalyte() {
-    return analyte;
+  public Integer getSortOrderId() {
+    return sortOrderId;
   }
-  public void setAnalyte(Integer analyte) {
-    if((analyte == null && this.analyte != null) || 
-       (analyte != null && !analyte.equals(this.analyte)))
-      this.analyte = analyte;
+  public void setSortOrderId(Integer sortOrderId) {
+    if((sortOrderId == null && this.sortOrderId != null) || 
+       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
+      this.sortOrderId = sortOrderId;
+  }
+
+  public Integer getTypeId() {
+    return typeId;
+  }
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
+  }
+
+  public Integer getAnalyteId() {
+    return analyteId;
+  }
+  public void setAnalyteId(Integer analyteId) {
+    if((analyteId == null && this.analyteId != null) || 
+       (analyteId != null && !analyteId.equals(this.analyteId)))
+      this.analyteId = analyteId;
   }
 
   public String getIsReportable() {
@@ -124,13 +123,13 @@ public class TestAnalyte implements Auditable, Cloneable {
       this.isReportable = isReportable;
   }
 
-  public Integer getScriptlet() {
-    return scriptlet;
+  public Integer getScriptletId() {
+    return scriptletId;
   }
-  public void setScriptlet(Integer scriptlet) {
-    if((scriptlet == null && this.scriptlet != null) || 
-       (scriptlet != null && !scriptlet.equals(this.scriptlet)))
-      this.scriptlet = scriptlet;
+  public void setScriptletId(Integer scriptletId) {
+    if((scriptletId == null && this.scriptletId != null) || 
+       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+      this.scriptletId = scriptletId;
   }
 
   
@@ -145,61 +144,21 @@ public class TestAnalyte implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((test == null && original.test != null) || 
-         (test != null && !test.equals(original.test))){
-        Element elem = doc.createElement("test");
-        elem.appendChild(doc.createTextNode(original.test.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      if((resultGroup == null && original.resultGroup != null) || 
-         (resultGroup != null && !resultGroup.equals(original.resultGroup))){
-        Element elem = doc.createElement("result_group");
-        elem.appendChild(doc.createTextNode(original.resultGroup.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
 
-      if((sortOrder == null && original.sortOrder != null) || 
-         (sortOrder != null && !sortOrder.equals(original.sortOrder))){
-        Element elem = doc.createElement("sort_order");
-        elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-      if((analyte == null && original.analyte != null) || 
-         (analyte != null && !analyte.equals(original.analyte))){
-        Element elem = doc.createElement("analyte");
-        elem.appendChild(doc.createTextNode(original.analyte.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
-      if((isReportable == null && original.isReportable != null) || 
-         (isReportable != null && !isReportable.equals(original.isReportable))){
-        Element elem = doc.createElement("is_reportable");
-        elem.appendChild(doc.createTextNode(original.isReportable.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
 
-      if((scriptlet == null && original.scriptlet != null) || 
-         (scriptlet != null && !scriptlet.equals(original.scriptlet))){
-        Element elem = doc.createElement("scriptlet");
-        elem.appendChild(doc.createTextNode(original.scriptlet.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

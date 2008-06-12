@@ -31,14 +31,14 @@ public class SampleHuman implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sample")
-  private Integer sample;             
+  @Column(name="sample_id")
+  private Integer sampleId;             
 
-  @Column(name="patient")
-  private Integer patient;             
+  @Column(name="patient_id")
+  private Integer patientId;             
 
-  @Column(name="provider")
-  private Integer provider;             
+  @Column(name="provider_id")
+  private Integer providerId;             
 
   @Column(name="provider_phone")
   private String providerPhone;             
@@ -57,31 +57,31 @@ public class SampleHuman implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSample() {
-    return sample;
+  public Integer getSampleId() {
+    return sampleId;
   }
-  public void setSample(Integer sample) {
-    if((sample == null && this.sample != null) || 
-       (sample != null && !sample.equals(this.sample)))
-      this.sample = sample;
-  }
-
-  public Integer getPatient() {
-    return patient;
-  }
-  public void setPatient(Integer patient) {
-    if((patient == null && this.patient != null) || 
-       (patient != null && !patient.equals(this.patient)))
-      this.patient = patient;
+  public void setSampleId(Integer sampleId) {
+    if((sampleId == null && this.sampleId != null) || 
+       (sampleId != null && !sampleId.equals(this.sampleId)))
+      this.sampleId = sampleId;
   }
 
-  public Integer getProvider() {
-    return provider;
+  public Integer getPatientId() {
+    return patientId;
   }
-  public void setProvider(Integer provider) {
-    if((provider == null && this.provider != null) || 
-       (provider != null && !provider.equals(this.provider)))
-      this.provider = provider;
+  public void setPatientId(Integer patientId) {
+    if((patientId == null && this.patientId != null) || 
+       (patientId != null && !patientId.equals(this.patientId)))
+      this.patientId = patientId;
+  }
+
+  public Integer getProviderId() {
+    return providerId;
+  }
+  public void setProviderId(Integer providerId) {
+    if((providerId == null && this.providerId != null) || 
+       (providerId != null && !providerId.equals(this.providerId)))
+      this.providerId = providerId;
   }
 
   public String getProviderPhone() {
@@ -105,40 +105,15 @@ public class SampleHuman implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((sample == null && original.sample != null) || 
-         (sample != null && !sample.equals(original.sample))){
-        Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
 
-      if((patient == null && original.patient != null) || 
-         (patient != null && !patient.equals(original.patient))){
-        Element elem = doc.createElement("patient");
-        elem.appendChild(doc.createTextNode(original.patient.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(patientId,original.patientId,doc,"patient_id");
 
-      if((provider == null && original.provider != null) || 
-         (provider != null && !provider.equals(original.provider))){
-        Element elem = doc.createElement("provider");
-        elem.appendChild(doc.createTextNode(original.provider.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(providerId,original.providerId,doc,"provider_id");
 
-      if((providerPhone == null && original.providerPhone != null) || 
-         (providerPhone != null && !providerPhone.equals(original.providerPhone))){
-        Element elem = doc.createElement("provider_phone");
-        elem.appendChild(doc.createTextNode(original.providerPhone.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(providerPhone,original.providerPhone,doc,"provider_phone");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

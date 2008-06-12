@@ -159,8 +159,8 @@ public class QaEventBean implements QaEventRemote{
         qaEvent.setName(qaEventDO.getName());
         qaEvent.setReportingSequence(qaEventDO.getReportingSequence());
         qaEvent.setReportingText(qaEventDO.getReportingText());
-        qaEvent.setTest(qaEventDO.getTest());
-        qaEvent.setType(qaEventDO.getType());
+        qaEvent.setTestId(qaEventDO.getTest());
+        qaEvent.setTypeId(qaEventDO.getType());
         
         if(qaEvent.getId() == null){
             manager.persist(qaEvent);
@@ -205,7 +205,7 @@ public class QaEventBean implements QaEventRemote{
     
     private void validateQaEvent(QaEventDO qaEventDO,List<Exception> exceptionList){
         if(qaEventDO.getType()==null){                       
-            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.TYPE));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.TYPE_ID));
            } 
         if("".equals(qaEventDO.getName())){                       
             exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.NAME));

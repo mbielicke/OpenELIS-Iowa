@@ -31,14 +31,14 @@ public class SampleOrganization implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sample")
-  private Integer sample;             
+  @Column(name="sample_id")
+  private Integer sampleId;             
 
-  @Column(name="organization")
-  private Integer organization;             
+  @Column(name="organization_id")
+  private Integer organizationId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
 
   @Transient
@@ -54,31 +54,31 @@ public class SampleOrganization implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSample() {
-    return sample;
+  public Integer getSampleId() {
+    return sampleId;
   }
-  public void setSample(Integer sample) {
-    if((sample == null && this.sample != null) || 
-       (sample != null && !sample.equals(this.sample)))
-      this.sample = sample;
-  }
-
-  public Integer getOrganization() {
-    return organization;
-  }
-  public void setOrganization(Integer organization) {
-    if((organization == null && this.organization != null) || 
-       (organization != null && !organization.equals(this.organization)))
-      this.organization = organization;
+  public void setSampleId(Integer sampleId) {
+    if((sampleId == null && this.sampleId != null) || 
+       (sampleId != null && !sampleId.equals(this.sampleId)))
+      this.sampleId = sampleId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getOrganizationId() {
+    return organizationId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setOrganizationId(Integer organizationId) {
+    if((organizationId == null && this.organizationId != null) || 
+       (organizationId != null && !organizationId.equals(this.organizationId)))
+      this.organizationId = organizationId;
+  }
+
+  public Integer getTypeId() {
+    return typeId;
+  }
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   
@@ -93,33 +93,13 @@ public class SampleOrganization implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((sample == null && original.sample != null) || 
-         (sample != null && !sample.equals(original.sample))){
-        Element elem = doc.createElement("sample");
-        elem.appendChild(doc.createTextNode(original.sample.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
 
-      if((organization == null && original.organization != null) || 
-         (organization != null && !organization.equals(original.organization))){
-        Element elem = doc.createElement("organization");
-        elem.appendChild(doc.createTextNode(original.organization.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(organizationId,original.organizationId,doc,"organization_id");
 
-      if((type == null && original.type != null) || 
-         (type != null && !type.equals(original.type))){
-        Element elem = doc.createElement("type");
-        elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

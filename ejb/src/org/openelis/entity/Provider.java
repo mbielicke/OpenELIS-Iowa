@@ -5,12 +5,15 @@ package org.openelis.entity;
   * Provider Entity POJO for database 
   */
 
-import java.util.Collection;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.entity.Note;
+import org.openelis.entity.ProviderAddress;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -25,15 +28,17 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
 @NamedQueries({@NamedQuery(name = "Provider.Provider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
-                               "  from Provider p, Dictionary d where d.id = p.type and p.id = :id"),
-               @NamedQuery(name = "Provider.Addresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.provider, " +
-                                           " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
-                                           " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
-                                           " where pa.provider = :id order by pa.location"),
-               @NamedQuery(name = "Provider.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUser, n.text, n.timestamp, n.subject) " + 
-                       "  from Note n where n.referenceTable = (select id from ReferenceTable where name='provider') and n.referenceId = :id ORDER BY n.timestamp DESC")})               
-@Entity 
+"  from Provider p, Dictionary d where d.id = p.typeId and p.id = :id"),
+@NamedQuery(name = "Provider.Addresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.providerId, " +
+            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
+            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
+            " where pa.providerId = :id order by pa.location"),
+@NamedQuery(name = "Provider.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) " + 
+"  from Note n where n.referenceTableId = (select id from ReferenceTable where name='provider') and n.referenceId = :id ORDER BY n.timestamp DESC")})               
+
+@Entity
 @Table(name="provider")
 @EntityListeners({AuditUtil.class})
 public class Provider implements Auditable, Cloneable {
@@ -52,12 +57,12 @@ public class Provider implements Auditable, Cloneable {
   @Column(name="middle_name")
   private String middleName;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="npi")
   private String npi;             
-  
+
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "provider",insertable = false, updatable = false)
   private Collection<ProviderAddress> providerAddress;
@@ -65,7 +70,7 @@ public class Provider implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "reference_id", insertable = false, updatable = false)
   private Collection<Note> provNote;
-  
+
   @Transient
   private Provider original;
 
@@ -106,13 +111,13 @@ public class Provider implements Auditable, Cloneable {
       this.middleName = middleName;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setType(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getNpi() {
@@ -132,76 +137,46 @@ public class Provider implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        if((lastName == null && original.lastName != null) || 
-           (lastName != null && !lastName.equals(original.lastName))){
-          Element elem = doc.createElement("last_name");
-          elem.appendChild(doc.createTextNode(original.lastName.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(lastName,original.lastName,doc,"last_name");
 
-        if((firstName == null && original.firstName != null) || 
-           (firstName != null && !firstName.equals(original.firstName))){
-          Element elem = doc.createElement("first_name");
-          elem.appendChild(doc.createTextNode(original.firstName.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(firstName,original.firstName,doc,"first_name");
 
-        if((middleName == null && original.middleName != null) || 
-           (middleName != null && !middleName.equals(original.middleName))){
-          Element elem = doc.createElement("middle_name");
-          elem.appendChild(doc.createTextNode(original.middleName.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(middleName,original.middleName,doc,"middle_name");
 
-        if((type == null && original.type != null) || 
-           (type != null && !type.equals(original.type))){
-          Element elem = doc.createElement("type");
-          elem.appendChild(doc.createTextNode(original.type.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
-        if((npi == null && original.npi != null) || 
-           (npi != null && !npi.equals(original.npi))){
-          Element elem = doc.createElement("npi");
-          elem.appendChild(doc.createTextNode(original.npi.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(npi,original.npi,doc,"npi");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "provider";
   }
   
   public Collection<ProviderAddress> getProviderAddress() {
-     return providerAddress;
-  }
-  
-  public void setProviderAddress(Collection<ProviderAddress> providerAddress) {
-    this.providerAddress = providerAddress;
-  }
-   public Collection<Note> getProvNote() {
-    return provNote;
-  }
-   public void setProvNote(Collection<Note> provNote) {
-    this.provNote = provNote;
-  }
+      return providerAddress;
+   }
+   
+   public void setProviderAddress(Collection<ProviderAddress> providerAddress) {
+     this.providerAddress = providerAddress;
+   }
+    public Collection<Note> getProvNote() {
+     return provNote;
+   }
+    public void setProvNote(Collection<Note> provNote) {
+     this.provNote = provNote;
+   }
   
 }   

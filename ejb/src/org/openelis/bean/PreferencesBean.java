@@ -57,7 +57,7 @@ public class PreferencesBean implements PreferencesRemote{
            prefs = new Preferences();
        }
        prefs.setKey(prefsDO.getKey());
-       prefs.setSystemUser(getSystemUserId());
+       prefs.setSystemUserId(getSystemUserId());
        prefs.setText(prefsDO.getText());
        if(prefs.getId() == null){
            manager.persist(prefs);

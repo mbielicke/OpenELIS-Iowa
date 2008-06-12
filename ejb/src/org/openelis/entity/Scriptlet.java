@@ -7,8 +7,10 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -21,7 +23,8 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "Scriptlet.Scriptlet", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
-        "order by script.name ")
+"order by script.name ")
+
 @Entity
 @Table(name="scriptlet")
 @EntityListeners({AuditUtil.class})
@@ -82,26 +85,11 @@ public class Scriptlet implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((codeSource == null && original.codeSource != null) || 
-         (codeSource != null && !codeSource.equals(original.codeSource))){
-        Element elem = doc.createElement("code_source");
-        elem.appendChild(doc.createTextNode(original.codeSource.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(codeSource,original.codeSource,doc,"code_source");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

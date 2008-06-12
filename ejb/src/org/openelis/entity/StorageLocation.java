@@ -5,6 +5,13 @@ package org.openelis.entity;
   * StorageLocation Entity POJO for database 
   */
 
+import org.openelis.entity.StorageUnit;
+import org.openelis.util.XMLUtil;
+import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.Collection;
 
 import javax.persistence.Column;
@@ -22,24 +29,18 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.util.XMLUtil;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
-@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
+@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
 @NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select s.id, s.name, s.location " +
-							 " from StorageLocation s where s.name like :name order by s.name"),
+                             " from StorageLocation s where s.name like :name order by s.name"),
 @NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
 @NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name")})
-							 
-							 
+                             
+
 @Entity
 @Table(name="storage_location")
 @EntityListeners({AuditUtil.class})
@@ -50,8 +51,8 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sort_order")
-  private Integer sortOrder;             
+  @Column(name="sort_order_id")
+  private Integer sortOrderId;             
 
   @Column(name="name")
   private String name;             
@@ -59,10 +60,10 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="location")
   private String location;             
 
-  @Column(name="parent_storage_location")
+  @Column(name="parent_storage_location_id")
   private Integer parentStorageLocationId;             
 
-  @Column(name="storage_unit")
+  @Column(name="storage_unit_id")
   private Integer storageUnitId;             
 
   @Column(name="is_available")
@@ -79,7 +80,7 @@ public class StorageLocation implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_unit", insertable = false, updatable = false)
   private StorageUnit storageUnit;
-  
+
   @Transient
   private StorageLocation original;
 
@@ -93,13 +94,13 @@ public class StorageLocation implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSortOrder() {
-    return sortOrder;
+  public Integer getSortOrderId() {
+    return sortOrderId;
   }
-  public void setSortOrder(Integer sortOrder) {
-    if((sortOrder == null && this.sortOrder != null) || 
-       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
-      this.sortOrder = sortOrder;
+  public void setSortOrderId(Integer sortOrderId) {
+    if((sortOrderId == null && this.sortOrderId != null) || 
+       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
+      this.sortOrderId = sortOrderId;
   }
 
   public String getName() {
@@ -123,19 +124,19 @@ public class StorageLocation implements Auditable, Cloneable {
   public Integer getParentStorageLocationId() {
     return parentStorageLocationId;
   }
-  public void setParentStorageLocationId(Integer parentStorageLocation) {
-    if((parentStorageLocation == null && this.parentStorageLocationId != null) || 
-       (parentStorageLocation != null && !parentStorageLocation.equals(this.parentStorageLocationId)))
-      this.parentStorageLocationId = parentStorageLocation;
+  public void setParentStorageLocationId(Integer parentStorageLocationId) {
+    if((parentStorageLocationId == null && this.parentStorageLocationId != null) || 
+       (parentStorageLocationId != null && !parentStorageLocationId.equals(this.parentStorageLocationId)))
+      this.parentStorageLocationId = parentStorageLocationId;
   }
 
   public Integer getStorageUnitId() {
     return storageUnitId;
   }
-  public void setStorageUnitId(Integer storageUnit) {
-    if((storageUnit == null && this.storageUnitId != null) || 
-       (storageUnit != null && !storageUnit.equals(this.storageUnitId)))
-      this.storageUnitId = storageUnit;
+  public void setStorageUnitId(Integer storageUnitId) {
+    if((storageUnitId == null && this.storageUnitId != null) || 
+       (storageUnitId != null && !storageUnitId.equals(this.storageUnitId)))
+      this.storageUnitId = storageUnitId;
   }
 
   public String getIsAvailable() {
@@ -155,89 +156,54 @@ public class StorageLocation implements Auditable, Cloneable {
   }
   
   public String getChangeXML() {
-      try {
-        Document doc = XMLUtil.createNew("change");
-        Element root = doc.getDocumentElement();
-        
-        if((id == null && original.id != null) || 
-           (id != null && !id.equals(original.id))){
-          Element elem = doc.createElement("id");
-          elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-          root.appendChild(elem);
-        }      
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-        //4/29/08 - we dont want to keep track of when sort order changes
-        /*if((sortOrder == null && original.sortOrder != null) || 
-           (sortOrder != null && !sortOrder.equals(original.sortOrder))){
-          Element elem = doc.createElement("sort_order");
-          elem.appendChild(doc.createTextNode(original.sortOrder.toString().trim()));
-          root.appendChild(elem);
-        }*/      
+      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
 
-        if((name == null && original.name != null) || 
-           (name != null && !name.equals(original.name))){
-          Element elem = doc.createElement("name");
-          elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-        if((location == null && original.location != null) || 
-           (location != null && !location.equals(original.location))){
-          Element elem = doc.createElement("location");
-          elem.appendChild(doc.createTextNode(original.location.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(location,original.location,doc,"location");
 
-        if((parentStorageLocationId == null && original.parentStorageLocationId != null) || 
-           (parentStorageLocationId != null && !parentStorageLocationId.equals(original.parentStorageLocationId))){
-          Element elem = doc.createElement("parent_storage_location");
-          elem.appendChild(doc.createTextNode(original.parentStorageLocationId.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(parentStorageLocationId,original.parentStorageLocationId,doc,"parent_storage_location_id");
 
-        if((storageUnitId == null && original.storageUnitId != null) || 
-           (storageUnitId != null && !storageUnitId.equals(original.storageUnitId))){
-          Element elem = doc.createElement("storage_unit");
-          elem.appendChild(doc.createTextNode(original.storageUnitId.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(storageUnitId,original.storageUnitId,doc,"storage_unit_id");
 
-        if((isAvailable == null && original.isAvailable != null) || 
-           (isAvailable != null && !isAvailable.equals(original.isAvailable))){
-          Element elem = doc.createElement("is_available");
-          elem.appendChild(doc.createTextNode(original.isAvailable.toString().trim()));
-          root.appendChild(elem);
-        }      
+      AuditUtil.getChangeXML(isAvailable,original.isAvailable,doc,"is_available");
 
-        if(root.hasChildNodes())
-          return XMLUtil.toString(doc);
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      return null;
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return null;
+  }
    
   public String getTableName() {
     return "storage_location";
   }
-public Collection<StorageLocation> getChildLocations() {
-	return childLocations;
-}
-public void setChildLocations(
-		Collection<StorageLocation> childLocations) {
-	this.childLocations = childLocations;
-}
-public StorageUnit getStorageUnit() {
-	return storageUnit;
-}
-public void setStorageUnit(StorageUnit storageUnitName) {
-	this.storageUnit = storageUnitName;
-}
-public StorageLocation getParentStorageLocation() {
-    return parentStorageLocation;
-}
-public void setParentStorageLocation(StorageLocation parentStorageLocation) {
-    this.parentStorageLocation = parentStorageLocation;
-}
+  
+  public Collection<StorageLocation> getChildLocations() {
+    return childLocations;
+  }
+  public void setChildLocations(
+        Collection<StorageLocation> childLocations) {
+    this.childLocations = childLocations;
+  }
+  public StorageUnit getStorageUnit() {
+    return storageUnit;
+  }
+  public void setStorageUnit(StorageUnit storageUnitName) {
+    this.storageUnit = storageUnitName;
+  }
+  public StorageLocation getParentStorageLocation() {
+      return parentStorageLocation;
+  }
+  public void setParentStorageLocation(StorageLocation parentStorageLocation) {
+      this.parentStorageLocation = parentStorageLocation;
+  }
   
 }   

@@ -81,26 +81,11 @@ public class Panel implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((name == null && original.name != null) || 
-         (name != null && !name.equals(original.name))){
-        Element elem = doc.createElement("name");
-        elem.appendChild(doc.createTextNode(original.name.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(name,original.name,doc,"name");
 
-      if((description == null && original.description != null) || 
-         (description != null && !description.equals(original.description))){
-        Element elem = doc.createElement("description");
-        elem.appendChild(doc.createTextNode(original.description.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

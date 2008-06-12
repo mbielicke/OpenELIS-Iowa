@@ -40,8 +40,8 @@ public class Patient implements Auditable, Cloneable {
   @Column(name="middle_name")
   private String middleName;             
 
-  @Column(name="address")
-  private Integer address;             
+  @Column(name="address_id")
+  private Integer addressId;             
 
   @Column(name="birth_date")
   private Date birthDate;             
@@ -49,14 +49,14 @@ public class Patient implements Auditable, Cloneable {
   @Column(name="birth_time")
   private Date birthTime;             
 
-  @Column(name="gender")
-  private Integer gender;             
+  @Column(name="gender_id")
+  private Integer genderId;             
 
   @Column(name="race")
   private String race;             
 
-  @Column(name="ethnicity")
-  private Integer ethnicity;             
+  @Column(name="ethnicity_id")
+  private Integer ethnicityId;             
 
 
   @Transient
@@ -99,13 +99,13 @@ public class Patient implements Auditable, Cloneable {
       this.middleName = middleName;
   }
 
-  public Integer getAddress() {
-    return address;
+  public Integer getAddressId() {
+    return addressId;
   }
-  public void setAddress(Integer address) {
-    if((address == null && this.address != null) || 
-       (address != null && !address.equals(this.address)))
-      this.address = address;
+  public void setAddressId(Integer addressId) {
+    if((addressId == null && this.addressId != null) || 
+       (addressId != null && !addressId.equals(this.addressId)))
+      this.addressId = addressId;
   }
 
   public Datetime getBirthDate() {
@@ -130,13 +130,13 @@ public class Patient implements Auditable, Cloneable {
       this.birthTime = birth_time.getDate();
   }
 
-  public Integer getGender() {
-    return gender;
+  public Integer getGenderId() {
+    return genderId;
   }
-  public void setGender(Integer gender) {
-    if((gender == null && this.gender != null) || 
-       (gender != null && !gender.equals(this.gender)))
-      this.gender = gender;
+  public void setGenderId(Integer genderId) {
+    if((genderId == null && this.genderId != null) || 
+       (genderId != null && !genderId.equals(this.genderId)))
+      this.genderId = genderId;
   }
 
   public String getRace() {
@@ -148,13 +148,13 @@ public class Patient implements Auditable, Cloneable {
       this.race = race;
   }
 
-  public Integer getEthnicity() {
-    return ethnicity;
+  public Integer getEthnicityId() {
+    return ethnicityId;
   }
-  public void setEthnicity(Integer ethnicity) {
-    if((ethnicity == null && this.ethnicity != null) || 
-       (ethnicity != null && !ethnicity.equals(this.ethnicity)))
-      this.ethnicity = ethnicity;
+  public void setEthnicityId(Integer ethnicityId) {
+    if((ethnicityId == null && this.ethnicityId != null) || 
+       (ethnicityId != null && !ethnicityId.equals(this.ethnicityId)))
+      this.ethnicityId = ethnicityId;
   }
 
   
@@ -169,75 +169,25 @@ public class Patient implements Auditable, Cloneable {
       Document doc = XMLUtil.createNew("change");
       Element root = doc.getDocumentElement();
       
-      if((id == null && original.id != null) || 
-         (id != null && !id.equals(original.id))){
-        Element elem = doc.createElement("id");
-        elem.appendChild(doc.createTextNode(original.id.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      if((lastName == null && original.lastName != null) || 
-         (lastName != null && !lastName.equals(original.lastName))){
-        Element elem = doc.createElement("last_name");
-        elem.appendChild(doc.createTextNode(original.lastName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(lastName,original.lastName,doc,"last_name");
 
-      if((firstName == null && original.firstName != null) || 
-         (firstName != null && !firstName.equals(original.firstName))){
-        Element elem = doc.createElement("first_name");
-        elem.appendChild(doc.createTextNode(original.firstName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(firstName,original.firstName,doc,"first_name");
 
-      if((middleName == null && original.middleName != null) || 
-         (middleName != null && !middleName.equals(original.middleName))){
-        Element elem = doc.createElement("middle_name");
-        elem.appendChild(doc.createTextNode(original.middleName.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(middleName,original.middleName,doc,"middle_name");
 
-      if((address == null && original.address != null) || 
-         (address != null && !address.equals(original.address))){
-        Element elem = doc.createElement("address");
-        elem.appendChild(doc.createTextNode(original.address.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
-      if((birthDate == null && original.birthDate != null) || 
-         (birthDate != null && !birthDate.equals(original.birthDate))){
-        Element elem = doc.createElement("birth_date");
-        elem.appendChild(doc.createTextNode(original.birthDate.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(birthDate,original.birthDate,doc,"birth_date");
 
-      if((birthTime == null && original.birthTime != null) || 
-         (birthTime != null && !birthTime.equals(original.birthTime))){
-        Element elem = doc.createElement("birth_time");
-        elem.appendChild(doc.createTextNode(original.birthTime.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(birthTime,original.birthTime,doc,"birth_time");
 
-      if((gender == null && original.gender != null) || 
-         (gender != null && !gender.equals(original.gender))){
-        Element elem = doc.createElement("gender");
-        elem.appendChild(doc.createTextNode(original.gender.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(genderId,original.genderId,doc,"gender_id");
 
-      if((race == null && original.race != null) || 
-         (race != null && !race.equals(original.race))){
-        Element elem = doc.createElement("race");
-        elem.appendChild(doc.createTextNode(original.race.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(race,original.race,doc,"race");
 
-      if((ethnicity == null && original.ethnicity != null) || 
-         (ethnicity != null && !ethnicity.equals(original.ethnicity))){
-        Element elem = doc.createElement("ethnicity");
-        elem.appendChild(doc.createTextNode(original.ethnicity.toString().trim()));
-        root.appendChild(elem);
-      }      
+      AuditUtil.getChangeXML(ethnicityId,original.ethnicityId,doc,"ethnicity_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

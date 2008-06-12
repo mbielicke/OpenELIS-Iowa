@@ -226,7 +226,7 @@ public class ProviderBean implements ProviderRemote {
             provider.setLastName(providerDO.getLastName());
             provider.setMiddleName(providerDO.getMiddleName());
             provider.setNpi(providerDO.getNpi());
-            provider.setType(providerDO.getTypeId());            
+            provider.setTypeId(providerDO.getTypeId());            
             
             if (provider.getId() == null) {
                 manager.persist(provider);
@@ -261,7 +261,7 @@ public class ProviderBean implements ProviderRemote {
                 
                 provAdd.setExternalId(provAddDO.getExternalId());
                 provAdd.setLocation(provAddDO.getLocation());
-                provAdd.setProvider(provider.getId());
+                provAdd.setProviderId(provider.getId());
                 provAdd.setAddressId(addressId);
                                                        
                 if(provAdd.getId()==null){
@@ -277,9 +277,9 @@ public class ProviderBean implements ProviderRemote {
                 note = new Note();
                 note.setIsExternal(noteDO.getIsExternal());
                 note.setReferenceId(provider.getId());
-                note.setReferenceTable(providerReferenceId);
+                note.setReferenceTableId(providerReferenceId);
                 note.setSubject(noteDO.getSubject());
-                note.setSystemUser(getSystemUserId());
+                note.setSystemUserId(getSystemUserId());
                 note.setText(noteDO.getText());
                 note.setTimestamp(Datetime.getInstance());
             }
@@ -316,7 +316,7 @@ public class ProviderBean implements ProviderRemote {
            exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderMeta.LAST_NAME));
           }
        if(providerDO.getTypeId()==null){           
-           exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderMeta.TYPE));
+           exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderMeta.TYPE_ID));
           }
        return exceptionList;
     }
