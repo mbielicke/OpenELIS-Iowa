@@ -15,13 +15,13 @@ public class TestAnalyteMeta implements Meta {
 	
 	public static final String
               ID					="test_analyte.id",
-              TEST_ID					="test_analyte.test_id",
-              RESULT_GROUP_ID					="test_analyte.result_group_id",
-              SORT_ORDER_ID					="test_analyte.sort_order_id",
-              TYPE_ID					="test_analyte.type_id",
-              ANALYTE_ID					="test_analyte.analyte_id",
-              IS_REPORTABLE					="test_analyte.is_reportable",
-              SCRIPTLET_ID					="test_analyte.scriptlet_id";
+              TEST_ID					="test_analyte.testId",
+              RESULT_GROUP_ID					="test_analyte.resultGroupId",
+              SORT_ORDER_ID					="test_analyte.sortOrderId",
+              TYPE_ID					="test_analyte.typeId",
+              ANALYTE_ID					="test_analyte.analyteId",
+              IS_REPORTABLE					="test_analyte.isReportable",
+              SCRIPTLET_ID					="test_analyte.scriptletId";
 
 
   	private static final String[] columnNames = {

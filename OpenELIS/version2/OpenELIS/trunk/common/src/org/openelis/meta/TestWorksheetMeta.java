@@ -15,11 +15,11 @@ public class TestWorksheetMeta implements Meta {
 	
 	public static final String
               ID					="test_worksheet.id",
-              TEST_ID					="test_worksheet.test_id",
-              BATCH_CAPACITY					="test_worksheet.batch_capacity",
-              TOTAL_CAPACITY					="test_worksheet.total_capacity",
-              NUMBER_FORMAT_ID					="test_worksheet.number_format_id",
-              SCRIPTLET_ID					="test_worksheet.scriptlet_id";
+              TEST_ID					="test_worksheet.testId",
+              BATCH_CAPACITY					="test_worksheet.batchCapacity",
+              TOTAL_CAPACITY					="test_worksheet.totalCapacity",
+              NUMBER_FORMAT_ID					="test_worksheet.numberFormatId",
+              SCRIPTLET_ID					="test_worksheet.scriptletId";
 
 
   	private static final String[] columnNames = {

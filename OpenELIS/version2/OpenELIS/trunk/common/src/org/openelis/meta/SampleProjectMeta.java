@@ -15,9 +15,9 @@ public class SampleProjectMeta implements Meta {
 	
 	public static final String
               ID					="sample_project.id",
-              SAMPLE_ID					="sample_project.sample_id",
-              PROJECT_ID					="sample_project.project_id",
-              IS_PERMANENT					="sample_project.is_permanent";
+              SAMPLE_ID					="sample_project.sampleId",
+              PROJECT_ID					="sample_project.projectId",
+              IS_PERMANENT					="sample_project.isPermanent";
 
 
   	private static final String[] columnNames = {

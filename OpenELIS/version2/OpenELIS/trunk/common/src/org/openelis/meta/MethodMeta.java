@@ -17,10 +17,10 @@ public class MethodMeta implements Meta {
               ID					="method.id",
               NAME					="method.name",
               DESCRIPTION					="method.description",
-              REPORTING_DESCRIPTION					="method.reporting_description",
-              IS_ACTIVE					="method.is_active",
-              ACTIVE_BEGIN					="method.active_begin",
-              ACTIVE_END					="method.active_end";
+              REPORTING_DESCRIPTION					="method.reportingDescription",
+              IS_ACTIVE					="method.isActive",
+              ACTIVE_BEGIN					="method.activeBegin",
+              ACTIVE_END					="method.activeEnd";
 
 
   	private static final String[] columnNames = {

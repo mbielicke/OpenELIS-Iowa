@@ -15,15 +15,15 @@ public class PatientMeta implements Meta {
 	
 	public static final String
               ID					="patient.id",
-              LAST_NAME					="patient.last_name",
-              FIRST_NAME					="patient.first_name",
-              MIDDLE_NAME					="patient.middle_name",
-              ADDRESS_ID					="patient.address_id",
-              BIRTH_DATE					="patient.birth_date",
-              BIRTH_TIME					="patient.birth_time",
-              GENDER_ID					="patient.gender_id",
+              LAST_NAME					="patient.lastName",
+              FIRST_NAME					="patient.firstName",
+              MIDDLE_NAME					="patient.middleName",
+              ADDRESS_ID					="patient.addressId",
+              BIRTH_DATE					="patient.birthDate",
+              BIRTH_TIME					="patient.birthTime",
+              GENDER_ID					="patient.genderId",
               RACE					="patient.race",
-              ETHNICITY_ID					="patient.ethnicity_id";
+              ETHNICITY_ID					="patient.ethnicityId";
 
 
   	private static final String[] columnNames = {

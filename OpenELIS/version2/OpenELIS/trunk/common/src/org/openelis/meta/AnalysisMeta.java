@@ -15,21 +15,21 @@ public class AnalysisMeta implements Meta {
 	
 	public static final String
               ID					="analysis.id",
-              SAMPLE_ITEM_ID					="analysis.sample_item_id",
+              SAMPLE_ITEM_ID					="analysis.sampleItemId",
               REVISION					="analysis.revision",
-              TEST_ID					="analysis.test_id",
-              SECTION_ID					="analysis.section_id",
-              PRE_ANALYSIS_ID					="analysis.pre_analysis_id",
-              PARENT_ANALYSIS_ID					="analysis.parent_analysis_id",
-              PARENT_RESULT_ID					="analysis.parent_result_id",
-              IS_REPORTABLE					="analysis.is_reportable",
-              UNIT_OF_MEASURE_ID					="analysis.unit_of_measure_id",
-              STATUS_ID					="analysis.status_id",
-              AVAILABLE_DATE					="analysis.available_date",
-              STARTED_DATE					="analysis.started_date",
-              COMPLETED_DATE					="analysis.completed_date",
-              RELEASED_DATE					="analysis.released_date",
-              PRINTED_DATE					="analysis.printed_date";
+              TEST_ID					="analysis.testId",
+              SECTION_ID					="analysis.sectionId",
+              PRE_ANALYSIS_ID					="analysis.preAnalysisId",
+              PARENT_ANALYSIS_ID					="analysis.parentAnalysisId",
+              PARENT_RESULT_ID					="analysis.parentResultId",
+              IS_REPORTABLE					="analysis.isReportable",
+              UNIT_OF_MEASURE_ID					="analysis.unitOfMeasureId",
+              STATUS_ID					="analysis.statusId",
+              AVAILABLE_DATE					="analysis.availableDate",
+              STARTED_DATE					="analysis.startedDate",
+              COMPLETED_DATE					="analysis.completedDate",
+              RELEASED_DATE					="analysis.releasedDate",
+              PRINTED_DATE					="analysis.printedDate";
 
 
   	private static final String[] columnNames = {

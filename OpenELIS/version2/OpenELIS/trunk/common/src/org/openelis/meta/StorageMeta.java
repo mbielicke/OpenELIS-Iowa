@@ -15,9 +15,9 @@ public class StorageMeta implements Meta {
 	
 	public static final String
               ID					="storage.id",
-              REFERENCE_ID					="storage.reference_id",
-              REFERENCE_TABLE_ID					="storage.reference_table_id",
-              STORAGE_LOCATION_ID					="storage.storage_location_id",
+              REFERENCE_ID					="storage.referenceId",
+              REFERENCE_TABLE_ID					="storage.referenceTableId",
+              STORAGE_LOCATION_ID					="storage.storageLocationId",
               CHECKIN					="storage.checkin",
               CHECKOUT					="storage.checkout";
 

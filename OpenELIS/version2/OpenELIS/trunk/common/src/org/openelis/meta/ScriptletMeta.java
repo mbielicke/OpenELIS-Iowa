@@ -16,7 +16,7 @@ public class ScriptletMeta implements Meta {
 	public static final String
               ID					="scriptlet.id",
               NAME					="scriptlet.name",
-              CODE_SOURCE					="scriptlet.code_source";
+              CODE_SOURCE					="scriptlet.codeSource";
 
 
   	private static final String[] columnNames = {

@@ -2,30 +2,30 @@
 package org.openelis.meta;
 
 /**
-  * AttachmentItem META Data
+  * SampleOrganization META Data
   */
 
 import java.util.HashMap;
 import org.openelis.util.Meta;
 
-public class AttachmentItemMeta implements Meta {
-  	private static final String tableName = "attachment_item";
-	private static final String entityName = "AttachmentItem";
+public class SampleOrganizationMeta implements Meta {
+  	private static final String tableName = "sample_organization";
+	private static final String entityName = "SampleOrganization";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="attachment_item.id",
-              REFERENCE_ID					="attachment_item.referenceId",
-              REFERENCE_TABLE_ID					="attachment_item.referenceTableId",
-              ATTACHMENT_ID					="attachment_item.attachmentId";
+              ID					="sample_organization.id",
+              SAMPLE_ID					="sample_organization.sampleId",
+              ORGANIZATION_ID					="sample_organization.organizationId",
+              TYPE_ID					="sample_organization.typeId";
 
 
   	private static final String[] columnNames = {
-  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,ATTACHMENT_ID};
+  	  ID,SAMPLE_ID,ORGANIZATION_ID,TYPE_ID};
   	  
 	private static HashMap<String,String> columnHashList;
 
-	private static final AttachmentItemMeta attachment_itemMeta = new AttachmentItemMeta();
+	private static final SampleOrganizationMeta sample_organizationMeta = new SampleOrganizationMeta();
     
     static {
         columnHashList = new HashMap<String,String>(columnNames.length);
@@ -34,12 +34,12 @@ public class AttachmentItemMeta implements Meta {
         }
     }
     
-    private AttachmentItemMeta() {
+    private SampleOrganizationMeta() {
         
     }
     
-    public static AttachmentItemMeta getInstance() {
-        return attachment_itemMeta;
+    public static SampleOrganizationMeta getInstance() {
+        return sample_organizationMeta;
     }
 
     public String[] getColumnList() {
@@ -72,16 +72,16 @@ public class AttachmentItemMeta implements Meta {
     return ID;
   } 
 
-  public static String getReferenceId() {
-    return REFERENCE_ID;
+  public static String getSampleId() {
+    return SAMPLE_ID;
   } 
 
-  public static String getReferenceTableId() {
-    return REFERENCE_TABLE_ID;
+  public static String getOrganizationId() {
+    return ORGANIZATION_ID;
   } 
 
-  public static String getAttachmentId() {
-    return ATTACHMENT_ID;
+  public static String getTypeId() {
+    return TYPE_ID;
   } 
 
   

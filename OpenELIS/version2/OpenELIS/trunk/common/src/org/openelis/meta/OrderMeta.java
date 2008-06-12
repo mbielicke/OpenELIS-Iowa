@@ -15,16 +15,16 @@ public class OrderMeta implements Meta {
 	
 	public static final String
               ID					="order.id",
-              STATUS_ID					="order.status_id",
-              ORDERED_DATE					="order.ordered_date",
-              NEEDED_IN_DAYS					="order.needed_in_days",
-              REQUESTED_BY					="order.requested_by",
-              COST_CENTER_ID					="order.cost_center_id",
-              ORGANIZATION_ID					="order.organization_id",
-              IS_EXTERNAL					="order.is_external",
-              EXTERNAL_ORDER_NUMBER					="order.external_order_number",
-              REPORT_TO_ID					="order.report_to_id",
-              BILL_TO_ID					="order.bill_to_id";
+              STATUS_ID					="order.statusId",
+              ORDERED_DATE					="order.orderedDate",
+              NEEDED_IN_DAYS					="order.neededInDays",
+              REQUESTED_BY					="order.requestedBy",
+              COST_CENTER_ID					="order.costCenterId",
+              ORGANIZATION_ID					="order.organizationId",
+              IS_EXTERNAL					="order.isExternal",
+              EXTERNAL_ORDER_NUMBER					="order.externalOrderNumber",
+              REPORT_TO_ID					="order.reportToId",
+              BILL_TO_ID					="order.billToId";
 
 
   	private static final String[] columnNames = {

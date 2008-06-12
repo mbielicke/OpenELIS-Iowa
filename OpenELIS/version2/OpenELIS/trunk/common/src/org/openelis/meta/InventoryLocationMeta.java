@@ -15,11 +15,11 @@ public class InventoryLocationMeta implements Meta {
 	
 	public static final String
               ID					="inventory_location.id",
-              INVENTORY_ITEM_ID					="inventory_location.inventory_item_id",
-              LOT_NUMBER					="inventory_location.lot_number",
-              STORAGE_LOCATION_ID					="inventory_location.storage_location_id",
-              QUANTITY_ONHAND					="inventory_location.quantity_onhand",
-              EXPIRATION_DATE					="inventory_location.expiration_date";
+              INVENTORY_ITEM_ID					="inventory_location.inventoryItemId",
+              LOT_NUMBER					="inventory_location.lotNumber",
+              STORAGE_LOCATION_ID					="inventory_location.storageLocationId",
+              QUANTITY_ONHAND					="inventory_location.quantityOnhand",
+              EXPIRATION_DATE					="inventory_location.expirationDate";
 
 
   	private static final String[] columnNames = {

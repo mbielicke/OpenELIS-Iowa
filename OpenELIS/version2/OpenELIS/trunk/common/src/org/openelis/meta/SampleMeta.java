@@ -15,18 +15,18 @@ public class SampleMeta implements Meta {
 	
 	public static final String
               ID					="sample.id",
-              NEXT_ITEM_SEQUENCE					="sample.next_item_sequence",
-              DOMAIN_ID					="sample.domain_id",
-              ACCESSION_NUMBER					="sample.accession_number",
+              NEXT_ITEM_SEQUENCE					="sample.nextItemSequence",
+              DOMAIN_ID					="sample.domainId",
+              ACCESSION_NUMBER					="sample.accessionNumber",
               REVISION					="sample.revision",
-              ENTERED_DATE					="sample.entered_date",
-              RECEIVED_DATE					="sample.received_date",
-              RECEIVED_BY_ID					="sample.received_by_id",
-              COLLECTION_DATE					="sample.collection_date",
-              STATUS_ID					="sample.status_id",
-              PACKAGE_ID					="sample.package_id",
-              CLIENT_REFERENCE					="sample.client_reference",
-              RELEASED_DATE					="sample.released_date";
+              ENTERED_DATE					="sample.enteredDate",
+              RECEIVED_DATE					="sample.receivedDate",
+              RECEIVED_BY_ID					="sample.receivedById",
+              COLLECTION_DATE					="sample.collectionDate",
+              STATUS_ID					="sample.statusId",
+              PACKAGE_ID					="sample.packageId",
+              CLIENT_REFERENCE					="sample.clientReference",
+              RELEASED_DATE					="sample.releasedDate";
 
 
   	private static final String[] columnNames = {

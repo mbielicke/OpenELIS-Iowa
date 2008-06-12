@@ -15,15 +15,15 @@ public class AddressMeta implements Meta {
 	
 	public static final String
               ID					="address.id",
-              MULTIPLE_UNIT					="address.multiple_unit",
-              STREET_ADDRESS					="address.street_address",
+              MULTIPLE_UNIT					="address.multipleUnit",
+              STREET_ADDRESS					="address.streetAddress",
               CITY					="address.city",
               STATE					="address.state",
-              ZIP_CODE					="address.zip_code",
-              WORK_PHONE					="address.work_phone",
-              HOME_PHONE					="address.home_phone",
-              CELL_PHONE					="address.cell_phone",
-              FAX_PHONE					="address.fax_phone",
+              ZIP_CODE					="address.zipCode",
+              WORK_PHONE					="address.workPhone",
+              HOME_PHONE					="address.homePhone",
+              CELL_PHONE					="address.cellPhone",
+              FAX_PHONE					="address.faxPhone",
               EMAIL					="address.email",
               COUNTRY					="address.country";
 

@@ -15,10 +15,10 @@ public class SampleHumanMeta implements Meta {
 	
 	public static final String
               ID					="sample_human.id",
-              SAMPLE_ID					="sample_human.sample_id",
-              PATIENT_ID					="sample_human.patient_id",
-              PROVIDER_ID					="sample_human.provider_id",
-              PROVIDER_PHONE					="sample_human.provider_phone";
+              SAMPLE_ID					="sample_human.sampleId",
+              PATIENT_ID					="sample_human.patientId",
+              PROVIDER_ID					="sample_human.providerId",
+              PROVIDER_PHONE					="sample_human.providerPhone";
 
 
   	private static final String[] columnNames = {

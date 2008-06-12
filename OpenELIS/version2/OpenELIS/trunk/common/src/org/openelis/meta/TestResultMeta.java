@@ -15,14 +15,14 @@ public class TestResultMeta implements Meta {
 	
 	public static final String
               ID					="test_result.id",
-              TEST_ID					="test_result.test_id",
-              RESULT_GROUP_ID					="test_result.result_group_id",
-              FLAG_ID					="test_result.flag_id",
-              TYPE_ID					="test_result.type_id",
+              TEST_ID					="test_result.testId",
+              RESULT_GROUP_ID					="test_result.resultGroupId",
+              FLAG_ID					="test_result.flagId",
+              TYPE_ID					="test_result.typeId",
               VALUE					="test_result.value",
-              SIGNIFICANT_DIGITS					="test_result.significant_digits",
-              QUANT_LIMIT					="test_result.quant_limit",
-              CONT_LEVEL					="test_result.cont_level";
+              SIGNIFICANT_DIGITS					="test_result.significantDigits",
+              QUANT_LIMIT					="test_result.quantLimit",
+              CONT_LEVEL					="test_result.contLevel";
 
 
   	private static final String[] columnNames = {

@@ -17,14 +17,14 @@ public class InstrumentMeta implements Meta {
               ID					="instrument.id",
               NAME					="instrument.name",
               DESCRIPTION					="instrument.description",
-              MODEL_NUMBER					="instrument.model_number",
-              SERIAL_NUMBER					="instrument.serial_number",
-              TYPE_ID					="instrument.type_id",
+              MODEL_NUMBER					="instrument.modelNumber",
+              SERIAL_NUMBER					="instrument.serialNumber",
+              TYPE_ID					="instrument.typeId",
               LOCATION					="instrument.location",
-              IS_ACTIVE					="instrument.is_active",
-              ACTIVE_BEGIN					="instrument.active_begin",
-              ACTIVE_END					="instrument.active_end",
-              SCRIPTLET_ID					="instrument.scriptlet_id";
+              IS_ACTIVE					="instrument.isActive",
+              ACTIVE_BEGIN					="instrument.activeBegin",
+              ACTIVE_END					="instrument.activeEnd",
+              SCRIPTLET_ID					="instrument.scriptletId";
 
 
   	private static final String[] columnNames = {

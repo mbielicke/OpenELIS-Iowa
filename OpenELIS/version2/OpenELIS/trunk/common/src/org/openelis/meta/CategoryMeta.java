@@ -15,10 +15,10 @@ public class CategoryMeta implements Meta {
 	
 	public static final String
               ID					="category.id",
-              SYSTEM_NAME					="category.system_name",
+              SYSTEM_NAME					="category.systemName",
               NAME					="category.name",
               DESCRIPTION					="category.description",
-              SECTION_ID					="category.section_id";
+              SECTION_ID					="category.sectionId";
 
 
   	private static final String[] columnNames = {

@@ -15,8 +15,8 @@ public class MethodResultMeta implements Meta {
 	
 	public static final String
               ID					="method_result.id",
-              METHOD_ID					="method_result.method_id",
-              RESULT_GROUP_ID					="method_result.result_group_id",
+              METHOD_ID					="method_result.methodId",
+              RESULT_GROUP_ID					="method_result.resultGroupId",
               FLAGS					="method_result.flags",
               TYPE					="method_result.type",
               VALUE					="method_result.value";

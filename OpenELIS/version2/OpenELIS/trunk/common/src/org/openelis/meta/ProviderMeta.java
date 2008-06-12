@@ -15,10 +15,10 @@ public class ProviderMeta implements Meta {
 	
 	public static final String
               ID					="provider.id",
-              LAST_NAME					="provider.last_name",
-              FIRST_NAME					="provider.first_name",
-              MIDDLE_NAME					="provider.middle_name",
-              TYPE_ID					="provider.type_id",
+              LAST_NAME					="provider.lastName",
+              FIRST_NAME					="provider.firstName",
+              MIDDLE_NAME					="provider.middleName",
+              TYPE_ID					="provider.typeId",
               NPI					="provider.npi";
 
 

@@ -15,13 +15,13 @@ public class AuxFieldMeta implements Meta {
 	
 	public static final String
               ID					="aux_field.id",
-              SORT_ORDER_ID					="aux_field.sort_order_id",
-              ANALYTE_ID					="aux_field.analyte_id",
-              REFERENCE_TABLE_ID					="aux_field.reference_table_id",
-              IS_REQUIRED					="aux_field.is_required",
-              IS_ACTIVE					="aux_field.is_active",
-              IS_REPORTABLE					="aux_field.is_reportable",
-              SCRIPTLET_ID					="aux_field.scriptlet_id";
+              SORT_ORDER_ID					="aux_field.sortOrderId",
+              ANALYTE_ID					="aux_field.analyteId",
+              REFERENCE_TABLE_ID					="aux_field.referenceTableId",
+              IS_REQUIRED					="aux_field.isRequired",
+              IS_ACTIVE					="aux_field.isActive",
+              IS_REPORTABLE					="aux_field.isReportable",
+              SCRIPTLET_ID					="aux_field.scriptletId";
 
 
   	private static final String[] columnNames = {

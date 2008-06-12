@@ -17,12 +17,12 @@ public class ProjectMeta implements Meta {
               ID					="project.id",
               NAME					="project.name",
               DESCRIPTION					="project.description",
-              STARTED_DATE					="project.started_date",
-              COMPLETED_DATE					="project.completed_date",
-              IS_ACTIVE					="project.is_active",
-              REFERENCE_TO					="project.reference_to",
-              OWNER_ID					="project.owner_id",
-              SCRIPTLET_ID					="project.scriptlet_id";
+              STARTED_DATE					="project.startedDate",
+              COMPLETED_DATE					="project.completedDate",
+              IS_ACTIVE					="project.isActive",
+              REFERENCE_TO					="project.referenceTo",
+              OWNER_ID					="project.ownerId",
+              SCRIPTLET_ID					="project.scriptletId";
 
 
   	private static final String[] columnNames = {

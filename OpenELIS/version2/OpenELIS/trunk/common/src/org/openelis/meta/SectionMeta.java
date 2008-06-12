@@ -15,11 +15,11 @@ public class SectionMeta implements Meta {
 	
 	public static final String
               ID					="section.id",
-              PARENT_SECTION_ID					="section.parent_section_id",
+              PARENT_SECTION_ID					="section.parentSectionId",
               NAME					="section.name",
               DESCRIPTION					="section.description",
-              IS_EXTERNAL					="section.is_external",
-              ORGANIZATION_ID					="section.organization_id";
+              IS_EXTERNAL					="section.isExternal",
+              ORGANIZATION_ID					="section.organizationId";
 
 
   	private static final String[] columnNames = {

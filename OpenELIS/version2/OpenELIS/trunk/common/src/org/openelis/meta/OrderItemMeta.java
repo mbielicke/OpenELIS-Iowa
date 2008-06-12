@@ -15,9 +15,9 @@ public class OrderItemMeta implements Meta {
 	
 	public static final String
               ID					="order_item.id",
-              ORDER_ID					="order_item.order_id",
-              INVENTORY_ITEM_ID					="order_item.inventory_item_id",
-              QUANTITY_REQUESTED					="order_item.quantity_requested";
+              ORDER_ID					="order_item.orderId",
+              INVENTORY_ITEM_ID					="order_item.inventoryItemId",
+              QUANTITY_REQUESTED					="order_item.quantityRequested";
 
 
   	private static final String[] columnNames = {

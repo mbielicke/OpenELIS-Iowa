@@ -15,10 +15,10 @@ public class TestWorksheetItemMeta implements Meta {
 	
 	public static final String
               ID					="test_worksheet_item.id",
-              TEST_WORKSHEET_ID					="test_worksheet_item.test_worksheet_id",
+              TEST_WORKSHEET_ID					="test_worksheet_item.testWorksheetId",
               POSITION					="test_worksheet_item.position",
-              TYPE_ID					="test_worksheet_item.type_id",
-              QC_NAME					="test_worksheet_item.qc_name";
+              TYPE_ID					="test_worksheet_item.typeId",
+              QC_NAME					="test_worksheet_item.qcName";
 
 
   	private static final String[] columnNames = {

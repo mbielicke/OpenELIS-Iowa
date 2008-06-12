@@ -15,11 +15,11 @@ public class QcAnalyteMeta implements Meta {
 	
 	public static final String
               ID					="qc_analyte.id",
-              QC_ID					="qc_analyte.qc_id",
-              ANALYTE_ID					="qc_analyte.analyte_id",
-              TYPE_ID					="qc_analyte.type_id",
+              QC_ID					="qc_analyte.qcId",
+              ANALYTE_ID					="qc_analyte.analyteId",
+              TYPE_ID					="qc_analyte.typeId",
               VALUE					="qc_analyte.value",
-              IS_TRENDABLE					="qc_analyte.is_trendable";
+              IS_TRENDABLE					="qc_analyte.isTrendable";
 
 
   	private static final String[] columnNames = {

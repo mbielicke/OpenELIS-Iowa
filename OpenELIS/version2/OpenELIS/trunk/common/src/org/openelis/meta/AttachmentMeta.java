@@ -15,10 +15,10 @@ public class AttachmentMeta implements Meta {
 	
 	public static final String
               ID					="attachment.id",
-              TYPE_ID					="attachment.type_id",
+              TYPE_ID					="attachment.typeId",
               FILENAME					="attachment.filename",
               DESCRIPTION					="attachment.description",
-              STORAGE_REFERENCE					="attachment.storage_reference";
+              STORAGE_REFERENCE					="attachment.storageReference";
 
 
   	private static final String[] columnNames = {

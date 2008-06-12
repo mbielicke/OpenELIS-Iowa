@@ -15,11 +15,11 @@ public class InstrumentLogMeta implements Meta {
 	
 	public static final String
               ID					="instrument_log.id",
-              INSTRUMENT_ID					="instrument_log.instrument_id",
-              TYPE_ID					="instrument_log.type_id",
-              WORKSHEET_ID					="instrument_log.worksheet_id",
-              EVENT_BEGIN					="instrument_log.event_begin",
-              EVENT_END					="instrument_log.event_end";
+              INSTRUMENT_ID					="instrument_log.instrumentId",
+              TYPE_ID					="instrument_log.typeId",
+              WORKSHEET_ID					="instrument_log.worksheetId",
+              EVENT_BEGIN					="instrument_log.eventBegin",
+              EVENT_END					="instrument_log.eventEnd";
 
 
   	private static final String[] columnNames = {
