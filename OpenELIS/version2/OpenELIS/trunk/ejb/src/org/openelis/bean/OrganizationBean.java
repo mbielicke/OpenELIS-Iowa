@@ -27,16 +27,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.OrganizationAddressMeta;
-import org.openelis.meta.OrganizationContactAddressMeta;
-import org.openelis.meta.OrganizationContactMeta;
-import org.openelis.meta.OrganizationMeta;
-import org.openelis.meta.OrganizationNoteMeta;
-import org.openelis.meta.OrganizationParentOrganizationMeta;
+import org.openelis.newmeta.OrganizationMeta;
+import org.openelis.newmeta.OrganizationMetaMap;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.Meta;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -59,6 +56,7 @@ public class OrganizationBean implements OrganizationRemote {
 	
     private LockLocal lockBean;
     private AddressLocal addressBean;
+    private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
     {
         try {
@@ -245,35 +243,28 @@ public class OrganizationBean implements OrganizationRemote {
         Integer organizationContactReferenceId = (Integer)refIdQuery.getSingleResult();
         
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        NewQueryBuilder qb = new NewQueryBuilder();
 
-        OrganizationMeta orgMeta = OrganizationMeta.getInstance();
-        OrganizationParentOrganizationMeta parentOrgMeta = OrganizationParentOrganizationMeta.getInstance();
-        OrganizationAddressMeta orgAddressMeta = OrganizationAddressMeta.getInstance();
-        OrganizationContactMeta orgContactMeta = OrganizationContactMeta.getInstance();
-        OrganizationContactAddressMeta orgContactAddressMeta = OrganizationContactAddressMeta.getInstance();
-        OrganizationNoteMeta orgNoteMeta = OrganizationNoteMeta.getInstance();
-
-        qb.addMeta(new Meta[]{orgMeta, parentOrgMeta, orgAddressMeta, orgContactAddressMeta, orgContactMeta, orgNoteMeta});
+        qb.setMeta(OrgMeta);
  
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+orgMeta.ID+", "+orgMeta.NAME+") ");
-        qb.addTable(orgMeta);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
+        //qb.addTable(orgMeta);
 
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(orgMeta.NAME);
-        
-        if(qb.hasTable(orgContactAddressMeta.getTable()))
-        	qb.addTable(orgContactMeta);
+        qb.setOrderBy(OrgMeta.getName());
+       // if(qb.hasTable(orgContactAddressMeta.getTable()))
+       // 	qb.addTable(orgContactMeta);
         
         //TODO we need to put these values in cache to remove this from where statement
-        if(qb.hasTable(orgNoteMeta.getTable())){
-        	qb.addWhere(orgNoteMeta.REFERENCE_TABLE+" = "+organizationReferenceId+" or "+orgNoteMeta.REFERENCE_TABLE+" is null");
-        }
+        //if(qb.hasTable(orgNoteMeta.getTable())){
+       // 	qb.addWhere(orgNoteMeta.REFERENCE_TABLE+" = "+organizationReferenceId+" or "+orgNoteMeta.REFERENCE_TABLE+" is null");
+       // }
         
         sb.append(qb.getEJBQL());
-
+        try{
+         System.out.println(sb.toString());
          Query query = manager.createQuery(sb.toString());
         
          if(first > -1 && max > -1)
@@ -288,6 +279,10 @@ public class OrganizationBean implements OrganizationRemote {
         	 throw new LastPageException();
          else
         	 return returnList;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
 	}
 	
 	public List autoCompleteLookupById(Integer id){
@@ -336,59 +331,59 @@ public class OrganizationBean implements OrganizationRemote {
 	private void validateOrganizationAndAddress(OrganizationAddressDO organizationDO, List exceptionList){
 		//name required
 		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.getName()));
 		}
 		
 		//street address required
 		if(organizationDO.getAddressDO().getStreetAddress() == null || "".equals(organizationDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.STREET_ADDRESS));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getStreetAddress()));
 		}
 
 		//city required
 		if(organizationDO.getAddressDO().getCity() == null || "".equals(organizationDO.getAddressDO().getCity())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.CITY));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCity()));
 		}
 
 		//zipcode required
 		if(organizationDO.getAddressDO().getZipCode() == null || "".equals(organizationDO.getAddressDO().getZipCode())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.ZIP_CODE));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getZipCode()));
 		}
 		
 		//country required
 		if(organizationDO.getAddressDO().getCountry() == null || "".equals(organizationDO.getAddressDO().getCountry())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrganizationAddressMeta.COUNTRY));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCountry()));
 		}		
 	}
 	
 	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, List exceptionList){
 		//contact type required
 		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.CONTACT_TYPE_ID));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId()));
 		}
 
 		//name required
 		if(orgContactDO.getName() == null || "".equals(orgContactDO.getName())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactMeta.NAME));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getName()));
 		}
 		
 		//street address required
 		if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.STREET_ADDRESS));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getStreetAddress()));
 		}
 		
 		//city required
 		if(orgContactDO.getAddressDO().getCity() == null || "".equals(orgContactDO.getAddressDO().getCity())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.CITY));	
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCity()));	
 		}
 		
 		//zipcode required
 		if(orgContactDO.getAddressDO().getZipCode() == null || "".equals(orgContactDO.getAddressDO().getZipCode())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.ZIP_CODE));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getZipCode()));
 		}
 		
 		//country required
 		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrganizationContactAddressMeta.COUNTRY));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCountry()));
 		}		
 	}
 }
