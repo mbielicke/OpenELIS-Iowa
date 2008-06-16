@@ -28,6 +28,7 @@ import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+import org.openelis.newmeta.OrganizationMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -60,6 +61,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
                     clearNotes = false, clearContacts = false;
 
     private ScreenVertical   svp       = null;
+    
+    private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
 
     public OrganizationScreen() {
         super("org.openelis.modules.organization.server.OrganizationService",
@@ -116,9 +119,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         contactsController.setAutoAdd(false);
         ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
 
-        orgId = (ScreenTextBox)widgets.get("organization.id");
-        orgName = (TextBox)getWidget("organization.name");
-        noteText = (ScreenTextArea)widgets.get("note.text");
+        orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
+        orgName = (TextBox)getWidget(OrgMeta.getName());
+        noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
         svp = (ScreenVertical) widgets.get("notesPanel");
 
         if (stateDropdown == null) {
@@ -127,7 +130,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             contactTypeDropdown = (DataModel)initData.get("contacts");
         }
 
-        drop = (AutoCompleteDropdown)getWidget("organization.address.state");
+        drop = (AutoCompleteDropdown)getWidget(OrgMeta.getAddress().getState());
         drop.setModel(stateDropdown);
 
         sw = (ScreenTableWidget)widgets.get("contactsTable");
@@ -142,7 +145,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         // country dropdowns
         //
-        drop = (AutoCompleteDropdown)getWidget("organization.address.country");
+        drop = (AutoCompleteDropdown)getWidget(OrgMeta.getAddress().getCountry());
         drop.setModel(countryDropdown);
 
         ((TableAutoDropdown)d.controller.editors[7]).setModel(countryDropdown);
@@ -246,7 +249,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             loadContacts = true;
             clearContacts = false;
             
-            Integer orgId = (Integer)rpc.getFieldValue("organization.id");
+            Integer orgId = (Integer)rpc.getFieldValue(OrgMeta.getId());
             NumberObject orgIdObj = new NumberObject(orgId);
             
 //          done because key is set to null in AppScreenForm for the add operation 
@@ -312,7 +315,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             FormRPC rpc;
 
             rpc = (FormRPC)this.forms.get("queryByLetter");
-            rpc.setFieldValue("organization.name", query);
+            rpc.setFieldValue(OrgMeta.getName(), query);
             commitQuery(rpc);
         }
     }
@@ -403,12 +406,12 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     
     private void clearNotesFields(){
         //     the note subject and body fields need to be refeshed after every successful commit 
-           TextBox subjectBox = (TextBox)getWidget("note.subject");           
+           TextBox subjectBox = (TextBox)getWidget(OrgMeta.getNote().getSubject());           
            subjectBox.setText("");
-          TextArea noteArea = (TextArea)getWidget("note.text");
+          TextArea noteArea = (TextArea)getWidget(OrgMeta.getNote().getText());
           noteArea.setText("");           
-          rpc.setFieldValue("note.subject", null);
-          rpc.setFieldValue("note.text", null);  
+          rpc.setFieldValue(OrgMeta.getNote().getSubject(), null);
+          rpc.setFieldValue(OrgMeta.getNote().getText(), null);  
        }
 
     private void fillContactsModel() {
@@ -465,7 +468,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
                                                      "Choose Standard Note",
                                                      "standardNotePicker",
                                                      "Loading...");
-        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
+        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget(OrgMeta.getNote().getText())));
 
         standardNotePopupPanel.add(pickerWindow);
         int left = this.getAbsoluteLeft();

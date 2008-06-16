@@ -2,12 +2,11 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:organizationMeta="xalan://org.openelis.meta.OrganizationMeta" 
-                xmlns:orgAddressMeta="xalan://org.openelis.meta.OrganizationAddressMeta"
-                xmlns:orgNoteMeta="xalan://org.openelis.meta.OrganizationNoteMeta"
-                xmlns:parentOrgMeta="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"
-                xmlns:orgContactMeta="xalan://org.openelis.meta.OrganizationContactMeta"
-                xmlns:orgContactAddressMeta="xalan://org.openelis.meta.OrganizationContactAddressMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.OrganizationMetaMap"
+                xmlns:addr="xalan://org.openelis.newmeta.AddressMeta"
+                xmlns:contact="xalan://org.openelis.newmeta.OrganizationContactMetaMap"
+                xmlns:note="xalan://org.openelis.newmeta.NoteMeta"
+                xmlns:parent="xalan://org.openelis.newmeta.OrganizationMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -20,32 +19,34 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="organizationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
-  </xalan:component>
-
-  <xalan:component prefix="orgAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationAddressMeta"/>
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrganizationMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="parentOrgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"/>
+  <xalan:component prefix="addr">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AddressMeta"/>
   </xalan:component>
   
-    <xalan:component prefix="orgNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationNoteMeta"/>
+  <xalan:component prefix="contact">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrganizationContactMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="orgContactMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactMeta"/>
+  <xalan:component prefix="note">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NotetMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orgContactAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactAddressMeta"/>
-  </xalan:component>
+  <xalan:component prefix="parent">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrganizationMeta"/>
+  </xalan:component>  
   
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="org" select="meta:new()"/>
+    <xsl:variable name="addr" select="meta:getAddress($org)"/>
+    <xsl:variable name="cont" select="meta:getOrganizationContact($org)"/>
+    <xsl:variable name="parent" select="meta:getParentOrganization($org)"/>
+    <xsl:variable name="note" select="meta:getNote($org)"/>
+    <xsl:variable name="contAddr" select="contact:getAddress($cont)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Organization" name="{resource:getString($constants,'organization')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -99,7 +100,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
 										</widget>
 										<widget>
-										<textbox key="{organizationMeta:getId()}" width="75px" tab="{organizationMeta:getName()},{organizationMeta:getIsActive()}"/>
+										<textbox key="{meta:getId($org)}" width="75px" tab="{meta:getName($org)},{meta:getIsActive($org)}"/>
 										</widget>
 									</row>
 									<row>								
@@ -107,13 +108,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 										</widget>
 										<widget>
-										<textbox case="upper" key="{organizationMeta:getName()}" width="225px" max="40" tab="{orgAddressMeta:multipleUnit()},{organizationMeta:getId()}"/>
+										<textbox case="upper" key="{meta:getName($org)}" width="225px" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}"/>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<textbox case="upper" key="{orgAddressMeta:city()}" width="212px" max="30" tab="{orgAddressMeta:state()},{orgAddressMeta:streetAddress()}"/>
+											<textbox case="upper" key="{addr:getCity($addr)}" width="212px" max="30" tab="{addr:getState($addr)},{addr:getStreetAddress($addr)}"/>
 										</widget>		
 									</row>				
 									<row>
@@ -122,19 +123,19 @@
 										</widget>
 										
 										<widget>
-											<textbox case="upper" key="{orgAddressMeta:multipleUnit()}" width="212px" max="30" tab="{orgAddressMeta:streetAddress()},{organizationMeta:getName()}"/>
+											<textbox case="upper" key="{addr:getMultipleUnit($addr)}" width="212px" max="30" tab="{addr:getStreetAddress($addr)},{meta:getName($org)}"/>
 										</widget>
 										<widget>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 												</widget>
 												<widget>
-													<autoDropdown key="{orgAddressMeta:state()}" case="upper" width="40px" tab="{orgAddressMeta:zipCode()},{orgAddressMeta:city()}"/>
+													<autoDropdown key="{addr:getState($addr)}" case="upper" width="40px" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}"/>
 												</widget>
 											<widget>
 													<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 												</widget>
 												<widget>
-													<maskedbox key="{orgAddressMeta:zipCode()}" width="70" mask="99999-9999" tab="{orgAddressMeta:country()},{orgAddressMeta:state()}"/>
+													<maskedbox key="{addr:getZipCode($addr)}" width="70" mask="99999-9999" tab="{addr:getCountry($addr)},{addr:getState($addr)}"/>
 												</widget>
 									</row>	
 									<row>
@@ -142,13 +143,13 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 										</widget>
 										<widget>
-											<textbox case="upper" key="{orgAddressMeta:streetAddress()}" width="212px" max="30" tab="{orgAddressMeta:city()},{orgAddressMeta:multipleUnit()}"/>
+											<textbox case="upper" key="{addr:getStreetAddress($addr)}" width="212px" max="30" tab="{addr:getCity($addr)},{addr:getMultipleUnit($addr)}"/>
 										</widget>	
 											<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"country")'/>:</text>
 										</widget>
 										<widget colspan="3">
-												<autoDropdown key="{orgAddressMeta:country()}" case="mixed" width="175px" tab="{parentOrgMeta:name()},{orgAddressMeta:zipCode()}"/>
+												<autoDropdown key="{addr:getCountry($addr)}" case="mixed" width="175px" tab="{parent:getName($parent)},{addr:getZipCode($addr)}"/>
 										</widget>					
 									</row>
 								<row>
@@ -156,19 +157,19 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentOrganization")'/>:</text>
 										</widget>
 										<widget>
-										<autoDropdown cat="parentOrg" key="{parentOrgMeta:name()}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" tab="{organizationMeta:getIsActive()},{orgAddressMeta:country()}">
+										<autoDropdown cat="parentOrg" key="{parent:getName($parent)}" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" width="225px" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="241px" tab="{organizationMeta:getIsActive()},{orgAddressMeta:country()}"/>
+											<textbox case="upper" width="241px" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}"/>
 										</query>
 										</widget>
 										<widget>
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 										</widget>
 										<widget colspan="3">
-											<check key="{organizationMeta:getIsActive()}" tab="{organizationMeta:getId()},{parentOrgMeta:name()}"/>
+											<check key="{meta:getIsActive($org)}" tab="{meta:getId($org)},{parent:getName($parent)}"/>
 										</widget>
 								</row>
 								</panel>
@@ -202,19 +203,19 @@
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<dropdown key="{orgContactMeta:getContactTypeId()}" required="true"/>
-											<string key="{orgContactMeta:getName()}" required="true"/>
-											<string key="{orgContactAddressMeta:multipleUnit()}"/>
-											<string key="{orgContactAddressMeta:streetAddress()}" required="true"/>
-											<string key="{orgContactAddressMeta:city()}" required="true"/>
-											<dropdown key="{orgContactAddressMeta:state()}"/>
-											<string key="{orgContactAddressMeta:zipCode()}" required="true"/>
-											<dropdown key="{orgContactAddressMeta:country()}" required="true"/>
-											<string key="{orgContactAddressMeta:workPhone()}"/>
-											<string key="{orgContactAddressMeta:homePhone()}"/>
-											<string key="{orgContactAddressMeta:cellPhone()}"/>
-											<string key="{orgContactAddressMeta:faxPhone()}"/>
-											<string key="{orgContactAddressMeta:email()}"/>
+											<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
+											<string key="{contact:getName($cont)}" required="true"/>
+											<string key="{addr:getMultipleUnit($contAddr)}"/>
+											<string key="{addr:getStreetAddress($contAddr)}" required="true"/>
+											<string key="{addr:getCity($contAddr)}" required="true"/>
+											<dropdown key="{addr:getState($contAddr)}"/>
+											<string key="{addr:getZipCode($contAddr)}" required="true"/>
+											<dropdown key="{addr:getCountry($contAddr)}" required="true"/>
+											<string key="{addr:getWorkPhone($contAddr)}"/>
+											<string key="{addr:getHomePhone($contAddr)}"/>
+											<string key="{addr:getCellPhone($contAddr)}"/>
+											<string key="{addr:getFaxPhone($contAddr)}"/>
+											<string key="{addr:getEmail($contAddr)}"/>
 										</fields>
 										<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 										<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
@@ -245,11 +246,11 @@
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>		 	
 										</editors>
-										<fields><xsl:value-of select='orgContactMeta:getContactTypeId()'/>,<xsl:value-of select='orgContactMeta:getName()'/>,<xsl:value-of select='orgContactAddressMeta:multipleUnit()'/>,
-										<xsl:value-of select='orgContactAddressMeta:streetAddress()'/>,<xsl:value-of select='orgContactAddressMeta:city()'/>,<xsl:value-of select='orgContactAddressMeta:state()'/>,
-										<xsl:value-of select='orgContactAddressMeta:zipCode()'/>,<xsl:value-of select='orgContactAddressMeta:country()'/></fields>,<xsl:value-of select='orgContactAddressMeta:workPhone()'/>,
-										<xsl:value-of select='orgContactAddressMeta:homePhone()'/>,	<xsl:value-of select='orgContactAddressMeta:cellPhone()'/>,<xsl:value-of select='orgContactAddressMeta:faxPhone()'/>,
-										<xsl:value-of select='orgContactAddressMeta:email()'/>										
+										<fields><xsl:value-of select='contact:getContactTypeId($cont)'/>,<xsl:value-of select='contact:getName($cont)'/>,<xsl:value-of select='addr:getMultipleUnit($contAddr)'/>,
+										<xsl:value-of select='addr:getStreetAddress($contAddr)'/>,<xsl:value-of select='addr:getCity($contAddr)'/>,<xsl:value-of select='addr:getState($contAddr)'/>,
+										<xsl:value-of select='addr:getZipCode($contAddr)'/>,<xsl:value-of select='addr:getCountry($contAddr)'/></fields>,<xsl:value-of select='addr:getWorkPhone($contAddr)'/>,
+										<xsl:value-of select='addr:getHomePhone($contAddr)'/>,	<xsl:value-of select='addr:getCellPhone($contAddr)'/>,<xsl:value-of select='addr:getFaxPhone($contAddr)'/>,
+										<xsl:value-of select='addr:getEmail($contAddr)'/>										
 									</queryTable>
 									</query>
 								</widget>
@@ -276,7 +277,7 @@
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
 										</widget>
 										<widget>
-										<textbox case="mixed" key="{orgNoteMeta:subject()}" width="435px" max="60" showError="false" tab="{orgNoteMeta:text()},{orgNoteMeta:text()}"/>
+										<textbox case="mixed" key="{note:getSubject($note)}" width="435px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
 										</widget>
 										<widget>
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
@@ -294,7 +295,7 @@
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{orgNoteMeta:text()}" showError="false" tab="{orgNoteMeta:subject()},{orgNoteMeta:subject()}"/>
+										<textarea width="549px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>										
 										</widget>
 										</row>
 								 
@@ -319,51 +320,51 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	  <number key="{organizationMeta:getId()}" type="integer" required="false"/>
-      <number key="{organizationMeta:getAddressId()}" required="false" type="integer"/>
-      <string key="{organizationMeta:getName()}" max="40" required="true"/>
-      <string key="{orgAddressMeta:streetAddress()}" max="30" required="true"/>
-      <string key="{orgAddressMeta:multipleUnit()}" max="30" required="false"/>
-      <string key="{orgAddressMeta:city()}" max="30" required="true"/>
-      <string key="{orgAddressMeta:zipCode()}" max="10" required="true"/>
-      <check key="{organizationMeta:getIsActive()}" required="false"/>
-      <string key="{orgNoteMeta:subject()}" max="60" required="false"/>
-      <string key="{orgNoteMeta:text()}" required="false"/>
-      <dropdown key="{parentOrgMeta:name()}" type="integer" required="false"/> 
-      <dropdown key="{orgAddressMeta:state()}" required="false"/>
-      <dropdown key="{orgAddressMeta:country()}" required="true"/>
+  	  <number key="{meta:getId($org)}" type="integer" required="false"/>
+      <number key="{meta:getAddressId($org)}" required="false" type="integer"/>
+      <string key="{meta:getName($org)}" max="40" required="true"/>
+      <string key="{addr:getStreetAddress($addr)}" max="30" required="true"/>
+      <string key="{addr:getMultipleUnit($addr)}" max="30" required="false"/>
+      <string key="{addr:getCity($addr)}" max="30" required="true"/>
+      <string key="{addr:getZipCode($addr)}" max="10" required="true"/>
+      <check key="{meta:getIsActive($org)}" required="false"/>
+      <string key="{note:getSubject($note)}" max="60" required="false"/>
+      <string key="{note:getText($note)}" required="false"/>
+      <dropdown key="{parent:getName($parent)}" type="integer" required="false"/> 
+      <dropdown key="{addr:getState($addr)}" required="false"/>
+      <dropdown key="{addr:getCountry($addr)}" required="true"/>
       <table key="contactsTable"/>
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{organizationMeta:getId()}" type="integer"/>
-      <queryString key="{organizationMeta:getName()}"/>
-      <queryString key="{orgAddressMeta:streetAddress()}"/>
-      <queryString key="{orgAddressMeta:multipleUnit()}" value="query"/>
-      <queryString key="{orgAddressMeta:city()}"/>
-      <queryString key="{orgAddressMeta:zipCode()}"/>
-      <queryString key="{parentOrgMeta:name()}"/>
-      <queryString key="{orgNoteMeta:subject()}"/>
-      <queryString key="{orgNoteMeta:text()}"/>
-      <dropdown key="{orgAddressMeta:state()}" required="false"/>
-      <dropdown key="{orgAddressMeta:country()}" required="false"/>
-      <queryCheck key="{organizationMeta:getIsActive()}" required="false"/>
+      <queryNumber key="{meta:getId($org)}" type="integer"/>
+      <queryString key="{meta:getName($org)}"/>
+      <queryString key="{addr:getStreetAddress($addr)}"/>
+      <queryString key="{addr:getMultipleUnit($addr)}" value="query"/>
+      <queryString key="{addr:getCity($addr)}"/>
+      <queryString key="{addr:getZipCode($addr)}"/>
+      <queryString key="{parent:getName($parent)}"/>
+      <queryString key="{note:getSubject($note)}"/>
+      <queryString key="{note:getText($note)}"/>
+      <dropdown key="{addr:getState($addr)}" required="false"/>
+      <dropdown key="{addr:getCountry($addr)}" required="false"/>
+      <queryCheck key="{meta:getIsActive($org)}" required="false"/>
       <table key="contactsTable"/>
-      <dropdown key="{orgContactMeta:getContactTypeId()}" required="false"/>
-	  <queryString key="{orgContactMeta:getName()}" required="false"/>
-	  <queryString key="{orgContactAddressMeta:multipleUnit()}" required="false"/>
-	  <queryString key="{orgContactAddressMeta:streetAddress()}" required="false"/>
-	  <queryString key="{orgContactAddressMeta:city()}" required="false"/>
-	  <dropdown key="{orgContactAddressMeta:state()}" required="false"/>
-	  <queryString key="{orgContactAddressMeta:zipCode()}" required="false"/>
-      <queryString key="{orgContactAddressMeta:workPhone()}" required="false"/>
-      <queryString key="{orgContactAddressMeta:homePhone()}" required="false"/>
-      <queryString key="{orgContactAddressMeta:cellPhone()}" required="false"/>
-	  <queryString key="{orgContactAddressMeta:faxPhone()}" required="false"/>
-      <queryString key="{orgContactAddressMeta:email()}" required="false"/>
-	  <dropdown key="{orgContactAddressMeta:country()}" required="false"/>
+      <dropdown key="{contact:getContactTypeId($cont)}" required="false"/>
+	  <queryString key="{contact:getName($cont)}" required="false"/>
+	  <queryString key="{addr:getMultipleUnit($contAddr)}" required="false"/>
+	  <queryString key="{addr:getStreetAddress($contAddr)}" required="false"/>
+	  <queryString key="{addr:getCity($contAddr)}" required="false"/>
+	  <dropdown key="{addr:getState($contAddr)}" required="false"/>
+	  <queryString key="{addr:getZipCode($contAddr)}" required="false"/>
+      <queryString key="{addr:getWorkPhone($contAddr)}" required="false"/>
+      <queryString key="{addr:getHomePhone($contAddr)}" required="false"/>
+      <queryString key="{addr:getCellPhone($contAddr)}" required="false"/>
+	  <queryString key="{addr:getFaxPhone($contAddr)}" required="false"/>
+      <queryString key="{addr:getEmail($contAddr)}" required="false"/>
+	  <dropdown key="{addr:getCountry($contAddr)}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{organizationMeta:getName()}"/>
+		<queryString key="{meta:getName($org)}"/>
 	</rpc>
 </screen>
   </xsl:template>
