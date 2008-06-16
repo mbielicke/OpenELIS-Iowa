@@ -34,10 +34,8 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.OrganizationAddressMeta;
-import org.openelis.meta.OrganizationMeta;
-import org.openelis.meta.OrganizationNoteMeta;
-import org.openelis.meta.OrganizationParentOrganizationMeta;
+import org.openelis.newmeta.OrganizationMeta;
+import org.openelis.newmeta.OrganizationMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -56,6 +54,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 															  AutoCompleteServiceInt {
 
 	private static final int leftTableRowsPerPage = 19;
+    
+    private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
 	private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
@@ -132,8 +132,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
     		
     //		build the noteDo from the form
-    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrganizationNoteMeta.SUBJECT));
-    		organizationNote.setText((String)rpcSend.getFieldValue(OrganizationNoteMeta.TEXT));
+    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
+    		organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
     		organizationNote.setIsExternal("Y");
     		
     		//validate the fields on the backend
@@ -181,8 +181,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());		
     		
     //		build the noteDo from the form
-    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrganizationNoteMeta.SUBJECT));
-    		organizationNote.setText((String)rpcSend.getFieldValue(OrganizationNoteMeta.TEXT));
+    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
+    		organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
     		organizationNote.setIsExternal("Y");
     		
     //		validate the fields on the backend
@@ -526,20 +526,20 @@ public class OrganizationService implements AppScreenFormServiceInt,
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, OrganizationAddressDO organizationDO){
-		rpcReturn.setFieldValue(OrganizationMeta.ID, organizationDO.getOrganizationId());
-		rpcReturn.setFieldValue(OrganizationMeta.NAME,organizationDO.getName());
-		rpcReturn.setFieldValue(OrganizationMeta.IS_ACTIVE,organizationDO.getIsActive());
-		rpcReturn.setFieldValue(OrganizationMeta.ADDRESS_ID, organizationDO.getAddressDO().getId());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.STREET_ADDRESS,organizationDO.getAddressDO().getStreetAddress());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.MULTIPLE_UNIT,organizationDO.getAddressDO().getMultipleUnit());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.CITY,organizationDO.getAddressDO().getCity());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.ZIP_CODE,organizationDO.getAddressDO().getZipCode());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.STATE,organizationDO.getAddressDO().getState());
-		rpcReturn.setFieldValue(OrganizationAddressMeta.COUNTRY,organizationDO.getAddressDO().getCountry());
+		rpcReturn.setFieldValue(OrgMeta.getId(), organizationDO.getOrganizationId());
+		rpcReturn.setFieldValue(OrgMeta.getName(),organizationDO.getName());
+		rpcReturn.setFieldValue(OrgMeta.getIsActive(),organizationDO.getIsActive());
+		rpcReturn.setFieldValue(OrgMeta.getAddressId(), organizationDO.getAddressDO().getId());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getStreetAddress(),organizationDO.getAddressDO().getStreetAddress());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getMultipleUnit(),organizationDO.getAddressDO().getMultipleUnit());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getCity(),organizationDO.getAddressDO().getCity());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getZipCode(),organizationDO.getAddressDO().getZipCode());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getState(),organizationDO.getAddressDO().getState());
+		rpcReturn.setFieldValue(OrgMeta.ADDRESS.getCountry(),organizationDO.getAddressDO().getCountry());
 		
 		//we need to create a dataset for the parent organization auto complete
 		if(organizationDO.getParentOrganizationId() == null)
-			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, null);
+			rpcReturn.setFieldValue(OrgMeta.PARENT_ORGANIZATION.getName(), null);
 		else{
 			DataSet parentOrgSet = new DataSet();
 			NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
@@ -548,27 +548,27 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			text.setValue(organizationDO.getParentOrganization());
 			parentOrgSet.setKey(id);
 			parentOrgSet.addObject(text);
-			rpcReturn.setFieldValue(OrganizationParentOrganizationMeta.NAME, parentOrgSet);
+			rpcReturn.setFieldValue(OrgMeta.PARENT_ORGANIZATION.getName(), parentOrgSet);
 		}
 	}
 	
 	private OrganizationAddressDO getOrganizationDOFromRPC(FormRPC rpcSend){
 		OrganizationAddressDO newOrganizationDO = new OrganizationAddressDO();
 		
-		newOrganizationDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrganizationMeta.ID));
-		newOrganizationDO.setName((String) rpcSend.getFieldValue(OrganizationMeta.NAME));
-		newOrganizationDO.setIsActive((String)rpcSend.getFieldValue(OrganizationMeta.IS_ACTIVE));
-		newOrganizationDO.setParentOrganizationId((Integer) rpcSend.getFieldValue(OrganizationParentOrganizationMeta.NAME));		
-		newOrganizationDO.setParentOrganization((String)((DropDownField)rpcSend.getField(OrganizationParentOrganizationMeta.NAME)).getTextValue());
+		newOrganizationDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrgMeta.getId()));
+		newOrganizationDO.setName((String) rpcSend.getFieldValue(OrgMeta.getName()));
+		newOrganizationDO.setIsActive((String)rpcSend.getFieldValue(OrgMeta.getIsActive()));
+		newOrganizationDO.setParentOrganizationId((Integer) rpcSend.getFieldValue(OrgMeta.PARENT_ORGANIZATION.getName()));		
+		newOrganizationDO.setParentOrganization((String)((DropDownField)rpcSend.getField(OrgMeta.PARENT_ORGANIZATION.getName())).getTextValue());
 		
 		//organization address value
-		newOrganizationDO.getAddressDO().setId((Integer) rpcSend.getFieldValue(OrganizationMeta.ADDRESS_ID));
-		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue(OrganizationAddressMeta.MULTIPLE_UNIT));
-		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue(OrganizationAddressMeta.STREET_ADDRESS));
-		newOrganizationDO.getAddressDO().setCity((String)rpcSend.getFieldValue(OrganizationAddressMeta.CITY));
-		newOrganizationDO.getAddressDO().setState((String)rpcSend.getFieldValue(OrganizationAddressMeta.STATE));
-		newOrganizationDO.getAddressDO().setZipCode((String)rpcSend.getFieldValue(OrganizationAddressMeta.ZIP_CODE));
-		newOrganizationDO.getAddressDO().setCountry((String)rpcSend.getFieldValue(OrganizationAddressMeta.COUNTRY));
+		newOrganizationDO.getAddressDO().setId((Integer) rpcSend.getFieldValue(OrgMeta.getAddressId()));
+		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getMultipleUnit()));
+		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getStreetAddress()));
+		newOrganizationDO.getAddressDO().setCity((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getCity()));
+		newOrganizationDO.getAddressDO().setState((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getState()));
+		newOrganizationDO.getAddressDO().setZipCode((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getZipCode()));
+		newOrganizationDO.getAddressDO().setCountry((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getCountry()));
 		
 		return newOrganizationDO;
 	}
