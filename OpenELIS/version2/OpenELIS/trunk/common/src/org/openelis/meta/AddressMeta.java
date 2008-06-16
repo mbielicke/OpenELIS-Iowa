@@ -15,17 +15,17 @@ public class AddressMeta implements Meta {
 	
 	public static final String
               ID					="address.id",
-              MULTIPLE_UNIT					="address.multipleUnit",
-              STREET_ADDRESS					="address.streetAddress",
+              MULTIPLE_UNIT		    ="address.multipleUnit",
+              STREET_ADDRESS		="address.streetAddress",
               CITY					="address.city",
               STATE					="address.state",
-              ZIP_CODE					="address.zipCode",
-              WORK_PHONE					="address.workPhone",
-              HOME_PHONE					="address.homePhone",
-              CELL_PHONE					="address.cellPhone",
-              FAX_PHONE					="address.faxPhone",
+              ZIP_CODE				="address.zipCode",
+              WORK_PHONE			="address.workPhone",
+              HOME_PHONE			="address.homePhone",
+              CELL_PHONE			="address.cellPhone",
+              FAX_PHONE				="address.faxPhone",
               EMAIL					="address.email",
-              COUNTRY					="address.country";
+              COUNTRY				="address.country";
 
 
   	private static final String[] columnNames = {
