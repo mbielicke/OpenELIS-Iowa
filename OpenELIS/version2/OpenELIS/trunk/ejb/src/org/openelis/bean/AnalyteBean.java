@@ -1,5 +1,21 @@
 package org.openelis.bean;
 
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.local.LockLocal;
+import org.openelis.newmeta.AnalyteMetaMap;
+import org.openelis.remote.AnalyteRemote;
+import org.openelis.util.NewQueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,24 +31,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.entity.Analyte;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.local.LockLocal;
-import org.openelis.meta.AnalyteMeta;
-import org.openelis.meta.AnalyteParentAnalyteMeta;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.util.Meta;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
-
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("analyte-select")
@@ -46,6 +44,8 @@ public class AnalyteBean implements AnalyteRemote{
 	
 	@Resource
 	private SessionContext ctx;
+    
+    private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 	
     private LockLocal lockBean;
     
@@ -104,7 +104,7 @@ public class AnalyteBean implements AnalyteRemote{
         return analyteRecord;
 	}
 
-    @RolesAllowed("analyte-update")
+   @RolesAllowed("analyte-update")
 	public AnalyteDO getAnalyteAndLock(Integer analyteId) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
@@ -134,20 +134,17 @@ public class AnalyteBean implements AnalyteRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
+		NewQueryBuilder qb = new NewQueryBuilder();
 		
-		AnalyteMeta analyteMeta = AnalyteMeta.getInstance();
-		AnalyteParentAnalyteMeta parentMeta = AnalyteParentAnalyteMeta.getInstance();
+		qb.setMeta(Meta);
 		
-		qb.addMeta(new Meta[]{analyteMeta,parentMeta});
-		
-		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+AnalyteMeta.ID+", "+AnalyteMeta.NAME + ") ");
-		 qb.addTable(analyteMeta);
+		qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+", "+Meta.getName() + ") ");
+		 //qb.addTable(analyteMeta);
 	        
 //	      this method is going to throw an exception if a column doesnt match
 		 qb.addWhere(fields);      
 
-	     qb.setOrderBy(AnalyteMeta.NAME);
+	     qb.setOrderBy(Meta.getName());
         
 	     sb.append(qb.getEJBQL());
 
@@ -289,7 +286,7 @@ public class AnalyteBean implements AnalyteRemote{
 	private void validateAnalyte(AnalyteDO analyteDO, List exceptionList){
 		//name required	
 		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",AnalyteMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
 		}
 		
 		//name not duplicate
@@ -306,6 +303,6 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",AnalyteMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
 	}
 }

@@ -283,7 +283,7 @@ public class CategoryBean implements CategoryRemote {
         return categoryId;
     }
     
-    @RolesAllowed("dictionary-update")
+    //@RolesAllowed("dictionary-update")
     public CategoryDO getCategoryAndLock(Integer categoryId)throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
