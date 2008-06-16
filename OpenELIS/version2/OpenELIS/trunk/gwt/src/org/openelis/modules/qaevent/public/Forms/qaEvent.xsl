@@ -66,7 +66,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:getDescription()}" width= "425px" tab="{qaEventMeta:getTypeId()},{qaEventMeta:getNameId()}"/>
+      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:getDescription()}" width= "425px" tab="{qaEventMeta:getTypeId()},{qaEventMeta:getName()}"/>
      </widget>     
     </row>
      <row>
@@ -121,7 +121,7 @@
 </display>
 							  
 <rpc key= "display">
- <number key="{qaEventMeta:gteId()}" type="integer" required = "false" />
+ <number key="{qaEventMeta:getId()}" type="integer" required = "false" />
  <string key="{qaEventMeta:getName()}" max = "20" required = "true"/>
  <number key="{qaEventMeta:getReportingSequence()}"  type="integer" required = "false" />
  <string key="{qaEventMeta:getDescription()}" max = "60" required = "false" /> 	 

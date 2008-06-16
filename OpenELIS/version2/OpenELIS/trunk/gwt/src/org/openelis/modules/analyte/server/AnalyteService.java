@@ -21,6 +21,7 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AnalyteParentAnalyteMeta;
+import org.openelis.newmeta.AnalyteMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.server.constants.Constants;
@@ -37,6 +38,8 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 	private static final int leftTableRowsPerPage = 10;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
+    
+    private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
     
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List analyteNames = new ArrayList();
@@ -265,35 +268,35 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, AnalyteDO analyteDO){
-		rpcReturn.setFieldValue(AnalyteMeta.ID, analyteDO.getId());
-		rpcReturn.setFieldValue(AnalyteMeta.NAME, (analyteDO.getName() == null ? null : analyteDO.getName()));
-		rpcReturn.setFieldValue(AnalyteMeta.IS_ACTIVE, (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive()));
-		rpcReturn.setFieldValue(AnalyteMeta.ANALYTE_GROUP_ID, analyteDO.getAnalyteGroup());
-		rpcReturn.setFieldValue(AnalyteMeta.EXTERNAL_ID, (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId()));
+		rpcReturn.setFieldValue(Meta.getId(), analyteDO.getId());
+		rpcReturn.setFieldValue(Meta.getName(), (analyteDO.getName() == null ? null : analyteDO.getName()));
+		rpcReturn.setFieldValue(Meta.getIsActive(), (analyteDO.getIsActive() == null ? null : analyteDO.getIsActive()));
+		rpcReturn.setFieldValue(Meta.getAnalyteGroupId(), analyteDO.getAnalyteGroup());
+		rpcReturn.setFieldValue(Meta.getExternalId(), (analyteDO.getExternalId() == null ? null : analyteDO.getExternalId()));
 		
 //		we need to create a dataset for the parent organization auto complete
 		if(analyteDO.getParentAnalyteId() == null)
-			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, null);
+			rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), null);
 		else{
 			DataSet parentAnalyteSet = new DataSet();
 			NumberObject id = new NumberObject(analyteDO.getParentAnalyteId());
 			StringObject text = new StringObject(analyteDO.getParentAnalyte());
 			parentAnalyteSet.setKey(id);
 			parentAnalyteSet.addObject(text);
-			rpcReturn.setFieldValue(AnalyteParentAnalyteMeta.NAME, parentAnalyteSet);
+			rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), parentAnalyteSet);
 		}
 	}
 	
 	private AnalyteDO getAnalyteDOFromRPC(FormRPC rpcSend) {
 		AnalyteDO newAnalyteDO = new AnalyteDO();
 
-		newAnalyteDO.setId((Integer) rpcSend.getFieldValue(AnalyteMeta.ID));
-		newAnalyteDO.setName(((String) rpcSend.getFieldValue(AnalyteMeta.NAME)));
-		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(AnalyteMeta.IS_ACTIVE)));
-		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(AnalyteMeta.ANALYTE_GROUP_ID));
-		newAnalyteDO.setParentAnalyteId((Integer) rpcSend.getFieldValue(AnalyteParentAnalyteMeta.NAME));
-        newAnalyteDO.setParentAnalyte((String)((DropDownField)rpcSend.getField(AnalyteParentAnalyteMeta.NAME)).getTextValue());
-		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(AnalyteMeta.EXTERNAL_ID)));		
+		newAnalyteDO.setId((Integer) rpcSend.getFieldValue(Meta.getId()));
+		newAnalyteDO.setName(((String) rpcSend.getFieldValue(Meta.getName())));
+		newAnalyteDO.setIsActive(((String) rpcSend.getFieldValue(Meta.getIsActive())));
+		newAnalyteDO.setAnalyteGroup((Integer) rpcSend.getFieldValue(Meta.getAnalyteGroupId()));
+		newAnalyteDO.setParentAnalyteId((Integer) rpcSend.getFieldValue(Meta.getParentAnalyte().getId()));
+        newAnalyteDO.setParentAnalyte((String)((DropDownField)rpcSend.getField(Meta.getParentAnalyte().getName())).getTextValue());
+		newAnalyteDO.setExternalId(((String) rpcSend.getFieldValue(Meta.getExternalId())));		
 
 		return newAnalyteDO;
 	}

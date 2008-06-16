@@ -90,7 +90,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>           
 		<widget>
-		  <autoDropdown key="{providerMeta:getTypeId()}" case="mixed" width="80px" tab="{providerMeta:Npi()},{providerMeta:getMiddleName()}"/>
+		  <autoDropdown key="{providerMeta:getTypeId()}" case="mixed" width="80px" tab="{providerMeta:getNpi()},{providerMeta:getMiddleName()}"/>
 		</widget>								
     </row>
     <row>
@@ -104,7 +104,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"npi")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed"   key= "{providerMeta:getNpi()}" max="20"  width= "145px" tab="{providerMeta:getId()},{providerMeta:getType()}"/>
+      <textbox case= "mixed"   key= "{providerMeta:getNpi()}" max="20"  width= "145px" tab="{providerMeta:getId()},{providerMeta:getTypeId()}"/>
      </widget>
     </row>
     <row>
@@ -112,7 +112,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"middleName")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{providerMeta:getMiddleName()}" max="20" case = "upper" width= "145px" tab="{providerMeta:getType()},{providerMeta:getFirstName()}"/>
+      <textbox key= "{providerMeta:getMiddleName()}" max="20" case = "upper" width= "145px" tab="{providerMeta:getTypeId()},{providerMeta:getFirstName()}"/>
      </widget>
     </row>
    </panel>
@@ -145,8 +145,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed" max="80"/>		 
 		</editors>
 		 <fields>
-		  <string key = "{providerAddrMeta:location()}" required = "true"/>
-		  <string key="{providerAddrMeta:externalId()}"/>
+		  <string key = "{providerAddrMeta:getLocation()}" required = "true"/>
+		  <string key="{providerAddrMeta:getExternalId()}"/>
 		  <string key="{providerAddrAddrMeta:multipleUnit()}"/>
 		  <string key="{providerAddrAddrMeta:streetAddress()}"/>
 		  <string key="{providerAddrAddrMeta:city()}" required = "true"/>		  		  
@@ -188,7 +188,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed"/>		 
 		</editors>
 		<fields>
-		  <xsl:value-of select='providerAddrMeta:location()'/>,<xsl:value-of select='providerAddrMeta:externalId()'/>,
+		  <xsl:value-of select='providerAddrMeta:getLocation()'/>,<xsl:value-of select='providerAddrMeta:getExternalId()'/>,
 		  <xsl:value-of select='providerAddrAddrMeta:multipleUnit()'/>,<xsl:value-of select='providerAddrAddrMeta:streetAddress()'/>,
 		  <xsl:value-of select='providerAddrAddrMeta:city()'/>,<xsl:value-of select='providerAddrAddrMeta:state()'/>,
 		  <xsl:value-of select='providerAddrAddrMeta:country()'/>,<xsl:value-of select='providerAddrAddrMeta:zipCode()'/>,
@@ -290,8 +290,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="{providerNoteMeta:text()}" /> 
   <dropdown key="{providerMeta:getTypeId()}" type="integer" required = "false"/>                            
     <table key="providerAddressTable"/>	
-  <queryString key="{providerAddrMeta:location()}" required="false"/>
-	  <queryString key="{providerAddrMeta:externalId()}" required="false"/>
+  <queryString key="{providerAddrMeta:getLocation()}" required="false"/>
+	  <queryString key="{providerAddrMeta:getExternalId()}" required="false"/>
 	  <queryString key="{providerAddrAddrMeta:multipleUnit()}" required="false"/>
 	  <queryString key="{providerAddrAddrMeta:streetAddress()}" required="false"/>
 	  <queryString key="{providerAddrAddrMeta:city()}" required="false"/>

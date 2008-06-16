@@ -2,8 +2,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:analyteMeta="xalan://org.openelis.meta.AnalyteMeta"
-                xmlns:parentAnalyteMeta="xalan://org.openelis.meta.AnalyteParentAnalyteMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.AnalyteMetaMap"
+                xmlns:parentMeta="xalan://org.openelis.newmeta.AnalyteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>   
@@ -16,16 +16,18 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="analyteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AnalyteMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="parentAnalyteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteParentAnalyteMeta"/>
+  <xalan:component prefix="parentMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AnalyteMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="meta" select="meta:new()"/>
+    <xsl:variable name="parentMeta" select="meta:getParentAnalyte($meta)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Analyte" name="{resource:getString($constants,'analyte')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -66,7 +68,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{analyteMeta:getName()}" max="60" width="350px" tab="{analyteMeta:getAnalyteGroupId()},{analyteMeta:getIsActive()}"/>
+										<textbox case="mixed" key="{meta:getName($meta)}" max="60" width="350px" tab="{meta:getAnalyteGroupId($meta)},{meta:getIsActive($meta)}"/>
 									</widget>
 								</row>
 								<row>								
@@ -74,7 +76,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"analyteGroup")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{analyteMeta:getAnalyteGroupId()}" width="200px" tab="{parentAnalyteMeta:getName()},{analyteMeta:getName()}"/>
+										<textbox case="mixed" key="{meta:getAnalyteGroupId($meta)}" width="200px" tab="{parentMeta:getName($parentMeta)},{meta:getName($meta)}"/>
 									</widget>
 								</row>
 								<row>								
@@ -82,12 +84,12 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
 									</widget>
 									<widget>
-									<autoDropdown cat="parentAnalyte" key="{parentAnalyteMeta:getName()}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{analyteMeta:getExternalId()},{analyteMeta:getAnalyteGroupId()}">
+									<autoDropdown cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
 										<headers>Name</headers>
 										<widths>194</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="mixed" width="200px" tab="{analyteMeta:getExternalId()},{analyteMeta:getAnalyteGroupId()}"/>
+											<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}"/>
 										</query>
 									</widget>
 								</row>
@@ -96,7 +98,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"externalId")'/>:</text>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{analyteMeta:getExternalId()}" max="20" width="150px" tab="{analyteMeta:getIsActive()},{parentAnalyteMeta:getName()}"/>
+										<textbox case="mixed" key="{meta:getExternalId($meta)}" max="20" width="150px" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}"/>
 									</widget>
 								</row>
 								<row>
@@ -104,7 +106,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									</widget>
 									<widget>
-										<check key="{analyteMeta:getIsActive()}" tab="{analyteMeta:getName()},{analyteMeta:getExternalId()}"/>
+										<check key="{meta:getIsActive($meta)}" tab="{meta:getName($meta)},{meta:getExternalId($meta)}"/>
 									</widget>
 								</row>
 							</panel>
@@ -113,23 +115,23 @@
 		</panel>
 	</display>
 	<rpc key="display">
-  	<number key="{analyteMeta:getId()}" type="integer" required="false"/>
-  	<string key="{analyteMeta:getName()}" required="true"/>
-  	<number key="{analyteMeta:getAnalyteGroupId()}" type="integer" required="false"/>
-  	<dropdown key="{parentAnalyteMeta:getName()}" type="integer" required="false"/>
-  	<string key="{analyteMeta:getExternalId()}" required="false"/>
-  	<check key="{analyteMeta:getIsActive()}" required="false"/>
+  	<number key="{meta:getId($meta)}" type="integer" required="false"/>
+  	<string key="{meta:getName($meta)}" required="true"/>
+  	<number key="{meta:getAnalyteGroupId($meta)}" type="integer" required="false"/>
+  	<dropdown key="{parentMeta:getName($parentMeta)}" type="integer" required="false"/>
+  	<string key="{meta:getExternalId($meta)}" required="false"/>
+  	<check key="{meta:getIsActive($meta)}" required="false"/>
 	</rpc>
 	<rpc key="query">
-  	<queryNumber key="{analyteMeta:getId()}" type="integer" required="false"/>
-  	<queryString key="{analyteMeta:getName()}" required="false"/>
-  	<queryNumber key="{analyteMeta:getAnalyteGroupId()}" type="integer" required="false"/>
-  	<queryString key="{parentAnalyteMeta:getName()}" required="false"/>
-  	<queryString key="{analyteMeta:getExternalId()}" required="false"/>
-  	<queryCheck key="{analyteMeta:getIsActive()}" required="false"/>
+  	<queryNumber key="{meta:getId($meta)}" type="integer" required="false"/>
+  	<queryString key="{meta:getName($meta)}" required="false"/>
+  	<queryNumber key="{meta:getAnalyteGroupId($meta)}" type="integer" required="false"/>
+  	<queryString key="{parentMeta:getName($parentMeta)}" required="false"/>
+  	<queryString key="{meta:getExternalId($meta)}" required="false"/>
+  	<queryCheck key="{meta:getIsActive($meta)}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-	<queryString key="{analyteMeta:getName()}"/>
+	<queryString key="{meta:getName($meta)}"/>
 	</rpc>
 </screen>
   </xsl:template>
