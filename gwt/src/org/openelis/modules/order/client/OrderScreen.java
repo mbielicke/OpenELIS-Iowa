@@ -529,10 +529,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(col == 0 && row > -1 && !"".equals(((TableTextBox)((EditTable)controller).view.table.getWidget(row, col)).editor.getText()))
+      //  if(col == 0 && row > -1 && !"".equals(((TableTextBox)((EditTable)controller).view.table.getWidget(row, col)).editor.getText()))
             return true;
-        else
-            return false;
+       // else
+         //   return false;
     }
 
     public void finishedEditing(int row, int col, TableController controller) {

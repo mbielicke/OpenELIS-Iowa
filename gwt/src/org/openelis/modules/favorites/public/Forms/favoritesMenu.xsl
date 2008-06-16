@@ -29,7 +29,7 @@
 		        		  label="{resource:getString($constants,$label)}"
 				          description=""
 				          value="{$value}"
-				          onClick="OpenELIS"/>
+				          onClick="org.openelis.modules.main.client.openelis.OpenELIS"/>
 			    </xsl:for-each>
 			</menuPanel>
 	</display>

@@ -119,7 +119,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         noteTab = (TabPanel)getWidget("provTabPanel");  
         
-        displayType = (ScreenAutoDropdown)widgets.get("provider.type");
+        displayType = (ScreenAutoDropdown)widgets.get("provider.typeId");
         
         provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.setAutoAdd(false);

@@ -5,6 +5,7 @@ import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.AnalyteMetaMap;
 
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -12,6 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class AnalyteScreen extends OpenELISScreenForm {
 	
 	private TextBox nameTextBox;
+    private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 
 	public AnalyteScreen() {
 		super("org.openelis.modules.analyte.server.AnalyteService",false);
@@ -39,7 +41,7 @@ public class AnalyteScreen extends OpenELISScreenForm {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        nameTextBox = (TextBox) getWidget("analyte.name");
+        nameTextBox = (TextBox) getWidget(Meta.getName());
 
 		super.afterDraw(success);
 	}
@@ -70,7 +72,7 @@ public class AnalyteScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 
-			letterRPC.setFieldValue("analyte.name", query);
+			letterRPC.setFieldValue(Meta.getName(), query);
 
 			commitQuery(letterRPC);
 		}
