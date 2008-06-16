@@ -80,7 +80,7 @@ public class OrderBean implements OrderRemote{
         return orderDO;
     }
 
-    @RolesAllowed("order-update")
+   @RolesAllowed("order-update")
     public OrderDO getOrderAndLock(Integer orderId, String orderType) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "order");

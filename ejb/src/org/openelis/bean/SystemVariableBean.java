@@ -124,7 +124,7 @@ public class SystemVariableBean implements SystemVariableRemote{
         
     }
 
-    @RolesAllowed("systemvariable-update")
+   @RolesAllowed("systemvariable-update")
     public Integer updateSystemVariable(SystemVariableDO sysVarDO) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "system_variable");
@@ -160,7 +160,7 @@ public class SystemVariableBean implements SystemVariableRemote{
         return sysVar.getId();
     }  
     
-    @RolesAllowed("systemvariable-delete")    
+   @RolesAllowed("systemvariable-delete")    
     public void deleteSystemVariable(Integer sysVarId) throws Exception {
      Query lockQuery = manager.createNamedQuery("getTableId");
      lockQuery.setParameter("name", "system_variable");

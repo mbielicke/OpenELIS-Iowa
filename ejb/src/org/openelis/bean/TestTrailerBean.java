@@ -156,7 +156,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         	 return returnList;
 	}
 
-    @RolesAllowed("testtrailer-update")
+   @RolesAllowed("testtrailer-update")
 	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) throws Exception{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "test_trailer");
