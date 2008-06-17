@@ -21,8 +21,8 @@
    <xsl:variable name="modules"><xsl:value-of select="modules"/></xsl:variable>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
-		<panel layout="vertical" style="AppBackground" sizeToWindow="true" xsi:type="Panel">
-		<panel layout="absolute" style="topMenuBar">
+		<VerticalPanel style="AppBackground" sizeToWindow="true">
+		<AbsolutePanel style="topMenuBar">
 		<menuPanel layout="horizontal" xsi:type="Panel" style="topBarItemHolder" spacing="0" padding="0">
 		    <menuItem>
 		        <menuDisplay>
@@ -115,9 +115,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				  <widget>
 					<html>&lt;hr/&gt;</html>
-				  </widget>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">project</xsl:with-param>
@@ -315,9 +313,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-			    <widget>
 				   <html>&lt;hr/&gt;</html>
-				</widget>
 				    <xsl:if test="contains($modules,'Analyte')">
 					  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Analyte</xsl:with-param>
@@ -343,9 +339,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-			    <widget>
 					<html>&lt;hr/&gt;</html>
-			    </widget>
 			        <xsl:if test="contains($modules,'Label')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Label</xsl:with-param>
@@ -373,9 +367,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-			    <widget>
 					<html>&lt;hr/&gt;</html>
-			    </widget>
 			        <xsl:if test="contains($modules,'StorageUnit')">
 			    	  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageUnit</xsl:with-param>
@@ -394,9 +386,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				<widget>
 					<html>&lt;hr/&gt;</html>
-				</widget>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">instrument</xsl:with-param>
@@ -404,9 +394,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				<widget>
 					<html>&lt;hr/&gt;</html>
-				</widget>
 					<xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">scriptlet</xsl:with-param>
@@ -451,9 +439,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-					<widget>
 						<html>&lt;hr/&gt;</html>
-					</widget>
 					<menuItem style="TopMenuRowContainer" 
 						      hover="Hover"
 						      icon="referenceIcon"
@@ -522,25 +508,21 @@
 				</menuPanel>
 		    </menuItem>
         </menuPanel>
-       </panel>
-       <panel layout="horizontal" xsi:type="Panel">
-          <panel layout="vertical" xsi:type="Panel" key="favoritesPanel" visible="false" width="220px">
-            <panel layout="horizontal" xsi:type="Panel" style="Header" width="100%" height="20px">
-              <widget>
+       </AbsolutePanel>
+       <HorizontalPanel>
+          <VerticalPanel key="favoritesPanel" visible="false" width="220px">
+            <HorizontalPanel style="Header" width="100%" height="20px">
                 <text style="ScreenWindowLabel">Favorites</text>
-              </widget>
               <widget halign="right">
                 <appButton action="editFavorites" key="EditFavorites" onclick="this">
-	              <panel layout="absolute" xsi:type="Absolute" style="EditSettings"/>
+	              <AbsolutePanel style="EditSettings"/>
 	            </appButton>
 	          </widget>
-            </panel>
-	      </panel>
-		    	<widget>
-			    	<winbrowser key="browser" sizeToWindow="true"/>
-		    	</widget>
-		</panel>
-	</panel>
+            </HorizontalPanel>
+	      </VerticalPanel>
+    	<winbrowser key="browser" sizeToWindow="true"/>
+		</HorizontalPanel>
+	</VerticalPanel>
 	</display>
 	<rpc key="display"/>
 	<rpc key="query"/>
