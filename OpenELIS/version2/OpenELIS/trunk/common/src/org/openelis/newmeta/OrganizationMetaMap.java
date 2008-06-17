@@ -51,7 +51,7 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap{
     public String buildFrom(String name){
         String from = "Organization o ";
         if(name.indexOf("notes.") > -1)
-            from = ", IN (o.note) notes ";
+            from += ", IN (o.note) notes ";
         if(name.indexOf("contacts.") > -1)
             from += ", IN (o.organizationContact) contacts "; 
         return from;
