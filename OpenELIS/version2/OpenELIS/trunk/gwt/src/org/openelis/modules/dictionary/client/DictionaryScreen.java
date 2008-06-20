@@ -15,6 +15,7 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.CategoryMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -31,6 +32,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     
     private static DataModel sectionDropDown = null;
 
+    private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
         super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
     }
@@ -71,13 +73,12 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
                 
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
-
         dictEntryController.setAutoAdd(false);
 
-        tname = (TextBox)getWidget("category.name");
+        tname = (TextBox)getWidget(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
-        displaySection = (ScreenAutoDropdown)widgets.get("category.section");       
+        displaySection = (ScreenAutoDropdown)widgets.get(CatMap.getSectionId());       
         
         if (sectionDropDown == null) {
             sectionDropDown = (DataModel)initData.get("sections");
@@ -102,16 +103,11 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     public void add() {
         dictEntryController.setAutoAdd(true);
     
-        DictionaryEntriesTable dictEntManager = ((DictionaryEntriesTable)dictEntryController.manager);
-        dictEntManager.resetLists();
-    
         super.add();        
     
         // set focus to the name field
         tname.setFocus(true);
-    
-        
-    
+               
     }
 
     public void update() {
@@ -122,7 +118,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
     public void abort() {
-    	dictEntryController.setAutoAdd(false);
+        dictEntryController.setAutoAdd(false);
         super.abort();
     }
 
@@ -141,19 +137,19 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }    
 
     public void commitUpdate() {
-    	dictEntryController.setAutoAdd(false);
+        dictEntryController.setAutoAdd(false);
         //we need to do this reset to get rid of the last row
         dictEntryController.reset();
-    	super.commitUpdate();
+        super.commitUpdate();
     }
 
     private void getCategories(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("category.name", query);
+            letterRPC.setFieldValue(CatMap.getName(), query);
             
-            commitQuery(letterRPC);
+            commitQuery(letterRPC);            
         }
     }
     

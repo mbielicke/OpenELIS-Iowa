@@ -31,7 +31,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.CategoryMeta;
+import org.openelis.newmeta.CategoryMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -49,6 +49,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
     private static final int leftTableRowsPerPage = 19;           
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
+    
+    private static final CategoryMetaMap CatMeta = new CategoryMetaMap();  
     
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List systemNames = new ArrayList();
@@ -76,7 +78,6 @@ public class DictionaryService implements AppScreenFormServiceInt,
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
             
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-            fields.remove("dictEntTable");
            
                 try{                                        
                     systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
@@ -119,7 +120,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        NumberField catId = (NumberField) rpcSend.getField(CategoryMeta.ID);
+        NumberField catId = (NumberField) rpcSend.getField(CatMeta.getId());
         
         CategoryDO categoryDO = getCategoryDOFromRPC(rpcSend);
         
@@ -160,7 +161,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        NumberField categoryId = (NumberField) rpcSend.getField(CategoryMeta.ID);
+        NumberField categoryId = (NumberField) rpcSend.getField(CatMeta.getId());
         
         CategoryDO categoryDO = getCategoryDOFromRPC(rpcSend);
         
@@ -435,27 +436,27 @@ public class DictionaryService implements AppScreenFormServiceInt,
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, CategoryDO catDO){
-        rpcReturn.setFieldValue(CategoryMeta.ID, catDO.getId());
-        rpcReturn.setFieldValue(CategoryMeta.SYSTEM_NAME,catDO.getSystemName());
-        rpcReturn.setFieldValue(CategoryMeta.NAME,catDO.getName());
-        rpcReturn.setFieldValue(CategoryMeta.DESCRIPTION,catDO.getDescription());    
+        rpcReturn.setFieldValue(CatMeta.getId(), catDO.getId());
+        rpcReturn.setFieldValue(CatMeta.getSystemName(),catDO.getSystemName());
+        rpcReturn.setFieldValue(CatMeta.getName(),catDO.getName());
+        rpcReturn.setFieldValue(CatMeta.getDescription(),catDO.getDescription());    
         if(catDO.getSection()!=null){
-            rpcReturn.setFieldValue(CategoryMeta.SECTION_ID,catDO.getSection());
+            rpcReturn.setFieldValue(CatMeta.getSectionId(),catDO.getSection());
          }else{
-            rpcReturn.setFieldValue(CategoryMeta.SECTION_ID,new Integer(-1));  
+            rpcReturn.setFieldValue(CatMeta.getSectionId(),new Integer(-1));  
          }
     }
     
     private CategoryDO getCategoryDOFromRPC(FormRPC rpcSend){        
-        NumberField categoryId = (NumberField) rpcSend.getField(CategoryMeta.ID);
+        NumberField categoryId = (NumberField) rpcSend.getField(CatMeta.getId());
         CategoryDO categoryDO = new CategoryDO();
         categoryDO.setId((Integer)categoryId.getValue());
-        categoryDO.setDescription(((String)rpcSend.getFieldValue(CategoryMeta.DESCRIPTION)));
-        categoryDO.setName(((String)rpcSend.getFieldValue(CategoryMeta.NAME)));
-        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CategoryMeta.SYSTEM_NAME)));
+        categoryDO.setDescription(((String)rpcSend.getFieldValue(CatMeta.getDescription())));
+        categoryDO.setName(((String)rpcSend.getFieldValue(CatMeta.getName())));
+        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CatMeta.getSystemName())));
                 
-        if(!new Integer(-1).equals(rpcSend.getFieldValue(CategoryMeta.SECTION_ID)))
-           categoryDO.setSection((Integer)rpcSend.getFieldValue(CategoryMeta.SECTION_ID));
+        if(!new Integer(-1).equals(rpcSend.getFieldValue(CatMeta.getSectionId())))
+           categoryDO.setSection((Integer)rpcSend.getFieldValue(CatMeta.getSectionId()));
         
         return categoryDO; 
     }

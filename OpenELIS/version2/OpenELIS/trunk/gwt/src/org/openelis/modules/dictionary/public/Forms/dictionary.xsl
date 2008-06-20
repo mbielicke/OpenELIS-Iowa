@@ -2,9 +2,9 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:categoryMeta="xalan://org.openelis.meta.CategoryMeta"
-                xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta"
-                xmlns:dictRelEntryMeta="xalan://org.openelis.meta.DictionaryRelatedEntryMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.CategoryMetaMap"
+                xmlns:dictionary="xalan://org.openelis.newmeta.DictionaryMetaMap"
+                xmlns:relentry="xalan://org.openelis.newmeta.DictionaryMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -17,16 +17,24 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="categoryMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.CategoryMeta"/>
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.CategoryMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="dictionaryMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMeta"/>
+  <xalan:component prefix="dictionary">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="relentry">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="cat" select="meta:new()"/>    
+    <xsl:variable name="dictNew" select="meta:getDictionary($cat)"/>
+    <!--<xsl:variable name="dictNew" select="dictionary:new()"/>-->
+    <xsl:variable name="relentry" select="dictionary:getRelatedEntry($dictNew)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Dictionary" name="{resource:getString($constants,'dictionary')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -67,7 +75,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="50" width="355px" key="{categoryMeta:getName()}" tab="{categoryMeta:getDescription()},{categoryMeta:getSystemName()}"/>
+										<textbox case="mixed" max="50" width="355px" key="{meta:getName($cat)}" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}"/>
 									</widget>
 								</row>
 								<row>
@@ -75,7 +83,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="60" key="{categoryMeta:getDescription()}" width="425px" tab="{categoryMeta:getSectionId()},{categoryMeta:getName()}"/>
+										<textbox case="mixed" max="60" key="{meta:getDescription($cat)}" width="425px" tab="{meta:getSectionId($cat)},{meta:getName($cat)}"/>
 									</widget>
 								</row>
 								<row>								
@@ -84,7 +92,7 @@
 									 </widget>
 									 									 									  
 									           <widget>
-												   <autoDropdown key="{categoryMeta:getSectionId()}" case="lower" width="100px" tab="{categoryMeta:getSystemName()},{categoryMeta:getDescription()}"/>
+												   <autoDropdown key="{meta:getSectionId($cat)}" case="lower" width="100px" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}"/>
 												</widget>
 								     							   						
 								</row>	
@@ -93,7 +101,7 @@
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
 									</widget>
 									<widget>
-										<textbox case="mixed" max="30" width="215px" key="{categoryMeta:SystemName()}" tab="{categoryMeta:getName()},{categoryMeta:getSection()}"/>
+										<textbox case="mixed" max="30" width="215px" key="{meta:getSystemName($cat)}" tab="{meta:getName($cat)},{meta:getSectionId($cat)}"/>
 									</widget>
 								</row>						  							
 						</panel>
@@ -114,14 +122,16 @@
 									<textbox/>																			
 									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
 												<widths>123</widths>
-											</autoDropdown>
+									</autoDropdown>
 								</editors>
 								<fields>																											
-									<check key="{dictionaryMeta:getIsActive()}">Y</check>
-									<string key="{dictionaryMeta:getSystemName()}"/>									
-									<string key="{dictionaryMeta:getLocalAbbrev()}"/>
-									<string key="{dictionaryMeta:getEntry()}" required = "true"/>
-									<dropdown key="{dictRelEntryMeta:getEntry()}"/>									
+									<check key="{dictionary:getIsActive($dictNew)}">Y</check>
+									<string key="{dictionary:getSystemName($dictNew)}"/>									
+									<string key="{dictionary:getLocalAbbrev($dictNew)}"/>
+									<string key="{dictionary:getEntry($dictNew)}" required = "true"/>
+									<!--<dropdown key="{dictionary:getRelatedEntryId()}"/>-->
+									<!--<dropdown key="{dictionaryMeta:getName($relentry)}"/>-->
+									<dropdown key="{relentry:getEntry($relentry)}"/>
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
@@ -141,9 +151,10 @@
 									<textbox case = "mixed"/>									
 								</editors>
 								<fields>																		
-									<xsl:value-of select='dictionaryMeta:isActive()'/>,<xsl:value-of select='dictionaryMeta:getSystemName()'/>,
-		                            <xsl:value-of select='dictionaryMeta:localAbbrev()'/>,<xsl:value-of select='dictionaryMeta:getEntry()'/>,
-		                            <xsl:value-of select='dictRelEntryMeta:entry()'/>
+									<xsl:value-of select='dictionary:getIsActive($dictNew)'/>,<xsl:value-of select='dictionary:getSystemName($dictNew)'/>,
+		                            <xsl:value-of select='dictionary:getLocalAbbrev($dictNew)'/>,<xsl:value-of select='dictionary:getEntry($dictNew)'/>,
+		                            <!--<dropdown key="{dictionaryMeta:getName($relentry)}"/>-->
+									<dropdown key="{relentry:getEntry($relentry)}"/>
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
@@ -166,27 +177,26 @@
 		</panel>
 	</display>
 	<rpc key = "display">
-	 <number key="{categoryMeta:getId()}" type="integer" required="false"/>	
-	 <string key="{categoryMeta:getSystemName()}" max="30" required = "true"/>
-	 <string key="{categoryMeta:getName()}" max="50" required = "true"/>
-	 <string key="{categoryMeta:getDescription()}" max="60" required="false"/>
+	 <number key="{meta:getId($cat)}" type="integer" required="false"/>	
+	 <string key="{meta:getSystemName($cat)}" max="30" required = "true"/>
+	 <string key="{meta:getName($cat)}" max="50" required = "true"/>
+	 <string key="{meta:getDescription($cat)}" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <dropdown key="{categoryMeta:getSectionId()}" type="integer" required="false"/>    
+     <dropdown key="{meta:getSectionId($cat)}" type="integer" required="false"/>    
 	</rpc>
-	<rpc key = "query">	 		
-     <table key="dictEntTable"/>	
-	 <queryString key="{categoryMeta:getSystemName()}"/>
-	 <queryString key="{categoryMeta:getName()}"/>
-	 <queryString key="{categoryMeta:getDescription()}"/>
-	 <dropdown key="{categoryMeta:getSectionId()}" type="integer" required="false"/> 
-	 <queryCheck key="{dictionaryMeta:isActive()}" required="false"/>
-	  <queryString key="{dictionaryMeta:getSystemName()}" required="false"/>
-	  <queryString key="{dictionaryMeta:getLocalAbbrev()}" required="false"/>
-	  <queryString key="{dictionaryMeta:getEntry()}" required="false"/>
-	  <queryString key="{dictRelEntryMeta:getEntry()}" required="false"/>
+	<rpc key = "query">	 		    	
+	 <queryString key="{meta:getSystemName($cat)}"/>
+	 <queryString key="{meta:getName($cat)}"/>
+	 <queryString key="{meta:getDescription($cat)}"/>
+	 <dropdown key="{meta:getSectionId($cat)}" type="integer" required="false"/> 
+	 <queryCheck key="{dictionary:getIsActive($dictNew)}" required="false"/>
+	  <queryString key="{dictionary:getSystemName($dictNew)}" required="false"/>
+	  <queryString key="{dictionary:getLocalAbbrev($dictNew)}" required="false"/>
+	  <queryString key="{dictionary:getEntry($dictNew)}" required="false"/>
+	  <queryString key="{relentry:getEntry($relentry)}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-      <queryString key="{categoryMeta:getName()}"/>
+      <queryString key="{meta:getSystemName($cat)}"/>
     </rpc>
 </screen>
 </xsl:template>
