@@ -10,7 +10,7 @@ import org.openelis.gwt.common.NewMeta;
 
 public class QaeventMeta implements NewMeta {
   	private String path = "";
-	private static final String entityName = "Qaevent";
+	private static final String entityName = "QaEvent";
 	
 	private static final String
               ID					="id",
