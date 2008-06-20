@@ -5,23 +5,23 @@ import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class OrderReportToAddressMeta implements Meta{
-    private String tableName = "order.reportTo.address";
-    private String entityName = "order.reportTo.address";
+    private String tableName = "ordr.reportTo.address";
+    private String entityName = "ordr.reportTo.address";
     private boolean includeInFrom = false;
     
     public static final String
-    ID              = "order.reportTo.address.id",
-    MULTIPLE_UNIT   = "order.reportTo.address.multipleUnit",
-    STREET_ADDRESS  = "order.reportTo.address.streetAddress",
-    CITY            = "order.reportTo.address.city",
-    STATE           = "order.reportTo.address.state",
-    ZIP_CODE        = "order.reportTo.address.zipCode",
-    WORK_PHONE      = "order.reportTo.address.workPhone",
-    HOME_PHONE      = "order.reportTo.address.homePhone",
-    CELL_PHONE      = "order.reportTo.address.cellPhone",
-    FAX_PHONE       = "order.reportTo.address.faxPhone",
-    EMAIL           = "order.reportTo.address.email",
-    COUNTRY         = "order.reportTo.address.country";
+    ID              = "ordr.reportTo.address.id",
+    MULTIPLE_UNIT   = "ordr.reportTo.address.multipleUnit",
+    STREET_ADDRESS  = "ordr.reportTo.address.streetAddress",
+    CITY            = "ordr.reportTo.address.city",
+    STATE           = "ordr.reportTo.address.state",
+    ZIP_CODE        = "ordr.reportTo.address.zipCode",
+    WORK_PHONE      = "ordr.reportTo.address.workPhone",
+    HOME_PHONE      = "ordr.reportTo.address.homePhone",
+    CELL_PHONE      = "ordr.reportTo.address.cellPhone",
+    FAX_PHONE       = "ordr.reportTo.address.faxPhone",
+    EMAIL           = "ordr.reportTo.address.email",
+    COUNTRY         = "ordr.reportTo.address.country";
 
     //
     // Array of column names used for building select/insert/update strings
@@ -36,7 +36,7 @@ public class OrderReportToAddressMeta implements Meta{
     static {
      columnHashList = new HashMap<String, String>(columnNames.length);
      for (int i = 0; i < columnNames.length; i++)
-         columnHashList.put(columnNames[i].substring(23), "");
+         columnHashList.put(columnNames[i].substring(22), "");
     }
 
     private OrderReportToAddressMeta() {
@@ -71,51 +71,51 @@ public class OrderReportToAddressMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String multipleUnit(){
+    public static String getMultipleUnit(){
         return columnNames[1];
     }
     
-    public static String streetAddress(){
+    public static String getStreetAddress(){
         return columnNames[2];
     }
     
-    public static String city(){
+    public static String getCity(){
         return columnNames[3];
     }
     
-    public static String state(){
+    public static String getState(){
         return columnNames[4];
     }
     
-    public static String zipCode(){
+    public static String getzipCode(){
         return columnNames[5];
     }
     
-    public static String workPhone(){
+    public static String getWorkPhone(){
         return columnNames[6];
     }
     
-    public static String homePhone(){
+    public static String getHomePhone(){
         return columnNames[7];
     }
     
-    public static String cellPhone(){
+    public static String getCellPhone(){
         return columnNames[8];
     }
     
-    public static String faxPhone(){
+    public static String getFaxPhone(){
         return columnNames[9];
     }
     
-    public static String email(){
+    public static String getEmail(){
         return columnNames[10];
     }
     
-    public static String country(){
+    public static String getCountry(){
         return columnNames[11];
     }
 }

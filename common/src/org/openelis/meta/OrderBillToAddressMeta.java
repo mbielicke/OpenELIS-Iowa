@@ -5,23 +5,23 @@ import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class OrderBillToAddressMeta implements Meta{
-    private String tableName = "order.billTo.address";
-    private String entityName = "order.billTo.address";
+    private String tableName = "ordr.billTo.address";
+    private String entityName = "ordr.billTo.address";
     private boolean includeInFrom = false;
     
     public static final String
-    ID              = "order.billTo.address.id",
-    MULTIPLE_UNIT   = "order.billTo.address.multipleUnit",
-    STREET_ADDRESS  = "order.billTo.address.streetAddress",
-    CITY            = "order.billTo.address.city",
-    STATE           = "order.billTo.address.state",
-    ZIP_CODE        = "order.billTo.address.zipCode",
-    WORK_PHONE      = "order.billTo.address.workPhone",
-    HOME_PHONE      = "order.billTo.address.homePhone",
-    CELL_PHONE      = "order.billTo.address.cellPhone",
-    FAX_PHONE       = "order.billTo.address.faxPhone",
-    EMAIL           = "order.billTo.address.email",
-    COUNTRY         = "order.billTo.address.country";
+    ID              = "ordr.billTo.address.id",
+    MULTIPLE_UNIT   = "ordr.billTo.address.multipleUnit",
+    STREET_ADDRESS  = "ordr.billTo.address.streetAddress",
+    CITY            = "ordr.billTo.address.city",
+    STATE           = "ordr.billTo.address.state",
+    ZIP_CODE        = "ordr.billTo.address.zipCode",
+    WORK_PHONE      = "ordr.billTo.address.workPhone",
+    HOME_PHONE      = "ordr.billTo.address.homePhone",
+    CELL_PHONE      = "ordr.billTo.address.cellPhone",
+    FAX_PHONE       = "ordr.billTo.address.faxPhone",
+    EMAIL           = "ordr.billTo.address.email",
+    COUNTRY         = "ordr.billTo.address.country";
 
     //
     // Array of column names used for building select/insert/update strings
@@ -36,7 +36,7 @@ public class OrderBillToAddressMeta implements Meta{
     static {
      columnHashList = new HashMap<String, String>(columnNames.length);
      for (int i = 0; i < columnNames.length; i++)
-         columnHashList.put(columnNames[i].substring(21), "");
+         columnHashList.put(columnNames[i].substring(20), "");
     }
 
     private OrderBillToAddressMeta() {
@@ -71,51 +71,51 @@ public class OrderBillToAddressMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String multipleUnit(){
+    public static String getMmultipleUnit(){
         return columnNames[1];
     }
     
-    public static String streetAddress(){
+    public static String getStreetAddress(){
         return columnNames[2];
     }
     
-    public static String city(){
+    public static String getCity(){
         return columnNames[3];
     }
     
-    public static String state(){
+    public static String getState(){
         return columnNames[4];
     }
     
-    public static String zipCode(){
+    public static String getZipCode(){
         return columnNames[5];
     }
     
-    public static String workPhone(){
+    public static String getWorkPhone(){
         return columnNames[6];
     }
     
-    public static String homePhone(){
+    public static String getHomePhone(){
         return columnNames[7];
     }
     
-    public static String cellPhone(){
+    public static String getCellPhone(){
         return columnNames[8];
     }
     
-    public static String faxPhone(){
+    public static String getFaxPhone(){
         return columnNames[9];
     }
     
-    public static String email(){
+    public static String getEmail(){
         return columnNames[10];
     }
     
-    public static String country(){
+    public static String getCountry(){
         return columnNames[11];
     }
 }

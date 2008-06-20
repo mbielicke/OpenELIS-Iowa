@@ -6,20 +6,20 @@ import org.openelis.util.Meta;
 
 public class OrderItemInventoryItemMeta implements Meta{
     private String tableName = "inventoryItem";
-    private String entityName = "orderItem.inventoryItem";
+    private String entityName = "order_item.inventoryItem";
     private boolean includeInFrom = true;
     
     public static final String
      ID                     = "inventoryItem.id",
      NAME                   = "inventoryItem.name",
      DESCRIPTION            = "inventoryItem.description",
-     CATEGORY               = "inventoryItem.category",
-     STORE                  = "inventoryItem.store",
+     CATEGORY_ID            = "inventoryItem.categoryId",
+     STORE_ID               = "inventoryItem.storeId",
      QUANITY_MIN_LEVEL      = "inventoryItem.quantityMinLevel",
      QUANTITY_MAX_LEVEL     = "inventoryItem.quantityMaxLevel",
      QUANTITY_TO_REORDER    = "inventoryItem.quantityToReorder",
-     PURCHASED_UNITS        = "inventoryItem.purchasedUnits",
-     DISPENSED_UNITS        = "inventoryItem.dispensedUnits",
+     PURCHASED_UNITS_ID     = "inventoryItem.purchasedUnitsId",
+     DISPENSED_UNITS_ID     = "inventoryItem.dispensedUnitsId",
      IS_REORDER_AUTO        = "inventoryItem.isReorderAuto",
      IS_LOT_MAINTAINED      = "inventoryItem.isLotMaintained",
      IS_SERIAL_MAINTAINED   = "inventoryItem.isSerialMaintained",
@@ -38,8 +38,8 @@ public class OrderItemInventoryItemMeta implements Meta{
     // Array of column names used for building select/insert/update strings
     //
     private static final String[] columnNames = {
-         ID, NAME, DESCRIPTION, CATEGORY, STORE, QUANITY_MIN_LEVEL, QUANTITY_MAX_LEVEL, QUANTITY_TO_REORDER, PURCHASED_UNITS,
-         DISPENSED_UNITS, IS_REORDER_AUTO, IS_LOT_MAINTAINED, IS_SERIAL_MAINTAINED, IS_ACTIVE, IS_BULK, IS_NOT_FOR_SALE, 
+         ID, NAME, DESCRIPTION, CATEGORY_ID, STORE_ID, QUANITY_MIN_LEVEL, QUANTITY_MAX_LEVEL, QUANTITY_TO_REORDER, PURCHASED_UNITS_ID,
+         DISPENSED_UNITS_ID, IS_REORDER_AUTO, IS_LOT_MAINTAINED, IS_SERIAL_MAINTAINED, IS_ACTIVE, IS_BULK, IS_NOT_FOR_SALE, 
          IS_SUB_ASSEMBLY, IS_LABOR, IS_NO_INVENTORY, PRODUCT_URI, AVERAGE_LEAD_TIME, AVERAGE_COST, AVERAGE_DAILY_USE};
     
     private static HashMap<String,String> columnHashList;
@@ -84,95 +84,95 @@ public class OrderItemInventoryItemMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String name(){
+    public static String getName(){
         return columnNames[1];
     }
     
-    public static String description(){
+    public static String getDescription(){
         return columnNames[2];
     }
     
-    public static String category(){
+    public static String getCategoryId(){
         return columnNames[3];
     }
     
-    public static String store(){
+    public static String getStoreId(){
         return columnNames[4];
     }
         
-    public static String quantityMinLevel(){
+    public static String getQuantityMinLevel(){
         return columnNames[5];
     }
     
-    public static String quantityMaxLevel(){
+    public static String getQuantityMaxLevel(){
         return columnNames[6];
     }
     
-    public static String quantityToReorder(){
+    public static String getQuantityToReorder(){
         return columnNames[7];
     }
     
-    public static String purchasedUnits(){
+    public static String getPurchasedUnitsId(){
         return columnNames[8];
     }
     
-    public static String dispensedUnits(){
+    public static String getDispensedUnitsId(){
         return columnNames[9];
     }
     
-    public static String isReorderAuto(){
+    public static String getIsReorderAuto(){
         return columnNames[10];
     }
     
-    public static String isLotMaintained(){
+    public static String getIsLotMaintained(){
         return columnNames[11];
     }
     
-    public static String isSerialMaintained(){
+    public static String getIsSerialMaintained(){
         return columnNames[12];
     }
     
-    public static String isActive(){
+    public static String getIsActive(){
         return columnNames[13];
     }
     
-    public static String isBulk(){
+    public static String getIsBulk(){
         return columnNames[14];
     }
     
-    public static String isNotForSale(){
+    public static String getIsNotForSale(){
         return columnNames[15];
     }
     
-    public static String isSubAssembly(){
+    public static String getIsSubAssembly(){
         return columnNames[16];
     }
     
-    public static String isLabor(){
+    public static String getIsLabor(){
         return columnNames[17];
     }
     
-    public static String isNoInventory(){
+    public static String getIsNoInventory(){
         return columnNames[18];
     }
     
-    public static String productUri(){
+    public static String getProductUri(){
         return columnNames[19];
     }
     
-    public static String averageLeadTime(){
+    public static String getAverageLeadTime(){
         return columnNames[20];
     }
     
-    public static String averageCost(){
+    public static String getAverageCost(){
         return columnNames[21];
     }
     
-    public static String averageDailyUse(){
+    public static String getAverageDailyUse(){
         return columnNames[22];
     }
 }

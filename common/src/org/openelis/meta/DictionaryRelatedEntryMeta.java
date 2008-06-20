@@ -62,12 +62,12 @@ public class DictionaryRelatedEntryMeta implements Meta{
 		return columnHashList.containsKey(column);
 	}
         
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
        
     
-    public static String entry(){
+    public static String getEntry(){
         return columnNames[1];
     }        
     

@@ -11,7 +11,8 @@ public class InventoryReceiptDO implements Serializable{
     private static final long serialVersionUID = 1L;
     
     protected Integer id;
-    protected Integer inventoryItem;
+    protected Integer inventoryItemId;
+    protected String inventoryItem;
     protected Integer organization;
     protected Datetime receivedDate;
     protected Integer quantityReceived;
@@ -24,10 +25,11 @@ public class InventoryReceiptDO implements Serializable{
         
     }
     
-    public InventoryReceiptDO(Integer id, Integer inventoryItem, Integer organization, Date receivedDate,
+    public InventoryReceiptDO(Integer id, Integer inventoryItemId, String inventoryItem, Integer organization, Date receivedDate,
                               Integer quantityReceived, Double unitCost, String qcReference, String externalReference,
                               String upc){
         setId(id);
+        setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
         setOrganization(organization);
         setReceivedDate(receivedDate);
@@ -50,11 +52,11 @@ public class InventoryReceiptDO implements Serializable{
     public void setId(Integer id) {
         this.id = id;
     }
-    public Integer getInventoryItem() {
-        return inventoryItem;
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
     }
-    public void setInventoryItem(Integer inventoryItem) {
-        this.inventoryItem = inventoryItem;
+    public void setInventoryItemId(Integer inventoryItem) {
+        this.inventoryItemId = inventoryItem;
     }
     public Integer getOrganization() {
         return organization;
@@ -91,6 +93,14 @@ public class InventoryReceiptDO implements Serializable{
     }
     public void setUpc(String upc) {
         this.upc = DataBaseUtil.trim(upc);
+    }
+
+    public String getInventoryItem() {
+        return inventoryItem;
+    }
+
+    public void setInventoryItem(String inventoryItem) {
+        this.inventoryItem = DataBaseUtil.trim(inventoryItem);
     }
 
 }

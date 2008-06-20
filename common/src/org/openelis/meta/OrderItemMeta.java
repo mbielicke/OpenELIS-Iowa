@@ -10,14 +10,14 @@ import org.openelis.util.Meta;
 
 public class OrderItemMeta implements Meta {
   	private static final String tableName = "order_item";
-	private static final String entityName = "OrderItem";
+	private static final String entityName = "ordr.OrderItem";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="order_item.id",
-              ORDER_ID					="order_item.orderId",
-              INVENTORY_ITEM_ID					="order_item.inventoryItemId",
-              QUANTITY_REQUESTED					="order_item.quantityRequested";
+              ID					= "order_item.id",
+              ORDER_ID				= "order_item.orderId",
+              INVENTORY_ITEM_ID		= "order_item.inventoryItemId",
+              QUANTITY_REQUESTED    = "order_item.quantityRequested";
 
 
   	private static final String[] columnNames = {

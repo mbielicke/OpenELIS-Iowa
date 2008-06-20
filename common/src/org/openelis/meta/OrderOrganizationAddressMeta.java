@@ -71,51 +71,51 @@ public class OrderOrganizationAddressMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String multipleUnit(){
+    public static String getMultipleUnit(){
         return columnNames[1];
     }
     
-    public static String streetAddress(){
+    public static String getStreetAddress(){
         return columnNames[2];
     }
     
-    public static String city(){
+    public static String getCity(){
         return columnNames[3];
     }
     
-    public static String state(){
+    public static String getState(){
         return columnNames[4];
     }
     
-    public static String zipCode(){
+    public static String getZipCode(){
         return columnNames[5];
     }
     
-    public static String workPhone(){
+    public static String getWorkPhone(){
         return columnNames[6];
     }
     
-    public static String homePhone(){
+    public static String getHomePhone(){
         return columnNames[7];
     }
     
-    public static String cellPhone(){
+    public static String getCellPhone(){
         return columnNames[8];
     }
     
-    public static String faxPhone(){
+    public static String getFaxPhone(){
         return columnNames[9];
     }
     
-    public static String email(){
+    public static String getEmail(){
         return columnNames[10];
     }
     
-    public static String country(){
+    public static String getCountry(){
         return columnNames[11];
     }
 }

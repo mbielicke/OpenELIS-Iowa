@@ -9,22 +9,22 @@ import java.util.HashMap;
 import org.openelis.util.Meta;
 
 public class OrderMeta implements Meta {
-  	private static final String tableName = "order";
+  	private static final String tableName = "ordr";
 	private static final String entityName = "Order";
 	private boolean includeInFrom = true;
 	
 	public static final String
-              ID					="order.id",
-              STATUS_ID					="order.statusId",
-              ORDERED_DATE					="order.orderedDate",
-              NEEDED_IN_DAYS					="order.neededInDays",
-              REQUESTED_BY					="order.requestedBy",
-              COST_CENTER_ID					="order.costCenterId",
-              ORGANIZATION_ID					="order.organizationId",
-              IS_EXTERNAL					="order.isExternal",
-              EXTERNAL_ORDER_NUMBER					="order.externalOrderNumber",
-              REPORT_TO_ID					="order.reportToId",
-              BILL_TO_ID					="order.billToId";
+              ID					    = "ordr.id",
+              STATUS_ID					= "ordr.statusId",
+              ORDERED_DATE				= "ordr.orderedDate",
+              NEEDED_IN_DAYS			= "ordr.neededInDays",
+              REQUESTED_BY				= "ordr.requestedBy",
+              COST_CENTER_ID			= "ordr.costCenterId",
+              ORGANIZATION_ID			= "ordr.organizationId",
+              IS_EXTERNAL				= "ordr.isExternal",
+              EXTERNAL_ORDER_NUMBER     = "ordr.externalOrderNumber",
+              REPORT_TO_ID				= "ordr.reportToId",
+              BILL_TO_ID				= "ordr.billToId";
 
 
   	private static final String[] columnNames = {
