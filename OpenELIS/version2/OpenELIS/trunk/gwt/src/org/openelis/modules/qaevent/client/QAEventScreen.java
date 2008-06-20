@@ -9,6 +9,7 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.QaEventMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -26,7 +27,8 @@ import com.google.gwt.user.client.ui.Widget;
      private static DataModel qaEventTypeDropDown = null;
      private static DataModel testDropDown = null;
      
-       
+     private QaEventMetaMap QAEMeta = new QaEventMetaMap();  
+     
      public QAEventScreen(){
          super("org.openelis.modules.qaevent.server.QAEventService",!loaded);  
      }
@@ -60,11 +62,11 @@ import com.google.gwt.user.client.ui.Widget;
              ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
              atozButtons.addChangeListener(this);
              
-             tname = (TextBox)getWidget("qaevent.name");
-             displayType = (ScreenAutoDropdown)widgets.get("qaevent.type");
-             displayTest = (ScreenAutoDropdown)widgets.get("qaevent.testId");
+             tname = (TextBox)getWidget(QAEMeta.getName());
+             displayType = (ScreenAutoDropdown)widgets.get(QAEMeta.getTypeId());
+             displayTest = (ScreenAutoDropdown)widgets.get(QAEMeta.getTestId());
 
-             reportingText = (ScreenTextArea)widgets.get("qaevent.reportingText");       
+             reportingText = (ScreenTextArea)widgets.get(QAEMeta.getReportingText());       
          
             //load type and test dropdowns
            if(qaEventTypeDropDown == null){
@@ -113,7 +115,7 @@ import com.google.gwt.user.client.ui.Widget;
              if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
                  FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-                 letterRPC.setFieldValue("qaevent.name", query);
+                 letterRPC.setFieldValue(QAEMeta.getName(), query);
                   
                  commitQuery(letterRPC);
              }

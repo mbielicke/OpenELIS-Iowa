@@ -289,7 +289,6 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="{providerNoteMeta:subject()}" />
   <queryString key="{providerNoteMeta:text()}" /> 
   <dropdown key="{providerMeta:getTypeId()}" type="integer" required = "false"/>                            
-    <table key="providerAddressTable"/>	
   <queryString key="{providerAddrMeta:getLocation()}" required="false"/>
 	  <queryString key="{providerAddrMeta:getExternalId()}" required="false"/>
 	  <queryString key="{providerAddrAddrMeta:multipleUnit()}" required="false"/>

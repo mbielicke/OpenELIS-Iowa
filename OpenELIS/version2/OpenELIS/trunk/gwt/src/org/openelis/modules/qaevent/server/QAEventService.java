@@ -24,7 +24,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.QaEventMeta;
+import org.openelis.newmeta.QaEventMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -40,6 +40,8 @@ public class QAEventService implements AppScreenFormServiceInt{
     private static final int leftTableRowsPerPage = 19;  
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
+    
+    private static final QaEventMetaMap QAEMeta = new QaEventMetaMap();
     
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List qaEventNames = new ArrayList();
@@ -331,33 +333,33 @@ public class QAEventService implements AppScreenFormServiceInt{
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, QaEventDO qaeDO){
-        rpcReturn.setFieldValue(QaEventMeta.ID, qaeDO.getId());
-        rpcReturn.setFieldValue(QaEventMeta.NAME,qaeDO.getName());
-        rpcReturn.setFieldValue(QaEventMeta.REPORTING_SEQUENCE,qaeDO.getReportingSequence());
-        rpcReturn.setFieldValue(QaEventMeta.IS_BILLABLE,qaeDO.getIsBillable());     
-        rpcReturn.setFieldValue(QaEventMeta.DESCRIPTION,qaeDO.getDescription());
-        rpcReturn.setFieldValue(QaEventMeta.REPORTING_TEXT,qaeDO.getReportingText());   
-        rpcReturn.setFieldValue(QaEventMeta.TEST_ID,qaeDO.getTest());        
-        rpcReturn.setFieldValue(QaEventMeta.TYPE_ID,qaeDO.getType());
+        rpcReturn.setFieldValue(QAEMeta.getId(), qaeDO.getId());
+        rpcReturn.setFieldValue(QAEMeta.getName(),qaeDO.getName());
+        rpcReturn.setFieldValue(QAEMeta.getReportingSequence(),qaeDO.getReportingSequence());
+        rpcReturn.setFieldValue(QAEMeta.getIsBillable(),qaeDO.getIsBillable());     
+        rpcReturn.setFieldValue(QAEMeta.getDescription(),qaeDO.getDescription());
+        rpcReturn.setFieldValue(QAEMeta.getReportingText(),qaeDO.getReportingText());   
+        rpcReturn.setFieldValue(QAEMeta.getTestId(),qaeDO.getTest());        
+        rpcReturn.setFieldValue(QAEMeta.getTypeId(),qaeDO.getType());
     }
     
     private QaEventDO getQaEventDOFromRPC(FormRPC rpcSend){
         QaEventDO qaeDO = new QaEventDO();
-        NumberField qaeIdField = (NumberField) rpcSend.getField(QaEventMeta.ID);
+        NumberField qaeIdField = (NumberField) rpcSend.getField(QAEMeta.getId());
         
         qaeDO.setId((Integer)qaeIdField.getValue());
-        qaeDO.setDescription(((String)rpcSend.getFieldValue(QaEventMeta.DESCRIPTION)));
+        qaeDO.setDescription(((String)rpcSend.getFieldValue(QAEMeta.getDescription())));
         
 
-        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QaEventMeta.IS_BILLABLE)));                                     
-        qaeDO.setName(((String)rpcSend.getFieldValue(QaEventMeta.NAME)));         
-        qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QaEventMeta.REPORTING_SEQUENCE));
-        qaeDO.setReportingText(((String)rpcSend.getFieldValue(QaEventMeta.REPORTING_TEXT)));    
+        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QAEMeta.getReportingSequence())));                                     
+        qaeDO.setName(((String)rpcSend.getFieldValue(QAEMeta.getName())));         
+        qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QAEMeta.getReportingSequence()));
+        qaeDO.setReportingText(((String)rpcSend.getFieldValue(QAEMeta.getReportingText())));    
                 
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TEST_ID)))
-            qaeDO.setTest((Integer)rpcSend.getFieldValue(QaEventMeta.TEST_ID));   
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QaEventMeta.TYPE_ID)))
-            qaeDO.setType((Integer)rpcSend.getFieldValue(QaEventMeta.TYPE_ID));        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QAEMeta.getTestId())))
+            qaeDO.setTest((Integer)rpcSend.getFieldValue(QAEMeta.getTestId()));   
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(QAEMeta.getTypeId())))
+            qaeDO.setType((Integer)rpcSend.getFieldValue(QAEMeta.getTypeId()));        
      
        return qaeDO;
     }

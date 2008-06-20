@@ -69,18 +69,17 @@ public class ProviderService implements AppScreenFormServiceInt{
                 ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
                 providers = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
             }catch(Exception e){
-            	if(e instanceof LastPageException){
-            		throw new LastPageException(openElisConstants.getString("lastPageException"));
-            	}else{
-            		throw new RPCException(e.getMessage());	
-            	}
+                if(e instanceof LastPageException){
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
+                }else{
+                    throw new RPCException(e.getMessage()); 
+                }
             }
           
         } else{
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
             
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
-            fields.remove("providerAddressTable");
             
                 try{
                     providers = remote.query(fields,0,leftTableRowsPerPage);
@@ -296,8 +295,8 @@ public class ProviderService implements AppScreenFormServiceInt{
     }
 
     public HashMap getXMLData(HashMap args) throws RPCException {
-    	// TODO Auto-generated method stub
-    	return null;
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public TableModel fillAddressTable(TableModel addressModel, List contactsList){       
@@ -431,8 +430,8 @@ public class ProviderService implements AppScreenFormServiceInt{
     }
     
     public StringObject getNotesModel(NumberObject key){
-//    	remote interface to call the provider bean
-    	ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+//      remote interface to call the provider bean
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
         List notesList = remote.getProviderNotes((Integer)key.getValue());
@@ -440,9 +439,9 @@ public class ProviderService implements AppScreenFormServiceInt{
         Iterator itr = notesList.iterator();
         try{
         Document doc = XMLUtil.createNew("panel");
-		Element root = (Element) doc.getDocumentElement();
-		root.setAttribute("key", "notePanel");   
-		int i=0;
+        Element root = (Element) doc.getDocumentElement();
+        root.setAttribute("key", "notePanel");   
+        int i=0;
         while(itr.hasNext()){           
             NoteDO noteRow = (NoteDO)itr.next();
             
@@ -467,51 +466,51 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             String userName = user.getLoginName().trim();  
 
-        	 Element mainRowPanel = (Element) doc.createElement("panel");
-        	 Element topRowPanel = (Element) doc.createElement("panel");
-        	 Element titleWidgetTag = (Element) doc.createElement("widget");
-        	 Element titleText = (Element) doc.createElement("text");
-        	 Element authorWidgetTag = (Element) doc.createElement("widget");
-        	 Element authorPanel = (Element) doc.createElement("panel");
-        	 Element dateText = (Element) doc.createElement("text");
-        	 Element authorText = (Element) doc.createElement("text");
-        	 Element bodyWidgetTag = (Element) doc.createElement("widget");
-        	 Element bodytextTag = (Element) doc.createElement("text");
-        	 
-        	 mainRowPanel.setAttribute("key", "note"+i);
-        	 if(i % 2 == 1){
+             Element mainRowPanel = (Element) doc.createElement("panel");
+             Element topRowPanel = (Element) doc.createElement("panel");
+             Element titleWidgetTag = (Element) doc.createElement("widget");
+             Element titleText = (Element) doc.createElement("text");
+             Element authorWidgetTag = (Element) doc.createElement("widget");
+             Element authorPanel = (Element) doc.createElement("panel");
+             Element dateText = (Element) doc.createElement("text");
+             Element authorText = (Element) doc.createElement("text");
+             Element bodyWidgetTag = (Element) doc.createElement("widget");
+             Element bodytextTag = (Element) doc.createElement("text");
+             
+             mainRowPanel.setAttribute("key", "note"+i);
+             if(i % 2 == 1){
                  mainRowPanel.setAttribute("style", "AltTableRow");
              }else{
-            	 mainRowPanel.setAttribute("style", "TableRow");
+                 mainRowPanel.setAttribute("style", "TableRow");
              }
-        	 mainRowPanel.setAttribute("layout", "vertical");
-        	 mainRowPanel.setAttribute("width", "531px");
-        	 
-        	 topRowPanel.setAttribute("layout", "horizontal");
-        	 topRowPanel.setAttribute("width", "531px");
-        	 titleText.setAttribute("key", "note"+i+"Title");
-        	 titleText.setAttribute("style", "notesSubjectText");
-        	 titleText.appendChild(doc.createTextNode(subject));
-        	 authorWidgetTag.setAttribute("halign", "right");
-        	 authorPanel.setAttribute("layout", "vertical");
-        	 dateText.setAttribute("key", "note"+i+"Date");
-        	 dateText.appendChild(doc.createTextNode(date));
-        	 authorText.setAttribute("key", "note"+i+"Author");
-        	 authorText.appendChild(doc.createTextNode("by "+userName));
-        	 bodytextTag.setAttribute("key", "note"+i+"Body");
-        	 bodytextTag.setAttribute("wordwrap", "true");
-        	 bodytextTag.appendChild(doc.createTextNode(body));
-        	 
-        	 root.appendChild(mainRowPanel);
-        	 mainRowPanel.appendChild(topRowPanel);
-        	 mainRowPanel.appendChild(bodyWidgetTag);
-        	 topRowPanel.appendChild(titleWidgetTag);
-        	 topRowPanel.appendChild(authorWidgetTag);
-        	 titleWidgetTag.appendChild(titleText);
-        	 authorWidgetTag.appendChild(authorPanel);
-        	 authorPanel.appendChild(dateText);
-        	 authorPanel.appendChild(authorText);
-        	 bodyWidgetTag.appendChild(bodytextTag);
+             mainRowPanel.setAttribute("layout", "vertical");
+             mainRowPanel.setAttribute("width", "531px");
+             
+             topRowPanel.setAttribute("layout", "horizontal");
+             topRowPanel.setAttribute("width", "531px");
+             titleText.setAttribute("key", "note"+i+"Title");
+             titleText.setAttribute("style", "notesSubjectText");
+             titleText.appendChild(doc.createTextNode(subject));
+             authorWidgetTag.setAttribute("halign", "right");
+             authorPanel.setAttribute("layout", "vertical");
+             dateText.setAttribute("key", "note"+i+"Date");
+             dateText.appendChild(doc.createTextNode(date));
+             authorText.setAttribute("key", "note"+i+"Author");
+             authorText.appendChild(doc.createTextNode("by "+userName));
+             bodytextTag.setAttribute("key", "note"+i+"Body");
+             bodytextTag.setAttribute("wordwrap", "true");
+             bodytextTag.appendChild(doc.createTextNode(body));
+             
+             root.appendChild(mainRowPanel);
+             mainRowPanel.appendChild(topRowPanel);
+             mainRowPanel.appendChild(bodyWidgetTag);
+             topRowPanel.appendChild(titleWidgetTag);
+             topRowPanel.appendChild(authorWidgetTag);
+             titleWidgetTag.appendChild(titleText);
+             authorWidgetTag.appendChild(authorPanel);
+             authorPanel.appendChild(dateText);
+             authorPanel.appendChild(authorText);
+             bodyWidgetTag.appendChild(bodytextTag);
           
           i++;
       }
@@ -520,9 +519,9 @@ public class ProviderService implements AppScreenFormServiceInt{
         returnObject.setValue(XMLUtil.toString(doc));
         
         return returnObject;
-    	
+        
         }catch(Exception e){
-        	e.printStackTrace();
+            e.printStackTrace();
         }
         return null;        
     }
@@ -617,7 +616,7 @@ public class ProviderService implements AppScreenFormServiceInt{
        return provAddDOList;    
     }
 
-	private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
+    private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
