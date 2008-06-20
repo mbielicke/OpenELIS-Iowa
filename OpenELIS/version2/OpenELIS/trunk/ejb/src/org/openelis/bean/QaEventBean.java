@@ -25,9 +25,9 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.meta.QaEventMethodMeta;
 import org.openelis.meta.QaEventTestMeta;
+import org.openelis.newmeta.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
-import org.openelis.util.Meta;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -49,6 +49,8 @@ public class QaEventBean implements QaEventRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    
+    private static final QaEventMetaMap QaeMeta = new QaEventMetaMap();
     
     {
         try {
@@ -92,26 +94,30 @@ public class QaEventBean implements QaEventRemote{
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();        
+        //QueryBuilder qb = new QueryBuilder();     
+        NewQueryBuilder qb = new NewQueryBuilder();
         
-        QaEventMeta qaEventMeta  = QaEventMeta.getInstance();
-        QaEventTestMeta qaEventTestMeta = QaEventTestMeta.getInstance();
-        QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
+        //QaEventMeta qaEventMeta  = QaEventMeta.getInstance();
+        //QaEventTestMeta qaEventTestMeta = QaEventTestMeta.getInstance();
+        //QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
         
-        qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
-        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME + ") ");
-        qb.addTable(qaEventMeta);
+        //qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
+        qb.setMeta(QaeMeta);
+        //qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaeMeta.getId()+", "+QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName() + ") ");
+        //qb.addTable(qaEventMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
         
-        qb.setOrderBy(QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
+        //qb.setOrderBy(QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
+        qb.setOrderBy(QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName());        
         
-        //if(qb.hasTable(qaEventMethodMeta.getTable()))
-            qb.addTable(qaEventTestMeta);
-            qb.addTable(qaEventMethodMeta);
+           // qb.addTable(qaEventTestMeta);
+           // qb.addTable(qaEventMethodMeta);
                 
-        sb.append(qb.getEJBQL());            
+        sb.append(qb.getEJBQL());         
+        System.out.println("ejbql########################################### "+sb.toString());
         Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
