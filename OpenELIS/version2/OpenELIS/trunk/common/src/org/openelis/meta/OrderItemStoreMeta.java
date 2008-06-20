@@ -10,19 +10,19 @@ public class OrderItemStoreMeta implements Meta{
     private boolean includeInFrom = false;
     
     public static final String
-     ID             = "store.id",
-     CATEGORY       = "store.category",
-     RELATED_ENTRY  = "store.relatedEntry",
-     SYSTEM_NAME    = "store.systemName",
-     IS_ACTIVE      = "store.isActive",
-     LOCAL_ABBREV   = "store.localAbbrev",
-     ENTRY          = "store.entry";
+     ID                 = "store.id",
+     CATEGORY           = "store.category",
+     RELATED_ENTRY_ID   = "store.relatedEntryId",
+     SYSTEM_NAME        = "store.systemName",
+     IS_ACTIVE          = "store.isActive",
+     LOCAL_ABBREV       = "store.localAbbrev",
+     ENTRY              = "store.entry";
 
     //
     // Array of column names used for building select/insert/update strings
     //
     private static final String[] columnNames = {
-         ID, CATEGORY, RELATED_ENTRY, SYSTEM_NAME, IS_ACTIVE, LOCAL_ABBREV, ENTRY};
+         ID, CATEGORY, RELATED_ENTRY_ID, SYSTEM_NAME, IS_ACTIVE, LOCAL_ABBREV, ENTRY};
     
     private static HashMap<String,String> columnHashList;
     
@@ -68,31 +68,31 @@ public class OrderItemStoreMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String category(){
+    public static String getCategory(){
         return columnNames[1];
     }
     
-    public static String relatedEntry(){
+    public static String getRelatedEntryId(){
         return columnNames[2];
     }
 
-    public static String systemName(){
+    public static String getSystemName(){
         return columnNames[3];
     }
     
-    public static String isActive(){
+    public static String getIsActive(){
         return columnNames[4];
     }
     
-    public static String localAbbrev(){
+    public static String getLocalAbbrev(){
         return columnNames[5];
     }
     
-    public static String entry(){
+    public static String getEntry(){
         return columnNames[6];
     }
 }

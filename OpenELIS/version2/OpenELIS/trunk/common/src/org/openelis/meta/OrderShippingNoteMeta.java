@@ -6,7 +6,7 @@ import org.openelis.util.Meta;
 
 public class OrderShippingNoteMeta implements Meta{
     private String tableName = "shippingNote";
-    private String entityName = "order.note";
+    private String entityName = "ordr.note";
     private boolean includeInFrom = false;
     
     public static final String
@@ -66,35 +66,35 @@ public class OrderShippingNoteMeta implements Meta{
         return columnHashList.containsKey(column);
     }
     
-    public static String id(){
+    public static String getId(){
         return columnNames[0];
     }
     
-    public static String referenceId(){
+    public static String getReferenceId(){
         return columnNames[1];
     }
     
-    public static String referenceTable(){
+    public static String getReferenceTable(){
         return columnNames[2];
     }
     
-    public static String timestamp(){
+    public static String getTimestamp(){
         return columnNames[3];
     }
     
-    public static String isExternal(){
+    public static String getIsExternal(){
         return columnNames[4];
     }
     
-    public static String systemUser(){
+    public static String getSystemUser(){
         return columnNames[5];
     }
     
-    public static String subject(){
+    public static String getSubject(){
         return columnNames[6];
     }
     
-    public static String text(){
+    public static String getText(){
         return columnNames[7];
     }
 }
