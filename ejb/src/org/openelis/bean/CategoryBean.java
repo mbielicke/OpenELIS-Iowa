@@ -29,10 +29,9 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.DictionaryMeta;
-import org.openelis.meta.DictionaryRelatedEntryMeta;
+import org.openelis.newmeta.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.util.Meta;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -54,6 +53,8 @@ public class CategoryBean implements CategoryRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    
+    private static CategoryMetaMap CatMeta = new CategoryMetaMap();
     
     {
         try {
@@ -90,24 +91,25 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();        
+        NewQueryBuilder qb = new NewQueryBuilder();        
         
-        CategoryMeta categoryMeta = CategoryMeta.getInstance();
-        DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
-        DictionaryRelatedEntryMeta dicRelatedEntryMeta = DictionaryRelatedEntryMeta.getInstance();
+        //CategoryMeta categoryMeta = CategoryMeta.getInstance();
+        //DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
+        //DictionaryRelatedEntryMeta dicRelatedEntryMeta = DictionaryRelatedEntryMeta.getInstance();
         
-        qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
+        //qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
+        qb.setMeta(CatMeta);
         
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+CategoryMeta.ID+", "+CategoryMeta.NAME + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+CatMeta.getId()+", "+CatMeta.getName() + ") ");
         
-        qb.addTable(categoryMeta);
+        //qb.addTable(categoryMeta);
         
         qb.addWhere(fields);      
 
-        qb.setOrderBy(CategoryMeta.NAME);
+        qb.setOrderBy(CatMeta.getName());
         
-        if(qb.hasTable(dicRelatedEntryMeta.getTable()))
-        	qb.addTable(dictionaryMeta);
+        //if(qb.hasTable(dicRelatedEntryMeta.getTable()))
+        //	qb.addTable(dictionaryMeta);
         
         sb.append(qb.getEJBQL());
         

@@ -27,7 +27,7 @@ import org.openelis.utils.Auditable;
 @Entity
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
-@NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.type,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.typeId,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
                                                              "  from QaEvent q where q.id = :id")})
                
 public class QaEvent implements Auditable, Cloneable {
@@ -43,11 +43,11 @@ public class QaEvent implements Auditable, Cloneable {
   @Column(name="description")
   private String description;             
 
-  @Column(name="test")
+  @Column(name="test_id")
   private Integer testId;             
 
-  @Column(name="type")
-  private Integer type;             
+  @Column(name="type_id")
+  private Integer typeId;             
 
   @Column(name="is_billable")
   private String isBillable;             
@@ -59,7 +59,7 @@ public class QaEvent implements Auditable, Cloneable {
   private String reportingText;             
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test",insertable = false, updatable = false)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Test test; 
   
   @Transient
@@ -102,13 +102,13 @@ public class QaEvent implements Auditable, Cloneable {
       this.testId = testId;
   }
 
-  public Integer getType() {
-    return type;
+  public Integer getTypeId() {
+    return typeId;
   }
-  public void setTypeId(Integer type) {
-    if((type == null && this.type != null) || 
-       (type != null && !type.equals(this.type)))
-      this.type = type;
+  public void setTypeId(Integer typeId) {
+    if((typeId == null && this.typeId != null) || 
+       (typeId != null && !typeId.equals(this.typeId)))
+      this.typeId = typeId;
   }
 
   public String getIsBillable() {
@@ -178,10 +178,10 @@ public class QaEvent implements Auditable, Cloneable {
           root.appendChild(elem);
         }      
 
-        if((type == null && original.type != null) || 
-           (type != null && !type.equals(original.type))){
+        if((typeId == null && original.typeId != null) || 
+           (typeId != null && !typeId.equals(original.typeId))){
           Element elem = doc.createElement("type");
-          elem.appendChild(doc.createTextNode(original.type.toString().trim()));
+          elem.appendChild(doc.createTextNode(original.typeId.toString().trim()));
           root.appendChild(elem);
         }      
 
