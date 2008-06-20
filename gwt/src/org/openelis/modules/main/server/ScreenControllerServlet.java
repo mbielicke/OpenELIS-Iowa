@@ -101,7 +101,6 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
                 session.invalidate();
             }
             // redirect to CAS logout servlet for deletion of CAS cookies
-            getThreadLocalResponse().sendRedirect("https://www.uhl.uiowa.edu/cas/logout");
         } catch (Exception e) {
             e.getMessage();
         }
