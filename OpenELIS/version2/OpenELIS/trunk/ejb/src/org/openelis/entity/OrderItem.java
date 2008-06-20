@@ -5,13 +5,6 @@ package org.openelis.entity;
   * OrderItem Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.InventoryItem;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -24,8 +17,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
@@ -56,7 +53,7 @@ public class OrderItem implements Auditable, Cloneable {
   private Integer quantityRequested;             
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_item", insertable = false, updatable = false)
+  @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
   private InventoryItem inventoryItem;
   
   @Transient

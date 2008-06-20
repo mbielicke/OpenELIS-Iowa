@@ -31,9 +31,12 @@ import org.openelis.meta.OrderItemInventoryItemMeta;
 import org.openelis.meta.OrderItemMeta;
 import org.openelis.meta.OrderItemStoreMeta;
 import org.openelis.meta.OrderMeta;
+import org.openelis.newmeta.InventoryItemMetaMap;
+import org.openelis.newmeta.OrderMetaMap;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.Meta;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -55,6 +58,7 @@ public class OrderBean implements OrderRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
     
     {
         try {
@@ -80,7 +84,7 @@ public class OrderBean implements OrderRemote{
         return orderDO;
     }
 
-   @RolesAllowed("order-update")
+    @RolesAllowed("order-update")
     public OrderDO getOrderAndLock(Integer orderId, String orderType) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "order");
@@ -180,64 +184,67 @@ public class OrderBean implements OrderRemote{
 
     public List query(HashMap fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        //QueryBuilder qb = new QueryBuilder();
+        NewQueryBuilder qb = new NewQueryBuilder();
+        
+        qb.setMeta(OrderMetaMap);
 
-        OrderMeta orderMeta = OrderMeta.getInstance();
-        OrderItemMeta orderItemMeta = OrderItemMeta.getInstance();
-        OrderItemInventoryItemMeta invItemMeta = OrderItemInventoryItemMeta.getInstance();
-        OrderItemStoreMeta storeMeta = OrderItemStoreMeta.getInstance();
+        //OrderMeta orderMeta = OrderMeta.getInstance();
+        //OrderItemMeta orderItemMeta = OrderItemMeta.getInstance();
+        //OrderItemInventoryItemMeta invItemMeta = OrderItemInventoryItemMeta.getInstance();
+        //OrderItemStoreMeta storeMeta = OrderItemStoreMeta.getInstance();
 
-        qb.addMeta(new Meta[]{orderMeta, orderItemMeta, invItemMeta, storeMeta});
+        //qb.addMeta(new Meta[]{orderMeta, orderItemMeta, invItemMeta, storeMeta});
  
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+orderMeta.ID+") ");
-        qb.addTable(orderMeta);
-        qb.addTable(orderItemMeta);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrderMetaMap.getId()+") ");
+        //qb.addTable(orderMeta);
+        //qb.addTable(orderItemMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(orderMeta.ID);
+        qb.setOrderBy(OrderMetaMap.getId());
         
         if(orderType.equals(OrderRemote.EXTERNAL)){
-            qb.addWhere(orderMeta.IS_EXTERNAL + " = 'Y'");
-            qb.addWhere(orderMeta.ORGANIZATION_ID + " is not null");
+            qb.addWhere(OrderMetaMap.getIsExternal() + " = 'Y'");
+            qb.addWhere(OrderMetaMap.getOrganizationId() + " is not null");
             
         }else if(orderType.equals(OrderRemote.INTERNAL)){
-            qb.addWhere(orderMeta.IS_EXTERNAL + " = 'N'");
-            qb.addWhere(orderMeta.ORGANIZATION_ID + " is null");
+            qb.addWhere(OrderMetaMap.getIsExternal() + " = 'N'");
+            qb.addWhere(OrderMetaMap.getOrganizationId() + " is null");
             
         }else if(orderType.equals(OrderRemote.KITS)){
-            qb.addWhere(orderMeta.IS_EXTERNAL + " = 'N'");
-            qb.addWhere(orderMeta.ORGANIZATION_ID + " is not null");
-            
+            qb.addWhere(OrderMetaMap.getIsExternal() + " = 'N'");
+            qb.addWhere(OrderMetaMap.getOrganizationId() + " is not null");
         }
         
-        if(qb.hasTable(storeMeta.getTable())){
-            qb.addTable(invItemMeta);
-            String fromClause = qb.getFromClause();
-            fromClause+=", "+storeMeta.getEntity()+" "+storeMeta.getTable()+" ";
-            String whereClause = qb.getWhereClause();
-            whereClause+=" and("+OrderItemInventoryItemMeta.STORE+" = "+OrderItemStoreMeta.ID+") ";
+        //need to see if Store is in the from clause
+        String whereClause = qb.getWhereClause();
+        if(whereClause.indexOf("store.") > -1){
+            whereClause+=" and("+OrderMetaMap.getOrderItem().getInventoryItem().getStoreId()+" = "+OrderMetaMap.getStore().getId()+") ";
             
-            sb.append(qb.getSelectClause()).append(fromClause).append(whereClause).append(qb.getOrderBy());
+            if(whereClause.indexOf("inventoryTrans.") > -1)
+                whereClause += " and ("+OrderMetaMap.ORDER_INV_TRANS_META.getToOrderId()+" = "+OrderMetaMap.ORDER_ITEM_META.getId()+") ";
+            
+            sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
         }else{
             sb.append(qb.getEJBQL());
         }
        
         Query query = manager.createQuery(sb.toString());
-
-         if(first > -1 && max > -1)
-             query.setMaxResults(first+max);
-
-//       ***set the parameters in the query
-         qb.setQueryParams(query);
-
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
-         
-         if(returnList == null)
-             throw new LastPageException();
-         else
-             return returnList;
+        
+        if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+        
+//      ***set the parameters in the query
+        qb.setQueryParams(query);
+        
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        
+        if(returnList == null)
+         throw new LastPageException();
+        else
+         return returnList;
     }
 
     @RolesAllowed("order-update")
