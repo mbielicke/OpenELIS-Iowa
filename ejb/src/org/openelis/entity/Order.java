@@ -39,7 +39,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
-    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId,r.organizationId,r.receivedDate,r.quantityReceived, " +
+    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, o.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
                             " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryTransaction i left join i.fromReceipt r left join i.toOrder o where o.orderId = :id")})
             
 @Entity
@@ -95,7 +95,7 @@ public class Order implements Auditable, Cloneable {
   private Organization billTo;
   
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order")
+  @JoinColumn(name = "order_id")
   private Collection<OrderItem> orderItem;
 
   @Transient

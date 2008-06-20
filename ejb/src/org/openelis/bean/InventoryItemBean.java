@@ -19,8 +19,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.InventoryComponent;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.Note;
@@ -29,18 +27,12 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.InventoryComponentItemMeta;
 import org.openelis.meta.InventoryComponentMeta;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.meta.InventoryItemNoteMeta;
-import org.openelis.meta.InventoryLocationMeta;
-import org.openelis.meta.InventoryLocationStorageLocationMeta;
-import org.openelis.meta.OrganizationMeta;
-import org.openelis.meta.StorageLocationMeta;
+import org.openelis.newmeta.InventoryItemMetaMap;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.Datetime;
-import org.openelis.util.Meta;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -61,6 +53,7 @@ public class InventoryItemBean implements InventoryItemRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static final InventoryItemMetaMap invItemMap = new InventoryItemMetaMap();
     
     {
         try {
@@ -144,9 +137,11 @@ public class InventoryItemBean implements InventoryItemRemote{
         Integer inventoryItemReferenceId = (Integer)refIdQuery.getSingleResult();
         
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        NewQueryBuilder qb = new NewQueryBuilder();
+        
+        qb.setMeta(invItemMap);
 
-        InventoryItemMeta itemMeta = InventoryItemMeta.getInstance();
+        /*InventoryItemMeta itemMeta = InventoryItemMeta.getInstance();
         InventoryComponentMeta componentMeta = InventoryComponentMeta.getInstance();
         InventoryComponentItemMeta componentItemMeta = InventoryComponentItemMeta.getInstance();
         InventoryLocationMeta locationMeta = InventoryLocationMeta.getInstance();   
@@ -154,44 +149,42 @@ public class InventoryItemBean implements InventoryItemRemote{
         InventoryItemNoteMeta noteMeta = InventoryItemNoteMeta.getInstance();
 
         qb.addMeta(new Meta[]{itemMeta, componentMeta, componentItemMeta, locationMeta, locationStorageLocationMeta, noteMeta});
- 
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+itemMeta.ID+", "+itemMeta.NAME + ") ");
-        qb.addTable(itemMeta);
+ */
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+invItemMap.getId()+", "+invItemMap.getName()+") ");
+        //qb.addTable(itemMeta);
         
         //I add this everytime because if they query from the locations table the location meta needs to go first
         //and sometimes it doesnt.  This makes this table come first everytime.
-        qb.addTable(locationMeta);
+        //qb.addTable(locationMeta);
 
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(itemMeta.NAME);
+        qb.setOrderBy(invItemMap.getName());
         
         //TODO we need to put these values in cache to remove this from where statement
-        if(qb.hasTable(noteMeta.getTable()))
-        	qb.addWhere(noteMeta.REFERENCE_TABLE_ID+" = "+inventoryItemReferenceId+" or "+noteMeta.REFERENCE_TABLE_ID+" is null");
+        //if(qb.hasTable(noteMeta.getTable()))
+        //	qb.addWhere(noteMeta.REFERENCE_TABLE_ID+" = "+inventoryItemReferenceId+" or "+noteMeta.REFERENCE_TABLE_ID+" is null");
         
-        if(qb.hasTable(componentItemMeta.getTable()))
-            qb.addTable(componentMeta);
+        //if(qb.hasTable(componentItemMeta.getTable()))
+        //    qb.addTable(componentMeta);
         
         sb.append(qb.getEJBQL());
         
-        System.out.println("******QUERY: ["+sb.toString()+"]*********************");
-
-         Query query = manager.createQuery(sb.toString());
+        Query query = manager.createQuery(sb.toString());
         
-         if(first > -1 && max > -1)
-        	 query.setMaxResults(first+max);
-         
-//       ***set the parameters in the query
-         qb.setQueryParams(query);
-         
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
-         
-         if(returnList == null)
-        	 throw new LastPageException();
-         else
-        	 return returnList;
+        if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+        
+//      ***set the parameters in the query
+        qb.setQueryParams(query);
+        
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        
+        if(returnList == null)
+         throw new LastPageException();
+        else
+         return returnList;
 	}
 
     @RolesAllowed("inventory-update")

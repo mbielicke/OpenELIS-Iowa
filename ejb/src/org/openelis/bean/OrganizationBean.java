@@ -27,14 +27,11 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.newmeta.OrganizationMeta;
 import org.openelis.newmeta.OrganizationMetaMap;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
-import org.openelis.util.Meta;
 import org.openelis.util.NewQueryBuilder;
-import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -263,26 +260,21 @@ public class OrganizationBean implements OrganizationRemote {
        // }
         
         sb.append(qb.getEJBQL());
-        try{
-         System.out.println(sb.toString());
-         Query query = manager.createQuery(sb.toString());
+
+        Query query = manager.createQuery(sb.toString());
         
-         if(first > -1 && max > -1)
-        	 query.setMaxResults(first+max);
-         
-//       ***set the parameters in the query
-         qb.setQueryParams(query);
-         
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
-         
-         if(returnList == null)
-        	 throw new LastPageException();
-         else
-        	 return returnList;
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
+        if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+        
+//      ***set the parameters in the query
+        qb.setQueryParams(query);
+        
+        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        
+        if(returnList == null)
+         throw new LastPageException();
+        else
+         return returnList;
 	}
 	
 	public List autoCompleteLookupById(Integer id){
