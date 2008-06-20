@@ -2,7 +2,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:qaEventMeta="xalan://org.openelis.meta.QaEventMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.QaEventMetaMap"
+                xmlns:testMeta="xalan://org.openelis.newmeta.QaEventTestMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -15,12 +16,19 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="qaEventMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventMeta"/>
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.QaEventMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="testMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.QaEventTestMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="qae" select="meta:new()"/>
+    <xsl:variable name="test" select="meta:getTest($qae)"/>
+    <xsl:variable name="method" select="testMeta:getMethod($test)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "QAEvents" name="{resource:getString($constants,'QAEvent')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -58,7 +66,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "{qaEventMeta:getName()}" max = "20" width= "145px" case = "lower" tab="{qaEventMeta:getDescription()},{qaEventMeta:getReportingText()}"/>
+      <textbox key = "{meta:getName($qae)}" max = "20" width= "145px" case = "lower" tab="{meta:getDescription($qae)},{meta:getReportingText($qae)}"/>
      </widget>
      </row>     
      <row>     
@@ -66,7 +74,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" max = "60"  key= "{qaEventMeta:getDescription()}" width= "425px" tab="{qaEventMeta:getTypeId()},{qaEventMeta:getName()}"/>
+      <textbox case= "mixed" max = "60"  key= "{meta:getDescription($qae)}" width= "425px" tab="{meta:getTypeId($qae)},{meta:getName($qae)}"/>
      </widget>     
     </row>
      <row>
@@ -74,7 +82,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
      </widget>
      <widget>  		
-		<autoDropdown key="{qaEventMeta:getTypeId()}" width = "120px" case="mixed" tab="{qaEventMeta:getTestId()},{qaEventMeta:getDescription()}"/>
+		<autoDropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>
 	</widget>  									        
      </row>
      <row>
@@ -82,7 +90,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
      </widget>
      <widget>
-		<autoDropdown key="{qaEventMeta:getTestId()}" width = "140px"  case="mixed" tab="{qaEventMeta:getIsBillable()},{qaEventMeta:getTypeId()}"/>
+		<autoDropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
 	 </widget>
 	  </row>		
 	  						
@@ -91,7 +99,7 @@
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
         </widget>
         <widget>
-          <check key= "{qaEventMeta:getIsBillable()}" tab="{qaEventMeta:getReportingSequence()},{qaEventMeta:getTestId()}"/>
+          <check key= "{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{meta:getTestId($qae)}"/>
        </widget>
       </row> 
       <row>
@@ -100,7 +108,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
      </widget>
      <widget>
-      <textbox key= "{qaEventMeta:getReportingSequence()}"  width= "50px" tab="{qaEventMeta:getReportingText()},{qaEventMeta:getIsBillable()}"/>
+      <textbox key= "{meta:getReportingSequence($qae)}"  width= "50px" tab="{meta:getReportingText($qae)},{meta:getIsBillable($qae)}"/>
      </widget>    
      </row>
 			
@@ -109,7 +117,7 @@
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="400px" height="200px" case="mixed" key="{qaEventMeta:getReportingText()}" tab="{qaEventMeta:getName()},{qaEventMeta:getReportingSequence()}"/>
+		  <textarea width="400px" height="200px" case="mixed" key="{meta:getReportingText($qae)}" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}"/>
 	    </widget> 
 	   </row>								          
                                  					                         
@@ -121,28 +129,28 @@
 </display>
 							  
 <rpc key= "display">
- <number key="{qaEventMeta:getId()}" type="integer" required = "false" />
- <string key="{qaEventMeta:getName()}" max = "20" required = "true"/>
- <number key="{qaEventMeta:getReportingSequence()}"  type="integer" required = "false" />
- <string key="{qaEventMeta:getDescription()}" max = "60" required = "false" /> 	 
- <check key= "{qaEventMeta:getIsBillable()}" required = "false" />
- <string key="{qaEventMeta:getReportingText()}" required = "true"/>
- <dropdown key="{qaEventMeta:getTestId()}" type="integer" required = "false" />
- <dropdown key="{qaEventMeta:getTypeId()}" type="integer" required = "true"/>
+ <number key="{meta:getId($qae)}" type="integer" required = "false" />
+ <string key="{meta:getName($qae)}" max = "20" required = "true"/>
+ <number key="{meta:getReportingSequence($qae)}"  type="integer" required = "false" />
+ <string key="{meta:getDescription($qae)}" max = "60" required = "false" /> 	 
+ <check key= "{meta:getIsBillable($qae)}" required = "false" />
+ <string key="{meta:getReportingText($qae)}" required = "true"/>
+ <dropdown key="{meta:getTestId($qae)}" type="integer" required = "false" />
+ <dropdown key="{meta:getTypeId($qae)}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
- <queryString key="{qaEventMeta:getName()}" />
- <queryNumber key="{qaEventMeta:getReportingSequence()}" type="integer" />
- <queryString key="{qaEventMeta:getDescription()}"  /> 	
- <dropdown key="{qaEventMeta:getTypeId()}" type="integer"/> 
- <dropdown key="{qaEventMeta:testId()}" type="integer"/>
- <queryCheck key="{qaEventMeta:getIsBillable()}"/>
- <queryString key="{qaEventMeta:getReportingText()}"/>
+ <queryString key="{meta:getName($qae)}" />
+ <queryNumber key="{meta:getReportingSequence($qae)}" type="integer" />
+ <queryString key="{meta:getDescription($qae)}"  /> 	
+ <dropdown key="{meta:getTypeId($qae)}" type="integer"/> 
+ <dropdown key="{meta:getTestId($qae)}" type="integer"/>
+ <queryCheck key="{meta:getIsBillable($qae)}"/>
+ <queryString key="{meta:getReportingText($qae)}"/>
 </rpc>
 
 <rpc key= "queryByLetter">     
- <queryString key="{qaEventMeta:getName()}"/>
+ <queryString key="{meta:getName($qae)}"/>
 </rpc>
  
 </screen>
