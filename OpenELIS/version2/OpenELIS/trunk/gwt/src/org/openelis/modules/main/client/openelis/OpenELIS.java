@@ -1,6 +1,8 @@
 package org.openelis.modules.main.client.openelis;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -67,7 +69,14 @@ public class OpenELIS extends AppScreen implements ClickListener{
                 browser.setBrowserHeight();
                 return;
         	}else if(((String)((ScreenMenuItem)item).objClass).equals("Logout")){
-        		//FIXME logout code should go here soon
+        	    screenService.logout(new AsyncCallback() {
+                   public void onSuccess(Object result){
+                       Window.open("http://www.uhl.uiowa.edu", "_self", null);
+                   }
+                   public void onFailure(Throwable caught){
+                       Window.alert(caught.getMessage());
+                   }
+                });
         		return;
         	}
             ScreenMenuItem menuItem = (ScreenMenuItem)item;
