@@ -230,7 +230,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 	private void validateTestTrailer(TestTrailerDO testTrailerDO, List exceptionList){
 		//name required	
 		if(testTrailerDO.getName() == null || "".equals(testTrailerDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getName()));
 		}
 		
 		//name not duplicate
@@ -247,17 +247,17 @@ public class TestTrailerBean implements TestTrailerRemote{
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",TestTrailerMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldUniqueException",TestTrailerMap.getName()));
 		
 		
 		//description required
 		if(testTrailerDO.getDescription() == null || "".equals(testTrailerDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.DESCRIPTION));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getDescription()));
 		}
 		
 		//text required
 		if(testTrailerDO.getText()== null || "".equals(testTrailerDO.getText())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMeta.TEXT));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getText()));
 		}
 	}
 }

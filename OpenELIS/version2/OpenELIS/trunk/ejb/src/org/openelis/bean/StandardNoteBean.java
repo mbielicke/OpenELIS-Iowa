@@ -200,8 +200,8 @@ public class StandardNoteBean implements StandardNoteRemote{
     public List queryForType(HashMap fields) throws Exception {
         Query query = manager.createNamedQuery("StandardNote.TypeByNameDesc");
         
-        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
-        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
+        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMap.getName())).getParameter().get(0));
+        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMap.getDescription())).getParameter().get(0));
         
         List returnList = query.getResultList();
         
@@ -214,9 +214,9 @@ public class StandardNoteBean implements StandardNoteRemote{
     public List getStandardNoteByType(HashMap fields) throws Exception{
     	Query query = manager.createNamedQuery("StandardNote.StandardNoteByType");
         
-        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMeta.NAME)).getParameter().get(0));
-        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMeta.DESCRIPTION)).getParameter().get(0));
-        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMeta.TYPE_ID)).getValue()).trim()));
+        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMap.getName())).getParameter().get(0));
+        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMap.getDescription())).getParameter().get(0));
+        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMap.getTypeId())).getValue()).trim()));
         
         List returnList = query.getResultList();
         
@@ -250,22 +250,22 @@ public class StandardNoteBean implements StandardNoteRemote{
 	private void validateStandardNote(StandardNoteDO standardNoteDO, List exceptionList){
 		//name required (duplicates allowed)
 		if(standardNoteDO.getName() == null || "".equals(standardNoteDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getName()));
 		}
 		
 		//description required
 		if(standardNoteDO.getDescription() == null || "".equals(standardNoteDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.DESCRIPTION));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getDescription()));
 		}
 		
 		//type required
 		if(standardNoteDO.getType() == null || "".equals(standardNoteDO.getType())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.TYPE_ID));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getTypeId()));
 		}
 		
 		//text required
 		if(standardNoteDO.getText() == null || "".equals(standardNoteDO.getText())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMeta.TEXT));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getText()));
 		}		
 	}
 }

@@ -346,22 +346,22 @@ public class InventoryItemBean implements InventoryItemRemote{
     private void validateInventoryItem(InventoryItemDO inventoryItemDO, List exceptionList){
         //name required
         if(inventoryItemDO.getName() == null || "".equals(inventoryItemDO.getName())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.NAME));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getName()));
         }
         
         //store required
         if(inventoryItemDO.getStore() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.STORE_ID));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
         }
         
         //purchased units required
         if(inventoryItemDO.getPurchasedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.PURCHASED_UNITS_ID));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getPurchasedUnitsId()));
         }
         
         //dispensed units required
         if(inventoryItemDO.getDispensedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",InventoryItemMeta.DISPENSED_UNITS_ID));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
         }
         
         //item has to have unique name,store duplicates
@@ -379,18 +379,18 @@ public class InventoryItemBean implements InventoryItemRemote{
         }
         
         if(query.getResultList().size() > 0)
-            exceptionList.add(new FieldErrorException("inventoryItemNameUniqueException",InventoryItemMeta.NAME));
+            exceptionList.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
     }
     
     private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, List exceptionList){
         //component required
         if(componentDO.getComponentNameId() == null){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryComponentMeta.COMPONENT_ID));
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, invItemMap.INVENTORY_COMPONENT.getComponentId()));
         }
         
         //quantity required
         if(componentDO.getQuantity() == 0){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryComponentMeta.QUANTITY));
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, invItemMap.INVENTORY_COMPONENT.getQuantity()));
         }
         
         //components store needs to match the inventory items store
@@ -401,7 +401,7 @@ public class InventoryItemBean implements InventoryItemRemote{
                 query.setParameter("store", inventoryItemStoreId);
             
             if(query.getResultList().size() == 0)
-                exceptionList.add(new TableFieldErrorException("inventoryComponentStoreException", rowIndex, InventoryComponentMeta.COMPONENT_ID));
+                exceptionList.add(new TableFieldErrorException("inventoryComponentStoreException", rowIndex, invItemMap.INVENTORY_COMPONENT.getComponentId()));
         }
     }
 }
