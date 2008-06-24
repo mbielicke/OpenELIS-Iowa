@@ -4,12 +4,16 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.StorageLocationMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -22,6 +26,8 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	
     private AppButton removeEntryButton;
    	
+    private StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
+    
 	public StorageLocationScreen() {
 		super("org.openelis.modules.storage.server.StorageLocationService",false);
 	}
@@ -48,16 +54,18 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	public void afterDraw(boolean success) {
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
-		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-		modelWidget.addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
         removeEntryButton = (AppButton) getWidget("removeEntryButton");
         
-        nameTextbox = (TextBox)getWidget("storage_location.name");
+        nameTextbox = (TextBox)getWidget(StorageLocationMeta.getName());
 		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
 		
 		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
@@ -108,6 +116,9 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
     public void afterCommitUpdate(boolean success) {
 		childTable.setAutoAdd(false);
 		
+        //we need to do this reset to get rid of the last row
+        childTable.reset();
+        
 		super.afterCommitUpdate(success);
 	}
 	
@@ -136,7 +147,7 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
     		
-    		letterRPC.setFieldValue("storage_location.name", query);
+    		letterRPC.setFieldValue(StorageLocationMeta.getName(), query);
     
     		commitQuery(letterRPC);
     	}

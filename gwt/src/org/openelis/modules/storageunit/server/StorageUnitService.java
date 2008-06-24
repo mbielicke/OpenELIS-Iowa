@@ -24,6 +24,8 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.StorageUnitMeta;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.StorageUnitMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -39,6 +41,8 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 
+    private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
+    
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List storageUnits = new ArrayList();
 		// if the rpc is null then we need to get the page
@@ -375,23 +379,23 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, StorageUnitDO storageUnitDO) {
-    	rpcReturn.setFieldValue(StorageUnitMeta.ID, storageUnitDO.getId());
-    	rpcReturn.setFieldValue(StorageUnitMeta.CATEGORY, storageUnitDO.getCategory());
-    	rpcReturn.setFieldValue(StorageUnitMeta.DESCRIPTION, storageUnitDO.getDescription());
-    	rpcReturn.setFieldValue(StorageUnitMeta.IS_SINGULAR, storageUnitDO.getIsSingular());
+    	rpcReturn.setFieldValue(StorageUnitMeta.getId(), storageUnitDO.getId());
+    	rpcReturn.setFieldValue(StorageUnitMeta.getCategory(), storageUnitDO.getCategory());
+    	rpcReturn.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
+    	rpcReturn.setFieldValue(StorageUnitMeta.getIsSingular(), storageUnitDO.getIsSingular());
     }
 
     private StorageUnitDO getStorageUnitDOFromRPC(FormRPC rpcSend) {
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
     	newStorageUnitDO.setId((Integer) rpcSend
-    			.getFieldValue(StorageUnitMeta.ID));
+    			.getFieldValue(StorageUnitMeta.getId()));
     	newStorageUnitDO.setCategory(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.CATEGORY)));
+    			.getFieldValue(StorageUnitMeta.getCategory())));
     	newStorageUnitDO.setDescription(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.DESCRIPTION)));
+    			.getFieldValue(StorageUnitMeta.getDescription())));
     	newStorageUnitDO.setIsSingular(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.IS_SINGULAR)));
+    			.getFieldValue(StorageUnitMeta.getIsSingular())));
     
     	return newStorageUnitDO;
     }

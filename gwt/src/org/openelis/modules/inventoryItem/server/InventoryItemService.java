@@ -1,7 +1,9 @@
 package org.openelis.modules.inventoryItem.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -35,6 +37,9 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.InventoryNoteMeta;
+import org.openelis.newmeta.InventoryItemMetaMap;
+import org.openelis.newmeta.InventoryLocationMetaMap;
+import org.openelis.newmeta.StorageLocationMeta;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -46,15 +51,15 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 public class InventoryItemService implements AppScreenFormServiceInt, 
 									     AutoCompleteServiceInt {
     
     private static final int leftTableRowsPerPage = 24;
+    
+    private static final InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 
@@ -80,7 +85,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             }    
         }else{
             InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        
+
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
             fields.remove("componentsTable");
             fields.remove("locQuantitiesTable");

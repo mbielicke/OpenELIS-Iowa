@@ -35,6 +35,8 @@ import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.StorageLocationChildMeta;
 import org.openelis.meta.StorageLocationMeta;
 import org.openelis.meta.StorageLocationStorageUnitMeta;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.StorageLocationMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageUnitRemote;
@@ -45,10 +47,12 @@ import org.openelis.util.UTFResource;
 public class StorageLocationService implements AppScreenFormServiceInt,
    											   AutoCompleteServiceInt{
 
-	private static final int leftTableRowsPerPage = 19;
+	private static final int leftTableRowsPerPage = 20;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 
+    private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
+    
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List storageLocs = new ArrayList();
     //		if the rpc is null then we need to get the page
@@ -363,14 +367,14 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, StorageLocationDO storageLocDO){
-		rpcReturn.setFieldValue(StorageLocationMeta.ID, storageLocDO.getId());
-		rpcReturn.setFieldValue(StorageLocationMeta.IS_AVAILABLE, storageLocDO.getIsAvailable());
-		rpcReturn.setFieldValue(StorageLocationMeta.LOCATION, storageLocDO.getLocation());
-		rpcReturn.setFieldValue(StorageLocationMeta.NAME, storageLocDO.getName());
+		rpcReturn.setFieldValue(StorageLocationMeta.getId(), storageLocDO.getId());
+		rpcReturn.setFieldValue(StorageLocationMeta.getIsAvailable(), storageLocDO.getIsAvailable());
+		rpcReturn.setFieldValue(StorageLocationMeta.getLocation(), storageLocDO.getLocation());
+		rpcReturn.setFieldValue(StorageLocationMeta.getName(), storageLocDO.getName());
 		
 //		we need to create a dataset for the storage unit auto complete
 		if(storageLocDO.getStorageUnitId() == null)
-			rpcReturn.setFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION, null);
+			rpcReturn.setFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription(), null);
 		else{
 			DataSet storageUnitSet = new DataSet();
 			NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
@@ -379,20 +383,20 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 			text.setValue(storageLocDO.getStorageUnit());
 			storageUnitSet.setKey(id);
 			storageUnitSet.addObject(text);
-			rpcReturn.setFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION, storageUnitSet);
+			rpcReturn.setFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription(), storageUnitSet);
 		}
 	}
 	
 	private StorageLocationDO getStorageLocationDOFromRPC(FormRPC rpcSend){
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
 		
-		newStorageLocDO.setId((Integer)rpcSend.getFieldValue(StorageLocationMeta.ID));
-		newStorageLocDO.setIsAvailable((String) rpcSend.getFieldValue(StorageLocationMeta.IS_AVAILABLE));
-		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.LOCATION)));
-		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.NAME)));
-		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationChildMeta.ID));
-		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationStorageUnitMeta.DESCRIPTION));
-        newStorageLocDO.setStorageUnit((String)((DropDownField)rpcSend.getField(StorageLocationStorageUnitMeta.DESCRIPTION)).getTextValue());
+		newStorageLocDO.setId((Integer)rpcSend.getFieldValue(StorageLocationMeta.getId()));
+		newStorageLocDO.setIsAvailable((String) rpcSend.getFieldValue(StorageLocationMeta.getIsAvailable()));
+		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.getLocation())));
+		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.getName())));
+		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationMeta.CHILD_STORAGE_LOCATION_META.getId()));
+		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription()));
+        newStorageLocDO.setStorageUnit((String)((DropDownField)rpcSend.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).getTextValue());
 		
 		return newStorageLocDO;
 	}

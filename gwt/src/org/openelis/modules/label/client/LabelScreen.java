@@ -59,8 +59,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        displayPType = (ScreenAutoDropdown)widgets.get("label.printerType");
-        displayScript = (ScreenAutoDropdown)widgets.get("label.scriptlet");
+        displayPType = (ScreenAutoDropdown)widgets.get("label.printerTypeId");
+        displayScript = (ScreenAutoDropdown)widgets.get("label.scriptletId");
         
         //load dropdowns
        if(scriptletDropdown == null){

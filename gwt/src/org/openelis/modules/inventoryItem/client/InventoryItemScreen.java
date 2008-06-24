@@ -5,7 +5,6 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -19,14 +18,17 @@ import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+import org.openelis.newmeta.InventoryItemMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -44,6 +46,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 
     private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
+    TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
 	
@@ -64,6 +67,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     
     private ScreenVertical   svp       = null;
 	
+    private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
+    
 	public InventoryItemScreen() {
         super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded);
 	}
@@ -98,9 +103,11 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
-		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
 		modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
@@ -110,9 +117,10 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
-        nameTextbox = (ScreenTextBox) widgets.get("inventory_item.name");
-        idTextBox = (ScreenTextBox) widgets.get("inventory_item.id");
-        noteText = (ScreenTextArea) widgets.get("note.text");
+        nameTextbox = (ScreenTextBox) widgets.get(InvItemMeta.getName());
+        idTextBox = (ScreenTextBox) widgets.get(InvItemMeta.getId());
+        noteText = (ScreenTextArea) widgets.get(InvItemMeta.ITEM_NOTE.getText());
+        subjectBox = (TextBox)getWidget(InvItemMeta.ITEM_NOTE.getSubject()); 
         
         locsController = ((TableWidget)getWidget("locQuantitiesTable")).controller;
 		locsController.setAutoAdd(false);
@@ -131,16 +139,16 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             dispensedUnitsDropdown = (DataModel)initData.get("units");
         }
         
-        drop = (AutoCompleteDropdown)getWidget("inventory_item.storeId");
+        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getStoreId());
         drop.setModel(storesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("inventory_item.categoryId");
+        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getCategoryId());
         drop.setModel(categoriesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("inventory_item.purchasedUnitsId");
+        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getPurchasedUnitsId());
         drop.setModel(purchasedUnitsDropdown);
 
-        drop = (AutoCompleteDropdown)getWidget("inventory_item.dispensedUnitsId");
+        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getDispensedUnitsId());
         drop.setModel(dispensedUnitsDropdown);
         
 		super.afterDraw(success);			
@@ -260,7 +268,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
             loadLocations = true;
             clearLocations = false;
             
-            Integer itemId = (Integer)rpc.getFieldValue("inventory_item.id");
+            Integer itemId = (Integer)rpc.getFieldValue(InvItemMeta.getId());
             NumberObject itemIdObj = new NumberObject(itemId);
             
             // done because key is set to null in AppScreenForm for the add operation 
@@ -356,12 +364,11 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     
     private void clearCommentsFields(){
         //     the note subject and body fields need to be refeshed after every successful commit 
-           TextBox subjectBox = (TextBox)getWidget("note.subject");           
-           subjectBox.setText("");
-          TextArea noteArea = (TextArea)getWidget("note.text");
+          subjectBox.setText("");
+          TextArea noteArea = (TextArea)noteText.getWidget();
           noteArea.setText("");           
-          rpc.setFieldValue("note.subject", null);
-          rpc.setFieldValue("note.text", null);  
+          rpc.setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(), null);
+          rpc.setFieldValue(InvItemMeta.ITEM_NOTE.getText(), null);  
        }
     
     private void fillComponentsModel(boolean forDuplicate){
@@ -516,7 +523,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-			letterRPC.setFieldValue("inventory_item.name", query);
+			letterRPC.setFieldValue(InvItemMeta.getName(), query);
 
 			commitQuery(letterRPC);
 		}
@@ -525,7 +532,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 	private void onStandardNoteButtonClick(){
    	 	PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 		ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-		pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
+		pickerWindow.setContent(new StandardNotePickerScreen((TextArea)noteText.getWidget()));
 			
 		standardNotePopupPanel.add(pickerWindow);
 		int left = this.getAbsoluteLeft();
@@ -555,13 +562,13 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
             FormRPC displayRPC = rpc.clone();
-            displayRPC.setFieldValue("inventory_item.id", null);
+            displayRPC.setFieldValue(InvItemMeta.getId(), null);
             displayRPC.setFieldValue("locQuantitiesTable", null);
-            displayRPC.setFieldValue("inventory_item.averageLeadTime",null);
-            displayRPC.setFieldValue("inventory_item.averageCost",null);
-            displayRPC.setFieldValue("inventory_item.averageDailyUse",null);
-            displayRPC.setFieldValue("note.subject",null);
-            displayRPC.setFieldValue("note.text",null);   
+            displayRPC.setFieldValue(InvItemMeta.getAverageLeadTime(),null);
+            displayRPC.setFieldValue(InvItemMeta.getAverageCost(),null);
+            displayRPC.setFieldValue(InvItemMeta.getAverageDailyUse(),null);
+            displayRPC.setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
+            displayRPC.setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
                        
             add();
             

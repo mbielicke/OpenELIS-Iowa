@@ -32,87 +32,101 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Analyte" name="{resource:getString($constants,'analyte')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="horizontal" spacing="0" padding="0" style="WhiteContentPanel" xsi:type="Panel">
+		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
-			    <aToZ height="260px" width="100%" key="hideablePanel" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+			<CollapsePanel key="collapsePanel" height="235px">
+			    <azTable width="auto" key="azTable" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-				</aToZ>
-			<panel layout="vertical" spacing="0" xsi:type="Panel">
+				</azTable>
+			</CollapsePanel>
+			<VerticalPanel spacing="0">
 				<!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
-			<widget>
-    			<buttonPanel key="buttons">
-    			<xsl:call-template name="queryButton"/>
-    			<xsl:call-template name="previousButton"/>
-    			<xsl:call-template name="nextButton"/>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="addButton"/>
-    			<xsl:call-template name="updateButton"/>
-    			<xsl:call-template name="deleteButton"/>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="commitButton"/>
-    			<xsl:call-template name="abortButton"/>
-				</buttonPanel>
- 			</widget>
-		</panel>
-		<!--end button panel-->
-					<panel layout="vertical" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
-								<row>
-									<panel layout="horizontal" xsi:type="Panel" style="FormVerticalSpacing"/>
-								</row>
-								<row>								
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{meta:getName($meta)}" max="60" width="350px" tab="{meta:getAnalyteGroupId($meta)},{meta:getIsActive($meta)}"/>
-									</widget>
-								</row>
-								<row>								
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"analyteGroup")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{meta:getAnalyteGroupId($meta)}" width="200px" tab="{parentMeta:getName($parentMeta)},{meta:getName($meta)}"/>
-									</widget>
-								</row>
-								<row>								
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
-									</widget>
-									<widget>
-									<autoDropdown cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
-										<headers>Name</headers>
-										<widths>194</widths>
-										</autoDropdown>
-										<query>
-											<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}"/>
-										</query>
-									</widget>
-								</row>
-								<row>								
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"externalId")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{meta:getExternalId($meta)}" max="20" width="150px" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}"/>
-									</widget>
-								</row>
-								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{meta:getIsActive($meta)}" tab="{meta:getName($meta)},{meta:getExternalId($meta)}"/>
-									</widget>
-								</row>
-							</panel>
-				</panel>
-			</panel>
-		</panel>
+				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
+						<buttonPanel key="buttons">
+								<xsl:call-template name="queryButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="previousButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="nextButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="buttonPanelDivider"/>
+								<xsl:call-template name="addButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="updateButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="deleteButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="buttonPanelDivider"/>
+								<xsl:call-template name="commitButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="abortButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+							</buttonPanel>
+			</AbsolutePanel>
+			<!--end button panel-->
+			<VerticalPanel>
+				<TablePanel style="Form">
+					<row>
+						<HorizontalPanel style="FormVerticalSpacing"/>
+					</row>
+					<row>								
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
+						<textbox case="mixed" key="{meta:getName($meta)}" max="60" width="350px" tab="{meta:getAnalyteGroupId($meta)},{meta:getIsActive($meta)}"/>
+					</row>
+					<row>								
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"analyteGroup")'/>:</text>
+						<textbox case="mixed" key="{meta:getAnalyteGroupId($meta)}" width="200px" tab="{parentMeta:getName($parentMeta)},{meta:getName($meta)}"/>
+					</row>
+					<row>								
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
+						<widget>	
+							<autoDropdown cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
+								<headers>Name</headers>
+								<widths>194</widths>
+							</autoDropdown>
+							<query>
+								<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}"/>
+							</query>
+						</widget>
+					</row>
+					<row>								
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"externalId")'/>:</text>
+						<textbox case="mixed" key="{meta:getExternalId($meta)}" max="20" width="150px" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}"/>
+					</row>
+					<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
+						<check key="{meta:getIsActive($meta)}" tab="{meta:getName($meta)},{meta:getExternalId($meta)}"/>
+					</row>
+				</TablePanel>
+				</VerticalPanel>
+			</VerticalPanel>
+		</HorizontalPanel>
 	</display>
 	<rpc key="display">
   	<number key="{meta:getId($meta)}" type="integer" required="false"/>
