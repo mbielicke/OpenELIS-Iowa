@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.NewMeta;
 
 public class StorageLocationMeta implements NewMeta {
-  	private String path = "";
+  	protected String path = "";
 	private static final String entityName = "StorageLocation";
 	
 	private static final String
