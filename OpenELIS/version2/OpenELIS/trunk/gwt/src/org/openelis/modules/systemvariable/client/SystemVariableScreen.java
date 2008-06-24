@@ -44,7 +44,7 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        nameTextBox = (TextBox)getWidget("systemVariable.name");
+        nameTextBox = (TextBox)getWidget("system_variable.name");
         
         super.afterDraw(success);
     }  
@@ -71,7 +71,7 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("systemVariable.name", query);
+            letterRPC.setFieldValue("system_variable.name", query);
              
             commitQuery(letterRPC);
             

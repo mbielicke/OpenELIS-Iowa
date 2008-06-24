@@ -2,7 +2,9 @@ package org.openelis.modules.analyte.client;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.newmeta.AnalyteMetaMap;
@@ -34,9 +36,11 @@ public class AnalyteScreen extends OpenELISScreenForm {
 	
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
-		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-		modelWidget.addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);

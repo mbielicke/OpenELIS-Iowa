@@ -59,7 +59,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
      </widget>
      <widget> 
-      <textbox key = "{labelMeta:name()}" max = "30" width= "215px" case = "lower" tab="{labelMeta:description()},{labelMeta:scriptlet()}"/>
+      <textbox key = "{labelMeta:getName()}" max = "30" width= "215px" case = "lower" tab="{labelMeta:getDescription()},{labelMeta:getScriptletId()}"/>
      </widget>
      </row>     
      <row>     
@@ -67,7 +67,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
      </widget>
      <widget>
-      <textbox case= "mixed" max = "60"  key= "{labelMeta:description()}" width= "425px" tab="{labelMeta:printerType()},{labelMeta:name()}"/>
+      <textbox case= "mixed" max = "60"  key= "{labelMeta:getDescription()}" width= "425px" tab="{labelMeta:getPrinterTypeId()},{labelMeta:getName()}"/>
      </widget>     
     </row>
      <row>
@@ -75,7 +75,7 @@
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"printerType")'/>:</text>
      </widget>
      <widget>
-		<autoDropdown key="{labelMeta:printerType()}" width = "90px" case="mixed" tab="{labelMeta:scriptlet()},{labelMeta:description()}"/>
+		<autoDropdown key="{labelMeta:getPrinterTypeId()}" width = "90px" case="mixed" tab="{labelMeta:getScriptletId()},{labelMeta:getDescription()}"/>
 	</widget>  
 										        
      </row>
@@ -84,7 +84,7 @@
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
      </widget>
      <widget>
-     	<autoDropdown key="{labelMeta:scriptlet()}" width = "180px" case="mixed" tab="{labelMeta:name()},{labelMeta:printerType()}"/>
+     	<autoDropdown key="{labelMeta:getScriptletId()}" width = "180px" case="mixed" tab="{labelMeta:getName()},{labelMeta:getPrinterTypeId()}"/>
 	</widget>
 	  </row>			  												          
                                  					                         
@@ -96,22 +96,22 @@
 </display>
 							  
 <rpc key= "display">
- <number key="{labelMeta:id()}" type="integer" required = "false" />
- <string key="{labelMeta:name()}" max = "20" required = "true"/> 
- <string key="{labelMeta:description()}" max = "60" required = "false" /> 	 
- <dropdown key="{labelMeta:printerType()}" type="integer" required = "true"/>
- <dropdown key="{labelMeta:scriptlet()}" type="integer" required = "true"/>
+ <number key="{labelMeta:getId()}" type="integer" required = "false" />
+ <string key="{labelMeta:getName()}" max = "20" required = "true"/> 
+ <string key="{labelMeta:getDescription()}" max = "60" required = "false" /> 	 
+ <dropdown key="{labelMeta:getPrinterTypeId()}" type="integer" required = "true"/>
+ <dropdown key="{labelMeta:getScriptletId()}" type="integer" required = "true"/>
 </rpc>
 					   
 <rpc key= "query">     
- <queryString key="{labelMeta:name()}"/>
- <queryString key="{labelMeta:description()}"  /> 	
- <dropdown key="{labelMeta:printerType()}" type="integer"/> 
- <dropdown key="{labelMeta:scriptlet()}" type="integer"/>
+ <queryString key="{labelMeta:getName()}"/>
+ <queryString key="{labelMeta:getDescription()}"  /> 	
+ <dropdown key="{labelMeta:getPrinterTypeId()}" type="integer"/> 
+ <dropdown key="{labelMeta:getScriptletId()}" type="integer"/>
 </rpc>
 
 <rpc key= "queryByLetter">     
- <queryString key="{labelMeta:name()}"/>
+ <queryString key="{labelMeta:getName()}"/>
 </rpc>
  
 </screen>

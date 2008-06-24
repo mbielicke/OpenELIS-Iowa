@@ -4,10 +4,14 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.StorageUnitMetaMap;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -17,6 +21,8 @@ public class StorageUnitScreen extends OpenELISScreenForm {
     private static boolean loaded = false;
     private static DataModel storageUnitCategoryDropdown;
 	
+    private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
+    
 	public StorageUnitScreen() {
 		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded);
 	}
@@ -36,20 +42,22 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		loaded = true;
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
-		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-		modelWidget.addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        cat = (AutoCompleteDropdown)getWidget("storage_unit.category");
+        cat = (AutoCompleteDropdown)getWidget(StorageUnitMeta.getCategory());
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)
             storageUnitCategoryDropdown = (DataModel)initData.get("categories");
         
-        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get("storage_unit.category");
+        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get(StorageUnitMeta.getCategory());
                    
         ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
         
@@ -82,7 +90,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue("storage_unit.description", query);
+			letterRPC.setFieldValue(StorageUnitMeta.getDescription(), query);
 
 			commitQuery(letterRPC);
 		}

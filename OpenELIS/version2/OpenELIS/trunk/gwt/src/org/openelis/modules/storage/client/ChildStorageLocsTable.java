@@ -43,7 +43,7 @@ public class ChildStorageLocsTable implements TableManager {
     public void finishedEditing(int row, int col, TableController controller) {}
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-    	if (col == 0 && row == controller.model.numRows() - 1) {
+    	if (col == 0) {
             return true;
         }   
         

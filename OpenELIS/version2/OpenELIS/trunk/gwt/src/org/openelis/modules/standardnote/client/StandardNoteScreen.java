@@ -5,10 +5,13 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.StandardNoteMetaMap;
 
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -21,6 +24,8 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private static DataModel typeDropdown;
 	private static boolean loaded = false;
 	
+    private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
+    
 	public StandardNoteScreen() {
     	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded);
     }
@@ -40,21 +45,23 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		loaded = true;
 		setBpanel((ButtonPanel) getWidget("buttons"));
 		
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
         modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        textArea = (ScreenTextArea)widgets.get("standard_note.text");
-        nameTextbox = (TextBox)getWidget("standard_note.name");
+        textArea = (ScreenTextArea)widgets.get(StandardNoteMeta.getText());
+        nameTextbox = (TextBox)getWidget(StandardNoteMeta.getName());
 
         if(typeDropdown == null)
             typeDropdown = (DataModel)initData.get("noteTypes");
         
 //      load standard note type dropdowns
-        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get("standard_note.typeId");
+        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get(StandardNoteMeta.getTypeId());
                    
        ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
 		
@@ -97,7 +104,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
     		
-    		letterRPC.setFieldValue("standard_note.name", query);
+    		letterRPC.setFieldValue(StandardNoteMeta.getName(), query);
     
     		commitQuery(letterRPC);
     	}

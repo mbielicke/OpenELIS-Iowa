@@ -2,14 +2,15 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:inventoryItemMeta="xalan://org.openelis.meta.InventoryItemMeta" 
-                xmlns:inventoryComponentMeta="xalan://org.openelis.meta.InventoryComponentMeta"
-                xmlns:inventoryComponentItemMeta="xalan://org.openelis.meta.InventoryComponentItemMeta"
-                xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
-                xmlns:inventoryLocationStorageLocationMeta="xalan://org.openelis.meta.InventoryLocationStorageLocationMeta"
-                xmlns:inventoryItemNoteMeta="xalan://org.openelis.meta.InventoryItemNoteMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.InventoryItemMetaMap"
+                xmlns:noteMeta="xalan://org.openelis.newmeta.NoteMeta"
+                xmlns:locationMeta="xalan://org.openelis.newmeta.InventoryLocationMetaMap"
+                xmlns:componentMeta="xalan://org.openelis.newmeta.InventoryComponentMetaMap"
+                xmlns:storageLocationMeta="xalan://org.openelis.newmeta.StorageLocationMeta"                
+                xmlns:invItemMeta="xalan://org.openelis.newmeta.InventoryItemMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">
+                
 <xsl:import href="aToZOneColumn.xsl"/>
 
   <xalan:component prefix="resource">
@@ -20,258 +21,212 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMetaMap"/>
   </xalan:component>
 
-  <xalan:component prefix="inventoryComponentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryComponentMeta"/>
+  <xalan:component prefix="noteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NoteMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryComponentItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryComponentItemMeta"/>
+  <xalan:component prefix="locationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryLocationMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMeta"/>
+  <xalan:component prefix="componentMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryComponentMetaMap"/>
   </xalan:component>
 
-  <xalan:component prefix="inventoryLocationStorageLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationStorageLocationMeta"/>
+  <xalan:component prefix="storageLocationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.StorageLocationMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="inventoryItemNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemNoteMeta"/>
+  <xalan:component prefix="invItemMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="invItem" select="meta:new()"/>
+    <xsl:variable name="component" select="meta:getInventoryComponent($invItem)"/>
+    <xsl:variable name="location" select="meta:getInventoryLocation($invItem)"/>
+    <xsl:variable name="note" select="meta:getNote($invItem)"/>
+    <xsl:variable name="compInvItem" select="componentMeta:getInventoryItem($component)"/>
+    <xsl:variable name="locStorageLoc" select="locationMeta:getStorageLocation($location)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Inventory" name="{resource:getString($constants,'inventoryItem')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
+		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
-				<aToZ height="510px" width="100%" key="hideablePanel" maxRows="24" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+			<CollapsePanel key="collapsePanel">
+				<azTable colwidths="175" key="azTable" maxRows="24" tableWidth="auto" title="{resource:getString($constants,'name')}" width="100%">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-				</aToZ>
-			<panel layout="vertical" spacing="0" xsi:type="Panel">
+				</azTable>
+			</CollapsePanel>
+			<VerticalPanel spacing="0">
 		<!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<widget>
     			<buttonPanel key="buttons">
     			<xsl:call-template name="queryButton">
-    				<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    				<xsl:with-param name="language">
+    				    <xsl:value-of select="language"/>
+    				</xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="previousButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="nextButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="addButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+                    <xsl:with-param name="language">
+                        <xsl:value-of select="language"/>
+                    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="updateButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="commitButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="abortButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="optionsButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
     			</xsl:call-template>
 				</buttonPanel>
  			</widget>
-		</panel>
+		</AbsolutePanel>
 		<!--end button panel-->
 		
-					<panel layout="vertical" xsi:type="Panel">
-						<panel key="a" layout="horizontal" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
+					<VerticalPanel>
+						<HorizontalPanel>
+							<TablePanel style="Form">
 								<row>
-									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="lower" key="{inventoryItemMeta:getName()}" width="150px" max="20" tab="{inventoryItemMeta:getDescription()},{inventoryItemMeta:getIsNoInventory()}"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
-									</widget>
-									<widget>
-										<textbox key="{inventoryItemMeta:getId()}" width="75px"/>
-									</widget>
-									
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
+									<textbox case="lower" key="{meta:getName($invItem)}" width="150px" max="20" tab="{meta:getDescription($invItem)},{meta:getIsNoInventory($invItem)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
+						            <textbox key="{meta:getId($invItem)}" width="75px"/>								
 								</row>
-									<row>								
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
-										</widget>
-										<widget colspan="3">
-										<textbox case="mixed" key="{inventoryItemMeta:getDescription()}" width="340px" max="60" tab="{inventoryItemMeta:getStoreId()},{inventoryItemMeta:getName()}"/>
+								<row>								
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
+									<widget colspan="3">
+										<textbox case="mixed" key="{meta:getDescription($invItem)}" width="340px" max="60" tab="{meta:getStoreId($invItem)},{meta:getName($invItem)}"/>
 										</widget>									
-									</row>
-									<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:getStoreId()}" case="mixed" width="225px" tab="{inventoryItemMeta:getCategoryId()},{inventoryItemMeta:getDescription()}"/>
-										</widget>	
-									</row>
-									<row>
-									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:getCategoryId()}" case="mixed" width="180px" tab="{inventoryItemMeta:getQuantityMinLevel()},{inventoryItemMeta:getStoreId()}"/>
-										</widget>	
-									</row>
-									<row>
-										<widget>
-											<panel xsi:type="Absolute" layout="absolute" style="VerticalSpacer"/>
-										</widget>
-									</row>		
-									<row>
-									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"minOrderLevel")'/>:</text>
+								</row>
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
+									<widget colspan="3">
+										<autoDropdown key="{meta:getStoreId($invItem)}" case="mixed" width="225px" tab="{meta:getCategoryId($invItem)},{meta:getDescription($invItem)}"/>
+									</widget>	
+								</row>
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
+									<widget colspan="3">
+										<autoDropdown key="{meta:getCategoryId($invItem)}" case="mixed" width="180px" tab="{meta:getQuantityMinLevel($invItem)},{meta:getStoreId($invItem)}"/>
+									</widget>	
+								</row>
+								<row>
+									<AbsolutePanel style="VerticalSpacer"/>
+								</row>		
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"minOrderLevel")'/>:</text>
+									<textbox key="{meta:getQuantityMinLevel($invItem)}" width="55px" tab="{meta:getQuantityToReorder($invItem)},{meta:getCategoryId($invItem)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reorderLevel")'/>:</text>
+									<textbox key="{meta:getQuantityToReorder($invItem)}" width="55px" tab="{meta:getQuantityMaxLevel($invItem)},{meta:getQuantityMinLevel($invItem)}"/>
+								</row>	
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"maxOrderLevel")'/>:</text>
+									<widget colspan="3">
+										<textbox key="{meta:getQuantityMaxLevel($invItem)}" width="55px" tab="{meta:getPurchasedUnitsId($invItem)},{meta:getQuantityToReorder($invItem)}"/>
+									</widget>	
+								</row>
+								<row>
+									<AbsolutePanel style="VerticalSpacer"/>
+								</row>		
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnits")'/>:</text>
+									<widget colspan="3">
+										<autoDropdown key="{meta:getPurchasedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getDispensedUnitsId($invItem)},{meta:getQuantityMaxLevel($invItem)}"/>
 									</widget>
-										
-										<widget>
-											<textbox key="{inventoryItemMeta:getQuantityMinLevel()}" width="55px" tab="{inventoryItemMeta:getQuantityToReorder()},{inventoryItemMeta:getCategoryId()}"/>
-										</widget>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reorderLevel")'/>:</text>
-										</widget>
-										<widget>
-											<textbox key="{inventoryItemMeta:getQuantityToReorder()}" width="55px" tab="{inventoryItemMeta:getQuantityMaxLevel()},{inventoryItemMeta:getQuantityMinLevel()}"/>
-										</widget>													
-									</row>	
-									<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"maxOrderLevel")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<textbox key="{inventoryItemMeta:getQuantityMaxLevel()}" width="55px" tab="{inventoryItemMeta:getPurchasedUnitsId()},{inventoryItemMeta:getQuantityToReorder()}"/>
-										</widget>	
-									</row>
-									<row>
-										<widget>
-											<panel xsi:type="Absolute" layout="absolute" style="VerticalSpacer"/>
-										</widget>
-									</row>		
-									<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnits")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" case="mixed" width="90px" tab="{inventoryItemMeta:getDispensedUnitsId()},{inventoryItemMeta:getQuantityMaxLevel()}"/>
-										</widget>
-									</row>
-									<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
-										</widget>
-										<widget colspan="3">
-											<autoDropdown key="{inventoryItemMeta:getDispensedUnitsId()}" case="mixed" width="90px" tab="{inventoryItemMeta:getIsActive()},{inventoryItemMeta:getPurchasedUnitsId()}"/>
-										</widget>
-									</row>
-								</panel>
-								<panel layout="vertical" style="Form" xsi:type="Panel">
+								</row>
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
+									<widget colspan="3">
+										<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
+									</widget>
+								</row>
+							</TablePanel>
+							<VerticalPanel style="Form">
 								<titledPanel key="borderedPanel">
 								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"controlsParameters")'/></text></legend>
-								<content><panel layout="table" style="Form" xsi:type="Table">
+								<content><TablePanel style="Form">
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsActive()}" tab="{inventoryItemMeta:getIsReorderAuto()},{inventoryItemMeta:getPurchasedUnitsId()}"/>
-									</widget>
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
+									<check key="{meta:getIsActive($invItem)}" tab="{meta:getIsReorderAuto($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsReorderAuto()}" tab="{inventoryItemMeta:getIsLotMaintained()},{inventoryItemMeta:getIsActive()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
+									<check key="{meta:getIsReorderAuto($invItem)}" tab="{meta:getIsLotMaintained($invItem)},{meta:getIsActive($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsLotMaintained()}" tab="{inventoryItemMeta:getIsSerialMaintained()},{inventoryItemMeta:getIsReorderAuto()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
+									<check key="{meta:getIsLotMaintained($invItem)}" tab="{meta:getIsSerialMaintained($invItem)},{meta:getIsReorderAuto($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsSerialMaintained()}" tab="{inventoryItemMeta:getIsBulk()},{inventoryItemMeta:getIsLotMaintained()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
+									<check key="{meta:getIsSerialMaintained($invItem)}" tab="{meta:getIsBulk($invItem)},{meta:getIsLotMaintained($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsBulk()}" tab="{inventoryItemMeta:getIsNotForSale()},{inventoryItemMeta:getIsSerialMaintained()}"/>
-									</widget>
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
+									<check key="{meta:getIsBulk($invItem)}" tab="{meta:getIsNotForSale($invItem)},{meta:getIsSerialMaintained($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsNotForSale()}" tab="{inventoryItemMeta:getIsSubAssembly()},{inventoryItemMeta:getIsBulk()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
+									<check key="{meta:getIsNotForSale($invItem)}" tab="{meta:getIsSubAssembly($invItem)},{meta:getIsBulk($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsSubAssembly()}" tab="{inventoryItemMeta:getIsLabor()},{inventoryItemMeta:getIsNotForSale()}"/>
-									</widget>
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
+									<check key="{meta:getIsSubAssembly($invItem)}" tab="{meta:getIsLabor($invItem)},{meta:getIsNotForSale($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsLabor()}" tab="{inventoryItemMeta:getIsNoInventory()},{inventoryItemMeta:getIsSubAssembly()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
+									<check key="{meta:getIsLabor($invItem)}" tab="{meta:getIsNoInventory($invItem)},{meta:getIsSubAssembly($invItem)}"/>
 								</row>
 								<row>
-									<widget>
-										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
-									</widget>
-									<widget>
-										<check key="{inventoryItemMeta:getIsNoInventory()}" tab="{inventoryItemMeta:getName()},{inventoryItemMeta:getIsLabor()}"/>
-									</widget>	
+									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
+									<check key="{meta:getIsNoInventory($invItem)}" tab="{meta:getName($invItem)},{meta:getIsLabor($invItem)}"/>
 								</row>
-								</panel>
+								</TablePanel>
 								</content>
 								</titledPanel>
-								</panel>
-								</panel>
-<!-- tabbed panel needs to go here -->
-				<panel height="200px" key="tabPanel" halign="center" layout="tab" xsi:type="Tab">
+								</VerticalPanel>
+								</HorizontalPanel>
+				<!--TAB PANEL-->
+				<TabPanel height="200px" key="tabPanel">
 					<!-- TAB 1 (Components) -->
 					<tab key="tab1" text="{resource:getString($constants,'components')}">
-							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
+							<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="componentsTable" manager="InventoryComponentsTable" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
@@ -285,9 +240,9 @@
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<dropdown key="{inventoryComponentMeta:getComponentId()}" required="true"/>
-											<string key="{inventoryComponentItemMeta:getDescription()}"/>
-											<number key="{inventoryComponentMeta:getQuantity()}" type="double" required="true"/>
+											<dropdown key="{componentMeta:getComponentId($component)}" required="true"/>
+											<string key="{invItemMeta:getDescription($compInvItem)}"/>
+											<number key="{componentMeta:getQuantity($component)}" type="double" required="true"/>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false,false</filters>
@@ -299,33 +254,29 @@
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,353,104</widths>
 										<editors>
-											<autoDropdown cat="queryComponent" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="125px">												
-												<widths>118</widths>
-											</autoDropdown>
+											<textbox case="lower"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 										</editors>
-										<fields><xsl:value-of select='inventoryComponentMeta:getComponentId()'/>,<xsl:value-of select='inventoryComponentItemMeta:getDescription()'/>,
-										<xsl:value-of select='inventoryComponentMeta:getQuantity()'/>
+										<fields><xsl:value-of select='invItemMeta:getName($compInvItem)'/>,<xsl:value-of select='invItemMeta:getDescription($compInvItem)'/>,
+										<xsl:value-of select='componentMeta:getQuantity($component)'/>
 										</fields>										
 									</queryTable>
 									</query>
 								</widget>
 									<widget style="WhiteContentPanel" halign="center">
 									<appButton action="removeComponentRow" onclick="this" style="Button" key="removeComponentButton">
-									<panel xsi:type="Panel" layout="horizontal">
-              						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
-						              <widget>
+									<HorizontalPanel>
+              						<AbsolutePanel style="RemoveRowButtonImage"/>
                 						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							              </widget>
-							              </panel>
+  					                </HorizontalPanel>
 						            </appButton>
 						            </widget>
-							</panel>
+							</VerticalPanel>
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
 					<tab key="tab2" text="{resource:getString($constants,'locationQuantity')}">
-						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
+						<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
@@ -338,10 +289,10 @@
 											<label/>
 										</editors>
 										<fields>
-											<string key="{inventoryLocationMeta:getStorageLocationId()}"/>
-											<string key="{inventoryLocationMeta:getLotNumber()}"/>
-											<string key="{inventoryLocationMeta:getExpirationDate()}"/>
-											<number key="{inventoryLocationMeta:getQuantityOnhand()}" type="integer"/>
+											<string key="{locationMeta:getStorageLocationId($location)}"/>
+											<string key="{locationMeta:getLotNumber($location)}"/>
+											<string key="{locationMeta:getExpirationDate($location)}"/>
+											<number key="{locationMeta:getQuantityOnhand($location)}" type="integer"/>
 										</fields>
 										<sorts>true,true,true,true</sorts>
 										<filters>false,false,false,false</filters>
@@ -359,186 +310,157 @@
 											<textbox case="mixed"/>	
 										</editors>
 										<fields>
-											<xsl:value-of select='inventoryLocationStorageLocationMeta:getLocation()'/>,<xsl:value-of select='inventoryLocationMeta:getLotNumber()'/>,
-    										<xsl:value-of select='inventoryLocationMeta:getExpirationDate()'/>,<xsl:value-of select='inventoryLocationMeta:getQuantityOnhand()'/>
+											<xsl:value-of select='storageLocationMeta:getLocation($locStorageLoc)'/>,<xsl:value-of select='locationMeta:getLotNumber($location)'/>,
+    										<xsl:value-of select='locationMeta:getExpirationDate($location)'/>,<xsl:value-of select='locationMeta:getQuantityOnhand($location)'/>
 										</fields>							
 									</queryTable>
 									</query>
 								</widget>
-								<widget>
-									<panel xsi:type="Panel" layout="horizontal" height="10px"/>
-    				            </widget>
-							</panel>
+								<HorizontalPanel height="10px"/>
+							</VerticalPanel>
 					</tab>
 					<!-- start TAB 3 (Additional Info) -->
 					<tab key="tab4" text="{resource:getString($constants,'additionalInfo')}">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel">
-						<panel layout="table" style="Form" xsi:type="Panel">
+						<VerticalPanel height="229px" width="610px">
+						<TablePanel style="Form">
 						<row>
-							<widget>
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
-							</widget>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
 							<widget colspan="5">
-								<textbox case="mixed" key="{inventoryItemMeta:getProductUri()}" width="490px" max="80"/>
+								<textbox case="mixed" key="{meta:getProductUri($invItem)}" width="490px" max="80"/>
 							</widget>									
 						</row>
 						<row>
-							<widget>
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
-							</widget>
-							<widget>
-								<textbox key="{inventoryItemMeta:getAverageLeadTime()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
-							</widget>
-							<widget>
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
-							</widget>
-							<widget>
-								<textbox key="{inventoryItemMeta:getAverageCost()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
-							</widget>
-							<widget>
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
-							</widget>
-							<widget>
-								<textbox key="{inventoryItemMeta:getAverageDailyUse()}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
-							</widget>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
+							<textbox key="{meta:getAverageLeadTime($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
+							<textbox key="{meta:getAverageCost($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
+							<textbox key="{meta:getAverageDailyUse($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 						</row>
-						</panel>
-						</panel>
+						</TablePanel>
+						</VerticalPanel>
 					</tab>
 					
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
-						<panel height="229px" width="610px" layout="vertical" xsi:type="Panel"/>
+						<VerticalPanel height="229px" width="610px"/>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
 					<tab key="tab5" text="{resource:getString($constants,'comments')}">
-						<panel key="secMod3" layout="vertical" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
-							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">
-										<row>
-										<widget>
-												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
-										</widget>
-										<widget>
-										<textbox case="mixed" key="{inventoryItemNoteMeta:getSubject()}" width="435px" max="60" showError="false"/>
-										</widget>
-										<widget>
-										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
-										<panel xsi:type="Panel" layout="horizontal">
-              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+						<VerticalPanel width="100%" height="164px" spacing="0" padding="0">
+							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
+									<textbox case="mixed" key="{noteMeta:getSubject($note)}" width="435px" max="60" showError="false"/>
+									<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
+										<HorizontalPanel>
+              							<AbsolutePanel style="StandardNoteButtonImage"/>
 						              <widget>
                 						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
 							              </widget>
-							              </panel>
+							              </HorizontalPanel>
 						            </appButton>
-						            </widget>
-										</row>
-										<row>
-										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
-										</widget>locsController
-										<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{inventoryItemNoteMeta:getText()}" showError="false"/>
-										</widget>
-										</row>
-								 
-							<row>
-								<widget>
-								<html key="spacer" xml:space="preserve"> </html>
-								</widget>
-								<widget colspan="2">
-								<panel style="notesPanelContainer" layout="horizontal" xsi:type="Panel">
-								<panel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="138px" width="549px" layout="vertical" overflowX="auto" overflowY="scroll" xsi:type="Panel">
-								
-								</panel>
-								</panel>
+ 								</row>
+								<row>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
+									<widget colspan="2">
+										<textarea width="549px" height="50px" case="mixed" key="{noteMeta:getText($note)}" showError="false"/>
+									</widget>
+								</row> 
+								<row>
+									<html key="spacer" xml:space="preserve"> </html>
+									<widget colspan="2">
+										<HorizontalPanel style="notesPanelContainer">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="138px" width="549px" overflowX="auto" overflowY="scroll">				
+								</VerticalPanel>
+								</HorizontalPanel>
 								</widget>
 							</row>
-						</panel>
-						</panel>
-					</tab>
-					
-				</panel>
-				</panel>
-			</panel>
-		</panel>
+						</TablePanel>
+						</VerticalPanel>
+					</tab>					
+				</TabPanel>
+				</VerticalPanel>
+			</VerticalPanel>
+		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	  <number key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
-      <string key="{inventoryItemMeta:getName()}" max="20" required="true"/>
-      <string key="{inventoryItemMeta:getDescription()}" max="60" required="false"/>
-      <dropdown key="{inventoryItemMeta:getStoreId()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:getCategoryId()}" type="integer" required="false"/> 
-      <number key="{inventoryItemMeta:getQuantityMinLevel()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:getQuantityMaxLevel()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:getQuantityToReorder()}" type="integer" required="false"/>
-      <dropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" type="integer" required="true"/> 
-      <dropdown key="{inventoryItemMeta:getDispensedUnitsId()}" type="integer" required="true"/> 
-      <number key="{inventoryItemMeta:getAverageLeadTime()}" type="integer" required="false"/>
-      <number key="{inventoryItemMeta:getAverageCost()}" type="double" required="false"/>
-      <number key="{inventoryItemMeta:getAverageDailyUse()}" type="integer" required="false"/>
+  	  <number key="{meta:getId($invItem)}" type="integer" required="false"/>
+      <string key="{meta:getName($invItem)}" max="20" required="true"/>
+      <string key="{meta:getDescription($invItem)}" max="60" required="false"/>
+      <dropdown key="{meta:getStoreId($invItem)}" type="integer" required="true"/> 
+      <dropdown key="{meta:getCategoryId($invItem)}" type="integer" required="false"/> 
+      <number key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
+      <number key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
+      <number key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
+      <dropdown key="{meta:getPurchasedUnitsId($invItem)}" type="integer" required="true"/> 
+      <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="true"/> 
+      <number key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
+      <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
+      <number key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
       <table key="componentsTable"/>
       <table key="locQuantitiesTable"/>
-      <check key="{inventoryItemMeta:getIsActive()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsReorderAuto()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsLotMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsSerialMaintained()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsBulk()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsNotForSale()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsSubAssembly()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsLabor()}" required="false"/>
-      <check key="{inventoryItemMeta:getIsNoInventory()}" required="false"/>
+      <check key="{meta:getIsActive($invItem)}" required="false"/>
+      <check key="{meta:getIsReorderAuto($invItem)}" required="false"/>
+      <check key="{meta:getIsLotMaintained($invItem)}" required="false"/>
+      <check key="{meta:getIsSerialMaintained($invItem)}" required="false"/>
+      <check key="{meta:getIsBulk($invItem)}" required="false"/>
+      <check key="{meta:getIsNotForSale($invItem)}" required="false"/>
+      <check key="{meta:getIsSubAssembly($invItem)}" required="false"/>
+      <check key="{meta:getIsLabor($invItem)}" required="false"/>
+      <check key="{meta:getIsNoInventory($invItem)}" required="false"/>
       
-      <string key="{inventoryItemMeta:getProductUri()}" required="false"/>
+      <string key="{meta:getProductUri($invItem)}" required="false"/>
       
-      <string key="{inventoryItemNoteMeta:getSubject()}" max="60" required="false"/>
-      <string key="{inventoryItemNoteMeta:getText()}" required="false"/>
+      <string key="{noteMeta:getSubject($note)}" max="60" required="false"/>
+      <string key="{noteMeta:getText($note)}" required="false"/>
       
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{inventoryItemMeta:getId()}" type="integer" required="false"/>
-      <queryString key="{inventoryItemMeta:getName()}" max="20" required="false"/>
-      <queryString key="{inventoryItemMeta:getDescription()}" max="60" required="false"/>
-      <dropdown key="{inventoryItemMeta:getStoreId()}" type="integer" required="false"/> 
-      <dropdown key="{inventoryItemMeta:getCategoryId()}" type="integer" required="false"/> 
-      <queryNumber key="{inventoryItemMeta:getQuantityMinLevel()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:getQuantityMaxLevel()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:getQuantityToReorder()}" type="integer" required="false"/>
-      <dropdown key="{inventoryItemMeta:getPurchasedUnitsId()}" type="integer" required="false"/> 
-      <dropdown key="{inventoryItemMeta:getDispensedUnitsId()}" type="integer" required="false"/> 
-      <queryCheck key="{inventoryItemMeta:getIsActive()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsReorderAuto()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsLotMaintained()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsSerialMaintained()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsBulk()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsNotForSale()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsSubAssembly()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsLabor()}" required="false"/>
-      <queryCheck key="{inventoryItemMeta:getIsNoInventory()}" required="false"/>
+      <queryNumber key="{meta:getId($invItem)}" type="integer" required="false"/>
+      <queryString key="{meta:getName($invItem)}" max="20" required="false"/>
+      <queryString key="{meta:getDescription($invItem)}" max="60" required="false"/>
+      <dropdown key="{meta:getStoreId($invItem)}" type="integer" required="false"/> 
+      <dropdown key="{meta:getCategoryId($invItem)}" type="integer" required="false"/> 
+      <queryNumber key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
+      <queryNumber key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
+      <queryNumber key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
+      <dropdown key="{meta:getPurchasedUnitsId($invItem)}" type="integer" required="false"/> 
+      <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="false"/> 
+      <queryCheck key="{meta:getIsActive($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsReorderAuto($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsLotMaintained($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsSerialMaintained($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsBulk($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsNotForSale($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsSubAssembly($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsLabor($invItem)}" required="false"/>
+      <queryCheck key="{meta:getIsNoInventory($invItem)}" required="false"/>
 
       <!--Additional info tab-->
-      <queryNumber key="{inventoryItemMeta:getAverageLeadTime()}" type="integer" required="false"/>
-      <queryNumber key="{inventoryItemMeta:getAverageCost()}" type="double" required="false"/>
-      <queryNumber key="{inventoryItemMeta:getAverageDailyUse()}" type="integer" required="false"/>
-      <queryString key="{inventoryItemMeta:getProductUri()}" required="false"/>
+      <queryNumber key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
+      <queryNumber key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
+      <queryNumber key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
+      <queryString key="{meta:getProductUri($invItem)}" required="false"/>
       
       <!--comments tab-->
-      <queryString key="{inventoryItemNoteMeta:getSubject()}" max="60" required="false"/>
+      <queryString key="{noteMeta:getSubject($note)}" max="60" required="false"/>
       
       <table key="componentsTable"/>
       <!--component table values-->
-      <dropdown key="{inventoryComponentMeta:getComponentId()}" required="false"/>
-	  <queryString key="{inventoryComponentItemMeta:getDescription()}" required="false"/>
-	  <queryNumber key="{inventoryComponentMeta:getQuantity()}" type="double" required="false"/>   
+      <queryString key="{invItemMeta:getName($compInvItem)}" required="false"/>
+	  <queryString key="{invItemMeta:getDescription($compInvItem)}" required="false"/>
+	  <queryNumber key="{componentMeta:getQuantity($component)}" type="double" required="false"/>   
 
       <table key="locQuantitiesTable"/>	  
 	  <!--location table values-->
-	  <queryString key="{inventoryLocationStorageLocationMeta:getLocation()}" required="false"/>
-	  <queryString key="{inventoryLocationMeta:getLotNumber()}" required="false"/>
-	  <queryString key="{inventoryLocationMeta:getExpirationDate()}" required="false"/>
-	  <queryNumber key="{inventoryLocationMeta:getQuantityOnhand()}" type="integer" required="false"/>
+	  <queryString key="{storageLocationMeta:getLocation($locStorageLoc)}" required="false"/>
+	  <queryString key="{locationMeta:getLotNumber($location)}" required="false"/>
+	  <queryString key="{locationMeta:getExpirationDate($location)}" required="false"/>
+	  <queryNumber key="{locationMeta:getQuantityOnhand($location)}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{inventoryItemMeta:getName()}"/>
+		<queryString key="{meta:getName($invItem)}"/>
 	</rpc>
 </screen>
   </xsl:template>

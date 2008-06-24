@@ -27,13 +27,12 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableCellWidget;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableTextBox;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+import org.openelis.newmeta.OrderMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -80,6 +79,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                         clearShippingNotes  = false,
                         clearReportToBillTo = false,
                         clearReceipts       = false;
+    
+    private OrderMetaMap OrderMeta = new OrderMetaMap();
     
     public OrderScreen(DataObject[] args) {                
         super("org.openelis.modules.order.server.OrderService");
@@ -160,13 +161,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         
         loaded = true;
         
-        orderNum = (ScreenTextBox)widgets.get("ordr.id");
-        neededInDays = (ScreenTextBox)widgets.get("ordr.neededInDays");
-        status = (ScreenAutoDropdown)widgets.get("ordr.status");
-        orderDate = (ScreenTextBox)widgets.get("ordr.orderedDate");
-        requestedBy = (ScreenTextBox)widgets.get("ordr.requestedBy");
-        shippingNoteText = (ScreenTextArea)widgets.get("shippingNote.text");
-        customerNoteText = (ScreenTextArea)widgets.get("customerNote.text");
+        orderNum = (ScreenTextBox)widgets.get(OrderMeta.getId());
+        neededInDays = (ScreenTextBox)widgets.get(OrderMeta.getNeededInDays());
+        status = (ScreenAutoDropdown)widgets.get(OrderMeta.getStatusId());
+        orderDate = (ScreenTextBox)widgets.get(OrderMeta.getOrderedDate());
+        requestedBy = (ScreenTextBox)widgets.get(OrderMeta.getRequestedBy());
+        shippingNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_SHIPPING_NOTE_META.getText());
+        customerNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText());
         
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
@@ -182,29 +183,29 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         standardNoteShippingButton = (AppButton)getWidget("standardNoteShippingButton");
         
         //organization address fields
-        orgAptSuite  = (TextBox)getWidget("order.organization.address.multipleUnit");
-        orgAddress = (TextBox)getWidget("order.organization.address.streetAddress");
-        orgCity = (TextBox)getWidget("order.organization.address.city");
-        orgState = (TextBox)getWidget("order.organization.address.state");
-        orgZipCode = (TextBox)getWidget("order.organization.address.zipCode");
+        orgAptSuite  = (TextBox)getWidget(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit());
+        orgAddress = (TextBox)getWidget(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress());
+        orgCity = (TextBox)getWidget(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getCity());
+        orgState = (TextBox)getWidget(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getState());
+        orgZipCode = (TextBox)getWidget(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode());
         
         //report to address fields
-        reportToAptSuite = (TextBox)getWidget("order.reportTo.address.multipleUnit");
-        reportToAddress = (TextBox)getWidget("order.reportTo.address.streetAddress");
-        reportToCity = (TextBox)getWidget("order.reportTo.address.city");
-        reportToState = (TextBox)getWidget("order.reportTo.address.state");
-        reportToZipCode = (TextBox)getWidget("order.reportTo.address.zipCode");
+        reportToAptSuite = (TextBox)getWidget(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getMultipleUnit());
+        reportToAddress = (TextBox)getWidget(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getStreetAddress());
+        reportToCity = (TextBox)getWidget(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getCity());
+        reportToState = (TextBox)getWidget(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getState());
+        reportToZipCode = (TextBox)getWidget(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getZipCode());
         
         //bill to address fields
-        billToAptSuite = (TextBox)getWidget("order.billTo.address.multipleUnit");
-        billToAddress = (TextBox)getWidget("order.billTo.address.streetAddress");
-        billToCity = (TextBox)getWidget("order.billTo.address.city");
-        billToState = (TextBox)getWidget("order.billTo.address.state");
-        billToZipCode = (TextBox)getWidget("order.billTo.address.zipCode");
+        billToAptSuite = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getMultipleUnit());
+        billToAddress = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getStreetAddress());
+        billToCity = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getCity());
+        billToState = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getState());
+        billToZipCode = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getZipCode());
         
-        orgDropdown = (AutoCompleteDropdown)getWidget("ordr.organization"); 
-        billToDropdown = (AutoCompleteDropdown)getWidget("ordr.billTo");
-        reportToDropdown = (AutoCompleteDropdown)getWidget("ordr.reportTo");
+        orgDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_ORGANIZATION_META.getName()); 
+        billToDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
+        reportToDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
         
         if (statusDropdown == null) {
             statusDropdown = (DataModel)initData.get("status");
@@ -212,14 +213,14 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             costCenterDropdown = (DataModel)initData.get("costCenter");
         }
 
-        drop = (AutoCompleteDropdown)getWidget("ordr.status");
+        drop = (AutoCompleteDropdown)getWidget(OrderMeta.getStatusId());
         drop.setModel(statusDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("store");
-        if(drop != null)
-            drop.setModel(storeDropdown);
+       // drop = (AutoCompleteDropdown)getWidget("store");
+       // if(drop != null)
+       //     drop.setModel(storeDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget("ordr.costCenter");
+        drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
         drop.setModel(costCenterDropdown);
         
         setBpanel((ButtonPanel)getWidget("buttons"));
@@ -362,16 +363,16 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             loadShippingNotes = true;
             clearShippingNotes = false;
             
-            Integer itemId = (Integer)rpc.getFieldValue("inventoryItem.id");
-            NumberObject itemIdObj = new NumberObject(itemId);
+            Integer orderId = (Integer)rpc.getFieldValue(OrderMeta.getId());
+            NumberObject orderIdObj = new NumberObject(orderId);
             
             // done because key is set to null in AppScreenForm for the add operation 
             if(key ==null){  
                 key = new DataSet();
-                key.setKey(itemIdObj);
+                key.setKey(orderIdObj);
                 
             }else{
-                key.setKey(itemIdObj);
+                key.setKey(orderIdObj);
                 
             }
             
@@ -596,7 +597,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     private void onStandardNoteCustomerButtonClick() {
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("customerNote.text")));
+        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)customerNoteText.getWidget()));
 
         standardNotePopupPanel.add(pickerWindow);
         int left = this.getAbsoluteLeft();
@@ -608,7 +609,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     private void onStandardNoteShippingButtonClick() {
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("shippingNote.text")));
+        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)shippingNoteText.getWidget()));
 
         standardNotePopupPanel.add(pickerWindow);
         int left = this.getAbsoluteLeft();

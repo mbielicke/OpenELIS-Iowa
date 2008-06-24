@@ -15,7 +15,6 @@ import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -181,6 +180,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         noteText.enable(false);
         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
+        clearNotes();
     }
 
     public void add() {

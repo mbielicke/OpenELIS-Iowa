@@ -2,16 +2,15 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:orderMeta="xalan://org.openelis.meta.OrderMeta" 
-                xmlns:orderItemMeta="xalan://org.openelis.meta.OrderItemMeta"
-                xmlns:orderOrganizationAddressMeta="xalan://org.openelis.meta.OrderOrganizationAddressMeta"
-                xmlns:orderReportToAddressMeta="xalan://org.openelis.meta.OrderReportToAddressMeta"
-                xmlns:orderBillToAddressMeta="xalan://org.openelis.meta.OrderBillToAddressMeta"
-                xmlns:orderShippingNoteMeta="xalan://org.openelis.meta.OrderShippingNoteMeta"
-                xmlns:orderCustomerNoteMeta="xalan://org.openelis.meta.OrderCustomerNoteMeta"
-                xmlns:orderItemInventoryItemMeta="xalan://org.openelis.meta.OrderItemInventoryItemMeta"
-                xmlns:orderItemStoreMeta="xalan://org.openelis.meta.OrderItemStoreMeta"
-                xmlns:orderInventoryReceiptMeta="xalan://org.openelis.meta.OrderInventoryReceiptMeta"
+                xmlns:orderMeta="xalan://org.openelis.newmeta.OrderMetaMap" 
+                xmlns:orderItemMeta="xalan://org.openelis.newmeta.OrderItemMetaMap"
+                xmlns:orgMeta="xalan://org.openelis.newmeta.OrderOrganizationMetaMap"
+                xmlns:addr="xalan://org.openelis.newmeta.AddressMeta"
+                xmlns:noteMeta="xalan://org.openelis.newmeta.NoteMeta"
+                xmlns:dictionaryMeta="xalan://org.openelis.newmeta.DictionaryMeta"
+                xmlns:invItemMeta="xalan://org.openelis.newmeta.InventoryItemMeta"
+                xmlns:invTransMeta="xalan://org.openelis.newmeta.InventoryTransactionMetaMap"
+                xmlns:invReceiptMeta="xalan://org.openelis.newmeta.InventoryReceiptMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -24,204 +23,177 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMeta"/>
+    <xalan:component prefix="orderMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="orderItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMeta"/>
-  </xalan:component>
-   
-  <xalan:component prefix="orderOrganizationAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationAddressMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderItemMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="orderReportToAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderReportToAddressMeta"/>
+  <xalan:component prefix="orgMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderOrganizationMetaMap"/>
   </xalan:component>
   
-  <xalan:component prefix="orderBillToAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderBillToAddressMeta"/>
+  <xalan:component prefix="addr">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AddressMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orderShippingNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderShippingNoteMeta"/>
+  <xalan:component prefix="noteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NoteMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orderCustomerNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderCustomerNoteMeta"/>
+  <xalan:component prefix="dictionaryMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orderItemInventoryItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemInventoryItemMeta"/>
+  <xalan:component prefix="invItemMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orderItemStoreMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemStoreMeta"/>
+  <xalan:component prefix="invReceiptMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryReceiptMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="orderInventoryReceiptMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderInventoryReceiptMeta"/>
+    <xalan:component prefix="invTransMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryTransactionMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="order" select="orderMeta:new()"/>
+    <xsl:variable name="orderItem" select="orderMeta:getOrderItem($order)"/>
+    <xsl:variable name="organization" select="orderMeta:getOrderOrganization($order)"/>
+    <xsl:variable name="reportTo" select="orderMeta:getReportToOrganization($order)"/>
+    <xsl:variable name="billTo" select="orderMeta:getBillToOrganization($order)"/>
+    <xsl:variable name="custNote" select="orderMeta:getCustomerNote($order)"/>
+    <xsl:variable name="shippingNote" select="orderMeta:getShippingNote($order)"/>
+    <xsl:variable name="store" select="orderMeta:getStore($order)"/>   
+    <xsl:variable name="transaction" select="orderMeta:getInventoryTransaction($order)"/>
+    <xsl:variable name="receipt" select="invTransMeta:getInventoryReceipt($transaction)"/>
+    <xsl:variable name="orderItemInvItem" select="orderItemMeta:getInventoryItem($orderItem)"/>
+    <xsl:variable name="orgAddress" select="orgMeta:getAddress($organization)"/>
+    <xsl:variable name="reportToAddress" select="orgMeta:getAddress($reportTo)"/>
+    <xsl:variable name="billToAddress" select="orgMeta:getAddress($billTo)"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="VendorOrder" name="{resource:getString($constants,'vendorOrder')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="horizontal" style="WhiteContentPanel" spacing="0" padding="0" xsi:type="Panel">
-			<panel layout="vertical" spacing="0" xsi:type="Panel">
-		<!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
-			<widget>
-    			<buttonPanel key="buttons">
-    			<xsl:call-template name="queryButton">
-    				<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="previousButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="nextButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="addButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="updateButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="commitButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="abortButton">
-    			<xsl:with-param name="language"><xsl:value-of select="language"/></xsl:with-param>
-    			</xsl:call-template>
+		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
+		<VerticalPanel spacing="0">
+			<!--button panel code-->
+			<AbsolutePanel spacing="0" style="ButtonPanelContainer">
+   				<buttonPanel key="buttons">
+    				<xsl:call-template name="queryButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="previousButton">
+    					<xsl:with-param name="language">
+    					<xsl:value-of select="language"/>
+    				</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="nextButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="buttonPanelDivider"/>
+    				<xsl:call-template name="addButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="updateButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="buttonPanelDivider"/>
+    				<xsl:call-template name="commitButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
+    				<xsl:call-template name="abortButton">
+    					<xsl:with-param name="language">
+    						<xsl:value-of select="language"/>
+    					</xsl:with-param>
+    				</xsl:call-template>
 				</buttonPanel>
- 			</widget>
-		</panel>
-		<!--end button panel-->
-
-					<panel layout="vertical" xsi:type="Panel">
-
-						<panel key="a" layout="vertical" xsi:type="Panel">
-			<panel layout="horizontal" xsi:type="Panel">
-							<panel key="secMod2" layout="table" style="Form" xsi:type="Table">
+			</AbsolutePanel>
+			<!--end button panel-->
+			<VerticalPanel>
+				<VerticalPanel>
+					<HorizontalPanel>
+							<TablePanel style="Form">
 								<row>
-									<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="lower" key="{orderMeta:id()}" width="75px" max="20" tab="{orderMeta:neededInDays()},{orderMeta:externalOrderNumber()}"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
-									</widget>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
+									<textbox case="lower" key="{orderMeta:getId($order)}" width="75px" max="20" tab="{orderMeta:getNeededInDays($order)},{orderMeta:getExternalOrderNumber($order)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"neededDays")'/>:</text>
 									<widget colspan="3">
-										<textbox key="{orderMeta:neededInDays()}" width="75px" tab="{orderMeta:status()},{orderMeta:id()}"/>
+										<textbox key="{orderMeta:getNeededInDays($order)}" width="75px" tab="{orderMeta:getStatusId($order)},{orderMeta:getId($order)}"/>
 									</widget>
 								</row>
 								<row>
-								<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
-									</widget>
-									<widget>
-										<autoDropdown key="{orderMeta:status()}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:organization()},{orderMeta:neededInDays()}">
-													<widths>167</widths>
-										</autoDropdown>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendor")'/>:</text>
-									</widget>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
+									<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}">
+										<widths>167</widths>
+									</autoDropdown>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendor")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown cat="organization" key="{orderMeta:organization()}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:orderedDate()},{orderMeta:status()}">
-										<headers>Name,Street,City,St</headers>
-										<widths>180,110,100,20</widths>
+										<autoDropdown cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}">
+											<headers>Name,Street,City,St</headers>
+											<widths>180,110,100,20</widths>
 										</autoDropdown>
 										<query>
-											<textbox case="upper" width="188px" tab="{orderMeta:orderedDate()},{orderMeta:status()}"/>
+											<textbox case="upper" width="188px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}"/>
 										</query>
 									</widget>
 								</row>
 								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
-									</widget>
-									<widget>
-										<textbox key="{orderMeta:orderedDate()}" width="75px" tab="{orderMeta:requestedBy()},{orderMeta:organization()}"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-									</widget>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderDate")'/>:</text>
+									<textbox key="{orderMeta:getOrderedDate($order)}" width="75px" tab="{orderMeta:getRequestedBy($order)},{orgMeta:getName($organization)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 									<widget colspan="3">
-										<textbox case="upper" key="{orderOrganizationAddressMeta:multipleUnit()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="upper" key="{addr:getMultipleUnit($orgAddress)}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>	
-									
-										
 								</row>
 								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
-									</widget>
-									<widget>
-										<textbox key="{orderMeta:requestedBy()}" width="203px" tab="{orderMeta:costCenter()},{orderMeta:orderedDate()}"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-									</widget>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
+									<textbox key="{orderMeta:getRequestedBy($order)}" width="203px" tab="{orderMeta:getCostCenterId($order)},{orderMeta:getOrderedDate($order)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 									<widget colspan="3">
-										<textbox case="upper" key="{orderOrganizationAddressMeta:streetAddress()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="upper" key="{addr:getStreetAddress($orgAddress)}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>			
 								</row>
 								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-									</widget>
-									<widget>
-										<autoDropdown key="{orderMeta:costCenter()}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:externalOrderNumber()},{orderMeta:requestedBy()}">
-													<widths>167</widths>
-										</autoDropdown>
-									</widget>
-									
-										<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-									</widget>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
+									<autoDropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getExternalOrderNumber($order)},{orderMeta:getRequestedBy($order)}">
+										<widths>167</widths>
+									</autoDropdown>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 									<widget colspan="3">
-										<textbox case="upper" key="{orderOrganizationAddressMeta:city()}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="upper" key="{addr:getCity($orgAddress)}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
 								</row>
 								<row>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"extOrderNum")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{orderMeta:externalOrderNumber()}" width="188px" max="20" tab="{orderMeta:id()},{orderMeta:costCenter()}"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{orderOrganizationAddressMeta:state()}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<widget>
-										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-									</widget>
-									<widget>
-										<textbox case="mixed" key="{orderOrganizationAddressMeta:zipCode()}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>	
-									
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"extOrderNum")'/>:</text>
+									<textbox case="mixed" key="{orderMeta:getExternalOrderNumber($order)}" width="188px" max="20" tab="{orderMeta:getId($order)},{orderMeta:getCostCenterId($order)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+									<textbox case="mixed" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+									<textbox case="mixed" key="{addr:getZipCode($orgAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 								</row>
-								</panel>
-								</panel>
-								
-								</panel>
-<!-- tabbed panel needs to go here -->
-				<panel height="200px" key="tabPanel" halign="center" layout="tab" xsi:type="Tab">
+							</TablePanel>
+						</HorizontalPanel>
+					</VerticalPanel>
+				<!-- TAB PANEL -->
+				<TabPanel height="200px" key="tabPanel" halign="center">
 					<!-- TAB 1 (Components) -->
 					<tab key="tab1" text="{resource:getString($constants,'items')}">
-							<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
+							<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
@@ -236,9 +208,9 @@
 											<label/>
 										</editors>
 										<fields>
-											<number key="{orderItemMeta:quantityRequested()}" type="integer" required="true"/>
-											<dropdown key="{orderItemInventoryItemMeta:name()}" required="true"/>
-											<string key="{orderItemStoreMeta:entry()}" required="false"/>
+											<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="true"/>
+											<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
+											<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false,false</filters>
@@ -255,34 +227,32 @@
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<xsl:value-of select='orderItemMeta:quantityRequested()'/>,
-											<xsl:value-of select='orderItemInventoryItemMeta:name()'/>,
-											<xsl:value-of select='orderItemStoreMeta:entry()'/>
+											<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
+											<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
+											<xsl:value-of select='dictionaryMeta:getEntry($store)'/>
 										</fields>								
 									</queryTable>
 									</query>
 								</widget>
-
-									<widget style="WhiteContentPanel" halign="center">
+								<widget style="WhiteContentPanel" halign="center">
 									<appButton action="removeItemRow" onclick="this" style="Button" key="removeItemButton">
-									<panel xsi:type="Panel" layout="horizontal">
-              						<panel xsi:type="Absolute" layout="absolute" style="RemoveRowButtonImage"/>
-						              <widget>
+									<HorizontalPanel>
+              						<AbsolutePanel style="RemoveRowButtonImage"/>
                 						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							              </widget>
-							              </panel>
+ 					                </HorizontalPanel>
 						            </appButton>
 						            </widget>
-							</panel>
+							</VerticalPanel>
 					</tab>		
 					<!-- TAB 2 -->	
 					<tab key="tab2" text="{resource:getString($constants,'receipt')}">
-						<panel layout="vertical" spacing="0" padding="0" xsi:type="Panel" overflow="hidden">
+						<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
-										<headers>Date Rec, UPC, Qty, Cost, QC</headers>
-										<widths>110,130,70,90,158</widths>
+										<headers>Date Rec,Item,UPC,Qty,Cost,QC,</headers>
+										<widths>80,155,95,40,55,130</widths>
 										<editors>
+											<label/>
 											<label/>
 											<label/>
 											<label/>
@@ -290,21 +260,23 @@
 											<label/>
 										</editors>
 										<fields>
+											<string/>
 											<string/>
 											<string/>
 											<number type="integer"/>
 											<number type="double"/>
 											<string/>
 										</fields>
-										<sorts>true,true,true,true,true</sorts>
-										<filters>false,false,false,false,false</filters>
-										<colAligns>left,left,left,left,left</colAligns>
+										<sorts>true,true,true,true,true,true</sorts>
+										<filters>false,false,false,false,false,false</filters>
+										<colAligns>left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
 									<queryTable width="auto" maxRows="10" title="" showError="false">
-										<headers>Date Rec, UPC, Qty, Cost, QC</headers>
-										<widths>110,138,75,95,158</widths>
+										<headers>Date Rec,Item,UPC,Qty,Cost,QC</headers>
+										<widths>80,173,95,40,55,130</widths>
 										<editors>
+											<label/>
 											<label/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
@@ -312,119 +284,115 @@
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-										<xsl:value-of select='orderInventoryReceiptMeta:recievedDate()'/>,
-										<xsl:value-of select='orderInventoryReceiptMeta:upc()'/>,
-										<xsl:value-of select='orderInventoryReceiptMeta:quantityRecieved()'/>,
-										<xsl:value-of select='orderInventoryReceiptMeta:unitCost()'/>,
-										<xsl:value-of select='orderInventoryReceiptMeta:qcReference()'/>
+										<xsl:value-of select='invReceiptMeta:getReceivedDate($receipt)'/>,
+										item,
+										<xsl:value-of select='invReceiptMeta:getUpc($receipt)'/>,
+										<xsl:value-of select='invReceiptMeta:getQuantityReceived($receipt)'/>,
+										<xsl:value-of select='invReceiptMeta:getUnitCost($receipt)'/>,
+										<xsl:value-of select='invReceiptMeta:getQcReference($receipt)'/>
 										</fields>
 									</queryTable>
 									</query>
 								</widget>
-								<widget>
-									<panel xsi:type="Panel" layout="horizontal" height="10px"/>
-    				            </widget>
-							</panel>
+								<HorizontalPanel height="10px"/>
+							</VerticalPanel>
 					</tab>
 					<!-- TAB 3 -->
 					<tab key="tab3" text="{resource:getString($constants,'orderShippingNotes')}">
-						<panel key="secMod3" layout="vertical" width="100%" height="229px" spacing="0" padding="0" xsi:type="Panel">
-							<panel key="noteFormPanel" layout="table" style="Form" xsi:type="Table" padding="0" spacing="0">
-										<row>
-										<widget colspan="2" align="center">
+						<VerticalPanel width="100%" height="229px" spacing="0" padding="0">
+							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+								<row>
+									<widget colspan="2" align="center">
 										<appButton action="standardNoteShipping" onclick="this" key="standardNoteShippingButton" style="Button">
-										<panel xsi:type="Panel" layout="horizontal">
-              							<panel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
-						              <widget>
-                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
-							              </widget>
-							              </panel>
+											<HorizontalPanel>
+              								<AbsolutePanel style="StandardNoteButtonImage"/>
+	                						<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+							              </HorizontalPanel>
 						            </appButton>
 						            </widget>
-										</row>
-										<row>
-										<widget>
-											<panel layout="horizontal" width="14px" xsi:type="Panel"/>
-										</widget>
-										<widget colspan="2">
-										<textarea width="576px" height="179px" case="mixed" key="{orderShippingNoteMeta:text()}"/>
-										</widget>
-										</row>
-										</panel>
-										</panel>
+								</row>
+								<row>
+									<HorizontalPanel layout="horizontal" width="14px" xsi:type="Panel"/>
+									<widget colspan="2">
+										<textarea width="576px" height="179px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+									</widget>
+								</row>
+							</TablePanel>
+						</VerticalPanel>
 					</tab>
-				</panel>
-				</panel>
-			</panel>
-		</panel>
+				</TabPanel>
+				</VerticalPanel>
+			</VerticalPanel>
+		</HorizontalPanel>
 	</display>
 	<rpc key="display">
   	  <!-- values on the screen -->
-  	  <number key="{orderMeta:id()}" type="integer" required="false"/>
-      <number key="{orderMeta:neededInDays()}" type="integer" required="true"/>
-      <dropdown key="{orderMeta:status()}" type="integer" required="true"/> 
-      <dropdown key="{orderMeta:organization()}" required="true"/>
-      <string key="{orderMeta:orderedDate()}" required="true"/>
-      <string key="{orderMeta:requestedBy()}" required="true"/>
-      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
-      <string key="{orderMeta:externalOrderNumber()}" required="false"/>
-      <string key="{orderShippingNoteMeta:text()}" required="false"/>
+  	  <number key="{orderMeta:getId($order)}" type="integer" required="false"/>
+      <number key="{orderMeta:getNeededInDays($order)}" type="integer" required="true"/>
+      <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="true"/> 
+      <dropdown key="{orgMeta:getName($organization)}" required="true"/>
+      <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
+      <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
+      <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
+      <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
+      <string key="{noteMeta:getText($shippingNote)}" required="false"/>
       <table key="itemsTable"/>
       
       <!-- organization address-->
-      <string key="{orderOrganizationAddressMeta:multipleUnit()}" required="false"/>
-      <string key="{orderOrganizationAddressMeta:streetAddress()}" required="false"/>
-      <string key="{orderOrganizationAddressMeta:city()}" required="false"/>
-      <string key="{orderOrganizationAddressMeta:state()}" required="false"/>
-      <string key="{orderOrganizationAddressMeta:zipCode()}" required="false"/>
+      <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
+      <string key="{addr:getStreetAddress($orgAddress)}" required="false"/>
+      <string key="{addr:getCity($orgAddress)}" required="false"/>
+      <string key="{addr:getState($orgAddress)}" required="false"/>
+      <string key="{addr:getZipCode($orgAddress)}" required="false"/>
             
       <string key="orderType" required="false"/>
       
       <!-- values not on this screen -->
-	  <dropdown key="{orderMeta:reportTo()}" required="false"/>
-      <dropdown key="{orderMeta:billTo()}" required="false"/>
-      <string key="{orderCustomerNoteMeta:text()}" required="false"/>
+	  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
+      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>
+      <string key="{noteMeta:getText($custNote)}" required="false"/>
       
       <!--report to address-->
-      <string key="{orderReportToAddressMeta:multipleUnit()}" required="false"/>
-      <string key="{orderReportToAddressMeta:streetAddress()}" required="false"/>
-      <string key="{orderReportToAddressMeta:city()}" required="false"/>
-      <string key="{orderReportToAddressMeta:state()}" required="false"/>
-      <string key="{orderReportToAddressMeta:zipCode()}" required="false"/>
+      <string key="{addr:getMultipleUnit($reportToAddress)}" required="false"/>
+      <string key="{addr:getStreetAddress($reportToAddress)}" required="false"/>
+      <string key="{addr:getCity($reportToAddress)}" required="false"/>
+      <string key="{addr:getState($reportToAddress)}" required="false"/>
+      <string key="{addr:getZipCode($reportToAddress)}" required="false"/>
       
       <!--bill to address -->
-      <string key="{orderBillToAddressMeta:multipleUnit()}" required="false"/>
-      <string key="{orderBillToAddressMeta:streetAddress()}" required="false"/>
-      <string key="{orderBillToAddressMeta:city()}" required="false"/>
-      <string key="{orderBillToAddressMeta:state()}" required="false"/>
-      <string key="{orderBillToAddressMeta:zipCode()}" required="false"/>
+      <string key="{addr:getMultipleUnit($billToAddress)}" required="false"/>
+      <string key="{addr:getStreetAddress($billToAddress)}" required="false"/>
+      <string key="{addr:getCity($billToAddress)}" required="false"/>
+      <string key="{addr:getState($billToAddress)}" required="false"/>
+      <string key="{addr:getZipCode($billToAddress)}" required="false"/>
       
 	</rpc>
 	<rpc key="query">
-	  <queryNumber key="{orderMeta:id()}" type="integer" required="false"/>
-      <queryNumber key="{orderMeta:neededInDays()}" type="integer" required="false"/>
-      <dropdown key="{orderMeta:status()}" type="integer" required="false"/> 
-      <queryString key="{orderMeta:organization()}" required="false"/>
-      <queryString key="{orderMeta:orderedDate()}" required="false"/>
-      <queryString key="{orderMeta:requestedBy()}" required="false"/>
-      <dropdown key="{orderMeta:costCenter()}" type="integer" required="false"/>
-      <queryString key="{orderMeta:externalOrderNumber()}" required="false"/>
+	  <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
+      <queryNumber key="{orderMeta:getNeededInDays($order)}" type="integer" required="false"/>
+      <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="false"/> 
+      <queryString key="{orgMeta:getName($organization)}" required="false"/>
+      <queryString key="{orderMeta:getOrderedDate($order)}" required="false"/>
+      <queryString key="{orderMeta:getRequestedBy($order)}" required="false"/>
+      <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
+      <queryString key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
       
       <string key="orderType" required="false"/>
       
       <!-- order items table -->
       <table key="itemsTable"/>
-      <queryNumber key="{orderItemMeta:quantityRequested()}" type="integer" required="false"/>
-	  <queryString key="{orderItemInventoryItemMeta:name()}" required="false"/>
-	  <queryString key="{orderItemStoreMeta:entry()}" required="false"/>
+      <queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+	  <queryString key="{invItemMeta:getName($orderItemInvItem)}" required="false"/>
+	  <queryString key="{dictionaryMeta:getEntry($store)}" required="false"/>
 
 	  <!-- receipts table -->
       <table key="receiptsTable"/>
-	  <queryString key="{orderInventoryReceiptMeta:recievedDate()}" required="false"/>
-	  <queryString key="{orderInventoryReceiptMeta:upc()}" required="false"/>
-	  <queryNumber key="{orderInventoryReceiptMeta:quantityRecieved()}" type="integer" required="false"/>
-	  <queryNumber key="{orderInventoryReceiptMeta:unitCost()}" type="double" required="false"/>
-	  <queryString key="{orderInventoryReceiptMeta:qcReference()}" required="false"/>
+	  <queryString key="{invReceiptMeta:getReceivedDate($receipt)}" required="false"/>
+	  <queryString key="item" required="false"/>
+	  <queryString key="{invReceiptMeta:getUpc($receipt)}" required="false"/>
+	  <queryNumber key="{invReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
+	  <queryNumber key="{invReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
+	  <queryString key="{invReceiptMeta:getQcReference($receipt)}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>

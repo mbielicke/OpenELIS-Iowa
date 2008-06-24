@@ -24,6 +24,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.StandardNoteMeta;
+import org.openelis.newmeta.StandardNoteMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -36,10 +37,12 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 																AutoCompleteServiceInt {
 	
 	private static final long serialVersionUID = 734713425110147476L;
-	private static final int leftTableRowsPerPage = 10;
+	private static final int leftTableRowsPerPage = 13;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
+    private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
+    
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List standardNotes = new ArrayList();
         //		if the rpc is null then we need to get the page
@@ -339,11 +342,11 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 
 	private StandardNoteDO getStandardNoteDOFromRPC(FormRPC rpcSend){
     	StandardNoteDO newStandardNoteDO = new StandardNoteDO();
-    	newStandardNoteDO.setId((Integer)rpcSend.getFieldValue(StandardNoteMeta.ID));
-    	newStandardNoteDO.setDescription((String)rpcSend.getFieldValue(StandardNoteMeta.DESCRIPTION));
-    	newStandardNoteDO.setName((String)rpcSend.getFieldValue(StandardNoteMeta.NAME));
-    	newStandardNoteDO.setText((String)rpcSend.getFieldValue(StandardNoteMeta.TEXT));
-    	newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.TYPE_ID));
+    	newStandardNoteDO.setId((Integer)rpcSend.getFieldValue(StandardNoteMeta.getId()));
+    	newStandardNoteDO.setDescription((String)rpcSend.getFieldValue(StandardNoteMeta.getDescription()));
+    	newStandardNoteDO.setName((String)rpcSend.getFieldValue(StandardNoteMeta.getName()));
+    	newStandardNoteDO.setText((String)rpcSend.getFieldValue(StandardNoteMeta.getText()));
+    	newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.getTypeId()));
     	
     	return newStandardNoteDO;
     }
@@ -360,10 +363,10 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, StandardNoteDO standardNoteDO){
-    	rpcReturn.setFieldValue(StandardNoteMeta.ID, standardNoteDO.getId());
-    	rpcReturn.setFieldValue(StandardNoteMeta.DESCRIPTION, standardNoteDO.getDescription());
-    	rpcReturn.setFieldValue(StandardNoteMeta.NAME, standardNoteDO.getName());
-    	rpcReturn.setFieldValue(StandardNoteMeta.TEXT, standardNoteDO.getText());
-    	rpcReturn.setFieldValue(StandardNoteMeta.TYPE_ID, standardNoteDO.getType());
+    	rpcReturn.setFieldValue(StandardNoteMeta.getId(), standardNoteDO.getId());
+    	rpcReturn.setFieldValue(StandardNoteMeta.getDescription(), standardNoteDO.getDescription());
+    	rpcReturn.setFieldValue(StandardNoteMeta.getName(), standardNoteDO.getName());
+    	rpcReturn.setFieldValue(StandardNoteMeta.getText(), standardNoteDO.getText());
+    	rpcReturn.setFieldValue(StandardNoteMeta.getTypeId(), standardNoteDO.getType());
     }
 }

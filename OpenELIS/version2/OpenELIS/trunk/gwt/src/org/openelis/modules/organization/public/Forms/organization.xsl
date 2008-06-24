@@ -92,7 +92,7 @@
 						</AbsolutePanel>
 						<!--end button panel-->
 						<VerticalPanel>
-							<TablePanel key="secMod2" style="Form">
+							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
 									<textbox key="{meta:getId($org)}" tab="{meta:getName($org)},{meta:getIsActive($org)}" width="75px"/>
@@ -138,7 +138,7 @@
 									</widget>
 								</row>
 							</TablePanel>
-							<!-- tabbed panel needs to go here -->
+							<!-- TAB PANEL -->
 							<TabPanel halign="center" height="200px" key="orgTabPanel">
 								<!-- TAB 1 -->
 								<tab key="tab1" text="{resource:getString($constants,'contact')}">

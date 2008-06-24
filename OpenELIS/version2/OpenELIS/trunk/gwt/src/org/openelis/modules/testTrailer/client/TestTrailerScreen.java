@@ -3,9 +3,13 @@ package org.openelis.modules.testTrailer.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.TestTrailerMetaMap;
 
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -15,6 +19,8 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	private TextBox nameTextBox;
 	private ScreenTextArea textArea;
 	
+    private TestTrailerMetaMap TestTrailerMeta = new TestTrailerMetaMap();
+     
 	public TestTrailerScreen() {
 		super("org.openelis.modules.testTrailer.server.TestTrailerService",false);
 	}
@@ -33,15 +39,17 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	public void afterDraw(boolean success) {
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
-		AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-		modelWidget.addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        modelWidget.addChangeListener(atozTable);
         addChangeListener(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        nameTextBox = (TextBox) getWidget("test_trailer.name");
-        textArea = (ScreenTextArea) widgets.get("test_trailer.text");
+        nameTextBox = (TextBox) getWidget(TestTrailerMeta.getName());
+        textArea = (ScreenTextArea) widgets.get(TestTrailerMeta.getText());
 
 		super.afterDraw(success);
 	}
@@ -75,7 +83,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 
 			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue("test_trailer.name", query);
+			letterRPC.setFieldValue(TestTrailerMeta.getName(), query);
 
 			commitQuery(letterRPC);
 		}
