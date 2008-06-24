@@ -10,6 +10,8 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.OrganizationMetaMap;
+import org.openelis.newmeta.StandardNoteMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,6 +26,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 
 	public TextArea noteTextArea;
 	
+    private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
+    
 	public StandardNotePickerScreen(TextArea noteTextArea) {
 		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService",false);
 		this.noteTextArea = noteTextArea;		
@@ -36,8 +40,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 			TextBox findTextBox = (TextBox)getWidget("findTextBox");
 			 String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
 			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
-			queryRPC.setFieldValue("standard_note.name", queryString);
-			queryRPC.setFieldValue("standard_note.description", queryString);
+			queryRPC.setFieldValue(StandardNoteMeta.getName(), queryString);
+			queryRPC.setFieldValue(StandardNoteMeta.getDescription(), queryString);
 
 			StringObject name = new StringObject();
 	        StringObject desc = new StringObject();
@@ -135,8 +139,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 
 			StringObject name = new StringObject();
 	        StringObject desc = new StringObject();
-	        name.setValue(queryRPC.getFieldValue("standard_note.name")+(((String)queryRPC.getFieldValue("standard_note.name")).endsWith("*") ? "" : "*"));
-	        desc.setValue(queryRPC.getFieldValue("standard_note.description")+(((String)queryRPC.getFieldValue("standard_note.name")).endsWith("*") ? "" : "*"));
+	        name.setValue(queryRPC.getFieldValue(StandardNoteMeta.getName())+(((String)queryRPC.getFieldValue(StandardNoteMeta.getName())).endsWith("*") ? "" : "*"));
+	        desc.setValue(queryRPC.getFieldValue(StandardNoteMeta.getDescription())+(((String)queryRPC.getFieldValue(StandardNoteMeta.getName())).endsWith("*") ? "" : "*"));
 	        
 	        NumberObject idObj = new NumberObject(NumberObject.Type.INTEGER);
 			idObj.setValue(id);

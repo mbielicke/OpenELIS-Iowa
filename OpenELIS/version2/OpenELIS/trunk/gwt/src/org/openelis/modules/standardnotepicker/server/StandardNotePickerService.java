@@ -16,6 +16,8 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.widget.pagedtree.TreeModel;
 import org.openelis.gwt.widget.pagedtree.TreeModelItem;
 import org.openelis.meta.StandardNoteMeta;
+import org.openelis.newmeta.OrganizationMetaMap;
+import org.openelis.newmeta.StandardNoteMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
@@ -32,6 +34,8 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 
 	private static final long serialVersionUID = -2489317407834940845L;
 
+    private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
+    
 	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
     	return null;
     }
@@ -89,8 +93,8 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		descField.setValue(desc.getValue());
 		
 		HashMap fields = new HashMap();
-		fields.put(StandardNoteMeta.NAME, nameField);
-		fields.put(StandardNoteMeta.DESCRIPTION, descField);
+		fields.put(StandardNoteMeta.getName(), nameField);
+		fields.put(StandardNoteMeta.getDescription(), descField);
 		
 		List standardNoteCategories = new ArrayList();
 		try{
@@ -133,9 +137,9 @@ public class StandardNotePickerService implements AppScreenFormServiceInt {
 		nameField.setValue(name.getValue());
 		descField.setValue(desc.getValue());
 		HashMap<String,AbstractField> fields = new HashMap<String, AbstractField>();
-		fields.put(StandardNoteMeta.TYPE_ID, typeField);
-		fields.put(StandardNoteMeta.NAME, nameField);
-		fields.put(StandardNoteMeta.DESCRIPTION, descField);
+		fields.put(StandardNoteMeta.getTypeId(), typeField);
+		fields.put(StandardNoteMeta.getName(), nameField);
+		fields.put(StandardNoteMeta.getDescription(), descField);
 		List list = new ArrayList();
 		try{
 			list = remote.getStandardNoteByType(fields);
