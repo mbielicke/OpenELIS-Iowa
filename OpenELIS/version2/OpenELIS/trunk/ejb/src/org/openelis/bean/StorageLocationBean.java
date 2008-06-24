@@ -29,8 +29,11 @@ import org.openelis.meta.StorageLocationChildMeta;
 import org.openelis.meta.StorageLocationChildStorageUnitMeta;
 import org.openelis.meta.StorageLocationMeta;
 import org.openelis.meta.StorageLocationStorageUnitMeta;
+import org.openelis.newmeta.StorageLocationMetaMap;
+import org.openelis.newmeta.StorageUnitMetaMap;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.Meta;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -52,6 +55,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
     
     {
         try {
@@ -155,33 +159,21 @@ public class StorageLocationBean implements StorageLocationRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        NewQueryBuilder qb = new NewQueryBuilder();
         
-        StorageLocationMeta storageLocationMeta = StorageLocationMeta.getInstance();
-        StorageLocationChildMeta StorageLocationChildrenMeta = StorageLocationChildMeta.getInstance();
-        StorageLocationChildStorageUnitMeta storageLocationChildrenStorageUnitMeta = StorageLocationChildStorageUnitMeta.getInstance();
-        StorageLocationStorageUnitMeta storageUnitMeta = StorageLocationStorageUnitMeta.getInstance();
+        qb.setMeta(StorageLocationMeta);
         
-        qb.addMeta(new Meta[]{storageLocationMeta, StorageLocationChildrenMeta, storageLocationChildrenStorageUnitMeta, storageUnitMeta});
-        
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+storageLocationMeta.ID+", "+storageLocationMeta.NAME + ") ");
-        qb.addTable(storageLocationMeta);
-        
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+StorageLocationMeta.getId()+", "+StorageLocationMeta.getName() + ") ");
+         
 //      this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(storageLocationMeta.NAME);
+        qb.setOrderBy(StorageLocationMeta.getName());
         
-        qb.addWhere(storageLocationMeta.PARENT_STORAGE_LOCATION_ID + " is null");    
-        
-        if(qb.hasTable(storageLocationChildrenStorageUnitMeta.getTable()))
-        	qb.addTable(StorageLocationChildrenMeta);
-        
-        //if(qb.hasTable(StorageLocationChildrenMeta.getTable()))
-        //	qb.addWhere("");
-        
+        qb.addWhere(StorageLocationMeta.getParentStorageLocationId() + " is null");    
+        System.out.println("before get EJBQL");
         sb.append(qb.getEJBQL());
-
+System.out.println(sb.toString());
         Query query = manager.createQuery(sb.toString());
        
         if(first > -1 && max > -1)
@@ -333,7 +325,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	private void validateStorageLocation(StorageLocationDO storageLocationDO, List exceptionList){
 		//name required
 		if(storageLocationDO.getName() == null || "".equals(storageLocationDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getName()));
 		}
 		
 		//no name duplicates
@@ -349,28 +341,28 @@ public class StorageLocationBean implements StorageLocationRemote{
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",StorageLocationMeta.NAME));
+			exceptionList.add(new FieldErrorException("fieldUniqueException",StorageLocationMeta.getName()));
 		
 		//location required
 		if(storageLocationDO.getLocation() == null || "".equals(storageLocationDO.getLocation())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.LOCATION));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getLocation()));
 		}
 		
 		//storage unit required
 		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationStorageUnitMeta.DESCRIPTION));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.STORAGE_UNIT_META.getDescription()));
 		}		
 	}
 	
 	private void validateChildStorageLocation(StorageLocationDO storageLocationDO, int rowIndex, List exceptionList){
 		//storage unit required
 		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationChildStorageUnitMeta.DESCRIPTION));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationMeta.CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.getDescription()));
 		}
 		
 		//location required		
 		if(storageLocationDO.getLocation() == null || "".equals(storageLocationDO.getLocation())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationChildMeta.LOCATION));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationMeta.CHILD_STORAGE_LOCATION_META.getLocation()));
 		}		
 	}
 }

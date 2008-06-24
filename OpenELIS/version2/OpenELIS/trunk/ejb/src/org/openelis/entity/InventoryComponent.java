@@ -30,9 +30,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({ @NamedQuery(name = "InventoryComponent.InventoryComponent", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
     " c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
 @NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
-" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItemId = :id"),
-@NamedQuery(name = "InventoryComponent.ValidateComponentWithItemStore", query = "select c.id from InventoryComponent c left join c.componentInventoryItem i where " +
-" i.storeId = :store AND c.id = :id")})
+" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItemId = :id")})
 
 
 @Entity

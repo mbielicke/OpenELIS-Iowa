@@ -23,9 +23,9 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.StorageUnitMeta;
+import org.openelis.newmeta.StorageUnitMetaMap;
 import org.openelis.remote.StorageUnitRemote;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -49,6 +49,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
     {
         try {
@@ -61,19 +62,16 @@ public class StorageUnitBean implements StorageUnitRemote{
     
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
+		NewQueryBuilder qb = new NewQueryBuilder();
 		
-		StorageUnitMeta storageUnitMeta = StorageUnitMeta.getInstance();
+		qb.setMeta(StorageUnitMeta);
 		
-		qb.addMeta(storageUnitMeta);
-		
-		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+storageUnitMeta.ID+", "+storageUnitMeta.DESCRIPTION + ") ");
-		 qb.addTable(storageUnitMeta);
+		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+StorageUnitMeta.getId()+", "+StorageUnitMeta.getDescription() + ") ");
 	        
 //	      this method is going to throw an exception if a column doesnt match
 		 qb.addWhere(fields);      
 
-	     qb.setOrderBy(storageUnitMeta.DESCRIPTION);
+	     qb.setOrderBy(StorageUnitMeta.getDescription());
         
 	     sb.append(qb.getEJBQL());
 
@@ -241,12 +239,12 @@ public class StorageUnitBean implements StorageUnitRemote{
 	private void validateStorageUnit(StorageUnitDO storageUnitDO, List exceptionList){
 		//category required
 		if(storageUnitDO.getCategory() == null || "".equals(storageUnitDO.getCategory())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.CATEGORY));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getCategory()));
 		}
 		
 		//description required
 		if(storageUnitDO.getDescription() == null || "".equals(storageUnitDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.DESCRIPTION));
+			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getDescription()));
 		}
 		
 	}

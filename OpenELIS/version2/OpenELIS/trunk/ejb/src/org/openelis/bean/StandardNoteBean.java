@@ -25,7 +25,10 @@ import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.StandardNoteMeta;
+import org.openelis.newmeta.InventoryItemMetaMap;
+import org.openelis.newmeta.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -47,6 +50,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static final StandardNoteMetaMap StandardNoteMap = new StandardNoteMetaMap();
     
     {
         try {
@@ -125,19 +129,16 @@ public class StandardNoteBean implements StandardNoteRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
+		NewQueryBuilder qb = new NewQueryBuilder();
 		
-		StandardNoteMeta snMeta = StandardNoteMeta.getInstance();
+        qb.setMeta(StandardNoteMap);
 		
-		qb.addMeta(snMeta);
-		
-		qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + snMeta.ID + ", " + snMeta.NAME + ") ");
-		qb.addTable(snMeta);
+		qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + StandardNoteMap.getId() + ", " + StandardNoteMap.getName() + ") ");
 		
 //		this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
-        qb.setOrderBy(snMeta.NAME);
+        qb.setOrderBy(StandardNoteMap.getName());
         
         sb.append(qb.getEJBQL());
         

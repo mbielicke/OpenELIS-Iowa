@@ -184,22 +184,12 @@ public class OrderBean implements OrderRemote{
 
     public List query(HashMap fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
-        //QueryBuilder qb = new QueryBuilder();
         NewQueryBuilder qb = new NewQueryBuilder();
         
         qb.setMeta(OrderMetaMap);
 
-        //OrderMeta orderMeta = OrderMeta.getInstance();
-        //OrderItemMeta orderItemMeta = OrderItemMeta.getInstance();
-        //OrderItemInventoryItemMeta invItemMeta = OrderItemInventoryItemMeta.getInstance();
-        //OrderItemStoreMeta storeMeta = OrderItemStoreMeta.getInstance();
-
-        //qb.addMeta(new Meta[]{orderMeta, orderItemMeta, invItemMeta, storeMeta});
- 
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrderMetaMap.getId()+") ");
-        //qb.addTable(orderMeta);
-        //qb.addTable(orderItemMeta);
-        
+       
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 

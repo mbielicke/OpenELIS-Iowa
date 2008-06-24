@@ -131,43 +131,18 @@ public class InventoryItemBean implements InventoryItemRemote{
 	}
 
 	public List query(HashMap fields, int first, int max) throws Exception {
-//		organization reference table id
-    	Query refIdQuery = manager.createNamedQuery("getTableId");
-    	refIdQuery.setParameter("name", "inventory_item");
-        Integer inventoryItemReferenceId = (Integer)refIdQuery.getSingleResult();
         
         StringBuffer sb = new StringBuffer();
         NewQueryBuilder qb = new NewQueryBuilder();
         
         qb.setMeta(invItemMap);
 
-        /*InventoryItemMeta itemMeta = InventoryItemMeta.getInstance();
-        InventoryComponentMeta componentMeta = InventoryComponentMeta.getInstance();
-        InventoryComponentItemMeta componentItemMeta = InventoryComponentItemMeta.getInstance();
-        InventoryLocationMeta locationMeta = InventoryLocationMeta.getInstance();   
-        InventoryLocationStorageLocationMeta locationStorageLocationMeta = InventoryLocationStorageLocationMeta.getInstance();
-        InventoryItemNoteMeta noteMeta = InventoryItemNoteMeta.getInstance();
-
-        qb.addMeta(new Meta[]{itemMeta, componentMeta, componentItemMeta, locationMeta, locationStorageLocationMeta, noteMeta});
- */
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+invItemMap.getId()+", "+invItemMap.getName()+") ");
-        //qb.addTable(itemMeta);
         
-        //I add this everytime because if they query from the locations table the location meta needs to go first
-        //and sometimes it doesnt.  This makes this table come first everytime.
-        //qb.addTable(locationMeta);
-
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
         qb.setOrderBy(invItemMap.getName());
-        
-        //TODO we need to put these values in cache to remove this from where statement
-        //if(qb.hasTable(noteMeta.getTable()))
-        //	qb.addWhere(noteMeta.REFERENCE_TABLE_ID+" = "+inventoryItemReferenceId+" or "+noteMeta.REFERENCE_TABLE_ID+" is null");
-        
-        //if(qb.hasTable(componentItemMeta.getTable()))
-        //    qb.addTable(componentMeta);
         
         sb.append(qb.getEJBQL());
         
@@ -421,8 +396,8 @@ public class InventoryItemBean implements InventoryItemRemote{
         //components store needs to match the inventory items store
         if(componentDO.getComponentNameId() != null){
             Query query = null;
-                query = manager.createNamedQuery("InventoryComponent.ValidateComponentWithItemStore");
-                query.setParameter("id", componentDO.getId());
+                query = manager.createNamedQuery("InventoryItem.ValidateComponentWithItemStore");
+                query.setParameter("id", componentDO.getComponentNameId());
                 query.setParameter("store", inventoryItemStoreId);
             
             if(query.getResultList().size() == 0)

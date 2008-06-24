@@ -139,7 +139,6 @@ public class AnalyteBean implements AnalyteRemote{
 		qb.setMeta(Meta);
 		
 		qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+", "+Meta.getName() + ") ");
-		 //qb.addTable(analyteMeta);
 	        
 //	      this method is going to throw an exception if a column doesnt match
 		 qb.addWhere(fields);      
