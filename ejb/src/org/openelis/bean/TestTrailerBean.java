@@ -24,7 +24,10 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.TestTrailerMeta;
+import org.openelis.newmeta.StandardNoteMetaMap;
+import org.openelis.newmeta.TestTrailerMetaMap;
 import org.openelis.remote.TestTrailerRemote;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -46,6 +49,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static final TestTrailerMetaMap TestTrailerMap = new TestTrailerMetaMap();
     
     {
         try {
@@ -124,19 +128,16 @@ public class TestTrailerBean implements TestTrailerRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
+		NewQueryBuilder qb = new NewQueryBuilder();
 		
-		TestTrailerMeta testTrailerMeta = TestTrailerMeta.getInstance();
+		qb.setMeta(TestTrailerMap);
 		
-		qb.addMeta(testTrailerMeta);
-		
-		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+TestTrailerMeta.ID+", "+TestTrailerMeta.NAME + ") ");
-		 qb.addTable(testTrailerMeta);
+		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+TestTrailerMap.getId()+", "+TestTrailerMap.getName() + ") ");
 	        
 //	      this method is going to throw an exception if a column doesnt match
 		 qb.addWhere(fields);      
 
-	     qb.setOrderBy(TestTrailerMeta.NAME);
+	     qb.setOrderBy(TestTrailerMap.getName());
         
 	     sb.append(qb.getEJBQL());
 

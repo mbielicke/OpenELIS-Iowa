@@ -49,7 +49,9 @@ import org.openelis.utils.Auditable;
      @NamedQuery(name = "InventoryItem.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
                           + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='inventory_item') and n.referenceId = :id ORDER BY n.timestamp DESC"),
      @NamedQuery(name = "InventoryItem.UpdateNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name and i.storeId = :store AND i.id != :id"),
-     @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.storeId = :store")})
+     @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.storeId = :store"),
+     @NamedQuery(name = "InventoryItem.ValidateComponentWithItemStore", query = "select i.id from InventoryItem i where " +
+                            " i.storeId = :store AND i.id = :id")})
 
      
 @Entity

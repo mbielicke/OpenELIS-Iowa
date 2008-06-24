@@ -245,20 +245,12 @@ public class OrganizationBean implements OrganizationRemote {
         qb.setMeta(OrgMeta);
  
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
-        //qb.addTable(orgMeta);
-
+       
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
         qb.setOrderBy(OrgMeta.getName());
-       // if(qb.hasTable(orgContactAddressMeta.getTable()))
-       // 	qb.addTable(orgContactMeta);
-        
-        //TODO we need to put these values in cache to remove this from where statement
-        //if(qb.hasTable(orgNoteMeta.getTable())){
-       // 	qb.addWhere(orgNoteMeta.REFERENCE_TABLE+" = "+organizationReferenceId+" or "+orgNoteMeta.REFERENCE_TABLE+" is null");
-       // }
-        
+       
         sb.append(qb.getEJBQL());
 
         Query query = manager.createQuery(sb.toString());
