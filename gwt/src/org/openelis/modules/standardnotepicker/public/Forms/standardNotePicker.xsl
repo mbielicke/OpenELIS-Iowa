@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:standardNoteMeta="xalan://org.openelis.meta.StandardNoteMeta" 
+                xmlns:standardNoteMeta="xalan://org.openelis.newmeta.StandardNoteMetaMap" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="button.xsl"/>
@@ -16,58 +16,61 @@
   </xalan:component>
 
   <xalan:component prefix="standardNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StandardNoteMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.StandardNoteMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
+      <xsl:variable name="meta" select="standardNoteMeta:new()"/>
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="StandardNotePicker" name="{resource:getString($constants,'standardNoteSelection')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<panel layout="vertical" style="WhiteContentPanel" spacing="0" width="300px" xsi:type="Panel">
-		<panel layout="horizontal" spacing="0" xsi:type="Panel">
-		<panel layout="horizontal" spacing="3" xsi:type="Panel">
+		<VerticalPanel style="WhiteContentPanel" spacing="0" width="300px">
+		<HorizontalPanel spacing="0">
+		<HorizontalPanel spacing="3">
 		<textbox key="findTextBox" width="200px" showError="false" alwaysEnabled="true"/>
-		</panel>
+		</HorizontalPanel>
 		<appButton action="find" onclick="this" style="Button" key="findButton" alwaysEnabled="true">
-			<panel xsi:type="Panel" layout="horizontal">
-            	<panel xsi:type="Absolute" layout="absolute" style="FindButtonImage"/>
-					<widget>
+			<HorizontalPanel>
+            	<AbsolutePanel style="FindButtonImage"/>
                 		<text><xsl:value-of select='resource:getString($constants,"find")'/></text>
-					</widget>
-				</panel>
+				</HorizontalPanel>
 		</appButton>
-		</panel>
-				<panel key="treeContainer" layout="vertical" height="250px" width="320px" overflow="auto" xsi:type="Panel">
+		</HorizontalPanel>
+			<VerticalPanel key="treeContainer" height="250px" width="320px" overflow="auto">
 				<!--tree-->
 				<pagedtree key="noteTree" vertical="true" height = "250px" width = "320px" itemsPerPage="1000" title=""/>
-				</panel>
-				<panel layout="horizontal" xsi:type="Panel" spacing="10">
-				<widget>
+				</VerticalPanel>
+				<HorizontalPanel spacing="10">
 				<!-- text area-->
 				<textarea key="noteText" width="300px" height="200px"/>
-				</widget>
-				</panel>
+				</HorizontalPanel>
 				
 			<!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer" align="center">
-			<widget>
+		<AbsolutePanel spacing="0" style="ButtonPanelContainer" align="center">
     			<buttonPanel key="buttons">
-    			<xsl:call-template name="popupSelectButton"/>
-    			<xsl:call-template name="popupCancelButton"/>
+    			<xsl:call-template name="popupSelectButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="popupCancelButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
 				</buttonPanel>
- 			</widget>
-		</panel>
+		</AbsolutePanel>
 		<!--end button panel-->
-			</panel>
+			</VerticalPanel>
 	</display>
 	<rpc key="display">
 	<tree key="noteTree"/>
 	</rpc>
 	<rpc key="queryByNameDescription">
- 	<queryString key="{standardNoteMeta:getName()}" type="string" required="false"/>
-  	<queryString key="{standardNoteMeta:getDescription()}" required="false"/>
+ 	<queryString key="{standardNoteMeta:getName($meta)}" type="string" required="false"/>
+  	<queryString key="{standardNoteMeta:getDescription($meta)}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>
