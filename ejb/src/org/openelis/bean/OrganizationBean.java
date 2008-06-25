@@ -27,7 +27,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.newmeta.OrganizationMetaMap;
+import org.openelis.meta.OrganizationMetaMap;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.Datetime;
