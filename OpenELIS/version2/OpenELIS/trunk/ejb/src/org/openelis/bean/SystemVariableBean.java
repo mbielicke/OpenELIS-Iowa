@@ -23,9 +23,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.SystemVariableMeta;
+import org.openelis.newmeta.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;
-import org.openelis.util.Meta;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
 
 import edu.uiowa.uhl.security.domain.SystemUserDO;
@@ -48,6 +48,8 @@ public class SystemVariableBean implements SystemVariableRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    
+    private static final SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     
     {
         try {
@@ -96,16 +98,16 @@ public class SystemVariableBean implements SystemVariableRemote{
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        SystemVariableMeta sysVarMeta = SystemVariableMeta.getInstance();
+        StringBuffer sb = new StringBuffer();        
         
-        QueryBuilder qb = new QueryBuilder();
-        qb.addMeta(new Meta[]{sysVarMeta});
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+SystemVariableMeta.ID+" , "+SystemVariableMeta.NAME + ") ");
-        qb.addTable(sysVarMeta);
+        NewQueryBuilder qb = new NewQueryBuilder();
+        //qb.addMeta(new Meta[]{sysVarMeta});
+        qb.setMeta(Meta);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+" , "+Meta.getName() + ") ");
+        //qb.addTable(sysVarMeta);
         qb.addWhere(fields);
         
-        qb.setOrderBy(SystemVariableMeta.NAME);
+        qb.setOrderBy(Meta.getName());
         
         sb.append(qb.getEJBQL());            
         Query query = manager.createQuery(sb.toString());
