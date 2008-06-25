@@ -13,7 +13,7 @@ public class OrderDO implements Serializable{
     private static final long serialVersionUID = 1L;
     
     protected Integer id;
-    protected Integer status;
+    protected Integer statusId;
     protected Datetime orderedDate;
     protected Integer neededInDays;
     protected String requestedBy;
@@ -39,7 +39,7 @@ public class OrderDO implements Serializable{
                    Integer costCenter, Integer organizationId, String isExternal, String externalOrderNumber, 
                    Integer reportToId, Integer billToId){
         setId(id);
-        setStatus(status);
+        setStatusId(status);
         setOrderedDate(orderedDate);
         setNeededInDays(neededInDays);
         setRequestedBy(requestedBy);
@@ -59,7 +59,7 @@ public class OrderDO implements Serializable{
                    String orgState, String orgZipCode, String isExternal, String externalOrderNumber, 
                    Integer reportToId, Integer billToId){
         setId(id);
-        setStatus(status);
+        setStatusId(status);
         setOrderedDate(orderedDate);
         setNeededInDays(neededInDays);
         setRequestedBy(requestedBy);
@@ -87,7 +87,7 @@ public class OrderDO implements Serializable{
                    Integer billToId, String billTo, String billToMultUnit, String billToStreetAddress, String billToCity, String billToState,
                    String billToZipCode){
         setId(id);
-        setStatus(status);
+        setStatusId(status);
         setOrderedDate(orderedDate);
         setNeededInDays(neededInDays);
         setRequestedBy(requestedBy);
@@ -227,12 +227,12 @@ public class OrderDO implements Serializable{
         this.requestedBy = DataBaseUtil.trim(requestedBy);
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getStatusId() {
+        return statusId;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setStatusId(Integer status) {
+        this.statusId = status;
     }
     
 
