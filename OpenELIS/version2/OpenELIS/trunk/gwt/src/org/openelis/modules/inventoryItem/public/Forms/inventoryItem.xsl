@@ -60,7 +60,7 @@
 		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel">
-				<azTable colwidths="175" key="azTable" maxRows="24" tableWidth="auto" title="{resource:getString($constants,'name')}" width="100%">
+				<azTable width="auto" key="azTable" maxRows="24" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -331,11 +331,17 @@
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageLeadTime")'/>:</text>
-							<textbox key="{meta:getAverageLeadTime($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							<widget>
+								<textbox key="{meta:getAverageLeadTime($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageCost")'/>:</text>
-							<textbox key="{meta:getAverageCost($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							<widget>
+								<textbox key="{meta:getAverageCost($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"averageDailyUse")'/>:</text>
-							<textbox key="{meta:getAverageDailyUse($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							<widget>
+								<textbox key="{meta:getAverageDailyUse($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
+							</widget>
 						</row>
 						</TablePanel>
 						</VerticalPanel>
@@ -343,7 +349,9 @@
 					
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
-						<VerticalPanel height="229px" width="610px"/>
+						<VerticalPanel height="229px" width="610px">
+						<richtext key="manufacturingText"/>"
+						</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
 					<tab key="tab5" text="{resource:getString($constants,'comments')}">
@@ -351,7 +359,7 @@
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
-									<textbox case="mixed" key="{noteMeta:getSubject($note)}" width="435px" max="60" showError="false"/>
+									<textbox case="mixed" key="{noteMeta:getSubject($note)}" width="429px" max="60" showError="false"/>
 									<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
 										<HorizontalPanel>
               							<AbsolutePanel style="StandardNoteButtonImage"/>
@@ -364,14 +372,14 @@
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 									<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{noteMeta:getText($note)}" showError="false"/>
+										<textarea width="545px" height="50px" case="mixed" key="{noteMeta:getText($note)}" showError="false"/>
 									</widget>
 								</row> 
 								<row>
 									<html key="spacer" xml:space="preserve"> </html>
 									<widget colspan="2">
 										<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="138px" width="549px" overflowX="auto" overflowY="scroll">				
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="136px" width="545px" overflowX="auto" overflowY="scroll">				
 								</VerticalPanel>
 								</HorizontalPanel>
 								</widget>

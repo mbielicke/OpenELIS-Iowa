@@ -171,9 +171,13 @@
 								<HorizontalPanel width="15px"/>
 							</widget>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							<widget>
 							<textbox case="upper" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							<widget>
 							<textbox case="upper" key="{addr:getZipCode($orgAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
 						</row>
 					</TablePanel>
 				</HorizontalPanel>
@@ -341,14 +345,22 @@
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<textbox case="upper" key="{addr:getState($reportToAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<widget>
+								<textbox case="upper" key="{addr:getState($reportToAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<textbox case="upper" key="{addr:getZipCode($reportToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<widget>
+								<textbox case="upper" key="{addr:getZipCode($reportToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
 							<HorizontalPanel width="15px"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-							<textbox case="upper" key="{addr:getState($billToAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<widget>
+								<textbox case="upper" key="{addr:getState($billToAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>	
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-							<textbox case="upper" key="{addr:getZipCode($billToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<widget>
+								<textbox case="upper" key="{addr:getZipCode($billToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
 						</row>
 					</TablePanel>
 				</VerticalPanel>

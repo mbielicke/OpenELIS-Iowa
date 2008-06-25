@@ -50,7 +50,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     private static boolean loaded = false;
     
-    private static DataModel statusDropdown, storeDropdown, costCenterDropdown;
+    private static DataModel statusDropdown, costCenterDropdown;
     
     private AutoCompleteDropdown orgDropdown, billToDropdown, reportToDropdown;
     
@@ -209,7 +209,6 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         
         if (statusDropdown == null) {
             statusDropdown = (DataModel)initData.get("status");
-            storeDropdown = (DataModel)initData.get("store");
             costCenterDropdown = (DataModel)initData.get("costCenter");
         }
 
@@ -272,6 +271,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                 status.load((DropDownField)set.getObject(0));
                 orderDate.load((StringField)set.getObject(1));
                 requestedBy.load((StringField)set.getObject(2));
+                
+                //set the values in the rpc
+                rpc.setFieldValue(OrderMeta.getStatusId(), (Integer)((DropDownField)set.getObject(0)).getValue());
+                rpc.setFieldValue(OrderMeta.getOrderedDate(), (String)((StringField)set.getObject(1)).getValue());
+                rpc.setFieldValue(OrderMeta.getRequestedBy(), (String)((StringField)set.getObject(2)).getValue());
                 
                 window.setStatus("","");
             }

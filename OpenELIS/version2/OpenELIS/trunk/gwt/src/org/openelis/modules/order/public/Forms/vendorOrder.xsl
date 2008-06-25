@@ -182,9 +182,13 @@
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"extOrderNum")'/>:</text>
 									<textbox case="mixed" key="{orderMeta:getExternalOrderNumber($order)}" width="188px" max="20" tab="{orderMeta:getId($order)},{orderMeta:getCostCenterId($order)}"/>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+									<widget>
 									<textbox case="mixed" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+									<widget>
 									<textbox case="mixed" key="{addr:getZipCode($orgAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
 								</row>
 							</TablePanel>
 						</HorizontalPanel>

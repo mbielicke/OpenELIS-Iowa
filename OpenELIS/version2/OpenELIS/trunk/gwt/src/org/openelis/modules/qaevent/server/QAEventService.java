@@ -257,7 +257,7 @@ public class QAEventService implements AppScreenFormServiceInt{
     public DataModel getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
-        int id = -1;
+        Integer id = null;
                 
         DataModel model = new DataModel();
         
@@ -267,10 +267,9 @@ public class QAEventService implements AppScreenFormServiceInt{
         }else if(cat.equals("test")){
             QaEventRemote qaeRemote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
             entries = qaeRemote.getTestNames();
-        }
-                
-
-            
+        }            
+        
+        if(entries.size() > 0){ 
             DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
                           
@@ -285,48 +284,48 @@ public class QAEventService implements AppScreenFormServiceInt{
             blankset.setKey(blankNumberId);
     
             model.add(blankset);        
-   
+        }
+    
+        int i=0;
+        while(i < entries.size()){
+            DataSet set = new DataSet();
+            
+        //id
+        Integer dropdownId = null;
+        //entry
+        String dropDownText = null;
+        //method
+        String methodName = null;
         
-            int i=0;
-            while(i < entries.size()){
-                DataSet set = new DataSet();
-                
-            //id
-            Integer dropdownId = null;
-            //entry
-            String dropDownText = null;
-            //method
-            String methodName = null;
-            
-            if(cat.equals("test")){ 
-                QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO) entries.get(i);
-                dropdownId = resultDO.getId();
-                dropDownText = resultDO.getTest();
-                methodName = resultDO.getMethod();
-            }else{
-                IdNameDO resultDO = (IdNameDO) entries.get(i);
-                dropdownId = resultDO.getId();
-                dropDownText = resultDO.getName();
-            }
-            
-            StringObject textObject = new StringObject();
-                        
-            if(methodName!=null){
-             textObject.setValue(dropDownText+" , "+methodName);
-            }else{
-             textObject.setValue(dropDownText);
-            }
-            
-            set.addObject(textObject);            
+        if(cat.equals("test")){ 
+            QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO) entries.get(i);
+            dropdownId = resultDO.getId();
+            dropDownText = resultDO.getTest();
+            methodName = resultDO.getMethod();
+        }else{
+            IdNameDO resultDO = (IdNameDO) entries.get(i);
+            dropdownId = resultDO.getId();
+            dropDownText = resultDO.getName();
+        }
+        
+        StringObject textObject = new StringObject();
+                    
+        if(methodName!=null){
+         textObject.setValue(dropDownText+" , "+methodName);
+        }else{
+         textObject.setValue(dropDownText);
+        }
+        
+        set.addObject(textObject);            
 
-                NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
+            NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
 
-                numberId.setValue(dropdownId);
+            numberId.setValue(dropdownId);
 
-                set.setKey(numberId);           
-            
-            model.add(set);
-            i++;
+            set.setKey(numberId);           
+        
+        model.add(set);
+        i++;
          }
            
         return model;

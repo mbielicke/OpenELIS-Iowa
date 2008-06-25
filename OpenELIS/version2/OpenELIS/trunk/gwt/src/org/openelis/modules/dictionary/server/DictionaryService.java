@@ -357,22 +357,8 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
     // the method called to load the dropdowns on the screen
     public DataModel getInitialModel(String cat) { 
-         
         DataModel model = new DataModel();
-        DataSet blankset = new DataSet();
-        
-        StringObject blankStringId = new StringObject();
-                                    
-        blankStringId.setValue("");
-        blankset.addObject(blankStringId);
-        
-        if(cat.equals("section")){
-         NumberObject blankNumberId = new NumberObject(-1);
-         blankset.setKey(blankNumberId);
-        }                        
-        
-        model.add(blankset);
-        
+                
         if(cat.equals("section")){
         
          SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
@@ -381,6 +367,20 @@ public class DictionaryService implements AppScreenFormServiceInt,
                                  
          if(sections!=null){
 
+             DataSet blankset = new DataSet();
+             
+             StringObject blankStringId = new StringObject();
+                                         
+             blankStringId.setValue("");
+             blankset.addObject(blankStringId);
+             
+             if(cat.equals("section")){
+              NumberObject blankNumberId = new NumberObject(-1);
+              blankset.setKey(blankNumberId);
+             }                        
+             
+             model.add(blankset);
+             
           for (Iterator iter = sections.iterator(); iter.hasNext();) {
               SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
                            

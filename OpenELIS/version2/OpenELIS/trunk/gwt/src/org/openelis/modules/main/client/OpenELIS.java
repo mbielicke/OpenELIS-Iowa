@@ -46,6 +46,7 @@ import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenRadio;
+import org.openelis.gwt.screen.ScreenRichTextArea;
 import org.openelis.gwt.screen.ScreenStack;
 import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTablePanel;
@@ -181,6 +182,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                           return new ScreenCalendar();
                                       else if(args[0] instanceof Node) 
                                           return new ScreenCalendar((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {ScreenRichTextArea.class.getName(),ScreenRichTextArea.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenRichTextArea();
+                                      else if(args[0] instanceof Node) 
+                                          return new ScreenRichTextArea((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });

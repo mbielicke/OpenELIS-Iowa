@@ -257,19 +257,22 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public DataModel getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        List entries = null; 
-        int id = -1;
+        List entries = new ArrayList(); 
+        Integer id = null;
                 
         DataModel model = new DataModel();
         
         if(cat.equals("printerType")){
             id = catRemote.getCategoryId("printer_type"); 
-            entries = catRemote.getDropdownValues(id);
+            if(id != null)
+                entries = catRemote.getDropdownValues(id);
+            
         }else if(cat.equals("scriptlet")){
             LabelRemote labelRemote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
             entries = labelRemote.getScriptlets();
         }                
             
+        if(entries.size() > 0){
             DataSet blankset = new DataSet();           
             StringObject blankStringId = new StringObject();
                           
@@ -282,7 +285,7 @@ public class LabelService implements AppScreenFormServiceInt {
             blankset.setKey(blankNumberId);
     
             model.add(blankset);        
-   
+        }
         
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             IdNameDO resultDO = (IdNameDO)iter.next();

@@ -14,10 +14,14 @@ import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryNotFoundException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
@@ -176,11 +180,10 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         orderItems = getOrderItemsListFromRPC(itemsTable, orderDO.getId(), orderType);
                 
         //validate the fields on the backend
-        List exceptionList = new ArrayList();
-        //remote.validateForAdd(newOrganizationDO, organizationContacts);
+        List exceptionList = remote.validateForAdd(orderDO, orderType, orderItems);
         
         if(exceptionList.size() > 0){
-            //setRpcErrors(exceptionList, contactsTable, rpcSend);
+            setRpcErrors(exceptionList, itemsTable, rpcSend);
             return rpcSend;
         } 
         
@@ -192,7 +195,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            //setRpcErrors(exceptionList, contactsTable, rpcSend);
+            setRpcErrors(exceptionList, itemsTable, rpcSend);
             
             return rpcSend;
         }
@@ -239,14 +242,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         //contacts info
         TableModel itemsTable = (TableModel)rpcSend.getField("itemsTable").getValue();
-        System.out.println("Number of rows: "+itemsTable.numRows());
         orderItems = getOrderItemsListFromRPC(itemsTable, orderDO.getId(), orderType);     
-        System.out.println("number of order items:"+orderItems.size());
+        
         //validate the fields on the backend
-        List exceptionList = new ArrayList();
-        //remote.validateForUpdate(newOrganizationDO, organizationContacts);
+        List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems);
         if(exceptionList.size() > 0){
-          //  setRpcErrors(exceptionList, contactsTable, rpcSend);
+            setRpcErrors(exceptionList, itemsTable, rpcSend);
             
             return rpcSend;
         } 
@@ -261,7 +262,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            //setRpcErrors(exceptionList, contactsTable, rpcSend);
+            setRpcErrors(exceptionList, itemsTable, rpcSend);
             
             return rpcSend;
         }
@@ -376,8 +377,26 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return returnMap;
     }
     
+    private void setRpcErrors(List exceptionList, TableModel orderItemsTable, FormRPC rpcSend){
+        //we need to get the keys and look them up in the resource bundle for internationalization
+        for (int i=0; i<exceptionList.size();i++) {
+            //if the error is inside the order items table
+            if(exceptionList.get(i) instanceof TableFieldErrorException){
+                TableRow row = orderItemsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                row.getColumn(orderItemsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
+                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the field
+            }else if(exceptionList.get(i) instanceof FieldErrorException)
+                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            //if the error is on the entire form
+            else if(exceptionList.get(i) instanceof FormErrorException)
+                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+        }   
+        rpcSend.status = IForm.Status.invalid;
+    }
+    
     public DataModel getInitialModel(String cat){
-        int id = -1;
+        Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         
         if(cat.equals("status"))
@@ -388,25 +407,28 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             id = remote.getCategoryId("cost_centers");
         
         List entries = new ArrayList();
-        if(id > -1)
+        if(id != null)
             entries = remote.getDropdownValues(id);
         
         //we need to build the model to return
         DataModel returnModel = new DataModel();
+
+        if(entries.size() > 0){ 
+            //create a blank entry to begin the list
+            DataSet blankset = new DataSet();
             
-        //create a blank entry to begin the list
-        DataSet blankset = new DataSet();
+            StringObject blankStringId = new StringObject();
+            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
+            
+            blankStringId.setValue("");
+            blankset.addObject(blankStringId);
+            
+            blankNumberId.setValue(new Integer(0));
+            blankset.setKey(blankNumberId);
+            
+            returnModel.add(blankset);
+        }
         
-        StringObject blankStringId = new StringObject();
-        NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-        
-        blankStringId.setValue("");
-        blankset.addObject(blankStringId);
-        
-        blankNumberId.setValue(new Integer(0));
-        blankset.setKey(blankNumberId);
-        
-        returnModel.add(blankset);
         int i=0;
         while(i < entries.size()){
             DataSet set = new DataSet();
@@ -608,7 +630,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         orderDO.setId((Integer) rpcSend.getFieldValue(OrderMeta.getId()));
         orderDO.setNeededInDays((Integer) rpcSend.getFieldValue(OrderMeta.getNeededInDays()));
-        orderDO.setStatus((Integer) rpcSend.getFieldValue(OrderMeta.getStatusId()));
+        orderDO.setStatusId((Integer) rpcSend.getFieldValue(OrderMeta.getStatusId()));
         orderDO.setOrganization((String)((DropDownField)rpcSend.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).getTextValue());
         orderDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName()));
         orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, (String)rpcSend.getFieldValue(OrderMeta.getOrderedDate())).getDate());
@@ -626,7 +648,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
     private void setFieldsInRPC(FormRPC rpcReturn, OrderDO orderDO){
         rpcReturn.setFieldValue(OrderMeta.getId(), orderDO.getId());
         rpcReturn.setFieldValue(OrderMeta.getNeededInDays(), orderDO.getNeededInDays());
-        rpcReturn.setFieldValue(OrderMeta.getStatusId(), orderDO.getStatus());
+        rpcReturn.setFieldValue(OrderMeta.getStatusId(), orderDO.getStatusId());
         rpcReturn.setFieldValue(OrderMeta.getOrderedDate(), orderDO.getOrderedDate().toString());
         rpcReturn.setFieldValue(OrderMeta.getRequestedBy(), orderDO.getRequestedBy());
         rpcReturn.setFieldValue(OrderMeta.getCostCenterId(), orderDO.getCostCenter());
