@@ -21,7 +21,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.SystemVariableMeta;
+import org.openelis.newmeta.SystemVariableMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.server.constants.Constants;
@@ -33,6 +33,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9;  
     
+    private static SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
      public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
@@ -232,18 +233,18 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
 
     private void setFieldsInRPC(FormRPC rpcReturn, SystemVariableDO svDO){
-        rpcReturn.setFieldValue(SystemVariableMeta.ID, svDO.getId());
-        rpcReturn.setFieldValue(SystemVariableMeta.NAME,svDO.getName());
-        rpcReturn.setFieldValue(SystemVariableMeta.VALUE,svDO.getValue());        
+        rpcReturn.setFieldValue(Meta.getId(), svDO.getId());
+        rpcReturn.setFieldValue(Meta.getName(),svDO.getName());
+        rpcReturn.setFieldValue(Meta.getValue(),svDO.getValue());        
     }
     
     
     private SystemVariableDO getSystemVariableDOFromRPC(FormRPC rpcsend){
         SystemVariableDO sysVarDO = new SystemVariableDO();
-        Integer svId = (Integer) rpcsend.getFieldValue(SystemVariableMeta.ID);        
+        Integer svId = (Integer) rpcsend.getFieldValue(Meta.getId());        
         sysVarDO.setId(svId);
-        sysVarDO.setName(((String)rpcsend.getFieldValue(SystemVariableMeta.NAME)));
-        sysVarDO.setValue(((String)rpcsend.getFieldValue(SystemVariableMeta.VALUE)));
+        sysVarDO.setName(((String)rpcsend.getFieldValue(Meta.getName())));
+        sysVarDO.setValue(((String)rpcsend.getFieldValue(Meta.getValue())));
         return sysVarDO;
     }
 

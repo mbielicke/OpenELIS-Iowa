@@ -5,6 +5,7 @@ import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.SystemVariableMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -16,6 +17,8 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
     }
+    
+    private SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     
     public void onChange(Widget sender) {
         
@@ -44,7 +47,7 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        nameTextBox = (TextBox)getWidget("system_variable.name");
+        nameTextBox = (TextBox)getWidget(Meta.getName());
         
         super.afterDraw(success);
     }  
@@ -71,7 +74,7 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue("system_variable.name", query);
+            letterRPC.setFieldValue(Meta.getName(), query);
              
             commitQuery(letterRPC);
             

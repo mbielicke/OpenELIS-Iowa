@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:systemVariableMeta="xalan://org.openelis.meta.SystemVariableMeta"
+                xmlns:meta="xalan://org.openelis.newmeta.SystemVariableMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>
@@ -15,78 +15,104 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.SystemVariableMeta"/>
+  </xalan:component>
 
   <xsl:template match="doc"> 
-      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="sv" select="meta:new()"/>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "SystemVariable" name="{resource:getString($constants,'systemVariable')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
+ <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel">  
   <aToZ height="235px" width="100%" key="hideablePanel"  maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">     
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     
   </aToZ>
   
-  <panel layout= "vertical" xsi:type = "Panel">
+  <VerticalPanel>
    <!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<widget>
     			<buttonPanel key="buttons">
-    			<xsl:call-template name="queryButton"/>
-    			<xsl:call-template name="previousButton"/>
-    			<xsl:call-template name="nextButton"/>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="addButton"/>
-    			<xsl:call-template name="updateButton"/>
-    			<xsl:call-template name="deleteButton"/>
-    			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="commitButton"/>
-    			<xsl:call-template name="abortButton"/>
-				</buttonPanel>
+								<xsl:call-template name="queryButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="previousButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="nextButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="buttonPanelDivider"/>
+								<xsl:call-template name="addButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="updateButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="deleteButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="buttonPanelDivider"/>
+								<xsl:call-template name="commitButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:call-template name="abortButton">
+									<xsl:with-param name="language">
+										<xsl:value-of select="language"/>
+									</xsl:with-param>
+								</xsl:call-template>
+							</buttonPanel>
  			</widget>
-		</panel>
+		</AbsolutePanel>
 		<!--end button panel-->
    
-  <panel layout= "vertical" height = "5px" xsi:type= "Panel"/> 
-  <panel key = "svfields" layout= "table" style="Form" xsi:type= "Table">
+  <VerticalPanel height = "5px"/> 
+  <TablePanel key = "svfields" layout= "table" style="Form" xsi:type= "Table">
     <row>
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
-     </widget>
-     <widget> 
-      <textbox key ="{systemVariableMeta:getName()}" max = "30" width= "215px" case = "lower" tab="{systemVariableMeta:getValue()},{systemVariableMeta:getValue()}"/>
-     </widget>
+      <textbox key ="{meta:getName($sv)}" max = "30" width= "215px" case = "lower" tab="{meta:getValue($sv)},{meta:getValue($sv)}"/>
      </row>     
      <row>     
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"value")'/>:</text>
-     </widget>
-     <widget>
-      <textbox case= "mixed" key= "{systemVariableMeta:getValue()}" width= "425px" tab="{systemVariableMeta:getName()},{systemVariableMeta:getName()}"/>
-     </widget>     
-    </row>     						          
-                                 					                         
-   </panel>            
-                            						
-  </panel>
- </panel>
+      <textbox case= "mixed" key= "{meta:getValue($sv)}" width= "425px" tab="{meta:getName($sv)},{meta:getName($sv)}"/>   
+    </row>     						                                           					                         
+   </TablePanel>                                        						
+  </VerticalPanel>
+ </HorizontalPanel>
 </display>
 							  
 <rpc key= "display">
- <number key="{systemVariableMeta:getId()}" type="integer" required = "false" />
- <string key="{systemVariableMeta:getName()}" required="false"/> <!--required = "true"-->
- <string key="{systemVariableMeta:getValue()}" required="false"/> <!--required = "true"--> 	 
+ <number key="{meta:getId($sv)}" type="integer" required = "false" />
+ <string key="{meta:getName($sv)}" required="false"/> <!--required = "true"-->
+ <string key="{meta:getValue($sv)}" required="false"/> <!--required = "true"--> 	 
 </rpc>
 					   
 <rpc key= "query">     
- <queryString key="{systemVariableMeta:getName()}" />
- <queryString key="{systemVariableMeta:getValue()}"  /> 	
+ <queryString key="{meta:getName($sv)}" />
+ <queryString key="{meta:getValue($sv)}"  /> 	
 </rpc>
 
 <rpc key= "queryByLetter">     
- <queryString key="{systemVariableMeta:getName()}"/>
+ <queryString key="{meta:getName($sv)}"/>
 </rpc>
  
 </screen>

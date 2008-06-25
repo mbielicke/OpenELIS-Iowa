@@ -33,16 +33,16 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "QAEvents" name="{resource:getString($constants,'QAEvent')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <panel layout= "horizontal" spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
+ <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
   <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}" colwidths ="100,65,65">   
      <buttonPanel key="atozButtons">
 	   <xsl:call-template name="aToZLeftPanelButtons"/>		
 	</buttonPanel>		     
   </aToZ>
   
-  <panel layout= "vertical" xsi:type = "Panel">
+  <VerticalPanel>
    <!--button panel code-->
-		<panel xsi:type="Absolute" layout="absolute" spacing="0" style="ButtonPanelContainer">
+		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<widget>
     			<buttonPanel key="buttons">
     			<xsl:call-template name="queryButton"/>
@@ -56,60 +56,34 @@
     			<xsl:call-template name="abortButton"/>
 				</buttonPanel>
  			</widget>
-		</panel>
+		</AbsolutePanel>
 		<!--end button panel-->
    
-  <panel layout= "vertical" height = "5px" xsi:type= "Panel"/> 
-  <panel key = "qafields" layout= "table" style="Form" xsi:type= "Table">
+  <VerticalPanel height = "5px"/> 
+  <TablePanel key = "qafields" style="Form" xsi:type= "Table">
     <row>
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
-     </widget>
-     <widget> 
       <textbox key = "{meta:getName($qae)}" max = "20" width= "145px" case = "lower" tab="{meta:getDescription($qae)},{meta:getReportingText($qae)}"/>
-     </widget>
      </row>     
      <row>     
-     <widget>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
-     </widget>
-     <widget>
       <textbox case= "mixed" max = "60"  key= "{meta:getDescription($qae)}" width= "425px" tab="{meta:getTypeId($qae)},{meta:getName($qae)}"/>
-     </widget>     
     </row>
      <row>
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
-     </widget>
-     <widget>  		
-		<autoDropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>
-	</widget>  									        
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text> 		
+	  <autoDropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>									        
      </row>
      <row>
-     <widget>
-       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
-     </widget>
-     <widget>
-		<autoDropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
-	 </widget>
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
+	  <autoDropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
 	  </row>		
 	  						
       <row>           
-      <widget>
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
-        </widget>
-        <widget>
-          <check key= "{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{meta:getTestId($qae)}"/>
-       </widget>
+        <check key= "{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{meta:getTestId($qae)}"/>
       </row> 
-      <row>
-       
-     <widget>
-      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>
-     </widget>
-     <widget>
-      <textbox key= "{meta:getReportingSequence($qae)}"  width= "50px" tab="{meta:getReportingText($qae)},{meta:getIsBillable($qae)}"/>
-     </widget>    
+      <row>       
+      <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>   
      </row>
 			
 	   <row>
@@ -121,11 +95,11 @@
 	    </widget> 
 	   </row>								          
                                  					                         
-   </panel>            
+   </TablePanel>            
                             
 						
-  </panel>
- </panel>
+  </VerticalPanel>
+ </HorizontalPanel>
 </display>
 							  
 <rpc key= "display">
