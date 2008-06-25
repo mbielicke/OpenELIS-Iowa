@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.NewMeta;
 
 public class ProviderAddressMeta implements NewMeta {
-  	private String path = "";
+  	public String path = "";
 	private static final String entityName = "ProviderAddress";
 	
 	private static final String

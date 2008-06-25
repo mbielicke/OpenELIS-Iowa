@@ -24,9 +24,9 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.LabelMeta;
+import org.openelis.newmeta.LabelMetaMap;
 import org.openelis.remote.LabelRemote;
-import org.openelis.util.Meta;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -49,6 +49,8 @@ public class LabelBean implements LabelRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    
+    private static final LabelMetaMap Meta = new LabelMetaMap();
     
     {
         try {
@@ -98,17 +100,18 @@ public class LabelBean implements LabelRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();    
+        NewQueryBuilder qb = new NewQueryBuilder();    
         
-        LabelMeta labelMeta = LabelMeta.getInstance();
-        qb.addMeta(new Meta[]{labelMeta});
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+ LabelMeta.ID + " , "+ LabelMeta.NAME + ") ");
-        qb.addTable(labelMeta);
+        //LabelMeta labelMeta = LabelMeta.getInstance();
+        //qb.addMeta(new Meta[]{labelMeta});
+        qb.setMeta(Meta);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+ Meta.getId() + " , "+ Meta.getName() + ") ");
+        //qb.addTable(labelMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
         
-        qb.setOrderBy(LabelMeta.NAME);
+        qb.setOrderBy(Meta.getName());
         
         sb.append(qb.getEJBQL());            
         Query query = manager.createQuery(sb.toString());
@@ -173,16 +176,16 @@ public class LabelBean implements LabelRemote {
     public void validateLabel(LabelDO labelDO, List<Exception> exceptionList){
 
          if("".equals(labelDO.getName())){          
-             exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.NAME));                 
+             exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));                 
 
           }                       
                                 
           if(labelDO.getPrinterType()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.PRINTER_TYPE_ID));          
+              exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getPrinterTypeId()));          
           } 
           
           if(labelDO.getScriptlet()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",LabelMeta.SCRIPTLET_ID));
+              exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getScriptletId()));
          }
                    
           

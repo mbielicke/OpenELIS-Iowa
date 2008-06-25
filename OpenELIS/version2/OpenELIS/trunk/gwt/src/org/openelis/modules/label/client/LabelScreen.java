@@ -8,6 +8,7 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.newmeta.LabelMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -22,6 +23,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     private ScreenAutoDropdown displayPType = null;
     private ScreenAutoDropdown displayScript = null;
     private TextBox nameTextbox;
+    
+    private LabelMetaMap Meta = new LabelMetaMap(); 
     
     public LabelScreen() {
         super("org.openelis.modules.label.server.LabelService",!loaded);
@@ -50,7 +53,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         loaded = true;        
         setBpanel((ButtonPanel)getWidget("buttons"));
 
-        nameTextbox = (TextBox)getWidget("label.name");
+        nameTextbox = (TextBox)getWidget(Meta.getName());
         
         AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
         modelWidget.addChangeListener(atozTable);
@@ -59,8 +62,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         atozButtons.addChangeListener(this);
         
-        displayPType = (ScreenAutoDropdown)widgets.get("label.printerTypeId");
-        displayScript = (ScreenAutoDropdown)widgets.get("label.scriptletId");
+        displayPType = (ScreenAutoDropdown)widgets.get(Meta.getPrinterTypeId());
+        displayScript = (ScreenAutoDropdown)widgets.get(Meta.getScriptletId());
         
         //load dropdowns
        if(scriptletDropdown == null){
@@ -99,7 +102,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     
           FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
          
-          letterRPC.setFieldValue("label.name", query);
+          letterRPC.setFieldValue(Meta.getName(), query);
            
           commitQuery(letterRPC);
           

@@ -31,8 +31,7 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.ProviderMeta;
-import org.openelis.meta.ProviderNoteMeta;
+import org.openelis.newmeta.ProviderMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -52,6 +51,8 @@ public class ProviderService implements AppScreenFormServiceInt{
     
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 19;
+    
+    private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
            
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
@@ -137,8 +138,8 @@ public class ProviderService implements AppScreenFormServiceInt{
                 
         ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
                                         
-        providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
-        providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
+        providerNote.setSubject((String)rpcSend.getFieldValue(ProvMeta.getNote().getSubject()));
+        providerNote.setText((String)rpcSend.getFieldValue(ProvMeta.getNote().getText()));
         providerNote.setIsExternal("Y");
         
         List<Exception> exceptionList = remote.validateForAdd(providerDO, provAddDOList);
@@ -177,8 +178,8 @@ public class ProviderService implements AppScreenFormServiceInt{
                 
         ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerDO.getId());
                                         
-        providerNote.setSubject((String)rpcSend.getFieldValue(ProviderNoteMeta.SUBJECT));
-        providerNote.setText((String)rpcSend.getFieldValue(ProviderNoteMeta.TEXT));
+        providerNote.setSubject((String)rpcSend.getFieldValue(ProvMeta.getNote().getSubject()));
+        providerNote.setText((String)rpcSend.getFieldValue(ProvMeta.getNote().getText()));
         providerNote.setIsExternal("Y");
         
         List<Exception> exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
@@ -534,26 +535,26 @@ public class ProviderService implements AppScreenFormServiceInt{
     }
         
     private void setFieldsInRPC(FormRPC rpcReturn, ProviderDO provDO){
-        rpcReturn.setFieldValue(ProviderMeta.ID, provDO.getId());
-        rpcReturn.setFieldValue(ProviderMeta.LAST_NAME,provDO.getLastName());
-        rpcReturn.setFieldValue(ProviderMeta.FIRST_NAME,provDO.getFirstName());
-        rpcReturn.setFieldValue(ProviderMeta.NPI,provDO.getNpi());        
-        rpcReturn.setFieldValue(ProviderMeta.MIDDLE_NAME,provDO.getMiddleName());                              
-        rpcReturn.setFieldValue(ProviderMeta.TYPE_ID,provDO.getTypeId());         
+        rpcReturn.setFieldValue(ProvMeta.getId(), provDO.getId());
+        rpcReturn.setFieldValue(ProvMeta.getLastName(),provDO.getLastName());
+        rpcReturn.setFieldValue(ProvMeta.getFirstName(),provDO.getFirstName());
+        rpcReturn.setFieldValue(ProvMeta.getNpi(),provDO.getNpi());        
+        rpcReturn.setFieldValue(ProvMeta.getMiddleName(),provDO.getMiddleName());                              
+        rpcReturn.setFieldValue(ProvMeta.getTypeId(),provDO.getTypeId());         
     }
     
     private ProviderDO getProviderDOFromRPC(FormRPC rpcSend){
-     NumberField providerId = (NumberField) rpcSend.getField(ProviderMeta.ID);   
+     NumberField providerId = (NumberField) rpcSend.getField(ProvMeta.getId());   
      ProviderDO providerDO = new ProviderDO();
      //provider info        
      providerDO.setId((Integer)providerId.getValue());
-     providerDO.setFirstName(((String)rpcSend.getFieldValue(ProviderMeta.FIRST_NAME)));
-     providerDO.setLastName(((String)rpcSend.getFieldValue(ProviderMeta.LAST_NAME)));
-     providerDO.setMiddleName(((String)rpcSend.getFieldValue(ProviderMeta.MIDDLE_NAME)));
-     providerDO.setNpi(((String)rpcSend.getFieldValue(ProviderMeta.NPI)));
+     providerDO.setFirstName(((String)rpcSend.getFieldValue(ProvMeta.getFirstName())));
+     providerDO.setLastName(((String)rpcSend.getFieldValue(ProvMeta.getLastName())));
+     providerDO.setMiddleName(((String)rpcSend.getFieldValue(ProvMeta.getMiddleName())));
+     providerDO.setNpi(((String)rpcSend.getFieldValue(ProvMeta.getNpi())));
      
-     if(!new Integer(-1).equals(rpcSend.getFieldValue(ProviderMeta.TYPE_ID)))
-      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProviderMeta.TYPE_ID));
+     if(!new Integer(-1).equals(rpcSend.getFieldValue(ProvMeta.getTypeId())))
+      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProvMeta.getTypeId()));
      
      return providerDO;
     }

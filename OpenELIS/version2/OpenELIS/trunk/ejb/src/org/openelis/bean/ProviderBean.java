@@ -28,14 +28,12 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.ProviderAddressAddressMeta;
-import org.openelis.meta.ProviderAddressMeta;
-import org.openelis.meta.ProviderMeta;
-import org.openelis.meta.ProviderNoteMeta;
+import org.openelis.newmeta.ProviderMetaMap;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.Meta;
+import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -58,6 +56,8 @@ public class ProviderBean implements ProviderRemote {
     
     private LockLocal lockBean;
     private AddressLocal addressBean;
+    
+    private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
     {
         try {
@@ -117,33 +117,35 @@ public class ProviderBean implements ProviderRemote {
         
         Query refIdQuery = manager.createNamedQuery("getTableId");
         refIdQuery.setParameter("name", "provider");
-        Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
+        //Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
                
         
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        NewQueryBuilder qb = new NewQueryBuilder();
          
-       ProviderMeta providerMeta = ProviderMeta.getInstance();
-       ProviderAddressMeta providerAddressMeta = ProviderAddressMeta.getInstance();
-       ProviderAddressAddressMeta providerAddressAddressMeta = ProviderAddressAddressMeta.getInstance();
-       ProviderNoteMeta providerNoteMeta = ProviderNoteMeta.getInstance();
+       //ProviderMeta providerMeta = ProviderMeta.getInstance();
+       //ProviderAddressMeta providerAddressMeta = ProviderAddressMeta.getInstance();
+       //ProviderAddressAddressMeta providerAddressAddressMeta = ProviderAddressAddressMeta.getInstance();
+       //ProviderNoteMeta providerNoteMeta = ProviderNoteMeta.getInstance();
        
-       qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
+       //qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
+       qb.setMeta(ProvMeta);
+        
+       qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("+ProvMeta.getId()+", "+ProvMeta.getLastName()+", "+ProvMeta.getFirstName() + ") ");
+       //qb.addTable(providerMeta);
        
-       qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("+ProviderMeta.ID+", "+ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME + ") ");
-       qb.addTable(providerMeta);
        
        //this method is going to throw an exception if a column doesnt match
        qb.addWhere(fields);   
        
-       qb.setOrderBy(ProviderMeta.LAST_NAME+", "+ProviderMeta.FIRST_NAME);
+       qb.setOrderBy(ProvMeta.getLastName()+", "+ProvMeta.getFirstName());
        
-       if(qb.hasTable(providerAddressAddressMeta.getTable()))
-           qb.addTable(providerAddressMeta);
+      // if(qb.hasTable(providerAddressAddressMeta.getTable()))
+       //    qb.addTable(providerAddressMeta);
           
-       if(qb.hasTable(providerNoteMeta.getTable())){
-           qb.addWhere(ProviderNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+ProviderNoteMeta.REFERENCE_TABLE+" is null");
-          }
+       //if(qb.hasTable(providerNoteMeta.getTable())){
+       //    qb.addWhere(ProviderNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+ProviderNoteMeta.REFERENCE_TABLE+" is null");
+       //   }
           
        sb.append(qb.getEJBQL());       
        Query query = manager.createQuery(sb.toString());
@@ -313,10 +315,10 @@ public class ProviderBean implements ProviderRemote {
 
    private List validateProvider(ProviderDO providerDO,List<Exception> exceptionList){
        if("".equals(providerDO.getLastName())){           
-           exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderMeta.LAST_NAME));
+           exceptionList.add(new FieldErrorException("fieldRequiredException",ProvMeta.getLastName()));
           }
        if(providerDO.getTypeId()==null){           
-           exceptionList.add(new FieldErrorException("fieldRequiredException",ProviderMeta.TYPE_ID));
+           exceptionList.add(new FieldErrorException("fieldRequiredException",ProvMeta.getTypeId()));
           }
        return exceptionList;
     }
@@ -327,16 +329,16 @@ public class ProviderBean implements ProviderRemote {
        String state = provAddDO.getAddressDO().getState();
        String zipcode = provAddDO.getAddressDO().getZipCode();      
        if(location == null || "".equals(location)){            
-           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProviderAddressMeta.LOCATION));
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getLocation()));
          }
        if(state == null || "".equals(state)){            
-           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProviderAddressAddressMeta.STATE));
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getAddress().getState()));
          }
        if(city == null || "".equals(city)){            
-           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProviderAddressAddressMeta.CITY));
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getCity()));
          }
        if(zipcode == null || "".equals(zipcode)){            
-           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProviderAddressAddressMeta.ZIP_CODE));
+           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getZipCode()));
          }
        
        return  exceptionList;
