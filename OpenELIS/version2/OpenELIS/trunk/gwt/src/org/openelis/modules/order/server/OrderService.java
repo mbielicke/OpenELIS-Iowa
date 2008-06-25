@@ -1,9 +1,5 @@
 package org.openelis.modules.order.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
@@ -39,10 +35,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.OrderCustomerNoteMeta;
-import org.openelis.meta.OrderInventoryReceiptMeta;
-import org.openelis.meta.OrderShippingNoteMeta;
-import org.openelis.newmeta.OrderMetaMap;
+import org.openelis.meta.OrderMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -53,6 +46,10 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class OrderService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
 
@@ -109,7 +106,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             fields.remove("itemsTable");
             fields.remove("label1");
             fields.remove("item");
-            fields.remove(OrderInventoryReceiptMeta.RECIEVED_DATE);
+            fields.remove(OrderMeta.getInventoryTransaction().INVENTORY_RECEIPT_META.getReceivedDate());
 
             try{    
                 orderIds = remote.query(fields,0,leftTableRowsPerPage, orderType);
@@ -167,12 +164,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         //build customer notes do from form
         customerNotes.setSubject("");
-        customerNotes.setText((String)rpcSend.getFieldValue(OrderCustomerNoteMeta.TEXT));
+        customerNotes.setText((String)rpcSend.getFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText()));
         customerNotes.setIsExternal("Y");
         
         //build order shipping do notes from form
         orderShippingNotes.setSubject("");
-        orderShippingNotes.setText((String)rpcSend.getFieldValue(OrderShippingNoteMeta.TEXT));
+        orderShippingNotes.setText((String)rpcSend.getFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText()));
         orderShippingNotes.setIsExternal("Y");
         
         //order items info
@@ -232,12 +229,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         //build customer notes do from form
         customerNote.setSubject("");
-        customerNote.setText((String)rpcSend.getFieldValue(OrderCustomerNoteMeta.TEXT));
+        customerNote.setText((String)rpcSend.getFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText()));
         customerNote.setIsExternal("Y");
         
         //build order shipping do notes from form
         shippingNote.setSubject("");
-        shippingNote.setText((String)rpcSend.getFieldValue(OrderShippingNoteMeta.TEXT));
+        shippingNote.setText((String)rpcSend.getFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText()));
         shippingNote.setIsExternal("Y");
         
         //contacts info

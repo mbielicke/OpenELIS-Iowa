@@ -8,8 +8,8 @@ import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.meta.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.newmeta.QaEventMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;

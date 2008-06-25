@@ -3,8 +3,8 @@
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.newmeta.CategoryMetaMap"
-                xmlns:dictionary="xalan://org.openelis.newmeta.DictionaryMetaMap"
-                xmlns:relentry="xalan://org.openelis.newmeta.DictionaryMeta"                
+                xmlns:dictionary="xalan://org.openelis.meta.DictionaryMetaMap"
+                xmlns:relentry="xalan://org.openelis.meta.DictionaryMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -18,15 +18,15 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.CategoryMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.CategoryMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="dictionary">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="relentry">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 

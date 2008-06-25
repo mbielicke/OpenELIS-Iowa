@@ -2,10 +2,10 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.newmeta.ProviderMetaMap"
-                xmlns:note="xalan://org.openelis.newmeta.NotetMeta"
-                xmlns:location="xalan://org.openelis.newmeta.ProviderAddressMetaMap"
-                xmlns:addr="xalan://org.openelis.newmeta.AddressMeta"
+                xmlns:meta="xalan://org.openelis.meta.ProviderMetaMap"
+                xmlns:note="xalan://org.openelis.meta.NotetMeta"
+                xmlns:location="xalan://org.openelis.meta.ProviderAddressMetaMap"
+                xmlns:addr="xalan://org.openelis.meta.AddressMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
                 
@@ -20,19 +20,19 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.ProviderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMetaMap"/>
   </xalan:component>  
   
   <xalan:component prefix="note">
-	 <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NotetMeta"/>
+	 <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NotetMeta"/>
   </xalan:component>
   
   <xalan:component prefix="location">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.ProviderAddressMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addr">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AddressMeta"/>
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
 	</xalan:component>
 
   <xsl:template match="doc"> 

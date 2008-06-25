@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:standardNoteMeta="xalan://org.openelis.newmeta.StandardNoteMetaMap" 
+                xmlns:standardNoteMeta="xalan://org.openelis.meta.StandardNoteMetaMap" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/> 
@@ -16,7 +16,7 @@
   </xalan:component>
 
   <xalan:component prefix="standardNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.StandardNoteMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StandardNoteMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 

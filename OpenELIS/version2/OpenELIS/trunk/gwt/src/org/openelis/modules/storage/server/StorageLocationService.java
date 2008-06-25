@@ -1,10 +1,5 @@
 package org.openelis.modules.storage.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageUnitAutoDO;
@@ -32,17 +27,18 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.StorageLocationChildMeta;
-import org.openelis.meta.StorageLocationMeta;
-import org.openelis.meta.StorageLocationStorageUnitMeta;
-import org.openelis.newmeta.StandardNoteMetaMap;
-import org.openelis.newmeta.StorageLocationMetaMap;
+import org.openelis.meta.StorageLocationMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class StorageLocationService implements AppScreenFormServiceInt,
    											   AutoCompleteServiceInt{
