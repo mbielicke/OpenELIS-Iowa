@@ -230,9 +230,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 										<row>
 										
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
-										<textbox case="mixed" key="{note:getSubject($note)}" width="435px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
-										
-										
+										<textbox case="mixed" key="{note:getSubject($note)}" width="429px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
+					
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
 										<HorizontalPanel>
               							<AbsolutePanel style="StandardNoteButtonImage"/>
@@ -248,15 +247,15 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="549px" height="61px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="545px" height="61px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
 							<row>								
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
-								<HorizontalPanel style="notesPanelContainer" >
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="145px" width="549px" overflowX="auto" overflowY="scroll">
+								<HorizontalPanel style="notesPanelContainer">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="545px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>

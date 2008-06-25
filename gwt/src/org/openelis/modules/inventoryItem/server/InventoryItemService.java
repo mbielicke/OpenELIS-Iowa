@@ -540,7 +540,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     }
     
     public DataModel getInitialModel(String cat){
-        int id = -1;
+        Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 
         if(cat.equals("itemCategories"))
@@ -554,10 +554,13 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         if(id > -1)
             entries = (List<IdNameDO>)remote.getDropdownValues(id);
         
+        
         //we need to build the model to return
         DataModel returnModel = new DataModel();
-                    
-        returnModel.add(new NumberObject(0),new StringObject(""));
+        
+        if(entries.size() > 0){ 
+            returnModel.add(new NumberObject(0),new StringObject(""));
+        }
         
         for(IdNameDO resultDO : entries) { 
             returnModel.add(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName()));

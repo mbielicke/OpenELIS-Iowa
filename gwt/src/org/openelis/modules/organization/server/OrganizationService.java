@@ -451,7 +451,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     }
 
     public DataModel getInitialModel(String cat){
-    	int id = -1;
+    	Integer id = null;
     	CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
     	
     	if(cat.equals("state"))
@@ -462,28 +462,30 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		id = remote.getCategoryId("contact_type");
     	
     	List entries = new ArrayList();
-    	if(id > -1)
+    	if(id != null)
     		entries = remote.getDropdownValues(id);
     	
     	//we need to build the model to return
     	DataModel returnModel = new DataModel();
-    		
-    	//create a blank entry to begin the list
-    	DataSet blankset = new DataSet();
     	
-    	StringObject blankStringId = new StringObject("");
-    	NumberObject blankNumberId = new NumberObject(0);
-    	BooleanObject blankSelected = new BooleanObject();
-        
-    	blankset.addObject(blankStringId);
-    	
-    	
-    	if(cat.equals("contactType"))
-    		blankset.setKey(blankNumberId);
-    	else
-    		blankset.setKey(blankStringId);			
-    	
-    	returnModel.add(blankset);
+        if(entries.size() > 0){	
+        	//create a blank entry to begin the list
+        	DataSet blankset = new DataSet();
+        	
+        	StringObject blankStringId = new StringObject("");
+        	NumberObject blankNumberId = new NumberObject(0);
+        	BooleanObject blankSelected = new BooleanObject();
+            
+        	blankset.addObject(blankStringId);
+        	
+        	
+        	if(cat.equals("contactType"))
+        		blankset.setKey(blankNumberId);
+        	else
+        		blankset.setKey(blankStringId);			
+        	
+        	returnModel.add(blankset);
+        }
     	int i=0;
     	while(i < entries.size()){
     		DataSet set = new DataSet();

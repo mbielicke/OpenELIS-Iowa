@@ -224,16 +224,79 @@
 											</appButton>
 										</widget>
 									</VerticalPanel>
-									<!-- end TAB 1 data table -->
 									<!-- END TAB 1 -->
 								</tab>
-								<!-- start TAB 2 -->
+								<!-- START TAB 2 -->
+								<tab key="tab2" text="{resource:getString($constants,'identifier')}">
+									<VerticalPanel overflow="hidden" padding="0" spacing="0">
+										<widget valign="top">
+											<table key="identifierstsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+													<xsl:value-of select="resource:getString($constants,'identifier')"/>,<xsl:value-of select="resource:getString($constants,'value')"/>												</headers>
+												<widths>267,300</widths>
+												<editors>
+													<textbox case="mixed"/>
+													<textbox case="mixed"/>
+												</editors>
+												<fields>
+													<string key="{contact:getName($cont)}" required="true"/>
+													<string key="{addr:getMultipleUnit($contAddr)}" required="true"/>
+												</fields>
+												<sorts>true,true</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+											</table>
+											<query>
+												<queryTable maxRows="8" showError="false" title="" width="592px">
+													<headers>
+														<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
+													</headers>
+													<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
+													<editors>
+														<autoDropdown case="mixed" multiSelect="true" width="90px"/>
+														<textbox case="upper"/>
+														<textbox case="upper"/>
+														<textbox case="upper"/>
+														<textbox case="upper"/>
+														<autoDropdown case="upper" multiSelect="true" width="40px"/>
+														<textbox case="mixed"/>
+														<autoDropdown case="mixed" multiSelect="true" width="110px"/>
+														<textbox case="mixed"/>
+														<textbox case="mixed"/>
+														<textbox case="mixed"/>
+														<textbox case="mixed"/>
+														<textbox case="mixed"/>
+													</editors>
+													<fields>
+														<xsl:value-of select="contact:getContactTypeId($cont)"/>,<xsl:value-of select="contact:getName($cont)"/>,<xsl:value-of select="addr:getMultipleUnit($contAddr)"/>,<xsl:value-of select="addr:getStreetAddress($contAddr)"/>,<xsl:value-of select="addr:getCity($contAddr)"/>,<xsl:value-of select="addr:getState($contAddr)"/>,<xsl:value-of select="addr:getZipCode($contAddr)"/>,<xsl:value-of select="addr:getCountry($contAddr)"/>
+													</fields>
+													<xsl:value-of select="addr:getWorkPhone($contAddr)"/>,
+   													<xsl:value-of select="addr:getHomePhone($contAddr)"/>,
+													<xsl:value-of select="addr:getCellPhone($contAddr)"/>,
+													<xsl:value-of select="addr:getFaxPhone($contAddr)"/>,
+   													<xsl:value-of select="addr:getEmail($contAddr)"/>
+												</queryTable>
+											</query>
+										</widget>
+										<widget halign="center" style="WhiteContentPanel">
+											<appButton action="removeIdentifierRow" key="removeIdentifierButton" onclick="this" style="Button">
+												<HorizontalPanel>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
+													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+												</HorizontalPanel>
+											</appButton>
+										</widget>
+										<HorizontalPanel height="18px"/>
+									</VerticalPanel>
+								</tab>
+								<!-- END TAB 2 -->
+								<!-- start TAB 3 -->
 								<tab key="noteTab" text="{resource:getString($constants,'note')}">
 									<VerticalPanel height="164px" key="secMod3" padding="0" spacing="0" width="100%">
 										<TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
 											<row>
 												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/></text>
-												<textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}" width="435px"/>
+												<textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}" width="429px"/>
 												<appButton action="standardNote" key="standardNoteButton" onclick="this" style="Button">
 													<HorizontalPanel>
 														<AbsolutePanel style="StandardNoteButtonImage"/>
@@ -244,7 +307,7 @@
 											<row>
 												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'note')"/></text>
 												<widget colspan="2">
-													<textarea case="mixed" height="50px" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}" width="549px"/>
+													<textarea case="mixed" height="48px" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}" width="545px"/>
 												</widget>
 											</row>
 											<row>
@@ -253,7 +316,7 @@
 											    </widget>
 												<widget colspan="2">
 													<HorizontalPanel style="notesPanelContainer">
-														<VerticalPanel height="137px" key="notesPanel" layout="vertical" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="549px" xsi:type="Panel"></VerticalPanel>
+														<VerticalPanel height="137px" key="notesPanel" layout="vertical" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="545px" xsi:type="Panel"></VerticalPanel>
 													</HorizontalPanel>
 												</widget>
 											</row>

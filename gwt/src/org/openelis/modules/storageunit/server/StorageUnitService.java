@@ -300,7 +300,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 	}
 
 	public DataModel getInitialModel(String cat) {
-		int id = -1;
+		Integer id = null;
 		CategoryRemote remote = (CategoryRemote) EJBFactory
 				.lookup("openelis/CategoryBean/remote");
 
@@ -309,26 +309,25 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		}
 
 		List entries = new ArrayList();
-		if (id > -1)
+		if (id != null)
 			entries = remote.getDropdownValues(id);
 
 		// we need to build the model to return
 		DataModel returnModel = new DataModel();
 
-		// create a blank entry to begin the list
-		DataSet blankset = new DataSet();
-
-		StringObject blankStringId = new StringObject();
-		// BooleanObject blankSelected = new BooleanObject();
-
-		blankStringId.setValue("");
-		blankset.setKey(blankStringId);
-		blankset.addObject(blankStringId);
-
-		// blankSelected.setValue(new Boolean(false));
-		// blankset.addObject(blankSelected);
-
-		returnModel.add(blankset);
+        if(entries.size() > 0){
+    		// create a blank entry to begin the list
+    		DataSet blankset = new DataSet();
+    
+    		StringObject blankStringId = new StringObject();
+    
+    		blankStringId.setValue("");
+    		blankset.setKey(blankStringId);
+    		blankset.addObject(blankStringId);
+    
+    		returnModel.add(blankset);
+        }
+        
 		int i = 0;
 		while (i < entries.size()) {
 			DataSet set = new DataSet();

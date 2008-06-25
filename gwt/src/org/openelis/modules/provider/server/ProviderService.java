@@ -360,7 +360,7 @@ public class ProviderService implements AppScreenFormServiceInt{
     public DataModel getInitialModel(String cat) {        
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
-        int id = -1;
+        Integer id = null;
                 
         DataModel model = new DataModel();
         
@@ -372,27 +372,29 @@ public class ProviderService implements AppScreenFormServiceInt{
             id = catRemote.getCategoryId("country");            
         }
                 
-        if(id >-1){
+        if(id != null){
             entries = catRemote.getDropdownValues(id);
-            DataSet blankset = new DataSet();           
-            StringObject blankStringId = new StringObject();
-                                       
-            blankStringId.setValue("");
-            blankset.addObject(blankStringId);
             
-            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-            blankNumberId.setValue(new Integer(-1));
-            if(cat.equals("providerType")){
-
-              blankset.setKey(blankNumberId);
-            } else{
-
-              blankset.setKey(blankStringId);
-            }            
-
-            
-            model.add(blankset);        
-          
+            if(entries.size() > 0){ 
+                DataSet blankset = new DataSet();           
+                StringObject blankStringId = new StringObject();
+                                           
+                blankStringId.setValue("");
+                blankset.addObject(blankStringId);
+                
+                NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
+                blankNumberId.setValue(new Integer(-1));
+                if(cat.equals("providerType")){
+    
+                  blankset.setKey(blankNumberId);
+                } else{
+    
+                  blankset.setKey(blankStringId);
+                }            
+    
+                
+                model.add(blankset);        
+            }
         
             int i=0;
             while(i < entries.size()){
