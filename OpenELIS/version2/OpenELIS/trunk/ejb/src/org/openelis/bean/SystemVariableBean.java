@@ -22,7 +22,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.SystemVariableMeta;
 import org.openelis.newmeta.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.NewQueryBuilder;
@@ -198,10 +197,10 @@ public class SystemVariableBean implements SystemVariableRemote{
     
     private void validate(SystemVariableDO sysVarDO,List<Exception> exceptionList){
         if(sysVarDO.getName()==null || "".equals(sysVarDO.getName())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",SystemVariableMeta.NAME));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
         }
         if(sysVarDO.getValue()==null|| "".equals(sysVarDO.getValue())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",SystemVariableMeta.VALUE));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getValue()));
         }
     }
     
