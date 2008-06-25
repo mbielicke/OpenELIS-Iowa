@@ -351,7 +351,7 @@ public class QAEventService implements AppScreenFormServiceInt{
         qaeDO.setDescription(((String)rpcSend.getFieldValue(QAEMeta.getDescription())));
         
 
-        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QAEMeta.getReportingSequence())));                                     
+        qaeDO.setIsBillable(((String)rpcSend.getFieldValue(QAEMeta.getIsBillable())));                                     
         qaeDO.setName(((String)rpcSend.getFieldValue(QAEMeta.getName())));         
         qaeDO.setReportingSequence((Integer)rpcSend.getFieldValue(QAEMeta.getReportingSequence()));
         qaeDO.setReportingText(((String)rpcSend.getFieldValue(QAEMeta.getReportingText())));    
