@@ -22,9 +22,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.QaEventMeta;
-import org.openelis.meta.QaEventMethodMeta;
-import org.openelis.meta.QaEventTestMeta;
 import org.openelis.newmeta.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.NewQueryBuilder;
@@ -116,8 +113,7 @@ public class QaEventBean implements QaEventRemote{
            // qb.addTable(qaEventTestMeta);
            // qb.addTable(qaEventMethodMeta);
                 
-        sb.append(qb.getEJBQL());         
-        System.out.println("ejbql########################################### "+sb.toString());
+        sb.append(qb.getEJBQL());                 
         Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
@@ -211,13 +207,13 @@ public class QaEventBean implements QaEventRemote{
     
     private void validateQaEvent(QaEventDO qaEventDO,List<Exception> exceptionList){
         if(qaEventDO.getType()==null){                       
-            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.TYPE_ID));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getTypeId()));
            } 
         if("".equals(qaEventDO.getName())){                       
-            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.NAME));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getName()));
            } 
         if("".equals(qaEventDO.getReportingText())){                       
-            exceptionList.add(new FieldErrorException("fieldRequiredException",QaEventMeta.REPORTING_TEXT));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getReportingText()));
            } 
     } 
  
