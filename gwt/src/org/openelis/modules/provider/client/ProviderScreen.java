@@ -29,6 +29,7 @@ import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+import org.openelis.newmeta.ProviderMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -69,6 +70,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private static DataModel stateDropDown = null;  
     private static DataModel countryDropDown = null; 
     
+    private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",!loaded);
@@ -111,15 +113,15 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         standardNoteButton = (AppButton) getWidget("standardNoteButton");
         
-        provId = (ScreenTextBox)widgets.get("provider.id");
-        lastName = (TextBox)getWidget("provider.lastName");
-        subjectBox = (TextBox)getWidget("note.subject");
-        noteArea = (ScreenTextArea)widgets.get("note.text");
+        provId = (ScreenTextBox)widgets.get(ProvMeta.getId());
+        lastName = (TextBox)getWidget(ProvMeta.getLastName());
+        subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
+        noteArea = (ScreenTextArea)widgets.get(ProvMeta.getNote().getText());
         svp = (ScreenVertical) widgets.get("notesPanel");
         
         noteTab = (TabPanel)getWidget("provTabPanel");  
         
-        displayType = (ScreenAutoDropdown)widgets.get("provider.typeId");
+        displayType = (ScreenAutoDropdown)widgets.get(ProvMeta.getTypeId());
         
         provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.setAutoAdd(false);
@@ -204,10 +206,10 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     }
 
     public void update() {                        
-        note = (StringField)rpc.getField("note.text");             
+        note = (StringField)rpc.getField(ProvMeta.getNote().getText());             
         note.setValue("");
                  
-        subject = (StringField)rpc.getField("note.subject");
+        subject = (StringField)rpc.getField(ProvMeta.getNote().getSubject());
         subject.setValue("");
         
         provAddController.setAutoAdd(true);
@@ -289,7 +291,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         loadAddresses = true;
         clearAddresses = false;
         
-        Integer provId = (Integer)rpc.getFieldValue("provider.id");
+        Integer provId = (Integer)rpc.getFieldValue(ProvMeta.getId());
         NumberObject provIdObj = new NumberObject(provId);
         
 //      done because key is set to null in AppScreenForm for the add operation 
@@ -359,7 +361,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
             
-            letterRPC.setFieldValue("provider.lastName", query);            
+            letterRPC.setFieldValue(ProvMeta.getLastName(), query);            
             commitQuery(letterRPC); 
        }
     }
@@ -471,8 +473,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       subjectBox.setText("");
       
       ((TextArea)noteArea.getWidget()).setText("");           
-      rpc.setFieldValue("note.subject", null);
-      rpc.setFieldValue("note.text", null);  
+      rpc.setFieldValue(ProvMeta.getNote().getSubject(), null);
+      rpc.setFieldValue(ProvMeta.getNote().getText(), null);  
    }
    
    private void loadTabs(){        

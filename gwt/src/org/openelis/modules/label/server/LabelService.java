@@ -23,7 +23,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.LabelMeta;
+import org.openelis.newmeta.LabelMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -38,7 +38,7 @@ public class LabelService implements AppScreenFormServiceInt {
     private static final int leftTableRowsPerPage = 9; 
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-    
+    private static final LabelMetaMap Meta = new LabelMetaMap();  
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List labels = new ArrayList();
         if(rpcSend == null){           
@@ -312,25 +312,25 @@ public class LabelService implements AppScreenFormServiceInt {
     
     
     private void setFieldsInRPC(FormRPC rpcReturn, LabelDO qaeDO){
-        rpcReturn.setFieldValue(LabelMeta.ID, qaeDO.getId());
-        rpcReturn.setFieldValue(LabelMeta.NAME,qaeDO.getName());
-        rpcReturn.setFieldValue(LabelMeta.DESCRIPTION,qaeDO.getDescription());
-        rpcReturn.setFieldValue(LabelMeta.PRINTER_TYPE_ID,qaeDO.getPrinterType());     
-        rpcReturn.setFieldValue(LabelMeta.SCRIPTLET_ID,qaeDO.getScriptlet());        
+        rpcReturn.setFieldValue(Meta.getId(), qaeDO.getId());
+        rpcReturn.setFieldValue(Meta.getName(),qaeDO.getName());
+        rpcReturn.setFieldValue(Meta.getDescription(),qaeDO.getDescription());
+        rpcReturn.setFieldValue(Meta.getPrinterTypeId(),qaeDO.getPrinterType());     
+        rpcReturn.setFieldValue(Meta.getScriptletId(),qaeDO.getScriptlet());        
     }
     
     private LabelDO getLabelDOFromRPC(FormRPC rpcSend){
         LabelDO labelDO = new LabelDO();
-        NumberField labelIdField = (NumberField) rpcSend.getField(LabelMeta.ID);
+        NumberField labelIdField = (NumberField) rpcSend.getField(Meta.getId());
         
         labelDO.setId((Integer)labelIdField.getValue());
-        labelDO.setName(((String)rpcSend.getFieldValue(LabelMeta.NAME)));
-        labelDO.setDescription(((String)rpcSend.getFieldValue(LabelMeta.DESCRIPTION)));
+        labelDO.setName(((String)rpcSend.getFieldValue(Meta.getName())));
+        labelDO.setDescription(((String)rpcSend.getFieldValue(Meta.getDescription())));
               
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE_ID)))
-            labelDO.setPrinterType((Integer)rpcSend.getFieldValue(LabelMeta.PRINTER_TYPE_ID));   
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(LabelMeta.SCRIPTLET_ID)))
-            labelDO.setScriptlet((Integer)rpcSend.getFieldValue(LabelMeta.SCRIPTLET_ID));        
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(Meta.getPrinterTypeId())))
+            labelDO.setPrinterType((Integer)rpcSend.getFieldValue(Meta.getPrinterTypeId()));   
+        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(Meta.getScriptletId())))
+            labelDO.setScriptlet((Integer)rpcSend.getFieldValue(Meta.getScriptletId()));        
      
        return labelDO;
     }
