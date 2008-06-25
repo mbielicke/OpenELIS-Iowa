@@ -7,9 +7,9 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.meta.StandardNoteMetaMap;
+import org.openelis.meta.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.newmeta.StandardNoteMetaMap;
-import org.openelis.newmeta.TestTrailerMetaMap;
 
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;

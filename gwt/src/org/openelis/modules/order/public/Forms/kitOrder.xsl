@@ -2,13 +2,13 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:orderMeta="xalan://org.openelis.newmeta.OrderMetaMap" 
-                xmlns:orderItemMeta="xalan://org.openelis.newmeta.OrderItemMetaMap"
-                xmlns:orgMeta="xalan://org.openelis.newmeta.OrderOrganizationMetaMap"
-                xmlns:addr="xalan://org.openelis.newmeta.AddressMeta"
-                xmlns:noteMeta="xalan://org.openelis.newmeta.NoteMeta"
-                xmlns:dictionaryMeta="xalan://org.openelis.newmeta.DictionaryMeta"
-                xmlns:invItemMeta="xalan://org.openelis.newmeta.InventoryItemMeta"
+                xmlns:orderMeta="xalan://org.openelis.meta.OrderMetaMap" 
+                xmlns:orderItemMeta="xalan://org.openelis.meta.OrderItemMetaMap"
+                xmlns:orgMeta="xalan://org.openelis.meta.OrderOrganizationMetaMap"
+                xmlns:addr="xalan://org.openelis.meta.AddressMeta"
+                xmlns:noteMeta="xalan://org.openelis.meta.NoteMeta"
+                xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta"
+                xmlns:invItemMeta="xalan://org.openelis.meta.InventoryItemMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -22,31 +22,31 @@
   </xalan:component>
   
   <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="orderItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="orgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.OrderOrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addr">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AddressMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
   </xalan:component>
   
   <xalan:component prefix="noteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NoteMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta"/>
   </xalan:component>
   
   <xalan:component prefix="dictionaryMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.DictionaryMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMeta"/>
   </xalan:component>
   
   <xalan:component prefix="invItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 

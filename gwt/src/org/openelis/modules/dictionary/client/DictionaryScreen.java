@@ -14,8 +14,8 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.meta.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.newmeta.CategoryMetaMap;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;

@@ -2,12 +2,12 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:meta="xalan://org.openelis.newmeta.InventoryItemMetaMap"
-                xmlns:noteMeta="xalan://org.openelis.newmeta.NoteMeta"
-                xmlns:locationMeta="xalan://org.openelis.newmeta.InventoryLocationMetaMap"
-                xmlns:componentMeta="xalan://org.openelis.newmeta.InventoryComponentMetaMap"
-                xmlns:storageLocationMeta="xalan://org.openelis.newmeta.StorageLocationMeta"                
-                xmlns:invItemMeta="xalan://org.openelis.newmeta.InventoryItemMeta"                
+                xmlns:meta="xalan://org.openelis.meta.InventoryItemMetaMap"
+                xmlns:noteMeta="xalan://org.openelis.meta.NoteMeta"
+                xmlns:locationMeta="xalan://org.openelis.meta.InventoryLocationMetaMap"
+                xmlns:componentMeta="xalan://org.openelis.meta.InventoryComponentMetaMap"
+                xmlns:storageLocationMeta="xalan://org.openelis.meta.StorageLocationMeta"                
+                xmlns:invItemMeta="xalan://org.openelis.meta.InventoryItemMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">
                 
@@ -22,27 +22,27 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="noteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.NoteMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta"/>
   </xalan:component>
   
   <xalan:component prefix="locationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryLocationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="componentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryComponentMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryComponentMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="storageLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.StorageLocationMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationMeta"/>
   </xalan:component>
   
   <xalan:component prefix="invItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.InventoryItemMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 

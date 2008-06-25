@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:labelMeta="xalan://org.openelis.newmeta.LabelMetaMap"
+                xmlns:labelMeta="xalan://org.openelis.meta.LabelMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>
@@ -16,7 +16,7 @@
   </xalan:component>
   
   <xalan:component prefix="labelMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.LabelMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.LabelMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 

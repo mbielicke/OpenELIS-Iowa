@@ -9,9 +9,9 @@ import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.meta.OrganizationMetaMap;
+import org.openelis.meta.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.newmeta.OrganizationMetaMap;
-import org.openelis.newmeta.StandardNoteMetaMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;

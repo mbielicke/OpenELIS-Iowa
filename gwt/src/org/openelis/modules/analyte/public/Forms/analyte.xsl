@@ -2,8 +2,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.newmeta.AnalyteMetaMap"
-                xmlns:parentMeta="xalan://org.openelis.newmeta.AnalyteMeta"
+                xmlns:meta="xalan://org.openelis.meta.AnalyteMetaMap"
+                xmlns:parentMeta="xalan://org.openelis.meta.AnalyteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>   
@@ -17,11 +17,11 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AnalyteMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="parentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.AnalyteMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 

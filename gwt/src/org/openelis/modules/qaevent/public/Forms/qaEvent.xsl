@@ -2,8 +2,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.newmeta.QaEventMetaMap"
-                xmlns:testMeta="xalan://org.openelis.newmeta.QaEventTestMetaMap"
+                xmlns:meta="xalan://org.openelis.meta.QaEventMetaMap"
+                xmlns:testMeta="xalan://org.openelis.meta.QaEventTestMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -17,11 +17,11 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.QaEventMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="testMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.QaEventTestMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventTestMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 

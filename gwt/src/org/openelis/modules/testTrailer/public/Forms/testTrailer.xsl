@@ -2,7 +2,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:testTrailerMeta="xalan://org.openelis.newmeta.TestTrailerMetaMap"
+                xmlns:testTrailerMeta="xalan://org.openelis.meta.TestTrailerMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>   
@@ -16,7 +16,7 @@
   </xalan:component>
   
  <xalan:component prefix="testTrailerMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.newmeta.TestTrailerMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestTrailerMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
