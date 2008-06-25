@@ -1,5 +1,22 @@
 package org.openelis.bean;
 
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.StorageLocationDO;
+import org.openelis.entity.StorageLocation;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.LockLocal;
+import org.openelis.meta.StorageLocationMetaMap;
+import org.openelis.remote.StorageLocationRemote;
+import org.openelis.util.NewQueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,30 +32,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageLocationDO;
-import org.openelis.entity.StorageLocation;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.local.LockLocal;
-import org.openelis.meta.StorageLocationChildMeta;
-import org.openelis.meta.StorageLocationChildStorageUnitMeta;
-import org.openelis.meta.StorageLocationMeta;
-import org.openelis.meta.StorageLocationStorageUnitMeta;
-import org.openelis.newmeta.StorageLocationMetaMap;
-import org.openelis.newmeta.StorageUnitMetaMap;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.util.Meta;
-import org.openelis.util.NewQueryBuilder;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 @SecurityDomain("openelis")

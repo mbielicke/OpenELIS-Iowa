@@ -1,5 +1,30 @@
 package org.openelis.bean;
 
+import edu.uiowa.uhl.security.domain.SystemUserDO;
+import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BillToReportToDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrderAddAutoFillDO;
+import org.openelis.domain.OrderDO;
+import org.openelis.domain.OrderItemDO;
+import org.openelis.entity.InventoryTransaction;
+import org.openelis.entity.Note;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.LockLocal;
+import org.openelis.meta.OrderMetaMap;
+import org.openelis.remote.OrderRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.NewQueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,40 +40,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
-import org.openelis.entity.InventoryTransaction;
-import org.openelis.entity.Note;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.local.LockLocal;
-import org.openelis.meta.OrderItemInventoryItemMeta;
-import org.openelis.meta.OrderItemMeta;
-import org.openelis.meta.OrderItemStoreMeta;
-import org.openelis.meta.OrderMeta;
-import org.openelis.newmeta.InventoryItemMetaMap;
-import org.openelis.newmeta.OrderMetaMap;
-import org.openelis.remote.OrderRemote;
-import org.openelis.util.Datetime;
-import org.openelis.util.Meta;
-import org.openelis.util.NewQueryBuilder;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 @SecurityDomain("openelis")

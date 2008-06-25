@@ -29,7 +29,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.InventoryComponentMeta;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.newmeta.InventoryItemMetaMap;
+import org.openelis.meta.InventoryItemMetaMap;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.NewQueryBuilder;

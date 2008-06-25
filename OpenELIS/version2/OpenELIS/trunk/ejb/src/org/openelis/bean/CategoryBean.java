@@ -28,8 +28,8 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.meta.CategoryMetaMap;
 import org.openelis.meta.DictionaryMeta;
-import org.openelis.newmeta.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
@@ -53,6 +53,7 @@ public class CategoryBean implements CategoryRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    
     
     private static CategoryMetaMap CatMeta = new CategoryMetaMap();
     
@@ -323,18 +324,18 @@ public class CategoryBean implements CategoryRemote {
                 
               if(catId!=null){  
                 if(!catId.equals(categoryDO.getId())){
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",CategoryMeta.SYSTEM_NAME));
+                    exceptionList.add(new FieldErrorException("fieldUniqueException",CatMeta.getSystemName()));
                 }  
               }                                 
 
        }else {
  
-           exceptionList.add(new FieldErrorException("fieldRequiredException",CategoryMeta.SYSTEM_NAME)); 
+           exceptionList.add(new FieldErrorException("fieldRequiredException",CatMeta.getSystemName())); 
        } 
             
          if(("").equals(categoryDO.getName())){      
 
-                exceptionList.add(new FieldErrorException("fieldRequiredException",CategoryMeta.NAME)); 
+                exceptionList.add(new FieldErrorException("fieldRequiredException",CatMeta.getName())); 
             }
             
     }
@@ -347,11 +348,11 @@ public class CategoryBean implements CategoryRemote {
                entries.add(dictDO.getEntry());
               }else{        
 
-                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.ENTRY));
+                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,CatMeta.getDictionary().getEntry()));
               } 
             }else{              
 
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", index,DictionaryMeta.ENTRY));
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException", index,CatMeta.getDictionary().getEntry()));
             }              
            
             
@@ -370,15 +371,15 @@ public class CategoryBean implements CategoryRemote {
                  
                   if(catId != null){
                       if(!catId.equals(categoryId)){                                                        
-                          exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
+                          exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,CatMeta.getDictionary().getSystemName()));
                       }
                   }                           
                 systemNames.add(dictDO.getSystemName());                            
             }else{
                 if(dictDO.getId() ==null){
-                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,DictionaryMeta.SYSTEM_NAME));
+                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,CatMeta.getDictionary().getSystemName()));
                 }else {
-                    exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,DictionaryMeta.SYSTEM_NAME));
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,CatMeta.getDictionary().getSystemName()));
                 }
             }
             

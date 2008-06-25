@@ -11,7 +11,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.newmeta.AnalyteMetaMap;
+import org.openelis.meta.AnalyteMetaMap;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
