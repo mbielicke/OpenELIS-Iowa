@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +22,17 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
+import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.InventoryTransaction;
 import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.OrderItemInventoryItemMeta;
 import org.openelis.meta.OrderItemMeta;
@@ -237,6 +244,21 @@ public class OrderBean implements OrderRemote{
          return returnList;
     }
 
+    public OrderAddAutoFillDO getAddAutoFillValues() throws Exception{
+        OrderAddAutoFillDO autoFillDO = new OrderAddAutoFillDO();
+        //status integer
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        query.setParameter("systemName", "order_status_pending");
+        autoFillDO.setStatus((Integer)query.getSingleResult());
+        //order date
+        autoFillDO.setOrderedDate(new Date());
+        //requested by string
+        SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
+        autoFillDO.setRequestedBy(systemUserDO.getLoginName());
+        
+        return autoFillDO;
+    }
+
     @RolesAllowed("order-update")
     public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteDO customerNoteDO, NoteDO orderShippingNotes) throws Exception {
         //order reference table id
@@ -264,11 +286,11 @@ public class OrderBean implements OrderRemote{
             order = manager.find(Order.class, orderDO.getId());
 
         //validate the order record
-        //List exceptionList = new ArrayList();
-        //validateOrganizationAndAddress(organizationDO, exceptionList);
-        //if(exceptionList.size() > 0){
-        //    throw (RPCException)exceptionList.get(0);
-        //}
+        List exceptionList = new ArrayList();
+        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        
+        if(exceptionList.size() > 0)
+            throw (RPCException)exceptionList.get(0);
         
         //update order record
          order.setBillToId(orderDO.getBillToId());
@@ -280,7 +302,7 @@ public class OrderBean implements OrderRemote{
          order.setOrganizationId(orderDO.getOrganizationId());
          order.setReportToId(orderDO.getReportToId());
          order.setRequestedBy(orderDO.getRequestedBy());
-         order.setStatusId(orderDO.getStatus());
+         order.setStatusId(orderDO.getStatusId());
 
         if (order.getId() == null) {
             manager.persist(order);
@@ -297,11 +319,11 @@ public class OrderBean implements OrderRemote{
             OrderItem orderItem = null;
             
             //validate the order item record
-            //exceptionList = new ArrayList();
-            //validateContactAndAddress(contactDO, i, exceptionList);
-            //if(exceptionList.size() > 0){
-            //    throw (RPCException)exceptionList.get(0);
-            //}
+            exceptionList = new ArrayList();
+            validateOrderItems(orderItemDO, i, exceptionList);
+            
+            if(exceptionList.size() > 0)
+                throw (RPCException)exceptionList.get(0);
             
             if (orderItemDO.getId() == null)
                 orderItem = new OrderItem();
@@ -322,7 +344,7 @@ public class OrderBean implements OrderRemote{
                 }
            }
             
-           //we may need to add transaction records for this order item
+           //insert transaction record if necessary
            if(orderItemDO.getLocationId() != null){
                InventoryTransaction trans = null;
                if (orderItemDO.getTransactionId() == null)
@@ -397,28 +419,74 @@ public class OrderBean implements OrderRemote{
     }
 
     public List validateForAdd(OrderDO orderDO, String orderType, List items) {
-        // TODO Auto-generated method stub
-        return null;
+        List exceptionList = new ArrayList();
+        
+        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        
+        for(int i=0; i<items.size();i++){            
+            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
+            
+            validateOrderItems(orderItemDO, i, exceptionList);
+        }
+        
+        return exceptionList;
     }
 
     public List validateForUpdate(OrderDO orderDO, String orderType, List items) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public OrderAddAutoFillDO getAddAutoFillValues() throws Exception{
-        OrderAddAutoFillDO autoFillDO = new OrderAddAutoFillDO();
-        //status integer
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "order_status_pending");
-        autoFillDO.setStatus((Integer)query.getSingleResult());
-        //order date
-        autoFillDO.setOrderedDate(new Date());
-        //requested by string
-        SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
-        autoFillDO.setRequestedBy(systemUserDO.getLoginName());
+        List exceptionList = new ArrayList();
         
-        return autoFillDO;
+        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        
+        for(int i=0; i<items.size();i++){            
+            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
+            
+            validateOrderItems(orderItemDO, i, exceptionList);
+        }
+        
+        return exceptionList;
     }
-
+    
+    private void validateOrder(OrderDO orderDO, int numberOfOrderItems, String orderType, List exceptionList){
+        //status required for all order types
+        if(orderDO.getStatusId() == null || "".equals(orderDO.getStatusId())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getStatusId()));
+        }
+        
+        //needed in days required for all order types
+        if(orderDO.getNeededInDays() == null || "".equals(orderDO.getNeededInDays())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getNeededInDays()));
+        }
+        
+        //organization required for vendor orders and kit orders
+        if((orderDO.getOrganizationId() == null || "".equals(orderDO.getOrganizationId())) && (OrderRemote.EXTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType))){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrganizationId()));
+        }        
+        
+        //ordered date required for all order types
+        if(orderDO.getOrderedDate() == null || "".equals(orderDO.getOrderedDate())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrderedDate()));
+        }
+        
+        //requested by required for all order types
+        if(orderDO.getRequestedBy() == null || "".equals(orderDO.getRequestedBy())){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getRequestedBy()));
+        }        
+        
+        //number of order items needs to be > 0
+        if(numberOfOrderItems < 1){
+            exceptionList.add(new FormErrorException("zeroOrderItemsException"));
+        }
+    }
+    
+    private void validateOrderItems(OrderItemDO orderItemDO, int rowIndex, List exceptionList){
+        //quantity is required for all order types
+        if(orderItemDO.getQuantityRequested() == null || "".equals(orderItemDO.getQuantityRequested())){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getQuantityRequested()));
+        }
+        
+        //inventory item is required for all order types
+        if(orderItemDO.getInventoryItemId() == null || "".equals(orderItemDO.getInventoryItemId())){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getInventoryItemId()));
+        }
+    }
 }
