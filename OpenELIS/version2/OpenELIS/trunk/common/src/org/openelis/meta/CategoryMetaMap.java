@@ -18,7 +18,7 @@ public class CategoryMetaMap extends CategoryMeta implements MetaMap {
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith("notes."))
+        if(name.startsWith("dict."))
             return DICTIONARY.hasColumn(name);
         return super.hasColumn(name);
     }

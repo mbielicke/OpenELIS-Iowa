@@ -101,9 +101,9 @@
 </display>
 							  
 <rpc key= "display">
- <number key="{systemVariableMeta:getId()}" type="integer" required = "false" />
- <string key="{systemVariableMeta:getName()}" required="true"/>
- <string key="{systemVariableMeta:getValue()}" required="true"/>
+ <number key="{meta:getId($sv)}" type="integer" required = "false" />
+ <string key="{meta:getName($sv)}" required="true"/>
+ <string key="{meta:getValue($sv)}" required="true"/>
 </rpc>
 					   
 <rpc key= "query">     

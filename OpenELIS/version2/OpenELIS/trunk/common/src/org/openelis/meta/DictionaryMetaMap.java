@@ -10,7 +10,7 @@ public class DictionaryMetaMap extends DictionaryMeta implements MetaMap {
     
     public DictionaryMetaMap(String path){
         super(path);        
-        RELATED_ENTRY = new DictionaryMeta(path+"relentry.");
+        RELATED_ENTRY = new DictionaryMeta(path+"relatedEntry.");
     }
     
     private DictionaryMeta RELATED_ENTRY;
@@ -20,7 +20,7 @@ public class DictionaryMetaMap extends DictionaryMeta implements MetaMap {
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith(path+"relentry."))
+        if(name.startsWith(path+"relatedEntry."))
           return RELATED_ENTRY.hasColumn(name); 
       return super.hasColumn(name);
     }
