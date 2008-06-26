@@ -110,6 +110,7 @@
       </row> 
       <row>       
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>   
+      <textbox key= "{meta:getReportingSequence($qae)}" width= "40px" tab="{meta:getReportingText($qae)},{meta:getIsBillable($qae)}"/> 
      </row>
 			
 	   <row>
