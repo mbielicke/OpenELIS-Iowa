@@ -1,6 +1,8 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.NoteMeta;
+import org.openelis.meta.ProviderMeta;
 
 public class ProviderMetaMap extends ProviderMeta implements MetaMap {
  

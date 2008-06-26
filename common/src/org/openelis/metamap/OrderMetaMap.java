@@ -1,6 +1,9 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.DictionaryMeta;
+import org.openelis.meta.NoteMeta;
+import org.openelis.meta.OrderMeta;
 
 public class OrderMetaMap extends OrderMeta implements MetaMap{
 

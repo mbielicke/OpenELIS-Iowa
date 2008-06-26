@@ -1,14 +1,17 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.AddressMeta;
+import org.openelis.meta.OrganizationContactMeta;
 
-public class OrderOrganizationMetaMap extends OrganizationMeta implements MetaMap{
-
-    public OrderOrganizationMetaMap() {
+public class OrganizationContactMetaMap extends OrganizationContactMeta implements
+                                                                       MetaMap {
+    
+    public OrganizationContactMetaMap() {
         super();
     }
     
-    public OrderOrganizationMetaMap(String path){
+    public OrganizationContactMetaMap(String path){
         super(path);
         ADDRESS = new AddressMeta(path + "address.");
     }
@@ -20,7 +23,7 @@ public class OrderOrganizationMetaMap extends OrganizationMeta implements MetaMa
     }
 
     public String buildFrom(String where) {
-        return "Organization ";
+        return "OrganizationContact ";
     }
     
     public boolean hasColumn(String name){
