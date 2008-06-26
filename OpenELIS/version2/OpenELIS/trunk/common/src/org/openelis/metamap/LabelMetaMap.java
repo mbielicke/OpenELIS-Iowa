@@ -1,6 +1,7 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.LabelMeta;
 
 public class LabelMetaMap extends LabelMeta implements MetaMap {
 

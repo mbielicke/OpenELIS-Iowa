@@ -1,6 +1,8 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.InventoryLocationMeta;
+import org.openelis.meta.StorageLocationMeta;
 
 public class InventoryLocationMetaMap extends InventoryLocationMeta implements MetaMap{
 

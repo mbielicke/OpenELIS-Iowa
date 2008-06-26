@@ -1,6 +1,7 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.StorageUnitMeta;
 
 public class StorageUnitMetaMap extends StorageUnitMeta implements MetaMap{
     

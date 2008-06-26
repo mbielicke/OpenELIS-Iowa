@@ -1,6 +1,7 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.AnalyteMeta;
 
 
 public class AnalyteMetaMap extends AnalyteMeta implements MetaMap {

@@ -1,6 +1,7 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.SystemVariableMeta;
 
 public class SystemVariableMetaMap extends SystemVariableMeta implements
                                                              MetaMap {

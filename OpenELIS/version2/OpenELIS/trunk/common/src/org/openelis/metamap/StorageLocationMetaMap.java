@@ -1,6 +1,8 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.StorageLocationMeta;
+import org.openelis.meta.StorageUnitMeta;
 
 public class StorageLocationMetaMap extends StorageLocationMeta implements MetaMap{
     private boolean child = false;

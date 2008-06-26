@@ -1,6 +1,7 @@
-package org.openelis.meta;
+package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.DictionaryMeta;
 
 public class DictionaryMetaMap extends DictionaryMeta implements MetaMap {
 
