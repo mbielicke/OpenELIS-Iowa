@@ -22,7 +22,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.QaEventMetaMap;
+import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;

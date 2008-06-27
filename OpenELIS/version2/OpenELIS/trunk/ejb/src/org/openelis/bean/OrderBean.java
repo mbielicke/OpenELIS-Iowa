@@ -19,7 +19,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.OrderMetaMap;
+import org.openelis.metamap.OrderMetaMap;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.NewQueryBuilder;

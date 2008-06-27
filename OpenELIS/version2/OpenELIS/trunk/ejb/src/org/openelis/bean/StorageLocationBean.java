@@ -12,7 +12,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.StorageLocationMetaMap;
+import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
