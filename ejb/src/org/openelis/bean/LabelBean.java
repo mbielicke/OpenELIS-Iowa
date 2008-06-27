@@ -24,7 +24,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.LabelMetaMap;
+import org.openelis.metamap.LabelMetaMap;
 import org.openelis.remote.LabelRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.util.QueryBuilder;

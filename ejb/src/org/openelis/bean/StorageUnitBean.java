@@ -23,7 +23,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.StorageUnitMetaMap;
+import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
