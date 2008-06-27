@@ -11,8 +11,8 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.meta.StandardNoteMetaMap;
-import org.openelis.meta.StorageLocationMetaMap;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;

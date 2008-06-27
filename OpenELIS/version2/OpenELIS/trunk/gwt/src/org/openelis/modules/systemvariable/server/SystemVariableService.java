@@ -21,7 +21,7 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.SystemVariableMetaMap;
+import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.server.constants.Constants;

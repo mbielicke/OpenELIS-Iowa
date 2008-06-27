@@ -31,7 +31,7 @@ import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.meta.ProviderMetaMap;
+import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;

@@ -24,7 +24,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.meta.StandardNoteMeta;
-import org.openelis.meta.StandardNoteMetaMap;
+import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;

@@ -7,7 +7,7 @@ import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.meta.LabelMetaMap;
+import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;

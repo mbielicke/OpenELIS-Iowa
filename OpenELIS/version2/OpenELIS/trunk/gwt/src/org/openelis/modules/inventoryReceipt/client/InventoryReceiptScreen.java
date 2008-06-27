@@ -8,7 +8,7 @@ import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.meta.InventoryReceiptMetaMap;
+import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;

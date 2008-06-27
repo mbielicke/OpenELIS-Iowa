@@ -30,7 +30,7 @@ import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.meta.OrderMetaMap;
+import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 

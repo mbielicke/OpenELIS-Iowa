@@ -27,7 +27,7 @@ import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.meta.ProviderMetaMap;
+import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 

@@ -27,7 +27,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.StorageLocationMetaMap;
+import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageUnitRemote;
