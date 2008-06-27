@@ -4,7 +4,7 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.meta.SystemVariableMetaMap;
+import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;

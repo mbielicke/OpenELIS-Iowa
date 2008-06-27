@@ -9,8 +9,8 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.meta.StandardNoteMetaMap;
-import org.openelis.meta.StorageUnitMetaMap;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.Widget;
