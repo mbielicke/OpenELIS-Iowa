@@ -20,13 +20,6 @@ package org.openelis.entity;
   * StorageLocation Entity POJO for database 
   */
 
-import org.openelis.entity.StorageUnit;
-import org.openelis.util.XMLUtil;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import java.util.Collection;
 
 import javax.persistence.Column;
@@ -36,7 +29,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -44,14 +36,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.util.XMLUtil;
+import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 @NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
 @NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
-@NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select s.id, s.name, s.location " +
-                             " from StorageLocation s where s.name like :name order by s.name"),
+@NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +
+                             " childLoc.storageUnit.description) " +
+                             " from StorageLocation childLoc where " +
+                             " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
+                             " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'" +
+                             " order by childLoc.name"),
 @NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
 @NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name")})
                              
@@ -92,7 +94,7 @@ public class StorageLocation implements Auditable, Cloneable {
   @JoinColumn(name = "parent_storage_location_id", insertable = false, updatable = false)
   private StorageLocation parentStorageLocation;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_unit_id", insertable = false, updatable = false)
   private StorageUnit storageUnit;
 

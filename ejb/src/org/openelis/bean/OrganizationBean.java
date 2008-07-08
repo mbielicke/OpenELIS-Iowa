@@ -45,12 +45,11 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 @SecurityDomain("openelis")

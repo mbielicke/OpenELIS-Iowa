@@ -50,6 +50,12 @@ import org.openelis.utils.Auditable;
                                         " from InventoryLocation i left join i.storageLocation childLoc " +
                                         " left join childLoc.parentStorageLocation parentLoc " +
                                         " where i.inventoryItemId = :id and i.quantityOnhand > 0"),
+@NamedQuery(name = "InventoryLocation.AutoCompleteByName", query = "select distinct new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +
+                                        " childLoc.storageUnit.description) " +
+                                        " from InventoryLocation i left join i.storageLocation childLoc where " +
+                                        " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
+                                        " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) " +
+                                        " order by childLoc.name"),
 @NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocationId = :id")})
 
 
@@ -131,16 +137,16 @@ public class InventoryLocation implements Auditable, Cloneable {
        (quantityOnhand != null && !quantityOnhand.equals(this.quantityOnhand)))
       this.quantityOnhand = quantityOnhand;
   }
-
+    
   public Datetime getExpirationDate() {
     if(expirationDate == null)
       return null;
     return new Datetime(Datetime.YEAR ,Datetime. DAY,expirationDate);
   }
-  public void setExpirationDate (Datetime expiration_date){
-    if((expirationDate == null && this.expirationDate != null) || 
-       (expirationDate != null && !expirationDate.equals(this.expirationDate)))
-      this.expirationDate = expiration_date.getDate();
+  public void setExpirationDate (Datetime expirationDate){
+    if((expirationDate == null && this.expirationDate != null) || (expirationDate != null && this.expirationDate == null) || 
+       (expirationDate != null && !expirationDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.expirationDate))))
+      this.expirationDate = expirationDate.getDate();
   }
 
   

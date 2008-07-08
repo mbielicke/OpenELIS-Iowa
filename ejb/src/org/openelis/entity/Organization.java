@@ -55,9 +55,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Organization.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
             + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='organization') and n.referenceId = :id ORDER BY n.timestamp DESC"),
     @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
-              " o.address.zipCode) from Organization o where o.id = :id"),
+              " o.address.zipCode) from Organization o where o.id = :id and o.isActive = 'Y'"),
     @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
-              " o.address.zipCode) from Organization o where o.name like :name order by o.name") })
+              " o.address.zipCode) from Organization o where o.name like :name and o.isActive='Y' order by o.name") })
               
 @Entity
 @Table(name="organization")

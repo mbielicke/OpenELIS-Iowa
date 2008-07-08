@@ -42,16 +42,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.InventoryComponentMeta;
-import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.InventoryItemRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.NewQueryBuilder;
 import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 @SecurityDomain("openelis")

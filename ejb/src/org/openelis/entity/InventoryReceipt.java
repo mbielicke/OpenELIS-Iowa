@@ -29,13 +29,27 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "InventoryReceipt.InventoryReceiptByOrderNum", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
+                                 " oi.id, o.organizationId,orgz.name,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
+                                 " orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
+                                 " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
+                                 " Dictionary dictStore, Dictionary dictPurch where ii.storeId = dictStore.id and ii.purchasedUnitsId=dictPurch.id and o.id = :id and o.isExternal='Y'"),
+    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(ii.id, ii.name) from InventoryReceipt ir LEFT JOIN ir.inventoryItem ii " +
+                                 " where ir.upc like :upc")})
+                            
 @Entity
 @Table(name="inventory_receipt")
 @EntityListeners({AuditUtil.class})
@@ -68,8 +82,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
   private String externalReference;             
 
   @Column(name="upc")
-  private String upc;             
-
+  private String upc;  
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
+  private InventoryItem inventoryItem;
 
   @Transient
   private InventoryReceipt original;
@@ -105,12 +122,12 @@ public class InventoryReceipt implements Auditable, Cloneable {
   public Datetime getReceivedDate() {
     if(receivedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,receivedDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,receivedDate);
   }
-  public void setReceivedDate (Datetime received_date){
-    if((receivedDate == null && this.receivedDate != null) || 
-       (receivedDate != null && !receivedDate.equals(this.receivedDate)))
-      this.receivedDate = received_date.getDate();
+  public void setReceivedDate (Datetime receivedDate){
+    if((receivedDate == null && this.receivedDate != null) || (receivedDate != null && this.receivedDate == null) || 
+       (receivedDate != null && !receivedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.receivedDate))))
+      this.receivedDate = receivedDate.getDate();
   }
 
   public Integer getQuantityReceived() {
@@ -199,5 +216,11 @@ public class InventoryReceipt implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_receipt";
   }
+public InventoryItem getInventoryItem() {
+    return inventoryItem;
+}
+public void setInventoryItem(InventoryItem inventoryItem) {
+    this.inventoryItem = inventoryItem;
+}
   
 }   

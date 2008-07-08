@@ -31,10 +31,9 @@ import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 //@SecurityDomain("ttSecurity")
