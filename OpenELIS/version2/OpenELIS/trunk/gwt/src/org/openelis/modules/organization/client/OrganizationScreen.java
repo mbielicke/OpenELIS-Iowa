@@ -493,16 +493,13 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     private void onRemoveContactRowButtonClick() {
-        TableWidget orgContactsTable = (TableWidget)getWidget("contactsTable");
-        int selectedRow = orgContactsTable.controller.selected;
-        if (selectedRow > -1 && orgContactsTable.controller.model.numRows() > 1) {
-            TableRow row = orgContactsTable.controller.model.getRow(selectedRow);
-            orgContactsTable.controller.model.hideRow(row);
-            // delete the last row of the table because it is autoadd
-            // orgContactsTable.controller.model
-            // .deleteRow(orgContactsTable.controller.model.numRows() - 1);
+        int selectedRow = contactsController.selected;
+        if (selectedRow > -1 && contactsController.model.numRows() > 1) {
+            TableRow row = contactsController.model.getRow(selectedRow);
+            contactsController.model.hideRow(row);
+            
             // reset the model
-            orgContactsTable.controller.reset();
+            contactsController.reset();
             // need to set the deleted flag to "Y" also
             StringField deleteFlag = new StringField();
             deleteFlag.setValue("Y");

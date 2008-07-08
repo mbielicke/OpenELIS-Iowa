@@ -32,6 +32,14 @@ public class InventoryReceiptEntry implements AppModule {
                                    }
                                 }
         );
+        
+        ClassFactory.addClass(new String[] {"InventoryReceiptAutoParams"}, 
+                              new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      return new InventoryReceiptAutoParams();
+                                  }
+                               }
+       );
     }
 
     public String getModuleName() {

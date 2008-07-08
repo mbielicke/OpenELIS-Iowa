@@ -17,8 +17,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.meta.QaEventMetaMap"
-                xmlns:testMeta="xalan://org.openelis.meta.QaEventTestMetaMap"
+                xmlns:meta="xalan://org.openelis.metamap.QaEventMetaMap"
+                xmlns:testMeta="xalan://org.openelis.metamap.QaEventTestMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>

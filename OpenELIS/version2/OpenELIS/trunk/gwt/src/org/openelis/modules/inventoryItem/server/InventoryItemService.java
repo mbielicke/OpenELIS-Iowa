@@ -15,8 +15,10 @@
 */
 package org.openelis.modules.inventoryItem.server;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -48,23 +50,19 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class InventoryItemService implements AppScreenFormServiceInt, 
 									     AutoCompleteServiceInt {

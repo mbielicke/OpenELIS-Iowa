@@ -37,6 +37,9 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Cli
     
     public void afterDraw(boolean sucess) {
         setBpanel((ButtonPanel)getWidget("buttons"));
+        getBpanel().enableButton("query", false);
+        getBpanel().enableButton("add", false);
+        
         super.afterDraw(sucess);
     }
 

@@ -17,8 +17,8 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.meta.CategoryMetaMap"
-                xmlns:dictionary="xalan://org.openelis.meta.DictionaryMetaMap"
+                xmlns:meta="xalan://org.openelis.metamap.CategoryMetaMap"
+                xmlns:dictionary="xalan://org.openelis.metamap.DictionaryMetaMap"
                 xmlns:relentry="xalan://org.openelis.meta.DictionaryMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">

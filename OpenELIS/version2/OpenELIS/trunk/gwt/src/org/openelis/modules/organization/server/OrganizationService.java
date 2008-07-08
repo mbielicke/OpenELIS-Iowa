@@ -23,8 +23,8 @@ import java.util.List;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -49,21 +49,19 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.OrganizationMeta;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.remote.SystemUserRemote;
 
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {

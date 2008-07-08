@@ -654,6 +654,19 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         orderDO.setBillToId((Integer) rpcSend.getFieldValue(OrderMeta.ORDER_BILL_TO_META.getName()));
         orderDO.setExternalOrderNumber((String)rpcSend.getFieldValue(OrderMeta.getExternalOrderNumber()));
         
+        //set org address values
+        if(orderDO.getOrganizationId() != null){
+            orderDO.organizationAddressDO.setMultipleUnit((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()));
+            orderDO.organizationAddressDO.setStreetAddress((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()));
+            orderDO.organizationAddressDO.setCity((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getCity()));
+            orderDO.organizationAddressDO.setState((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getState()));
+            orderDO.organizationAddressDO.setZipCode((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()));
+        }
+        
+        //set bill to address values
+        
+        //set report to addresss values
+        
         return orderDO;
     }
     

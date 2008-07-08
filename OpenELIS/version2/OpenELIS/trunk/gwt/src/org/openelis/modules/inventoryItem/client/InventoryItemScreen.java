@@ -26,6 +26,7 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -37,6 +38,7 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
@@ -68,6 +70,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 	private EditTable componentsController, locsController;
     
     private ScreenMenuPanel duplicateMenuPanel;
+    
+    private ScreenCheck isActive;
     
     private static boolean loaded = false;
     private static DataModel storesDropdown, categoriesDropdown,
@@ -130,6 +134,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
         
+        isActive = (ScreenCheck)widgets.get(InvItemMeta.getIsActive());
+        
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
         nameTextbox = (ScreenTextBox) widgets.get(InvItemMeta.getName());
@@ -191,6 +197,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 		
 		idTextBox.enable(false);
         clearComments();
+        
+        ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
 	}
 	
 	public void afterUpdate(boolean success) {
