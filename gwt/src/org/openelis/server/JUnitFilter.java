@@ -15,11 +15,10 @@
 */
 package org.openelis.server;
 
-import edu.uiowa.uhl.security.remote.SecurityRemote;
-
 import org.apache.log4j.Logger;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
+import org.openelis.security.remote.SecurityRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 
