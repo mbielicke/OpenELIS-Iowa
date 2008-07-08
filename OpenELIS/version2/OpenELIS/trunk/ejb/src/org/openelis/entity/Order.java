@@ -138,7 +138,7 @@ public class Order implements Auditable, Cloneable {
   public Datetime getOrderedDate() {
     if(orderedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,orderedDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,orderedDate);
   }
   public void setOrderedDate (Datetime orderedDate){
     if((orderedDate == null && this.orderedDate != null) || (orderedDate != null && this.orderedDate == null) || 

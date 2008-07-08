@@ -29,10 +29,9 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.openelis.entity.History;
 import org.openelis.local.HistoryLocal;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.utils.Auditable;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 public class HistoryBean implements HistoryLocal {

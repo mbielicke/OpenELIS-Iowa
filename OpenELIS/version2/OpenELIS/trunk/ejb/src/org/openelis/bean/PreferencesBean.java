@@ -15,13 +15,6 @@
 */
 package org.openelis.bean;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
-
-import org.openelis.domain.PreferencesDO;
-import org.openelis.entity.Preferences;
-import org.openelis.remote.PreferencesRemote;
-
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -33,6 +26,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.openelis.domain.PreferencesDO;
+import org.openelis.entity.Preferences;
+import org.openelis.remote.PreferencesRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 
 @EJBs({
     @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)

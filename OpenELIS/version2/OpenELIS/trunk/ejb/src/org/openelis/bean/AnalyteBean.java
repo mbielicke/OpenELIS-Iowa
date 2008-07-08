@@ -15,22 +15,6 @@
 */
 package org.openelis.bean;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.entity.Analyte;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.AnalyteMetaMap;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.util.NewQueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +29,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.remote.AnalyteRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.NewQueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @SecurityDomain("openelis")

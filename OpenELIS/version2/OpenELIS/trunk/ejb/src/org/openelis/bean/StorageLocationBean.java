@@ -15,23 +15,6 @@
 */
 package org.openelis.bean;
 
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageLocationDO;
-import org.openelis.entity.StorageLocation;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.StorageLocationMetaMap;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.util.NewQueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,6 +30,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.StorageLocationDO;
+import org.openelis.entity.StorageLocation;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.remote.StorageLocationRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.NewQueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -78,6 +77,8 @@ public class StorageLocationBean implements StorageLocationRemote{
 		Query query = null;
 		query = manager.createNamedQuery("StorageLocation.AutoCompleteByName");
 		query.setParameter("name",name);
+        query.setParameter("loc",name);
+        query.setParameter("desc",name);
 		query.setMaxResults(maxResults);
 		return query.getResultList();
 	}

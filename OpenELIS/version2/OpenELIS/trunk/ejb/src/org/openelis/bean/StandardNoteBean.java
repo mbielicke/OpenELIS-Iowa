@@ -39,16 +39,12 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
-import org.openelis.meta.StandardNoteMeta;
-import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.NewQueryBuilder;
-import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-
-import edu.uiowa.uhl.security.domain.SystemUserDO;
-import edu.uiowa.uhl.security.local.SystemUserUtilLocal;
 
 @Stateless
 @SecurityDomain("openelis")
