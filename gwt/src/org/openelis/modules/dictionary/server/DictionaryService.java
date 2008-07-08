@@ -50,12 +50,11 @@ import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.security.domain.SectionIdNameDO;
+import org.openelis.security.remote.SystemUserUtilRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import edu.uiowa.uhl.security.domain.SectionIdNameDO;
-import edu.uiowa.uhl.security.remote.SystemUserUtilRemote;
 
 public class DictionaryService implements AppScreenFormServiceInt,
                                            AutoCompleteServiceInt{

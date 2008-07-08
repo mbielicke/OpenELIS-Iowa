@@ -13,8 +13,17 @@
  
  Copyright (C) OpenELIS.  All Rights Reserved.
 -->
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addr="xalan://org.openelis.meta.AddressMeta" xmlns:contact="xalan://org.openelis.meta.OrganizationContactMetaMap" xmlns:locale="xalan://java.util.Locale" xmlns:meta="xalan://org.openelis.meta.OrganizationMetaMap" xmlns:note="xalan://org.openelis.meta.NoteMeta" xmlns:parent="xalan://org.openelis.meta.OrganizationMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:resource="xalan://org.openelis.util.UTFResource"
+                xmlns:locale="xalan://java.util.Locale" 
+                xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap" 
+                xmlns:addr="xalan://org.openelis.meta.AddressMeta"
+                xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
+                xmlns:note="xalan://org.openelis.meta.NoteMeta"
+                xmlns:parent="xalan://org.openelis.meta.OrganizationMeta"
+                extension-element-prefixes="resource"
+                version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
 	<xalan:component prefix="resource">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -23,16 +32,16 @@
 		<xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
 	</xalan:component>
 	<xalan:component prefix="meta">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMetaMap"/>
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationMetaMap"/>
 	</xalan:component>
 	<xalan:component prefix="addr">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
 	</xalan:component>
 	<xalan:component prefix="contact">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactMetaMap"/>
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationContactMetaMap"/>
 	</xalan:component>
 	<xalan:component prefix="note">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.NotetMeta"/>
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta"/>
 	</xalan:component>
 	<xalan:component prefix="parent">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
@@ -391,5 +400,5 @@
 				<queryString key="{meta:getName($org)}"/>
 			</rpc>
 		</screen>
-	</xsl:template>
+  </xsl:template>
 </xsl:stylesheet>

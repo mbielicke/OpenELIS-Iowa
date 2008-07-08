@@ -41,7 +41,6 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -64,6 +63,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class OrderScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, ChangeListener {
     
     private static boolean loaded = false;
+    private boolean startedLoadingTable = false;
     
     private static DataModel statusDropdown, costCenterDropdown;
     
@@ -401,6 +401,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     public void afterCommitUpdate(boolean success) {
         itemsController.setAutoAdd(false);
+        
+        //we need to do this reset to get rid of the last row
+        itemsController.reset();
+        
         super.afterCommitUpdate(success);
     }
     public void afterCommitQuery(boolean success) {
@@ -549,23 +553,29 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-      //  if(col == 0 && row > -1 && !"".equals(((TableTextBox)((EditTable)controller).view.table.getWidget(row, col)).editor.getText()))
+        if(col == 0)
             return true;
-       // else
-         //   return false;
+      
+        return false;
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
-        if(col == 1){
-            TableWidget d = (TableWidget)getWidget("itemsTable");
-            if(((TableAutoDropdown)d.controller.editors[1]).editor.getSelected().size() > 0){
-                DataSet selectedRow = (DataSet)((TableAutoDropdown)d.controller.editors[1]).editor.getSelected().get(0);
+        if(col == 1 && row >= 0 && !startedLoadingTable){
+            startedLoadingTable = true;
+            
+            TableRow tableRow = ((EditTable)controller).model.getRow(row);
+            DropDownField invItemField = (DropDownField)tableRow.getColumn(1);
+            ArrayList selections = invItemField.getSelections();
+     
+            if(selections.size() > 0){
+                DataSet selectedRow = (DataSet)selections.get(0);
+           
                 if(selectedRow.size() > 1){
                     StringField storeLabel = new StringField();
                     StringField locationLabel = new StringField();
                     NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
                     storeLabel.setValue((String)((StringObject)selectedRow.getObject(1)).getValue());
-                    TableRow tableRow = itemsController.model.getRow(row);
+
                     tableRow.setColumn(2, storeLabel);
                     
                     if(tableRow.numColumns() == 4){
@@ -575,7 +585,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                         tableRow.addHidden("locationId", locationId);
                     }
                     
-                    controller.scrollLoad(-1);
+                    ((EditTable)controller).load(0);
+                    startedLoadingTable = false;
                 }
             }
         }

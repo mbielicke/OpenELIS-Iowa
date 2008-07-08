@@ -17,12 +17,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:organizationMeta="xalan://org.openelis.meta.OrganizationMeta" 
-                xmlns:orgAddressMeta="xalan://org.openelis.meta.OrganizationAddressMeta"
-                xmlns:orgNoteMeta="xalan://org.openelis.meta.OrganizationNoteMeta"
-                xmlns:parentOrgMeta="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"
-                xmlns:orgContactMeta="xalan://org.openelis.meta.OrganizationContactMeta"
-                xmlns:orgContactAddressMeta="xalan://org.openelis.meta.OrganizationContactAddressMeta"
+                xmlns:meta="xalan://org.openelis.meta.OrganizationMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -35,31 +30,12 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
-  <xalan:component prefix="organizationMeta">
+  <xalan:component prefix="meta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
-  </xalan:component>
-
-  <xalan:component prefix="orgAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationAddressMeta"/>
-  </xalan:component>
-  
-  <xalan:component prefix="parentOrgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationParentOrganizationMeta"/>
-  </xalan:component>
-  
-    <xalan:component prefix="orgNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationNoteMeta"/>
-  </xalan:component>
-  
-  <xalan:component prefix="orgContactMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactMeta"/>
-  </xalan:component>
-  
-  <xalan:component prefix="orgContactAddressMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationContactAddressMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
+  <xsl:variable name="org" select="meta:new()"/>
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -137,12 +113,12 @@
 								<textbox case="upper"/>
 							</editors>
 							<fields>
-								<string key="{orgContactMeta:getName()}" required="false"/>
-								<string key="{orgContactMeta:getName()}" required="false"/>
-								<string key="{orgContactMeta:getName()}" required="false"/>
-								<string key="{orgContactMeta:getName()}" required="false"/>
-								<string key="{orgContactMeta:getName()}" required="false"/>
-								<string key="{orgContactMeta:getName()}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
+								<string key="{meta:getId($org)}" required="false"/>
 							</fields>
 							<sorts>true,true,true,true,true,true</sorts>
 							<filters>false,false,false,false,false,false</filters>
@@ -173,11 +149,11 @@
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>		 	
 								</editors>
-								<fields><xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/>,
-								<xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/>,
-								<xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/></fields>,<xsl:value-of select='organizationMeta:getId()'/>,
-								<xsl:value-of select='organizationMeta:getId()'/>,	<xsl:value-of select='organizationMeta:getId()'/>,<xsl:value-of select='organizationMeta:getId()'/>,
-								<xsl:value-of select='organizationMeta:getId()'/>										
+								<fields><xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/>,
+								<xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/>,
+								<xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/></fields>,<xsl:value-of select='meta:getId($org)'/>,
+								<xsl:value-of select='meta:getId($org)'/>,	<xsl:value-of select='meta:getId($org)'/>,<xsl:value-of select='meta:getId($org)'/>,
+								<xsl:value-of select='meta:getId($org)'/>										
 							</queryTable>
 							</query>
 						</widget>
@@ -195,51 +171,51 @@
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	  <number key="{organizationMeta:getId()}" type="integer" required="false"/>
-      <number key="{organizationMeta:getAddressId()}" required="false" type="integer"/>
-      <string key="{organizationMeta:getName()}" max="40" required="true"/>
-      <string key="{organizationMeta:getId()}" max="30" required="true"/>
-      <string key="{organizationMeta:getId()}" max="30" required="false"/>
-      <string key="{organizationMeta:getId()}" max="30" required="true"/>
-      <string key="{organizationMeta:getId()}" max="10" required="true"/>
-      <check key="{organizationMeta:getIsActive()}" required="false"/>
-      <string key="{organizationMeta:getId()}" max="60" required="false"/>
-      <string key="{organizationMeta:getId()}" required="false"/>
-      <dropdown key="{organizationMeta:getId()}" type="integer" required="false"/> 
-      <dropdown key="{organizationMeta:getId()}" required="false"/>
-      <dropdown key="{organizationMeta:getId()}" required="true"/>
+  	  <number key="{meta:getId($org)}" type="integer" required="false"/>
+      <number key="{meta:getId($org)}" required="false" type="integer"/>
+      <string key="{meta:getId($org)}" max="40" required="true"/>
+      <string key="{meta:getId($org)}" max="30" required="true"/>
+      <string key="{meta:getId($org)}" max="30" required="false"/>
+      <string key="{meta:getId($org)}" max="30" required="true"/>
+      <string key="{meta:getId($org)}" max="10" required="true"/>
+      <check key="{meta:getId($org)}" required="false"/>
+      <string key="{meta:getId($org)}" max="60" required="false"/>
+      <string key="{meta:getId($org)}" required="false"/>
+      <dropdown key="{meta:getId($org)}" type="integer" required="false"/> 
+      <dropdown key="{meta:getId($org)}" required="false"/>
+      <dropdown key="{meta:getId($org)}" required="true"/>
       <table key="contactsTable"/>
 	</rpc>
 	<rpc key="query">
-      <queryNumber key="{organizationMeta:getId()}" type="integer"/>
-      <queryString key="{organizationMeta:getName()}"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <queryString key="{organizationMeta:getId()}" value="query"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <queryString key="{organizationMeta:getId()}"/>
-      <dropdown key="{organizationMeta:getId()}" required="false"/>
-      <dropdown key="{organizationMeta:getId()}" required="false"/>
-      <queryCheck key="{organizationMeta:getIsActive()}" required="false"/>
+      <queryNumber key="{meta:getId($org)}" type="integer"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}" value="query"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}"/>
+      <queryString key="{meta:getId($org)}"/>
+      <dropdown key="{meta:getId($org)}" required="false"/>
+      <dropdown key="{meta:getId($org)}" required="false"/>
+      <queryCheck key="{meta:getId($org)}" required="false"/>
       <table key="contactsTable"/>
-      <dropdown key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <dropdown key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-      <queryString key="{organizationMeta:getId()}" required="false"/>
-      <queryString key="{organizationMeta:getId()}" required="false"/>
-      <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <queryString key="{organizationMeta:getId()}" required="false"/>
-      <queryString key="{organizationMeta:getId()}" required="false"/>
-	  <dropdown key="{organizationMeta:getId()}" required="false"/>
+      <dropdown key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+	  <dropdown key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+      <queryString key="{meta:getId($org)}" required="false"/>
+      <queryString key="{meta:getId($org)}" required="false"/>
+      <queryString key="{meta:getId($org)}" required="false"/>
+	  <queryString key="{meta:getId($org)}" required="false"/>
+      <queryString key="{meta:getId($org)}" required="false"/>
+	  <dropdown key="{meta:getId($org)}" required="false"/>
 	</rpc>
 	<rpc key="queryByLetter">
-		<queryString key="{organizationMeta:getName()}"/>
+		<queryString key="{meta:getId($org)}"/>
 	</rpc>
 </screen>
   </xsl:template>

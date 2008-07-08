@@ -17,7 +17,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:storageUnitMeta="xalan://org.openelis.meta.StorageUnitMetaMap"
+                xmlns:storageUnitMeta="xalan://org.openelis.metamap.StorageUnitMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/>   

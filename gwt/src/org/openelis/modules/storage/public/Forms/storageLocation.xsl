@@ -17,7 +17,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:storageLocationMeta="xalan://org.openelis.meta.StorageLocationMetaMap"
+                xmlns:storageLocationMeta="xalan://org.openelis.metamap.StorageLocationMetaMap"
                 xmlns:storageUnitMeta="xalan://org.openelis.meta.StorageUnitMeta"               
                 extension-element-prefixes="resource"
                 version="1.0">
