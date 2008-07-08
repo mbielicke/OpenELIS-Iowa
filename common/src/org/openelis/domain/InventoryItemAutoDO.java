@@ -29,15 +29,30 @@ public class InventoryItemAutoDO implements Serializable{
     protected Integer locationId;
     protected String location;
     protected Integer quantityOnHand;
+    protected String description;
+    protected String purchasedUnits;
     
     public InventoryItemAutoDO(){
         
+    }
+    
+    public InventoryItemAutoDO(Integer id, String name){
+        setId(id);
+        setName(name);
     }
     
     public InventoryItemAutoDO(Integer id, String name, String store){
         setId(id);
         setName(name);
         setStore(store);
+    }
+    
+    public InventoryItemAutoDO(Integer id, String name, String store, String description, String purchasedUnits){
+        setId(id);
+        setName(name);
+        setStore(store);
+        setDescription(description);
+        setPurchasedUnits(purchasedUnits);
     }
     
     public InventoryItemAutoDO(Integer id, String name, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
@@ -106,5 +121,20 @@ public class InventoryItemAutoDO implements Serializable{
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
+    
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+    }
+
+    public String getPurchasedUnits() {
+        return purchasedUnits;
+    }
+
+    public void setPurchasedUnits(String purchasedUnits) {
+        this.purchasedUnits = DataBaseUtil.trim(purchasedUnits);
+    }
 }
