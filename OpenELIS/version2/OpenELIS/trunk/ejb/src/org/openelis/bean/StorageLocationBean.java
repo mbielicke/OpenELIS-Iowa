@@ -44,7 +44,7 @@ import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -168,7 +168,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
         
         qb.setMeta(StorageLocationMeta);
         

@@ -52,7 +52,7 @@ import org.openelis.remote.OrderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -196,7 +196,7 @@ public class OrderBean implements OrderRemote{
 
     public List query(HashMap fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
         
         qb.setMeta(OrderMetaMap);
 

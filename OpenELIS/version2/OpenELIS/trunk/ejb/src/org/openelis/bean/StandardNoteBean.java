@@ -43,7 +43,7 @@ import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -140,7 +140,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		NewQueryBuilder qb = new NewQueryBuilder();
+		QueryBuilder qb = new QueryBuilder();
 		
         qb.setMeta(StandardNoteMap);
 		

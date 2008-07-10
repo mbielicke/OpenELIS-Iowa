@@ -46,7 +46,7 @@ import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -104,7 +104,7 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();        
+        QueryBuilder qb = new QueryBuilder();        
         
         //CategoryMeta categoryMeta = CategoryMeta.getInstance();
         //DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();

@@ -43,7 +43,7 @@ import org.openelis.metamap.LabelMetaMap;
 import org.openelis.remote.LabelRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -113,7 +113,7 @@ public class LabelBean implements LabelRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();    
+        QueryBuilder qb = new QueryBuilder();    
         
         //LabelMeta labelMeta = LabelMeta.getInstance();
         //qb.addMeta(new Meta[]{labelMeta});

@@ -49,7 +49,7 @@ import org.openelis.remote.ProviderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -133,7 +133,7 @@ public class ProviderBean implements ProviderRemote {
                
         
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
          
        //ProviderMeta providerMeta = ProviderMeta.getInstance();
        //ProviderAddressMeta providerAddressMeta = ProviderAddressMeta.getInstance();
