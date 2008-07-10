@@ -47,7 +47,7 @@ import org.openelis.remote.InventoryItemRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -145,7 +145,7 @@ public class InventoryItemBean implements InventoryItemRemote{
 	public List query(HashMap fields, int first, int max) throws Exception {
         
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
         
         qb.setMeta(invItemMap);
 

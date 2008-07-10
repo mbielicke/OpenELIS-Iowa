@@ -48,7 +48,7 @@ import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -254,7 +254,7 @@ public class OrganizationBean implements OrganizationRemote {
         Integer organizationContactReferenceId = (Integer)refIdQuery.getSingleResult();
         
         StringBuffer sb = new StringBuffer();
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
 
         qb.setMeta(OrgMeta);
  

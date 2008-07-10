@@ -42,7 +42,7 @@ import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -148,7 +148,7 @@ public class AnalyteBean implements AnalyteRemote{
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		NewQueryBuilder qb = new NewQueryBuilder();
+		QueryBuilder qb = new QueryBuilder();
 		
 		qb.setMeta(Meta);
 		

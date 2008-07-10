@@ -41,7 +41,7 @@ import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -106,7 +106,7 @@ public class QaEventBean implements QaEventRemote{
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         //QueryBuilder qb = new QueryBuilder();     
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
         
         //QaEventMeta qaEventMeta  = QaEventMeta.getInstance();
         //QaEventTestMeta qaEventTestMeta = QaEventTestMeta.getInstance();

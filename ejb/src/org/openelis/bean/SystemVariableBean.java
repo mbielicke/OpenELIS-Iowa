@@ -41,7 +41,7 @@ import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NewQueryBuilder;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -113,7 +113,7 @@ public class SystemVariableBean implements SystemVariableRemote{
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();        
         
-        NewQueryBuilder qb = new NewQueryBuilder();
+        QueryBuilder qb = new QueryBuilder();
         //qb.addMeta(new Meta[]{sysVarMeta});
         qb.setMeta(Meta);
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+" , "+Meta.getName() + ") ");
