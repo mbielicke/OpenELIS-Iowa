@@ -13,7 +13,7 @@
  
  Copyright (C) The University of Iowa.  All Rights Reserved.
 -->
-<?xml version="1.0"?>
+
 
 <!-- ======================================================================= -->
 <!-- JBoss build file                                                       -->
@@ -43,6 +43,7 @@
   	       <include name="org/openelis/local/*.class"/>
   	       <include name="org/openelis/util/*.class"/>
   	       <include name="org/openelis/meta/*.class"/>
+   	       <include name="org/openelis/metamap/*.class"/>
   	    </fileset>
     </jar>
     <jar jarfile="build/openelis.ear"> 
