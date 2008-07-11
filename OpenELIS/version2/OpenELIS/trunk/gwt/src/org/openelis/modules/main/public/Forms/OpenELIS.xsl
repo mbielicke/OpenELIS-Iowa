@@ -17,6 +17,9 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:security="xalan://org.openelis.gwt.common.SecurityUtil"
+                xmlns:service="xalan://org.openelis.gwt.server.ServiceUtils"
+                xmlns:so="xalan://org.openelis.gwt.common.SecurityModule"
                 xmlns:fn="http://www.w3.org/2005/xpath-functions" 
                 extension-element-prefixes="resource"
                 version="1.0">
@@ -29,11 +32,23 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
+  <xalan:component prefix="security">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityUtil"/>
+  </xalan:component>
+  
+  <xalan:component prefix="session">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.server.ServiceUtils"/>
+  </xalan:component>
+  
+  <xalan:component prefix="so">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityModule"/>
+  </xalan:component>
+  
        <xsl:variable name="language"><xsl:value-of select="doc/locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="doc/props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
   <xsl:template match="doc">
-   <xsl:variable name="modules"><xsl:value-of select="modules"/></xsl:variable>
+   <xsl:variable name="security" select="service:getSecurity()"/>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display  constants="OpenELISConstants">
 		<VerticalPanel style="AppBackground" sizeToWindow="true">
@@ -51,7 +66,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
    				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="contains($modules,'Favorites')">
+				    <xsl:if test="security:hasModule($security,'favorites')">
 				      <xsl:call-template name="menuItem">
       				    <xsl:with-param name="key">FavoritesMenu</xsl:with-param>
 				        <xsl:with-param name="label">favoritesMenu</xsl:with-param>
@@ -138,7 +153,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="contains($modules,'Provider')">				  
+				    <xsl:if test="security:hasModule($security,'provider')">				  
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Provider</xsl:with-param>
 				        <xsl:with-param name="label">provider</xsl:with-param>
@@ -147,7 +162,7 @@
       				    <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="contains($modules,'Organization')">
+				    <xsl:if test="security:hasModule($security,'organization')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Organization</xsl:with-param>
 				        <xsl:with-param name="label">organization</xsl:with-param>
@@ -261,7 +276,7 @@
 				      <xsl:with-param name="class">InventoryAdjustmentScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
-				    <xsl:if test="contains($modules,'Inventory')">			
+				    <xsl:if test="security:hasModule($security,'inventory')">			
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryItem</xsl:with-param>
 				      <xsl:with-param name="label">inventoryItem</xsl:with-param>
@@ -312,7 +327,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="contains($modules,'QAEvent')">
+				    <xsl:if test="security:hasModule($security,'qaevent')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">QAEvent</xsl:with-param>
 				        <xsl:with-param name="label">QAEvent</xsl:with-param>
@@ -329,7 +344,7 @@
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				   <html>&lt;hr/&gt;</html>
-				    <xsl:if test="contains($modules,'Analyte')">
+				    <xsl:if test="security:hasModule($security,'analyte')">
 					  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Analyte</xsl:with-param>
 				        <xsl:with-param name="label">analyte</xsl:with-param>
@@ -338,7 +353,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="contains($modules,'Dictionary')">
+				    <xsl:if test="security:hasModule($security,'dictionary')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Dictionary</xsl:with-param>
 				        <xsl:with-param name="label">dictionary</xsl:with-param>
@@ -355,7 +370,7 @@
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 					<html>&lt;hr/&gt;</html>
-			        <xsl:if test="contains($modules,'Label')">
+			        <xsl:if test="security:hasModule($security,'label')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Label</xsl:with-param>
 				        <xsl:with-param name="label">label</xsl:with-param>
@@ -364,7 +379,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="contains($modules,'StandardNote')">			    
+				    <xsl:if test="security:hasModule($security,'standardnote')">			    
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StandardNote</xsl:with-param>
 				        <xsl:with-param name="label">standardNote</xsl:with-param>
@@ -373,7 +388,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="contains($modules,'TestTrailer')">
+				    <xsl:if test="security:hasModule($security,'testtrailer')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key"></xsl:with-param>
 				        <xsl:with-param name="label">trailerForTest</xsl:with-param>
@@ -383,7 +398,7 @@
 				      </xsl:call-template>
 				    </xsl:if>
 					<html>&lt;hr/&gt;</html>
-			        <xsl:if test="contains($modules,'StorageUnit')">
+			        <xsl:if test="security:hasModule($security,'storageunit')">
 			    	  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageUnit</xsl:with-param>
 				        <xsl:with-param name="label">storageUnit</xsl:with-param>
@@ -392,7 +407,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="contains($modules,'Storage')">
+				    <xsl:if test="security:hasModule($security,'storage')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageLocation</xsl:with-param>
 				        <xsl:with-param name="label">storageLocation</xsl:with-param>
@@ -417,7 +432,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="contains($modules,'SystemVariable')">
+				    <xsl:if test="security:hasModule($security,'systemvariable')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">SystemVariable</xsl:with-param>
 				        <xsl:with-param name="label">systemVariable</xsl:with-param>

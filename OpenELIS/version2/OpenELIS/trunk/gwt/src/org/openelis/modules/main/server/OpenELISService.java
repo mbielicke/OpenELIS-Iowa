@@ -181,15 +181,8 @@ public class OpenELISService implements OpenELISServiceInt {
 
 	public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
 		try {
-			Document doc = XMLUtil.createNew("doc");
-			Element root = doc.getDocumentElement();
-			Element modules = doc.createElement("modules");
-			String modu = ((CollectionField)args.get("modules")).toString();
-			System.out.println("modules : "+modu);
-			modules.appendChild(doc.createTextNode(modu));
-			root.appendChild(modules);
 			StringObject xml = new StringObject();
-			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl",doc));
+			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
             HashMap map = new HashMap();
             map.put("xml", xml);
             map.put("AppConstants",getConstants());
