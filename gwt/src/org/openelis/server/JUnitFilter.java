@@ -16,6 +16,8 @@
 package org.openelis.server;
 
 import org.apache.log4j.Logger;
+import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
 import org.openelis.security.remote.SecurityRemote;
@@ -112,9 +114,9 @@ public class JUnitFilter implements Filter {
                 try {
                     InitialContext ctx = new InitialContext(props);
                     SecurityRemote remote = (SecurityRemote)ctx.lookup("SecurityBean/remote");
-                    HashMap mods = remote.getModules("openelis");
-                    SessionManager.getSession().setAttribute("permissions", mods);
-                    if(!mods.containsKey("openelis-select")){
+                    SecurityUtil security = remote.initSecurity("openelis");
+                    SessionManager.getSession().setAttribute("security", security);
+                    if(!security.has("openelis",ModuleFlags.SELECT)){
                         ((HttpServletResponse)response).sendRedirect("NoPermission.html");
                         return;
                     }
