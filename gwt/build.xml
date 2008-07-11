@@ -13,7 +13,6 @@
  
  Copyright (C) The University of Iowa.  All Rights Reserved.
 -->
-<?xml version="1.0"?>
 
 <!--
 
@@ -44,9 +43,9 @@ Builds the a servlet warfile.
 
 	   <target name="openelis-web" depends="init">
 	   	  <jar jarfile="build/elissecurity.jar">
-	   	    <fileset dir="../SecurityJBoss/bin">
-	   	  	   <include name="edu/uiowa/uhl/security/domain/*.class"/>
-	   	       <include name="edu/uiowa/uhl/security/remote/*.class"/>
+	   	    <fileset dir="../OpenELIS-Security-EJB/bin">
+	   	  	   <include name="org/openelis/security/domain/*.class"/>
+	   	       <include name="org/openelis/security/remote/*.class"/>
 	   	    </fileset>
 	   	  </jar>
 	  	<jar jarfile="build/openelis-common.jar">
@@ -56,6 +55,7 @@ Builds the a servlet warfile.
 	  	       <include name="org/openelis/local/*.class"/>
 	  	       <include name="org/openelis/util/*.class"/>
 	  	       <include name="org/openelis/meta/*.class"/>
+	  	       <include name="org/openelis/metamap/*.class"/>
 	  	    </fileset>
 	    </jar>
 	   	  <delete file="${build.dir}/openelis.war" />

@@ -15,11 +15,22 @@
 */
 package org.openelis.server;
 
+import org.apache.log4j.Logger;
+import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.persistence.CachingManager;
+import org.openelis.security.remote.SecurityRemote;
+import org.openelis.server.constants.Constants;
+import org.openelis.util.SessionManager;
+import org.openelis.util.XMLUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -32,16 +43,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.persistence.CachingManager;
-import org.openelis.security.remote.SecurityRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 //import edu.uiowa.uhl.security.remote.SecurityRemote;
 
@@ -118,9 +119,9 @@ public class StaticFilter implements Filter {
                 try {
                     InitialContext ctx = new InitialContext(props);
                     SecurityRemote remote = (SecurityRemote)ctx.lookup("SecurityBean/remote");
-                    HashMap mods = remote.getModules("openelis");
-                    SessionManager.getSession().setAttribute("permissions", mods);
-                    if(!mods.containsKey("openelis-select")){
+                    SecurityUtil security = remote.initSecurity("openelis");
+                    SessionManager.getSession().setAttribute("security", security);
+                    if(!security.has("openelis",ModuleFlags.SELECT)){
                         ((HttpServletResponse)response).sendRedirect("NoPermission.html");
                         return;
                     }
