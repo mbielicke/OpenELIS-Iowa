@@ -66,7 +66,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
    				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="security:hasModule($security,'favorites')">
+				    <xsl:if test="security:hasModule($security,'favorites','SELECT')">
 				      <xsl:call-template name="menuItem">
       				    <xsl:with-param name="key">FavoritesMenu</xsl:with-param>
 				        <xsl:with-param name="label">favoritesMenu</xsl:with-param>
@@ -153,7 +153,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="security:hasModule($security,'provider')">				  
+				    <xsl:if test="security:hasModule($security,'provider','SELECT')">				  
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Provider</xsl:with-param>
 				        <xsl:with-param name="label">provider</xsl:with-param>
@@ -162,7 +162,7 @@
       				    <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'organization')">
+				    <xsl:if test="security:hasModule($security,'organization','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Organization</xsl:with-param>
 				        <xsl:with-param name="label">organization</xsl:with-param>
@@ -276,7 +276,7 @@
 				      <xsl:with-param name="class">InventoryAdjustmentScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
-				    <xsl:if test="security:hasModule($security,'inventory')">			
+				    <xsl:if test="security:hasModule($security,'inventory','SELECT')">			
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryItem</xsl:with-param>
 				      <xsl:with-param name="label">inventoryItem</xsl:with-param>
@@ -327,7 +327,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="security:hasModule($security,'qaevent')">
+				    <xsl:if test="security:hasModule($security,'qaevent','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">QAEvent</xsl:with-param>
 				        <xsl:with-param name="label">QAEvent</xsl:with-param>
@@ -344,7 +344,7 @@
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				   <html>&lt;hr/&gt;</html>
-				    <xsl:if test="security:hasModule($security,'analyte')">
+				    <xsl:if test="security:hasModule($security,'analyte','SELECT')">
 					  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Analyte</xsl:with-param>
 				        <xsl:with-param name="label">analyte</xsl:with-param>
@@ -353,7 +353,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'dictionary')">
+				    <xsl:if test="security:hasModule($security,'dictionary','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Dictionary</xsl:with-param>
 				        <xsl:with-param name="label">dictionary</xsl:with-param>
@@ -370,7 +370,7 @@
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 					<html>&lt;hr/&gt;</html>
-			        <xsl:if test="security:hasModule($security,'label')">
+			        <xsl:if test="security:hasModule($security,'label','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Label</xsl:with-param>
 				        <xsl:with-param name="label">label</xsl:with-param>
@@ -379,7 +379,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'standardnote')">			    
+				    <xsl:if test="security:hasModule($security,'standardnote','SELECT')">			    
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StandardNote</xsl:with-param>
 				        <xsl:with-param name="label">standardNote</xsl:with-param>
@@ -388,7 +388,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'testtrailer')">
+				    <xsl:if test="security:hasModule($security,'testtrailer','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key"></xsl:with-param>
 				        <xsl:with-param name="label">trailerForTest</xsl:with-param>
@@ -398,7 +398,7 @@
 				      </xsl:call-template>
 				    </xsl:if>
 					<html>&lt;hr/&gt;</html>
-			        <xsl:if test="security:hasModule($security,'storageunit')">
+			        <xsl:if test="security:hasModule($security,'storageunit','SELECT')">
 			    	  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageUnit</xsl:with-param>
 				        <xsl:with-param name="label">storageUnit</xsl:with-param>
@@ -407,7 +407,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'storage')">
+				    <xsl:if test="security:hasModule($security,'storage','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageLocation</xsl:with-param>
 				        <xsl:with-param name="label">storageLocation</xsl:with-param>
@@ -432,7 +432,7 @@
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="security:hasModule($security,'systemvariable')">
+				    <xsl:if test="security:hasModule($security,'systemvariable','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">SystemVariable</xsl:with-param>
 				        <xsl:with-param name="label">systemVariable</xsl:with-param>
