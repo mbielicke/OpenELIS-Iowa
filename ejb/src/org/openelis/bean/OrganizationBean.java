@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -41,6 +43,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.AddressLocal;
@@ -50,6 +53,8 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityElement;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -68,6 +73,15 @@ public class OrganizationBean implements OrganizationRemote {
     private LockLocal lockBean;
     private AddressLocal addressBean;
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
+    public static HashMap<String,SecurityElement> securityMap;
+    
+    @PostConstruct
+    private void init(){
+        securityMap = new HashMap<String,SecurityElement>();
+        securityMap.put("getOrganizationAddressAndLock",new SecurityElement("organization",ModuleFlags.UPDATE));
+        securityMap.put("updateOrganization", new SecurityElement("organization",ModuleFlags.UPDATE));
+        
+    }
     
     {
         try {
@@ -96,7 +110,8 @@ public class OrganizationBean implements OrganizationRemote {
         return getOrganizationAddress(organizationId);
 	}
 	
-	@RolesAllowed("organization-update")
+	//@RolesAllowed("organization-update")
+    @Interceptors(SecurityInterceptor.class)
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
@@ -105,7 +120,8 @@ public class OrganizationBean implements OrganizationRemote {
         return getOrganizationAddress(organizationId);
     }
 	
-	@RolesAllowed("organization-update")
+	//@RolesAllowed("organization-update")
+    @Interceptors(SecurityInterceptor.class)
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception{
 	    //organization reference table id
         Query query = manager.createNamedQuery("getTableId");
