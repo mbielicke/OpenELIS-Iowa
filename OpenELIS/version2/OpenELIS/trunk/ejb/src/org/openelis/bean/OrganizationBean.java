@@ -15,23 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -53,10 +36,30 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.SecurityElement;
 import org.openelis.utils.SecurityInterceptor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
+    @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote {
@@ -73,24 +76,13 @@ public class OrganizationBean implements OrganizationRemote {
     private LockLocal lockBean;
     private AddressLocal addressBean;
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
-    public static HashMap<String,SecurityElement> securityMap;
     
     @PostConstruct
-    private void init(){
-        securityMap = new HashMap<String,SecurityElement>();
-        securityMap.put("getOrganizationAddressAndLock",new SecurityElement("organization",ModuleFlags.UPDATE));
-        securityMap.put("updateOrganization", new SecurityElement("organization",ModuleFlags.UPDATE));
-        
-    }
-    
+    private void init() 
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-            addressBean =  (AddressLocal)cont.lookup("openelis/AddressBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
@@ -111,8 +103,9 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 	
 	//@RolesAllowed("organization-update")
-    @Interceptors(SecurityInterceptor.class)
+    //@Interceptors(SecurityInterceptor.class)
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
+        SecurityInterceptor.applySecurity("organization", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
         lockBean.getLock((Integer)query.getSingleResult(),organizationId);
@@ -121,8 +114,9 @@ public class OrganizationBean implements OrganizationRemote {
     }
 	
 	//@RolesAllowed("organization-update")
-    @Interceptors(SecurityInterceptor.class)
+    //@Interceptors(SecurityInterceptor.class)
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception{
+        SecurityInterceptor.applySecurity("organization", ModuleFlags.UPDATE);
 	    //organization reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
