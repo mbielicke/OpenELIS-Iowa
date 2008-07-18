@@ -2,14 +2,14 @@ package org.openelis.utils;
 
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 
-public class SecurityElement {
+public class SecurityModuleElement {
     
-    public String module;
+    public String name;
     public ModuleFlags flag;
     
-    public SecurityElement(String module, ModuleFlags flag){
-        this.module = module;
+    public SecurityModuleElement(String name, ModuleFlags flag){
+        this.name = name;
         this.flag = flag;
     }
-
+    
 }
