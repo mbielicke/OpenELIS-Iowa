@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
@@ -45,7 +30,27 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("storageunit-select")
 public class StorageUnitBean implements StorageUnitRemote{
@@ -55,8 +60,6 @@ public class StorageUnitBean implements StorageUnitRemote{
     //private String className = this.getClass().getName();
    // private Logger log = Logger.getLogger(className);
 	
-	
-	@EJB
 	private SystemUserUtilLocal sysUser;
 	
 	@Resource
@@ -65,13 +68,11 @@ public class StorageUnitBean implements StorageUnitRemote{
     private LockLocal lockBean;
     private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List query(HashMap fields, int first, int max) throws Exception {
@@ -152,7 +153,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 	}
 	
     @RolesAllowed("storageunit-update")
-	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId) throws Exception{
+	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId, String session) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "storage_unit");
         lockBean.getLock((Integer)query.getSingleResult(),StorageUnitId);
@@ -161,7 +162,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 		
 	}
 	
-	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId) {
+	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId, String session) {
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "storage_unit");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),StorageUnitId);

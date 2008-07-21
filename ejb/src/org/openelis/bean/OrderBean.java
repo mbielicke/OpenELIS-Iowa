@@ -15,22 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.NoteDO;
@@ -55,7 +39,28 @@ import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("order-select")
 public class OrderBean implements OrderRemote{
@@ -63,7 +68,6 @@ public class OrderBean implements OrderRemote{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    @EJB
     private SystemUserUtilLocal sysUser;
     
     @Resource
@@ -72,13 +76,11 @@ public class OrderBean implements OrderRemote{
     private LockLocal lockBean;
     private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
     
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public OrderDO getOrder(Integer orderId, String orderType) {
@@ -97,7 +99,7 @@ public class OrderBean implements OrderRemote{
     }
 
     @RolesAllowed("order-update")
-    public OrderDO getOrderAndLock(Integer orderId, String orderType) throws Exception {
+    public OrderDO getOrderAndLock(Integer orderId, String orderType, String session) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "order");
         lockBean.getLock((Integer)query.getSingleResult(),orderId);
@@ -105,7 +107,7 @@ public class OrderBean implements OrderRemote{
         return getOrder(orderId, orderType);
     }
 
-    public OrderDO getOrderAndUnlock(Integer orderId , String orderType) {
+    public OrderDO getOrderAndUnlock(Integer orderId , String orderType, String session) {
         //unlock the entity
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "order");

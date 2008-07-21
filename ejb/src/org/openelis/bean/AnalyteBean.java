@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.entity.Analyte;
@@ -45,15 +30,34 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("analyte-select")
 public class AnalyteBean implements AnalyteRemote{
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-	@EJB
+   
 	private SystemUserUtilLocal sysUser;
 	
 	@Resource
@@ -62,14 +66,12 @@ public class AnalyteBean implements AnalyteRemote{
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 	
     private LockLocal lockBean;
-    
+   
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
@@ -119,7 +121,7 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
    @RolesAllowed("analyte-update")
-	public AnalyteDO getAnalyteAndLock(Integer analyteId) throws Exception {
+	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
         lockBean.getLock((Integer)query.getSingleResult(),analyteId);
@@ -127,7 +129,7 @@ public class AnalyteBean implements AnalyteRemote{
         return getAnalyte(analyteId);
 	}
 
-	public AnalyteDO getAnalyteAndUnlock(Integer analyteId) {
+	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session) {
 		Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "analyte");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),analyteId);

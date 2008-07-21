@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.QaEventDO;
 import org.openelis.entity.QaEvent;
@@ -44,7 +29,27 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("qaevent-select")
 public class QaEventBean implements QaEventRemote{
@@ -52,8 +57,6 @@ public class QaEventBean implements QaEventRemote{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    
-    @EJB
     private SystemUserUtilLocal sysUser;
     
     @Resource
@@ -62,14 +65,12 @@ public class QaEventBean implements QaEventRemote{
     private LockLocal lockBean;
     
     private static final QaEventMetaMap QaeMeta = new QaEventMetaMap();
-    
+
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public QaEventDO getQaEvent(Integer qaEventId) {
@@ -187,7 +188,7 @@ public class QaEventBean implements QaEventRemote{
     }
 
     @RolesAllowed("qaevent-update")
-    public QaEventDO getQaEventAndLock(Integer qaEventId) throws Exception {
+    public QaEventDO getQaEventAndLock(Integer qaEventId, String session) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         lockBean.getLock((Integer)query.getSingleResult(),qaEventId);
@@ -195,7 +196,7 @@ public class QaEventBean implements QaEventRemote{
         return getQaEvent(qaEventId);
     }
 
-    public QaEventDO getQaEventAndUnlock(Integer qaEventId) {
+    public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session) {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         lockBean.giveUpLock((Integer)query.getSingleResult(),qaEventId);           

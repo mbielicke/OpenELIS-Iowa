@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
@@ -46,7 +31,27 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("standardnote-select")
 public class StandardNoteBean implements StandardNoteRemote{
@@ -54,7 +59,6 @@ public class StandardNoteBean implements StandardNoteRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 	
-	@EJB
 	private SystemUserUtilLocal sysUser;
 	
 	@Resource
@@ -63,13 +67,11 @@ public class StandardNoteBean implements StandardNoteRemote{
     private LockLocal lockBean;
     private static final StandardNoteMetaMap StandardNoteMap = new StandardNoteMetaMap();
     
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
 
     @RolesAllowed("standardnote-delete")
@@ -111,7 +113,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	}
 	
     @RolesAllowed("standardnote-update")
-	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception{
+	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "standard_note");
         lockBean.getLock((Integer)query.getSingleResult(),standardNoteId);
@@ -119,7 +121,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         return getStandardNote(standardNoteId);
 	}
 	
-	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId) {
+	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId, String session) {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "standard_note");
         lockBean.giveUpLock((Integer)query.getSingleResult(),standardNoteId);

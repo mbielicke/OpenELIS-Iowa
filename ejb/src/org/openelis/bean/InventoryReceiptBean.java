@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryLocation;
@@ -42,7 +27,27 @@ import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Local",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("receipt-select")
 public class InventoryReceiptBean implements InventoryReceiptRemote{
@@ -50,7 +55,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    @EJB
     private SystemUserUtilLocal sysUser;
     
     @Resource
@@ -59,13 +63,12 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     private LockLocal lockBean;
     private static final InventoryReceiptMetaMap InventoryReceiptMap = new InventoryReceiptMetaMap();
     
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+        
     }
     
     public List getInventoryReceiptRecords(Integer orderId) {
@@ -77,7 +80,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
 
     @RolesAllowed("receipt-update")
-    public List getInventoryReceiptRecordsAndLock(Integer orderId) throws Exception {
+    public List getInventoryReceiptRecordsAndLock(Integer orderId, String session) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_receipt");
         lockBean.getLock((Integer)query.getSingleResult(),orderId);
@@ -85,7 +88,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         return getInventoryReceiptRecords(orderId);
     }
 
-    public List getInventoryReceiptRecordsAndUnlock(Integer orderId) {
+    public List getInventoryReceiptRecordsAndUnlock(Integer orderId, String session) {
 //      unlock the entity
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "inventory_receipt");
