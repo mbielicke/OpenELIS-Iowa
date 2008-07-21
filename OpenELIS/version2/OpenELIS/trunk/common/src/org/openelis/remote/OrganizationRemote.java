@@ -28,10 +28,10 @@ public interface OrganizationRemote {
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
 	
 	//method to unlock entity and return org name, address
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId);
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId, String session);
 	
 	//update initial call for org
-	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
+	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception;
 	
 	//commit a change to org, or insert a new org
 	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception;

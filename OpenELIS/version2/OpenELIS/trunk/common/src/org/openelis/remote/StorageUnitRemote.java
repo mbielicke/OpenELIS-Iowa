@@ -31,10 +31,10 @@ public interface StorageUnitRemote {
 	public StorageUnitDO getStorageUnit(Integer StorageUnitId);
 	
 	//method to return a whole storage unit and lock it
-	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId) throws Exception;
+	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId, String session) throws Exception;
 	
 	//method to return a whole storage unit and unlock it
-	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId);
+	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId, String session);
 	
 	 //method to query for storage units
 	 public List query(HashMap fields, int first, int max) throws Exception;

@@ -27,9 +27,9 @@ public interface LabelRemote {
     // method to return Label 
     public LabelDO getLabel(Integer labelId);
     
-    public LabelDO getLabelAndUnlock(Integer labelId);
+    public LabelDO getLabelAndUnlock(Integer labelId, String session);
     
-    public LabelDO getLabelAndLock(Integer labelId)throws Exception;    
+    public LabelDO getLabelAndLock(Integer labelId, String session)throws Exception;    
      
     //  commit a change to Label or insert a new Label
     public Integer updateLabel(LabelDO sysVarDO)throws Exception;

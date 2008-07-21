@@ -28,9 +28,9 @@ public interface QaEventRemote {
     // method to return QaEvent 
     public QaEventDO getQaEvent(Integer qaEventId);
     
-    public QaEventDO getQaEventAndUnlock(Integer qaEventId);
+    public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session);
     
-    public QaEventDO getQaEventAndLock(Integer qaEventId)throws Exception;    
+    public QaEventDO getQaEventAndLock(Integer qaEventId, String session)throws Exception;    
      
     //  commit a change to QaEvent, or insert a new provider
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception;

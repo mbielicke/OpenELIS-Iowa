@@ -35,10 +35,10 @@ public interface OrderRemote {
     public OrderDO getOrder(Integer orderId, String orderType);
     
     //method to unlock entity and return order record
-    public OrderDO getOrderAndUnlock(Integer orderId, String orderType);
+    public OrderDO getOrderAndUnlock(Integer orderId, String orderType, String session);
     
     //method to lock entity and return order
-    public OrderDO getOrderAndLock(Integer orderId, String orderType) throws Exception;
+    public OrderDO getOrderAndLock(Integer orderId, String orderType, String session) throws Exception;
     
     //commit a change to order, or insert a new order record
     public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteDO customerNoteDO, NoteDO orderShippingNotes) throws Exception;

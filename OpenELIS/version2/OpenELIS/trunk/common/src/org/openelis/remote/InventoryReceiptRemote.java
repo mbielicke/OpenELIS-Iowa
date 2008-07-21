@@ -28,10 +28,10 @@ public interface InventoryReceiptRemote {
     public List getInventoryReceiptRecords(Integer orderId);
     
     //method to unlock entity and return the inventory records record
-    public List getInventoryReceiptRecordsAndUnlock(Integer orderId);
+    public List getInventoryReceiptRecordsAndUnlock(Integer orderId, String session);
     
     //method to lock entity and return the inventory records
-    public List getInventoryReceiptRecordsAndLock(Integer orderId) throws Exception;
+    public List getInventoryReceiptRecordsAndLock(Integer orderId, String session) throws Exception;
     
     //commit a change to inventory receipt, or insert a new inventory receipt
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception;

@@ -31,10 +31,10 @@ public interface StandardNoteRemote {
 	public StandardNoteDO getStandardNote(Integer standardNoteId);
 	
 	//method to unlock and return a whole standard note
-	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId);
+	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId, String session);
 	
 	//method to lock and return a whole standard note
-	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId) throws Exception;
+	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception;
 	
     //method to return a whole standard note by type
     public List getStandardNoteByType(HashMap fields) throws Exception;
