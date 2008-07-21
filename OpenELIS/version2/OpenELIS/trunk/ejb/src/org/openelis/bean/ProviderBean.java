@@ -15,22 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
@@ -42,9 +26,9 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ProviderMetaMap;
-import org.openelis.remote.AddressLocal;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -52,7 +36,29 @@ import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
+    @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("provider-select")
 public class ProviderBean implements ProviderRemote {
@@ -60,7 +66,6 @@ public class ProviderBean implements ProviderRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    @EJB
     private SystemUserUtilLocal sysUser;
     
     @Resource
@@ -71,14 +76,12 @@ public class ProviderBean implements ProviderRemote {
     
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-            addressBean =  (AddressLocal)cont.lookup("openelis/AddressBean/local");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public ProviderDO getProvider(Integer providerId) {                 
@@ -311,14 +314,14 @@ public class ProviderBean implements ProviderRemote {
     }
 
     @RolesAllowed("provider-update")
-    public ProviderDO getProviderAndLock(Integer providerId) throws Exception{
+    public ProviderDO getProviderAndLock(Integer providerId, String session) throws Exception{
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "provider");
         lockBean.getLock((Integer)query.getSingleResult(),providerId);         
         return getProvider(providerId);
     }
 
-    public ProviderDO getProviderAndUnlock(Integer providerId) {
+    public ProviderDO getProviderAndUnlock(Integer providerId, String session) {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "provider");
         lockBean.giveUpLock((Integer)query.getSingleResult(),providerId);

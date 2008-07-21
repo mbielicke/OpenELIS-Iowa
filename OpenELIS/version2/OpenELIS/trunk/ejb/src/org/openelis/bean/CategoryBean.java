@@ -15,23 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
@@ -49,7 +32,29 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("dictionary-select")
 public class CategoryBean implements CategoryRemote {
@@ -57,8 +62,6 @@ public class CategoryBean implements CategoryRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    
-    @EJB
     private SystemUserUtilLocal sysUser;
     
     @Resource
@@ -68,14 +71,13 @@ public class CategoryBean implements CategoryRemote {
     
     
     private static CategoryMetaMap CatMeta = new CategoryMetaMap();
-    
+
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+        
     }
    
     public CategoryDO getCategory(Integer categoryId) {        
@@ -299,7 +301,7 @@ public class CategoryBean implements CategoryRemote {
     }
     
     //@RolesAllowed("dictionary-update")
-    public CategoryDO getCategoryAndLock(Integer categoryId)throws Exception {
+    public CategoryDO getCategoryAndLock(Integer categoryId, String session)throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
 
@@ -308,7 +310,7 @@ public class CategoryBean implements CategoryRemote {
         return getCategory(categoryId);
     }
 
-    public CategoryDO getCategoryAndUnlock(Integer categoryId) {
+    public CategoryDO getCategoryAndUnlock(Integer categoryId, String session) {
         
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "category");

@@ -15,21 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.entity.TestTrailer;
@@ -45,7 +30,27 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("testtrailer-select")
 public class TestTrailerBean implements TestTrailerRemote{
@@ -53,7 +58,6 @@ public class TestTrailerBean implements TestTrailerRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-	@EJB
 	private SystemUserUtilLocal sysUser;
 	
 	@Resource
@@ -61,14 +65,12 @@ public class TestTrailerBean implements TestTrailerRemote{
 	
     private LockLocal lockBean;
     private static final TestTrailerMetaMap TestTrailerMap = new TestTrailerMetaMap();
-    
+
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     @RolesAllowed("testtrailer-delete")
@@ -121,7 +123,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 	}
 
     @RolesAllowed("testtrailer-update")
-	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId) throws Exception {
+	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId, String session) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "test_trailer");
         lockBean.getLock((Integer)query.getSingleResult(),testTrailerId);
@@ -129,7 +131,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         return getTestTrailer(testTrailerId);
 	}
 
-	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId) {
+	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId, String session) {
 		Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "test_trailer");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),testTrailerId);

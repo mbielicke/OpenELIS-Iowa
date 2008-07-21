@@ -27,9 +27,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.remote.AddressLocal;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -93,7 +93,7 @@ public class OrganizationBean implements OrganizationRemote {
         return orgAddressContacts;
 	}
 	
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) {
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId, String session) {
 		//unlock the entity
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "organization");
@@ -104,7 +104,7 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	//@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
-    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
+    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception{
         SecurityInterceptor.applySecurity("organization", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");

@@ -22,7 +22,7 @@ import javax.persistence.PersistenceContext;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.entity.Address;
-import org.openelis.remote.AddressLocal;
+import org.openelis.local.AddressLocal;
 
 @Stateless
 public class AddressBean implements AddressLocal{

@@ -15,22 +15,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.entity.StorageLocation;
@@ -47,15 +31,35 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Stateless
+@EJBs({
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+})
 @SecurityDomain("openelis")
 @RolesAllowed("storagelocation-select")
 public class StorageLocationBean implements StorageLocationRemote{
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;	
-	
-	@EJB
+
 	private SystemUserUtilLocal sysUser;
 	
 	@Resource
@@ -63,14 +67,12 @@ public class StorageLocationBean implements StorageLocationRemote{
 	
     private LockLocal lockBean;
     private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
-    
+
+    @PostConstruct
+    private void init()
     {
-        try {
-            InitialContext cont = new InitialContext();
-            lockBean =  (LockLocal)cont.lookup("openelis/LockBean/local");
-        }catch(Exception e){
-            
-        }
+        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
@@ -132,7 +134,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 	
     @RolesAllowed("storagelocation-update")
-	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception{
+	public StorageLocationDO getStorageLocAndLock(Integer StorageId, String session) throws Exception{
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "storage_location");
         lockBean.getLock((Integer)query.getSingleResult(),StorageId);
@@ -140,7 +142,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         return getStorageLoc(StorageId);       
 	}
 	
-	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId) {
+	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId, String session) {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "storage_location");
         lockBean.giveUpLock((Integer)query.getSingleResult(),StorageId);
