@@ -31,10 +31,10 @@ public interface StorageLocationRemote {
 	public StorageLocationDO getStorageLoc(Integer StorageId);
 	
 	//method to return a whole storage loc
-	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId);
+	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId, String session);
 	
 //	method to return a whole storage loc
-	public StorageLocationDO getStorageLocAndLock(Integer StorageId) throws Exception;
+	public StorageLocationDO getStorageLocAndLock(Integer StorageId, String session) throws Exception;
 	
 	//method to return a child storage locs
 	public List getStorageLocChildren(Integer StorageId);

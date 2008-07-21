@@ -31,10 +31,10 @@ public interface TestTrailerRemote {
 	public TestTrailerDO getTestTrailer(Integer testTrailerId);
 	
 	//method to return a whole test trailer and lock it
-	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId) throws Exception;
+	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId, String session) throws Exception;
 	
 	//method to return a whole test trailer and unlock it
-	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId);
+	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId, String session);
 	
 	 //method to query for test trailers
 	 public List query(HashMap fields, int first, int max) throws Exception;

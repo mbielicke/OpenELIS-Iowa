@@ -31,10 +31,10 @@ public interface AnalyteRemote {
 	public AnalyteDO getAnalyte(Integer analyteId);
 	
 	//method to return a whole analyte and lock it
-	public AnalyteDO getAnalyteAndLock(Integer analyteId) throws Exception;
+	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception;
 	
 	//method to return a whole analyte and unlock it
-	public AnalyteDO getAnalyteAndUnlock(Integer analyteId);
+	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session);
 	
 	 //method to query for analytes
 	 public List query(HashMap fields, int first, int max) throws Exception;

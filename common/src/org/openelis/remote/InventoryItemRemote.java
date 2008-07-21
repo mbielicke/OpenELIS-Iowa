@@ -29,10 +29,10 @@ public interface InventoryItemRemote {
 	public InventoryItemDO getInventoryItem(Integer inventoryItemId);
 	
 	//method to unlock entity and return parent inventory item
-	public InventoryItemDO getInventoryItemAndUnlock(Integer inventoryItemId);
+	public InventoryItemDO getInventoryItemAndUnlock(Integer inventoryItemId, String session);
 	
 	//method to lock entity and return parent inventory item
-	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId) throws Exception;
+	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId, String session) throws Exception;
 	
 	//commit a change to inventory, or insert a new inventory
 	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO) throws Exception;

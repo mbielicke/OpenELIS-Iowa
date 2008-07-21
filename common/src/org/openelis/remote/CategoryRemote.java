@@ -29,9 +29,9 @@ public interface CategoryRemote {
     //  method to return category without performing locking
     public CategoryDO getCategory(Integer categoryId);
     
-    public CategoryDO getCategoryAndUnlock(Integer categoryId);
+    public CategoryDO getCategoryAndUnlock(Integer categoryId, String session);
     
-    public CategoryDO getCategoryAndLock(Integer categoryId)throws Exception;
+    public CategoryDO getCategoryAndLock(Integer categoryId, String session)throws Exception;
     
     // commit a change to category, or insert a new category
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception;

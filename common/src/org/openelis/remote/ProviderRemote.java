@@ -30,9 +30,9 @@ public interface ProviderRemote {
     //  method to return provider 
     public ProviderDO getProvider(Integer providerId);
         
-    public ProviderDO getProviderAndUnlock(Integer providerId);
+    public ProviderDO getProviderAndUnlock(Integer providerId, String session);
     
-    public ProviderDO getProviderAndLock(Integer providerId)throws Exception;
+    public ProviderDO getProviderAndLock(Integer providerId, String session)throws Exception;
     
     //commit a change to provider, or insert a new provider
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses) throws Exception;

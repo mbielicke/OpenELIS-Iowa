@@ -13,7 +13,7 @@
 * 
 * Copyright (C) The University of Iowa.  All Rights Reserved.
 */
-package org.openelis.remote;
+package org.openelis.local;
 
 import javax.ejb.Local;
 

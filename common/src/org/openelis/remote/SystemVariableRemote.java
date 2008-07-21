@@ -28,9 +28,9 @@ public interface SystemVariableRemote {
     // method to return SystemVariable 
     public SystemVariableDO getSystemVariable(Integer sysVarId);
     
-    public SystemVariableDO getSystemVariableAndUnlock(Integer sysVarId);
+    public SystemVariableDO getSystemVariableAndUnlock(Integer sysVarId, String session);
     
-    public SystemVariableDO getSystemVariableAndLock(Integer sysVarId)throws Exception;    
+    public SystemVariableDO getSystemVariableAndLock(Integer sysVarId, String session)throws Exception;    
      
     //  commit a change to SystemVariable or insert a new SystemVariable
     public Integer updateSystemVariable(SystemVariableDO sysVarDO)throws Exception;
