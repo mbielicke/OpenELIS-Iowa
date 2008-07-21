@@ -226,7 +226,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     
             CategoryDO catDO = new CategoryDO();
              try{
-                catDO = remote.getCategoryAndUnlock(categoryId);
+                catDO = remote.getCategoryAndUnlock(categoryId, SessionManager.getSession().getId());
              }catch(Exception ex){
                  throw new RPCException(ex.getMessage());
              }  
@@ -260,7 +260,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
         CategoryDO catDO = new CategoryDO();
          try{
-            catDO = remote.getCategoryAndLock(categoryId);
+            catDO = remote.getCategoryAndLock(categoryId, SessionManager.getSession().getId());
          }catch(Exception ex){
              throw new RPCException(ex.getMessage());
          }  

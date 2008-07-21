@@ -217,7 +217,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
     		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     		
     		
-    		TestTrailerDO testTrailerDO = remote.getTestTrailerAndUnlock((Integer)key.getKey().getValue());
+    		TestTrailerDO testTrailerDO = remote.getTestTrailerAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, testTrailerDO);
@@ -243,7 +243,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		TestTrailerDO testTrailerDO = new TestTrailerDO();
 		
 		try{
-			testTrailerDO = remote.getTestTrailerAndLock((Integer)key.getKey().getValue());
+			testTrailerDO = remote.getTestTrailerAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}

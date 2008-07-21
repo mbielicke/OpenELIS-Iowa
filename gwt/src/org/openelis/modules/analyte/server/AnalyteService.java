@@ -218,7 +218,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     		
     		
-    		AnalyteDO analyteDO = remote.getAnalyteAndUnlock((Integer)key.getKey().getValue());
+    		AnalyteDO analyteDO = remote.getAnalyteAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, analyteDO);
@@ -244,7 +244,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 
 		AnalyteDO analyteDO = new AnalyteDO();
 		try {
-			analyteDO = remote.getAnalyteAndLock((Integer) key.getKey().getValue());
+			analyteDO = remote.getAnalyteAndLock((Integer) key.getKey().getValue(), SessionManager.getSession().getId());
 		} catch (Exception e) {
 			throw new RPCException(e.getMessage());
 		}

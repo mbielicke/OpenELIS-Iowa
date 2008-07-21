@@ -202,7 +202,7 @@ public class QAEventService implements AppScreenFormServiceInt{
     
             QaEventDO qaeDO = new QaEventDO();
              try{
-              qaeDO = remote.getQaEventAndUnlock(qaEventId);
+              qaeDO = remote.getQaEventAndUnlock(qaEventId, SessionManager.getSession().getId());
              } catch(Exception ex){
                  throw new RPCException(ex.getMessage());
              }  
@@ -229,7 +229,7 @@ public class QAEventService implements AppScreenFormServiceInt{
 
         QaEventDO qaeDO = new QaEventDO();
          try{
-          qaeDO = remote.getQaEventAndLock(qaEventId);
+          qaeDO = remote.getQaEventAndLock(qaEventId, SessionManager.getSession().getId());
          } catch(Exception ex){
              throw new RPCException(ex.getMessage());
          }  

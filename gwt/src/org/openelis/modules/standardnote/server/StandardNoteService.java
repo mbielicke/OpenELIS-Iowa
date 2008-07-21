@@ -226,7 +226,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
     		
-    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getKey().getValue());
+    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, standardNoteDO);
@@ -252,7 +252,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
 		
 		try{
-			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getKey().getValue());
+			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}

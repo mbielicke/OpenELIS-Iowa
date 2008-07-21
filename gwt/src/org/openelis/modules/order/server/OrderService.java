@@ -295,7 +295,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         String orderType = (String)rpcReturn.getFieldValue("orderType");
         
-        OrderDO orderDO = remote.getOrderAndUnlock((Integer)key.getKey().getValue(), orderType);
+        OrderDO orderDO = remote.getOrderAndUnlock((Integer)key.getKey().getValue(), orderType, SessionManager.getSession().getId());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, orderDO);
@@ -325,7 +325,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         OrderDO orderDO = new OrderDO();
         try{
-            orderDO = remote.getOrderAndLock((Integer)key.getKey().getValue(), orderType);
+            orderDO = remote.getOrderAndLock((Integer)key.getKey().getValue(), orderType, SessionManager.getSession().getId());
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
