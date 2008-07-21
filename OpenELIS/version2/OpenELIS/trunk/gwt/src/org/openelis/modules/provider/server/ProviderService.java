@@ -235,7 +235,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             ProviderDO provDO = new ProviderDO();
              try{
-              provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId);
+              provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId, SessionManager.getSession().getId());
               }catch(Exception ex){
                  throw new RPCException(ex.getMessage());
              }  
@@ -262,7 +262,7 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             ProviderDO provDO = new ProviderDO();
              try{
-              provDO =  (ProviderDO)remote.getProviderAndLock(providerId);
+              provDO =  (ProviderDO)remote.getProviderAndLock(providerId, SessionManager.getSession().getId());
              }catch(Exception ex){
                  throw new RPCException(ex.getMessage());
              }  

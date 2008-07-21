@@ -205,7 +205,7 @@ public class LabelService implements AppScreenFormServiceInt {
         Integer labelId = (Integer)key.getKey().getValue();
         LabelDO labelDO =null;
         try{
-            labelDO  = remote.getLabelAndUnlock(labelId);
+            labelDO  = remote.getLabelAndUnlock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
                throw new RPCException(ex.getMessage());
            }  
@@ -231,7 +231,7 @@ public class LabelService implements AppScreenFormServiceInt {
         Integer labelId = (Integer)key.getKey().getValue();
         LabelDO labelDO =null;
         try{
-            labelDO  = remote.getLabelAndLock(labelId);
+            labelDO  = remote.getLabelAndLock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
                throw new RPCException(ex.getMessage());
            }  

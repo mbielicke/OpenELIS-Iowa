@@ -244,7 +244,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     		
     		
-    		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)key.getKey().getValue());
+    		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, storageLocDO);
@@ -282,7 +282,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		StorageLocationDO storageLocDO = new StorageLocationDO();
 		
 		try{
-			storageLocDO = remote.getStorageLocAndLock((Integer)key.getKey().getValue());
+			storageLocDO = remote.getStorageLocAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}

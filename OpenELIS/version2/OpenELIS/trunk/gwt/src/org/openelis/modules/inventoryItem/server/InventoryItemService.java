@@ -235,7 +235,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
         
-        InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock((Integer)key.getKey().getValue());
+        InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
 
 //      set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
@@ -261,7 +261,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         try{
-            inventoryItemDO = remote.getInventoryItemAndLock((Integer)key.getKey().getValue());
+            inventoryItemDO = remote.getInventoryItemAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }

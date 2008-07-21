@@ -236,7 +236,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     			.lookup("openelis/StorageUnitBean/remote");
     
     	StorageUnitDO storageUnitDO = remote
-    			.getStorageUnitAndUnlock((Integer) key.getKey().getValue());
+    			.getStorageUnitAndUnlock((Integer) key.getKey().getValue(), SessionManager.getSession().getId());
     
     	// set the fields in the RPC
     	setFieldsInRPC(rpcReturn, storageUnitDO);
@@ -267,7 +267,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitDO storageUnitDO = new StorageUnitDO();
 		try {
 			storageUnitDO = remote.getStorageUnitAndLock((Integer) key.getKey()
-					.getValue());
+					.getValue(), SessionManager.getSession().getId());
 		} catch (Exception e) {
 			throw new RPCException(e.getMessage());
 		}

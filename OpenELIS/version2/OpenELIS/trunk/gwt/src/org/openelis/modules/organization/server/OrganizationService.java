@@ -239,7 +239,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     		
     		
-    		OrganizationAddressDO organizationDO = remote.getOrganizationAddressAndUnlock((Integer)key.getKey().getValue());
+    		OrganizationAddressDO organizationDO = remote.getOrganizationAddressAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, organizationDO);
@@ -266,7 +266,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		
     		OrganizationAddressDO organizationDO = new OrganizationAddressDO();
     		try{
-    			organizationDO = remote.getOrganizationAddressAndLock((Integer)key.getKey().getValue());
+    			organizationDO = remote.getOrganizationAddressAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
     		}catch(Exception e){
     			throw new RPCException(e.getMessage());
     		}

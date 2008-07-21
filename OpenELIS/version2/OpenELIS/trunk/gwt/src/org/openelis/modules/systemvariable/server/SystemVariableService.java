@@ -195,7 +195,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         
         SystemVariableDO svDO = null;
         try{
-          svDO = remote.getSystemVariableAndUnlock(svId);
+          svDO = remote.getSystemVariableAndUnlock(svId, SessionManager.getSession().getId());
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }  
@@ -221,7 +221,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
         
         SystemVariableDO svDO = null;
         try{
-          svDO = remote.getSystemVariableAndLock(svId);
+          svDO = remote.getSystemVariableAndLock(svId, SessionManager.getSession().getId());
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }  
