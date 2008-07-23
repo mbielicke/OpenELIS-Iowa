@@ -494,7 +494,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
     private void onRemoveContactRowButtonClick() {
         int selectedRow = contactsController.selected;
-        if (selectedRow > -1 && contactsController.model.numRows() > 1) {
+        if (selectedRow > -1 && contactsController.model.numRows() > 0) {
             TableRow row = contactsController.model.getRow(selectedRow);
             contactsController.model.hideRow(row);
             
