@@ -1,0 +1,116 @@
+
+package org.openelis.entity;
+
+/**
+  * TransReceiptOrder Entity POJO for database 
+  */
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
+
+@Entity
+@Table(name="trans_receipt_order")
+@EntityListeners({AuditUtil.class})
+public class TransReceiptOrder implements Auditable, Cloneable {
+  
+  @Id
+  @GeneratedValue
+  @Column(name="id")
+  private Integer id;             
+
+  @Column(name="inventory_receipt_id")
+  private Integer inventoryReceiptId;             
+
+  @Column(name="order_item_id")
+  private Integer orderItemId;             
+
+  @Column(name="quantity")
+  private Integer quantity;             
+
+
+  @Transient
+  private TransReceiptOrder original;
+
+  
+  public Integer getId() {
+    return id;
+  }
+  protected void setId(Integer id) {
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
+  }
+
+  public Integer getInventoryReceiptId() {
+    return inventoryReceiptId;
+  }
+  public void setInventoryReceiptId(Integer inventoryReceiptId) {
+    if((inventoryReceiptId == null && this.inventoryReceiptId != null) || 
+       (inventoryReceiptId != null && !inventoryReceiptId.equals(this.inventoryReceiptId)))
+      this.inventoryReceiptId = inventoryReceiptId;
+  }
+
+  public Integer getOrderItemId() {
+    return orderItemId;
+  }
+  public void setOrderItemId(Integer orderItemId) {
+    if((orderItemId == null && this.orderItemId != null) || 
+       (orderItemId != null && !orderItemId.equals(this.orderItemId)))
+      this.orderItemId = orderItemId;
+  }
+
+  public Integer getQuantity() {
+    return quantity;
+  }
+  public void setQuantity(Integer quantity) {
+    if((quantity == null && this.quantity != null) || 
+       (quantity != null && !quantity.equals(this.quantity)))
+      this.quantity = quantity;
+  }
+
+  
+  public void setClone() {
+    try {
+      original = (TransReceiptOrder)this.clone();
+    }catch(Exception e){}
+  }
+  
+  public String getChangeXML() {
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
+
+      AuditUtil.getChangeXML(inventoryReceiptId,original.inventoryReceiptId,doc,"inventory_receipt_id");
+
+      AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
+
+      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
+
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+    return null;
+  }
+   
+  public String getTableName() {
+    return "trans_receipt_order";
+  }
+  
+}   
