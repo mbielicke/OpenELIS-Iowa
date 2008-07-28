@@ -20,6 +20,7 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -33,7 +34,6 @@ import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -42,6 +42,8 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -59,8 +61,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryItemScreen extends OpenELISScreenForm implements ClickListener, TabListener{
+public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener{
 
+    private boolean startedLoadingTable = false;
     private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
     TextBox subjectBox; 
@@ -71,7 +74,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     
     private ScreenMenuPanel duplicateMenuPanel;
     
-    private ScreenCheck isActive;
+    private ScreenCheck isActive, isSerializedCheck;
     
     private static boolean loaded = false;
     private static DataModel storesDropdown, categoriesDropdown,
@@ -135,6 +138,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
         
         isActive = (ScreenCheck)widgets.get(InvItemMeta.getIsActive());
+        isSerializedCheck = (ScreenCheck)widgets.get(InvItemMeta.getIsSerialMaintained());
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
@@ -149,8 +153,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
 		
 		componentsController = ((TableWidget)getWidget("componentsTable")).controller;
 		componentsController.setAutoAdd(false);
-        ((InventoryComponentsTable)componentsController.manager).setInventoryForm(this);
-		
+       
         svp = (ScreenVertical) widgets.get("notesPanel");
         
         if (storesDropdown == null) {
@@ -446,6 +449,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
     private void fillLocationsModel(){
         Integer itemId = null;
         NumberObject itemIdObj;
+        StringObject isSerialized = new StringObject();
         TableField f;
 
         if (key == null || key.getKey() == null) {
@@ -457,21 +461,22 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         
         itemId = (Integer)key.getKey().getValue();
         itemIdObj = new NumberObject(itemId);
+        isSerialized.setValue(((CheckBox)isSerializedCheck.getWidget()).getState());
 
         f = new TableField();
         f.setValue(locsController.model);
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {itemIdObj, f};
+        DataObject[] args = new DataObject[] {itemIdObj, isSerialized, f};
 
         screenService.getObject("getLocationsModel", args, new AsyncCallback() {
             public void onSuccess(Object result) {
                 // get the table model and load it
                 // in the table
-                rpc.setFieldValue("locQuantitiesTable",
-                                  (TableModel)((TableField)result).getValue());
+                TableModel model = (TableModel)((TableField)result).getValue();
+                rpc.setFieldValue("locQuantitiesTable", model);
 
-                locsController.loadModel((TableModel)((TableField)result).getValue());
+                locsController.loadModel(model);
 
                 clearLocations = locsController.model.numRows() > 0;
                 
@@ -565,14 +570,13 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
      }
 
     private void onRemoveComponentRowButtonClick() {
-        TableWidget componentsTable = (TableWidget)getWidget("componentsTable");
-        int selectedRow = componentsTable.controller.selected;
-        if (selectedRow > -1 && componentsTable.controller.model.numRows() > 1) {
-            TableRow row = componentsTable.controller.model.getRow(selectedRow);
-            componentsTable.controller.model.hideRow(row);
+        int selectedRow = componentsController.selected;
+        if (selectedRow > -1 && componentsController.model.numRows() > 0) {
+            TableRow row = componentsController.model.getRow(selectedRow);
+            componentsController.model.hideRow(row);
 
             // reset the model
-            componentsTable.controller.reset();
+            componentsController.reset();
             // need to set the deleted flag to "Y" also
             StringField deleteFlag = new StringField();
             deleteFlag.setValue("Y");
@@ -622,5 +626,105 @@ public class InventoryItemScreen extends OpenELISScreenForm implements ClickList
         } 
         
         super.changeState(state);
+    }
+    
+    //
+    //Table Manager methods
+    //
+    public boolean action(int row, int col, TableController controller) {
+        return false;
+    }
+
+    public boolean canDelete(int row, TableController controller) {
+        return true;
+    }
+
+    public boolean canEdit(int row, int col, TableController controller) {
+       return true;
+    }
+
+    public boolean canInsert(int row, TableController controller) {
+        return false;
+    }
+
+    public boolean canSelect(int row, TableController controller) {
+        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
+            return true;
+        return false;
+    }
+    
+    public boolean doAutoAdd(int row, int col, TableController controller) {
+        if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row)))
+            return true;
+        else if(row > -1 && row == controller.model.numRows() && !tableRowEmpty(((EditTable)controller).autoAddRow))
+            return true;
+      
+        return false;
+    }
+    
+    public void finishedEditing(final int row, int col, final TableController controller) {
+        DropDownField componentField;
+        if(col == 0 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
+            startedLoadingTable = true;
+            componentField = (DropDownField)controller.model.getFieldAt(row, col);
+            if(componentField.getValue() != null){
+                window.setStatus("","spinnerIcon");
+                NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
+                  
+                // prepare the argument list for the getObject function
+                DataObject[] args = new DataObject[] {componentIdObj}; 
+                  
+                screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
+                    public void onSuccess(Object result){    
+                      // get the datamodel, load it in the notes panel and set the value in the rpc
+                        StringField descString = new StringField();
+                        descString.setValue((String) ((StringObject)result).getValue());
+                        
+                        TableRow tableRow = controller.model.getRow(row);
+                        tableRow.setColumn(1, descString);
+                        
+                        controller.scrollLoad(-1);
+                        
+                        controller.select(row, 2);
+                        
+                        window.setStatus("","");
+                        startedLoadingTable = false;
+                    }
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                        startedLoadingTable = false;
+                    }
+                });
+            }
+        }     
+    }
+
+    public void getNextPage(TableController controller) {}
+
+    public void getPage(int page) {}
+
+    public void getPreviousPage(TableController controller) {}
+
+    public void rowAdded(int row, TableController controller) {}
+
+    public void setModel(TableController controller, DataModel model) {}
+
+    public void setMultiple(int row, int col, TableController controller) {}
+    //
+    //End Table Manager Methods
+    //
+    
+    private boolean tableRowEmpty(TableRow row){
+        boolean empty = true;
+        
+        for(int i=0; i<row.numColumns(); i++){
+            if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+                empty = false;
+                break;
+            }
+        }
+        
+        return empty;
     }
 }

@@ -205,13 +205,13 @@
 	 <string key="{meta:getName($cat)}" max="50" required = "true"/>
 	 <string key="{meta:getDescription($cat)}" max="60" required="false"/>
      <table key="dictEntTable"/>	 
-     <dropdown key="{meta:getSectionId($cat)}" type="integer" required="false"/>    
+     <dropdown key="{meta:getSectionId($cat)}" required="false"/>    
 	</rpc>
 	<rpc key = "query">	 		    	
 	 <queryString key="{meta:getSystemName($cat)}"/>
 	 <queryString key="{meta:getName($cat)}"/>
 	 <queryString key="{meta:getDescription($cat)}"/>
-	 <dropdown key="{meta:getSectionId($cat)}" type="integer" required="false"/> 
+	 <dropdown key="{meta:getSectionId($cat)}" required="false"/> 
 	 <queryCheck key="{dictionary:getIsActive($dictNew)}" required="false"/>
 	  <queryString key="{dictionary:getSystemName($dictNew)}" required="false"/>
 	  <queryString key="{dictionary:getLocalAbbrev($dictNew)}" required="false"/>
