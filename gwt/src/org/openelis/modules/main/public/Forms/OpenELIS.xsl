@@ -66,7 +66,6 @@
 				      <xsl:with-param name="class"></xsl:with-param>
    				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:if test="security:hasModule($security,'favorites','SELECT')">
 				      <xsl:call-template name="menuItem">
       				    <xsl:with-param name="key">FavoritesMenu</xsl:with-param>
 				        <xsl:with-param name="label">favoritesMenu</xsl:with-param>
@@ -74,7 +73,6 @@
 				        <xsl:with-param name="class">FavoritesMenu</xsl:with-param>
        				    <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
-				    </xsl:if>
 				    <xsl:call-template name="menuItem">
     				  <xsl:with-param name="key">Logout</xsl:with-param>
 				      <xsl:with-param name="label">logout</xsl:with-param>
@@ -407,7 +405,7 @@
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-				    <xsl:if test="security:hasModule($security,'storage','SELECT')">
+				    <xsl:if test="security:hasModule($security,'storagelocation','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageLocation</xsl:with-param>
 				        <xsl:with-param name="label">storageLocation</xsl:with-param>

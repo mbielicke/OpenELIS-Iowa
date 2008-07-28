@@ -24,7 +24,7 @@
                 xmlns:noteMeta="xalan://org.openelis.meta.NoteMeta"
                 xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta"
                 xmlns:invItemMeta="xalan://org.openelis.meta.InventoryItemMeta"
-                xmlns:invTransMeta="xalan://org.openelis.metamap.InventoryTransactionMetaMap"
+                xmlns:invTransMeta="xalan://org.openelis.metamap.TransReceiptOrderMetaMap"
                 xmlns:invReceiptMeta="xalan://org.openelis.meta.InventoryReceiptMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
@@ -71,7 +71,7 @@
   </xalan:component>
   
     <xalan:component prefix="invTransMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryTransactionMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TransReceiptOrderMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
@@ -221,8 +221,8 @@
 										<editors>
 											<textbox case="mixed"/>
 											<autoDropdown cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
-												<headers>Name,Store</headers>
-												<widths>100,150</widths>
+												<headers>Name,Store, Pur Units</headers>
+												<widths>135,110,110</widths>
 											</autoDropdown>
 											<label/>
 										</editors>

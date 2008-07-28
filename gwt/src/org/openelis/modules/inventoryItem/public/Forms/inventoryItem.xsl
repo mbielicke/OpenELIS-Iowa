@@ -187,9 +187,9 @@
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
-									<widget colspan="3">
-										<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
-									</widget>
+									<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"ratio")'/>:</text>
+									<textbox key="ratio" width="55px" tab="??,??"/>
 								</row>
 							</TablePanel>
 							<VerticalPanel style="Form">
@@ -243,7 +243,7 @@
 					<tab key="tab1" text="{resource:getString($constants,'components')}">
 							<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
-								<table width="auto" key="componentsTable" manager="InventoryComponentsTable" maxRows="9" title="" showError="false" showScroll="true">
+								<table width="auto" key="componentsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
@@ -295,9 +295,11 @@
 							<widget valign="top">
 								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
+										<xsl:value-of select='resource:getString($constants,"serialNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>212,90,136,123</widths>
+										<widths>162,70,70,133,123</widths>
 										<editors>
+											<label/>
 											<label/>
 											<label/>
 											<label/>
@@ -306,19 +308,22 @@
 										<fields>
 											<string key="{locationMeta:getStorageLocationId($location)}"/>
 											<string key="{locationMeta:getLotNumber($location)}"/>
+											<number key="{locationMeta:getId($location)}" type="integer"/>
 											<string key="{locationMeta:getExpirationDate($location)}"/>
 											<number key="{locationMeta:getQuantityOnhand($location)}" type="integer"/>
 										</fields>
-										<sorts>true,true,true,true</sorts>
-										<filters>false,false,false,false</filters>
-										<colAligns>left,left,left,left</colAligns>
+										<sorts>true,true,true,true,true</sorts>
+										<filters>false,false,false,false,false</filters>
+										<colAligns>left,left,left,left,left</colAligns>
 									</table>
 									<query>
 									<queryTable width="auto" title="" maxRows="10" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
+										<xsl:value-of select='resource:getString($constants,"serialNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>212,108,136,123</widths>
+										<widths>180,70,70,133,123</widths>
 										<editors>
+											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 											<label/>
@@ -326,7 +331,8 @@
 										</editors>
 										<fields>
 											<xsl:value-of select='storageLocationMeta:getLocation($locStorageLoc)'/>,<xsl:value-of select='locationMeta:getLotNumber($location)'/>,
-    										<xsl:value-of select='locationMeta:getExpirationDate($location)'/>,<xsl:value-of select='locationMeta:getQuantityOnhand($location)'/>
+    										<xsl:value-of select='locationMeta:getId($location)'/>,<xsl:value-of select='locationMeta:getExpirationDate($location)'/>,
+    										<xsl:value-of select='locationMeta:getQuantityOnhand($location)'/>
 										</fields>							
 									</queryTable>
 									</query>
@@ -365,7 +371,7 @@
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
 						<VerticalPanel height="229px" width="610px">
-						<richtext key="manufacturingText"/>"
+						<!--<richtext key="manufacturingText" tools="false"/>-->
 						</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
@@ -479,6 +485,7 @@
 	  <!--location table values-->
 	  <queryString key="{storageLocationMeta:getLocation($locStorageLoc)}" required="false"/>
 	  <queryString key="{locationMeta:getLotNumber($location)}" required="false"/>
+	  <queryNumber key="{locationMeta:getId($location)}" type="integer" required="false"/>
 	  <queryString key="{locationMeta:getExpirationDate($location)}" required="false"/>
 	  <queryNumber key="{locationMeta:getQuantityOnhand($location)}" type="integer" required="false"/>
 	</rpc>

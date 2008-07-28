@@ -29,7 +29,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -73,7 +73,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
             FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("DictionaryQuery");
     
            if(rpc == null)
-               throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+               throw new QueryException(openElisConstants.getString("queryExpiredException"));
                 
             try{
                 
@@ -454,11 +454,11 @@ public class DictionaryService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(CatMeta.getSystemName(),catDO.getSystemName());
         rpcReturn.setFieldValue(CatMeta.getName(),catDO.getName());
         rpcReturn.setFieldValue(CatMeta.getDescription(),catDO.getDescription());    
-        if(catDO.getSection()!=null){
-            rpcReturn.setFieldValue(CatMeta.getSectionId(),catDO.getSection());
-         }else{
-            rpcReturn.setFieldValue(CatMeta.getSectionId(),new Integer(-1));  
-         }
+        //if(catDO.getSection()!=null){
+         rpcReturn.setFieldValue(CatMeta.getSectionId(),catDO.getSection());
+         //}else{
+         //   rpcReturn.setFieldValue(CatMeta.getSectionId(),new Integer(-1));  
+         //}
     }
     
     private CategoryDO getCategoryDOFromRPC(FormRPC rpcSend){        
@@ -468,9 +468,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
         categoryDO.setDescription(((String)rpcSend.getFieldValue(CatMeta.getDescription())));
         categoryDO.setName(((String)rpcSend.getFieldValue(CatMeta.getName())));
         categoryDO.setSystemName(((String)rpcSend.getFieldValue(CatMeta.getSystemName())));
-                
-        if(!new Integer(-1).equals(rpcSend.getFieldValue(CatMeta.getSectionId())))
-           categoryDO.setSection((Integer)rpcSend.getFieldValue(CatMeta.getSectionId()));
+        categoryDO.setSection((Integer)rpcSend.getFieldValue(CatMeta.getSectionId()));
         
         return categoryDO; 
     }

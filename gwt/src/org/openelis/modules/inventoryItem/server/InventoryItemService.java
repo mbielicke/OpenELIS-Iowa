@@ -31,7 +31,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -50,6 +50,7 @@ import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -58,6 +59,7 @@ import org.openelis.remote.InventoryItemRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
@@ -81,7 +83,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryItemQuery");
     
             if(rpc == null)
-                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+                throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
             InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
             try{
@@ -321,10 +323,10 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return model;
     }
     
-    public TableField getLocationsModel(NumberObject itemId, TableField model){
+    public TableField getLocationsModel(NumberObject itemId, StringObject isSerialized, TableField model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List locationsList = remote.getInventoryLocations((Integer)itemId.getValue());
-        model.setValue(fillLocationsTable((TableModel)model.getValue(),locationsList));
+        model.setValue(fillLocationsTable((TableModel)model.getValue(), (String)isSerialized.getValue(), locationsList));
         return model;
     }
     
@@ -470,7 +472,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return componentsModel;
     }
     
-    public TableModel fillLocationsTable(TableModel locationsModel, List locationsList){
+    public TableModel fillLocationsTable(TableModel locationsModel, String isSerialized, List locationsList){
         try {
             locationsModel.reset();
             
@@ -484,8 +486,19 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                     
                     row.getColumn(0).setValue(locationRow.getStorageLocation());
                     row.getColumn(1).setValue(locationRow.getLotNumber());
-                    row.getColumn(2).setValue(locationRow.getExpirationDate().toString());
-                    row.getColumn(3).setValue(locationRow.getQuantityOnHand());
+                    
+                    if(CheckBox.CHECKED.equals(isSerialized))
+                        row.getColumn(2).setValue(locationRow.getId());
+                    else
+                        row.getColumn(2).setValue(null);
+                    
+                    Datetime expDate = locationRow.getExpirationDate();
+                    if(expDate.getDate() != null)
+                        row.getColumn(3).setValue(expDate.toString());
+                    else
+                        row.getColumn(3).setValue(null);
+                    
+                    row.getColumn(4).setValue(locationRow.getQuantityOnHand());
                     
                     locationsModel.addRow(row);
            } 

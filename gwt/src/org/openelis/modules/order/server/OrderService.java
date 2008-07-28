@@ -30,7 +30,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -85,7 +85,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             String orderType = (String)orderTypeField.getValue();
             
             if(rpc == null)
-                throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+                throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
             HashMap<String,AbstractField> fields = rpc.getFieldMap();
             fields.remove("orderType");
@@ -121,7 +121,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             fields.remove("itemsTable");
             fields.remove("label1");
             fields.remove("item");
-            fields.remove(OrderMeta.getInventoryTransaction().INVENTORY_RECEIPT_META.getReceivedDate());
+            //FIXME we may need to put this back fields.remove(OrderMeta.getInventoryTransaction().getReceivedDate());
 
             try{    
                 orderIds = remote.query(fields,0,leftTableRowsPerPage, orderType);
@@ -503,11 +503,14 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             return getOrganizationMatches(match);
         else if("billTo".equals(cat))
             return getOrganizationMatches(match);
-        else if("inventoryItemWithStoreAndLoc".equals(cat))
-            return getInventoryItemMatches(match, true);
+        else if("inventoryItemWithStoreAndLocSubItems".equals(cat))
+            return getInventoryItemMatches(match, false, true);
         else if("inventoryItemWithStore".equals(cat))
-            return getInventoryItemMatches(match, false);
-        
+            return getInventoryItemMatchesNoLoc(match, true, true);
+        else if("inventoryItemWithStoreAndLocMainStore".equals(cat))
+            return getInventoryItemMatches(match, true, false);
+        else if("inventoryItemWithStoreAndLoc".equals(cat))
+            return getInventoryItemMatches(match, false, false);
         return null;
     }
     
@@ -579,21 +582,54 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return dataModel;           
     }
     
-    private DataModel getInventoryItemMatches(String match, boolean withLocation){
+    private DataModel getInventoryItemMatchesNoLoc(String match, boolean limitToMainStore, boolean allowSubAssembly){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         DataModel dataModel = new DataModel();
         List autoCompleteList;
-    
-        //try{
-           // int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
-            //lookup by id...should only bring back 1 result
-            autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(match+"%", 10, withLocation);
+
+        String parsedMatch = match.replace('*', '%');
+        
+        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
+        
+        for(int i=0; i < autoCompleteList.size(); i++){
+            InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
             
-        /*}catch(NumberFormatException e){
-            //it isnt an id
-            //lookup by name
-            autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
-        }*/
+            Integer itemId = resultDO.getId();
+            String name = resultDO.getName();
+            String store = resultDO.getStore();
+            String purchasedUnits = resultDO.getPurchasedUnits();
+            
+            DataSet data = new DataSet();
+            //hidden id
+            NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
+            idObject.setValue(itemId);
+            data.setKey(idObject);
+            //columns
+            StringObject nameObject = new StringObject();
+            nameObject.setValue(name);
+            data.addObject(nameObject);
+            StringObject storeObject = new StringObject();
+            storeObject.setValue(store);
+            data.addObject(storeObject);
+            StringObject purchUnitsObj = new StringObject();
+            purchUnitsObj.setValue(purchasedUnits);
+            data.addObject(purchUnitsObj);
+                        
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
+        
+        return dataModel;           
+    }
+    
+    private DataModel getInventoryItemMatches(String match, boolean limitToMainStore, boolean allowSubAssembly){
+        InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
+        DataModel dataModel = new DataModel();
+        List autoCompleteList;
+        
+        String parsedMatch = match.replace('*', '%');
+        
+        autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
@@ -603,6 +639,13 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             String store = resultDO.getStore();
             Integer locationId = resultDO.getLocationId();
             String location = resultDO.getLocation();
+            String lotNum = resultDO.getLotNum();
+            Datetime expDateTime = resultDO.getExpDate();
+            
+            String expDate = null;
+            if(expDateTime.getDate() != null)
+                expDate = expDateTime.toString();
+            
             Integer qty = resultDO.getQuantityOnHand();
             
             DataSet data = new DataSet();
@@ -617,19 +660,23 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
             data.addObject(storeObject);
-            
-            if(withLocation){
-                StringObject locationObject = new StringObject();
-                locationObject.setValue(location);
-                data.addObject(locationObject);
-                NumberObject qtyObject = new NumberObject(NumberObject.Type.INTEGER);
-                qtyObject.setValue(qty);
-                data.addObject(qtyObject);
-                NumberObject locIdObject = new NumberObject(NumberObject.Type.INTEGER);
-                locIdObject.setValue(locationId);
-                data.addObject(locIdObject);
-            }
-            
+
+            StringObject locationObject = new StringObject();
+            locationObject.setValue(location);
+            data.addObject(locationObject);
+            StringObject lotNumObj = new StringObject();
+            lotNumObj.setValue(lotNum);
+            data.addObject(lotNumObj);
+            StringObject expDateObj = new StringObject();
+            expDateObj.setValue(expDate);
+            data.addObject(expDateObj);
+            NumberObject qtyObject = new NumberObject(NumberObject.Type.INTEGER);
+            qtyObject.setValue(qty);
+            data.addObject(qtyObject);
+            NumberObject locIdObject = new NumberObject(NumberObject.Type.INTEGER);
+            locIdObject.setValue(locationId);
+            data.addObject(locIdObject);
+                       
             //add the dataset to the datamodel
             dataModel.add(data);                            
         }       

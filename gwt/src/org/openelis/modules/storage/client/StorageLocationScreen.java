@@ -139,14 +139,11 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	
 	private void onRemoveRowButtonClick(){
 			int selectedRow = childTable.selected;
-			if (selectedRow > -1
-				&& childTable.model.numRows() > 1) {
-				TableRow row = childTable.model
-						.getRow(selectedRow);
+			if (selectedRow > -1 && childTable.model.numRows() > 0) {
+				TableRow row = childTable.model.getRow(selectedRow);
                 childTable.model.hideRow(row);
 				// delete the last row of the table because it is autoadd
-				childTable.model
-						.deleteRow(childTable.model.numRows() - 1);
+				childTable.model.deleteRow(childTable.model.numRows() - 1);
 				// reset the model
 				childTable.reset();
 				// need to set the deleted flag to "Y" also

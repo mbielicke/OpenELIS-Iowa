@@ -42,6 +42,7 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.OrderMetaMap;
@@ -325,7 +326,6 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         rpc.setFieldValue("orderType", orderType);
 
         orderNum.enable(false);
-        status.enable(false);
         orderDate.enable(false);
         
         neededInDays.setFocus(true);
@@ -351,6 +351,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             clearShippingNotes = true;
         }else{
             loadItems = true;
+            loadReceipts = true;
             loadCustomerNotes = true;
             loadReportToBillTo = true;
             loadShippingNotes = true;
@@ -431,7 +432,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if(tabPanel != null)
             selectedTab = tabPanel.getTabBar().getSelectedTab();
 
-        if ((selectedTab == 0 && loadItems) || selectedTab == -1) {
+        if ((selectedTab == 0 || selectedTab == -1) && loadItems) {
             // if there was data previously then clear the items table
             if (clearItems) {
                 clearItems();
@@ -553,23 +554,26 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(col == 0)
+        if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row)))
+            return true;
+        else if(row > -1 && row == controller.model.numRows() && !tableRowEmpty(((EditTable)controller).autoAddRow))
             return true;
       
         return false;
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
-        if(col == 1 && row >= 0 && !startedLoadingTable){
+       //Window.alert("("+col+") && ("+row+") && ("+controller.model.numRows()+") && ("+!startedLoadingTable+") total:("+(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable)+")");
+        if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
             startedLoadingTable = true;
             
             TableRow tableRow = ((EditTable)controller).model.getRow(row);
             DropDownField invItemField = (DropDownField)tableRow.getColumn(1);
             ArrayList selections = invItemField.getSelections();
-     
+  
             if(selections.size() > 0){
                 DataSet selectedRow = (DataSet)selections.get(0);
-           
+  
                 if(selectedRow.size() > 1){
                     StringField storeLabel = new StringField();
                     StringField locationLabel = new StringField();
@@ -578,14 +582,19 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
 
                     tableRow.setColumn(2, storeLabel);
                     
+                    ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setField(storeLabel);
+                    ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setDisplay();
+                    
                     if(tableRow.numColumns() == 4){
                         locationLabel.setValue((String)((StringObject)selectedRow.getObject(2)).getValue());
                         tableRow.setColumn(3, locationLabel);
-                        locationId.setValue((Integer)((NumberObject)selectedRow.getObject(4)).getValue());
+                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setField(locationLabel);
+                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
+                        
+                        locationId.setValue((Integer)((NumberObject)selectedRow.getObject(6)).getValue());
                         tableRow.addHidden("locationId", locationId);
                     }
-                    
-                    ((EditTable)controller).load(0);
+
                     startedLoadingTable = false;
                 }
             }
@@ -608,14 +617,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     //
     
     private void onRemoveItemButtonClick() {
-        TableWidget itemsTable = (TableWidget)getWidget("itemsTable");
-        int selectedRow = itemsTable.controller.selected;
-        if (selectedRow > -1 && itemsTable.controller.model.numRows() > 1) {
-            TableRow row = itemsTable.controller.model.getRow(selectedRow);
-            itemsTable.controller.model.hideRow(row);
+        int selectedRow = itemsController.selected;
+        if (selectedRow > -1 && itemsController.model.numRows() > 0) {
+            TableRow row = itemsController.model.getRow(selectedRow);
+            itemsController.model.hideRow(row);
 
             // reset the model
-            itemsTable.controller.reset();
+            itemsController.reset();
             // need to set the deleted flag to "Y" also
             StringField deleteFlag = new StringField();
             deleteFlag.setValue("Y");
@@ -675,8 +683,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             public void onSuccess(Object result) {
                 // get the table model and load it
                 // in the table
-                rpc.setFieldValue("itemsTable",
-                                  (TableModel)((TableField)result).getValue());
+                //rpc.setFieldValue("itemsTable",
+                //                  (TableModel)((TableField)result).getValue());
+                
                 itemsController.loadModel((TableModel)((TableField)result).getValue());
 
                 clearItems = itemsController.model.numRows() > 0;
@@ -847,13 +856,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     private void clearItems() {
         itemsController.model.reset();
-        itemsController.setModel(itemsController.model);
-        rpc.setFieldValue("itemsTable", itemsController.model);
+        //itemsController.setModel(itemsController.model);
+        //rpc.setFieldValue("itemsTable", itemsController.model);
     }
     
     private void clearReceipts() {
         receiptsController.model.reset();
-        receiptsController.setModel(receiptsController.model);
+        //receiptsController.setModel(receiptsController.model);
     }
     
     private void clearCustomerNotes() {
@@ -866,5 +875,18 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     private void clearReportToBillTo() {
         
+    }
+    
+    private boolean tableRowEmpty(TableRow row){
+        boolean empty = true;
+        
+        for(int i=0; i<row.numColumns(); i++){
+            if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+                empty = false;
+                break;
+            }
+        }
+        
+        return empty;
     }
 }

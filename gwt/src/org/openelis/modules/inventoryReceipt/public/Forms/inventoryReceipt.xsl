@@ -17,7 +17,10 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:inventoryReceiptMeta="xalan://org.openelis.metamap.InventoryReceiptMetaMap" 
+                xmlns:meta="xalan://org.openelis.metamap.InventoryReceiptMetaMap" 
+                xmlns:inventoryReceiptMeta="xalan://org.openelis.meta.InventoryReceiptMeta" 
+                xmlns:transReceiptOrderMeta="xalan://org.openelis.metamap.TransReceiptOrderMetaMap" 
+                xmlns:transReceiptLocationMeta="xalan://org.openelis.metamap.TransReceiptLocationMetaMap" 
                 xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap"
                 xmlns:orderItemMeta="xalan://org.openelis.metamap.OrderItemMetaMap"
                 xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
@@ -36,16 +39,28 @@
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryReceiptMetaMap"/>
+  </xalan:component>
+  
   <xalan:component prefix="inventoryReceiptMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryReceiptMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryReceiptMeta"/>
   </xalan:component>
 
+  <xalan:component prefix="transReceiptOrderMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TransReceiptOrderMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="transReceiptLocationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TransReceiptLocationMetaMap"/>
+  </xalan:component>
+  
   <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="orderItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderItemMetaMap"/>
   </xalan:component>
     
   <xalan:component prefix="inventoryLocationMeta">
@@ -53,7 +68,7 @@
   </xalan:component>
   
     <xalan:component prefix="organizationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderOrganizationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addressMeta">
@@ -65,12 +80,14 @@
   </xalan:component>
   
   <xsl:template match="doc"> 
-    <xsl:variable name="receipt" select="inventoryReceiptMeta:new()"/>
-    <xsl:variable name="loc" select="inventoryReceiptMeta:getInventoryLocation($receipt)"/>
-    <xsl:variable name="order" select="inventoryReceiptMeta:getOrder($receipt)"/>
-    <xsl:variable name="orderItem" select="orderMeta:getOrderItem($order)"/>
-    <xsl:variable name="invItem" select="orderItemMeta:getInventoryItem($orderItem)"/>
-    <xsl:variable name="org" select="orderMeta:getOrderOrganization($order)"/>
+    <xsl:variable name="receipt" select="meta:new()"/>
+    <xsl:variable name="transReceiptOrder" select="meta:getTransReceiptOrder($receipt)"/>
+    <xsl:variable name="transForLoc" select="meta:getTransReceiptLocation($receipt)"/>
+    <xsl:variable name="loc" select="transReceiptLocationMeta:getInventoryLocation($transForLoc)"/>
+    <xsl:variable name="orderItem" select="meta:getOrderItem($receipt)"/>
+    <xsl:variable name="order" select="orderItemMeta:getOrder($orderItem)"/>
+    <xsl:variable name="invItem" select="meta:getInventoryitem($receipt)"/>
+    <xsl:variable name="org" select="meta:getOrganization($receipt)"/>
     <xsl:variable name="address" select="organizationMeta:getAddress($org)"/>
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
@@ -126,10 +143,11 @@
 				<VerticalPanel spacing="0" padding="0" overflow="hidden">
 					<widget valign="top">
 						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
-							<headers><xsl:value-of select='resource:getString($constants,"orderNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
-							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
-							<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-							<widths>60,70,85,140,155,35,50,80,95</widths>										
+							<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
+							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
+							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,
+							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
+							<widths>40,60,80,140,155,40,40,45,75,95</widths>										
 							<editors>
 								<textbox case="mixed"/>
 								<calendar begin="0" end="2"/>							
@@ -143,45 +161,51 @@
 									<widths>180,110,100,20</widths>
 								</autoDropdown>
 								<textbox case="mixed"/>
+								<label/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
 							</editors>
 							<fields>
 								<number key="{orderMeta:getId($order)}" type="integer" required="false"/>
-								<date key="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2" required="true"/>
+								<date key="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2" required="true">current</date>
 								<string key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
-								<dropdown key="{orderItemMeta:getInventoryItemId($orderItem)}" required="true"/>
-								<dropdown key="{orderMeta:getOrganizationId($order)}" required="true"/>
-								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="true"/>
-								<number key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="true"/>
+								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+								<dropdown key="{organizationMeta:getName($org)}" required="true"/>
+								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
+								<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+								<number key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
 								<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 								<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
 							</fields>
-							<sorts>true,true,true,true,true,true,true,true,true</sorts>
-							<filters>false,false,false,false,false,false,false,false,false</filters>
-							<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
+							<sorts>false,false,false,false,false,false,false,false,false,false</sorts>
+							<filters>false,false,false,false,false,false,false,false,false,false</filters>
+							<colAligns>left,left,left,left,left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false">
-								<headers><xsl:value-of select='resource:getString($constants,"orderNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
-							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
-							<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-								<widths>60,70,85,149,164,35,50,80,95</widths>
+								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
+							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
+							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,
+							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
+								<widths>40,60,80,149,164,40,40,45,75,95</widths>
 								<editors>
 									<textbox case="mixed"/>
-									<label/>
+									<calendar begin="0" end="2"/>
+									<!--<textbox case="mixed"/>-->
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
 									<textbox case="upper"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
+									<label/>
+									<label/>
+									<label/>
+									<label/>
 									<textbox case="mixed"/>		 	
 								</editors>
 								<fields>
 									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
-									<xsl:value-of select='orderItemMeta:getInventoryItemId($orderItem)'/>,<xsl:value-of select='orderMeta:getOrganizationId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>,
+									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>,
+									<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
 									<xsl:value-of select='inventoryReceiptMeta:getUnitCost($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getQcReference($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getExternalReference($receipt)'/>										
 								</fields>
 							</queryTable>
@@ -276,11 +300,11 @@
 									<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" tab="{inventoryLocationMeta:getExpirationDate($loc)},{inventoryLocationMeta:getStorageLocationId($loc)}"/>
 								</row>
 								<row>
-									<widget colspan="2">
-										<VerticalPanel/>
-									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"expDate")'/>:</text>
-									<calendar key="{inventoryLocationMeta:getExpirationDate($loc)}" onChange="this" begin="0" end="2" tab="addToExisting,{inventoryLocationMeta:getLotNumber($loc)}"/>							
+								<widget colspan="2">
+								<HorizontalPanel/>
+								</widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"expDate")'/>:</text>
+								<calendar key="{inventoryLocationMeta:getExpirationDate($loc)}" onChange="this" begin="0" end="2" tab="addToExisting,{inventoryLocationMeta:getLotNumber($loc)}"/>							
 								</row>
 								</TablePanel>
 								</content>
@@ -308,23 +332,20 @@
     	<string key="{addressMeta:getCity($address)}" required="false"/>
     	<string key="{addressMeta:getState($address)}" required="false"/>
     	<string key="{addressMeta:getZipCode($address)}" required="false"/>
+    	<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="query">
     	<table key="receiptsTable"/>
-      	<queryString key="{orderMeta:getId($order)}" required="false"/>
-		<!-- this should be changed to date when we can query by dates -->
-		<queryString key="{inventoryReceiptMeta:getReceivedDate($receipt)}" required="false"/>-->
+      	<queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
+		<queryDate key="{inventoryReceiptMeta:getReceivedDate($receipt)}"  begin="0" end="2" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
-		<queryString key="{orderItemMeta:getInventoryItemId($orderItem)}" required="false"/>
-		<queryString key="{orderMeta:getOrganizationId($order)}" required="false"/>
+		<queryString key="{inventoryItemMeta:getName($invItem)}" required="false"/>
+		<queryString key="{organizationMeta:getName($org)}" required="false"/>
 		<queryNumber key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
+		<queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
 		<queryNumber key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
-		
-		<queryString key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
-		<queryString key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
-<!--		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>-->
       
     </rpc>
 </screen>

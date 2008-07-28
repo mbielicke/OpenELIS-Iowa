@@ -24,7 +24,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryNotFoundException;
+import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -72,7 +72,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
                 FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("StorageLocationQuery");
     
     	        if(rpc == null)
-    	        	throw new QueryNotFoundException(openElisConstants.getString("queryExpiredException"));
+    	        	throw new QueryException(openElisConstants.getString("queryExpiredException"));
     			
     	        StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     	        try{

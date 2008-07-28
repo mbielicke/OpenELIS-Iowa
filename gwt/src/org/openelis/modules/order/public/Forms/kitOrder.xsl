@@ -210,8 +210,8 @@
 								<editors>
 									<textbox case="mixed"/>
 									<autoDropdown cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
-										<headers>Name,Store,Location, Qty</headers>
-										<widths>100,150,150,40</widths>
+										<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
+										<widths>135,110,160,70,70,30</widths>
 									</autoDropdown>
 									<label/>
 									<label/>
