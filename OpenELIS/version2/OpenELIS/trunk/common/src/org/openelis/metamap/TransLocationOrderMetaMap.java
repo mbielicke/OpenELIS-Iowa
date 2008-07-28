@@ -16,27 +16,24 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.InventoryLocationMeta;
-import org.openelis.meta.InventoryReceiptMeta;
-import org.openelis.meta.InventoryTransactionMeta;
+import org.openelis.meta.TransLocationOrderMeta;
 
-public class InventoryTransactionMetaMap extends InventoryTransactionMeta implements MetaMap{
-    
-    public InventoryTransactionMetaMap() {
+public class TransLocationOrderMetaMap extends TransLocationOrderMeta implements MetaMap{
+    public TransLocationOrderMetaMap() {
         super();
     }
     
-    public InventoryTransactionMetaMap(String path){
+    public TransLocationOrderMetaMap(String path){
         super(path);
-        INVENTORY_RECEIPT_META = new InventoryReceiptMeta(path + "fromReceipt.");
-        INVENTORY_LOCATION_META = new InventoryLocationMetaMap(path + "toLocation.");
+        ORDER_ITEM_META = new OrderItemMetaMap(path + "orderItem.");
+        INVENTORY_LOCATION_META = new InventoryLocationMetaMap(path + "inventoryLocation.");
     }
     
-    public InventoryReceiptMeta INVENTORY_RECEIPT_META; 
+    public OrderItemMetaMap ORDER_ITEM_META; 
     public InventoryLocationMetaMap INVENTORY_LOCATION_META;
     
-    public InventoryReceiptMeta getInventoryReceipt() {
-        return INVENTORY_RECEIPT_META;
+    public OrderItemMetaMap getOrderItem() {
+        return ORDER_ITEM_META;
     }
     
     public InventoryLocationMetaMap getInventoryLocation(){
@@ -44,12 +41,12 @@ public class InventoryTransactionMetaMap extends InventoryTransactionMeta implem
     }
 
     public String buildFrom(String where) {
-        return "InventoryTransaction ";
+        return "TransLocationOrder ";
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith(path+"fromReceipt."))
-            return INVENTORY_RECEIPT_META.hasColumn(name);
+        if(name.startsWith(path+"orderItem."))
+            return ORDER_ITEM_META.hasColumn(name);
         if(name.startsWith(path+"toLocation."))
             return INVENTORY_LOCATION_META.hasColumn(name);
         return super.hasColumn(name);

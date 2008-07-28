@@ -55,8 +55,11 @@ public interface InventoryItemRemote {
 	 //auto complete  component lookup
 	 public List inventoryComponentAutoCompleteLookupByName(String itemName, Integer storeId, String currentName, int maxResults);
      
-	 //auto complete  component lookup
-     public List inventoryItemStoreLocAutoCompleteLookupByName(String itemName, int maxResults, boolean withLocation);
+	 //auto complete inv item lookup
+     public List inventoryItemStoreAutoCompleteLookupByName(String itemName, int maxResults, boolean limitToMainStore, boolean allowSubAssembly);
+     
+     //auto complete inv item lookup
+     public List inventoryItemStoreLocAutoCompleteLookupByName(String itemName, int maxResults, boolean limitToMainStore, boolean allowSubAssembly);
 	  
 	 //a way for the servlet to get the system user id
 	 public Integer getSystemUserId();

@@ -28,12 +28,12 @@ public class InventoryLocationMetaMap extends InventoryLocationMeta implements M
     public InventoryLocationMetaMap(String path){
         super(path);
         
-        INVENTORY_LOCATION_STORAGE_LOCATION = new StorageLocationMeta(path + "storageLocation.");
+        INVENTORY_LOCATION_STORAGE_LOCATION = new StorageLocationMetaMap(path + "storageLocation.");
     }
     
-    public StorageLocationMeta INVENTORY_LOCATION_STORAGE_LOCATION;
+    public StorageLocationMetaMap INVENTORY_LOCATION_STORAGE_LOCATION;
     
-    public StorageLocationMeta getStorageLocation() {
+    public StorageLocationMetaMap getStorageLocation() {
         return INVENTORY_LOCATION_STORAGE_LOCATION;
     }
     

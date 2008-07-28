@@ -30,7 +30,7 @@ public class StorageLocationMetaMap extends StorageLocationMeta implements MetaM
     
     public StorageLocationMetaMap(String path) {
         super(path);
-        STORAGE_UNIT_META = new StorageUnitMeta("childUnit.");
+        STORAGE_UNIT_META = new StorageUnitMeta(path+"storageUnit.");
         child = true;
     }
     

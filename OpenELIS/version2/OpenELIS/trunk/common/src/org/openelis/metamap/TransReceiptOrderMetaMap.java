@@ -16,42 +16,41 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.InventoryLocationMeta;
 import org.openelis.meta.InventoryReceiptMeta;
-import org.openelis.meta.InventoryTransactionMeta;
+import org.openelis.meta.TransReceiptOrderMeta;
 
-public class InventoryTransactionMetaMap extends InventoryTransactionMeta implements MetaMap{
+public class TransReceiptOrderMetaMap extends TransReceiptOrderMeta implements MetaMap{
     
-    public InventoryTransactionMetaMap() {
+    public TransReceiptOrderMetaMap() {
         super();
     }
     
-    public InventoryTransactionMetaMap(String path){
+    public TransReceiptOrderMetaMap(String path){
         super(path);
-        INVENTORY_RECEIPT_META = new InventoryReceiptMeta(path + "fromReceipt.");
-        INVENTORY_LOCATION_META = new InventoryLocationMetaMap(path + "toLocation.");
+        INVENTORY_RECEIPT_META = new InventoryReceiptMeta(path + "inventoryReceipt.");
+        //ORDER_ITEM_META = new OrderItemMetaMap(path + "orderItem.");
     }
     
     public InventoryReceiptMeta INVENTORY_RECEIPT_META; 
-    public InventoryLocationMetaMap INVENTORY_LOCATION_META;
+    //public OrderItemMetaMap ORDER_ITEM_META;
     
     public InventoryReceiptMeta getInventoryReceipt() {
         return INVENTORY_RECEIPT_META;
     }
     
-    public InventoryLocationMetaMap getInventoryLocation(){
-        return INVENTORY_LOCATION_META;
-    }
+    /*public OrderItemMetaMap getOrderItem(){
+        return ORDER_ITEM_META;
+    }*/
 
     public String buildFrom(String where) {
-        return "InventoryTransaction ";
+        return "TransReceiptOrder ";
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith(path+"fromReceipt."))
+        if(name.startsWith(path+"inventoryReceipt."))
             return INVENTORY_RECEIPT_META.hasColumn(name);
-        if(name.startsWith(path+"toLocation."))
-            return INVENTORY_LOCATION_META.hasColumn(name);
+        //if(name.startsWith(path+"orderItem."))
+        //    return ORDER_ITEM_META.hasColumn(name);
         return super.hasColumn(name);
     }
 }
