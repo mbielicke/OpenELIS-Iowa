@@ -5,21 +5,28 @@ package org.openelis.entity;
   * TransReceiptLocation Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+@NamedQueries({ @NamedQuery(name = "TransReceiptLocation.TransIdsLocIdsByReceiptId", query = "select tr.id, tr.inventoryLocationId from TransReceiptLocation tr where tr.inventoryReceiptId = :id " +
+                                            " order by tr.quantity desc")})
+
 
 @Entity
 @Table(name="trans_receipt_location")
@@ -38,7 +45,15 @@ public class TransReceiptLocation implements Auditable, Cloneable {
   private Integer inventoryLocationId;             
 
   @Column(name="quantity")
-  private Integer quantity;             
+  private Integer quantity;  
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
+  private InventoryReceipt inventoryReceipt;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
+  private InventoryLocation inventoryLocation;
 
 
   @Transient
@@ -112,5 +127,11 @@ public class TransReceiptLocation implements Auditable, Cloneable {
   public String getTableName() {
     return "trans_receipt_location";
   }
+public InventoryLocation getInventoryLocation() {
+    return inventoryLocation;
+}
+public InventoryReceipt getInventoryReceipt() {
+    return inventoryReceipt;
+}
   
 }   

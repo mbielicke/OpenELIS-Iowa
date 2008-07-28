@@ -15,30 +15,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.entity.InventoryTransaction;
-import org.openelis.entity.Note;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.remote.OrderRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,6 +31,30 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BillToReportToDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrderAddAutoFillDO;
+import org.openelis.domain.OrderDO;
+import org.openelis.domain.OrderItemDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.entity.TransLocationOrder;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.OrderMetaMap;
+import org.openelis.remote.OrderRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -228,7 +228,7 @@ public class OrderBean implements OrderRemote{
             whereClause+=" and("+OrderMetaMap.getOrderItem().getInventoryItem().getStoreId()+" = "+OrderMetaMap.getStore().getId()+") ";
             
             if(whereClause.indexOf("inventoryTrans.") > -1)
-                whereClause += " and ("+OrderMetaMap.ORDER_INV_TRANS_META.getToOrderId()+" = "+OrderMetaMap.ORDER_ITEM_META.getId()+") ";
+                whereClause += " and ("+OrderMetaMap.ORDER_INV_TRANS_META.getOrderItemId()+" = "+OrderMetaMap.ORDER_ITEM_META.getId()+") ";
             
             sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
         }else{
@@ -316,9 +316,9 @@ public class OrderBean implements OrderRemote{
         }
  
         //lookup the order transaction type to be used later
-        query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "inv_trans_order");
-        Integer orderTypeId = (Integer)query.getSingleResult();
+        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        //query.setParameter("systemName", "inv_trans_order");
+        //Integer orderTypeId = (Integer)query.getSingleResult();
         
         //update order items
         for (int i=0; i<items.size();i++) {
@@ -352,20 +352,21 @@ public class OrderBean implements OrderRemote{
            }
             
            //insert transaction record if necessary
+            System.out.println("do we try and insert trans record?: ("+(orderItemDO.getLocationId() != null)+")");
            if(orderItemDO.getLocationId() != null){
-               InventoryTransaction trans = null;
+               TransLocationOrder transLocOrder = null;
+               
                if (orderItemDO.getTransactionId() == null)
-                   trans = new InventoryTransaction();
+                   transLocOrder = new TransLocationOrder();
                else
-                   trans = manager.find(InventoryTransaction.class, orderItemDO.getTransactionId());
+                   transLocOrder = manager.find(TransLocationOrder.class, orderItemDO.getTransactionId());
                
-               trans.setFromLocationId(orderItemDO.getLocationId());
-               trans.setToOrderId(orderItem.getId());
-               trans.setTypeId(orderTypeId);
-               trans.setQuantity(orderItem.getQuantityRequested().doubleValue());
+               transLocOrder.setInventoryLocationId(orderItemDO.getLocationId());
+               transLocOrder.setOrderItemId(orderItem.getId());
+               transLocOrder.setQuantity(orderItem.getQuantityRequested());
                
-               if (trans.getId() == null) {
-                   manager.persist(trans);
+               if (transLocOrder.getId() == null) {
+                   manager.persist(transLocOrder);
                }
            }
         }

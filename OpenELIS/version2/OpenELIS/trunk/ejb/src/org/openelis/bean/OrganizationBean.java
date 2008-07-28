@@ -255,19 +255,17 @@ public class OrganizationBean implements OrganizationRemote {
 	    }
 
 	public List query(HashMap fields, int first, int max) throws Exception{
-//		organization reference table id
-    	Query refIdQuery = manager.createNamedQuery("getTableId");
-    	refIdQuery.setParameter("name", "organization");
-        Integer organizationReferenceId = (Integer)refIdQuery.getSingleResult();
-        
-//      organization contact reference table id
-        Integer organizationContactReferenceId = (Integer)refIdQuery.getSingleResult();
-        
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
         qb.setMeta(OrgMeta);
  
+        /*
+         * o.id, oi.inventoryItemId, oi.inventoryItem.name,
+         * oi.id, o.organizationId,orgz.name,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state,
+         * orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained
+         */
+        
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
        
         //this method is going to throw an exception if a column doesnt match
