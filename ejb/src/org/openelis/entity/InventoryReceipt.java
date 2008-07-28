@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -42,14 +44,32 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "InventoryReceipt.InventoryReceiptByOrderNum", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
-                                 " oi.id, o.organizationId,orgz.name,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
-                                 " orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
-                                 " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
-                                 " Dictionary dictStore, Dictionary dictPurch where ii.storeId = dictStore.id and ii.purchasedUnitsId=dictPurch.id and o.id = :id and o.isExternal='Y'"),
-    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(ii.id, ii.name) from InventoryReceipt ir LEFT JOIN ir.inventoryItem ii " +
-                                 " where ir.upc like :upc")})
-                            
+    @NamedQuery(name = "InventoryReceipt.OrderItemListWithTransByOrderNum", query = "select distinct oi.id from InventoryTransaction tr LEFT JOIN tr.toOrder oi where " + 
+                               " oi.order.id = :id and tr.fromReceiptId is not null "),
+    @NamedQuery(name = "InventoryReceipt.OrderItemListByOrderNum", query = "select distinct oi.id from Order o LEFT JOIN o.orderItem oi where " + 
+                               " (NOT EXISTS (select tr.id from TransReceiptOrder tr where tr.orderItemId = oi.id and tr.inventoryReceiptId is not null) OR " +
+                               " oi.quantityRequested > (select sum(tr2.quantity) from TransReceiptOrder tr2 where tr2.orderItemId = oi.id and tr2.inventoryReceiptId is not null))" + 
+                               " and o.id = :id and o.isExternal='Y'"),
+    @NamedQuery(name = "InventoryReceipt.InventoryReceiptNotRecByOrderId", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
+                               " oi.id, o.organizationId,orgz.name,oi.quantityRequested,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
+                               " orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
+                               " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
+                               " Dictionary dictStore, Dictionary dictPurch where " + 
+                               " ii.storeId = dictStore.id and ii.purchasedUnitsId=dictPurch.id " +                                
+                               " and oi.id = :id order by o.id "),
+    @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
+                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' and " + 
+                            " oi.quantityRequested > (SELECT sum(tr.quantity) FROM TransReceiptOrder tr where tr.orderItemId = oi.id) " + 
+                            " and o.id = :id"),
+    @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
+                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' " +
+                            " and o.id = :id"),
+    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, purUnit.entry) " +
+                            " from InventoryReceipt ir left join ir.inventoryItem i, Dictionary store, Dictionary purUnit " +
+                            " where i.storeId = store.id and i.purchasedUnitsId = purUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
+                            " order by i.name"),
+    @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from TransReceiptLocation tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
+                    
 @Entity
 @Table(name="inventory_receipt")
 @EntityListeners({AuditUtil.class})
@@ -87,6 +107,18 @@ public class InventoryReceipt implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
   private InventoryItem inventoryItem;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+  private Organization organization;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
+  private Collection<TransReceiptOrder> transReceiptOrders;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
+  private Collection<TransReceiptLocation> transReceiptLocations;
 
   @Transient
   private InventoryReceipt original;
@@ -221,6 +253,15 @@ public InventoryItem getInventoryItem() {
 }
 public void setInventoryItem(InventoryItem inventoryItem) {
     this.inventoryItem = inventoryItem;
+}
+public Organization getOrganization() {
+    return organization;
+}
+public Collection<TransReceiptOrder> getFromReceiptTransactions() {
+    return transReceiptOrders;
+}
+public Collection<TransReceiptLocation> getTransReceiptLocations() {
+    return transReceiptLocations;
 }
   
 }   

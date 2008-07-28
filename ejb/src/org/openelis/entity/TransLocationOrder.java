@@ -14,8 +14,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -38,14 +41,25 @@ public class TransLocationOrder implements Auditable, Cloneable {
   private Integer orderItemId;             
 
   @Column(name="quantity")
-  private Integer quantity;             
+  private Integer quantity; 
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+  private OrderItem orderItem;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
+  private InventoryLocation inventoryLocation;
 
 
   @Transient
   private TransLocationOrder original;
 
   
-  public Integer getId() {
+  public OrderItem getOrderItem() {
+    return orderItem;
+}
+public Integer getId() {
     return id;
   }
   protected void setId(Integer id) {
@@ -112,5 +126,8 @@ public class TransLocationOrder implements Auditable, Cloneable {
   public String getTableName() {
     return "trans_location_order";
   }
+public InventoryLocation getInventoryLocation() {
+    return inventoryLocation;
+}
   
 }   

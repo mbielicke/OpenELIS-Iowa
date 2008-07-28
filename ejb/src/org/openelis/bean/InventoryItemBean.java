@@ -308,12 +308,31 @@ public class InventoryItemBean implements InventoryItemRemote{
         return query.getResultList();
     }
     
-    public List inventoryItemStoreLocAutoCompleteLookupByName(String itemName, int maxResults, boolean withLocation) {
+    public List inventoryItemStoreAutoCompleteLookupByName(String itemName, int maxResults, boolean limitToMainStore, boolean allowSubAssembly){
         Query query = null;
-        if(withLocation)
+        if(allowSubAssembly && !limitToMainStore)
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreByNameReceipt");
+        else if(allowSubAssembly && limitToMainStore)
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems");
+        else 
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreByName");
+           
+        query.setParameter("name",itemName);
+        
+        query.setMaxResults(maxResults);
+        
+        return query.getResultList();
+    }
+    
+    public List inventoryItemStoreLocAutoCompleteLookupByName(String itemName, int maxResults, boolean limitToMainStore, boolean allowSubAssembly) {
+        Query query = null;
+    
+        if(allowSubAssembly && !limitToMainStore)
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreLocByNameSubItems");
+        else if(!allowSubAssembly && !limitToMainStore)
             query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreLocByName");
         else
-            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreByName");
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreLocByName");
         
         query.setParameter("name",itemName);
         

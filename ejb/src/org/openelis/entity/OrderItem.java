@@ -40,10 +40,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries( {
-    @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
-                            " d.entry, it.fromLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, it.id) from InventoryTransaction it left join it.toOrder o " +
-                            " left join o.inventoryItem ii left join it.fromLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id"),
+    @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantityRequested, " +
+                            " d.entry, t.inventoryLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, t.id) from TransLocationOrder t left join t.orderItem oi " +
+                            " left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
+                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where oi.inventoryItem.storeId = d.id and oi.orderId = :id"),
     @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
                             " d.entry) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id")})
                             
@@ -70,6 +70,10 @@ public class OrderItem implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
   private InventoryItem inventoryItem;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id", insertable = false, updatable = false)
+  private Order order;
   
   @Transient
   private OrderItem original;
@@ -149,5 +153,8 @@ public class OrderItem implements Auditable, Cloneable {
   public void setInventoryItem(InventoryItem inventoryItem) {
       this.inventoryItem = inventoryItem;
   }
+public Order getOrder() {
+    return order;
+}
   
 }   
