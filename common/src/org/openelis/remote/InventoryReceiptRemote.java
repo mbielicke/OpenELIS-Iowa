@@ -27,17 +27,17 @@ public interface InventoryReceiptRemote {
     //method to return inventory records by order number
     public List getInventoryReceiptRecords(Integer orderId);
     
-    //method to unlock entity and return the inventory records record
-    public List getInventoryReceiptRecordsAndUnlock(Integer orderId, String session);
-    
-    //method to lock entity and return the inventory records
-    public List getInventoryReceiptRecordsAndLock(Integer orderId, String session) throws Exception;
-    
     //commit a change to inventory receipt, or insert a new inventory receipt
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception;
     
     //method to query for inventory receipts
      public List query(HashMap fields, int first, int max) throws Exception;
+     
+     //method to query for inventory receipts..and also lock the necessary records
+     public List queryAndLock(HashMap fields, int first, int max) throws Exception;
+     
+     //method to query for inventory receipts..and also unlock the necessary records
+     public List queryAndUnlock(HashMap fields, int first, int max) throws Exception;
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);

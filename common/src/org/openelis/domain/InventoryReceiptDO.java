@@ -44,8 +44,10 @@ public class InventoryReceiptDO implements Serializable{
     protected String itemDesc;
     protected String itemStore;
     protected String itemPurchasedUnits;
+    protected Integer itemQtyRequested;
 
     protected Integer storageLocationId;
+    protected String storageLocation;
     protected String lotNumber;
     protected Datetime expDate;
     protected boolean addToExisting;
@@ -53,6 +55,7 @@ public class InventoryReceiptDO implements Serializable{
     protected String isLotMaintained;
     protected String isSerialMaintained;
     protected String isBulk;
+    protected Integer transReceiptOrderId;
     
     protected Boolean delete = false;
 
@@ -100,8 +103,52 @@ public class InventoryReceiptDO implements Serializable{
         setUpc(upc);
     }
     
+    /*used for query*/
+    public InventoryReceiptDO(Integer id, Integer orderNumber, Date dateReceived, String upc, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
+                              String organization, Integer qty, Double cost, String qc, String extReference, String streetAddress, String multUnit, String city, String state, String zipCode,
+                              String itemDesc, String itemStore, String itemPurchUnits, Integer quantityRequested, String isBulk, String isLotMaintained, String isSerialMaintained, 
+                              Integer storageLocationId, String storageLocName, String storageLocLocation, String storageUnitDescription, String lotNumber, Date expDate, 
+                              Integer transReceiptOrderId) {
+        setId(id);
+        setOrderNumber(orderNumber);
+        setReceivedDate(dateReceived);
+        setUpc(upc);
+        setInventoryItemId(inventoryItemId);
+        setInventoryItem(inventoryItem);
+        setOrderItemId(orderItemId);
+        setOrganizationId(organizationId);
+        setOrganization(organization);
+        setQuantityReceived(qty);
+        setUnitCost(cost);
+        setQcReference(qc);
+        setExternalReference(extReference);
+        
+        //org address values
+        orgAddress.setStreetAddress(streetAddress);
+        orgAddress.setMultipleUnit(multUnit);
+        orgAddress.setCity(city);
+        orgAddress.setState(state);
+        orgAddress.setZipCode(zipCode);
+        
+        //inv item values
+        setItemDesc(itemDesc);
+        setItemStore(itemStore);
+        setItemPurchasedUnits(itemPurchUnits);
+        setItemQtyRequested(quantityRequested);
+        setIsBulk(isBulk);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
+        
+        setStorageLocationId(storageLocationId);
+        setStorageLocation(storageLocName.trim()+", "+storageUnitDescription.trim()+" "+storageLocLocation.trim());
+        setExpDate(expDate);
+        setLotNumber(lotNumber);
+        setTransReceiptOrderId(transReceiptOrderId);
+    }
+
+    /*used for order number entry*/
     public InventoryReceiptDO(Integer orderNumber, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
-                              String organization, String streetAddress, String multUnit, String city, String state, String zipCode,
+                              String organization, Integer itemQtyRequested, String streetAddress, String multUnit, String city, String state, String zipCode,
                               String itemDesc, String itemStore, String itemPurchUnits, String isBulk, String isLotMaintained, String isSerialMaintained) {
         setOrderNumber(orderNumber);
         setInventoryItemId(inventoryItemId);
@@ -109,6 +156,7 @@ public class InventoryReceiptDO implements Serializable{
         setOrderItemId(orderItemId);
         setOrganizationId(organizationId);
         setOrganization(organization);
+        setItemQtyRequested(itemQtyRequested);
         
         //org address values
         orgAddress.setStreetAddress(streetAddress);
@@ -299,5 +347,29 @@ public class InventoryReceiptDO implements Serializable{
 
     public void setOrderItemId(Integer orderItemId) {
         this.orderItemId = orderItemId;
+    }
+
+    public String getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = DataBaseUtil.trim(storageLocation);
+    }
+
+    public Integer getItemQtyRequested() {
+        return itemQtyRequested;
+    }
+
+    public void setItemQtyRequested(Integer itemQtyRequested) {
+        this.itemQtyRequested = itemQtyRequested;
+    }
+
+    public Integer getTransReceiptOrderId() {
+        return transReceiptOrderId;
+    }
+
+    public void setTransReceiptOrderId(Integer transReceiptOrderId) {
+        this.transReceiptOrderId = transReceiptOrderId;
     }
 }

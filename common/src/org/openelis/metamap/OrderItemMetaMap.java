@@ -18,6 +18,7 @@ package org.openelis.metamap;
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.OrderItemMeta;
+import org.openelis.meta.OrderMeta;
 
 public class OrderItemMetaMap extends OrderItemMeta implements MetaMap{
 
@@ -28,12 +29,19 @@ public class OrderItemMetaMap extends OrderItemMeta implements MetaMap{
     public OrderItemMetaMap(String path){
         super(path);
         INVENTORY_ITEM_META = new InventoryItemMeta(path + "inventoryItem.");
+        ORDER_META = new OrderMetaMap(path+"order.", false);
     }
     
-    public InventoryItemMeta INVENTORY_ITEM_META; 
+    public InventoryItemMeta INVENTORY_ITEM_META;
+    
+    public OrderMetaMap ORDER_META;
     
     public InventoryItemMeta getInventoryItem() {
         return INVENTORY_ITEM_META;
+    }
+    
+    public OrderMetaMap getOrder(){
+        return ORDER_META;
     }
 
     public String buildFrom(String where) {
@@ -43,6 +51,8 @@ public class OrderItemMetaMap extends OrderItemMeta implements MetaMap{
     public boolean hasColumn(String name){
         if(name.startsWith(path+"inventoryItem."))
             return INVENTORY_ITEM_META.hasColumn(name);
+        if(name.startsWith(path+"order."))
+            return ORDER_META.hasColumn(name);
         return super.hasColumn(name);
     }
 

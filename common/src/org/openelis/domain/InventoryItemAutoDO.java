@@ -16,8 +16,10 @@
 package org.openelis.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.openelis.util.DataBaseUtil;
+import org.openelis.util.Datetime;
 
 public class InventoryItemAutoDO implements Serializable{
 
@@ -31,6 +33,8 @@ public class InventoryItemAutoDO implements Serializable{
     protected Integer quantityOnHand;
     protected String description;
     protected String purchasedUnits;
+    protected String lotNum;
+    protected Datetime expDate;
     
     public InventoryItemAutoDO(){
         
@@ -56,7 +60,7 @@ public class InventoryItemAutoDO implements Serializable{
     }
     
     public InventoryItemAutoDO(Integer id, String name, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
-                               String parentStorageLocName, String childStorageUnit, Integer quantityOnHand){
+                               String parentStorageLocName, String childStorageUnit, String lotNum, Date expDate, Integer quantityOnHand){
         setId(id);
         setName(name);
         setStore(store);
@@ -70,7 +74,8 @@ public class InventoryItemAutoDO implements Serializable{
             storageLocation += childStorageLocName.trim();    
         
         setLocation(storageLocation);
-        
+        setLotNum(lotNum);
+        setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
     }
 
@@ -136,5 +141,21 @@ public class InventoryItemAutoDO implements Serializable{
 
     public void setPurchasedUnits(String purchasedUnits) {
         this.purchasedUnits = DataBaseUtil.trim(purchasedUnits);
+    }
+
+    public Datetime getExpDate() {
+        return expDate;
+    }
+
+    public void setExpDate(Date expDate) {
+        this.expDate = new Datetime(Datetime.YEAR, Datetime.DAY, expDate);
+    }
+
+    public String getLotNum() {
+        return lotNum;
+    }
+
+    public void setLotNum(String lotNum) {
+        this.lotNum = lotNum;
     }
 }

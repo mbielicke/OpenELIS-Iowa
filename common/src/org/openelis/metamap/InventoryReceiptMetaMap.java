@@ -16,25 +16,50 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.InventoryLocationMeta;
+import org.openelis.meta.DictionaryMeta;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.InventoryReceiptMeta;
 
 public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements MetaMap{
 
     public InventoryReceiptMetaMap() {
-        super("inventoryReceipt.");
+        super("receipt.");
     }
     
-    public InventoryLocationMeta INVENTORY_LOCATION_META = new InventoryLocationMeta("locations.");
-    
-    public OrderMetaMap ORDER_META = new OrderMetaMap();
-    
-    public InventoryLocationMeta getInventoryLocation() {
-        return INVENTORY_LOCATION_META;
+    public TransReceiptOrderMetaMap TRANS_RECEIPT_ORDER_META = new TransReceiptOrderMetaMap("orderTrans.");
+    public TransReceiptLocationMetaMap TRANS_RECEIPT_LOCATION_META = new TransReceiptLocationMetaMap("locTrans.");
+    public InventoryItemMeta INVENTORY_ITEM_META = new InventoryItemMeta("ii.");
+    public OrderItemMetaMap ORDER_ITEM_META = new OrderItemMetaMap("oi.");
+    public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
+    public DictionaryMeta DICTIONARY_PURCHASED_UNITS_META = new DictionaryMeta("dictPurch.");
+    public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.");
+
+    public TransReceiptOrderMetaMap getTransReceiptOrder(){
+        return TRANS_RECEIPT_ORDER_META;
     }
     
-    public OrderMetaMap getOrder() {
-        return ORDER_META;
+    public OrderItemMetaMap getOrderItem(){
+        return ORDER_ITEM_META;
+    }
+    
+    public DictionaryMeta getPurchasedUnitsDict(){
+        return DICTIONARY_PURCHASED_UNITS_META;
+    }
+    
+    public DictionaryMeta getStoreDict(){
+        return DICTIONARY_STORE_META;
+    }
+    
+    public TransReceiptLocationMetaMap getTransReceiptLocation(){
+        return TRANS_RECEIPT_LOCATION_META;
+    }
+    
+    public OrderOrganizationMetaMap getOrganization(){
+        return ORGANIZATION_META;
+    }
+    
+    public InventoryItemMeta getInventoryitem(){
+        return INVENTORY_ITEM_META;
     }
     
     public static InventoryReceiptMetaMap getInstance() {
@@ -42,23 +67,48 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
     }
     
     public boolean hasColumn(String name){
-       /* if(name.startsWith("o.address."))
-            return ADDRESS.hasColumn(name);
-        if(name.startsWith("o.parentOrganization."))
-            return PARENT_ORGANIZATION.hasColumn(name);
-        if(name.startsWith("notes."))
-            return NOTE.hasColumn(name);
-        if(name.startsWith("contacts."))
-            return ORGANIZATION_CONTACT.hasColumn(name);*/
+        if(name.startsWith("orderTrans."))
+            return TRANS_RECEIPT_ORDER_META.hasColumn(name);
+        if(name.startsWith("oi."))
+            return ORDER_ITEM_META.hasColumn(name);
+        if(name.startsWith("dictStore."))
+            return DICTIONARY_STORE_META.hasColumn(name);
+        if(name.startsWith("dictPurch."))
+            return DICTIONARY_PURCHASED_UNITS_META.hasColumn(name);
+        if(name.startsWith("locTrans."))
+            return TRANS_RECEIPT_LOCATION_META.hasColumn(name);
+        if(name.startsWith("orgz."))
+            return ORGANIZATION_META.hasColumn(name);
+        if(name.startsWith("ii."))
+            return INVENTORY_ITEM_META.hasColumn(name);
         return super.hasColumn(name);
     }
     
+    /*
+    inventory_receipt ir
+    left outer join inventory_transaction trans on ir.id=trans.from_receipt_id
+    left outer join order_item oi on trans.to_order_id=oi.id 
+    inner join organization orgz on ir.organization_id=orgz.id 
+*/
+    
     public String buildFrom(String name){
-        String from = "InventoryReceipt inventoryReceipt ";
-        /*if(name.indexOf("notes.") > -1)
-            from += ", IN (o.note) notes ";
-        if(name.indexOf("contacts.") > -1)
-            from += ", IN (o.organizationContact) contacts ";*/ 
+        //we always want to bring back the whole DO so the from wont change
+        String from = "InventoryReceipt receipt ";
+        //if(name.indexOf("oi.") > -1)
+        from += " LEFT JOIN receipt.transReceiptOrders orderTrans ";
+        from += " LEFT JOIN receipt.transReceiptLocations locTrans ";
+        from += " LEFT JOIN orderTrans.orderItem oi ";
+        //from += ", IN (trans.fromReceipt) receipt ";
+        //if(name.indexOf("ii.") > -1)
+        
+        //if(name.indexOf("orgz.") > -1)
+        //from += ", IN (receipt.organization) orgz ";
+        //from += ", IN (trans.toOrder) oi ";
+        //from += ", IN (locTrans.toLocation) loc ";
+        from += ", InventoryItem ii, Organization orgz ";
+        from += ", Dictionary dictStore, Dictionary dictPurch ";
+        
+        
         return from;
     }
 }
