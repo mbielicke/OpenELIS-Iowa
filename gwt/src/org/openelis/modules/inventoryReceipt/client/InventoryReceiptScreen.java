@@ -63,7 +63,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     
     private AppButton        removeReceiptButton;
     private TextBox orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText,
-                    itemDescText, itemStoreText, itemPurUnitsText;
+                    itemDescText, itemStoreText, itemDisUnitsText;
     ScreenTextBox itemLotNum;
     private ScreenAutoDropdown itemLocation;
     private ScreenCalendar itemExpDate;
@@ -78,7 +78,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public void onClick(Widget sender) {
         if (sender == removeReceiptButton)
             onRemoveReceiptRowButtonClick();
-        else if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsController.model.numRows() > 0){
+        else if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsController.selected > -1 && receiptsController.model.numRows() > 0){
             CheckField existing = new CheckField();
             if(((CheckBox)addToExisiting.getWidget()).getState() == CheckBox.CHECKED)
                 existing.setValue(CheckBox.UNCHECKED);
@@ -124,7 +124,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         orgZipCodeText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getZipCode());
         itemDescText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getDescription());
         itemStoreText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getStoreId());
-        itemPurUnitsText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getPurchasedUnitsId());
+        itemDisUnitsText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getDispensedUnitsId());
         itemLocation = (ScreenAutoDropdown)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
         itemLotNum = (ScreenTextBox)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
         itemExpDate = (ScreenCalendar)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
@@ -298,8 +298,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 itemDescText.setText((String)((StringField)tableRow.getHidden("itemDesc")).getValue());
             if(tableRow.getHidden("itemStore") != null)
                 itemStoreText.setText((String)((StringField)tableRow.getHidden("itemStore")).getValue());
-            if(tableRow.getHidden("itemPurUnit") != null)
-                itemPurUnitsText.setText((String)((StringField)tableRow.getHidden("itemPurUnit")).getValue());
+            if(tableRow.getHidden("itemDisUnit") != null)
+                itemDisUnitsText.setText((String)((StringField)tableRow.getHidden("itemDisUnit")).getValue());
             
             if(tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()) != null)
                 ((AutoCompleteDropdown)itemLocation.getWidget()).setSelected((ArrayList)((DropDownField)tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getSelections());
@@ -329,7 +329,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             orgZipCodeText.setText("");
             itemDescText.setText("");
             itemStoreText.setText("");
-            itemPurUnitsText.setText("");
+            itemDisUnitsText.setText("");
             ((AutoCompleteDropdown)itemLocation.getWidget()).reset();
             ((TextBox)itemLotNum.getWidget()).setText("");
             ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
@@ -489,7 +489,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                             tableRow.addHidden("zipCode", (StringField)set.getObject(14));
                             tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
                             tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-                            tableRow.addHidden("itemPurUnit", (StringField)set.getObject(17));
+                            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
                             tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
                             tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
                             tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));
@@ -512,7 +512,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                             orgZipCodeText.setText((String)((StringField)set.getObject(13)).getValue());
                             itemDescText.setText((String)((StringField)set.getObject(14)).getValue());
                             itemStoreText.setText((String)((StringField)set.getObject(15)).getValue());
-                            itemPurUnitsText.setText((String)((StringField)set.getObject(16)).getValue());
+                            itemDisUnitsText.setText((String)((StringField)set.getObject(16)).getValue());
                             
                             if(model.size() == 1)
                                 ((EditTable)controller).load(0);
@@ -538,7 +538,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                             tableRow.addHidden("zipCode", (StringField)set.getObject(14));
                             tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
                             tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-                            tableRow.addHidden("itemPurUnit", (StringField)set.getObject(17));
+                            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
                             tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
                             tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
                             tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));
@@ -601,9 +601,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                         StringField itemDesc = new StringField();
                         StringObject purUnits = (StringObject)set.getObject(3);
                         StringField itemPurUnit = new StringField();
+                        StringObject itemIsBulk =(StringObject)set.getObject(4);
+                        StringField isBulk =  new StringField();
+                        StringObject itemIsLotMaintained = (StringObject)set.getObject(5);
+                        StringField isLotMaintained = new StringField();
+                        StringObject itemIsSerialMaintained = (StringObject)set.getObject(6);
+                        StringField isSerialMaintained = new StringField();
                         itemDesc.setValue(desc.getValue());
                         itemStore.setValue(store.getValue());
                         itemPurUnit.setValue(purUnits.getValue());
+                        isBulk.setValue(itemIsBulk.getValue());
+                        isLotMaintained.setValue(itemIsLotMaintained.getValue());
+                        isSerialMaintained.setValue(itemIsSerialMaintained.getValue());
                         
                         inventoryItemSet.setKey(itemId);
                         inventoryItemSet.addObject(itemText);
@@ -616,11 +625,14 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                         //set the text boxes
                         itemDescText.setText((String)((StringObject)desc).getValue());
                         itemStoreText.setText((String)((StringObject)store).getValue());
-                        itemPurUnitsText.setText((String)((StringObject)purUnits).getValue());
+                        itemDisUnitsText.setText((String)((StringObject)purUnits).getValue());
                         
                         tableRow.addHidden("itemDesc", itemDesc);
                         tableRow.addHidden("itemStore", itemStore);
-                        tableRow.addHidden("itemPurUnit", itemPurUnit);
+                        tableRow.addHidden("itemDisUnit", itemPurUnit);
+                        tableRow.addHidden("itemIsBulk", isBulk);
+                        tableRow.addHidden("itemIsLotMaintained", isLotMaintained);
+                        tableRow.addHidden("itemIsSerialMaintained", isSerialMaintained);
                         
                         tableRow.setColumn(3, inventoryItem);
                         
@@ -650,19 +662,28 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 //set the text boxes
                 itemDescText.setText((String)((StringObject)set.getObject(2)).getValue());
                 itemStoreText.setText((String)((StringObject)set.getObject(1)).getValue());
-                itemPurUnitsText.setText((String)((StringObject)set.getObject(3)).getValue());
+                itemDisUnitsText.setText((String)((StringObject)set.getObject(3)).getValue());
                 
                 StringField itemDesc = new StringField();
                 StringField itemStore = new StringField();
                 StringField itemPurUnit = new StringField();
+                StringField isBulk =  new StringField();
+                StringField isLotMaintained = new StringField();
+                StringField isSerialMaintained = new StringField();
                 
                 itemDesc.setValue((String)((StringObject)set.getObject(2)).getValue());
                 itemStore.setValue((String)((StringObject)set.getObject(1)).getValue());
                 itemPurUnit.setValue((String)((StringObject)set.getObject(3)).getValue());
+                isBulk.setValue((String)((StringObject)set.getObject(4)).getValue());
+                isLotMaintained.setValue((String)((StringObject)set.getObject(5)).getValue());
+                isSerialMaintained.setValue((String)((StringObject)set.getObject(6)).getValue());
                 
                 tableRow.addHidden("itemDesc", itemDesc);
                 tableRow.addHidden("itemStore", itemStore);
-                tableRow.addHidden("itemPurUnit", itemPurUnit);
+                tableRow.addHidden("itemDisUnit", itemPurUnit);
+                tableRow.addHidden("itemIsBulk", isBulk);
+                tableRow.addHidden("itemIsLotMaintained", isLotMaintained);
+                tableRow.addHidden("itemIsSerialMaintained", isSerialMaintained);
            }
         }else if(col == 4 && row > -1 && row < controller.model.numRows()){
             TableRow tableRow = controller.model.getRow(row);
@@ -797,7 +818,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             tableRow.addHidden("zipCode", (StringField)set.getObject(14));
             tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
             tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-            tableRow.addHidden("itemPurUnit", (StringField)set.getObject(17));
+            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
             tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
             tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
             tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));

@@ -597,7 +597,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             Integer itemId = resultDO.getId();
             String name = resultDO.getName();
             String store = resultDO.getStore();
-            String purchasedUnits = resultDO.getPurchasedUnits();
+            String dispensedUnits = resultDO.getDispensedUnits();
             
             DataSet data = new DataSet();
             //hidden id
@@ -611,9 +611,9 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
             data.addObject(storeObject);
-            StringObject purchUnitsObj = new StringObject();
-            purchUnitsObj.setValue(purchasedUnits);
-            data.addObject(purchUnitsObj);
+            StringObject disUnitsObj = new StringObject();
+            disUnitsObj.setValue(dispensedUnits);
+            data.addObject(disUnitsObj);
                         
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -805,6 +805,11 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                 orderItemDO.setInventoryItemId((Integer)row.getColumn(1).getValue());
                 orderItemDO.setQuantityRequested((Integer)row.getColumn(0).getValue());
                 
+                if(row.numColumns() == 5){
+                    orderItemDO.setUnitCost((Double)row.getColumn(3).getValue());
+                    orderItemDO.setCatalogNumber((String)row.getColumn(4).getValue());
+                }
+                
                 if(locationId != null)
                     orderItemDO.setLocationId((Integer)locationId.getValue());
                 
@@ -818,7 +823,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return orderItems;
     }
     
-    public TableField getItemsModel(NumberObject orderId, TableField model, StringObject orderTypeObj){
+    public TableField getItemsModel(NumberObject orderId, BooleanObject forDuplicate, TableField model, StringObject orderTypeObj){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         boolean withLocation = false;
         String orderType = (String)orderTypeObj.getValue();
@@ -828,7 +833,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         List itemsList = remote.getOrderItems((Integer)orderId.getValue(), withLocation);
         
-        model.setValue(fillOrderItemsTable((TableModel)model.getValue(),itemsList));
+        model.setValue(fillOrderItemsTable((TableModel)model.getValue(),itemsList, ((Boolean)forDuplicate.getValue()).booleanValue()));
         
         return model;
     }
@@ -948,7 +953,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return null;
     }
     
-    public TableModel fillOrderItemsTable(TableModel orderItemsModel, List orderItemsList){
+    public TableModel fillOrderItemsTable(TableModel orderItemsModel, List orderItemsList, boolean forDuplicate){
         try 
         {
             orderItemsModel.reset();
@@ -960,6 +965,13 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                    NumberField id = new NumberField(orderItemRow.getId());
                    NumberField locationId = new NumberField(orderItemRow.getLocationId());
                    NumberField inventoryTransactionId = new NumberField(orderItemRow.getTransactionId());
+                   
+                   if(forDuplicate){
+                       id.setValue(null);
+                       locationId.setValue(null);
+                       inventoryTransactionId.setValue(null);
+                   }
+                                      
                     row.addHidden("itemId", id);
                     
                     if(orderItemRow.getLocationId() != null)
@@ -985,6 +997,10 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                     
                     if(row.numColumns() == 4)
                         row.getColumn(3).setValue(orderItemRow.getLocation());
+                    else if(row.numColumns() == 5){
+                        row.getColumn(3).setValue(orderItemRow.getUnitCost());
+                        row.getColumn(4).setValue(orderItemRow.getCatalogNumber());
+                    }
                     
                     orderItemsModel.addRow(row);
            } 

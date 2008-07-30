@@ -15,16 +15,23 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
+import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryAdjustmentScreen extends OpenELISScreenForm implements ClickListener {
+public class InventoryAdjustmentScreen extends OpenELISScreenForm implements TableManager, ClickListener {
 
         
     private static boolean loaded = false;
+    private EditTable        adjustmentsController;
     
     public InventoryAdjustmentScreen() {
         super("org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService",false);
@@ -37,10 +44,73 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Cli
     
     public void afterDraw(boolean sucess) {
         setBpanel((ButtonPanel)getWidget("buttons"));
-        getBpanel().enableButton("query", false);
-        getBpanel().enableButton("add", false);
+        
+        adjustmentsController = ((TableWidget)getWidget("adjustmentsTable")).controller;
+        adjustmentsController.setAutoAdd(false);
         
         super.afterDraw(sucess);
     }
+    
+    public void add() {
+        //
+        // make sure the contact table gets set before the main add
+        //
+        adjustmentsController.setAutoAdd(true);
+        super.add();
+    }
+    //
+    //start table manager methods
+    //
+    public boolean canSelect(int row, TableController controller) {        
+        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
+            return true;
+        return false;
+    }
+
+    public boolean canEdit(int row, int col, TableController controller) {
+        /*if(disableRows){
+            return false;
+        }*/
+        
+       return true;
+    }
+
+    public boolean canDelete(int row, TableController controller) {
+        return true;
+    }
+
+    public boolean action(int row, int col, TableController controller) {  
+        return false;
+    }
+
+    public boolean canInsert(int row, TableController controller) {
+        return false;     
+    }
+
+    public void finishedEditing(int row, int col, TableController controller) {}
+
+    public boolean doAutoAdd(int row, int col, TableController controller) {
+        if(col == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public void rowAdded(int row, TableController controller) {}
+
+    public void getNextPage(TableController controller) {}
+
+    public void getPage(int page) {}
+
+    public void getPreviousPage(TableController controller) {}
+
+    public void setModel(TableController controller, DataModel model) {}
+
+    public void validateRow(int row, TableController controller) {}
+
+    public void setMultiple(int row, int col, TableController controller) {}
+    //
+    //end table manager methods
+    //
 
 }

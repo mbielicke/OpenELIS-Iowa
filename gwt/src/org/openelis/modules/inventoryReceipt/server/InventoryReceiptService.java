@@ -303,7 +303,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringField zipCode = new StringField();
             StringField itemDesc = new StringField();
             StringField itemStore = new StringField();
-            StringField itemPurUnit = new StringField();
+            StringField itemDispensedUnit = new StringField();
             StringField itemIsBulk = new StringField();
             StringField itemIsLotMaintained = new StringField();
             StringField itemIsSerialMaintained = new StringField();
@@ -354,12 +354,15 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             zipCode.setValue(receiptDO.getOrgAddress().getZipCode());
             itemDesc.setValue(receiptDO.getItemDesc());
             itemStore.setValue(receiptDO.getItemStore());
-            itemPurUnit.setValue(receiptDO.getItemPurchasedUnits());
+            itemDispensedUnit.setValue(receiptDO.getItemDispensedUnits());
             itemIsBulk.setValue(receiptDO.getIsBulk());
             itemIsLotMaintained.setValue(receiptDO.getIsLotMaintained());
             itemIsSerialMaintained.setValue(receiptDO.getIsSerialMaintained());
             orderItemId.setValue(receiptDO.getOrderItemId());
-            addToExisting.setValue(receiptDO.getIsBulk());
+            
+            //FIXME dont want to default for now...
+            //addToExisting.setValue(receiptDO.getIsBulk());
+            addToExisting.setValue("N");
             
             //inventory location set
             if(receiptDO.getStorageLocationId() != null){
@@ -400,7 +403,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             set.addObject(zipCode);
             set.addObject(itemDesc);
             set.addObject(itemStore);
-            set.addObject(itemPurUnit);
+            set.addObject(itemDispensedUnit);
             set.addObject(itemIsBulk);
             set.addObject(itemIsLotMaintained);
             set.addObject(itemIsSerialMaintained);
@@ -434,7 +437,10 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             String name = invItemDO.getName();
             String store = invItemDO.getStore();
             String desc = invItemDO.getDescription();
-            String purUnits = invItemDO.getPurchasedUnits();
+            //String purUnits = invItemDO.getPurchasedUnits();
+            String itemIsBulk = invItemDO.getIsBulk();
+            String itemIsLotMaintained = invItemDO.getIsLotMaintained();
+            String itemIsSerialMaintained = invItemDO.getIsSerialMaintained();
             
             DataSet data = new DataSet();
             //hidden id
@@ -451,9 +457,18 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringObject descObj = new StringObject();
             descObj.setValue(desc);
             data.addObject(descObj);
-            StringObject purUnitsObj = new StringObject();
-            purUnitsObj.setValue(purUnits);
-            data.addObject(purUnitsObj);
+            //StringObject purUnitsObj = new StringObject();
+            //purUnitsObj.setValue(purUnits);
+            //data.addObject(purUnitsObj);
+            StringObject isBulkObj = new StringObject();
+            isBulkObj.setValue(itemIsBulk);
+            data.addObject(isBulkObj);
+            StringObject isLotMaintainedObj = new StringObject();
+            isLotMaintainedObj.setValue(itemIsLotMaintained);
+            data.addObject(isLotMaintainedObj);            
+            StringObject isSerialMaintainedObj = new StringObject();
+            isSerialMaintainedObj.setValue(itemIsSerialMaintained);
+            data.addObject(isSerialMaintainedObj);
             
             model.add(data);
         }
@@ -532,7 +547,10 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             String name = resultDO.getName();
             String store = resultDO.getStore();
             String desc = resultDO.getDescription();
-            String purUnits = resultDO.getPurchasedUnits();
+            //String purUnits = resultDO.getPurchasedUnits();
+            String itemIsBulk = resultDO.getIsBulk();
+            String itemIsLotMaintained = resultDO.getIsLotMaintained();
+            String itemIsSerialMaintained = resultDO.getIsSerialMaintained();
             
             DataSet data = new DataSet();
             //hidden id
@@ -549,9 +567,18 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringObject descObj = new StringObject();
             descObj.setValue(desc);
             data.addObject(descObj);
-            StringObject purUnitsObj = new StringObject();
-            purUnitsObj.setValue(purUnits);
-            data.addObject(purUnitsObj);
+            //StringObject purUnitsObj = new StringObject();
+            //purUnitsObj.setValue(purUnits);
+            //data.addObject(purUnitsObj);
+            StringObject isBulkObj = new StringObject();
+            isBulkObj.setValue(itemIsBulk);
+            data.addObject(isBulkObj);
+            StringObject isLotMaintainedObj = new StringObject();
+            isLotMaintainedObj.setValue(itemIsLotMaintained);
+            data.addObject(isLotMaintainedObj);            
+            StringObject isSerialMaintainedObj = new StringObject();
+            isSerialMaintainedObj.setValue(itemIsSerialMaintained);
+            data.addObject(isSerialMaintainedObj);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -761,7 +788,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringField zipCode = new StringField();
             StringField itemDesc = new StringField();
             StringField itemStore = new StringField();
-            StringField itemPurUnit = new StringField();
+            StringField itemDisUnit = new StringField();
             StringField itemIsBulk = new StringField();
             StringField itemIsLotMaintained = new StringField();
             StringField itemIsSerialMaintained = new StringField();
@@ -809,7 +836,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             zipCode.setValue(resultDO.getOrgAddress().getZipCode());
             itemDesc.setValue(resultDO.getItemDesc());
             itemStore.setValue(resultDO.getItemStore());
-            itemPurUnit.setValue(resultDO.getItemPurchasedUnits());
+            itemDisUnit.setValue(resultDO.getItemDispensedUnits());
             itemIsBulk.setValue(resultDO.getIsBulk());
             itemIsLotMaintained.setValue(resultDO.getIsLotMaintained());
             itemIsSerialMaintained.setValue(resultDO.getIsSerialMaintained());
@@ -851,7 +878,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             row.addObject(zipCode);
             row.addObject(itemDesc);
             row.addObject(itemStore);
-            row.addObject(itemPurUnit);
+            row.addObject(itemDisUnit);
             row.addObject(itemIsBulk);
             row.addObject(itemIsLotMaintained);
             row.addObject(itemIsSerialMaintained);

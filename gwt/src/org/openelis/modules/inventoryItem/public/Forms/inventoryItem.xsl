@@ -173,23 +173,26 @@
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"maxOrderLevel")'/>:</text>
 									<widget colspan="3">
-										<textbox key="{meta:getQuantityMaxLevel($invItem)}" width="55px" tab="{meta:getPurchasedUnitsId($invItem)},{meta:getQuantityToReorder($invItem)}"/>
+										<textbox key="{meta:getQuantityMaxLevel($invItem)}" width="55px" tab="{meta:getDispensedUnitsId($invItem)},{meta:getQuantityToReorder($invItem)}"/>
 									</widget>	
 								</row>
 								<row>
 									<AbsolutePanel style="VerticalSpacer"/>
 								</row>		
-								<row>
+<!--								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnits")'/>:</text>
 									<widget colspan="3">
 										<autoDropdown key="{meta:getPurchasedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getDispensedUnitsId($invItem)},{meta:getQuantityMaxLevel($invItem)}"/>
 									</widget>
 								</row>
+								-->
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
-									<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
+									<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getQuantityMaxLevel($invItem)}"/>
+									<!--
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"ratio")'/>:</text>
 									<textbox key="ratio" width="55px" tab="??,??"/>
+									-->
 								</row>
 							</TablePanel>
 							<VerticalPanel style="Form">
@@ -295,7 +298,7 @@
 							<widget valign="top">
 								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
-										<xsl:value-of select='resource:getString($constants,"serialNum")'/>,
+										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
 										<widths>162,70,70,133,123</widths>
 										<editors>
@@ -422,7 +425,6 @@
       <number key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
       <number key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
       <number key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
-      <dropdown key="{meta:getPurchasedUnitsId($invItem)}" type="integer" required="true"/> 
       <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="true"/> 
       <number key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
       <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
@@ -454,7 +456,6 @@
       <queryNumber key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
       <queryNumber key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
       <queryNumber key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
-      <dropdown key="{meta:getPurchasedUnitsId($invItem)}" type="integer" required="false"/> 
       <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="false"/> 
       <queryCheck key="{meta:getIsActive($invItem)}" required="false"/>
       <queryCheck key="{meta:getIsReorderAuto($invItem)}" required="false"/>

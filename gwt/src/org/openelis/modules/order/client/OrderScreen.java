@@ -18,6 +18,7 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -33,6 +34,8 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenMenuItem;
+import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -71,6 +74,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     private AutoCompleteDropdown orgDropdown, billToDropdown, reportToDropdown;
     
     private AppButton        removeItemButton, standardNoteCustomerButton, standardNoteShippingButton;
+    
+    private ScreenMenuPanel duplicateMenuPanel;
     
     private ScreenTextBox          orderNum, neededInDays, orderDate, requestedBy;
     private TextBox orgAptSuite, orgAddress, orgCity, orgState, orgZipCode,
@@ -113,7 +118,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public void onClick(Widget sender) {
-        if (sender == standardNoteCustomerButton)
+        if(sender instanceof ScreenMenuItem){
+            if("duplicateRecord".equals(((String)((ScreenMenuItem)sender).objClass))){
+                onDuplicateRecordClick();
+            }
+        }else if (sender == standardNoteCustomerButton)
             onStandardNoteCustomerButtonClick();
         else if(sender == standardNoteShippingButton)
             onStandardNoteShippingButtonClick();
@@ -192,6 +201,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
             receiptsController.setAutoAdd(false);
         }
+        
+        duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
         //buttons
         removeItemButton = (AppButton)getWidget("removeItemButton");
@@ -438,12 +449,12 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                 clearItems();
             }
             // load the items table
-            fillItemsModel();
+            fillItemsModel(false);
             // don't load it again unless the mode changes or a new fetch is
             // done
             loadItems = false;
             
-        } else if ((selectedTab == 1 && "kits".equals(orderType) && loadCustomerNotes)) {
+        } else if (selectedTab == 1 && "kits".equals(orderType) && loadCustomerNotes) {
             // if there was data previously then clear the locations table otherwise
             // don't
             if (clearCustomerNotes) {
@@ -467,7 +478,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             // done
             loadReceipts = false;
 
-        }else if (selectedTab == 2 && loadShippingNotes) {
+        }else if ((selectedTab == 2 || (selectedTab == 1 && "internal".equals(orderType))) && loadShippingNotes) {
             // if there was data previously then clear the comments panel otherwise
             // don't
             if (clearShippingNotes) {
@@ -496,7 +507,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if (index == 0 && loadItems) {
             if (clearItems)
                 clearItems();
-            fillItemsModel();
+            fillItemsModel(false);
             loadItems = false;
         } else if (index == 1 && "kits".equals(orderType) && loadCustomerNotes) {
             if (clearCustomerNotes) {
@@ -509,6 +520,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                 clearReceipts();
             fillReceipts();
             loadReceipts = false;
+        } else if (index == 1 && "internal".equals(orderType) && loadShippingNotes) {
+            if (clearShippingNotes)
+                clearShippingNotes();
+            fillShippingNotes();
+            loadShippingNotes = false;
         } else if (index == 2 && loadShippingNotes) {
             if (clearShippingNotes)
                 clearShippingNotes();
@@ -616,6 +632,19 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     //end table manager methods
     //
     
+    public void changeState(FormInt.State state) {
+        if(duplicateMenuPanel != null){ 
+            if(state == FormInt.State.DISPLAY){
+                ((ScreenMenuItem)((ScreenMenuItem) duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+
+            }else{  
+                ((ScreenMenuItem)((ScreenMenuItem)duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+            }
+        }
+        
+        super.changeState(state);
+    }
+    
     private void onRemoveItemButtonClick() {
         int selectedRow = itemsController.selected;
         if (selectedRow > -1 && itemsController.model.numRows() > 0) {
@@ -656,9 +685,37 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         standardNotePopupPanel.show();
     }
     
-    private void fillItemsModel() {
+    private void onDuplicateRecordClick(){
+        if(state == FormInt.State.DISPLAY){
+            //we need to do the duplicate method
+            FormRPC displayRPC = rpc.clone();
+            displayRPC.setFieldValue(OrderMeta.getId(), null);
+            displayRPC.setFieldValue("receiptsTable", null);
+            displayRPC.setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(),null);
+                       
+            add();
+            
+            clearItems = false;
+            loadItems = true;
+            
+            clearReceipts = false;
+            loadReceipts = false;
+            
+            clearShippingNotes = false;
+            loadShippingNotes = false;
+            
+            rpc = displayRPC;
+            
+            load();
+            
+            fillItemsModel(true);
+        }
+    }
+    
+    private void fillItemsModel(boolean forDuplicate) {
         Integer orderId = null;
         NumberObject orderIdObj;
+        BooleanObject duplicateObj;
         StringObject orderTypeObj = new StringObject();
         TableField f;
 
@@ -672,12 +729,18 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         orderId = (Integer)key.getKey().getValue();
         orderIdObj = new NumberObject(orderId);
         orderTypeObj.setValue(orderType);
-
+        duplicateObj = new BooleanObject();
+        
+        if(forDuplicate)
+            duplicateObj.setValue("Y");
+        else
+            duplicateObj.setValue("N");
+        
         f = new TableField();
         f.setValue(itemsController.model);
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj, f, orderTypeObj};
+        DataObject[] args = new DataObject[] {orderIdObj, duplicateObj, f, orderTypeObj};
 
         screenService.getObject("getItemsModel", args, new AsyncCallback() {
             public void onSuccess(Object result) {
