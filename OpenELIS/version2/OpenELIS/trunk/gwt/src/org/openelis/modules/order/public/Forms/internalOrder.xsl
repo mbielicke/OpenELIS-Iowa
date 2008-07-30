@@ -160,13 +160,16 @@
 				</TablePanel>
 			</HorizontalPanel>
 		</VerticalPanel>
-		<VerticalPanel height="10px"/>
-		<VerticalPanel spacing="3">
+	<!-- TAB PANEL -->
+	<TabPanel height="200px" key="tabPanel" halign="center">
+		<!-- TAB 1 (Components) -->
+		<tab key="tab1" text="{resource:getString($constants,'items')}">
+			<VerticalPanel spacing="0" padding="0" overflow="hidden">
 			<widget>
 				<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
 					<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 					<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-					<widths>83,160,159,159</widths>
+					<widths>60,170,164,167</widths>
 					<editors>
 						<textbox case="mixed"/>
 						<autoDropdown cat="inventoryItemWithStoreAndLocSubItems" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
@@ -182,7 +185,7 @@
 						<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
 						<string key="location" required="false"/>
 					</fields>
-					<sorts>true,true,true,true</sorts>
+					<sorts>false,true,true,true</sorts>
 					<filters>false,false,false,false</filters>
 					<colAligns>left,left,left,left</colAligns>
 				</table>
@@ -190,7 +193,7 @@
 					<queryTable width="auto" maxRows="9" title="" showError="false">
 						<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 						<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-					<widths>83,178,159,159</widths>
+					<widths>60,188,164,167</widths>
 					<editors>
 						<textbox case="mixed"/>
 						<textbox case="lower"/>
@@ -215,6 +218,31 @@
 				</appButton>
 			</widget>
 		</VerticalPanel>
+		</tab>
+		<!-- TAB 2 -->
+			<tab key="tab3" text="{resource:getString($constants,'orderShippingNotes')}">
+				<VerticalPanel width="100%" height="229px" spacing="0" padding="0">
+					<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+						<row>
+							<widget colspan="2" align="center">
+								<appButton action="standardNoteShipping" onclick="this" key="standardNoteShippingButton" style="Button">
+									<HorizontalPanel>
+              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+	                					<text><xsl:value-of select='resource:getString($constants,"standardNote")'/></text>
+						             </HorizontalPanel>
+						    	</appButton>
+						  	</widget>
+						</row>
+						<row>
+							<HorizontalPanel width="14px"/>
+							<widget colspan="2">
+								<textarea width="576px" height="179px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+							</widget>
+						</row>
+					</TablePanel>
+				</VerticalPanel>
+			</tab>
+		</TabPanel>
 		</VerticalPanel>
 		</VerticalPanel>
 		</HorizontalPanel>
@@ -227,6 +255,7 @@
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
+      <string key="{noteMeta:getText($shippingNote)}" required="false"/>
       <table key="itemsTable"/>
             
       <string key="orderType" required="false"/>

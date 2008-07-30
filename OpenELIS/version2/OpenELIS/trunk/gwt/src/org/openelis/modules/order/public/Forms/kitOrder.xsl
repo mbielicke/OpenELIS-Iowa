@@ -206,7 +206,7 @@
 							<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 								<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-								<widths>83,160,159,159</widths>
+								<widths>60,170,164,167</widths>
 								<editors>
 									<textbox case="mixed"/>
 									<autoDropdown cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
@@ -222,7 +222,7 @@
 									<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
 									<string key="location" required="false"/>
 								</fields>
-								<sorts>true,true,true,true</sorts>
+								<sorts>false,true,true,true</sorts>
 								<filters>false,false,false,false</filters>
 								<colAligns>left,left,left,left</colAligns>
 							</table>
@@ -230,7 +230,7 @@
 								<queryTable width="auto" maxRows="9" title="" showError="false">
 									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 									<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-									<widths>83,178,159,159</widths>
+									<widths>60,188,164,167</widths>
 									<editors>
 										<textbox case="mixed"/>
 										<textbox case="lower"/>
