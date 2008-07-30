@@ -77,8 +77,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
     private ScreenCheck isActive, isSerializedCheck;
     
     private static boolean loaded = false;
-    private static DataModel storesDropdown, categoriesDropdown,
-                    purchasedUnitsDropdown, dispensedUnitsDropdown;
+    private static DataModel storesDropdown, categoriesDropdown, dispensedUnitsDropdown;
     
     private boolean          loadComponents = true, 
                              loadLocations = true, 
@@ -159,7 +158,6 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         if (storesDropdown == null) {
             storesDropdown = (DataModel)initData.get("stores");
             categoriesDropdown = (DataModel)initData.get("categories");
-            purchasedUnitsDropdown = (DataModel)initData.get("units");
             dispensedUnitsDropdown = (DataModel)initData.get("units");
         }
         
@@ -169,9 +167,6 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getCategoryId());
         drop.setModel(categoriesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getPurchasedUnitsId());
-        drop.setModel(purchasedUnitsDropdown);
-
         drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getDispensedUnitsId());
         drop.setModel(dispensedUnitsDropdown);
         

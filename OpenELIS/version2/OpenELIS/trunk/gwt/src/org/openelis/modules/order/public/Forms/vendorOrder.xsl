@@ -136,6 +136,12 @@
     						<xsl:value-of select="language"/>
     					</xsl:with-param>
     				</xsl:call-template>
+    				<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="optionsButton">
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
+    			</xsl:call-template>
 				</buttonPanel>
 			</AbsolutePanel>
 			<!--end button panel-->
@@ -216,39 +222,49 @@
 							<widget valign="top">
 								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-										<xsl:value-of select='resource:getString($constants,"store")'/></headers>
-										<widths>83,241,240</widths>
+										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
+										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
+										<widths>60,178,163,70,87</widths>
 										<editors>
 											<textbox case="mixed"/>
 											<autoDropdown cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
-												<headers>Name,Store, Pur Units</headers>
+												<headers>Name,Store, Dispensed Units</headers>
 												<widths>135,110,110</widths>
 											</autoDropdown>
 											<label/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
 										</editors>
 										<fields>
 											<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="true"/>
 											<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
 											<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
+											<number type="double" required="false"/>
+											<string required="false"/>
 										</fields>
-										<sorts>true,true,true</sorts>
-										<filters>false,false,false</filters>
-										<colAligns>left,left,left</colAligns>
+										<sorts>false,true,true,false,false</sorts>
+										<filters>false,false,false,false,false</filters>
+										<colAligns>left,left,left,left,left</colAligns>
 									</table>
 									<query>
 									<queryTable width="auto" maxRows="9" title="" showError="false">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-									<xsl:value-of select='resource:getString($constants,"store")'/></headers>
-										<widths>83,250,249</widths>
+										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
+										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
+										<widths>60,187,172,70,87</widths>
 										<editors>
 											<textbox case="mixed"/>
 											<textbox case="lower"/>
+											<textbox case="mixed"/>
+											<textbox case="mixed"/>
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
 											<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
 											<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
-											<xsl:value-of select='dictionaryMeta:getEntry($store)'/>
+											<xsl:value-of select='dictionaryMeta:getEntry($store)'/>,
+											<xsl:value-of select='orderItemMeta:getUnitCost($orderItem)'/>,
+											<xsl:value-of select='orderItemMeta:getCatalogNumber($orderItem)'/>
 										</fields>								
 									</queryTable>
 									</query>
@@ -357,6 +373,8 @@
       <string key="{noteMeta:getText($shippingNote)}" required="false"/>
       <table key="itemsTable"/>
       
+      <table key="receiptsTable"/>
+      
       <!-- organization address-->
       <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
       <string key="{addr:getStreetAddress($orgAddress)}" required="false"/>
@@ -403,6 +421,8 @@
       <queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
 	  <queryString key="{invItemMeta:getName($orderItemInvItem)}" required="false"/>
 	  <queryString key="{dictionaryMeta:getEntry($store)}" required="false"/>
+	  <queryString key="{orderItemMeta:getCatalogNumber($orderItem)}" required="false"/>
+ 	  <queryNumber key="{orderItemMeta:getUnitCost($orderItem)}" type="double" required="false"/>
 
 	  <!-- receipts table -->
       <table key="receiptsTable"/>

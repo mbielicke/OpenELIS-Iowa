@@ -611,7 +611,6 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InvItemMeta.getIsSubAssembly(), inventoryItemDO.getIsSubAssembly());
         rpcReturn.setFieldValue(InvItemMeta.getName(), inventoryItemDO.getName());
         rpcReturn.setFieldValue(InvItemMeta.getProductUri(), inventoryItemDO.getProductUri());
-        rpcReturn.setFieldValue(InvItemMeta.getPurchasedUnitsId(), inventoryItemDO.getPurchasedUnits());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMaxLevel(), inventoryItemDO.getQuantityMaxLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMinLevel(), inventoryItemDO.getQuantityMinLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityToReorder(), inventoryItemDO.getQuantityToReorder());
@@ -639,7 +638,6 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO.setIsSubAssembly((String)rpcSend.getFieldValue(InvItemMeta.getIsSubAssembly()));
         inventoryItemDO.setName((String)rpcSend.getFieldValue(InvItemMeta.getName()));
         inventoryItemDO.setProductUri((String)rpcSend.getFieldValue(InvItemMeta.getProductUri()));
-        inventoryItemDO.setPurchasedUnits((Integer)rpcSend.getFieldValue(InvItemMeta.getPurchasedUnitsId()));
         inventoryItemDO.setQuantityMaxLevel((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityMaxLevel()));
         inventoryItemDO.setQuantityMinLevel((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityMinLevel()));
         inventoryItemDO.setQuantityToReorder((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityToReorder()));

@@ -104,16 +104,6 @@
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
     			</xsl:call-template>
-    			<!--<xsl:call-template name="previousButton">
-	    			<xsl:with-param name="language">
-	    				<xsl:value-of select="language"/>
-	    			</xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="nextButton">
-    				<xsl:with-param name="language">
-    					<xsl:value-of select="language"/>
-    				</xsl:with-param>
-    			</xsl:call-template>-->
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="addButton">
     				<xsl:with-param name="language">
@@ -144,10 +134,10 @@
 					<widget valign="top">
 						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
 							<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
-							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
+							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,
 							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-							<widths>40,60,80,140,155,40,40,45,75,95</widths>										
+							<widths>40,65,80,140,155,40,40,45,70,95</widths>										
 							<editors>
 								<textbox case="mixed"/>
 								<calendar begin="0" end="2"/>							
@@ -185,14 +175,13 @@
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false">
 								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
-							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"organization")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
+							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/>,
 							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-								<widths>40,60,80,149,164,40,40,45,75,95</widths>
+								<widths>40,65,80,149,164,40,40,45,70,95</widths>
 								<editors>
 									<textbox case="mixed"/>
 									<calendar begin="0" end="2"/>
-									<!--<textbox case="mixed"/>-->
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
 									<textbox case="upper"/>
@@ -226,7 +215,7 @@
 			<HorizontalPanel>
 				<VerticalPanel style="Form">
 					<titledPanel key="borderedPanel">
-						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"organizationAddress")'/></text></legend>
+						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"vendorAddress")'/></text></legend>
 							<content>
 								<TablePanel style="Form">
 								<row>
@@ -292,9 +281,9 @@
 									</widget>
 								</row>
 								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"purchasedUnits")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
 									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getPurchasedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"lotNum")'/>:</text>
 									<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" tab="{inventoryLocationMeta:getExpirationDate($loc)},{inventoryLocationMeta:getStorageLocationId($loc)}"/>
@@ -326,7 +315,7 @@
     	<!--disabled values -->
     	<string key="{inventoryItemMeta:getDescription($invItem)}" required="false"/>
     	<string key="{inventoryItemMeta:getStoreId($invItem)}" required="false"/>
-    	<string key="{inventoryItemMeta:getPurchasedUnitsId($invItem)}" required="false"/>
+    	<string key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" required="false"/>
     	<string key="{addressMeta:getMultipleUnit($address)}" required="false"/>
     	<string key="{addressMeta:getStreetAddress($address)}" required="false"/>
     	<string key="{addressMeta:getCity($address)}" required="false"/>
