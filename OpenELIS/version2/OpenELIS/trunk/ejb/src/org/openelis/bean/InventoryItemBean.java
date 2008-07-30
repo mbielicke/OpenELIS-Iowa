@@ -222,7 +222,6 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setIsSubAssembly(inventoryItemDO.getIsSubAssembly());
          inventoryItem.setName(inventoryItemDO.getName());
          inventoryItem.setProductUri(inventoryItemDO.getProductUri());
-         inventoryItem.setPurchasedUnitsId(inventoryItemDO.getPurchasedUnits());
          inventoryItem.setQuantityMaxLevel(inventoryItemDO.getQuantityMaxLevel());
          inventoryItem.setQuantityMinLevel(inventoryItemDO.getQuantityMinLevel());
          inventoryItem.setQuantityToReorder(inventoryItemDO.getQuantityToReorder());
@@ -386,11 +385,6 @@ public class InventoryItemBean implements InventoryItemRemote{
         //store required
         if(inventoryItemDO.getStore() == null){
             exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
-        }
-        
-        //purchased units required
-        if(inventoryItemDO.getPurchasedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getPurchasedUnitsId()));
         }
         
         //dispensed units required

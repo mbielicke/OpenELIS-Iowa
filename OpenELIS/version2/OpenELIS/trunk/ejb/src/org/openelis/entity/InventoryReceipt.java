@@ -52,10 +52,10 @@ import org.openelis.utils.Auditable;
                                " and o.id = :id and o.isExternal='Y'"),
     @NamedQuery(name = "InventoryReceipt.InventoryReceiptNotRecByOrderId", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
                                " oi.id, o.organizationId,orgz.name,oi.quantityRequested,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
-                               " orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
+                               " orgz.address.zipCode, ii.description, dictStore.entry, dicDisUnits.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
                                " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
-                               " Dictionary dictStore, Dictionary dictPurch where " + 
-                               " ii.storeId = dictStore.id and ii.purchasedUnitsId=dictPurch.id " +                                
+                               " Dictionary dictStore, Dictionary dicDisUnits where " + 
+                               " ii.storeId = dictStore.id and ii.dispensedUnitsId = dicDisUnits.id " +                                
                                " and oi.id = :id order by o.id "),
     @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' and " + 
@@ -64,9 +64,10 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' " +
                             " and o.id = :id"),
-    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, purUnit.entry) " +
-                            " from InventoryReceipt ir left join ir.inventoryItem i, Dictionary store, Dictionary purUnit " +
-                            " where i.storeId = store.id and i.purchasedUnitsId = purUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
+    @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
+                            " from InventoryReceipt ir left join ir.inventoryItem i, Dictionary store, Dictionary disUnit " +
+                            " where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and ir.upc like :upc and i.isActive = 'Y' " +
                             " order by i.name"),
     @NamedQuery(name = "InventoryReceipt.LocationIdsByReceiptId", query = "select distinct il.id  from TransReceiptLocation tr LEFT JOIN tr.inventoryLocation il where tr.inventoryReceiptId = :id ")})
                     

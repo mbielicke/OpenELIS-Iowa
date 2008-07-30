@@ -40,10 +40,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-/*and (i.isLotMaintained='Y' and il.quantityOnhand > 0) and (i.isSerialMaintained='Y' and il.quantityOnhand > 0)*/
 
 @NamedQueries({ @NamedQuery(name = "InventoryItem.InventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.categoryId,i.storeId,i.quantityMinLevel, " +
-                               " i.quantityMaxLevel,i.quantityToReorder, i.purchasedUnitsId,i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
+                               " i.quantityMaxLevel,i.quantityToReorder, i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
                             " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse) " +
                             " from InventoryItem i where i.id = :id"),
      @NamedQuery(name = "InventoryItem.AutocompleteByNameStoreCurrentName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
@@ -65,15 +64,16 @@ import org.w3c.dom.Element;
                             "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and d.systemName = 'inv_main_store' " +
-                            " order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, purUnit.entry) " +
-                            " from InventoryItem i, Dictionary store, Dictionary purUnit where i.storeId = store.id and i.purchasedUnitsId = purUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, purUnit.entry) " +
-                 " from InventoryItem i, Dictionary store, Dictionary purUnit where i.storeId = store.id and i.purchasedUnitsId = purUnit.id and i.name like :name and i.isActive = 'Y' " +
-                 " and i.isNotForSale = 'N' and store.systemName = 'inv_main_store'  order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, purUnit.entry) " +
-                            " from InventoryItem i, Dictionary store, Dictionary purUnit where i.storeId = store.id and i.purchasedUnitsId = purUnit.id and i.name like :name and i.isActive = 'Y' " +
+                            " order by i.name"), 
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
+                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),         
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
+                            " and i.isNotForSale = 'N' and store.systemName = 'inv_main_store'  order by i.name"),
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' order by i.name"),
      @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description " +
                             "  from InventoryItem i where i.id = :id"),
@@ -115,9 +115,6 @@ public class InventoryItem implements Auditable, Cloneable {
 
   @Column(name="quantity_to_reorder")
   private Integer quantityToReorder;             
-
-  @Column(name="purchased_units_id")
-  private Integer purchasedUnitsId;             
 
   @Column(name="dispensed_units_id")
   private Integer dispensedUnitsId;             
@@ -247,15 +244,6 @@ public class InventoryItem implements Auditable, Cloneable {
     if((quantityToReorder == null && this.quantityToReorder != null) || 
        (quantityToReorder != null && !quantityToReorder.equals(this.quantityToReorder)))
       this.quantityToReorder = quantityToReorder;
-  }
-
-  public Integer getPurchasedUnitsId() {
-    return purchasedUnitsId;
-  }
-  public void setPurchasedUnitsId(Integer purchasedUnitsId) {
-    if((purchasedUnitsId == null && this.purchasedUnitsId != null) || 
-       (purchasedUnitsId != null && !purchasedUnitsId.equals(this.purchasedUnitsId)))
-      this.purchasedUnitsId = purchasedUnitsId;
   }
 
   public Integer getDispensedUnitsId() {
@@ -411,8 +399,6 @@ public class InventoryItem implements Auditable, Cloneable {
       AuditUtil.getChangeXML(quantityMaxLevel,original.quantityMaxLevel,doc,"quantity_max_level");
 
       AuditUtil.getChangeXML(quantityToReorder,original.quantityToReorder,doc,"quantity_to_reorder");
-
-      AuditUtil.getChangeXML(purchasedUnitsId,original.purchasedUnitsId,doc,"purchased_units_id");
 
       AuditUtil.getChangeXML(dispensedUnitsId,original.dispensedUnitsId,doc,"dispensed_units_id");
 

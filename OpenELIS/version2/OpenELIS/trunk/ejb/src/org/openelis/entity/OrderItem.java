@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
                             " left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where oi.inventoryItem.storeId = d.id and oi.orderId = :id"),
     @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
-                            " d.entry) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id")})
+                            " d.entry, o.catalogNumber, o.unitCost) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id")})
                             
                             
 @Entity
@@ -65,7 +65,13 @@ public class OrderItem implements Auditable, Cloneable {
   private Integer inventoryItemId;             
 
   @Column(name="quantity_requested")
-  private Integer quantityRequested;             
+  private Integer quantityRequested;
+  
+  @Column(name="catalog_number")
+  private String catalogNumber;   
+  
+  @Column(name="unit_cost")
+  private Double unitCost;   
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
@@ -114,8 +120,27 @@ public class OrderItem implements Auditable, Cloneable {
        (quantityRequested != null && !quantityRequested.equals(this.quantityRequested)))
       this.quantityRequested = quantityRequested;
   }
-
   
+  public Double getUnitCost() {
+      return unitCost;
+    }
+  
+  public void setUnitCost(Double unitCost) {
+      if((unitCost == null && this.unitCost != null) || 
+         (unitCost != null && !unitCost.equals(this.unitCost)))
+        this.unitCost = unitCost;
+    }
+    
+  public String getCatalogNumber() {
+    return catalogNumber;
+  }
+  
+  public void setCatalogNumber(String catalogNumber) {
+      if((catalogNumber == null && this.catalogNumber != null) || 
+         (catalogNumber != null && !catalogNumber.equals(this.catalogNumber)))
+          this.catalogNumber = catalogNumber;
+  }
+
   public void setClone() {
     try {
       original = (OrderItem)this.clone();
@@ -134,6 +159,10 @@ public class OrderItem implements Auditable, Cloneable {
       AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
 
       AuditUtil.getChangeXML(quantityRequested,original.quantityRequested,doc,"quantity_requested");
+      
+      AuditUtil.getChangeXML(catalogNumber,original.catalogNumber,doc,"catalog_number");
+      
+      AuditUtil.getChangeXML(unitCost,original.unitCost,doc,"unit_cost");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

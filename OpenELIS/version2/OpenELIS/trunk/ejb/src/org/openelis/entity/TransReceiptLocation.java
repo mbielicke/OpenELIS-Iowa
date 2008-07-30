@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries({ @NamedQuery(name = "TransReceiptLocation.TransIdsLocIdsByReceiptId", query = "select tr.id, tr.inventoryLocationId from TransReceiptLocation tr where tr.inventoryReceiptId = :id " +
-                                            " order by tr.quantity desc")})
+                                            " and quantity > 0 order by tr.quantity desc")})
 
 
 @Entity
