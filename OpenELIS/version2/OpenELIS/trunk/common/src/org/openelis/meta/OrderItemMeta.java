@@ -31,10 +31,12 @@ public class OrderItemMeta implements Meta {
               ID					="id",
               ORDER_ID					="orderId",
               INVENTORY_ITEM_ID					="inventoryItemId",
-              QUANTITY_REQUESTED					="quantityRequested";
+              QUANTITY_REQUESTED					="quantityRequested",
+              CATALOG_NUMBER            ="catalogNumber",
+              UNIT_COST                 ="unitCost";
 
   	private static final String[] columnNames = {
-  	  ID,ORDER_ID,INVENTORY_ITEM_ID,QUANTITY_REQUESTED};
+  	  ID,ORDER_ID,INVENTORY_ITEM_ID,QUANTITY_REQUESTED,CATALOG_NUMBER,UNIT_COST};
   	  
 	private HashSet<String> columnHashList;
     
@@ -82,6 +84,12 @@ public class OrderItemMeta implements Meta {
     public String getQuantityRequested() {
         return path + QUANTITY_REQUESTED;
     } 
-
-  
+    
+    public String getCatalogNumber() {
+        return path + CATALOG_NUMBER;
+    } 
+    
+    public String getUnitCost() {
+        return path + UNIT_COST;
+    } 
 }   

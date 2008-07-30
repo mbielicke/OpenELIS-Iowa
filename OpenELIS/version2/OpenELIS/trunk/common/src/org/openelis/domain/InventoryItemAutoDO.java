@@ -32,9 +32,12 @@ public class InventoryItemAutoDO implements Serializable{
     protected String location;
     protected Integer quantityOnHand;
     protected String description;
-    protected String purchasedUnits;
+    protected String dispensedUnits;
     protected String lotNum;
     protected Datetime expDate;
+    protected String isBulk;
+    protected String isLotMaintained;
+    protected String isSerialMaintained;
     
     public InventoryItemAutoDO(){
         
@@ -51,12 +54,12 @@ public class InventoryItemAutoDO implements Serializable{
         setStore(store);
     }
     
-    public InventoryItemAutoDO(Integer id, String name, String store, String description, String purchasedUnits){
+    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits){
         setId(id);
         setName(name);
         setStore(store);
         setDescription(description);
-        setPurchasedUnits(purchasedUnits);
+        setDispensedUnits(dispensedUnits);
     }
     
     public InventoryItemAutoDO(Integer id, String name, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
@@ -77,6 +80,18 @@ public class InventoryItemAutoDO implements Serializable{
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
+    }
+    
+    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, String isSerialMaintained){
+        setId(id);
+        setName(name);
+        setStore(store);
+        setDescription(description);
+        setDispensedUnits(dispensedUnits);
+        
+        setIsBulk(isBulk);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
     }
 
     public Integer getId() {
@@ -135,12 +150,12 @@ public class InventoryItemAutoDO implements Serializable{
         this.description = DataBaseUtil.trim(description);
     }
 
-    public String getPurchasedUnits() {
-        return purchasedUnits;
+    public String getDispensedUnits() {
+        return dispensedUnits;
     }
 
-    public void setPurchasedUnits(String purchasedUnits) {
-        this.purchasedUnits = DataBaseUtil.trim(purchasedUnits);
+    public void setDispensedUnits(String dispensedUnits) {
+        this.dispensedUnits = DataBaseUtil.trim(dispensedUnits);
     }
 
     public Datetime getExpDate() {
@@ -157,5 +172,29 @@ public class InventoryItemAutoDO implements Serializable{
 
     public void setLotNum(String lotNum) {
         this.lotNum = lotNum;
+    }
+    
+    public String getIsBulk() {
+        return isBulk;
+    }
+
+    public void setIsBulk(String isBulk) {
+        this.isBulk = DataBaseUtil.trim(isBulk);
+    }
+
+    public String getIsLotMaintained() {
+        return isLotMaintained;
+    }
+
+    public void setIsLotMaintained(String isLotMaintained) {
+        this.isLotMaintained = DataBaseUtil.trim(isLotMaintained);
+    }
+
+    public String getIsSerialMaintained() {
+        return isSerialMaintained;
+    }
+
+    public void setIsSerialMaintained(String isSerialMaintained) {
+        this.isSerialMaintained = DataBaseUtil.trim(isSerialMaintained);
     }
 }

@@ -31,7 +31,6 @@ public class InventoryItemDO implements Serializable{
 	protected Integer quantityMinLevel;
 	protected Integer quantityMaxLevel;
 	protected Integer quantityToReorder;
-    protected Integer purchasedUnits;
     protected Integer dispensedUnits;
 	protected String isReorderAuto;
 	protected String isLotMaintained;
@@ -52,7 +51,7 @@ public class InventoryItemDO implements Serializable{
     }
     
 	public InventoryItemDO(Integer id, String name, String description, Integer category, Integer store,
-                           Integer quantityMinLevel, Integer quantityMaxLevel, Integer quantityToReorder, Integer purchasedUnits,
+                           Integer quantityMinLevel, Integer quantityMaxLevel, Integer quantityToReorder, 
                            Integer dispensedUnits, String isReorderAuto, String isLotMaintained, String isSerialMaintained,
                            String isActive, String isBulk, String isNotForSale, String isSubAssembly, String isLabor, String isNoInventory,
                            String productUri, Integer aveLeadTime, double aveCost, Integer aveDailyUse){
@@ -65,7 +64,6 @@ public class InventoryItemDO implements Serializable{
         setQuantityMinLevel(quantityMinLevel);
         setQuantityMaxLevel(quantityMaxLevel);
         setQuantityToReorder(quantityToReorder);
-        setPurchasedUnits(purchasedUnits);
         setDispensedUnits(dispensedUnits);
         setIsReorderAuto(isReorderAuto);
         setIsLotMaintained(isLotMaintained);
@@ -224,14 +222,6 @@ public class InventoryItemDO implements Serializable{
 
     public void setProductUri(String productUri) {
         this.productUri = DataBaseUtil.trim(productUri);
-    }
-
-    public Integer getPurchasedUnits() {
-        return purchasedUnits;
-    }
-
-    public void setPurchasedUnits(Integer purchasedUnits) {
-        this.purchasedUnits = purchasedUnits;
     }
 
     public Integer getQuantityMaxLevel() {
