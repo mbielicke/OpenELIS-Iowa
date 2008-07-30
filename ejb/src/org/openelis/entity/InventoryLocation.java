@@ -87,6 +87,10 @@ public class InventoryLocation implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "storage_location_id", insertable = false, updatable = false)
   private StorageLocation storageLocation;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
+  private InventoryItem inventoryItem;
 
 
   @Transient
@@ -191,5 +195,8 @@ public class InventoryLocation implements Auditable, Cloneable {
   public void setStorageLocation(StorageLocation storageLocation) {
       this.storageLocation = storageLocation;
   }
+public InventoryItem getInventoryItem() {
+    return inventoryItem;
+}
   
 }   

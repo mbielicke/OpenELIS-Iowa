@@ -345,6 +345,8 @@ public class OrderBean implements OrderRemote{
                 orderItem.setInventoryItemId(orderItemDO.getInventoryItemId());
                 orderItem.setOrderId(order.getId());
                 orderItem.setQuantityRequested(orderItemDO.getQuantityRequested());
+                orderItem.setCatalogNumber(orderItemDO.getCatalogNumber());
+                orderItem.setUnitCost(orderItemDO.getUnitCost());
                     
                 if (orderItem.getId() == null) {
                     manager.persist(orderItem);
@@ -352,7 +354,6 @@ public class OrderBean implements OrderRemote{
            }
             
            //insert transaction record if necessary
-            System.out.println("do we try and insert trans record?: ("+(orderItemDO.getLocationId() != null)+")");
            if(orderItemDO.getLocationId() != null){
                TransLocationOrder transLocOrder = null;
                

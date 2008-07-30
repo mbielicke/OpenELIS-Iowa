@@ -1,4 +1,18 @@
-
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.entity;
 
 /**
@@ -10,12 +24,16 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -40,6 +58,10 @@ public class InventoryAdjustment implements Auditable, Cloneable {
   @Column(name="adjustment_date")
   private Date adjustmentDate;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_adjustment_id", insertable = false, updatable = false)
+  private Collection<TransAdjustmentLocation> transAdjustmentLocation;
+  
 
   @Transient
   private InventoryAdjustment original;
@@ -114,5 +136,8 @@ public class InventoryAdjustment implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_adjustment";
   }
+public Collection<TransAdjustmentLocation> getTransAdjustmentLocation() {
+    return transAdjustmentLocation;
+}
   
 }   

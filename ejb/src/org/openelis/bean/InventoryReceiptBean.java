@@ -143,7 +143,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                          InventoryReceiptMap.getOrganizationId()+", "+
                          InventoryReceiptMap.ORGANIZATION_META.getName()+", "+
                          InventoryReceiptMap.getQuantityReceived()+", "+
-                         InventoryReceiptMap.getUnitCost()+", "+
+                         InventoryReceiptMap.ORDER_ITEM_META.getUnitCost()+", "+
                          InventoryReceiptMap.getQcReference()+", "+
                          InventoryReceiptMap.getExternalReference()+", "+
                          InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
@@ -153,7 +153,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                          InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getZipCode()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getDescription()+", "+
                          InventoryReceiptMap.DICTIONARY_STORE_META.getEntry()+", "+
-                         InventoryReceiptMap.DICTIONARY_PURCHASED_UNITS_META.getEntry()+", "+
+                         InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getEntry()+", "+
                          InventoryReceiptMap.ORDER_ITEM_META.getQuantityRequested()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getIsBulk()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getIsLotMaintained()+", "+
@@ -172,7 +172,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         qb.addWhere(InventoryReceiptMap.getInventoryItemId() + " = " + InventoryReceiptMap.INVENTORY_ITEM_META.getId());
         qb.addWhere(InventoryReceiptMap.getOrganizationId() + " = " + InventoryReceiptMap.ORGANIZATION_META.getId());
         qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_STORE_META.getId());
-        qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getPurchasedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_PURCHASED_UNITS_META.getId());
+        qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
         
         qb.setOrderBy(InventoryReceiptMap.getReceivedDate()+", "+InventoryReceiptMap.ORDER_ITEM_META.ORDER_META.getId());
         
@@ -228,6 +228,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 throw (RPCException)exceptionList.get(0);
             }
             
+            System.out.println("1");
             if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
                 receipt.setExternalReference(receiptDO.getExternalReference());
                 receipt.setInventoryItemId(receiptDO.getInventoryItemId());
@@ -261,11 +262,13 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 manager.persist(transReceiptOrder);
             }
             
+            System.out.println("2");
             int numberOfLocs=1;
             List locTransLocIds = null;
 
             //we need to get the loc trans and the loc ids
             if(receiptDO.getId() != null){
+                System.out.println("2a");
                 Query query = manager.createNamedQuery("TransReceiptLocation.TransIdsLocIdsByReceiptId");
                 query.setParameter("id", receiptDO.getId());
                 locTransLocIds = query.getResultList();
@@ -275,82 +278,86 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 if("Y".equals(receiptDO.getIsSerialMaintained()) && newQuantityReceived > numberOfLocs)
                     numberOfLocs = newQuantityReceived;
                 
-            }else if("Y".equals(receiptDO.getIsSerialMaintained())){
+            }else if(receiptDO.getQuantityReceived() != null && "Y".equals(receiptDO.getIsSerialMaintained())){
+                System.out.println("2b");
                 numberOfLocs = receiptDO.getQuantityReceived();
             }
             
-            int numberOfZeroQtys = numberOfLocs - newQuantityReceived;
-            int j=0;
-            while(j<numberOfLocs){
-                //
-                //insert/update the location record
-                //
-                InventoryLocation invLocation = null;
-                
-                if (receiptDO.getId() == null || (receiptDO.getId() != null && j>=locTransLocIds.size()))
-                    invLocation = new InventoryLocation();
-                else
-                    invLocation = manager.find(InventoryLocation.class, (Integer)((Object[])locTransLocIds.get(j))[1]);
-                
-                if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
-                    invLocation.setExpirationDate(receiptDO.getExpDate());
-                    invLocation.setInventoryItemId(receiptDO.getInventoryItemId());
-                    invLocation.setLotNumber(receiptDO.getLotNumber());
+            System.out.println("3");
+            if(newQuantityReceived != null){
+                int numberOfZeroQtys = numberOfLocs - newQuantityReceived;
+                int j=0;
+                while(j<numberOfLocs){
+                    //
+                    //insert/update the location record
+                    //
+                    InventoryLocation invLocation = null;
                     
-                    if("Y".equals(receiptDO.getIsSerialMaintained())){
-                        if(numberOfZeroQtys > 0 && j<numberOfZeroQtys)
-                            invLocation.setQuantityOnhand(0);
-                        else
-                            invLocation.setQuantityOnhand(1);
-                    }else{
-                        invLocation.setQuantityOnhand(receiptDO.getQuantityReceived());
-                    }
+                    if (receiptDO.getId() == null || (receiptDO.getId() != null && j>=locTransLocIds.size()))
+                        invLocation = new InventoryLocation();
+                    else
+                        invLocation = manager.find(InventoryLocation.class, (Integer)((Object[])locTransLocIds.get(j))[1]);
                     
-                    invLocation.setStorageLocationId(receiptDO.getStorageLocationId());
+                    if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
+                        invLocation.setExpirationDate(receiptDO.getExpDate());
+                        invLocation.setInventoryItemId(receiptDO.getInventoryItemId());
+                        invLocation.setLotNumber(receiptDO.getLotNumber());
                         
-                    if (invLocation.getId() == null)
-                        manager.persist(invLocation);
-                }
-                
-                //
-                //insert/update the transaction record that points to inventory location
-                //
-                TransReceiptLocation transReceiptLocation =  null;
-                
-                if (receiptDO.getId() == null || (receiptDO.getId() != null && j>=locTransLocIds.size()))
-                    transReceiptLocation = new TransReceiptLocation();
-                else
-                    transReceiptLocation = manager.find(TransReceiptLocation.class, (Integer)((Object[])locTransLocIds.get(j))[0]);
-                
-                if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
-                    transReceiptLocation.setInventoryReceiptId(receipt.getId());
-                    transReceiptLocation.setInventoryLocationId(invLocation.getId());
-                    
-                    if("Y".equals(receiptDO.getIsSerialMaintained())){
-                        if(numberOfZeroQtys > 0 && j<numberOfZeroQtys)
-                            transReceiptLocation.setQuantity(0);
-                        else
-                            transReceiptLocation.setQuantity(1);
-                    }else{
-                        transReceiptLocation.setQuantity(receiptDO.getQuantityReceived());
+                        if("Y".equals(receiptDO.getIsSerialMaintained())){
+                            if(numberOfZeroQtys > 0 && j<numberOfZeroQtys)
+                                invLocation.setQuantityOnhand(0);
+                            else
+                                invLocation.setQuantityOnhand(1);
+                        }else{
+                            invLocation.setQuantityOnhand(receiptDO.getQuantityReceived());
+                        }
+                        
+                        invLocation.setStorageLocationId(receiptDO.getStorageLocationId());
+                            
+                        if (invLocation.getId() == null)
+                            manager.persist(invLocation);
                     }
                     
-                    manager.persist(transReceiptLocation);
-                }                        
-                j++;
-            }  
+                    //
+                    //insert/update the transaction record that points to inventory location
+                    //
+                    TransReceiptLocation transReceiptLocation =  null;
+                    
+                    if (receiptDO.getId() == null || (receiptDO.getId() != null && j>=locTransLocIds.size()))
+                        transReceiptLocation = new TransReceiptLocation();
+                    else
+                        transReceiptLocation = manager.find(TransReceiptLocation.class, (Integer)((Object[])locTransLocIds.get(j))[0]);
+                    
+                    if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
+                        transReceiptLocation.setInventoryReceiptId(receipt.getId());
+                        transReceiptLocation.setInventoryLocationId(invLocation.getId());
+                        
+                        if("Y".equals(receiptDO.getIsSerialMaintained())){
+                            if(numberOfZeroQtys > 0 && j<numberOfZeroQtys)
+                                transReceiptLocation.setQuantity(0);
+                            else
+                                transReceiptLocation.setQuantity(1);
+                        }else{
+                            transReceiptLocation.setQuantity(receiptDO.getQuantityReceived());
+                        }
+                        
+                        manager.persist(transReceiptLocation);
+                    }                        
+                    j++;
+                } 
+            }
         }
         
         Integer completedStatusValue = null;
         //we need to run a query to see if we should set the order to completed
         for(int j=0; j < orderIds.size(); j++){
             Query query = manager.createNamedQuery("InventoryReceipt.OrdersNotCompletedCanceled");
-            query.setParameter("id",orderIds.get(0)); //order id
+            query.setParameter("id",orderIds.get(j)); //order id
             
             //if the size > 0 the order isnt cancelled or complete so we need check and set the order status
             if(query.getResultList().size() > 0){
                 query = manager.createNamedQuery("InventoryReceipt.OrderItemsNotFilled");
-                query.setParameter("id",orderIds.get(0)); //order id
+                query.setParameter("id",orderIds.get(j)); //order id
                 
                 //if the size is 0 we need to set this order to completed
                 if(query.getResultList().size() == 0){
@@ -360,7 +367,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                         completedStatusValue = (Integer)query.getResultList().get(0);
                     }
                     
-                    Order order = manager.find(Order.class, orderIds.get(0));
+                    Order order = manager.find(Order.class, orderIds.get(j));
                     order.setStatusId(completedStatusValue);
                 }
             }
@@ -446,27 +453,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         }
         
         //lot num required when checked on inventory item record 
-        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        System.out.println("("+("Y".equals(receiptDO.getIsLotMaintained()))+")");
-        System.out.println("("+(receiptDO.getLotNumber() == null)+")");
-        System.out.println("("+(receiptDO.getOrderNumber() != null) + ")"); 
-        System.out.println("("+(receiptDO.getOrderNumber() == null) + ")");
-        System.out.println("("+(receiptDO.getQuantityReceived() != null)+")");
-        System.out.println("("+(receiptDO.getUnitCost() != null)+")");
-      /*   (false)
-        008-07-28 09:40:18,917 INFO  [STDOUT] (true)
-        2008-07-28 09:40:18,917 INFO  [STDOUT] (false)
-        2008-07-28 09:40:18,917 INFO  [STDOUT] (true)
-        2008-07-28 09:40:18,917 INFO  [STDOUT] (true)
-        2008-07-28 09:40:18,918 INFO  [STDOUT] (false)
-        
-        
-        TRUE && FALSE && ((FALSE) || (TRUE) || TRUE || FALSE)
-        */
-        System.out.println("LOT NUM["+receiptDO.getLotNumber()+"]");
-                          
-
-        
         if("Y".equals(receiptDO.getIsLotMaintained()) && receiptDO.getLotNumber() == null && 
                         ((receiptDO.getOrderNumber() != null && receiptDO.getOrderNumber().equals(-1)) ||
                          (receiptDO.getOrderNumber() == null) || 
@@ -474,11 +460,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             exceptionList.add(new TableFieldErrorException("lotNumRequiredForRowException", rowIndex, InventoryReceiptMap.ORDER_ITEM_META.ORDER_META.getId()));
         }
         
-        //add to existing required when bulk is checked on inventory item record
-        //maybe..not how the first bulk item is added if this is true..leaving out for now
-        /*if("Y".equals(receiptDO.getIsBulk()) && !receiptDO.isAddToExisting()){
-            exceptionList.add(new TableFieldErrorException("lotNumRequiredForRowException", rowIndex, InventoryReceiptMap.ORDER_META.getId()));
-        }*/
         
         //add to existing not allow when bulk is not checked on inventory item record
         if("N".equals(receiptDO.getIsBulk()) && receiptDO.isAddToExisting()){
@@ -492,19 +473,22 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         
     }
     
-    //FIXME need to also lock the order records if they exist
     private void lockRecords(List receipts) throws Exception{
         if(receipts.size() == 0)
             return;
         
         Integer inventoryReceiptId = null;
         Integer inventoryLocationId = null;
+        Integer orderId = null;
+        List orderIds = new ArrayList();
         
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_receipt");
         inventoryReceiptId = (Integer)query.getSingleResult();
         query.setParameter("name", "inventory_location");
         inventoryLocationId = (Integer)query.getSingleResult();
+        query.setParameter("name", "order");
+        orderId = (Integer)query.getSingleResult();
         
         for(int i=0; i<receipts.size(); i++){
         
@@ -513,6 +497,10 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             if(receiptDO.getId() != null){
                 lockBean.getLock(inventoryReceiptId,receiptDO.getId());
             
+                //put the order id in the list if it is there
+                if(receiptDO.getOrderNumber() != null && !orderIds.contains(receiptDO.getOrderNumber()))
+                    orderIds.add(receiptDO.getOrderNumber());
+                
                 //get a list of all the locations
                 query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
                 query.setParameter("id", receiptDO.getId());
@@ -523,21 +511,28 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                     lockBean.getLock(inventoryLocationId, (Integer)locationIds.get(j));
             }
         }
+        
+        //we need to lock the orders
+        for(int j=0; j<orderIds.size(); j++)
+            lockBean.getLock(orderId, (Integer)orderIds.get(j));
     }
     
-    //FIXME need to also unlock the order records if they exist
     private void unlockRecords(List receipts) throws Exception{
         if(receipts.size() == 0)
             return;
         
         Integer inventoryReceiptId = null;
         Integer inventoryLocationId = null;
+        Integer orderId = null;
+        List orderIds = new ArrayList();
         
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_receipt");
         inventoryReceiptId = (Integer)query.getSingleResult();
         query.setParameter("name", "inventory_location");
         inventoryLocationId = (Integer)query.getSingleResult();
+        query.setParameter("name", "order");
+        orderId = (Integer)query.getSingleResult();
         
         for(int i=0; i<receipts.size(); i++){
         
@@ -546,6 +541,10 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             if(receiptDO.getId() != null){
                 lockBean.giveUpLock(inventoryReceiptId,receiptDO.getId());
             
+                //put the order id in the list if it is there
+                if(receiptDO.getOrderNumber() != null && !orderIds.contains(receiptDO.getOrderNumber()))
+                    orderIds.add(receiptDO.getOrderNumber());
+                
                 //get a list of all the locations
                 query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
                 query.setParameter("id", receiptDO.getId());
@@ -556,5 +555,9 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                     lockBean.giveUpLock(inventoryLocationId, (Integer)locationIds.get(j));
             }
         }
+        
+        //we need to unlock the orders
+        for(int j=0; j<orderIds.size(); j++)
+            lockBean.giveUpLock(orderId, (Integer)orderIds.get(j));
     }
 }
