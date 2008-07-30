@@ -36,7 +36,6 @@ public class InventoryItemMeta implements Meta {
               QUANTITY_MIN_LEVEL					="quantityMinLevel",
               QUANTITY_MAX_LEVEL					="quantityMaxLevel",
               QUANTITY_TO_REORDER					="quantityToReorder",
-              PURCHASED_UNITS_ID					="purchasedUnitsId",
               DISPENSED_UNITS_ID					="dispensedUnitsId",
               IS_REORDER_AUTO					="isReorderAuto",
               IS_LOT_MAINTAINED					="isLotMaintained",
@@ -53,7 +52,7 @@ public class InventoryItemMeta implements Meta {
               AVERAGE_DAILY_USE					="averageDailyUse";
 
   	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,CATEGORY_ID,STORE_ID,QUANTITY_MIN_LEVEL,QUANTITY_MAX_LEVEL,QUANTITY_TO_REORDER,PURCHASED_UNITS_ID,DISPENSED_UNITS_ID,IS_REORDER_AUTO,IS_LOT_MAINTAINED,IS_SERIAL_MAINTAINED,IS_ACTIVE,IS_BULK,IS_NOT_FOR_SALE,IS_SUB_ASSEMBLY,IS_LABOR,IS_NO_INVENTORY,PRODUCT_URI,AVERAGE_LEAD_TIME,AVERAGE_COST,AVERAGE_DAILY_USE};
+  	  ID,NAME,DESCRIPTION,CATEGORY_ID,STORE_ID,QUANTITY_MIN_LEVEL,QUANTITY_MAX_LEVEL,QUANTITY_TO_REORDER,DISPENSED_UNITS_ID,IS_REORDER_AUTO,IS_LOT_MAINTAINED,IS_SERIAL_MAINTAINED,IS_ACTIVE,IS_BULK,IS_NOT_FOR_SALE,IS_SUB_ASSEMBLY,IS_LABOR,IS_NO_INVENTORY,PRODUCT_URI,AVERAGE_LEAD_TIME,AVERAGE_COST,AVERAGE_DAILY_USE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -116,10 +115,6 @@ public class InventoryItemMeta implements Meta {
 
     public String getQuantityToReorder() {
         return path + QUANTITY_TO_REORDER;
-    } 
-
-    public String getPurchasedUnitsId() {
-        return path + PURCHASED_UNITS_ID;
     } 
 
     public String getDispensedUnitsId() {

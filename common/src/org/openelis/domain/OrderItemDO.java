@@ -32,6 +32,8 @@ public class OrderItemDO implements Serializable{
     protected Integer locationId;
     protected String location;
     protected Integer transactionId;
+    protected String catalogNumber;
+    protected Double unitCost;
     
     protected Boolean delete = false;
     
@@ -67,13 +69,15 @@ public class OrderItemDO implements Serializable{
         setLocation(storageLocation);
      }
     
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantityRequested, String store){
+    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantityRequested, String store, String catalogNumber, Double unitCost){
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
         setQuantityRequested(quantityRequested);
         setStore(store);
+        setCatalogNumber(catalogNumber);
+        setUnitCost(unitCost);
      }
 
     public Integer getId() {
@@ -154,5 +158,21 @@ public class OrderItemDO implements Serializable{
 
     public void setTransactionId(Integer transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public String getCatalogNumber() {
+        return catalogNumber;
+    }
+
+    public void setCatalogNumber(String catalogNumber) {
+        this.catalogNumber = DataBaseUtil.trim(catalogNumber);
+    }
+
+    public Double getUnitCost() {
+        return unitCost;
+    }
+
+    public void setUnitCost(Double unitCost) {
+        this.unitCost = unitCost;
     }
 }

@@ -43,7 +43,7 @@ public class InventoryReceiptDO implements Serializable{
     
     protected String itemDesc;
     protected String itemStore;
-    protected String itemPurchasedUnits;
+    protected String itemDispensedUnits;
     protected Integer itemQtyRequested;
 
     protected Integer storageLocationId;
@@ -106,7 +106,7 @@ public class InventoryReceiptDO implements Serializable{
     /*used for query*/
     public InventoryReceiptDO(Integer id, Integer orderNumber, Date dateReceived, String upc, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
                               String organization, Integer qty, Double cost, String qc, String extReference, String streetAddress, String multUnit, String city, String state, String zipCode,
-                              String itemDesc, String itemStore, String itemPurchUnits, Integer quantityRequested, String isBulk, String isLotMaintained, String isSerialMaintained, 
+                              String itemDesc, String itemStore, String itemDispensedUnits, Integer quantityRequested, String isBulk, String isLotMaintained, String isSerialMaintained, 
                               Integer storageLocationId, String storageLocName, String storageLocLocation, String storageUnitDescription, String lotNumber, Date expDate, 
                               Integer transReceiptOrderId) {
         setId(id);
@@ -133,7 +133,7 @@ public class InventoryReceiptDO implements Serializable{
         //inv item values
         setItemDesc(itemDesc);
         setItemStore(itemStore);
-        setItemPurchasedUnits(itemPurchUnits);
+        setItemDispensedUnits(itemDispensedUnits);
         setItemQtyRequested(quantityRequested);
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
@@ -149,7 +149,7 @@ public class InventoryReceiptDO implements Serializable{
     /*used for order number entry*/
     public InventoryReceiptDO(Integer orderNumber, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
                               String organization, Integer itemQtyRequested, String streetAddress, String multUnit, String city, String state, String zipCode,
-                              String itemDesc, String itemStore, String itemPurchUnits, String isBulk, String isLotMaintained, String isSerialMaintained) {
+                              String itemDesc, String itemStore, String itemDispensedUnits, String isBulk, String isLotMaintained, String isSerialMaintained) {
         setOrderNumber(orderNumber);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
@@ -167,8 +167,8 @@ public class InventoryReceiptDO implements Serializable{
         
         //inv item values
         setItemDesc(itemDesc);
-        setItemStore(itemStore);
-        setItemPurchasedUnits(itemPurchUnits);   
+        setItemStore(itemStore);  
+        setItemDispensedUnits(itemDispensedUnits);
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
@@ -259,14 +259,6 @@ public class InventoryReceiptDO implements Serializable{
 
     public void setItemDesc(String itemDesc) {
         this.itemDesc = DataBaseUtil.trim(itemDesc);
-    }
-
-    public String getItemPurchasedUnits() {
-        return itemPurchasedUnits;
-    }
-
-    public void setItemPurchasedUnits(String itemPurchasedUnits) {
-        this.itemPurchasedUnits = DataBaseUtil.trim(itemPurchasedUnits);
     }
 
     public String getItemStore() {
@@ -371,5 +363,13 @@ public class InventoryReceiptDO implements Serializable{
 
     public void setTransReceiptOrderId(Integer transReceiptOrderId) {
         this.transReceiptOrderId = transReceiptOrderId;
+    }
+
+    public String getItemDispensedUnits() {
+        return itemDispensedUnits;
+    }
+
+    public void setItemDispensedUnits(String itemDispensedUnits) {
+        this.itemDispensedUnits = DataBaseUtil.trim(itemDispensedUnits);
     }
 }

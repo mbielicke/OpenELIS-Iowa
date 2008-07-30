@@ -31,7 +31,7 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
     public InventoryItemMeta INVENTORY_ITEM_META = new InventoryItemMeta("ii.");
     public OrderItemMetaMap ORDER_ITEM_META = new OrderItemMetaMap("oi.");
     public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
-    public DictionaryMeta DICTIONARY_PURCHASED_UNITS_META = new DictionaryMeta("dictPurch.");
+    public DictionaryMeta DICTIONARY_DISPENSED_UNITS_META = new DictionaryMeta("dictDis.");
     public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.");
 
     public TransReceiptOrderMetaMap getTransReceiptOrder(){
@@ -42,8 +42,8 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         return ORDER_ITEM_META;
     }
     
-    public DictionaryMeta getPurchasedUnitsDict(){
-        return DICTIONARY_PURCHASED_UNITS_META;
+    public DictionaryMeta getDispensedUnitsDict(){
+        return DICTIONARY_DISPENSED_UNITS_META;
     }
     
     public DictionaryMeta getStoreDict(){
@@ -73,8 +73,8 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
             return ORDER_ITEM_META.hasColumn(name);
         if(name.startsWith("dictStore."))
             return DICTIONARY_STORE_META.hasColumn(name);
-        if(name.startsWith("dictPurch."))
-            return DICTIONARY_PURCHASED_UNITS_META.hasColumn(name);
+        if(name.startsWith("dictDis."))
+            return DICTIONARY_DISPENSED_UNITS_META.hasColumn(name);
         if(name.startsWith("locTrans."))
             return TRANS_RECEIPT_LOCATION_META.hasColumn(name);
         if(name.startsWith("orgz."))
@@ -106,7 +106,7 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         //from += ", IN (trans.toOrder) oi ";
         //from += ", IN (locTrans.toLocation) loc ";
         from += ", InventoryItem ii, Organization orgz ";
-        from += ", Dictionary dictStore, Dictionary dictPurch ";
+        from += ", Dictionary dictStore, Dictionary dictDis ";
         
         
         return from;

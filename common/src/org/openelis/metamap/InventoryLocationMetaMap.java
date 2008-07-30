@@ -16,6 +16,7 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.InventoryLocationMeta;
 import org.openelis.meta.StorageLocationMeta;
 
@@ -29,17 +30,25 @@ public class InventoryLocationMetaMap extends InventoryLocationMeta implements M
         super(path);
         
         INVENTORY_LOCATION_STORAGE_LOCATION = new StorageLocationMetaMap(path + "storageLocation.");
+        INVENTORY_ITEM_META = new InventoryItemMeta(path + "inventoryItem.");
     }
     
     public StorageLocationMetaMap INVENTORY_LOCATION_STORAGE_LOCATION;
+    public InventoryItemMeta INVENTORY_ITEM_META;
     
     public StorageLocationMetaMap getStorageLocation() {
         return INVENTORY_LOCATION_STORAGE_LOCATION;
     }
     
+    public InventoryItemMeta getInventoryItem(){
+        return INVENTORY_ITEM_META;
+    }
+    
     public boolean hasColumn(String name){
         if(name.startsWith(path+"storageLocation."))
             return INVENTORY_LOCATION_STORAGE_LOCATION.hasColumn(name);
+        if(name.startsWith(path+"inventoryItem."))
+            return INVENTORY_ITEM_META.hasColumn(name);
         return super.hasColumn(name);
     }
     
