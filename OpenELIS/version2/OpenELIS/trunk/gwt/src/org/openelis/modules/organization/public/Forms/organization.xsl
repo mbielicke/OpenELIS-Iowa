@@ -165,7 +165,7 @@
 							<!-- TAB PANEL -->
 							<TabPanel halign="center" height="200px" key="orgTabPanel">
 								<!-- TAB 1 -->
-								<tab key="tab1" text="{resource:getString($constants,'contact')}">
+								<tab key="contactsTab" text="{resource:getString($constants,'contact')}">
 									<VerticalPanel overflow="hidden" padding="0" spacing="0">
 										<widget valign="top">
 											<table key="contactsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="true" title="" width="574px">
@@ -251,7 +251,7 @@
 									<!-- END TAB 1 -->
 								</tab>
 								<!-- START TAB 2 -->
-								<tab key="tab2" text="{resource:getString($constants,'identifier')}">
+								<tab text="{resource:getString($constants,'identifier')}">
 									<VerticalPanel overflow="hidden" padding="0" spacing="0">
 										<widget valign="top">
 											<table key="identifierstsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="true" title="" width="auto">
@@ -315,7 +315,7 @@
 								</tab>
 								<!-- END TAB 2 -->
 								<!-- start TAB 3 -->
-								<tab key="noteTab" text="{resource:getString($constants,'note')}">
+								<tab key="notesTab" text="{resource:getString($constants,'note')}">
 									<VerticalPanel height="164px" key="secMod3" padding="0" spacing="0" width="100%">
 										<TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
 											<row>
@@ -361,12 +361,18 @@
 				<string key="{addr:getCity($addr)}" max="30" required="true"/>
 				<string key="{addr:getZipCode($addr)}" max="10" required="true"/>
 				<check key="{meta:getIsActive($org)}" required="false"/>
-				<string key="{note:getSubject($note)}" max="60" required="false"/>
-				<string key="{note:getText($note)}" required="false"/>
 				<dropdown key="{parent:getName($parent)}" required="false" type="integer"/>
 				<dropdown key="{addr:getState($addr)}" required="false"/>
 				<dropdown key="{addr:getCountry($addr)}" required="true"/>
-				<table key="contactsTable"/>
+				<rpc key="contacts">
+				  <table key="contactsTable"/>
+				</rpc>
+				<rpc key="notes">
+				  <string key="{note:getSubject($note)}" max="60" required="false"/>
+				  <string key="{note:getText($note)}" required="false"/>
+				  <string key="notesPanel"/>
+				</rpc>
+				<string key="orgTabPanel" reset="false">contactsTab</string>
 			</rpc>
 			<rpc key="query">
 				<queryNumber key="{meta:getId($org)}" type="integer"/>

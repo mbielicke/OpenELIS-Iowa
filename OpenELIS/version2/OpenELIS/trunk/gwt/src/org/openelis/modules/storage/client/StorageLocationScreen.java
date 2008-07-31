@@ -15,10 +15,14 @@
 */
 package org.openelis.modules.storage.client;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -47,14 +51,15 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		super("org.openelis.modules.storage.server.StorageLocationService",false);
 	}
 	
-	public void onChange(Widget sender) {
-        if(sender == getWidget("atozButtons")){
-           String action = ((ButtonPanel)sender).buttonClicked.action;
-           if(action.startsWith("query:")){
-        	   getStorageLocs(action.substring(6, action.length()));      
-           }
+	public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton) {
+           String baction = ((AppButton)obj).action;
+           if(baction.startsWith("query:")){
+        	   getStorageLocs(baction.substring(6, baction.length()));      
+           }else
+               super.performCommand(action,obj);
         }else{
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
 
@@ -70,13 +75,13 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         removeEntryButton = (AppButton) getWidget("removeEntryButton");
         
@@ -123,9 +128,9 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		super.abort();
 	}
 	
-	public void commitAdd() {
+	public Request commitAdd() {
     	childTable.setAutoAdd(false);
-        super.commitAdd();
+        return super.commitAdd();
     }
 
     public void afterCommitUpdate(boolean success) {

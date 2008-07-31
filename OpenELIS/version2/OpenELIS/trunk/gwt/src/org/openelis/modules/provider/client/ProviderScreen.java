@@ -16,6 +16,19 @@
 package org.openelis.modules.provider.client;
 
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -33,7 +46,7 @@ import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -45,18 +58,6 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ProviderScreen extends OpenELISScreenForm implements ClickListener, TabListener{
 
@@ -92,15 +93,15 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         name="Provider";
     }
     
-    public void onChange(Widget sender) {
-        
-        if(sender == getWidget("atozButtons")){           
-           String action = ((ButtonPanel)sender).buttonClicked.action;           
-           if(action.startsWith("query:")){
-               getProviders(action.substring(6, action.length()));      
-           }
+    public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){           
+           String baction = ((AppButton)obj).action;           
+           if(baction.startsWith("query:")){
+               getProviders(baction.substring(6, baction.length()));      
+           }else
+               super.performCommand(action, obj);
         }else{
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
 
@@ -117,12 +118,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         message.setText("Done");
                    
 //      load other widgets
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         removeContactButton = (AppButton) getWidget("removeAddressButton");
         
@@ -278,23 +279,25 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
       loadTabs();                                
     }
     
-    public void commitQuery(FormRPC rpcQuery){
+    public Request commitQuery(FormRPC rpcQuery){
         provAddController.unselect(-1);
         
-        super.commitQuery(rpcQuery);
+        return super.commitQuery(rpcQuery);
     }
 
-    public void commitAdd(){
+    public Request commitAdd(){
                        
         provAddController.unselect(-1);
                
-        super.commitAdd();                              
+        Request ret = super.commitAdd();                            
         
         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
         
         standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
         
-        provAddController.setAutoAdd(false);      
+        provAddController.setAutoAdd(false);
+        
+        return ret;
     }
     
     public void afterCommitAdd(boolean success){      

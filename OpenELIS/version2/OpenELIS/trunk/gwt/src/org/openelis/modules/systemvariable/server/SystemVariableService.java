@@ -29,6 +29,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
@@ -274,6 +275,6 @@ public class SystemVariableService implements AppScreenFormServiceInt {
             else if(exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }   
-        rpcSend.status = IForm.Status.invalid;
+        rpcSend.status = Status.invalid;
     }
 }

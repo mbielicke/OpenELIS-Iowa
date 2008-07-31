@@ -62,8 +62,8 @@ public class DictionaryEntriesTable implements TableManager {
        return false;
     }
 
-    public boolean doAutoAdd(int row, int col, TableController controller) {              
-        if(col == 0 || col == 1 || col == 3)
+    public boolean doAutoAdd(TableRow row, TableController controller) {              
+        if(row.getColumn(0).getValue() != null || row.getColumn(1).getValue() != null || row.getColumn(3).getValue() != null)
             return true;
         else
             return false;

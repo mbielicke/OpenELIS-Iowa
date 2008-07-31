@@ -16,6 +16,7 @@
 package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
@@ -56,11 +57,8 @@ public class InventoryLocationsTable implements TableManager {
 
     public void finishedEditing(int row, int col, TableController controller) {}
 
-    public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(col == 0)
-            return true;
-        else
-            return false;
+    public boolean doAutoAdd(TableRow row, TableController controller) {
+        return row.getColumn(0).getValue() != null && !row.getColumn(0).getValue().equals(0);
     }
 
     public void rowAdded(int row, TableController controller) {}

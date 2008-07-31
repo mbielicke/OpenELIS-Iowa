@@ -18,11 +18,13 @@ package org.openelis.modules.inventoryReceipt.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.DateObject;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
@@ -39,6 +41,8 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormCalendarWidget;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
@@ -185,7 +189,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     public void update() {
-        doReset();
+        resetRPC();
+        load();
         
         window.setStatus(consts.get("lockForUpdate"),"spinnerIcon");
         
@@ -218,7 +223,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         if (state == State.UPDATE) {
             window.setStatus("","spinnerIcon");
             clearErrors();
-            doReset();
+            resetRPC();
+            load();
             enable(false);
             
             ModelObject modelObj = new ModelObject();
@@ -253,7 +259,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         super.commit();
         
         if (state == State.ADD || state == State.UPDATE) {
-            if (!rpc.validate() || !validate())
+            rpc.validate();
+            validate();
+            if (rpc.status == Status.valid)
                 receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
         }
     }
@@ -402,6 +410,10 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         return true;
     }
 
+    public boolean doAutoAdd(TableRow row, TableController controller) {
+        return row.getColumn(0).getValue() != null && !row.getColumn(0).getValue().equals(0);
+    }
+    
     public boolean doAutoAdd(int row, int col, TableController controller) {
         if(state != State.UPDATE){
             if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row), true))

@@ -15,16 +15,17 @@
 */
 package org.openelis.modules.systemvariable.client;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener {
     
@@ -35,15 +36,15 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     
     private SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     
-    public void onChange(Widget sender) {
-        
-        if(sender == getWidget("atozButtons")){           
-           String action = ((ButtonPanel)sender).buttonClicked.action;           
-           if(action.startsWith("query:")){
-               getSystemVariables(action.substring(6, action.length()));      
-           }
+    public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){           
+           String baction = ((AppButton)obj).action;           
+           if(baction.startsWith("query:")){
+               getSystemVariables(baction.substring(6, baction.length()));      
+           }else
+               super.performCommand(action, obj);
         }else{
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
 
@@ -55,12 +56,12 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     public void afterDraw(boolean success) {
         setBpanel((ButtonPanel) getWidget("buttons"));        
 
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         nameTextBox = (TextBox)getWidget(Meta.getName());
         

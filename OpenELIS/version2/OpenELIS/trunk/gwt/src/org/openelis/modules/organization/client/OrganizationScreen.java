@@ -15,15 +15,20 @@
 */
 package org.openelis.modules.organization.client;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -44,18 +49,6 @@ import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 public class OrganizationScreen extends OpenELISScreenForm implements
                                                           ClickListener,
                                                           TabListener {
@@ -70,11 +63,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     private ScreenTextArea   noteText;
     private TextBox          orgName;
     private ButtonPanel      atozButtons;
-
-    private boolean          loadNotes = true, loadContacts = true,
-                    clearNotes = false, clearContacts = false;
-
-    private ScreenVertical   svp       = null;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
 
@@ -83,14 +71,15 @@ public class OrganizationScreen extends OpenELISScreenForm implements
               !loaded);
     }
 
-    public void onChange(Widget sender) {
-        if (sender == atozButtons) {
-            String action = atozButtons.buttonClicked.action;
-            if (action.startsWith("query:")) {
-                getOrganizations(action.substring(6, action.length()));
-            }
+    public void performCommand(Enum action, Object obj) {
+        if (obj instanceof AppButton) {
+            String baction = ((AppButton)obj).action;
+            if (baction.startsWith("query:")) {
+                getOrganizations(baction.substring(6, baction.length()));
+            }else
+                super.performCommand(action, obj);
         } else {
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
 
@@ -115,8 +104,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         // modelwidget and us.
         //
         atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        modelWidget.addCommandListener(atozTable);
+        atozTable.modelWidget = modelWidget;
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
@@ -124,7 +114,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
         
         atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
 
         //
         // disable auto add and make sure there are no rows in the table
@@ -136,8 +126,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
         orgName = (TextBox)getWidget(OrgMeta.getName());
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
-        svp = (ScreenVertical) widgets.get("notesPanel");
-
+   
         if (stateDropdown == null) {
             stateDropdown = (DataModel)initData.get("states");
             countryDropdown = (DataModel)initData.get("countries");
@@ -173,18 +162,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         setBpanel((ButtonPanel)getWidget("buttons"));
         super.afterDraw(success);
-    }
-
-    /*
-     * Overriden to reset the data in Contact and Note tabs
-     */
-    public void afterFetch(boolean success) {
-        if (success) {
-            loadContacts = true;
-            loadNotes = true;
-            loadTabs();
-        }
-        super.afterFetch(success);
+        ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsController.model);
     }
 
     public void query() {
@@ -195,11 +173,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         noteText.enable(false);
         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
-        clearNotes();
     }
 
     public void add() {
-        ScreenVertical vp;
         //
         // make sure the contact table gets set before the main add
         //
@@ -210,8 +186,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         // disable / remove anything that is not editable
         //
         orgId.enable(false);
-        vp = (ScreenVertical)widgets.get("notesPanel");
-        vp.clear();
+        ((ScreenVertical)widgets.get("notesPanel")).clear();
 
         orgName.setFocus(true);
     }
@@ -223,65 +198,21 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
     public void afterUpdate(boolean success) {
         super.afterUpdate(success);
-        if (success) {
-            loadContacts = true;
-            loadNotes = true;
-            loadTabs();
-        }
         orgId.enable(false);
         orgName.setFocus(true);
     }
 
     public void abort() {
         contactsController.setAutoAdd(false);
-        
-        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
-            loadContacts = false;
-            clearContacts = true;
-            
-            loadNotes = false;
-            clearNotes = true;
-        }else{
-            loadContacts = true;
-            loadNotes = true;
-        }
-        
         //the super needs to ge before the load tabs method or the table wont load.
         super.abort();
         
-        loadTabs();        
+        //loadTabs();        
     }
 
     public void afterCommitAdd(boolean success) {
         contactsController.setAutoAdd(false);
         super.afterCommitAdd(success);
-
-        // we need to load the notes tab if it has been already loaded
-        if(success){ 
-            loadNotes = true;
-            clearNotes = true;
-            
-            loadContacts = true;
-            clearContacts = false;
-            
-            Integer orgId = (Integer)rpc.getFieldValue(OrgMeta.getId());
-            NumberObject orgIdObj = new NumberObject(orgId);
-            
-//          done because key is set to null in AppScreenForm for the add operation 
-            if(key ==null){  
-                key = new DataSet();
-                key.setKey(orgIdObj);
-                
-            }else{
-                key.setKey(orgIdObj);
-                
-            }
-            
-            loadTabs();
-            
-            //the note subject and body fields need to be refeshed after every successful commit
-            clearNotesFields();
-        }
     }
 
     public void afterCommitUpdate(boolean success) {
@@ -290,17 +221,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         contactsController.reset();
         
         super.afterCommitUpdate(success);
-
-        //we need to load the notes tab if it has been already loaded
-        if(success){ 
-            loadNotes = true;
-            clearNotes = true;
-            
-            loadTabs();
-            
-            //the note subject and body fields need to be refeshed after every successful commit
-            clearNotesFields();
-        }
     }
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -310,16 +230,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements
      * Overriden to allow lasy loading Contact and Note tabs
      */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if (index == 0 && loadContacts) {
-            if (clearContacts)
-                clearContacts();
+        if (index == 0 && !((FormRPC)rpc.getField("contacts")).load) {
             fillContactsModel();
-            loadContacts = false;
-        } else if (index == 1 && loadNotes) {
-            if (clearNotes)
-                clearNotes();
+        } else if (index == 2 && !((FormRPC)rpc.getField("notes")).load) {
             fillNotesModel();
-            loadNotes = false;
         }
         return true;
     }
@@ -335,146 +249,40 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         }
     }
 
-    private void loadTabs() {
-        TabPanel noteTab = (TabPanel)getWidget("orgTabPanel");
-        int selectedTab = noteTab.getTabBar().getSelectedTab();
-
-        if (selectedTab == 0 && loadContacts) {
-            // if there was data previously then clear the contacts table
-            // otherwise don't
-            if (clearContacts) {
-                clearContacts();
-            }
-            // load the table
-            fillContactsModel();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadContacts = false;
-        }
-
-        else if (selectedTab == 1 && loadNotes) {
-            // if there was data previously then clear the notes panel otherwise
-            // don't
-            if (clearNotes) {
-                clearNotes();
-            }
-            // load the notes model
-            fillNotesModel();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadNotes = false;
-
-        }
-    }
-
     /*
      * Get all notes for organization (key)
      */
-    private void fillNotesModel(){            
-        Integer orgId = null;
-        boolean getModel = false;
-         
-         // access the database only if id is not null  
-         if(key!=null){
-           if(key.getKey()!=null){        
-             getModel = true;
-             orgId = (Integer)key.getKey().getValue(); 
-           }else{
-               clearNotes = false;
-           }
-         }else{
-             clearNotes = false;
-         } 
-            
-           if(getModel){ 
-               window.setStatus("","spinnerIcon");
-               NumberObject orgIdObj = new NumberObject(orgId);
-                 
-               // prepare the argument list for the getObject function
-               DataObject[] args = new DataObject[] {orgIdObj}; 
-                 
-               screenService.getObject("getNotesModel", args, new AsyncCallback(){
-                   public void onSuccess(Object result){    
-                     // get the datamodel, load it in the notes panel and set the value in the rpc
-                       String xmlString = (String) ((StringObject)result).getValue();
-                       svp.load(xmlString);   
-                       
-                       if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
-                           clearNotes = true;
-                        }else {
-                            clearNotes = false;
-                        }
-                       window.setStatus("","");
-                   }
+    private void fillNotesModel(){  
+        if(key == null)
+            return;
+        screenService.getObject("loadNotes", new DataObject[] {key,rpc.getField("notes")}, new AsyncCallback(){
+            public void onSuccess(Object result){    
+                // get the datamodel, load it in the notes panel and set the value in the rpc
+                ((FormRPC)result).load = true;
+                load((FormRPC)result);
+                rpc.setField("notes",(FormRPC)result);
+            }
                    
-                   public void onFailure(Throwable caught){
-                       Window.alert(caught.getMessage());
-                   }
-               }); 
-         }       
-       }
-
-    private void clearNotes() {
-        svp = (ScreenVertical)widgets.get("notesPanel");
-        svp.clear();
+            public void onFailure(Throwable caught){
+                Window.alert(caught.getMessage());
+            }
+        });        
     }
-    
-    private void clearNotesFields(){
-        //     the note subject and body fields need to be refeshed after every successful commit 
-           TextBox subjectBox = (TextBox)getWidget(OrgMeta.getNote().getSubject());           
-           subjectBox.setText("");
-          TextArea noteArea = (TextArea)getWidget(OrgMeta.getNote().getText());
-          noteArea.setText("");           
-          rpc.setFieldValue(OrgMeta.getNote().getSubject(), null);
-          rpc.setFieldValue(OrgMeta.getNote().getText(), null);  
-       }
 
     private void fillContactsModel() {
-        Integer orgId = null;
-        NumberObject orgIdObj;
-        TableField f;
-
-        if (key == null || key.getKey() == null) {
-            clearContacts = false;
+        if(key == null)
             return;
-        }
-
-        window.setStatus("","spinnerIcon");
-        
-        orgId = (Integer)key.getKey().getValue();
-        orgIdObj = new NumberObject(orgId);
-
-        f = new TableField();
-        f.setValue(contactsController.model);
-
-        // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orgIdObj, f};
-
-        screenService.getObject("getContactsModel", args, new AsyncCallback() {
+        screenService.getObject("loadContacts", new DataObject[] {key,rpc.getField("contacts")}, new AsyncCallback() {
             public void onSuccess(Object result) {
-                // get the table model and load it
-                // in the table
-                rpc.setFieldValue("contactsTable",
-                                  (TableModel)((TableField)result).getValue());
-                EditTable orgContactController = (EditTable)(((TableWidget)getWidget("contactsTable")).controller);
-                orgContactController.loadModel((TableModel)((TableField)result).getValue());
+               
+                load((FormRPC)result);
+                rpc.setField("contacts", (FormRPC)result);
 
-                clearContacts = orgContactController.model.numRows() > 0;
-                
-                window.setStatus("","");
             }
-
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
             }
         });
-    }
-
-    private void clearContacts() {
-        EditTable orgContactController = (EditTable)(((TableWidget)getWidget("contactsTable")).controller);
-        orgContactController.model.reset();
-        orgContactController.setModel(orgContactController.model);
-        rpc.setFieldValue("contactsTable", orgContactController.model);
     }
 
     private void onStandardNoteButtonClick() {

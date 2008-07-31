@@ -25,6 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Node;
 
+import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
@@ -41,7 +42,6 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.gwt.screen.ScreenAToZPanel;
 import org.openelis.gwt.screen.ScreenAToZTable;
 import org.openelis.gwt.screen.ScreenAbsolute;
 import org.openelis.gwt.screen.ScreenAppButton;
@@ -451,6 +451,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClass(new String[] {FormRPC.class.getName(),"rpc-rpc"},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new FormRPC();
+                                      else if(args[0] instanceof Node)
+                                          return new FormRPC((Node)args[0]);
+                                      return null;
+                                  }
+      });
       ClassFactory.addClass(new String[] {StringField.class.getName(),StringField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
@@ -590,18 +600,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                           listener = new HoverListener();
                                       return listener;
                                   }
-      });
-      ClassFactory.addClass(new String[] {ScreenAToZPanel.class.getName(),ScreenAToZPanel.TAG_NAME},
-                                  new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      if(args == null)
-                                          return new ScreenAToZPanel();
-                                      else if(args[0] instanceof Node)
-                                          return new ScreenAToZPanel((Node)args[0],(ScreenBase)args[1]);
-                                      return null;
-                                  }
-      });
-      
+      });      
       ClassFactory.addClass(new String[] {ScreenPagedTree.class.getName(),ScreenPagedTree.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {

@@ -18,17 +18,14 @@ package org.openelis.modules.storageunit.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.Widget;
 
 public class StorageUnitScreen extends OpenELISScreenForm {
 
@@ -42,14 +39,15 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded);
 	}
 	
-	 public void onChange(Widget sender) {
-	        if(sender == getWidget("atozButtons")){
-	           String action = ((ButtonPanel)sender).buttonClicked.action;
-	           if(action.startsWith("query:")){
-	        	   getStorageUnits(action.substring(6, action.length()));      
-	           }
+	 public void performCommand(Enum action, Object obj) {
+	        if(obj instanceof AppButton){
+	           String baction = ((AppButton)obj).action;
+	           if(baction.startsWith("query:")){
+	        	   getStorageUnits(baction.substring(6, baction.length()));      
+	           }else
+                   super.performCommand(action, obj);
 	        }else{
-	            super.onChange(sender);
+	            super.performCommand(action, obj);
 	        }
 	    }
 	
@@ -58,13 +56,13 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         cat = (AutoCompleteDropdown)getWidget(StorageUnitMeta.getCategory());
 

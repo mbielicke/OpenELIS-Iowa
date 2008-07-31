@@ -15,20 +15,21 @@
 */
 package org.openelis.modules.qaevent.client;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
  public class QAEventScreen extends OpenELISScreenForm implements ClickListener{
    
@@ -48,15 +49,15 @@ import com.google.gwt.user.client.ui.Widget;
          super("org.openelis.modules.qaevent.server.QAEventService",!loaded);  
      }
      
-         public void onChange(Widget sender) {
-         
-         if(sender == getWidget("atozButtons")){           
-            String action = ((ButtonPanel)sender).buttonClicked.action;           
-            if(action.startsWith("query:")){
-                getQAEvents(action.substring(6, action.length()));      
-            }
+     public void performCommand(Enum action, Object obj) {
+         if(obj instanceof AppButton) {
+            String baction = ((AppButton)obj).action;           
+            if(baction.startsWith("query:")){
+                getQAEvents(baction.substring(6, baction.length()));      
+            }else
+                super.performCommand(action, obj);
          }else{
-             super.onChange(sender);
+             super.performCommand(action, obj);
          }
      }
 
@@ -70,12 +71,12 @@ import com.google.gwt.user.client.ui.Widget;
              
              setBpanel((ButtonPanel) getWidget("buttons"));                           
              
-             AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-             modelWidget.addChangeListener(atozTable);
-             addChangeListener(atozTable);
+             AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
+             modelWidget.addCommandListener(atozTable);
+             addCommandListener(atozTable);
              
              ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-             atozButtons.addChangeListener(this);
+             atozButtons.addCommandListener(this);
              
              tname = (TextBox)getWidget(QAEMeta.getName());
              displayType = (ScreenAutoDropdown)widgets.get(QAEMeta.getTypeId());

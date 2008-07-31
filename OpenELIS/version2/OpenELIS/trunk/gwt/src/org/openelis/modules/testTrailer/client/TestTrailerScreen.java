@@ -15,19 +15,17 @@
 */
 package org.openelis.modules.testTrailer.client;
 
+import com.google.gwt.user.client.ui.TextBox;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class TestTrailerScreen extends OpenELISScreenForm {
 	
@@ -40,14 +38,15 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 		super("org.openelis.modules.testTrailer.server.TestTrailerService",false);
 	}
 	
-	 public void onChange(Widget sender) {
-	        if(sender == getWidget("atozButtons")){
-	           String action = ((ButtonPanel)sender).buttonClicked.action;
-	           if(action.startsWith("query:")){
-	        	   getTestTrailers(action.substring(6, action.length()));      
-	           }
+	 public void performCommand(Enum action, Object obj) {
+	        if(obj instanceof AppButton){
+	           String baction = ((AppButton)obj).action;
+	           if(baction.startsWith("query:")){
+	        	   getTestTrailers(baction.substring(6, baction.length()));      
+	           }else
+                   super.performCommand(action, obj);
 	        }else{
-	            super.onChange(sender);
+	            super.performCommand(action, obj);
 	        }
 	    }
 	
@@ -55,13 +54,13 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         nameTextBox = (TextBox) getWidget(TestTrailerMeta.getName());
         textArea = (ScreenTextArea) widgets.get(TestTrailerMeta.getText());
