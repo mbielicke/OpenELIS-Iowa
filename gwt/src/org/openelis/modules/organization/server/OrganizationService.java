@@ -29,11 +29,10 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
@@ -80,7 +79,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
             FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("OrganizationQuery");
     
             if(rpc == null)
-            	throw new QueryException(openElisConstants.getString("queryExpiredException"));
+            	throw new RPCException(openElisConstants.getString("queryExpiredException"));
 
             OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
             try{
@@ -133,7 +132,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     //		remote interface to call the organization bean
     		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     		OrganizationAddressDO newOrganizationDO = new OrganizationAddressDO();
-    		List organizationContacts = new ArrayList();
+    		List<OrganizationContactDO> organizationContacts = new ArrayList<OrganizationContactDO>();
     		NoteDO organizationNote = new NoteDO();
     		
     		//build the organizationAddress DO from the form
@@ -141,21 +140,21 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		newOrganizationDO = getOrganizationDOFromRPC(rpcSend);
     		
     		//contacts info
-    		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
-    		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
+            TableModel contactsTable = (TableModel)((FormRPC)rpcSend.getField("contacts")).getField("contactsTable").getValue();
+            organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
+
     		
     //		build the noteDo from the form
-    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
-    		organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
-    		organizationNote.setIsExternal("Y");
+            organizationNote.setSubject((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(OrgMeta.NOTE.getSubject()));
+            organizationNote.setText((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(OrgMeta.NOTE.getText()));
+            organizationNote.setIsExternal("Y");
     		
     		//validate the fields on the backend
-    		List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
-    		
-    		if(exceptionList.size() > 0){
-    			setRpcErrors(exceptionList, contactsTable, rpcSend);
-    			return rpcSend;
-    		} 
+            List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
+                
+            if(exceptionList.size() > 0){
+                setRpcErrors(exceptionList, contactsTable, rpcSend);
+            } 
     		
     		//send the changes to the database
     		Integer orgId;
@@ -190,13 +189,20 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		newOrganizationDO = getOrganizationDOFromRPC(rpcSend);
     		
     		//contacts info
-    		TableModel contactsTable = (TableModel)rpcSend.getField("contactsTable").getValue();
-    		organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());		
+            TableModel contactsTable = null;
+            if(((FormRPC)rpcSend.getField("contacts")).load){
+                contactsTable = (TableModel)((FormRPC)rpcSend.getField("contacts")).getField("contactsTable").getValue();
+                organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
+            }else
+                organizationContacts = null;
     		
     //		build the noteDo from the form
-    		organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
-    		organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
-    		organizationNote.setIsExternal("Y");
+            if(((FormRPC)rpcSend.getField("notes")).load){
+                organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
+                organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
+                organizationNote.setIsExternal("Y");
+            }else
+                organizationNote = null;
     		
     //		validate the fields on the backend
     		List exceptionList = remote.validateForUpdate(newOrganizationDO, organizationContacts);
@@ -243,22 +249,54 @@ public class OrganizationService implements AppScreenFormServiceInt,
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, organizationDO);
+            
+            if(((FormRPC)rpcReturn.getField("contacts")).load){
+                FormRPC contactsRPC = (FormRPC)rpcReturn.getField("contacts");
+                getContactsModel((NumberObject)key.getKey(), (TableField)contactsRPC.getField("contactsTable"));
+            }
+            
+            if(((FormRPC)rpcReturn.getField("notes")).load){
+                FormRPC notesRpc = (FormRPC)rpcReturn.getField("notes");
+                notesRpc.setFieldValue("notesPanel",getNotesModel((NumberObject)key.getKey()).getValue());
+            }
     		
             return rpcReturn;  
     	}
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
 		//remote interface to call the organization bean
-		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
-//		System.out.println("in contacts");
-		OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getKey().getValue());
+//		    System.out.println("in contacts");
+        OrganizationAddressDO organizationDO = remote.getOrganizationAddress((Integer)key.getKey().getValue());
 
-//		set the fields in the RPC
-		setFieldsInRPC(rpcReturn, organizationDO);
+            //		set the fields in the RPC
+        setFieldsInRPC(rpcReturn, organizationDO);
+            
+        String tab = (String)rpcReturn.getFieldValue("orgTabPanel");
+        if(tab.equals("contactsTab")){
+            loadContacts(key,(FormRPC)rpcReturn.getField("contacts"));
+        }
+       
+        if(tab.equals("notesTab")){
+            loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+        }
         
-      return rpcReturn;  
+        return rpcReturn;  
 	}
+    
+    public FormRPC loadContacts(DataSet key, FormRPC rpcReturn) throws RPCException {
+        getContactsModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("contactsTable"));
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+    
+    public FormRPC loadNotes(DataSet key, FormRPC rpcReturn) throws RPCException {
+        StringObject so = getNotesModel((NumberObject)key.getKey());
+        rpcReturn.setFieldValue("notesPanel",so.getValue());
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
 	
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
     //		remote interface to call the organization bean
@@ -273,6 +311,15 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, organizationDO);
+            
+            String tab = (String)rpcReturn.getFieldValue("orgTabPanel");
+            if(tab.equals("contactsTab")){
+                loadContacts(key,(FormRPC)rpcReturn.getField("contacts"));
+            }
+           
+            if(tab.equals("notesTab")){
+                loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+            }
             
     	    return rpcReturn;  
     	}
@@ -396,12 +443,12 @@ public class OrganizationService implements AppScreenFormServiceInt,
             
             String userName = user.getLoginName().trim();  
     
-        	 Element mainRowPanel = (Element) doc.createElement("panel");
-        	 Element topRowPanel = (Element) doc.createElement("panel");
+        	 Element mainRowPanel = (Element) doc.createElement("VerticalPanel");
+        	 Element topRowPanel = (Element) doc.createElement("HorizontalPanel");
         	 Element titleWidgetTag = (Element) doc.createElement("widget");
         	 Element titleText = (Element) doc.createElement("text");
         	 Element authorWidgetTag = (Element) doc.createElement("widget");
-        	 Element authorPanel = (Element) doc.createElement("panel");
+        	 Element authorPanel = (Element) doc.createElement("VerticalPanel");
         	 Element dateText = (Element) doc.createElement("text");
         	 Element authorText = (Element) doc.createElement("text");
         	 Element bodyWidgetTag = (Element) doc.createElement("widget");
@@ -413,16 +460,13 @@ public class OrganizationService implements AppScreenFormServiceInt,
              }else{
             	 mainRowPanel.setAttribute("style", "TableRow");
              }
-        	 mainRowPanel.setAttribute("layout", "vertical");
         	 mainRowPanel.setAttribute("width", "531px");
         	 
-        	 topRowPanel.setAttribute("layout", "horizontal");
         	 topRowPanel.setAttribute("width", "531px");
         	 titleText.setAttribute("key", "note"+i+"Title");
         	 titleText.setAttribute("style", "notesSubjectText");
         	 titleText.appendChild(doc.createTextNode(subject));
         	 authorWidgetTag.setAttribute("halign", "right");
-        	 authorPanel.setAttribute("layout", "vertical");
         	 dateText.setAttribute("key", "note"+i+"Date");
         	 dateText.appendChild(doc.createTextNode(date));
         	 authorText.setAttribute("key", "note"+i+"Author");
@@ -456,11 +500,11 @@ public class OrganizationService implements AppScreenFormServiceInt,
         return null;
     }
 
-    public TableField getContactsModel(NumberObject orgId,TableField model){
+    public void getContactsModel(NumberObject orgId,TableField model){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         List contactsList = remote.getOrganizationContacts((Integer)orgId.getValue());
-        model.setValue(fillContactsTable((TableModel)model.getValue(),contactsList));
-        return model;
+        fillContactsTable((TableModel)model.getValue(),contactsList);
+
     }
 
     public DataModel getInitialModel(String cat){
@@ -588,8 +632,8 @@ public class OrganizationService implements AppScreenFormServiceInt,
 		return newOrganizationDO;
 	}
 	
-	private List getOrgContactsListFromRPC(TableModel contactsTable, Integer orgId){
-		List organizationContacts = new ArrayList();
+	private List<OrganizationContactDO> getOrgContactsListFromRPC(TableModel contactsTable, Integer orgId){
+		List<OrganizationContactDO> organizationContacts = new ArrayList<OrganizationContactDO>();
 		
 		for(int i=0; i<contactsTable.numRows(); i++){
 			OrganizationContactDO contactDO = new OrganizationContactDO();
@@ -650,7 +694,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		else if(exceptionList.get(i) instanceof FormErrorException)
     			rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
     	}	
-    	rpcSend.status = IForm.Status.invalid;
+    	rpcSend.status = Status.invalid;
     }
 
     private DataModel getParentOrgMatches(String match){

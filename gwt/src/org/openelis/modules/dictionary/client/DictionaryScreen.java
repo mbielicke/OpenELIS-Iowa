@@ -16,12 +16,17 @@
 package org.openelis.modules.dictionary.client;
 
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.widget.AToZPanel;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -31,10 +36,6 @@ import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm implements ClickListener{
 
@@ -52,17 +53,16 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
     }
 
-    public void onChange(Widget sender) {
-        
-        if(sender == getWidget("atozButtons")){           
-           String action = ((ButtonPanel)sender).buttonClicked.action;           
-           if (action.startsWith("query:")) {
-               getCategories(action.substring(6, action.length()));
-           } 
+    public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){           
+           String baction = ((AppButton)obj).action;           
+           if (baction.startsWith("query:")) {
+               getCategories(baction.substring(6, baction.length()));
+           }else
+               super.performCommand(action, obj);
         } else{
-            super.onChange(sender);
-           }
-    
+            super.performCommand(action, obj);
+        }
     }
 
     public void onClick(Widget sender) {
@@ -79,12 +79,12 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         
         setBpanel((ButtonPanel)getWidget("buttons"));
 
-        AToZPanel atozTable = (AToZPanel) getWidget("hideablePanel");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
                 
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
@@ -146,16 +146,16 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
     
 
-    public void commitAdd() {
+    public Request commitAdd() {
         dictEntryController.setAutoAdd(false);
-        super.commitAdd();
+        return super.commitAdd();
     }    
 
-    public void commitUpdate() {
+    public Request commitUpdate() {
         dictEntryController.setAutoAdd(false);
         //we need to do this reset to get rid of the last row
         dictEntryController.reset();
-        super.commitUpdate();
+        return super.commitUpdate();
     }
 
     private void getCategories(String query) {

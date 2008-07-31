@@ -94,14 +94,15 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded);
 	}
 
-    public void onChange(Widget sender) {
-        if(sender == getWidget("atozButtons")){
-           String action = ((ButtonPanel)sender).buttonClicked.action;
-           if(action.startsWith("query:")){
-        	   getInventories(action.substring(6, action.length()), ((ButtonPanel)sender).buttonClicked);      
-           }
+    public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){
+           String baction = ((AppButton)obj).action;
+           if(baction.startsWith("query:")){
+        	   getInventories(baction.substring(6, baction.length()), ((AppButton)obj));      
+           }else
+               super.performCommand(action, obj);
         }else{
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
     
@@ -125,13 +126,13 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 		setBpanel((ButtonPanel) getWidget("buttons"));
 
         AToZTable atozTable = (AToZTable) getWidget("azTable");
-		modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+		modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
@@ -721,5 +722,10 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         }
         
         return empty;
+    }
+
+    public boolean doAutoAdd(TableRow addRow, TableController controller) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

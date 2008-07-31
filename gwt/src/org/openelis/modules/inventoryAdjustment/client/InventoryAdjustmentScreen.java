@@ -16,6 +16,7 @@
 package org.openelis.modules.inventoryAdjustment.client;
 
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
@@ -88,6 +89,10 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     }
 
     public void finishedEditing(int row, int col, TableController controller) {}
+    
+    public boolean doAutoAdd(TableRow row, TableController controller){
+        return true;
+    }
 
     public boolean doAutoAdd(int row, int col, TableController controller) {
         if(col == 0)

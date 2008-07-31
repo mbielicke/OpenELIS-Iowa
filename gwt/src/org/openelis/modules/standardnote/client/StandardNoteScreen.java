@@ -15,21 +15,21 @@
 */
 package org.openelis.modules.standardnote.client;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.ui.TextBox;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZPanel;
 import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class StandardNoteScreen extends OpenELISScreenForm {
 
@@ -45,14 +45,15 @@ public class StandardNoteScreen extends OpenELISScreenForm {
     	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded);
     }
 
-    public void onChange(Widget sender) {
-        if(sender == getWidget("atozButtons")){
-           String action = ((ButtonPanel)sender).buttonClicked.action;
-           if(action.startsWith("query:")){
-        	   getStandardNotes(action.substring(6, action.length()));      
-           }
+    public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){
+           String baction = ((AppButton)obj).action;
+           if(baction.startsWith("query:")){
+        	   getStandardNotes(baction.substring(6, baction.length()));      
+           }else
+               super.performCommand(action,obj);
         }else{
-            super.onChange(sender);
+            super.performCommand(action, obj);
         }
     }
 
@@ -61,13 +62,13 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		setBpanel((ButtonPanel) getWidget("buttons"));
 		
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addChangeListener(atozTable);
-        addChangeListener(atozTable);
+        modelWidget.addCommandListener(atozTable);
+        addCommandListener(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addChangeListener(this);
+        atozButtons.addCommandListener(this);
         
         textArea = (ScreenTextArea)widgets.get(StandardNoteMeta.getText());
         nameTextbox = (TextBox)getWidget(StandardNoteMeta.getName());
@@ -107,11 +108,13 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	}
 
 	
-	public void commitQuery(FormRPC rpcQuery) {
-    	super.commitQuery(rpcQuery);
+	public Request commitQuery(FormRPC rpcQuery) {
+    	Request ret = super.commitQuery(rpcQuery);
     	
     	//enable the text area
     	textArea.enable(true);
+        
+        return ret;
     }
 
     private void getStandardNotes(String query) {

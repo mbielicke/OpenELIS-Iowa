@@ -569,6 +569,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         return false;
     }
 
+    public boolean doAutoAdd(TableRow row, TableController controller) {
+        return row.getColumn(0).getValue() != null && !row.getColumn(0).getValue().equals(0);
+    }
+    
     public boolean doAutoAdd(int row, int col, TableController controller) {
         if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row)))
             return true;
@@ -577,7 +581,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
       
         return false;
     }
-
+    
     public void finishedEditing(int row, int col, TableController controller) {
        //Window.alert("("+col+") && ("+row+") && ("+controller.model.numRows()+") && ("+!startedLoadingTable+") total:("+(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable)+")");
         if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
