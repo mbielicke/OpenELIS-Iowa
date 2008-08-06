@@ -65,7 +65,7 @@ import org.w3c.dom.Element;
 public class OrganizationService implements AppScreenFormServiceInt, 
 															  AutoCompleteServiceInt {
 
-	private static final int leftTableRowsPerPage = 19;
+	private static final int leftTableRowsPerPage = 20;
     
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
@@ -144,7 +144,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
             organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
 
     		
-    //		build the noteDo from the form
+            //build the noteDo from the form
             organizationNote.setSubject((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(OrgMeta.NOTE.getSubject()));
             organizationNote.setText((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(OrgMeta.NOTE.getText()));
             organizationNote.setIsExternal("Y");
@@ -172,9 +172,19 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		//lookup the changes from the database and build the rpc
     		newOrganizationDO.setOrganizationId(orgId);
     
-    //		set the fields in the RPC
+    		//set the fields in the RPC
     		setFieldsInRPC(rpcReturn, newOrganizationDO);
     
+    		//we need to refresh the notes tab if it is showing
+            String tab = (String)rpcReturn.getFieldValue("orgTabPanel");
+            if(tab.equals("notesTab")){
+                DataSet key = new DataSet();
+                NumberObject id = new NumberObject(NumberObject.Type.INTEGER, newOrganizationDO.getOrganizationId());
+                key.setKey(id);
+                
+                loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+            }
+            
     		return rpcReturn;
     	}
 
@@ -189,20 +199,17 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		newOrganizationDO = getOrganizationDOFromRPC(rpcSend);
     		
     		//contacts info
-            TableModel contactsTable = null;
-            if(((FormRPC)rpcSend.getField("contacts")).load){
-                contactsTable = (TableModel)((FormRPC)rpcSend.getField("contacts")).getField("contactsTable").getValue();
+            TableModel contactsTable = (TableModel)((FormRPC)rpcSend.getField("contacts")).getField("contactsTable").getValue();;
+            if(((FormRPC)rpcSend.getField("contacts")).load)
                 organizationContacts = getOrgContactsListFromRPC(contactsTable, newOrganizationDO.getOrganizationId());
-            }else
-                organizationContacts = null;
     		
     //		build the noteDo from the form
             if(((FormRPC)rpcSend.getField("notes")).load){
-                organizationNote.setSubject((String)rpcSend.getFieldValue(OrgMeta.NOTE.getSubject()));
-                organizationNote.setText((String)rpcSend.getFieldValue(OrgMeta.NOTE.getText()));
+                FormRPC notesRPC = (FormRPC)rpcSend.getField("notes");                
+                organizationNote.setSubject((String)notesRPC.getFieldValue(OrgMeta.NOTE.getSubject()));
+                organizationNote.setText((String)notesRPC.getFieldValue(OrgMeta.NOTE.getText()));
                 organizationNote.setIsExternal("Y");
-            }else
-                organizationNote = null;
+            }
     		
     //		validate the fields on the backend
     		List exceptionList = remote.validateForUpdate(newOrganizationDO, organizationContacts);
@@ -226,13 +233,20 @@ public class OrganizationService implements AppScreenFormServiceInt,
     			
     			return rpcSend;
     		}
-    		
-    		//lookup the changes from the database and build the rpc
-    		//OrganizationAddressDO organizationDO = remote.getOrganizationAddress(newOrganizationDO.getOrganizationId());
-    
-    //		set the fields in the RPC
+
+    		//set the fields in the RPC
     		setFieldsInRPC(rpcReturn, newOrganizationDO);	
     		
+            //we need to refresh the notes tab if it is showing
+            String tab = (String)rpcReturn.getFieldValue("orgTabPanel");
+            if(tab.equals("notesTab")){
+                DataSet key = new DataSet();
+                NumberObject id = new NumberObject(NumberObject.Type.INTEGER, newOrganizationDO.getOrganizationId());
+                key.setKey(id);
+                
+                loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+            }
+            
     		return rpcReturn;
     	}
 

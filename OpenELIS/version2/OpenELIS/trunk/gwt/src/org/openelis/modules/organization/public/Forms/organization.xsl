@@ -65,7 +65,7 @@
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel">
-						<azTable colwidths="175" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'name')}" width="100%">
+						<azTable colwidths="175" height="425px" key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
