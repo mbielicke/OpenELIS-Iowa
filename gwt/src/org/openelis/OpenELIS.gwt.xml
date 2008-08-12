@@ -25,6 +25,7 @@
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
+    <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.ELISCommon"/>     
     
 	<!-- Specify the app entry point class.                   -->
