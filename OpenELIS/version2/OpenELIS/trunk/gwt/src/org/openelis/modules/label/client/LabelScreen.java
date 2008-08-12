@@ -21,11 +21,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -39,6 +43,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     private ScreenAutoDropdown displayPType = null;
     private ScreenAutoDropdown displayScript = null;
     private TextBox nameTextbox;
+    private KeyListManager keyList = new KeyListManager();
     
     private LabelMetaMap Meta = new LabelMetaMap(); 
     
@@ -64,19 +69,24 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         
     }
 
-    public void afterDraw(boolean success) {       
+    public void afterDraw(boolean success) {
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(keyList);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         loaded = true;        
-        setBpanel((ButtonPanel)getWidget("buttons"));
 
         nameTextbox = (TextBox)getWidget(Meta.getName());
-        
-        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
+        startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
         displayPType = (ScreenAutoDropdown)widgets.get(Meta.getPrinterTypeId());
         displayScript = (ScreenAutoDropdown)widgets.get(Meta.getScriptletId());
@@ -91,24 +101,6 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
        ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
         
         super.afterDraw(success);
-    }
-    
-    public void query() {
-        super.query();
-        
-        nameTextbox.setFocus(true);
-    }
-    
-    public void add() {
-        super.add();
-        
-        nameTextbox.setFocus(true);
-    }
-    
-    public void afterUpdate(boolean success) {
-        super.afterUpdate(success);
-        
-        nameTextbox.setFocus(true);
     }
     
     private void getLabels(String query) {

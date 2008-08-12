@@ -99,7 +99,10 @@ public class QAEventService implements AppScreenFormServiceInt{
         }
         
         int i=0;
-        model.clear();    
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();    
         while(i < qaEventNames.size() && i < leftTableRowsPerPage) {
             IdNameTestMethodDO resultDO = (IdNameTestMethodDO)qaEventNames.get(i);
             //qaEvent id

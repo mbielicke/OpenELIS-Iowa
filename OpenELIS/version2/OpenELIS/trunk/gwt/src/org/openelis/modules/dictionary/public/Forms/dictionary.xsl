@@ -56,14 +56,13 @@
 	<display>
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
-																
-  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title="{resource:getString($constants,'catName')}" tablewidth="auto"  colwidths ="175">   
-     	 <buttonPanel key="atozButtons">
-	    	  <xsl:call-template name="aToZLeftPanelButtons"/>		
-		 </buttonPanel>        
-  </aToZ>
-  
-  
+			 		<CollapsePanel key="collapsePanel">
+						<azTable colwidths ="175" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
+							<buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+							</buttonPanel>
+						</azTable>
+					</CollapsePanel>
 	<VerticalPanel spacing="0">
 				<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">

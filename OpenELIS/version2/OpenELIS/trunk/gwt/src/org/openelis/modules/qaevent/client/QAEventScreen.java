@@ -15,18 +15,22 @@
 */
 package org.openelis.modules.qaevent.client;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -37,6 +41,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      private ScreenAutoDropdown displayType = null;
      private ScreenAutoDropdown displayTest = null;
      private ScreenTextArea reportingText = null;
+     private KeyListManager keyList = new KeyListManager();
      
      private static boolean loaded = false;
      
@@ -68,16 +73,19 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
         public void afterDraw(boolean success) {
              loaded = true;
-             
-             setBpanel((ButtonPanel) getWidget("buttons"));                           
-             
-             AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
-             modelWidget.addCommandListener(atozTable);
-             addCommandListener(atozTable);
-             
+             AToZTable atozTable = (AToZTable) getWidget("azTable");
              ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-             atozButtons.addCommandListener(this);
+             ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
              
+             CommandChain chain = new CommandChain();
+             chain.addCommand(bpanel);
+             chain.addCommand(keyList);
+             chain.addCommand(this);
+             chain.addCommand(atozTable);
+             chain.addCommand(atozButtons);
+             
+             ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+                          
              tname = (TextBox)getWidget(QAEMeta.getName());
              displayType = (ScreenAutoDropdown)widgets.get(QAEMeta.getTypeId());
              displayTest = (ScreenAutoDropdown)widgets.get(QAEMeta.getTestId());
@@ -94,9 +102,17 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
             ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
             ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
                     
-                
             super.afterDraw(success); 
-        }                 
+        }           
+        
+        protected AsyncCallback afterUpdate = new AsyncCallback() {
+            public void onFailure(Throwable caught) {   
+            }
+            public void onSuccess(Object result) {
+                tname.setFocus(true);
+                reportingText.enable(true);
+            }
+        };    
          
          public void query() {
             
@@ -118,14 +134,6 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
              reportingText.enable(true);
             tname.setFocus(true);            
          }
-         
-        public void afterUpdate(boolean success) {
-            super.afterUpdate(success);
-            
-            //set focus to the name field
-            tname.setFocus(true);
-            reportingText.enable(true);
-        }
          
          private void getQAEvents(String query) {
              if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {

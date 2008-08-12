@@ -140,7 +140,10 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         //fill the model with the query results
         int i=0;
-        model.clear();
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();
         while(i < orderIds.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)orderIds.get(i);
  

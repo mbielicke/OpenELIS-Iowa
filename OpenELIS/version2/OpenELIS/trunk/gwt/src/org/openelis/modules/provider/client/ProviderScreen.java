@@ -33,12 +33,14 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -50,6 +52,7 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.QueryTable;
@@ -76,6 +79,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private EditTable provAddController = null;
     private TabPanel noteTab = null;    
     private ScreenAutoDropdown displayType = null;
+    private KeyListManager keyList = new KeyListManager();
     
     private StringField note = null; 
     private StringField subject = null;
@@ -113,17 +117,21 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
 
     public void afterDraw(boolean success) {
         loaded = true;
-        setBpanel((ButtonPanel) getWidget("buttons"));        
-        message.setText("Done");
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        chain.addCommand(keyList);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
                    
 //      load other widgets
-        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-        
+
         removeContactButton = (AppButton) getWidget("removeAddressButton");
         
         standardNoteButton = (AppButton) getWidget("standardNoteButton");
@@ -140,6 +148,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
         provAddController.setAutoAdd(false);
+        addCommandListener(provAddController);
         
         ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         proAddManager.setProviderForm(this);
@@ -171,20 +180,84 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
        queryContactCountry.setModel(countryDropDown);              
         
-        super.afterDraw(success);
+
+       super.afterDraw(success);
     }
+    
+    protected AsyncCallback afterFetch = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
         
-    public void afterFetch(boolean success){       
-    //      every time a fetch is done, data in both tabs should be loaded afresh
-           if(success){ 
+        }
+        public void onSuccess(Object result) {
             loadAddresses = true;
-            loadNotes = true;                        
-                
+            loadNotes = true;                                
             loadTabs();        
-           } 
-           super.afterFetch(success); 
+        }
            
-         }
+    };
+       
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+        }
+        public void onSuccess(Object result) {
+            removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
+            
+            standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
+            
+            provId.enable(false);
+            
+            // this code is for the event of the update mode being enabled 
+            loadAddresses = true;
+            loadNotes = true;                
+            
+            loadTabs(); 
+            //      set focus to the last name field
+            lastName.setFocus(true);
+        }
+           
+    };
+       
+    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+        }
+        public void onSuccess(Object result) {
+           loadNotes = true;
+           clearNotes = true;                
+           loadTabs();
+           clearNotesFields(); 
+        }
+    };
+       
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+        }
+        public void onSuccess(Object result) {
+            loadNotes = true;
+            clearNotes = true;    
+            
+            loadAddresses = true;
+            clearAddresses = false;
+            
+            Integer provId = (Integer)rpc.getFieldValue(ProvMeta.getId());
+            NumberObject provIdObj = new NumberObject(provId);
+            
+//          done because key is set to null in AppScreenForm for the add operation 
+            if(key ==null){  
+                key = new DataSet();
+                key.setKey(provIdObj);
+                
+            }else{
+                key.setKey(provIdObj);
+                
+            }
+            
+            loadTabs();
+                    
+            clearNotesFields();
+            
+        }
+           
+    };
 
     public void query(){
     	clearNotes();   	       
@@ -227,34 +300,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         subject = (StringField)rpc.getField(ProvMeta.getNote().getSubject());
         subject.setValue("");
         
-        provAddController.setAutoAdd(true);
         
         //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
         //proAddManager.disableRows = false;
         
         noteArea.enable(true);
         super.update();      
-    }
-    
-    public void afterUpdate(boolean success) {
-        
-        super.afterUpdate(success);
-                
-        removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
-        
-        standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
-        
-        provId.enable(false);
-        
-       if(success){ 
-        // this code is for the event of the update mode being enabled 
-        loadAddresses = true;
-        loadNotes = true;                
-        
-        loadTabs();
-       } 
-        //      set focus to the last name field
-        lastName.setFocus(true);
     }
 
     public void abort(){      
@@ -284,11 +335,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         return super.commitQuery(rpcQuery);
     }
 
-    public Request commitAdd(){
+    public void commitAdd(){
                        
         provAddController.unselect(-1);
                
-        Request ret = super.commitAdd();                            
+        super.commitAdd();                            
         
         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
         
@@ -296,57 +347,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         provAddController.setAutoAdd(false);
         
-        return ret;
-    }
-    
-    public void afterCommitAdd(boolean success){      
-        // we need to load the notes tab if it has been already loaded
-       if(success){  
-        loadNotes = true;
-        clearNotes = true;    
-        
-        loadAddresses = true;
-        clearAddresses = false;
-        
-        Integer provId = (Integer)rpc.getFieldValue(ProvMeta.getId());
-        NumberObject provIdObj = new NumberObject(provId);
-        
-//      done because key is set to null in AppScreenForm for the add operation 
-        if(key ==null){  
-            key = new DataSet();
-            key.setKey(provIdObj);
-            
-        }else{
-            key.setKey(provIdObj);
-            
-        }
-        
-        loadTabs();
-                
-        clearNotesFields();
-      }
-        
-        super.afterCommitAdd(success);         
-    }
-
-    public void afterCommitUpdate(boolean success){
-        provAddController.setAutoAdd(false); 
-        //we need to do this reset to get rid of the last row
-        provAddController.reset();
-        
-        super.afterCommitUpdate(success); 
-        
-        //we need to load the notes tab if it has been already loaded
-        if(success){  
-         loadNotes = true;
-         clearNotes = true;                
-         
-         loadTabs();
-                 
-         clearNotesFields();
-       }
-        
-                    
     }
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index){

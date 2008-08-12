@@ -16,20 +16,23 @@
 package org.openelis.modules.dictionary.client;
 
 
-import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.EditTable;
@@ -42,6 +45,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     private EditTable dictEntryController = null;
     private AppButton removeEntryButton = null;
     private TextBox tname = null;
+    private KeyListManager keyList = new KeyListManager();
 
     private ScreenAutoDropdown displaySection = null;
     private static boolean loaded = false;
@@ -74,23 +78,26 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
     public void afterDraw(boolean success) {       
-
-        loaded = true;
-        
-        setBpanel((ButtonPanel)getWidget("buttons"));
-
-        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
-        
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-                
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+               
         dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
         ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
         dictEntryController.setAutoAdd(false);
+        addCommandListener(dictEntryController);
 
         tname = (TextBox)getWidget(CatMap.getName());
+        startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
         displaySection = (ScreenAutoDropdown)widgets.get(CatMap.getSectionId());       
@@ -102,60 +109,14 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
         
         super.afterDraw(success);
+        
+        loaded = true;
 
     }
 
     public void query() {
         super.query();
-    
-        // set focus to the name field       
-        tname.setFocus(true);
-    
-    
         removeEntryButton.changeState(ButtonState.DISABLED);
-    }
-
-    public void add() {
-        dictEntryController.setAutoAdd(true);
-    
-        super.add();        
-    
-        // set focus to the name field
-        tname.setFocus(true);
-               
-    }
-
-    public void update() {
-
-        dictEntryController.setAutoAdd(true);        
-        
-        super.update();
-    }
-
-    public void abort() {
-        dictEntryController.setAutoAdd(false);
-        super.abort();
-    }
-
-    public void afterUpdate(boolean success) {
-        super.afterUpdate(success);
-
-        // set focus to the name field
-        tname.setFocus(true);
-        
-    }
-    
-
-    public Request commitAdd() {
-        dictEntryController.setAutoAdd(false);
-        return super.commitAdd();
-    }    
-
-    public Request commitUpdate() {
-        dictEntryController.setAutoAdd(false);
-        //we need to do this reset to get rid of the last row
-        dictEntryController.reset();
-        return super.commitUpdate();
     }
 
     private void getCategories(String query) {

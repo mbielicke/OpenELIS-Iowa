@@ -18,6 +18,9 @@ package org.openelis.modules.analyte.client;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -29,6 +32,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 public class AnalyteScreen extends OpenELISScreenForm {
 	
 	private TextBox nameTextBox;
+    private KeyListManager keyList = new KeyListManager();
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 
 	public AnalyteScreen() {
@@ -48,42 +52,24 @@ public class AnalyteScreen extends OpenELISScreenForm {
     }
 	
 	public void afterDraw(boolean success) {
-	
-		setBpanel((ButtonPanel) getWidget("buttons"));
-
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(keyList);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-        
         nameTextBox = (TextBox) getWidget(Meta.getName());
+        
+        startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
 
 		super.afterDraw(success);
-	}
-	
-	public void add() {
-		super.add();
-
-		//set focus to the name field
-		nameTextBox.setFocus(true);
-	}
-	
-	public void query() {
-		super.query();
-		
-		//set focus to the name field
-		nameTextBox.setFocus(true);
-	}
-	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
-
-		//set focus to the name field
-		nameTextBox.setFocus(true);
 	}
 	
 	private void getAnalytes(String query) {

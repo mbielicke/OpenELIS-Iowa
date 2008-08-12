@@ -3,10 +3,12 @@ package org.openelis.modules.test.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -41,6 +43,7 @@ public class TestScreen extends OpenELISScreenForm implements
     private static boolean loaded = false;
     
     private TestMetaMap TestMeta = new TestMetaMap();
+    private KeyListManager keyList = new KeyListManager();
     
     private static String tableXML = "<table width=\"360px\" key=\"analyteTable\" manager=\"this\" maxRows=\"1\" title=\"\" showError=\"false\" showScroll = \"false\">"+
                             "<headers>Value,"+
@@ -99,7 +102,6 @@ public class TestScreen extends OpenELISScreenForm implements
       if(tabIndex ==1){
        final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("analyteTree");
         tree.controller.setTreeListener(this);
-        setBpanel((ButtonPanel) getWidget("buttons"));
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         
@@ -148,21 +150,19 @@ public class TestScreen extends OpenELISScreenForm implements
     
     public void afterDraw(boolean success) {
         loaded = true;
-        setBpanel((ButtonPanel) getWidget("buttons"));        
-        message.setText("Done");
-                   
-//      load other widgets
-        AToZTable atozTable = (AToZTable) getWidget("azTable");        
-        modelWidget.addCommandListener(atozTable);
-        atozTable.modelWidget = modelWidget;
-        addCommandListener(atozTable);
-        
-       ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");        
+        AToZTable atozTable = (AToZTable) getWidget("azTable");    
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);                           
-        setBpanel((ButtonPanel)getWidget("buttons"));
-               
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
+                
+       ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+                       
         super.afterDraw(success);
     }
 

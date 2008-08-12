@@ -49,12 +49,13 @@
 <screen id= "QAEvents" name="{resource:getString($constants,'QAEvent')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
-  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}" colwidths ="100,65,65">   
-     <buttonPanel key="atozButtons">
-	   <xsl:call-template name="aToZLeftPanelButtons"/>		
-	</buttonPanel>		     
-  </aToZ>
-  
+ 					<CollapsePanel key="collapsePanel">
+						<azTable colwidths ="100,65,65" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}">
+							<buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+							</buttonPanel>
+						</azTable>
+					</CollapsePanel>
   <VerticalPanel>
    <!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">

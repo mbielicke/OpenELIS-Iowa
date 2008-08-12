@@ -20,7 +20,10 @@ import com.google.gwt.user.client.ui.TextBox;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
@@ -35,6 +38,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
+    private KeyListManager keyList = new KeyListManager();
 	
 	private static DataModel typeDropdown;
 	private static boolean loaded = false;
@@ -59,20 +63,24 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 
     public void afterDraw(boolean success) {
 		loaded = true;
-		setBpanel((ButtonPanel) getWidget("buttons"));
-		
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
         
         textArea = (ScreenTextArea)widgets.get(StandardNoteMeta.getText());
         nameTextbox = (TextBox)getWidget(StandardNoteMeta.getName());
 
+        startWidget = (ScreenInputWidget)widgets.get(StandardNoteMeta.getName());
+        
         if(typeDropdown == null)
             typeDropdown = (DataModel)initData.get("noteTypes");
         
@@ -91,23 +99,8 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		textArea.enable(false);
 
 		nameTextbox.setFocus(true);
-	}
-	
-	public void add() {
-		super.add();
+    }
 
-		//set focus to the name field
-		nameTextbox.setFocus(true);
-	}
-	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
-
-		//set focus to the name field
-		nameTextbox.setFocus(true);
-	}
-
-	
 	public Request commitQuery(FormRPC rpcQuery) {
     	Request ret = super.commitQuery(rpcQuery);
     	

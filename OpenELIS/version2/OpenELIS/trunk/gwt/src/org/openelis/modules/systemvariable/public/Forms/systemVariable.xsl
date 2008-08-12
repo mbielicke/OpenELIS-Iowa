@@ -42,12 +42,13 @@
 <screen id= "SystemVariable" name="{resource:getString($constants,'systemVariable')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel">  
-  <aToZ height="235px" width="100%" key="hideablePanel"  maxRows="10" title = "" tablewidth="auto" headers = "{resource:getString($constants,'name')}" colwidths ="175">     
-     <buttonPanel key="atozButtons">
-	   <xsl:call-template name="aToZLeftPanelButtons"/>		
-	</buttonPanel>		     
-  </aToZ>
-  
+  					<CollapsePanel key="collapsePanel">
+						<azTable colwidths ="175" height="235px" key="azTable" maxRows="10" tablewidth="auto" title="" width="100%"  headers = "{resource:getString($constants,'name')}">
+							<buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+							</buttonPanel>
+						</azTable>
+					</CollapsePanel>  
   <VerticalPanel>
    <!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">

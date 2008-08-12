@@ -90,7 +90,10 @@ public class TestTrailerService implements AppScreenFormServiceInt {
     		}
     		
             int i=0;
-            model.clear();
+            if(model == null)
+                model = new DataModel();
+            else
+                model.clear();
             while(i < testTrailers.size() && i < leftTableRowsPerPage) {
                 IdNameDO resultDO = (IdNameDO)testTrailers.get(i);
                 //org id

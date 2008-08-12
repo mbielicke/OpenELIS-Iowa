@@ -15,14 +15,16 @@
 */
 package org.openelis.modules.storage.client;
 
-import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -30,18 +32,14 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class StorageLocationScreen extends OpenELISScreenForm implements ClickListener {
 	
 	private TextBox nameTextbox;
 	private EditTable childTable;
+    private KeyListManager keyList = new KeyListManager();
 	
     private AppButton removeEntryButton;
    	
@@ -72,21 +70,25 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	}
 	
 	public void afterDraw(boolean success) {
-		setBpanel((ButtonPanel) getWidget("buttons"));
-
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(keyList);
+        chain.addCommand(atozButtons);
+        chain.addCommand(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-        
+       
         removeEntryButton = (AppButton) getWidget("removeEntryButton");
         
         nameTextbox = (TextBox)getWidget(StorageLocationMeta.getName());
+        startWidget = (ScreenInputWidget)widgets.get(StorageLocationMeta.getName());
 		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
+        addCommandListener(childTable);
 		
 		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
 
@@ -100,46 +102,6 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		nameTextbox.setFocus(true);
 		
 		removeEntryButton.changeState(AppButton.ButtonState.DISABLED);
-	}
-	
-	public void add() {
-    	childTable.setAutoAdd(true);
-    	super.add();
-    
-    	//set focus to the name field
-    	nameTextbox.setFocus(true);
-    }
-
-    public void update() {
-    	childTable.setAutoAdd(true);
-    	super.update();
-    }
-
-    public void afterUpdate(boolean success) {
-    		super.afterUpdate(success);
-    
-    		//set focus to the name field
-    		nameTextbox.setFocus(true);
-    	}
-
-    public void abort() {		
-		childTable.setAutoAdd(false);
-		
-		super.abort();
-	}
-	
-	public Request commitAdd() {
-    	childTable.setAutoAdd(false);
-        return super.commitAdd();
-    }
-
-    public void afterCommitUpdate(boolean success) {
-		childTable.setAutoAdd(false);
-		
-        //we need to do this reset to get rid of the last row
-        childTable.reset();
-        
-		super.afterCommitUpdate(success);
 	}
 	
 	private void onRemoveRowButtonClick(){

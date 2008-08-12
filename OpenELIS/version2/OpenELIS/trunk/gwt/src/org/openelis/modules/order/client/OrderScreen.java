@@ -15,8 +15,17 @@
 */
 package org.openelis.modules.order.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
@@ -52,17 +61,8 @@ import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class OrderScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, ChangeListener {
     
@@ -196,10 +196,12 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
+        addCommandListener(itemsController);
         
         if("external".equals(orderType)){
             receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
             receiptsController.setAutoAdd(false);
+            addCommandListener(receiptsController);
         }
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
@@ -249,9 +251,92 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
         drop.setModel(costCenterDropdown);
         
-        setBpanel((ButtonPanel)getWidget("buttons"));
+        addCommandListener((ButtonPanel)getWidget("buttons"));
+        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         super.afterDraw(sucess);
     }
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onSuccess(Object result){
+            loadCustomerNotes = true;
+            loadItems = true;
+            loadReceipts = true;
+            loadReportToBillTo = true;
+            loadShippingNotes = true;
+            
+            loadTabs();
+        
+            rpc.setFieldValue("orderType", orderType);
+
+            orderNum.enable(false);
+            orderDate.enable(false);
+        
+            neededInDays.setFocus(true);
+        }
+        public void onFailure(Throwable caught){
+            
+        }
+     };
+     
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+         public void onSuccess(Object result){
+             loadItems = true;
+             clearItems = false;
+             
+             loadReceipts = true;
+             clearReceipts = false;
+             
+             loadCustomerNotes = true;
+             clearCustomerNotes = false;
+             
+             loadReportToBillTo = true;
+             clearReportToBillTo = false;
+             
+             loadShippingNotes = true;
+             clearShippingNotes = false;
+             
+             Integer orderId = (Integer)rpc.getFieldValue(OrderMeta.getId());
+             NumberObject orderIdObj = new NumberObject(orderId);
+             
+             // done because key is set to null in AppScreenForm for the add operation 
+             if(key ==null){  
+                 key = new DataSet();
+                 key.setKey(orderIdObj);
+                 
+             }else{
+                 key.setKey(orderIdObj);
+                 
+             }
+             loadTabs();
+         }
+         public void onFailure(Throwable caught){
+             
+         }
+      };
+      
+   protected AsyncCallback afterCommitQuery = new AsyncCallback() {
+          public void onFailure(Throwable caught) {
+          
+          }
+
+          public void onSuccess(Object result) {
+              rpc.setFieldValue("orderType", orderType);    
+          }
+    };
+    
+    protected AsyncCallback afterFetch = new AsyncCallback() {
+        public void onSuccess(Object result){
+            loadItems = true; 
+            loadReceipts = true;
+            loadCustomerNotes = true; 
+            loadShippingNotes = true;
+            loadReportToBillTo = true;
+            loadTabs();
+        }
+        public void onFailure(Throwable caught){
+            
+        }
+     };
     
     public void query() {
         super.query();
@@ -323,24 +408,6 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         itemsController.setAutoAdd(true);
         super.update();
     }
-    public void afterUpdate(boolean success) {
-        super.afterUpdate(success);
-        if (success) {
-            loadCustomerNotes = true;
-            loadItems = true;
-            loadReceipts = true;
-            loadReportToBillTo = true;
-            loadShippingNotes = true;
-            
-            loadTabs();
-        }
-        rpc.setFieldValue("orderType", orderType);
-
-        orderNum.enable(false);
-        orderDate.enable(false);
-        
-        neededInDays.setFocus(true);
-    }
     
     public void abort() {
         itemsController.setAutoAdd(false);
@@ -372,68 +439,6 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         super.abort();
         
         loadTabs();
-    }
-    
-    public void afterCommitAdd(boolean success) {
-        itemsController.setAutoAdd(false);
-        super.afterCommitAdd(success);
-        
-        if(success){ 
-            loadItems = true;
-            clearItems = false;
-            
-            loadReceipts = true;
-            clearReceipts = false;
-            
-            loadCustomerNotes = true;
-            clearCustomerNotes = false;
-            
-            loadReportToBillTo = true;
-            clearReportToBillTo = false;
-            
-            loadShippingNotes = true;
-            clearShippingNotes = false;
-            
-            Integer orderId = (Integer)rpc.getFieldValue(OrderMeta.getId());
-            NumberObject orderIdObj = new NumberObject(orderId);
-            
-            // done because key is set to null in AppScreenForm for the add operation 
-            if(key ==null){  
-                key = new DataSet();
-                key.setKey(orderIdObj);
-                
-            }else{
-                key.setKey(orderIdObj);
-                
-            }
-            
-            loadTabs();
-        }
-    }
-    
-    public void afterCommitUpdate(boolean success) {
-        itemsController.setAutoAdd(false);
-        
-        //we need to do this reset to get rid of the last row
-        itemsController.reset();
-        
-        super.afterCommitUpdate(success);
-    }
-    public void afterCommitQuery(boolean success) {
-      super.afterCommitQuery(success);
-      rpc.setFieldValue("orderType", orderType);
-    }
-    
-    public void afterFetch(boolean success) {
-        if (success) {
-            loadItems = true; 
-            loadReceipts = true;
-            loadCustomerNotes = true; 
-            loadShippingNotes = true;
-            loadReportToBillTo = true;
-            loadTabs();
-        }
-        super.afterFetch(success);
     }
     
     private void loadTabs() {

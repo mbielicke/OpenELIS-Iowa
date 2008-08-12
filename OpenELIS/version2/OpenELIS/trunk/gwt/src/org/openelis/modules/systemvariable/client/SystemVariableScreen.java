@@ -20,9 +20,13 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -30,6 +34,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener {
     
     private TextBox nameTextBox;
+    private KeyListManager keyList = new KeyListManager();
+    
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
     }
@@ -54,47 +60,30 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     }
 
     public void afterDraw(boolean success) {
-        setBpanel((ButtonPanel) getWidget("buttons"));        
-
-        AToZTable atozTable = (AToZTable) getWidget("hideablePanel");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
-        
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(bpanel);
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(atozButtons);
+        chain.addCommand(atozTable);
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         nameTextBox = (TextBox)getWidget(Meta.getName());
+        startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
         super.afterDraw(success);
     }  
     
-    public void query() {
-        super.query();
-        
-        nameTextBox.setFocus(true);
-    }
-    
-    public void add() {
-        super.add();
-        
-        nameTextBox.setFocus(true);
-    }
-    
-    public void afterUpdate(boolean success) {
-        super.afterUpdate(success);
-        
-        nameTextBox.setFocus(true);
-    }
-    
     private void getSystemVariables(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
             FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
             letterRPC.setFieldValue(Meta.getName(), query);
-             
             commitQuery(letterRPC);
-            
-           
         }
     }
         
