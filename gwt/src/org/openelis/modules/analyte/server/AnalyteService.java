@@ -93,7 +93,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
     		}
     		
             int i=0;
-            model.clear();
+            if(model == null)
+                model = new DataModel();
+            else
+                model.clear();
             while(i < analyteNames.size() && i < leftTableRowsPerPage) {
                 IdNameDO resultDO = (IdNameDO)analyteNames.get(i);
                 //org id

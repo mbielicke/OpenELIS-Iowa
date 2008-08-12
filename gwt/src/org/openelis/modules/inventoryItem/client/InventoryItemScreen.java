@@ -15,18 +15,32 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
@@ -49,18 +63,6 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener{
 
     private boolean startedLoadingTable = false;
@@ -69,6 +71,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
     TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
+    private KeyListManager keyList = new KeyListManager();
 	
 	private EditTable componentsController, locsController;
     
@@ -120,19 +123,20 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 	
 	public void afterDraw(boolean success) {
         AutoCompleteDropdown drop;
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(keyList);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
         
         loaded = true;
-        
-		setBpanel((ButtonPanel) getWidget("buttons"));
-
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
-		modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
-        
+              
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
         
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
@@ -143,6 +147,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
         nameTextbox = (ScreenTextBox) widgets.get(InvItemMeta.getName());
+        startWidget = nameTextbox;
         idTextBox = (ScreenTextBox) widgets.get(InvItemMeta.getId());
         noteText = (ScreenTextArea) widgets.get(InvItemMeta.ITEM_NOTE.getText());
         subjectBox = (TextBox)getWidget(InvItemMeta.ITEM_NOTE.getSubject()); 
@@ -153,6 +158,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 		
 		componentsController = ((TableWidget)getWidget("componentsTable")).controller;
 		componentsController.setAutoAdd(false);
+        addCommandListener(componentsController);
        
         svp = (ScreenVertical) widgets.get("notesPanel");
         
@@ -174,113 +180,53 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 		super.afterDraw(success);			
 	}
     
-    /*
-     * Overriden to reset the data in Contact and Note tabs
-     */
-    public void afterFetch(boolean success) {
-        if (success) {
+    protected AsyncCallback afterfetch = new AsyncCallback() {
+        public void onSuccess(Object result){
             loadComponents = true;
             loadLocations = true;
             loadComments = true;
             loadTabs();
+            idTextBox.enable(false);
         }
-        super.afterFetch(success);
-    }
-	
-	public void add() {
-		componentsController.setAutoAdd(true);
-		
-		super.add();
-		
-		nameTextbox.setFocus(true);
-		
-		idTextBox.enable(false);
-        clearComments();
-        
-        ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
-	}
-	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
-        if (success) {
-            loadComponents = true;
-            loadLocations = true;
-            loadComments = true;
+        public void onFailure(Throwable Caught){
             
-            loadTabs();
         }
-		
-		nameTextbox.setFocus(true);
-		idTextBox.enable(false);
-	}
-	
-	public void query() {		
-		super.query();
-		
-		nameTextbox.setFocus(true);
-		
-        //
-        // disable notes and contact remove button
-        //
-        noteText.enable(false);
-        //removeContactButton.changeState(AppButton.DISABLED);
-        clearComments();
-	}
-	
-	public void abort() {
-		componentsController.setAutoAdd(false);
-        
-        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
-            loadComponents = false;
-            clearComponents = true;
+     };
+     
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+         public void onSuccess(Object result) {
+             loadComponents = true;
+             loadLocations = true;
+             loadComments = true;
+             loadTabs();
+         }
+         
+         public void onFailure(Throwable caught){
+             
+         }
+      };
+      
+    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+          public void onSuccess(Object result){
+              loadComments = true;
+              clearComments = true;
+              
+              loadTabs();
+              
+              //the note subject and body fields need to be refeshed after every successful commit
+              clearCommentsFields();
+          }
+          
+          public void onFailure(Throwable caught){
+              
+          }
+    };  
+    
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
             
-            loadLocations = false;
-            clearLocations = true;
-            
-            loadComments = false;
-            clearComments = true;
-        }else{
-            loadComponents = true;
-            loadLocations = true;
-            loadComments = true;
         }
-        
-        //the super needs to go before the load tabs method or the table wont load.
-        super.abort();
-        
-        loadTabs();
-	}
-	
-	public void update() {
-		//locsController.setAutoAdd(true);
-		componentsController.setAutoAdd(true);
-		super.update();
-	}
-
-	public void afterCommitUpdate(boolean success) {
-		componentsController.setAutoAdd(false);
-		
-		super.afterCommitUpdate(success);
-        
-//      we need to load the comments tab if it has been already loaded
-        if(success){ 
-            loadComments = true;
-            clearComments = true;
-            
-            loadTabs();
-            
-            //the note subject and body fields need to be refeshed after every successful commit
-            clearCommentsFields();
-        }
-	}
-	
-	public void afterCommitAdd(boolean success) {
-		componentsController.setAutoAdd(false);
-		
-		super.afterCommitAdd(success);
-        
-//       we need to load the comments tab if it has been already loaded
-        if(success){ 
+        public void onSuccess(Object result) {
             loadComments = true;
             clearComments = true;
             
@@ -307,7 +253,48 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
             
             //the note subject and body fields need to be refeshed after every successful commit
             clearCommentsFields();
+        }   
+    };
+	
+	public void add() {		
+		super.add();
+		
+		idTextBox.enable(false);
+        clearComments();
+        
+        ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
+	}
+	
+	public void query() {		
+		super.query();
+        //
+        // disable notes and contact remove button
+        //
+        noteText.enable(false);
+        //removeContactButton.changeState(AppButton.DISABLED);
+        clearComments();
+	}
+	
+	public void abort() {        
+        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
+            loadComponents = false;
+            clearComponents = true;
+            
+            loadLocations = false;
+            clearLocations = true;
+            
+            loadComments = false;
+            clearComments = true;
+        }else{
+            loadComponents = true;
+            loadLocations = true;
+            loadComments = true;
         }
+        
+        //the super needs to go before the load tabs method or the table wont load.
+        super.abort();
+        
+        loadTabs();
 	}
 	
     /*

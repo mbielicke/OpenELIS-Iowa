@@ -17,7 +17,10 @@ package org.openelis.modules.storageunit.client;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
@@ -32,6 +35,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	private AutoCompleteDropdown cat;
     private static boolean loaded = false;
     private static DataModel storageUnitCategoryDropdown;
+    private KeyListManager keyList = new KeyListManager();
 	
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
@@ -53,18 +57,22 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	
 	public void afterDraw(boolean success) {
 		loaded = true;
-		setBpanel((ButtonPanel) getWidget("buttons"));
-
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
         
+        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(bpanel);
+        chain.addCommand(this);
+        chain.addCommand(atozButtons);
+        chain.addCommand(atozTable);
+        chain.addCommand(keyList);
+              
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-        
         cat = (AutoCompleteDropdown)getWidget(StorageUnitMeta.getCategory());
+        startWidget = (ScreenInputWidget)widgets.get(StorageUnitMeta.getCategory());
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)
@@ -75,27 +83,6 @@ public class StorageUnitScreen extends OpenELISScreenForm {
         ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
         
 		super.afterDraw(success);
-	}
-	
-	public void query() {
-    	super.query();
-    	
-    	//set focus to the name field
-    	cat.setFocus(true);
-    }
-
-    public void add() {
-		super.add();
-
-		//set focus to the name field
-		cat.setFocus(true);
-	}
-	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
-
-		//set focus to the name field
-		cat.setFocus(true);
 	}
 	
 	private void getStorageUnits(String query) {

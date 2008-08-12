@@ -92,7 +92,10 @@ public class TestService implements AppScreenFormServiceInt {
         
         //fill the model with the query results
         int i=0;
-        model.clear();
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();
         while(i < testNames.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)testNames.get(i);
  

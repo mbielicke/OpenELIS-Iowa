@@ -117,7 +117,10 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         
         //fill the model with the query results
         int i=0;
-        model.clear();
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();
         while(i < inventoryItemNames.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)inventoryItemNames.get(i);
             model.add(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName()));

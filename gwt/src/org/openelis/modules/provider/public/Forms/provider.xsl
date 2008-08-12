@@ -63,11 +63,13 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
-  <aToZ height="425px" width="100%" key="hideablePanel" maxRows="19" title = "" tablewidth="auto" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}" colwidths ="88,87">   
-		 <buttonPanel key="atozButtons">
-	       <xsl:call-template name="aToZLeftPanelButtons"/>		
-		 </buttonPanel>   
-  </aToZ>
+ 					<CollapsePanel key="collapsePanel">
+						<azTable height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
+							<buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+							</buttonPanel>
+						</azTable>
+					</CollapsePanel>
    <VerticalPanel spacing= "0">
    <!--button panel code-->
 		<AbsolutePanel layout="absolute" spacing="0" style="ButtonPanelContainer">

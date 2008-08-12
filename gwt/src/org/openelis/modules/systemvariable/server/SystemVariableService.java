@@ -91,7 +91,11 @@ public class SystemVariableService implements AppScreenFormServiceInt {
              }    
      
      int i=0;
-     model.clear();
+     
+     if(model == null)
+         model = new DataModel();
+     else
+         model.clear();
 
      while(i < sysVars.size() && i < leftTableRowsPerPage) {
          IdNameDO resultDO = (IdNameDO)sysVars.get(i);

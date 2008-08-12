@@ -104,7 +104,10 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     		}
     		
             int i=0;
-            model.clear();
+            if(model == null)
+                model = new DataModel();
+            else
+                model.clear();
             while(i < storageLocs.size() && i < leftTableRowsPerPage) {
                 IdNameDO resultDO = (IdNameDO)storageLocs.get(i);
                 //org id

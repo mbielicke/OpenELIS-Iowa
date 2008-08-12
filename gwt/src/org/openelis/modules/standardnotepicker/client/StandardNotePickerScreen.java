@@ -85,7 +85,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	public void afterDraw(boolean sucess) {
         final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
         tree.controller.setTreeListener(this);
-        setBpanel((ButtonPanel) getWidget("buttons"));
+        addCommandListener((ButtonPanel) getWidget("buttons"));
+        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         

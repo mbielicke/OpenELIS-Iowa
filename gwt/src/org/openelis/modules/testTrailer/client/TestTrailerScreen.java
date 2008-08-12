@@ -18,6 +18,9 @@ package org.openelis.modules.testTrailer.client;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
@@ -31,6 +34,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	
 	private TextBox nameTextBox;
 	private ScreenTextArea textArea;
+    private KeyListManager keyList = new KeyListManager();
 	
     private TestTrailerMetaMap TestTrailerMeta = new TestTrailerMetaMap();
      
@@ -51,18 +55,21 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	    }
 	
 	public void afterDraw(boolean success) {
-		setBpanel((ButtonPanel) getWidget("buttons"));
-
         AToZTable atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        addCommandListener(atozTable);
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(bpanel);
+        chain.addCommand(keyList);
+        chain.addCommand(atozButtons);
+        chain.addCommand(atozTable);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
-        
+           
         nameTextBox = (TextBox) getWidget(TestTrailerMeta.getName());
+        startWidget = (ScreenInputWidget)widgets.get(TestTrailerMeta.getName());
         textArea = (ScreenTextArea) widgets.get(TestTrailerMeta.getText());
 
 		super.afterDraw(success);
@@ -70,27 +77,10 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	
 	public void query() {
     		super.query();
-    		
     //		users cant query by text so disable it
     		textArea.enable(false);
     		
-    		//set focus to the name field
-    		nameTextBox.setFocus(true);
-    	}
-
-    public void add() {
-		super.add();
-
-		//set focus to the name field
-		nameTextBox.setFocus(true);
-	}
-	
-	public void afterUpdate(boolean success) {
-		super.afterUpdate(success);
-
-		//set focus to the name field
-		nameTextBox.setFocus(true);
-	}
+    }
 	
 	private void getTestTrailers(String query) {
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {

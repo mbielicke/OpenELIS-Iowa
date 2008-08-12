@@ -15,7 +15,13 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FormRPC.Status;
@@ -24,8 +30,8 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
-import org.openelis.gwt.common.data.DateObject;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -41,8 +47,6 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormCalendarWidget;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
@@ -51,13 +55,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager {
     
@@ -72,6 +70,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     private ScreenAutoDropdown itemLocation;
     private ScreenCalendar itemExpDate;
     private ScreenCheck addToExisiting;
+    private KeyListManager keyList = new KeyListManager();
     
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
@@ -140,8 +139,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //
         receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
         receiptsController.setAutoAdd(false);
+        addCommandListener(receiptsController);
         
-        setBpanel((ButtonPanel)getWidget("buttons"));
+        addCommandListener((ButtonPanel)getWidget("buttons"));
+        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        
         super.afterDraw(sucess);
     }
     
@@ -166,7 +168,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //we are using it to fill the table
         //super.fetch();
         
-        DataModel model = modelWidget.getModel();
+        DataModel model = keyList.getList();
         
         receiptsController.model.reset();
         receiptsController.reset();
@@ -195,7 +197,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         window.setStatus(consts.get("lockForUpdate"),"spinnerIcon");
         
         ModelObject modelObj = new ModelObject();
-        modelObj.setValue(modelWidget.getModel());
+        modelObj.setValue(keyList.getList());
         
         // prepare the argument list for the getObject function
         DataObject[] args = new DataObject[] {modelObj}; 
@@ -204,15 +206,19 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             public void onSuccess(Object result){                    
                 DataModel model = (DataModel)((ModelObject)result).getValue();
                 
-                modelWidget.setModel(model);
-                modelWidget.select(0);
+                keyList.setModel(model);
+                keyList.select(0);
                 
-                afterUpdate(true);
+                enable(true);
+                window.setStatus(consts.get("updateFields"),"");
+                changeState(State.UPDATE);
             }
             
             public void onFailure(Throwable caught){
                 Window.alert(caught.getMessage());
-                afterUpdate(true);
+                enable(true);
+                window.setStatus(consts.get("updateFields"),"");
+                changeState(State.UPDATE);
             }
         });
     }
@@ -228,7 +234,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             enable(false);
             
             ModelObject modelObj = new ModelObject();
-            modelObj.setValue(modelWidget.getModel());
+            modelObj.setValue(keyList.getList());
             
             // prepare the argument list for the getObject function
             DataObject[] args = new DataObject[] {modelObj}; 
@@ -237,8 +243,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 public void onSuccess(Object result){                    
                     DataModel model = (DataModel)((ModelObject)result).getValue();
                     
-                    modelWidget.setModel(model);
-                    modelWidget.select(0);
+                    keyList.setModel(model);
+                    keyList.select(0);
 
                     window.setStatus("","");
                     changeState(State.DISPLAY);
@@ -264,19 +270,6 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             if (rpc.status == Status.valid)
                 receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
         }
-    }
-    public void afterCommitAdd(boolean success) {
-        receiptsController.setAutoAdd(false);
- 
-        super.afterCommitAdd(success);
-    }
-    
-    public void afterCommitUpdate(boolean success) {
-        receiptsController.setAutoAdd(false);
-        //we need to do this reset to get rid of the last row
-        receiptsController.reset();
-        
-        super.afterCommitUpdate(success);
     }
 
     //start table manager methods

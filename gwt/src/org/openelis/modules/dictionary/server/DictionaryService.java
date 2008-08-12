@@ -106,7 +106,10 @@ public class DictionaryService implements AppScreenFormServiceInt,
        }
         
         int i=0;
-        model.clear();    
+        if(model == null)
+            model = new DataModel();
+        else 
+            model.clear();
         while(i < systemNames.size() && i < leftTableRowsPerPage) {
     
             IdNameDO resultDO = (IdNameDO)systemNames.get(i);

@@ -112,6 +112,11 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             SessionManager.getSession().setAttribute("InventoryReceiptQuery", rpcSend);
         }
         
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();
+        
         //fill the model with the query results
         fillModelFromQuery(model, receipts);
  

@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -63,6 +65,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     private ScreenTextArea   noteText;
     private TextBox          orgName;
     private ButtonPanel      atozButtons;
+    private KeyListManager   keyList = new KeyListManager();
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
 
@@ -104,17 +107,23 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         // modelwidget and us.
         //
         atozTable = (AToZTable)getWidget("azTable");
-        modelWidget.addCommandListener(atozTable);
-        atozTable.modelWidget = modelWidget;
-        addCommandListener(atozTable);
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
         
+        CommandChain formChain = new CommandChain();
+        formChain.addCommand(this);
+        formChain.addCommand(bpanel);
+        formChain.addCommand(keyList);
+        formChain.addCommand(atozTable);
+        formChain.addCommand(atozButtons);
+
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         removeContactButton = (AppButton)getWidget("removeContactButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
         
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-        atozButtons.addCommandListener(this);
+
+
 
         //
         // disable auto add and make sure there are no rows in the table
@@ -122,6 +131,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         contactsController = ((TableWidget)getWidget("contactsTable")).controller;
         contactsController.setAutoAdd(false);
         ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
+        addCommandListener(contactsController);
 
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
         orgName = (TextBox)getWidget(OrgMeta.getName());
@@ -160,10 +170,19 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         ((TableAutoDropdown)d.controller.editors[0]).setModel(contactTypeDropdown);
         ((TableAutoDropdown)q.editors[0]).setModel(contactTypeDropdown);
         
-        setBpanel((ButtonPanel)getWidget("buttons"));
+
         super.afterDraw(success);
         ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsController.model);
     }
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            orgId.enable(false);
+            orgName.setFocus(true);
+        }
+    };
 
     public void query() {
         super.query();
@@ -176,10 +195,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     public void add() {
-        //
-        // make sure the contact table gets set before the main add
-        //
-        contactsController.setAutoAdd(true);
+
         super.add();
 
         //
@@ -189,45 +205,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         ((ScreenVertical)widgets.get("notesPanel")).clear();
 
         orgName.setFocus(true);
-    }
-
-    public void update() {
-        contactsController.setAutoAdd(true);
-        super.update();
-    }
-
-    public void afterUpdate(boolean success) {
-        super.afterUpdate(success);
-        orgId.enable(false);
-        orgName.setFocus(true);
-    }
-
-    public void abort() {
-        contactsController.setAutoAdd(false);
-
-        super.abort();  
-    }
-
-    public void afterCommitAdd(boolean success) {
-        contactsController.setAutoAdd(false);
-        
-        //we need to do this reset to get rid of the last row
-        contactsController.reset();
-        
-        super.afterCommitAdd(success);
-        
-        clearNotesFields();
-    }
-
-    public void afterCommitUpdate(boolean success) {
-        contactsController.setAutoAdd(false);
-        
-        //we need to do this reset to get rid of the last row
-        contactsController.reset();
-        
-        super.afterCommitUpdate(success);
-        
-        clearNotesFields();
     }
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {

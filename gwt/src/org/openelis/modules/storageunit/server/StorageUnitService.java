@@ -103,7 +103,10 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		}
         
         int i = 0;
-        model.clear();
+        if(model == null)
+            model = new DataModel();
+        else
+            model.clear();
         while (i < storageUnits.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO) storageUnits.get(i);
             // org id

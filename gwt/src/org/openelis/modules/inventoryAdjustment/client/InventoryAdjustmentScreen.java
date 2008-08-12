@@ -44,7 +44,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     }
     
     public void afterDraw(boolean sucess) {
-        setBpanel((ButtonPanel)getWidget("buttons"));
+        addCommandListener((ButtonPanel)getWidget("buttons"));
+        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         adjustmentsController = ((TableWidget)getWidget("adjustmentsTable")).controller;
         adjustmentsController.setAutoAdd(false);

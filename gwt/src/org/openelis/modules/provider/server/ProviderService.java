@@ -111,7 +111,10 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             //fill the model with the query result
             int i=0;
-            model.clear();        
+            if(model == null)
+                model = new DataModel();
+            else
+                model.clear();
             while(i < providers.size() && i < leftTableRowsPerPage) {
         
                 IdLastNameFirstNameDO resultDO = (IdLastNameFirstNameDO)providers.get(i);
