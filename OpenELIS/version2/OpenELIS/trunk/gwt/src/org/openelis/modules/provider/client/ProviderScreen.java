@@ -90,7 +90,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",!loaded);
-        name="Provider";
     }
     
     public void performCommand(Enum action, Object obj) {
