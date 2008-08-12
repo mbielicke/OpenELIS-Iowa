@@ -97,7 +97,21 @@ public class OpenELISService implements OpenELISServiceInt {
                                                    "updatingComplete",
                                                    "mustCommitOrAbort",
                                                    "lockForUpdate",
-                                                   "updateFields"};
+                                                   "updateFields",
+                                                   "reportDescription",
+                                                   "testFormat",
+                                                   "revisionMethod",
+                                                   "turnAround",
+                                                   "turnAroundMax",
+                                                   "turnAroundAverage",
+                                                   "turnAroundWarn",
+                                                   "timeHolding",
+                                                   "timeTransit",
+                                                   "hours",
+                                                   "days",
+                                                   "beginDate",
+                                                   "endDate",
+                                                   "reportable"};
 
     public String getXML() throws RPCException {
         try {
