@@ -61,9 +61,6 @@ public interface OrderRemote {
     //method to query for orders
      public List query(HashMap fields, int first, int max, String orderType) throws Exception;
      
-     //a way for the servlet to get the system user id
-     public Integer getSystemUserId();
-     
      public OrderAddAutoFillDO getAddAutoFillValues() throws Exception;
      
      //auto complete order description lookup

@@ -39,9 +39,6 @@ public interface AnalyteRemote {
 	 //method to query for analytes
 	 public List query(HashMap fields, int first, int max) throws Exception;
 	 
-	 //a way for the servlet to get the system user id
-	 public Integer getSystemUserId();
-	 
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String name, int maxResults);
 	 

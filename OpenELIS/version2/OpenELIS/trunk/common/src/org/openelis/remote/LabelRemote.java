@@ -37,9 +37,6 @@ public interface LabelRemote {
     //  method to query for Label
     public List query(HashMap fields, int first, int max) throws Exception;
     
-    //a way for the servlet to get the system user id
-    public Integer getSystemUserId();
-    
     public List<Object[]> getScriptlets();
     
     public List<Exception> validateForAdd(LabelDO labelDO);

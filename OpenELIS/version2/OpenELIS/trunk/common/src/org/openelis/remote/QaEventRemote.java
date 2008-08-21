@@ -37,9 +37,6 @@ public interface QaEventRemote {
     
     //  method to query for QaEvent
     public List query(HashMap fields, int first, int max) throws Exception;
-    
-    //a way for the servlet to get the system user id
-    public Integer getSystemUserId();
         
     //method to get all the tests for a given QaEvent
     public List<Object[]> getTestNames();
