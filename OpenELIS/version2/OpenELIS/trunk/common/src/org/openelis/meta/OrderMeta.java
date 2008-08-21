@@ -38,10 +38,12 @@ public class OrderMeta implements Meta {
               IS_EXTERNAL					="isExternal",
               EXTERNAL_ORDER_NUMBER					="externalOrderNumber",
               REPORT_TO_ID					="reportToId",
-              BILL_TO_ID					="billToId";
+              BILL_TO_ID					="billToId",
+              SHIP_FROM_ID                  ="shipFromId",
+              DESCRIPTION                   ="description";
 
   	private static final String[] columnNames = {
-  	  ID,STATUS_ID,ORDERED_DATE,NEEDED_IN_DAYS,REQUESTED_BY,COST_CENTER_ID,ORGANIZATION_ID,IS_EXTERNAL,EXTERNAL_ORDER_NUMBER,REPORT_TO_ID,BILL_TO_ID};
+  	  ID,STATUS_ID,ORDERED_DATE,NEEDED_IN_DAYS,REQUESTED_BY,COST_CENTER_ID,ORGANIZATION_ID,IS_EXTERNAL,EXTERNAL_ORDER_NUMBER,REPORT_TO_ID,BILL_TO_ID, SHIP_FROM_ID,DESCRIPTION};
   	  
 	private HashSet<String> columnHashList;
     
@@ -118,5 +120,12 @@ public class OrderMeta implements Meta {
         return path + BILL_TO_ID;
     } 
 
+  public String getShipFromId(){
+      return path + SHIP_FROM_ID;
+  }
+  
+  public String getDescription(){
+      return path + DESCRIPTION;
+  }
   
 }   

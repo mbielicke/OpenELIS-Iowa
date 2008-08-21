@@ -34,6 +34,10 @@ public class IdNameDO implements Serializable{
     public IdNameDO(Integer id){
         setId(id);
     }
+    
+    public IdNameDO(String name){
+        setName(name);
+    }
 
     public Integer getId() {
         return id;
