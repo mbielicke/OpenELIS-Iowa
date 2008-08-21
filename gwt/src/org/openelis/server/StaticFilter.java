@@ -20,7 +20,7 @@ import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
-import org.openelis.security.remote.SecurityRemote;
+import org.openelis.remote.LoginRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
@@ -38,6 +38,7 @@ import javax.naming.InitialContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -63,6 +64,7 @@ public class StaticFilter implements Filter {
     private static Logger authLog = Logger.getLogger("org.openelis.auth");
     private int userTrys;
     private int ipTrys;
+    private ServletContext servletCtx;
     
     public void init(FilterConfig config) throws ServletException {
         log.debug("Initializing the Application.");
@@ -75,6 +77,7 @@ public class StaticFilter implements Filter {
         SessionManager.init("OpenELIS"); 
         ServiceUtils.props = "org.openelis.modules.main.server.constants.OpenELISConstants";
         CachingManager.init(Constants.APP_ROOT);
+        servletCtx = config.getServletContext();
         log.debug("getting out");
     }
 
@@ -102,24 +105,21 @@ public class StaticFilter implements Filter {
                 File propFile = null;
                 InputStream is = null;
                 Properties props = new Properties();
-                try{
-                    propFile = new File("/usr/pub/http/var/jndi/jndi.properties");
-                    is = new FileInputStream(propFile);
-                    props.load(is);
-                }catch(Exception e){
-                    props.setProperty("java.naming.factory.url.pkgs","org.jboss.naming:org.jnp.interfaces");
-                    props.setProperty("java.naming.provider.url","nabu.uhl.uiowa.edu");
-                }
-                props.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                "org.jboss.security.jndi.LoginInitialContextFactory");
-                props.setProperty(Context.SECURITY_PROTOCOL, "other");
-                props.setProperty(InitialContext.SECURITY_CREDENTIALS,
-                                  password);
-                props.setProperty(Context.SECURITY_PRINCIPAL, username);
                 try {
+                    InitialContext initCtx = new InitialContext();
+                    //Context envCtx = (Context)initCtx.lookup("java:comp/env");
+                    propFile = new File((String)initCtx.lookup(("java:comp/env/openelisJNDI")));
+                    is = new FileInputStream(propFile);
+               
+                    props.load(is);
+                    props.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+                    "org.jboss.security.jndi.LoginInitialContextFactory");
+                    props.setProperty(Context.SECURITY_PROTOCOL, "other");
+                    props.setProperty(InitialContext.SECURITY_CREDENTIALS,password);
+                    props.setProperty(Context.SECURITY_PRINCIPAL, username);
                     InitialContext ctx = new InitialContext(props);
-                    SecurityRemote remote = (SecurityRemote)ctx.lookup("SecurityBean/remote");
-                    SecurityUtil security = remote.initSecurity("openelis");
+                    LoginRemote remote = (LoginRemote)ctx.lookup("openelis/LoginBean/remote");
+                    SecurityUtil security = remote.login();
                     SessionManager.getSession().setAttribute("security", security);
                     if(!security.has("openelis",ModuleFlags.SELECT)){
                         ((HttpServletResponse)response).sendRedirect("NoPermission.html");

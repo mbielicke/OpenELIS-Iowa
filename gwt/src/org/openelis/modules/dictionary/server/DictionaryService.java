@@ -31,6 +31,7 @@ import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
