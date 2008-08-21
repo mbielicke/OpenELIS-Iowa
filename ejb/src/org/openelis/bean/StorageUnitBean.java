@@ -24,9 +24,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StorageUnitMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -48,7 +48,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -60,7 +59,6 @@ public class StorageUnitBean implements StorageUnitRemote{
     //private String className = this.getClass().getName();
    // private Logger log = Logger.getLogger(className);
 	
-	private SystemUserUtilLocal sysUser;
 	
 	@Resource
 	private SessionContext ctx;
@@ -72,7 +70,6 @@ public class StorageUnitBean implements StorageUnitRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List query(HashMap fields, int first, int max) throws Exception {
@@ -169,17 +166,6 @@ public class StorageUnitBean implements StorageUnitRemote{
 		
         return getStorageUnit(StorageUnitId);
 	}
-
-	public Integer getSystemUserId(){
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }      
-    }
 
     @RolesAllowed("storageunit-delete")
 	public void deleteStorageUnit(Integer storageUnitId) throws Exception {

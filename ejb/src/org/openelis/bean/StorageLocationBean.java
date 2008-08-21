@@ -25,9 +25,9 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -50,7 +50,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -60,8 +59,6 @@ public class StorageLocationBean implements StorageLocationRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;	
 
-	private SystemUserUtilLocal sysUser;
-	
 	@Resource
 	private SessionContext ctx;
 	
@@ -72,7 +69,6 @@ public class StorageLocationBean implements StorageLocationRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
@@ -150,18 +146,6 @@ public class StorageLocationBean implements StorageLocationRemote{
         return getStorageLoc(StorageId);
 	}
 
-	public Integer getSystemUserId() {
-		try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-        }
-	}
-	
 	public List getStorageLocChildren(Integer StorageId) {
 		Query query = manager.createNamedQuery("StorageLocation.GetChildren");
 		query.setParameter("id", StorageId);

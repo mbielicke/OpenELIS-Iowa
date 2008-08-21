@@ -28,9 +28,9 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -53,7 +53,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -63,8 +62,6 @@ public class InventoryItemBean implements InventoryItemRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-	private SystemUserUtilLocal sysUser;
-	
 	@Resource
 	private SessionContext ctx;
 	
@@ -75,8 +72,6 @@ public class InventoryItemBean implements InventoryItemRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
- 
     }
 
 	public List getInventoryComponents(Integer inventoryItemId) {
@@ -132,17 +127,6 @@ public class InventoryItemBean implements InventoryItemRemote{
         List notes = query.getResultList();// getting list of noteDOs from the item id
 
         return notes;
-	}
-
-	public Integer getSystemUserId() {
-		try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
 	}
 
 	public List query(HashMap fields, int first, int max) throws Exception {
@@ -278,7 +262,7 @@ public class InventoryItemBean implements InventoryItemRemote{
              note.setReferenceId(inventoryItem.getId());
              note.setReferenceTableId(inventoryItemReferenceId);
              note.setSubject(noteDO.getSubject());
-             note.setSystemUserId(getSystemUserId());
+             note.setSystemUserId(lockBean.getSystemUserId());
              note.setText(noteDO.getText());
             note.setTimestamp(Datetime.getInstance());
         }

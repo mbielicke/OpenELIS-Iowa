@@ -43,6 +43,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryReceiptMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -51,7 +52,6 @@ import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -60,8 +60,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-    private SystemUserUtilLocal sysUser;
     
     @Resource
     private SessionContext ctx;
@@ -73,14 +71,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
-        
     }
     
     public Integer getSystemUserId() {
         try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
+            SystemUserDO systemUserDO = (SystemUserDO)CachingManager.getElement("security", ctx.getCallerPrincipal().getName()+"userdo");
             return systemUserDO.getId();
         } catch (Exception e) {
             e.printStackTrace();

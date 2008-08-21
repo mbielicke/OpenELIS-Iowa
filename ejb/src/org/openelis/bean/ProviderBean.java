@@ -29,9 +29,9 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ProviderMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -55,7 +55,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
     @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
 })
@@ -65,8 +64,6 @@ public class ProviderBean implements ProviderRemote {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-    private SystemUserUtilLocal sysUser;
     
     @Resource
     private SessionContext ctx;
@@ -81,7 +78,6 @@ public class ProviderBean implements ProviderRemote {
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
         addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public ProviderDO getProvider(Integer providerId) {                 
@@ -112,20 +108,6 @@ public class ProviderBean implements ProviderRemote {
        List provNotes = query.getResultList(); // getting list of noteDOs from the provider id
 
        return provNotes;
-    }
-
-
-    public Integer getSystemUserId(){
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-        }
-        
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {
@@ -296,7 +278,7 @@ public class ProviderBean implements ProviderRemote {
                 note.setReferenceId(provider.getId());
                 note.setReferenceTableId(providerReferenceId);
                 note.setSubject(noteDO.getSubject());
-                note.setSystemUserId(getSystemUserId());
+                note.setSystemUserId(lockBean.getSystemUserId());
                 note.setText(noteDO.getText());
                 note.setTimestamp(Datetime.getInstance());
             }

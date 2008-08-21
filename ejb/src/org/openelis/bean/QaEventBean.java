@@ -23,9 +23,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.QaEventMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -47,7 +47,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -56,8 +55,6 @@ public class QaEventBean implements QaEventRemote{
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-
-    private SystemUserUtilLocal sysUser;
     
     @Resource
     private SessionContext ctx;
@@ -70,7 +67,6 @@ public class QaEventBean implements QaEventRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public QaEventDO getQaEvent(Integer qaEventId) {
@@ -83,20 +79,6 @@ public class QaEventBean implements QaEventRemote{
         
         return qaEvent;
     }  
-      
-
-    public Integer getSystemUserId() {
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-        }
-        
-    }
 
     public List<Object[]> getTestNames() {
         Query query = manager.createNamedQuery("Test.Names");                               

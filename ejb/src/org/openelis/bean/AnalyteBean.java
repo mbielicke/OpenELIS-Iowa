@@ -24,6 +24,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -49,7 +50,6 @@ import javax.persistence.Query;
 @Stateless
 @EJBs({
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
 })
 @SecurityDomain("openelis")
 @RolesAllowed("analyte-select")
@@ -57,8 +57,6 @@ public class AnalyteBean implements AnalyteRemote{
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-   
-	private SystemUserUtilLocal sysUser;
 	
 	@Resource
 	private SessionContext ctx;
@@ -71,7 +69,6 @@ public class AnalyteBean implements AnalyteRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public List autoCompleteLookupByName(String name, int maxResults) {
@@ -124,7 +121,7 @@ public class AnalyteBean implements AnalyteRemote{
 	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
 		Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
-        lockBean.getLock((Integer)query.getSingleResult(),analyteId);
+        lockBean.getLock((Integer)query.getSingleResult(),analyteId,session);
         
         return getAnalyte(analyteId);
 	}
@@ -132,21 +129,11 @@ public class AnalyteBean implements AnalyteRemote{
 	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session) {
 		Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "analyte");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),analyteId);
+        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),analyteId,session);
 		
         return getAnalyte(analyteId);
 	}
 
-	public Integer getSystemUserId() {
-		 try {
-	            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-	                                                                 .getName());
-	            return systemUserDO.getId();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return null;
-	        }    
-	}
 
 	public List query(HashMap fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();

@@ -49,6 +49,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrderMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -58,7 +59,6 @@ import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -67,8 +67,6 @@ public class OrderBean implements OrderRemote{
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-    private SystemUserUtilLocal sysUser;
     
     @Resource
     private SessionContext ctx;
@@ -80,7 +78,6 @@ public class OrderBean implements OrderRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public OrderDO getOrder(Integer orderId, String orderType) {
@@ -186,16 +183,6 @@ public class OrderBean implements OrderRemote{
             return null;        
     }
 
-    public Integer getSystemUserId() {
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public List query(HashMap fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -260,8 +247,8 @@ public class OrderBean implements OrderRemote{
         //order date
         autoFillDO.setOrderedDate(new Date());
         //requested by string
-        SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
-        autoFillDO.setRequestedBy(systemUserDO.getLoginName());
+        //SystemUserDO systemUserDO = sysUser.getSystemUser();
+        autoFillDO.setRequestedBy(ctx.getCallerPrincipal().getName());
         
         return autoFillDO;
     }
@@ -316,6 +303,11 @@ public class OrderBean implements OrderRemote{
         if (order.getId() == null) {
             manager.persist(order);
         }
+ 
+        //lookup the order transaction type to be used later
+        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        //query.setParameter("systemName", "inv_trans_order");
+        //Integer orderTypeId = (Integer)query.getSingleResult();
         
         //update order items
         for (int i=0; i<items.size();i++) {
@@ -384,7 +376,7 @@ public class OrderBean implements OrderRemote{
             custNote.setReferenceTableId(orderCustNoteReferenceId);
             custNote.setText(customerNoteDO.getText());
             if(custNote.getId() == null){
-                systemUserId = getSystemUserId();
+                systemUserId = lockBean.getSystemUserId();
                 custNote.setSystemUserId(systemUserId);
             }
             custNote.setTimestamp(Datetime.getInstance());
@@ -409,7 +401,7 @@ public class OrderBean implements OrderRemote{
             shippingNote.setText(orderShippingNotes.getText());
             if(shippingNote.getId() == null){
                 if(systemUserId == null)
-                    systemUserId = getSystemUserId();
+                    systemUserId = lockBean.getSystemUserId();
                 shippingNote.setSystemUserId(systemUserId);
             }
             shippingNote.setTimestamp(Datetime.getInstance());

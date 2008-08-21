@@ -24,6 +24,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.LabelMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.LabelRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -49,7 +50,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -59,8 +59,6 @@ public class LabelBean implements LabelRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    private SystemUserUtilLocal sysUser;
-    
     @Resource
     private SessionContext ctx;
     
@@ -72,7 +70,6 @@ public class LabelBean implements LabelRemote {
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public LabelDO getLabel(Integer labelId) {
@@ -98,19 +95,6 @@ public class LabelBean implements LabelRemote {
         
         return getLabel(labelId);
     }   
-
-    public Integer getSystemUserId() {
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-        }
-        
-    }
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();

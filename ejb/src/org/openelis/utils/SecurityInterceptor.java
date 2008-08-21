@@ -1,12 +1,13 @@
 package org.openelis.utils;
 
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.SecuritySection.SectionFlags;
-import org.openelis.security.local.SecurityLocal;
-import javax.naming.InitialContext;
+import org.openelis.persistence.CachingManager;
 
 public class SecurityInterceptor {
-    
+        
+    /*
     private static SecurityLocal security; 
     
     static {
@@ -59,6 +60,63 @@ public class SecurityInterceptor {
         try {
             for(int i = 0; i < elems.length; i++) {
                 if(!security.has("openelis", elems[i].name, elems[i].flag) && hasAll){
+                    throw new Exception("You do not have sufficient permissions");
+                }else if(!hasAll){
+                    return;
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    */
+    
+    public static void applySecurity(String user, String module, ModuleFlags flag) throws Exception {
+        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        try {
+            if(!security.has(module, flag)){
+                throw new Exception("You do not have suffiecient permissions");
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    public static void applySecurity(String user, String module, SectionFlags flag) throws Exception {
+        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        try {
+            if(!security.has(module, flag)){
+                throw new Exception("You do not have sufficeient permissions");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    public static void applySecurity(String user, SecurityModuleElement[] elems, boolean hasAll) throws Exception{
+        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        try {
+            for(int i = 0; i < elems.length; i++) {
+                if(!security.has(elems[i].name, elems[i].flag) && hasAll){
+                    throw new Exception("You do not have sufficient permissions");
+                }else if(!hasAll){
+                    return;
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    public static void applySecurity(String user, SecuritySectionElement[] elems, boolean hasAll) throws Exception{
+        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        try {
+            for(int i = 0; i < elems.length; i++) {
+                if(!security.has(elems[i].name, elems[i].flag) && hasAll){
                     throw new Exception("You do not have sufficient permissions");
                 }else if(!hasAll){
                     return;
