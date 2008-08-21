@@ -17,7 +17,6 @@ package org.openelis.modules.main.server;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -28,10 +27,8 @@ import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -39,81 +36,6 @@ public class OpenELISService implements OpenELISServiceInt {
    
     private static final long serialVersionUID = 1L;
     
-    private static String[] CONSTS = new String[] {"active",
-                                                   "description",
-                                                   "greeting",
-                                                   "favorites",
-                                                   "firstName",
-                                                   "lastName",
-                                                   "lastPageException",
-                                                   "middleName",
-                                                   "name",
-                                                   "id",
-                                                   "queryExpiredException",
-                                                   "removeRow",
-                                                   "section",
-                                                   "sequence",
-                                                   "test",
-                                                   "find",
-                                                   "lastPageException",
-                                                   "firstPageException",
-                                                   "beginningQueryException",
-                                                   "endingQueryException",
-                                                   "storageUnitDeleteException",
-                                                   "storageLocDeleteException",
-                                                   "analyteDeleteException",
-                                                   "inventoryAdjLocAutoException",
-                                                   "fieldUniqueException",
-                                                   "abort",
-                                                   "add",
-                                                   "cancel",
-                                                   "commit",
-                                                   "delete",
-                                                   "next",
-                                                   "previous",
-                                                   "query",
-                                                   "reload",
-                                                   "select",
-                                                   "update",
-                                                   "value",
-                                                   "addAborted",
-                                                   "adding",
-                                                   "addingFailed",
-                                                   "addingComplete",
-                                                   "deleteComplete",
-                                                   "deleteMessage",
-                                                   "deleteAborted",
-                                                   "deleting",
-                                                   "loadCompleteMessage",
-                                                   "enterFieldsToQuery",
-                                                   "enterInformationPressCommit",
-                                                   "loadingMessage",
-                                                   "correctErrors",
-                                                   "queryAborted",
-                                                   "querying",
-                                                   "queryingComplete",
-                                                   "updateFailed",
-                                                   "updateFieldsPressCommit",
-                                                   "updating",
-                                                   "updateAborted",
-                                                   "updatingComplete",
-                                                   "mustCommitOrAbort",
-                                                   "lockForUpdate",
-                                                   "updateFields",
-                                                   "reportDescription",
-                                                   "testFormat",
-                                                   "revisionMethod",
-                                                   "turnAround",
-                                                   "turnAroundMax",
-                                                   "turnAroundAverage",
-                                                   "turnAroundWarn",
-                                                   "timeHolding",
-                                                   "timeTransit",
-                                                   "hours",
-                                                   "days",
-                                                   "beginDate",
-                                                   "endDate",
-                                                   "reportable"};
 
     public String getXML() throws RPCException {
         try {
@@ -124,10 +46,10 @@ public class OpenELISService implements OpenELISServiceInt {
         }
 	}
     
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,DataObject> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-        HashMap map = new HashMap();
+        HashMap<String,DataObject> map = new HashMap<String,DataObject>();
         map.put("xml",xml);
         map.put("AppConstants", getConstants());
         return map;
@@ -186,9 +108,11 @@ public class OpenELISService implements OpenELISServiceInt {
     public ConstantMap getConstants() {
         UTFResource resource = UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
-        HashMap map = new HashMap();
-        for(int i = 0; i < CONSTS.length; i++){
-            map.put(CONSTS[i], resource.getString(CONSTS[i]));
+        HashMap<String,String> map = new HashMap<String,String>();
+        Enumeration<String> bundleKeys = resource.getKeys();
+        while(bundleKeys.hasMoreElements()){
+            String key = bundleKeys.nextElement();
+            map.put(key, resource.getString(key));
         }
         ConstantMap cmap = new ConstantMap();
         cmap.setValue(map);
@@ -199,7 +123,7 @@ public class OpenELISService implements OpenELISServiceInt {
 		try {
 			StringObject xml = new StringObject();
 			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-            HashMap map = new HashMap();
+            HashMap<String,DataObject> map = new HashMap<String,DataObject>();
             map.put("xml", xml);
             map.put("AppConstants",getConstants());
 			return map;
