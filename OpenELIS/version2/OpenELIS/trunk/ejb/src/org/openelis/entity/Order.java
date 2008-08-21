@@ -50,12 +50,13 @@ import org.openelis.utils.Auditable;
                             " o.isExternal, o.externalOrderNumber, o.reportToId, o.billToId) from Order o where o.id = :id"),
     @NamedQuery(name = "Order.OrderExternalKit", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
                             " oo.name, oo.address.multipleUnit, oo.address.streetAddress, oo.address.city, oo.address.state, oo.address.zipCode, o.isExternal, o.externalOrderNumber, " +
-                            " o.reportToId, o.billToId) from Order o left join o.organization oo where o.id = :id"),
+                            " o.reportToId, o.billToId, o.shipFromId, o.description) from Order o left join o.organization oo where o.id = :id"),
     @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
     @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, o.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from TransReceiptOrder i left join i.inventoryReceipt r left join i.orderItem o where o.orderId = :id")})
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from TransReceiptOrder i left join i.inventoryReceipt r left join i.orderItem o where o.orderId = :id"),
+    @NamedQuery(name = "Order.descriptionAutoLookup", query = "select distinct new org.openelis.domain.IdNameDO(o.description) from Order o where o.description like :desc")})
             
 @Entity
 @Table(name="order")
@@ -65,8 +66,11 @@ public class Order implements Auditable, Cloneable {
   @Id
   @GeneratedValue
   @Column(name="id")
-  private Integer id;             
-
+  private Integer id;  
+  
+  @Column(name="description")
+  private String description;
+  
   @Column(name="status_id")
   private Integer statusId;             
 
@@ -95,7 +99,10 @@ public class Order implements Auditable, Cloneable {
   private Integer reportToId;             
 
   @Column(name="bill_to_id")
-  private Integer billToId;             
+  private Integer billToId;
+  
+  @Column(name="ship_from_id")
+  private Integer shipFromId;   
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_id", insertable = false, updatable = false)
@@ -126,6 +133,16 @@ public class Order implements Auditable, Cloneable {
       this.id = id;
   }
 
+  public String getDescription() {
+      return description;
+  }
+    
+  public void setDescription(String description) {
+      if((description == null && this.description != null) || 
+         (description != null && !description.equals(this.description)))
+        this.description = description;
+  }
+    
   public Integer getStatusId() {
     return statusId;
   }
@@ -217,7 +234,15 @@ public class Order implements Auditable, Cloneable {
        (billToId != null && !billToId.equals(this.billToId)))
       this.billToId = billToId;
   }
-
+  
+  public Integer getShipFromId() {
+      return shipFromId;
+    }
+    public void setShipFromId(Integer shipFromId) {
+      if((shipFromId == null && this.shipFromId != null) || 
+         (shipFromId != null && !shipFromId.equals(this.shipFromId)))
+        this.shipFromId = shipFromId;
+    }
   
   public void setClone() {
     try {
@@ -251,6 +276,8 @@ public class Order implements Auditable, Cloneable {
       AuditUtil.getChangeXML(reportToId,original.reportToId,doc,"report_to_id");
 
       AuditUtil.getChangeXML(billToId,original.billToId,doc,"bill_to_id");
+      
+      AuditUtil.getChangeXML(shipFromId,original.shipFromId,doc,"ship_from_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

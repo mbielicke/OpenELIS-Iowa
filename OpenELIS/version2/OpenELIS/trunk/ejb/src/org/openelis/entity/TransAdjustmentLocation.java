@@ -5,12 +5,6 @@ package org.openelis.entity;
   * TransAdjustmentLocation Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -18,12 +12,25 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "TransAdjustmentLocation.TransAdjustmentLocation", query = "select distinct new org.openelis.domain.InventoryAdjustmentChildDO(trans.id, il.id, " +
+                                " il.inventoryItemId, ii.name, storLoc.name, storLoc.storageUnit.description, storLoc.location, " +
+                                " trans.physicalCount, trans.quantity)  from TransAdjustmentLocation trans LEFT JOIN trans.inventoryLocation il " +
+                                " LEFT JOIN il.inventoryItem ii LEFT JOIN il.storageLocation storLoc " +
+                                " where trans.inventoryAdjustmentId = :id ORDER BY il.id ")})
+                                
 @Entity
 @Table(name="trans_adjustment_location")
 @EntityListeners({AuditUtil.class})

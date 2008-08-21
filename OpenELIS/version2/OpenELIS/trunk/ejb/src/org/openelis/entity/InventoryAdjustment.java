@@ -33,12 +33,19 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "InventoryAdjustment.InventoryAdjustment", query = "select distinct new org.openelis.domain.InventoryAdjustmentDO(ia.id, ia.description, ia.systemUserId, " +
+                                " ia.adjustmentDate, ii.storeId) from InventoryAdjustment ia LEFT JOIN ia.transAdjustmentLocation trans LEFT JOIN " +
+                                " trans.inventoryLocation.inventoryItem ii where ia.id = :id ")})
+    
 @Entity
 @Table(name="inventory_adjustment")
 @EntityListeners({AuditUtil.class})
@@ -97,12 +104,13 @@ public class InventoryAdjustment implements Auditable, Cloneable {
   public Datetime getAdjustmentDate() {
     if(adjustmentDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,adjustmentDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,adjustmentDate);
   }
-  public void setAdjustmentDate (Datetime adjustment_date){
-    if((adjustmentDate == null && this.adjustmentDate != null) || 
-       (adjustmentDate != null && !adjustmentDate.equals(this.adjustmentDate)))
-      this.adjustmentDate = adjustment_date.getDate();
+      
+  public void setAdjustmentDate (Datetime adjustmentDate){
+    if((adjustmentDate == null && this.adjustmentDate != null) || (adjustmentDate != null && this.adjustmentDate == null) || 
+       (adjustmentDate != null && !adjustmentDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.adjustmentDate))))
+      this.adjustmentDate = adjustmentDate.getDate();
   }
 
   
