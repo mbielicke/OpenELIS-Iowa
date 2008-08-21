@@ -56,8 +56,11 @@ import org.openelis.utils.Auditable;
                                         " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
                                         " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) " +
                                         " order by childLoc.name"),
-@NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocationId = :id")})
-
+@NamedQuery(name = "InventoryLocation.IdByStorageLocation", query = "select i.id from InventoryLocation i where i.storageLocationId = :id"),
+@NamedQuery(name = "InventoryLocation.LocationInfoForAdjustmentFromId", query = "select distinct new org.openelis.domain.InventoryAdjLocationAutoDO(loc.id, ii.id, ii.name, dictStore.entry, " +
+                                        " sl.name, sl.location, sl.storageUnit.description, loc.quantityOnhand) " + 
+                                        " from InventoryLocation loc LEFT JOIN loc.inventoryItem ii LEFT JOIN loc.storageLocation sl, Dictionary dictStore where ii.storeId = dictStore.id AND loc.id = :id " + 
+                                        " AND ii.storeId = :store ")})
 
 @Entity
 @Table(name="inventory_location")

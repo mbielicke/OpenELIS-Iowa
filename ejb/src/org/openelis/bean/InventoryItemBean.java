@@ -152,11 +152,15 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         qb.setMeta(invItemMap);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+invItemMap.getId()+", "+invItemMap.getName()+") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameStoreDO("+
+                         invItemMap.getId()+", "+
+                         invItemMap.getName()+", "+
+                         invItemMap.DICTIONARY_STORE_META.getEntry()+") ");
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
-
+        qb.addWhere(invItemMap.getStoreId()+" = "+invItemMap.DICTIONARY_STORE_META.getId());
+        
         qb.setOrderBy(invItemMap.getName());
         
         sb.append(qb.getEJBQL());
@@ -335,6 +339,16 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         query.setParameter("name",itemName);
         
+        query.setMaxResults(maxResults);
+        
+        return query.getResultList();
+    }
+    
+    public List inventoryAdjItemAutoCompleteLookupByName(String itemName, Integer storeId, int maxResults){
+        Query query = manager.createNamedQuery("InventoryItem.AutocompleteItemByNameStore");
+       
+        query.setParameter("name",itemName);
+        query.setParameter("store",storeId);
         query.setMaxResults(maxResults);
         
         return query.getResultList();

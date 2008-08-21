@@ -294,7 +294,7 @@ public class OrderBean implements OrderRemote{
 
         //validate the order record
         List exceptionList = new ArrayList();
-        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        validateOrder(orderDO, items.size(), orderType, exceptionList, false);
         
         if(exceptionList.size() > 0)
             throw (RPCException)exceptionList.get(0);
@@ -310,15 +310,12 @@ public class OrderBean implements OrderRemote{
          order.setReportToId(orderDO.getReportToId());
          order.setRequestedBy(orderDO.getRequestedBy());
          order.setStatusId(orderDO.getStatusId());
-
+         order.setShipFromId(orderDO.getShipFromId());
+         order.setDescription(orderDO.getDescription());
+         
         if (order.getId() == null) {
             manager.persist(order);
         }
- 
-        //lookup the order transaction type to be used later
-        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        //query.setParameter("systemName", "inv_trans_order");
-        //Integer orderTypeId = (Integer)query.getSingleResult();
         
         //update order items
         for (int i=0; i<items.size();i++) {
@@ -427,10 +424,18 @@ public class OrderBean implements OrderRemote{
         return order.getId();        
     }
 
+    public List orderDescriptionAutoCompleteLookup(String desc, int maxResults) {
+        Query query = manager.createNamedQuery("Order.descriptionAutoLookup");
+        query.setParameter("desc", desc);
+        
+        query.setMaxResults(maxResults);
+        return query.getResultList();
+    }
+    
     public List validateForAdd(OrderDO orderDO, String orderType, List items) {
         List exceptionList = new ArrayList();
         
-        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        validateOrder(orderDO, items.size(), orderType, exceptionList, true);
         
         for(int i=0; i<items.size();i++){            
             OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
@@ -441,10 +446,10 @@ public class OrderBean implements OrderRemote{
         return exceptionList;
     }
 
-    public List validateForUpdate(OrderDO orderDO, String orderType, List items) {
+    public List validateForUpdate(OrderDO orderDO, String orderType, List items,  boolean validateOrderQty) {
         List exceptionList = new ArrayList();
         
-        validateOrder(orderDO, items.size(), orderType, exceptionList);
+        validateOrder(orderDO, items.size(), orderType, exceptionList, validateOrderQty);
         
         for(int i=0; i<items.size();i++){            
             OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
@@ -455,7 +460,7 @@ public class OrderBean implements OrderRemote{
         return exceptionList;
     }
     
-    private void validateOrder(OrderDO orderDO, int numberOfOrderItems, String orderType, List exceptionList){
+    private void validateOrder(OrderDO orderDO, int numberOfOrderItems, String orderType, List exceptionList, boolean validateOrderQty){
         //status required for all order types
         if(orderDO.getStatusId() == null || "".equals(orderDO.getStatusId())){
             exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getStatusId()));
@@ -482,7 +487,7 @@ public class OrderBean implements OrderRemote{
         }        
         
         //number of order items needs to be > 0
-        if(numberOfOrderItems < 1){
+        if(validateOrderQty && numberOfOrderItems < 1){
             exceptionList.add(new FormErrorException("zeroOrderItemsException"));
         }
     }
@@ -495,7 +500,7 @@ public class OrderBean implements OrderRemote{
         
         //inventory item is required for all order types
         if(orderItemDO.getInventoryItemId() == null || "".equals(orderItemDO.getInventoryItemId())){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getInventoryItemId()));
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
         }
     }
 }
