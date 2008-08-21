@@ -15,17 +15,8 @@
 */
 package org.openelis.modules.order.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
@@ -33,21 +24,21 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -61,15 +52,23 @@ import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class OrderScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, ChangeListener {
     
     private static boolean loaded = false;
     private boolean startedLoadingTable = false;
     
-    private static DataModel statusDropdown, costCenterDropdown;
+    private static DataModel statusDropdown, costCenterDropdown, shipFromDropdown;
     
     private AutoCompleteDropdown orgDropdown, billToDropdown, reportToDropdown;
     
@@ -82,6 +81,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                     reportToAptSuite, reportToAddress, reportToCity, reportToState, reportToZipCode,
                     billToAptSuite, billToAddress, billToCity, billToState, billToZipCode;
     
+    private KeyListManager keyList = new KeyListManager();
+    
     private ScreenTextArea   shippingNoteText, customerNoteText;
     
     private ScreenAutoDropdown status;
@@ -89,17 +90,6 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     private EditTable itemsController, receiptsController;
     
     private String orderType;
-    
-    private boolean     loadItems           = true, 
-                        loadCustomerNotes   = true, 
-                        loadShippingNotes   = true,
-                        loadReportToBillTo  = true,
-                        loadReceipts        = true,
-                        clearItems          = false, 
-                        clearCustomerNotes  = false, 
-                        clearShippingNotes  = false,
-                        clearReportToBillTo = false,
-                        clearReceipts       = false;
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
     
@@ -185,7 +175,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         AutoCompleteDropdown drop;
         
         loaded = true;
-        
+
         orderNum = (ScreenTextBox)widgets.get(OrderMeta.getId());
         neededInDays = (ScreenTextBox)widgets.get(OrderMeta.getNeededInDays());
         status = (ScreenAutoDropdown)widgets.get(OrderMeta.getStatusId());
@@ -194,13 +184,24 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         shippingNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_SHIPPING_NOTE_META.getText());
         customerNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText());
         
+        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
+        chain.addCommand(atozTable);
+        chain.addCommand(atozButtons);
+        
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
-        itemsController.setAutoAdd(false);
+        //itemsController.setAutoAdd(false);
         addCommandListener(itemsController);
         
         if("external".equals(orderType)){
             receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
-            receiptsController.setAutoAdd(false);
+          //  receiptsController.setAutoAdd(false);
             addCommandListener(receiptsController);
         }
         
@@ -239,6 +240,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         if (statusDropdown == null) {
             statusDropdown = (DataModel)initData.get("status");
             costCenterDropdown = (DataModel)initData.get("costCenter");
+            shipFromDropdown = (DataModel)initData.get("shipFrom");
         }
 
         drop = (AutoCompleteDropdown)getWidget(OrderMeta.getStatusId());
@@ -251,69 +253,37 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
         drop.setModel(costCenterDropdown);
         
-        addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        if("kits".equals(orderType)){
+            drop = (AutoCompleteDropdown)getWidget(OrderMeta.getShipFromId());
+            drop.setModel(shipFromDropdown);
+        }
+        
+        //addCommandListener((ButtonPanel)getWidget("buttons"));
+        //((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        
+        //set order type in display and query rpcs
+        ((FormRPC)forms.get("display")).setFieldValue("orderType", orderType);
+        ((FormRPC)forms.get("query")).setFieldValue("orderType", orderType);
+        
+        updateChain.add(afterUpdate);
+        //commitQueryChain.add(afterCommitQuery);
+        
         super.afterDraw(sucess);
     }
-    
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
-        public void onSuccess(Object result){
-            loadCustomerNotes = true;
-            loadItems = true;
-            loadReceipts = true;
-            loadReportToBillTo = true;
-            loadShippingNotes = true;
-            
-            loadTabs();
-        
-            rpc.setFieldValue("orderType", orderType);
-
-            orderNum.enable(false);
-            orderDate.enable(false);
-        
-            neededInDays.setFocus(true);
-        }
-        public void onFailure(Throwable caught){
-            
-        }
-     };
      
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+    /*protected AsyncCallback afterCommitAdd = new AsyncCallback() {
          public void onSuccess(Object result){
-             loadItems = true;
-             clearItems = false;
-             
-             loadReceipts = true;
-             clearReceipts = false;
-             
-             loadCustomerNotes = true;
-             clearCustomerNotes = false;
-             
-             loadReportToBillTo = true;
-             clearReportToBillTo = false;
-             
-             loadShippingNotes = true;
-             clearShippingNotes = false;
-             
-             Integer orderId = (Integer)rpc.getFieldValue(OrderMeta.getId());
-             NumberObject orderIdObj = new NumberObject(orderId);
-             
-             // done because key is set to null in AppScreenForm for the add operation 
-             if(key ==null){  
-                 key = new DataSet();
-                 key.setKey(orderIdObj);
-                 
-             }else{
-                 key.setKey(orderIdObj);
-                 
-             }
-             loadTabs();
+             Window.alert("AFTER!!");
+             itemsController.setAutoAdd(false);
+             itemsController.reset();
          }
+         
          public void onFailure(Throwable caught){
              
          }
-      };
+      };*/
       
+    /*
    protected AsyncCallback afterCommitQuery = new AsyncCallback() {
           public void onFailure(Throwable caught) {
           
@@ -323,26 +293,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
               rpc.setFieldValue("orderType", orderType);    
           }
     };
-    
-    protected AsyncCallback afterFetch = new AsyncCallback() {
-        public void onSuccess(Object result){
-            loadItems = true; 
-            loadReceipts = true;
-            loadCustomerNotes = true; 
-            loadShippingNotes = true;
-            loadReportToBillTo = true;
-            loadTabs();
-        }
-        public void onFailure(Throwable caught){
-            
-        }
-     };
+    */
     
     public void query() {
         super.query();
         
-        rpc.setFieldValue("orderType", orderType);
-        
+        //rpc.setFieldValue("orderType", orderType);
+
         orderNum.setFocus(true);
         
         //disable the remove row button, standard note buttons, and note text fields
@@ -363,10 +320,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
     
     public void add() {
-        itemsController.setAutoAdd(true);
+        //itemsController.setAutoAdd(true);
         super.add();
         
-        rpc.setFieldValue("orderType", orderType);
+        //rpc.setFieldValue("orderType", orderType);
         
         
         window.setStatus("","spinnerIcon");
@@ -403,151 +360,57 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         
         neededInDays.setFocus(true);
     }
-    
-    public void update() {
-        itemsController.setAutoAdd(true);
-        super.update();
-    }
-    
-    public void abort() {
-        itemsController.setAutoAdd(false);
         
-        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
-            loadItems = false;
-            clearItems = true;
-            
-            loadReceipts = false;
-            clearReceipts = true;
-            
-            loadCustomerNotes = false;
-            clearCustomerNotes = true;
-            
-            loadReportToBillTo = false;
-            clearReportToBillTo = true;
-            
-            loadShippingNotes = false;
-            clearShippingNotes = true;
-        }else{
-            loadItems = true;
-            loadReceipts = true;
-            loadCustomerNotes = true;
-            loadReportToBillTo = true;
-            loadShippingNotes = true;
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+            Window.alert("failure");
         }
-        
-        //the super needs to go before the load tabs method or the table wont load.
-        super.abort();
-        
-        loadTabs();
-    }
-    
-    private void loadTabs() {
-        int selectedTab = -1;
-        TabPanel tabPanel = (TabPanel)getWidget("tabPanel");
-        
-        if(tabPanel != null)
-            selectedTab = tabPanel.getTabBar().getSelectedTab();
+        public void onSuccess(Object result) {
+    //        rpc.setFieldValue("orderType", orderType);
 
-        if ((selectedTab == 0 || selectedTab == -1) && loadItems) {
-            // if there was data previously then clear the items table
-            if (clearItems) {
-                clearItems();
-            }
-            // load the items table
-            fillItemsModel(false);
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadItems = false;
+            orderNum.enable(false);
+            orderDate.enable(false);
             
-        } else if (selectedTab == 1 && "kits".equals(orderType) && loadCustomerNotes) {
-            // if there was data previously then clear the locations table otherwise
-            // don't
-            if (clearCustomerNotes) {
-                clearCustomerNotes();
-            }
-            // load the customer notes
-            fillCustomerNotes();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadCustomerNotes = false;
-
-        } else if ((selectedTab == 1 && "external".equals(orderType) && loadReceipts)) {
-            // if there was data previously then clear the locations table otherwise
-            // don't
-            if (clearReceipts) {
-                clearReceipts();
-            }
-            // load the customer notes
-            fillReceipts();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadReceipts = false;
-
-        }else if ((selectedTab == 2 || (selectedTab == 1 && "internal".equals(orderType))) && loadShippingNotes) {
-            // if there was data previously then clear the comments panel otherwise
-            // don't
-            if (clearShippingNotes) {
-                clearShippingNotes();
-            }
-            // load the comments model
-            fillShippingNotes();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadShippingNotes = false;
-
-        } else if (selectedTab == 3 && loadReportToBillTo) {
-            if (clearReportToBillTo) {
-                clearReportToBillTo();
-            }
-            // load the report to bill to tab
-            fillReportToBillTo();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadReportToBillTo = false;
-
+            neededInDays.setFocus(true);
         }
-    }
+    };
+    
+    /*protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            itemsController.setAutoAdd(false);
+            itemsController.reset();
+        }
+    };*/
+    
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if (index == 0 && loadItems) {
-            if (clearItems)
-                clearItems();
-            fillItemsModel(false);
-            loadItems = false;
-        } else if (index == 1 && "kits".equals(orderType) && loadCustomerNotes) {
-            if (clearCustomerNotes) {
-                clearCustomerNotes();
+        if(state != FormInt.State.QUERY){
+            if (index == 0 && !((FormRPC)rpc.getField("items")).load) {
+                fillItemsModel(false);
+                
+            } else if (index == 1 && "kits".equals(orderType) && !((FormRPC)rpc.getField("custNote")).load) {
+                fillCustomerNotes();
+                
+            } else if ((index == 1 && "external".equals(orderType) && !((FormRPC)rpc.getField("receipts")).load)) {
+                fillReceipts();
+                
+            } else if (index == 1 && "internal".equals(orderType) && !((FormRPC)rpc.getField("shippingNote")).load) {
+                fillShippingNotes();
+
+            } else if (index == 2 && !((FormRPC)rpc.getField("shippingNote")).load) {
+                fillShippingNotes();
+                
+            } else if (index == 3 && !((FormRPC)rpc.getField("reportToBillTo")).load) {
+                fillReportToBillTo();
+                
             }
-            fillCustomerNotes();
-            loadCustomerNotes = false;
-        } else if ((index == 1 && "external".equals(orderType) && loadReceipts)) {
-            if (clearReceipts)
-                clearReceipts();
-            fillReceipts();
-            loadReceipts = false;
-        } else if (index == 1 && "internal".equals(orderType) && loadShippingNotes) {
-            if (clearShippingNotes)
-                clearShippingNotes();
-            fillShippingNotes();
-            loadShippingNotes = false;
-        } else if (index == 2 && loadShippingNotes) {
-            if (clearShippingNotes)
-                clearShippingNotes();
-            fillShippingNotes();
-            loadShippingNotes = false;
-        } else if (index == 3 && loadReportToBillTo) {
-            if (clearReportToBillTo) 
-                clearReportToBillTo();
-            fillReportToBillTo();
-            loadReportToBillTo = false;
         }
         return true;
     }
 
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { }
 
     //
     //start table manager methods
@@ -575,20 +438,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
 
     public boolean doAutoAdd(TableRow row, TableController controller) {
-        return row.getColumn(0).getValue() != null && !row.getColumn(0).getValue().equals(0);
-    }
-    
-    public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row)))
-            return true;
-        else if(row > -1 && row == controller.model.numRows() && !tableRowEmpty(((EditTable)controller).autoAddRow))
-            return true;
-      
-        return false;
+        return !tableRowEmpty(row);
     }
     
     public void finishedEditing(int row, int col, TableController controller) {
-       //Window.alert("("+col+") && ("+row+") && ("+controller.model.numRows()+") && ("+!startedLoadingTable+") total:("+(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable)+")");
         if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
             startedLoadingTable = true;
             
@@ -699,201 +552,140 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             //we need to do the duplicate method
             FormRPC displayRPC = rpc.clone();
             displayRPC.setFieldValue(OrderMeta.getId(), null);
-            displayRPC.setFieldValue("receiptsTable", null);
-            displayRPC.setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(),null);
-                       
+            displayRPC.setFieldValue(OrderMeta.getExternalOrderNumber(), null);
+            displayRPC.setFieldValue("orderType", orderType);
+            ((FormRPC)displayRPC.getField("receipts")).setFieldValue("receiptsTable", null);
+            ((FormRPC)displayRPC.getField("shippingNote")).setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(),null);
+            
+            //set the load flags correctly
+            ((FormRPC)displayRPC.getField("items")).load = false;
+            ((FormRPC)displayRPC.getField("shippingNote")).load = true;
+            ((FormRPC)displayRPC.getField("receipts")).load = true;
+            
+            DataSet tempKey = key;
+            
             add();
             
-            clearItems = false;
-            loadItems = true;
-            
-            clearReceipts = false;
-            loadReceipts = false;
-            
-            clearShippingNotes = false;
-            loadShippingNotes = false;
-            
+            key = tempKey;
+
             rpc = displayRPC;
-            
+            forms.put("display", displayRPC);
+                        
             load();
             
             fillItemsModel(true);
         }
     }
     
-    private void fillItemsModel(boolean forDuplicate) {
-        Integer orderId = null;
-        NumberObject orderIdObj;
-        BooleanObject duplicateObj;
-        StringObject orderTypeObj = new StringObject();
-        TableField f;
-
-        if (key == null || key.getKey() == null) {
-            clearItems = false;
+    private void fillItemsModel(final boolean forDuplicate) {
+        if(key == null)
             return;
-        }
-
+        
         window.setStatus("","spinnerIcon");
         
-        orderId = (Integer)key.getKey().getValue();
-        orderIdObj = new NumberObject(orderId);
-        orderTypeObj.setValue(orderType);
-        duplicateObj = new BooleanObject();
-        
-        if(forDuplicate)
-            duplicateObj.setValue("Y");
-        else
-            duplicateObj.setValue("N");
-        
-        f = new TableField();
-        f.setValue(itemsController.model);
-
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj, duplicateObj, f, orderTypeObj};
+        DataObject[] args = new DataObject[] {key, new BooleanObject(forDuplicate), new StringObject(orderType), rpc.getField("items")};
 
-        screenService.getObject("getItemsModel", args, new AsyncCallback() {
+        screenService.getObject("loadItems", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                // get the table model and load it
-                // in the table
-                //rpc.setFieldValue("itemsTable",
-                //                  (TableModel)((TableField)result).getValue());
+                load((FormRPC)result);
+                rpc.setField("items", (FormRPC)result);
                 
-                itemsController.loadModel((TableModel)((TableField)result).getValue());
-
-                clearItems = itemsController.model.numRows() > 0;
+                if(forDuplicate)
+                    key = null;
                 
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillReceipts() {
-        Integer orderId = null;
-        NumberObject orderIdObj;
-        TableField f;
-
-        if (key == null || key.getKey() == null) {
-            clearReceipts = false;
+        if(key == null)
             return;
-        }
-
-        window.setStatus("","spinnerIcon");
         
-        orderId = (Integer)key.getKey().getValue();
-        orderIdObj = new NumberObject(orderId);
-
-        f = new TableField();
-        f.setValue(receiptsController.model);
+        window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj, f};
+        DataObject[] args = new DataObject[] {key, rpc.getField("receipts")};
 
-        screenService.getObject("getReceiptsModel", args, new AsyncCallback() {
+        screenService.getObject("loadReceipts", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                receiptsController.loadModel((TableModel)((TableField)result).getValue());
-
-                clearReceipts = receiptsController.model.numRows() > 0;
-                
+                load((FormRPC)result);
+                rpc.setField("receipts", (FormRPC)result);
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillCustomerNotes() {
-        Integer orderId = null;
-        NumberObject orderIdObj;
-
-        if (key == null || key.getKey() == null) {
-            clearCustomerNotes = false;
+        if(key == null)
             return;
-        }
-
-        window.setStatus("","spinnerIcon");
         
-        orderId = (Integer)key.getKey().getValue();
-        orderIdObj = new NumberObject(orderId);
+        window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj};
+        DataObject[] args = new DataObject[] {key, rpc.getField("custNote")};
 
-        screenService.getObject("getCustomerNotes", args, new AsyncCallback() {
+        screenService.getObject("loadCustomerNotes", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                
-                String notesText = (String)((StringField)result).getValue();
-                
-                ((TextArea)customerNoteText.getWidget()).setText(notesText);
-                
+                load((FormRPC)result);
+                rpc.setField("custNote",(FormRPC)result);
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillShippingNotes() {
-        Integer orderId = null;
-        NumberObject orderIdObj;
-
-        if (key == null || key.getKey() == null) {
-            clearShippingNotes = false;
+        if(key == null)
             return;
-        }
-
-        window.setStatus("","spinnerIcon");
         
-        orderId = (Integer)key.getKey().getValue();
-        orderIdObj = new NumberObject(orderId);
+        window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj};
+        DataObject[] args = new DataObject[] {key, rpc.getField("shippingNote")};
 
-        screenService.getObject("getShippingNotes", args, new AsyncCallback() {
+        screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                
-                String notesText = (String)((StringField)result).getValue();
-                
-                ((TextArea)shippingNoteText.getWidget()).setText(notesText);
-                
+                load((FormRPC)result);
+                rpc.setField("shippingNote",(FormRPC)result);
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillReportToBillTo() {
-        Integer orderId = null;
-        NumberObject orderIdObj;
-
-        if (key == null || key.getKey() == null) {
-            clearReportToBillTo = false;
+        if(key == null)
             return;
-        }
-
-        window.setStatus("","spinnerIcon");
         
-        orderId = (Integer)key.getKey().getValue();
-        orderIdObj = new NumberObject(orderId);
+        window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {orderIdObj};
+        DataObject[] args = new DataObject[] {key, rpc.getField("reportToBillTo")};
 
-        screenService.getObject("getReportToBillTo", args, new AsyncCallback() {
+        screenService.getObject("loadReportToBillTo", args, new AsyncCallback() {
             public void onSuccess(Object result) {
                 if(result != null){
-                    DataModel model = (DataModel)((ModelField)result).getValue();
+                    /*DataModel model = (DataModel)((ModelField)result).getValue();
                     DataSet set = model.get(0);
                     
                     ArrayList billToDataSets = new ArrayList();
@@ -914,7 +706,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                     reportToAddress.setText((String)((StringObject)set.getObject(10)).getValue());
                     reportToCity.setText((String)((StringObject)set.getObject(11)).getValue());
                     reportToState.setText((String)((StringObject)set.getObject(12)).getValue());
-                    reportToZipCode.setText((String)((StringObject)set.getObject(13)).getValue());
+                    reportToZipCode.setText((String)((StringObject)set.getObject(13)).getValue());*/
+                    load((FormRPC)result);
+                    rpc.setField("reportToBillTo",(FormRPC)result);
 
                 }
                 window.setStatus("","");
@@ -922,31 +716,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
-    }
-    
-    private void clearItems() {
-        itemsController.model.reset();
-        //itemsController.setModel(itemsController.model);
-        //rpc.setFieldValue("itemsTable", itemsController.model);
-    }
-    
-    private void clearReceipts() {
-        receiptsController.model.reset();
-        //receiptsController.setModel(receiptsController.model);
-    }
-    
-    private void clearCustomerNotes() {
-        ((TextArea)customerNoteText.getWidget()).setText("");
-    }
-    
-    private void clearShippingNotes() {
-        ((TextArea)shippingNoteText.getWidget()).setText("");
-    }
-    
-    private void clearReportToBillTo() {
-        
     }
     
     private boolean tableRowEmpty(TableRow row){

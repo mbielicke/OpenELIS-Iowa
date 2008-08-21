@@ -75,7 +75,7 @@
 		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel">
-				<azTable width="auto" key="azTable" maxRows="24" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="24" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -201,7 +201,7 @@
 								<content><TablePanel style="Form">
 								<row>
 									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
-									<check key="{meta:getIsActive($invItem)}" tab="{meta:getIsReorderAuto($invItem)},{meta:getPurchasedUnitsId($invItem)}"/>
+									<check key="{meta:getIsActive($invItem)}" tab="{meta:getIsReorderAuto($invItem)},{meta:getDispensedUnitsId($invItem)}"/>
 								</row>
 								<row>
 									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
@@ -241,9 +241,9 @@
 								</VerticalPanel>
 								</HorizontalPanel>
 				<!--TAB PANEL-->
-				<TabPanel height="200px" key="tabPanel">
+				<TabPanel height="200px" key="itemTabPanel">
 					<!-- TAB 1 (Components) -->
-					<tab key="tab1" text="{resource:getString($constants,'components')}">
+					<tab key="componentsTab" text="{resource:getString($constants,'components')}">
 							<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="componentsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
@@ -293,7 +293,7 @@
 							</VerticalPanel>
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
-					<tab key="tab2" text="{resource:getString($constants,'locationQuantity')}">
+					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
 						<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
@@ -340,12 +340,12 @@
 									</queryTable>
 									</query>
 								</widget>
-								<HorizontalPanel height="10px"/>
+								<HorizontalPanel height="8px"/>
 							</VerticalPanel>
 					</tab>
 					<!-- start TAB 3 (Additional Info) -->
-					<tab key="tab4" text="{resource:getString($constants,'additionalInfo')}">
-						<VerticalPanel height="229px" width="610px">
+					<tab key="additionalInfoTab" text="{resource:getString($constants,'additionalInfo')}">
+						<VerticalPanel height="247px" width="610px">
 						<TablePanel style="Form">
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
@@ -372,14 +372,14 @@
 					</tab>
 					
 					<!-- start TAB 4 (Manufacturing) -->
-					<tab key="tab4" text="{resource:getString($constants,'manufacturing')}">
-						<VerticalPanel height="229px" width="610px">
+					<tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
+						<VerticalPanel height="247px" width="610px">
 						<!--<richtext key="manufacturingText" tools="false"/>-->
 						</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
-					<tab key="tab5" text="{resource:getString($constants,'comments')}">
-						<VerticalPanel width="100%" height="164px" spacing="0" padding="0">
+					<tab key="commentsTab" text="{resource:getString($constants,'comments')}">
+						<VerticalPanel width="100%" height="182px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
@@ -403,7 +403,7 @@
 									<html key="spacer" xml:space="preserve"> </html>
 									<widget colspan="2">
 										<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="136px" width="545px" overflowX="auto" overflowY="scroll">				
+								<VerticalPanel key="notesPanel" style="notesPanel" valign="top" onclick="this" height="154px" width="545px" overflowX="auto" overflowY="scroll">				
 								</VerticalPanel>
 								</HorizontalPanel>
 								</widget>
@@ -426,11 +426,6 @@
       <number key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
       <number key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
       <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="true"/> 
-      <number key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
-      <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
-      <number key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
-      <table key="componentsTable"/>
-      <table key="locQuantitiesTable"/>
       <check key="{meta:getIsActive($invItem)}" required="false"/>
       <check key="{meta:getIsReorderAuto($invItem)}" required="false"/>
       <check key="{meta:getIsLotMaintained($invItem)}" required="false"/>
@@ -440,12 +435,33 @@
       <check key="{meta:getIsSubAssembly($invItem)}" required="false"/>
       <check key="{meta:getIsLabor($invItem)}" required="false"/>
       <check key="{meta:getIsNoInventory($invItem)}" required="false"/>
-      
       <string key="{meta:getProductUri($invItem)}" required="false"/>
+      <number key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
+      <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
+      <number key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
       
-      <string key="{noteMeta:getSubject($note)}" max="60" required="false"/>
-      <string key="{noteMeta:getText($note)}" required="false"/>
-      
+      <rpc key="components">
+	      <table key="componentsTable"/>
+      </rpc>
+
+      <rpc key="locations">
+	      <table key="locQuantitiesTable"/>
+      </rpc>
+
+      <!--<rpc key="additionalInfo">
+      </rpc>-->
+
+      <rpc key="manufacturing">
+      	<!--nothing yet-->
+      </rpc>
+
+      <rpc key="comments">
+	      <string key="{noteMeta:getSubject($note)}" max="60" required="false"/>
+    	  <string key="{noteMeta:getText($note)}" required="false"/>
+		  <string key="notesPanel"/>
+      </rpc>
+
+      <string key="itemTabPanel" reset="false">componentsTab</string>
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{meta:getId($invItem)}" type="integer" required="false"/>
