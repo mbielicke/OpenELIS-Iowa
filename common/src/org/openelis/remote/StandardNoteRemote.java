@@ -45,9 +45,6 @@ public interface StandardNoteRemote {
      //method to query for standard notes
      public List queryForType(HashMap fields) throws Exception;
 	 
-	 //a way for the servlet to get the system user id
-	 public Integer getSystemUserId();
-	 
 	 public void deleteStandardNote(Integer standardNoteId) throws Exception;
 	 
 	 //method to validate the fields before the backend updates it in the database

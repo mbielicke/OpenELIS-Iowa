@@ -21,6 +21,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationContactDO;
 
 @Remote
 public interface OrganizationRemote {
@@ -34,7 +35,7 @@ public interface OrganizationRemote {
 	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception;
 	
 	//commit a change to org, or insert a new org
-	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception;
+	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List<OrganizationContactDO> contacts) throws Exception;
 	
 	//method to return just notes
 	public List getOrganizationNotes(Integer organizationId);
@@ -50,9 +51,6 @@ public interface OrganizationRemote {
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
-	 
-	 //a way for the servlet to get the system user id
-	 public Integer getSystemUserId();
 	 
 	 //method to validate the fields before the backend updates it in the database
 	 public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts);

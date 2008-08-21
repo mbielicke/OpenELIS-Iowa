@@ -38,8 +38,6 @@ public interface SystemVariableRemote {
     //  method to query for SystemVariable
     public List query(HashMap fields, int first, int max) throws Exception;
     
-    //a way for the servlet to get the system user id
-    public Integer getSystemUserId();
     
     public void deleteSystemVariable(Integer sysVarId) throws Exception;
     
