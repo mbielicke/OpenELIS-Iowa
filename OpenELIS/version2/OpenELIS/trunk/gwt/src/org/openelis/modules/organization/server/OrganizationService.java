@@ -188,6 +188,10 @@ public class OrganizationService implements AppScreenFormServiceInt,
                 loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
             }
             
+            //we need to clear out the note subject and the note text fields after a commit
+            ((FormRPC)rpcReturn.getField("notes")).setFieldValue(OrgMeta.NOTE.getSubject(), null);
+            ((FormRPC)rpcReturn.getField("notes")).setFieldValue(OrgMeta.NOTE.getText(), null);
+            
     		return rpcReturn;
     	}
 
@@ -249,6 +253,13 @@ public class OrganizationService implements AppScreenFormServiceInt,
                 
                 loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
             }
+            
+            //we need to set the notes load param to true because update doesnt call resetRPC
+            ((FormRPC)rpcReturn.getField("notes")).load = false;
+            
+            //we need to clear out the note subject and the note text fields after a commit
+            ((FormRPC)rpcReturn.getField("notes")).setFieldValue(OrgMeta.NOTE.getSubject(), null);
+            ((FormRPC)rpcReturn.getField("notes")).setFieldValue(OrgMeta.NOTE.getText(), null);
             
     		return rpcReturn;
     	}
@@ -477,9 +488,9 @@ public class OrganizationService implements AppScreenFormServiceInt,
              }else{
             	 mainRowPanel.setAttribute("style", "TableRow");
              }
-        	 mainRowPanel.setAttribute("width", "531px");
+        	 mainRowPanel.setAttribute("width", "530px");
         	 
-        	 topRowPanel.setAttribute("width", "531px");
+        	 topRowPanel.setAttribute("width", "530px");
         	 titleText.setAttribute("key", "note"+i+"Title");
         	 titleText.setAttribute("style", "notesSubjectText");
         	 titleText.appendChild(doc.createTextNode(subject));

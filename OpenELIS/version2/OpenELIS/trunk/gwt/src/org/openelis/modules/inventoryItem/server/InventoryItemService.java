@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameStoreDO;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
@@ -29,7 +30,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -122,8 +122,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         else
             model.clear();
         while(i < inventoryItemNames.size() && i < leftTableRowsPerPage) {
-            IdNameDO resultDO = (IdNameDO)inventoryItemNames.get(i);
-            model.add(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName()));
+            IdNameStoreDO resultDO = (IdNameStoreDO)inventoryItemNames.get(i);
+
+            model.add(new NumberObject(resultDO.getId()),new DataObject[] {new StringObject(resultDO.getName()), new StringObject(resultDO.getStore())});
             i++;
         } 
  
@@ -131,24 +132,23 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-//      remote interface to call the inventory bean
+        //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         List components = new ArrayList();
        
         NoteDO inventoryItemNote = new NoteDO();
-        
-        //build the organizationAddress DO from the form
-        //organization info
+
         inventoryItemDO = getInventoryItemDOFromRPC(rpcSend);
         
         //components info
-        TableModel componentsTable = (TableModel)rpcSend.getField("componentsTable").getValue();
+        TableModel componentsTable = (TableModel)((FormRPC)rpcSend.getField("components")).getField("componentsTable").getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());
         
-//      build the noteDo from the form
-        inventoryItemNote.setSubject((String)rpcSend.getFieldValue(InvItemMeta.ITEM_NOTE.getSubject()));
-        inventoryItemNote.setText((String)rpcSend.getFieldValue(InvItemMeta.ITEM_NOTE.getText()));
+        //build the noteDo from the form
+        FormRPC noteRPC = (FormRPC)rpcSend.getField("comments");
+        inventoryItemNote.setSubject((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getSubject()));
+        inventoryItemNote.setText((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getText()));
         inventoryItemNote.setIsExternal("Y");
         
         //validate the fields on the backend
@@ -177,11 +177,25 @@ public class InventoryItemService implements AppScreenFormServiceInt,
 //      set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
 
+        //we need to refresh the comments tab if it is showing
+        String tab = (String)rpcReturn.getFieldValue("itemTabPanel");
+        if(tab.equals("commentsTab")){
+            DataSet key = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, inventoryItemDO.getId());
+            key.setKey(id);
+            
+            loadComments(key, (FormRPC)rpcReturn.getField("notes"));
+        }
+        
+        //we need to clear out the note subject and the note text fields after a commit
+        ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getSubject(), null);
+        ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getText(), null);  
+        
         return rpcReturn;
     }
 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-//      remote interface to call the inventory bean
+        //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         List components = new ArrayList();
@@ -192,17 +206,16 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO = getInventoryItemDOFromRPC(rpcSend);
         
         //components info
-        TableModel componentsTable = (TableModel)rpcSend.getField("componentsTable").getValue();
+        TableModel componentsTable = (TableModel)((FormRPC)rpcSend.getField("components")).getField("componentsTable").getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());   
         
-        //locations info
-        
-//      build the noteDo from the form
-        inventoryItemNote.setSubject((String)rpcSend.getFieldValue(InvItemMeta.ITEM_NOTE.getSubject()));
-        inventoryItemNote.setText((String)rpcSend.getFieldValue(InvItemMeta.ITEM_NOTE.getText()));
+        //build the noteDo from the form
+        FormRPC noteRPC = (FormRPC)rpcSend.getField("comments");
+        inventoryItemNote.setSubject((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getSubject()));
+        inventoryItemNote.setText((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getText()));
         inventoryItemNote.setIsExternal("Y");
         
-//      validate the fields on the backend
+        //validate the fields on the backend
         List exceptionList = remote.validateForUpdate(inventoryItemDO, components);
         if(exceptionList.size() > 0){
             setRpcErrors(exceptionList, componentsTable, rpcSend);
@@ -210,7 +223,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             return rpcSend;
         } 
         
-//      send the changes to the database
+        //send the changes to the database
         try{
             remote.updateInventory(inventoryItemDO, components, inventoryItemNote);
         }catch(Exception e){
@@ -228,6 +241,23 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);   
         
+        //we need to refresh the comments tab if it is showing
+        String tab = (String)rpcReturn.getFieldValue("itemTabPanel");
+        if(tab.equals("commentsTab")){
+            DataSet key = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, inventoryItemDO.getId());
+            key.setKey(id);
+            
+            loadComments(key, (FormRPC)rpcReturn.getField("comments"));
+        }
+        
+        //we need to set the notes load param to true because update doesnt call resetRPC
+        ((FormRPC)rpcReturn.getField("comments")).load = false;
+        
+        //we need to clear out the note subject and the note text fields after a commit
+        ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getSubject(), null);
+        ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getText(), null);  
+        
         return rpcReturn;
     }
 
@@ -237,14 +267,27 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     }
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-//      remote interface to call the inventory bean
+        //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
         
         InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
 
-//      set the fields in the RPC
+        //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
+        
+        String tab = (String)rpcReturn.getFieldValue("itemTabPanel");
+        if(tab.equals("componentsTab")){
+            loadComponents(key, new BooleanObject(false), (FormRPC)rpcReturn.getField("components"));
+        }
+       
+        if(tab.equals("locationsTab")){
+            loadLocations(key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (FormRPC)rpcReturn.getField("locations"));
+        }
+        
+        if(tab.equals("commentsTab")){
+            loadComments(key, (FormRPC)rpcReturn.getField("comments"));
+        }
         
         return rpcReturn;  
     }
@@ -255,14 +298,27 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         
         InventoryItemDO inventoryItemDO = remote.getInventoryItem((Integer)key.getKey().getValue());
 
-//      set the fields in the RPC
+        //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
+        
+        String tab = (String)rpcReturn.getFieldValue("itemTabPanel");
+        if(tab.equals("componentsTab")){
+            loadComponents(key, new BooleanObject(false), (FormRPC)rpcReturn.getField("components"));
+        }
+       
+        if(tab.equals("locationsTab")){
+            loadLocations(key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (FormRPC)rpcReturn.getField("locations"));
+        }
+        
+        if(tab.equals("commentsTab")){
+            loadComments(key, (FormRPC)rpcReturn.getField("comments"));
+        }
         
       return rpcReturn;
     }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-//      remote interface to call the inventory bean
+        //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
@@ -272,10 +328,42 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             throw new RPCException(e.getMessage());
         }
         
-//      set the fields in the RPC
+        //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
         
+        String tab = (String)rpcReturn.getFieldValue("itemTabPanel");
+        if(tab.equals("componentsTab")){
+            loadComponents(key, new BooleanObject(false), (FormRPC)rpcReturn.getField("components"));
+        }
+       
+        if(tab.equals("locationsTab")){
+            loadLocations(key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (FormRPC)rpcReturn.getField("locations"));
+        }
+        
+        if(tab.equals("commentsTab")){
+            loadComments(key, (FormRPC)rpcReturn.getField("comments"));
+        }
+        
         return rpcReturn;  
+    }
+    
+    public FormRPC loadComponents(DataSet key, BooleanObject forDuplicate, FormRPC rpcReturn) throws RPCException {
+        getComponentsModel((NumberObject)key.getKey(), forDuplicate, (TableField)rpcReturn.getField("componentsTable"));
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+    
+    public FormRPC loadLocations(DataSet key, StringObject isSerialized, FormRPC rpcReturn) throws RPCException {
+        getLocationsModel((NumberObject)key.getKey(), isSerialized, (TableField)rpcReturn.getField("locQuantitiesTable"));
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+    
+    public FormRPC loadComments(DataSet key, FormRPC rpcReturn) throws RPCException {
+        StringObject so = getCommentsModel((NumberObject)key.getKey());
+        rpcReturn.setFieldValue("notesPanel",so.getValue());
+        rpcReturn.load = true;
+        return rpcReturn;
     }
 
     public String getXML() throws RPCException {
@@ -316,14 +404,13 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     }
 
     public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
-    	// TODO Auto-generated method stub
     	return null;
     }
     
     public TableField getComponentsModel(NumberObject itemId, BooleanObject forDuplicate, TableField model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List componentsList = remote.getInventoryComponents((Integer)itemId.getValue());
-        model.setValue(fillComponentsTable((TableModel)model.getValue(),componentsList, ((Boolean)forDuplicate.getValue()).booleanValue()));
+        model.setValue(fillComponentsTable((TableModel)model.getValue(),(Boolean)forDuplicate.getValue(), componentsList));
         return model;
     }
     
@@ -372,12 +459,12 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             
             String userName = user.getLoginName().trim();  
     
-             Element mainRowPanel = (Element) doc.createElement("panel");
-             Element topRowPanel = (Element) doc.createElement("panel");
+            Element mainRowPanel = (Element) doc.createElement("VerticalPanel");
+             Element topRowPanel = (Element) doc.createElement("HorizontalPanel");
              Element titleWidgetTag = (Element) doc.createElement("widget");
              Element titleText = (Element) doc.createElement("text");
              Element authorWidgetTag = (Element) doc.createElement("widget");
-             Element authorPanel = (Element) doc.createElement("panel");
+             Element authorPanel = (Element) doc.createElement("VerticalPanel");
              Element dateText = (Element) doc.createElement("text");
              Element authorText = (Element) doc.createElement("text");
              Element bodyWidgetTag = (Element) doc.createElement("widget");
@@ -385,20 +472,17 @@ public class InventoryItemService implements AppScreenFormServiceInt,
              
              mainRowPanel.setAttribute("key", "note"+i);
              if(i % 2 == 1){
-                 mainRowPanel.setAttribute("style", "AltTableRow");
-             }else{
+                    mainRowPanel.setAttribute("style", "AltTableRow");
+                }else{
                  mainRowPanel.setAttribute("style", "TableRow");
-             }
-             mainRowPanel.setAttribute("layout", "vertical");
-             mainRowPanel.setAttribute("width", "531px");
+                }
+             mainRowPanel.setAttribute("width", "530px");
              
-             topRowPanel.setAttribute("layout", "horizontal");
-             topRowPanel.setAttribute("width", "531px");
+             topRowPanel.setAttribute("width", "530px");
              titleText.setAttribute("key", "note"+i+"Title");
              titleText.setAttribute("style", "notesSubjectText");
              titleText.appendChild(doc.createTextNode(subject));
              authorWidgetTag.setAttribute("halign", "right");
-             authorPanel.setAttribute("layout", "vertical");
              dateText.setAttribute("key", "note"+i+"Date");
              dateText.appendChild(doc.createTextNode(date));
              authorText.setAttribute("key", "note"+i+"Author");
@@ -432,7 +516,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return null;
     }
 
-    public TableModel fillComponentsTable(TableModel componentsModel, List componentsList, boolean forDuplicate){
+    public TableModel fillComponentsTable(TableModel componentsModel, boolean forDuplicate, List componentsList){
         try {
             componentsModel.reset();
             
@@ -441,13 +525,11 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     
                    TableRow row = componentsModel.createRow();
                    NumberField id = new NumberField(NumberObject.Type.INTEGER);
-                    
-                   if(forDuplicate)
-                       id.setValue(null);
-                   else
+                   
+                   if(componentRow.getId() != null && !forDuplicate){
                        id.setValue(componentRow.getId());
-                    
-                    row.addHidden("id", id);
+                       row.addHidden("id", id);
+                   }
 
 //                  we need to create a dataset for the component auto complete
                     if(componentRow.getComponentNameId() == null)

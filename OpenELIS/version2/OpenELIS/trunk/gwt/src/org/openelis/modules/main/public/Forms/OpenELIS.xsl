@@ -260,6 +260,22 @@
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">kits</xsl:with-param>
 				    </xsl:call-template>	
+				    <html>&lt;hr/&gt;</html>
+   				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">FillOrder</xsl:with-param>
+				      <xsl:with-param name="label">fillOrder</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">FillOrderScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>	
+  				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">Shipping</xsl:with-param>
+				      <xsl:with-param name="label">shipping</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">ShippingScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>	
+				    <html>&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryReceipt</xsl:with-param>
 				      <xsl:with-param name="label">inventoryReceipt</xsl:with-param>

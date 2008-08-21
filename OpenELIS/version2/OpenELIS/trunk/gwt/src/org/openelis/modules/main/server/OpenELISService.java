@@ -62,6 +62,8 @@ public class OpenELISService implements OpenELISServiceInt {
                                                    "storageUnitDeleteException",
                                                    "storageLocDeleteException",
                                                    "analyteDeleteException",
+                                                   "inventoryAdjLocAutoException",
+                                                   "fieldUniqueException",
                                                    "abort",
                                                    "add",
                                                    "cancel",

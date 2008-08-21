@@ -122,9 +122,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         removeContactButton = (AppButton)getWidget("removeContactButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
         
-
-
-
         //
         // disable auto add and make sure there are no rows in the table
         //
@@ -171,19 +168,14 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         ((TableAutoDropdown)q.editors[0]).setModel(contactTypeDropdown);
         
 
+        
+        //override the callbacks
+        updateChain.add(afterUpdate);
+        
         super.afterDraw(success);
         ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsController.model);
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
-        public void onFailure(Throwable caught) {   
-        }
-        public void onSuccess(Object result) {
-            orgId.enable(false);
-            orgName.setFocus(true);
-        }
-    };
-
     public void query() {
         super.query();
         orgId.setFocus(true);
@@ -206,6 +198,16 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
         orgName.setFocus(true);
     }
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            orgId.enable(false);
+            orgName.setFocus(true);
+        }
+    };
+
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
     }
@@ -214,10 +216,12 @@ public class OrganizationScreen extends OpenELISScreenForm implements
      * Overriden to allow lazy loading Contact and Note tabs
      */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if (index == 0 && !((FormRPC)rpc.getField("contacts")).load) {
-            fillContactsModel();
-        } else if (index == 2 && !((FormRPC)rpc.getField("notes")).load) {
-            fillNotesModel();
+        if(state != FormInt.State.QUERY){
+            if (index == 0 && !((FormRPC)rpc.getField("contacts")).load) {
+                fillContactsModel();
+            } else if (index == 2 && !((FormRPC)rpc.getField("notes")).load) {
+                fillNotesModel();
+            }
         }
         return true;
     }
@@ -245,7 +249,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         screenService.getObject("loadNotes", new DataObject[] {key,rpc.getField("notes")}, new AsyncCallback(){
             public void onSuccess(Object result){    
                 // get the datamodel, load it in the notes panel and set the value in the rpc
-                ((FormRPC)result).load = true;
                 load((FormRPC)result);
                 rpc.setField("notes",(FormRPC)result);
                 window.setStatus("","");
@@ -310,7 +313,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         }
     }
     
-    private void clearNotesFields(){
+    /*private void clearNotesFields(){
         //the note subject and body fields need to be refeshed after every successful commit 
         TextBox subjectBox = (TextBox)getWidget(OrgMeta.getNote().getSubject());           
         subjectBox.setText("");
@@ -318,5 +321,5 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         noteArea.setText("");           
         ((FormRPC)rpc.getField("notes")).setFieldValue(OrgMeta.getNote().getSubject(), null);
         ((FormRPC)rpc.getField("notes")).setFieldValue(OrgMeta.getNote().getText(), null);  
-    }
+    }*/
 }

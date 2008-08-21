@@ -13,37 +13,26 @@
 * 
 * Copyright (C) The University of Iowa.  All Rights Reserved.
 */
-package org.openelis.modules.inventoryAdjustment.client;
+package org.openelis.modules.shipping.client;
 
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.modules.inventoryItem.client.InventoryComponentAutoParams;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class InventoryAdjustmentEntry implements AppModule {
-
+public class ShippingEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        
-        ClassFactory.addClass(new String[] {"InventoryAdjustmentScreen"}, 
+        ClassFactory.addClass(new String[] {"ShippingScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new InventoryAdjustmentScreen();
+                                       return new ShippingScreen();
                                    }
                                 }
         );
-        
-        ClassFactory.addClass(new String[] {"InventoryAdjustmentAutoParams"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new InventoryAdjustmentAutoParams();
-                                  }
-                               }
-       );
     }
 
     public String getModuleName() {
-        return "InventoryAdjustment";
+        return "Shipping";
     }
 }

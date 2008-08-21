@@ -15,13 +15,7 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FormRPC.Status;
@@ -55,7 +49,13 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager {
     
@@ -78,6 +78,14 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false);
     }
 
+    public void performCommand(Enum action, Object obj) {
+        if(action == KeyListManager.Action.FETCH){
+            fetch();
+        }else{
+            super.performCommand(action, obj);
+        }
+    }        
+    
     public void onClick(Widget sender) {
         if (sender == removeReceiptButton)
             onRemoveReceiptRowButtonClick();
@@ -404,20 +412,13 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
 
     public boolean doAutoAdd(TableRow row, TableController controller) {
-        return row.getColumn(0).getValue() != null && !row.getColumn(0).getValue().equals(0);
-    }
-    
-    public boolean doAutoAdd(int row, int col, TableController controller) {
         if(state != State.UPDATE){
-            if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row), true))
-                return true;
-            else if(row > -1 && row == controller.model.numRows() && !tableRowEmpty(((EditTable)controller).autoAddRow, true))
-                return true;
+            return !tableRowEmpty(row, true);
         }
-      
+        
         return false;
     }
-
+    
     public void finishedEditing(final int row, final int col, final TableController controller) {
         //we need to try and lookup the order using the order number that they have entered
         

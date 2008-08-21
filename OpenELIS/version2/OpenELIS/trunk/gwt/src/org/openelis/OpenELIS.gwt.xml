@@ -11,6 +11,7 @@
     <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
+    <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
     <inherits name="org.openelis.modules.inventoryItem.InventoryItem"/>
     <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceipt"/>
@@ -19,6 +20,7 @@
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
+    <inherits name="org.openelis.modules.shipping.Shipping"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
     <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>        
     <inherits name="org.openelis.modules.storage.Storage"/>

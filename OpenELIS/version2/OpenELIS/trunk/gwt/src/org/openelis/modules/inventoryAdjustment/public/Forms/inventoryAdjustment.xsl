@@ -75,6 +75,16 @@
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
     			</xsl:call-template>
+    			<xsl:call-template name="previousButton">
+					<xsl:with-param name="language">
+						<xsl:value-of select="language"/>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:call-template name="nextButton">
+					<xsl:with-param name="language">
+						<xsl:value-of select="language"/>
+					</xsl:with-param>
+				</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="addButton">
     				<xsl:with-param name="language">
@@ -104,41 +114,46 @@
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"adjustmentNum")'/>:</text>
-						<textbox case="lower" key="{meta:getId($adj)}" width="75px" max="20" tab="{meta:getDescription($adj)},??"/>
+						<textbox case="mixed" key="{meta:getId($adj)}" width="75px" max="20" tab="{meta:getDescription($adj)},{inventoryItemMeta:getStoreId($invItem)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
-						<textbox case="lower" key="{meta:getDescription($adj)}" width="350px" max="20" tab="{meta:getAdjustmentDate($adj)},{meta:getId($adj)}"/>
+						<widget colspan="3">
+							<textbox case="mixed" key="{meta:getDescription($adj)}" width="414px" max="60" tab="{meta:getAdjustmentDate($adj)},{meta:getId($adj)}"/>
+						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"adjDate")'/>:</text>
-						<textbox case="lower" key="{meta:getAdjustmentDate($adj)}" width="85px" max="20" tab="??,{meta:getDescription($adj)}"/>
+						<calendar key="{meta:getAdjustmentDate($adj)}" begin="0" end="2" width="72px" tab="{meta:getSystemUserId($adj)},{meta:getDescription($adj)}"/>							
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"user")'/>:</text>
-						<textbox case="lower" key="aa" width="125px" max="20" tab="{meta:getId($adj)},{meta:getAdjustmentDate($adj)}"/>
+						<textbox case="mixed" key="{meta:getSystemUserId($adj)}" width="125px" tab="{inventoryItemMeta:getStoreId($invItem)},{meta:getAdjustmentDate($adj)}"/>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
+						<autoDropdown key="{inventoryItemMeta:getStoreId($invItem)}" case="mixed" width="205px" tab="{meta:getId($adj)},{meta:getSystemUserId($adj)}"/>
 					</row>
 				</TablePanel>
 				<VerticalPanel spacing="0" padding="0" overflow="hidden">
 					<widget valign="top">
 						<table width="auto" key="adjustmentsTable" manager="this" maxRows="14" title="" showError="false" showScroll="true">
 							<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-							<xsl:value-of select='resource:getString($constants,"store")'/>, 
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-							<widths>60,170,140,140,70,70,70</widths>										
+							<widths>50,205,225,60,60,60</widths>										
 							<editors>
-								<textbox case="upper"/>
-								<textbox case="upper"/>
-								<textbox case="upper"/>
-								<textbox case="upper"/>
-								<textbox case="upper"/>
-								<textbox case="upper"/>
+								<textbox case="mixed"/>
+								<autoDropdown cat="inventoryItem" autoParams="InventoryAdjustmentAutoParams" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
+									<headers>Name,Store,Location,Lot #,Exp Date,Qty</headers>
+							        <widths>135,110,160,70,70,30</widths>
+								</autoDropdown>
+								<label/>
+								<label/>
+								<textbox case="mixed"/>
+								<label/>
 							</editors>
 							<fields>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
-								<string key="{meta:getId($org)}" required="false"/>
+								<number key="{inventoryLocationMeta:getId($loc)}" type="integer" required="true"/>
+      							<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+      							<string required="false"/>
+      							<number key="{inventoryLocationMeta:getQuantityOnhand($loc)}" type="integer" required="false"/>
+      							<number key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" type="integer" required="true"/>
+      							<number key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer" required="false"/>
 							</fields>
 							<sorts>false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false</filters>
@@ -146,25 +161,26 @@
 						</table>
 						<query>
 							<queryTable width="auto" title="" maxRows="14" showError="false">
-								<headers><xsl:value-of select='resource:getString($constants,"inventoryItem")'/>, <xsl:value-of select='resource:getString($constants,"store")'/>, 
+								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-								<widths>179,179,170,70,70,70</widths>
+								<widths>50,214,234,60,60,60</widths>
 								<editors>
-									<textbox case="upper"/>
-									<textbox case="upper"/>
-									<textbox case="upper"/>
+									<textbox case="mixed"/>
+									<textbox case="mixed"/>
 									<label/>
+									<textbox case="mixed"/>
+									<textbox case="mixed"/>
 									<textbox case="mixed"/>		 	
 								</editors>
-								<fields><xsl:value-of select='inventoryLocationMeta:getId($loc)'/>,<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='dictionaryMeta:getEntry($dict)'/>,label1,
+								<fields><xsl:value-of select='inventoryLocationMeta:getId($loc)'/>,<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,label1,
 								<xsl:value-of select='inventoryLocationMeta:getQuantityOnhand($loc)'/>,<xsl:value-of select='transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)'/>,
 								<xsl:value-of select='transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)'/></fields>
 							</queryTable>
 							</query>
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
-							<appButton action="removeRow" onclick="this" style="Button" key="removeContactButton">
+							<appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">
 								<HorizontalPanel>
               						<AbsolutePanel style="RemoveRowButtonImage"/>
                 						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
@@ -179,24 +195,27 @@
 	<rpc key="display">
   	  <number key="{meta:getId($adj)}" type="integer" required="false"/>
       <string key="{meta:getDescription($adj)}" max="60" required="true"/>
-      <string key="{meta:getAdjustmentDate($adj)}" required="true"/>
+	  <date key="{meta:getAdjustmentDate($adj)}" begin="0" end="2" required="true"/>
       <string key="{meta:getSystemUserId($adj)}" required="true"/>
+      <dropdown key="{inventoryItemMeta:getStoreId($invItem)}" required="true"/>
       <table key="adjustmentsTable"/>
+      
+      <number key="systemUserId" type="integer" required="false"/>
 	</rpc>
 	<rpc key="query">
-  	  <queryNumber key="{meta:getId($adj)}" type="integer" required="false"/>
-      <queryString key="{meta:getDescription($adj)}" required="false"/>
-      <queryString key="{meta:getAdjustmentDate($adj)}" required="false"/>
-      <queryString key="{meta:getSystemUserId($adj)}" required="false"/>
-
+  	  <queryNumber key="{meta:getId($adj)}" type="integer"/>
+      <queryString key="{meta:getDescription($adj)}"/>
+      <queryDate key="{meta:getAdjustmentDate($adj)}" begin="0" end="2"/>
+      <queryString key="{meta:getSystemUserId($adj)}"/>
+      <dropdown key="{inventoryItemMeta:getStoreId($invItem)}"/>
+      
       <table key="adjustmentsTable"/>
-      <queryNumber key="{inventoryLocationMeta:getId($loc)}" type="integer" required="false"/>
-      <queryString key="{inventoryItemMeta:getName($invItem)}" required="false"/>
-      <queryString key="{dictionaryMeta:getEntry($dict)}" required="false"/>
-      <queryString key="label1" required="false"/>
-      <queryNumber key="{inventoryLocationMeta:getQuantityOnhand($loc)}" type="integer" required="false"/>
-      <queryNumber key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)" type="integer" required="false"/>
-      <queryNumber key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer" required="false"/>
+      <queryNumber key="{inventoryLocationMeta:getId($loc)}" type="integer"/>
+      <queryString key="{inventoryItemMeta:getName($invItem)}"/>
+      <queryString key="label1"/>
+      <queryNumber key="{inventoryLocationMeta:getQuantityOnhand($loc)}" type="integer"/>
+      <queryNumber key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" type="integer"/>
+      <queryNumber key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer"/>
 	</rpc>
 </screen>
   </xsl:template>

@@ -124,6 +124,12 @@
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
     			</xsl:call-template>
+    			<xsl:call-template name="buttonPanelDivider"/>
+    			<xsl:call-template name="optionsButton">
+    			    <xsl:with-param name="language">
+    			        <xsl:value-of select="language"/>
+    			    </xsl:with-param>
+    			</xsl:call-template>
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
@@ -161,9 +167,9 @@
 			</HorizontalPanel>
 		</VerticalPanel>
 	<!-- TAB PANEL -->
-	<TabPanel height="200px" key="tabPanel" halign="center">
-		<!-- TAB 1 (Components) -->
-		<tab key="tab1" text="{resource:getString($constants,'items')}">
+	<TabPanel height="200px" key="orderTabPanel" halign="center">
+		<!-- TAB 1 (Items) -->
+		<tab key="itemsTab" text="{resource:getString($constants,'items')}">
 			<VerticalPanel spacing="0" padding="0" overflow="hidden">
 			<widget>
 				<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
@@ -219,9 +225,9 @@
 			</widget>
 		</VerticalPanel>
 		</tab>
-		<!-- TAB 2 -->
-			<tab key="tab3" text="{resource:getString($constants,'orderShippingNotes')}">
-				<VerticalPanel width="100%" height="229px" spacing="0" padding="0">
+		<!-- TAB 2 (order notes) -->
+			<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
+				<VerticalPanel width="100%" height="247px" spacing="0" padding="0">
 					<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 						<row>
 							<widget colspan="2" align="center">
@@ -236,7 +242,7 @@
 						<row>
 							<HorizontalPanel width="14px"/>
 							<widget colspan="2">
-								<textarea width="576px" height="179px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+								<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 							</widget>
 						</row>
 					</TablePanel>
@@ -255,38 +261,15 @@
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
-      <string key="{noteMeta:getText($shippingNote)}" required="false"/>
-      <table key="itemsTable"/>
-            
-      <string key="orderType" required="false"/>
+      <string key="orderType" reset="false"/>
       
-      <!-- values not on this screen -->
-      <dropdown key="{orgMeta:getName($organization)}" required="false"/>
-      <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
-	  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
-      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>
-
-      <!-- organization address-->
-      <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
-      <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
-      <string key="{addr:getCity($orgAddress)}" required="false"/>
-      <string key="{addr:getState($orgAddress)}" required="false"/>
-      <string key="{addr:getZipCode($orgAddress)}" required="false"/>
-            
-      <!--report to address-->
-      <string key="{addr:getMultipleUnit($reportToAddress)}" required="false"/>
-      <string key="{addr:getStreetAddress($reportToAddress)}" required="false"/>
-      <string key="{addr:getCity($reportToAddress)}" required="false"/>
-      <string key="{addr:getState($reportToAddress)}" required="false"/>
-      <string key="{addr:getZipCode($reportToAddress)}" required="false"/>
-      
-      <!--bill to address -->
-      <string key="{addr:getMultipleUnit($billToAddress)}" required="false"/>
-      <string key="{addr:getStreetAddress($billToAddress)}" required="false"/>
-      <string key="{addr:getCity($billToAddress)}" required="false"/>
-      <string key="{addr:getState($billToAddress)}" required="false"/>
-      <string key="{addr:getZipCode($billToAddress)}" required="false"/>
-      
+      <rpc key="shippingNote">
+    	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
+      </rpc>
+      <rpc key="items">
+	      <table key="itemsTable"/>
+      </rpc>
+      <string key="orderTabPanel" reset="false">itemsTab</string>
 	</rpc>
 	<rpc key="query">
       <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
@@ -296,7 +279,7 @@
       <queryString key="{orderMeta:getRequestedBy($order)}" required="false"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
       
-      <string key="orderType" required="false"/>
+      <string key="orderType" reset="false"/>
 
 	  <!-- order items table -->
 	  <table key="itemsTable"/>

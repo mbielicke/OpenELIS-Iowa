@@ -159,9 +159,7 @@
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
-									<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}">
-										<widths>167</widths>
-									</autoDropdown>
+									<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}"/>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendor")'/>:</text>
 									<widget colspan="3">
 										<autoDropdown cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}">
@@ -215,9 +213,9 @@
 						</HorizontalPanel>
 					</VerticalPanel>
 				<!-- TAB PANEL -->
-				<TabPanel height="200px" key="tabPanel" halign="center">
-					<!-- TAB 1 (Components) -->
-					<tab key="tab1" text="{resource:getString($constants,'items')}">
+				<TabPanel height="200px" key="orderTabPanel" halign="center">
+					<!-- TAB 1 (items) -->
+					<tab key="itemsTab" text="{resource:getString($constants,'items')}">
 							<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
@@ -232,7 +230,7 @@
 												<widths>135,110,110</widths>
 											</autoDropdown>
 											<label/>
-											<textbox case="mixed"/>
+											<textbox case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
@@ -244,7 +242,7 @@
 										</fields>
 										<sorts>false,true,true,false,false</sorts>
 										<filters>false,false,false,false,false</filters>
-										<colAligns>left,left,left,left,left</colAligns>
+										<colAligns>left,left,left,right,left</colAligns>
 									</table>
 									<query>
 									<queryTable width="auto" maxRows="9" title="" showError="false">
@@ -256,7 +254,7 @@
 											<textbox case="mixed"/>
 											<textbox case="lower"/>
 											<textbox case="mixed"/>
-											<textbox case="mixed"/>
+											<textbox case="mixed" />
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
@@ -279,19 +277,21 @@
 						            </widget>
 							</VerticalPanel>
 					</tab>		
-					<!-- TAB 2 -->	
-					<tab key="tab2" text="{resource:getString($constants,'receipt')}">
+					<!-- TAB 2 (receipts) -->	
+					<tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
 						<VerticalPanel spacing="0" padding="0" overflow="hidden">
 							<widget valign="top">
 								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
-										<headers>Date Rec,Item,UPC,Qty,Cost,QC,</headers>
+										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
+										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
+										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/></headers>
 										<widths>80,155,95,40,55,130</widths>
 										<editors>
 											<label/>
 											<label/>
 											<label/>
 											<label/>
-											<label/>
+											<label displayMask="{resource:getString($constants,'displayCurrencyFormat')}"/>
 											<label/>
 										</editors>
 										<fields>
@@ -329,12 +329,12 @@
 									</queryTable>
 									</query>
 								</widget>
-								<HorizontalPanel height="10px"/>
+								<HorizontalPanel height="8px"/>
 							</VerticalPanel>
 					</tab>
-					<!-- TAB 3 -->
-					<tab key="tab3" text="{resource:getString($constants,'orderShippingNotes')}">
-						<VerticalPanel width="100%" height="229px" spacing="0" padding="0">
+					<!-- TAB 3 (order notes) -->
+					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
+						<VerticalPanel width="100%" height="247px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<widget colspan="2" align="center">
@@ -349,7 +349,7 @@
 								<row>
 									<HorizontalPanel layout="horizontal" width="14px" xsi:type="Panel"/>
 									<widget colspan="2">
-										<textarea width="576px" height="179px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -370,10 +370,16 @@
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
-      <string key="{noteMeta:getText($shippingNote)}" required="false"/>
-      <table key="itemsTable"/>
-      
-      <table key="receiptsTable"/>
+     
+      <rpc key="shippingNote">
+    	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
+      </rpc>
+      <rpc key="items">
+	      <table key="itemsTable"/>
+      </rpc>
+	  <rpc key="receipts">
+	  	  <table key="receiptsTable"/>
+	  </rpc>
       
       <!-- organization address-->
       <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
@@ -382,27 +388,9 @@
       <string key="{addr:getState($orgAddress)}" required="false"/>
       <string key="{addr:getZipCode($orgAddress)}" required="false"/>
             
-      <string key="orderType" required="false"/>
+      <string key="orderType" reset="false"/>
       
-      <!-- values not on this screen -->
-	  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
-      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>
-      <string key="{noteMeta:getText($custNote)}" required="false"/>
-      
-      <!--report to address-->
-      <string key="{addr:getMultipleUnit($reportToAddress)}" required="false"/>
-      <string key="{addr:getStreetAddress($reportToAddress)}" required="false"/>
-      <string key="{addr:getCity($reportToAddress)}" required="false"/>
-      <string key="{addr:getState($reportToAddress)}" required="false"/>
-      <string key="{addr:getZipCode($reportToAddress)}" required="false"/>
-      
-      <!--bill to address -->
-      <string key="{addr:getMultipleUnit($billToAddress)}" required="false"/>
-      <string key="{addr:getStreetAddress($billToAddress)}" required="false"/>
-      <string key="{addr:getCity($billToAddress)}" required="false"/>
-      <string key="{addr:getState($billToAddress)}" required="false"/>
-      <string key="{addr:getZipCode($billToAddress)}" required="false"/>
-      
+      <string key="orderTabPanel" reset="false">itemsTab</string>
 	</rpc>
 	<rpc key="query">
 	  <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
@@ -414,7 +402,7 @@
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
       <queryString key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
       
-      <string key="orderType" required="false"/>
+      <string key="orderType" reset="false"/>
       
       <!-- order items table -->
       <table key="itemsTable"/>

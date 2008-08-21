@@ -37,8 +37,6 @@ import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
@@ -81,13 +79,6 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
     
     private static boolean loaded = false;
     private static DataModel storesDropdown, categoriesDropdown, dispensedUnitsDropdown;
-    
-    private boolean          loadComponents = true, 
-                             loadLocations = true, 
-                             loadComments = true,
-                             clearComponents = false, 
-                             clearLocations = false, 
-                             clearComments = false;
     
     private ScreenVertical   svp       = null;
 	
@@ -135,7 +126,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         chain.addCommand(atozButtons);
         
         loaded = true;
-              
+        
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
@@ -180,25 +171,20 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 		super.afterDraw(success);			
 	}
     
-    protected AsyncCallback afterfetch = new AsyncCallback() {
-        public void onSuccess(Object result){
-            loadComponents = true;
-            loadLocations = true;
-            loadComments = true;
-            loadTabs();
-            idTextBox.enable(false);
-        }
-        public void onFailure(Throwable Caught){
-            
-        }
-     };
-     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    public void add() {
+		componentsController.setAutoAdd(true);
+		
+		super.add();
+		
+		idTextBox.enable(false);
+        
+        ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
+	}
+	
+	protected AsyncCallback afterUpdate = new AsyncCallback() {
          public void onSuccess(Object result) {
-             loadComponents = true;
-             loadLocations = true;
-             loadComments = true;
-             loadTabs();
+            nameTextbox.setFocus(true);
+			idTextBox.enable(false);
          }
          
          public void onFailure(Throwable caught){
@@ -206,328 +192,141 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
          }
       };
       
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
-          public void onSuccess(Object result){
-              loadComments = true;
-              clearComments = true;
-              
-              loadTabs();
-              
-              //the note subject and body fields need to be refeshed after every successful commit
-              clearCommentsFields();
-          }
-          
-          public void onFailure(Throwable caught){
-              
-          }
-    };  
-    
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-            
-        }
-        public void onSuccess(Object result) {
-            loadComments = true;
-            clearComments = true;
-            
-            loadComponents = true;
-            clearComponents = false;
-            
-            loadLocations = true;
-            clearLocations = false;
-            
-            Integer itemId = (Integer)rpc.getFieldValue(InvItemMeta.getId());
-            NumberObject itemIdObj = new NumberObject(itemId);
-            
-            // done because key is set to null in AppScreenForm for the add operation 
-            if(key ==null){  
-                key = new DataSet();
-                key.setKey(itemIdObj);
-                
-            }else{
-                key.setKey(itemIdObj);
-                
-            }
-            
-            loadTabs();
-            
-            //the note subject and body fields need to be refeshed after every successful commit
-            clearCommentsFields();
-        }   
-    };
-	
-	public void add() {		
-		super.add();
-		
-		idTextBox.enable(false);
-        clearComments();
-        
-        ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
-	}
-	
 	public void query() {		
 		super.query();
         //
         // disable notes and contact remove button
         //
         noteText.enable(false);
-        //removeContactButton.changeState(AppButton.DISABLED);
-        clearComments();
 	}
 	
-	public void abort() {        
-        if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
-            loadComponents = false;
-            clearComponents = true;
-            
-            loadLocations = false;
-            clearLocations = true;
-            
-            loadComments = false;
-            clearComments = true;
-        }else{
-            loadComponents = true;
-            loadLocations = true;
-            loadComments = true;
-        }
+	public void abort() {
+		componentsController.setAutoAdd(false);
         
-        //the super needs to go before the load tabs method or the table wont load.
         super.abort();
-        
-        loadTabs();
 	}
 	
+	public void update() {
+		componentsController.setAutoAdd(true);
+		super.update();
+	}
+	
+	protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+          public void onSuccess(Object result){
+              componentsController.setAutoAdd(false);
+        
+			//we need to do this reset to get rid of the last row
+	        componentsController.reset();
+          }
+          
+          public void onFailure(Throwable caught){
+              
+          }
+    };
+	
+	protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+            
+        }
+        public void onSuccess(Object result) {
+            componentsController.setAutoAdd(false);
+        
+			//we need to do this reset to get rid of the last row
+    	    componentsController.reset();
+        }   
+    };
+    
     /*
      * Overriden to allow lazy loading Contact and Note tabs
      */
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if (index == 0 && loadComponents) {
-            if (clearComponents)
-                clearComponents();
-            fillComponentsModel(false);
-            loadComponents = false;
-        } else if (index == 1 && loadLocations) {
-            if (clearLocations)
-                clearLocations();
-            fillLocationsModel();
-            loadLocations = false;
-        } else if(index == 4 && loadComments){
-            if (clearComments)
-                clearComments();
-            fillCommentsModel();
-            loadComments = false;            
+        if(state != FormInt.State.QUERY){
+            if (index == 0 && !((FormRPC)rpc.getField("components")).load) 
+                fillComponentsModel(false);
+            else if (index == 1 && !((FormRPC)rpc.getField("locations")).load) 
+                fillLocationsModel();
+            else if(index == 4 && !((FormRPC)rpc.getField("comments")).load)
+                fillCommentsModel();
         }
+        
         return true;
 	}
 
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-	
-		
-	}
-    
-    private void loadTabs() {
-        loadTabs(false);
-    }
-    private void loadTabs(boolean forDuplicates) {
-        TabPanel tabPanel = (TabPanel)getWidget("tabPanel");
-        int selectedTab = tabPanel.getTabBar().getSelectedTab();
-
-        if (selectedTab == 0 && loadComponents) {
-            // if there was data previously then clear the components table
-            // otherwise don't
-            if (clearComponents) {
-                clearComponents();
-            }
-            // load the components table
-            fillComponentsModel(forDuplicates);
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadComponents = false;
-            
-        } else if (selectedTab == 1 && loadLocations) {
-            // if there was data previously then clear the locations table otherwise
-            // don't
-            if (clearLocations) {
-                clearLocations();
-            }
-            // load the locations table
-            fillLocationsModel();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadLocations = false;
-
-        } else if (selectedTab == 4 && loadComments) {
-            // if there was data previously then clear the comments panel otherwise
-            // don't
-            if (clearComments) {
-                clearComments();
-            }
-            // load the comments model
-            fillCommentsModel();
-            // don't load it again unless the mode changes or a new fetch is
-            // done
-            loadComments = false;
-
-        }
-    }
-    
-    private void clearCommentsFields(){
-        //     the note subject and body fields need to be refeshed after every successful commit 
-          subjectBox.setText("");
-          TextArea noteArea = (TextArea)noteText.getWidget();
-          noteArea.setText("");           
-          rpc.setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(), null);
-          rpc.setFieldValue(InvItemMeta.ITEM_NOTE.getText(), null);  
-       }
-    
-    private void fillComponentsModel(boolean forDuplicate){
-        Integer itemId = null;
-        NumberObject itemIdObj;
-        BooleanObject duplicateObj;
-        TableField f;
-
-        if (key == null || key.getKey() == null) {
-            clearComponents = false;
+	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {}
+      
+    private void fillComponentsModel(final boolean forDuplicate){
+        if(key == null)
             return;
-        }
 
         window.setStatus("","spinnerIcon");
-        
-        itemId = (Integer)key.getKey().getValue();
-        itemIdObj = new NumberObject(itemId);
-        duplicateObj = new BooleanObject();
-        
-        if(forDuplicate)
-            duplicateObj.setValue("Y");
-        else
-            duplicateObj.setValue("N");
-
-
-        f = new TableField();
-        f.setValue(componentsController.model);
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {itemIdObj, duplicateObj, f};
+        DataObject[] args = new DataObject[] {key, new BooleanObject(forDuplicate), rpc.getField("components")};
 
-        screenService.getObject("getComponentsModel", args, new AsyncCallback() {
+        screenService.getObject("loadComponents", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                // get the table model and load it
-                // in the table
-                rpc.setFieldValue("componentsTable",
-                                  (TableModel)((TableField)result).getValue());
+                load((FormRPC)result);
+                rpc.setField("components", (FormRPC)result);
 
-                componentsController.loadModel((TableModel)((TableField)result).getValue());
-
-                clearComponents = componentsController.model.numRows() > 0;
+                if(forDuplicate)
+                    key = null;
                 
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillLocationsModel(){
-        Integer itemId = null;
-        NumberObject itemIdObj;
-        StringObject isSerialized = new StringObject();
-        TableField f;
-
-        if (key == null || key.getKey() == null) {
-            clearLocations = false;
+        if(key == null)
             return;
-        }
 
         window.setStatus("","spinnerIcon");
         
-        itemId = (Integer)key.getKey().getValue();
-        itemIdObj = new NumberObject(itemId);
-        isSerialized.setValue(((CheckBox)isSerializedCheck.getWidget()).getState());
-
-        f = new TableField();
-        f.setValue(locsController.model);
-
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {itemIdObj, isSerialized, f};
+        DataObject[] args = new DataObject[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), rpc.getField("locations")};
 
-        screenService.getObject("getLocationsModel", args, new AsyncCallback() {
+        screenService.getObject("loadLocations", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                // get the table model and load it
-                // in the table
-                TableModel model = (TableModel)((TableField)result).getValue();
-                rpc.setFieldValue("locQuantitiesTable", model);
-
-                locsController.loadModel(model);
-
-                clearLocations = locsController.model.numRows() > 0;
+                load((FormRPC)result);
+                rpc.setField("locations", (FormRPC)result);
                 
                 window.setStatus("","");
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
+                window.setStatus("","");
             }
         });
     }
     
     private void fillCommentsModel(){
-        Integer itemId = null;
-        boolean getModel = false;
+        if(key == null)
+            return;
+        
+        window.setStatus("","spinnerIcon");
+                 
+       // prepare the argument list for the getObject function
+       DataObject[] args = new DataObject[] {key, rpc.getField("comments")}; 
          
-         // access the database only if id is not null  
-         if(key!=null && key.getKey()!=null){        
-             getModel = true;
-             itemId = (Integer)key.getKey().getValue(); 
-          
-         }else{
-             clearComments = false;
-         } 
-            
-           if(getModel){ 
-               window.setStatus("","spinnerIcon");
-               NumberObject itemIdObj = new NumberObject(itemId);
-                 
-               // prepare the argument list for the getObject function
-               DataObject[] args = new DataObject[] {itemIdObj}; 
-                 
-               screenService.getObject("getCommentsModel", args, new AsyncCallback(){
-                   public void onSuccess(Object result){    
-                     // get the datamodel, load it in the comments panel and set the value in the rpc
-                       String xmlString = (String) ((StringObject)result).getValue();
-                       svp.load(xmlString);   
-                       
-                       if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
-                           clearComments = true;
-                        }else {
-                            clearComments = false;
-                        }
-                       window.setStatus("","");
-                   }
-                   
-                   public void onFailure(Throwable caught){
-                       Window.alert(caught.getMessage());
-                   }
-               }); 
-         }       
-    }
-    
-    private void clearComponents() {
-        componentsController.model.reset();
-        componentsController.setModel(componentsController.model);
-        rpc.setFieldValue("componentsTable", componentsController.model);
-    }
-    
-    private void clearLocations() {
-        locsController.model.reset();
-        locsController.setModel(locsController.model);
-        rpc.setFieldValue("locQuantitiesTable", locsController.model);
-    }
-	
-    private void clearComments() {
-        svp = (ScreenVertical)widgets.get("notesPanel");
-        svp.clear();
+       screenService.getObject("loadComments", args, new AsyncCallback(){
+           public void onSuccess(Object result){    
+               load((FormRPC)result);
+               rpc.setField("comments",(FormRPC)result);
+
+               window.setStatus("","");
+           }
+           
+           public void onFailure(Throwable caught){
+               Window.alert(caught.getMessage());
+               window.setStatus("","");
+           }
+       });     
     }
     
 	private void getInventories(String query, Widget sender) {
@@ -573,25 +372,27 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
             //we need to do the duplicate method
             FormRPC displayRPC = rpc.clone();
             displayRPC.setFieldValue(InvItemMeta.getId(), null);
-            displayRPC.setFieldValue("locQuantitiesTable", null);
             displayRPC.setFieldValue(InvItemMeta.getAverageLeadTime(),null);
             displayRPC.setFieldValue(InvItemMeta.getAverageCost(),null);
             displayRPC.setFieldValue(InvItemMeta.getAverageDailyUse(),null);
-            displayRPC.setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
-            displayRPC.setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
-                       
+            
+            ((FormRPC)displayRPC.getField("locations")).setFieldValue("locQuantitiesTable", null);
+            ((FormRPC)displayRPC.getField("components")).setFieldValue("componentsTable", null);
+            ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
+            ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
+            
+            DataSet tempKey = key;
+                    
             add();
             
-            clearComponents = false;
-            loadComponents = true;
-            
-            clearLocations = false;
-            loadLocations = false;
-            
-            clearComments = false;
-            loadComments = false;
+            key = tempKey;
             
             rpc = displayRPC;
+            
+            //set the load flags correctly
+            ((FormRPC)rpc.getField("components")).load = false;
+            ((FormRPC)rpc.getField("locations")).load = true;
+            ((FormRPC)rpc.getField("comments")).load = true;
             
             load();
             
@@ -636,13 +437,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         return false;
     }
     
-    public boolean doAutoAdd(int row, int col, TableController controller) {
-        if(row > -1 && row < controller.model.numRows() && !tableRowEmpty(controller.model.getRow(row)))
-            return true;
-        else if(row > -1 && row == controller.model.numRows() && !tableRowEmpty(((EditTable)controller).autoAddRow))
-            return true;
-      
-        return false;
+    public boolean doAutoAdd(TableRow addRow, TableController controller) {
+        return !tableRowEmpty(addRow);
     }
     
     public void finishedEditing(final int row, int col, final TableController controller) {
@@ -709,10 +505,5 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         }
         
         return empty;
-    }
-
-    public boolean doAutoAdd(TableRow addRow, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }
