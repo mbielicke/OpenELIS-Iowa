@@ -55,17 +55,18 @@
         }
         .inputbackground
         {
-            background-image: url("signInBg.jpg");
+            background-image: url("login.jpg");
             background-repeat:no-repeat;
             width: 450px;
         }
         .submit
         {
-            background-image: url("signIn.gif");
-            border-width:0px;
+            //background-image: url("signIn.gif");
+            border-width:1px solid gold;
             width: 75px;
             height: 20px;
             padding-left: 0.4em;
+            font-size:10px;
         }
     </style>
 </head>
@@ -86,15 +87,15 @@
                 <form method="post" name="login_form" autocomplete="off" action="{action}">
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
-                            <tr><td colspan='2' style="height: 160px;"></td></tr>
-                            <tr><th align="right" width='160'><xsl:value-of select="resource:getString($constants,'username')"/></th>
+                            <tr><td colspan='2' style="height: 150px;"></td></tr>
+                            <tr><th align="right" width='160'><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,'username')"/></font></th>
                                 <td align="left"><input type="text" name="username" class="inputfield" value='' onChange="javascript:this.value=this.value.toLowerCase();"/></td>
                             </tr>
-                            <tr><th align="right"><xsl:value-of select="resource:getString($constants,'password')"/></th>
+                            <tr><th align="right"><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,'password')"/></font></th>
                                 <td align="left"><input type="password" name="password" class="inputfield"/></td>
                             </tr>
                             <tr><td align="right"></td>
-                                <td align="left"><input type="submit" value="" border="0" class="submit"/></td>
+                                <td align="left"><font face="Arial,Helvetica" color="#486095"><input type="submit" border="0" class="submit" value="{resource:getString($constants,'signin')}"/></font></td>
                             </tr>
                             <tr>
                               <td colspan='2' align='left'></td>
