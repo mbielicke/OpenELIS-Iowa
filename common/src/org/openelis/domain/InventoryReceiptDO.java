@@ -145,15 +145,16 @@ public class InventoryReceiptDO implements Serializable{
         setLotNumber(lotNumber);
         setTransReceiptOrderId(transReceiptOrderId);
     }
-
+    
     /*used for order number entry*/
-    public InventoryReceiptDO(Integer orderNumber, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
+    public InventoryReceiptDO(Integer orderNumber, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Double unitCost, Integer organizationId,
                               String organization, Integer itemQtyRequested, String streetAddress, String multUnit, String city, String state, String zipCode,
                               String itemDesc, String itemStore, String itemDispensedUnits, String isBulk, String isLotMaintained, String isSerialMaintained) {
         setOrderNumber(orderNumber);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
         setOrderItemId(orderItemId);
+        setUnitCost(unitCost);
         setOrganizationId(organizationId);
         setOrganization(organization);
         setItemQtyRequested(itemQtyRequested);

@@ -66,8 +66,11 @@ public interface OrderRemote {
      
      public OrderAddAutoFillDO getAddAutoFillValues() throws Exception;
      
+     //auto complete order description lookup
+     public List orderDescriptionAutoCompleteLookup(String desc, int maxResults);
+     
      //method to validate the fields before the backend updates it in the database
-     public List validateForUpdate(OrderDO orderDO, String orderType, List items);
+     public List validateForUpdate(OrderDO orderDO, String orderType, List items,  boolean validateOrderQty);
      
      //method to validate the fields before the backend updates it in the database
      public List validateForAdd(OrderDO orderDO, String orderType, List items);

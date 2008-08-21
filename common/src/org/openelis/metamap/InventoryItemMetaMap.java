@@ -16,6 +16,7 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.DictionaryMeta;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.NoteMeta;
 
@@ -31,6 +32,8 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
     
     public InventoryLocationMetaMap INVENTORY_LOCATION = new InventoryLocationMetaMap("inventory_location.");  
     
+    public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
+    
     public NoteMeta getNote(){
         return ITEM_NOTE;
     }
@@ -41,6 +44,10 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
     
     public InventoryLocationMetaMap getInventoryLocation(){
         return INVENTORY_LOCATION;
+    }
+    
+    public DictionaryMeta getStoreDict(){
+        return DICTIONARY_STORE_META;
     }
     
     public static InventoryItemMetaMap getInstance() {
@@ -54,6 +61,8 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
             return INVENTORY_LOCATION.hasColumn(name);
         if(name.startsWith("note."))
             return ITEM_NOTE.hasColumn(name);
+        if(name.startsWith("dictStore."))
+            return DICTIONARY_STORE_META.hasColumn(name);
         return super.hasColumn(name);
     }
     
@@ -65,6 +74,7 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
             from += ", IN (inventory_item.inventoryComponent) inventory_component ";
         if(name.indexOf("inventory_location.") > -1)
             from += ", IN (inventory_item.inventoryLocation) inventory_location";
+        from += ", Dictionary dictStore ";
         return from;
     }
 }

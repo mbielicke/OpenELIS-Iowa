@@ -21,8 +21,6 @@ import java.util.Date;
 import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
-import com.sun.org.apache.regexp.internal.REProgram;
-
 public class OrderDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -44,6 +42,8 @@ public class OrderDO implements Serializable{
     protected Integer billToId;
     protected String billTo;
     public AddressDO billToAddressDO = new AddressDO();
+    protected Integer shipFromId;
+    protected String description;
     
     public OrderDO(){
         
@@ -72,7 +72,7 @@ public class OrderDO implements Serializable{
     public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
                    Integer costCenter, Integer organizationId, String organization, String orgMultUnit, String orgStreetAddress, String orgCity, 
                    String orgState, String orgZipCode, String isExternal, String externalOrderNumber, 
-                   Integer reportToId, Integer billToId){
+                   Integer reportToId, Integer billToId, Integer shipFromId, String description){
         setId(id);
         setStatusId(status);
         setOrderedDate(orderedDate);
@@ -85,6 +85,8 @@ public class OrderDO implements Serializable{
         setExternalOrderNumber(externalOrderNumber);
         setReportToId(reportToId);
         setBillToId(billToId);
+        setShipFromId(shipFromId);
+        setDescription(description);
         
         //set org address values
         organizationAddressDO.setMultipleUnit(orgMultUnit);
@@ -93,6 +95,7 @@ public class OrderDO implements Serializable{
         organizationAddressDO.setState(orgState);
         organizationAddressDO.setZipCode(orgZipCode);
     }
+    
     
     //constructor with address values
     public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
@@ -250,5 +253,19 @@ public class OrderDO implements Serializable{
         this.statusId = status;
     }
     
+    public Integer getShipFromId() {
+        return shipFromId;
+    }
 
+    public void setShipFromId(Integer shipFromId) {
+        this.shipFromId = shipFromId;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+    }
 }
