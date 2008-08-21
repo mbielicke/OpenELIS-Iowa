@@ -15,27 +15,21 @@
 */
 package org.openelis.bean;
 
+import org.openelis.domain.PreferencesDO;
+import org.openelis.entity.Preferences;
+import org.openelis.persistence.CachingManager;
+import org.openelis.remote.PreferencesRemote;
+import org.openelis.security.domain.SystemUserDO;
+
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.openelis.domain.PreferencesDO;
-import org.openelis.entity.Preferences;
-import org.openelis.remote.PreferencesRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-
-@EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
-})
 
 @Stateless
 public class PreferencesBean implements PreferencesRemote{
@@ -80,11 +74,8 @@ public class PreferencesBean implements PreferencesRemote{
     
     @PermitAll
     public Integer getSystemUserId() {
-        try {
-            InitialContext cont = new InitialContext();
-            SystemUserUtilLocal sysUser = (SystemUserUtilLocal)cont.lookup("java:comp/env/ejb/SystemUser");
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
+        try {  
+            SystemUserDO systemUserDO = (SystemUserDO)CachingManager.getElement("security",ctx.getCallerPrincipal().getName()+"userdo");
             return systemUserDO.getId();
         } catch (Exception e) {
             e.printStackTrace();

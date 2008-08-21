@@ -31,8 +31,9 @@ import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
+import org.openelis.local.LoginLocal;
+import org.openelis.persistence.CachingManager;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 
 @Stateless
@@ -43,7 +44,7 @@ public class LockBean implements LockLocal{
 private EntityManager manager;
 
 @EJB
-private SystemUserUtilLocal sysUser;
+private LoginLocal login;
 
 @Resource
 private SessionContext ctx;
@@ -52,14 +53,18 @@ private Logger log = Logger.getLogger(this.getClass());
 
 
 public boolean isLocked(Integer table, Integer row){
+    return isLocked(table,row,"");
+}
+
+public boolean isLocked(Integer table, Integer row, String session){
     Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
     boolean locked = false;
     try {
         Lock lock = (Lock)query.getSingleResult();
-        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId())){
+        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && !lock.getSessionId().equals(session)){
             locked = true;
         }
-        if((locked && lock.getSystemUserId().equals(getSystemUserId())) || !locked){
+        if((locked && (lock.getSystemUserId().equals(getSystemUserId()) && lock.getSessionId().equals(session))) || !locked){
             manager.remove(lock);
             manager.flush();
             locked = false;
@@ -71,11 +76,15 @@ public boolean isLocked(Integer table, Integer row){
 }
 
 public Integer getLock(Integer table, Integer row) throws Exception {
+    return getLock(table,row,"");
+}
+
+public Integer getLock(Integer table, Integer row, String session) throws Exception{
     if(isLocked(table, row)){
         Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
         try {
             Lock lock = (Lock)query.getSingleResult();
-            SystemUserDO user = sysUser.getSystemUser(lock.getSystemUserId());
+            SystemUserDO user = (SystemUserDO)CachingManager.getElement("security", ctx.getCallerPrincipal().getName()+"userdo");
             throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }catch(Exception e){
             e.printStackTrace();
@@ -86,6 +95,7 @@ public Integer getLock(Integer table, Integer row) throws Exception {
     lock.setReferenceTableId(table);
     lock.setReferenceId(row);
     lock.setSystemUserId(getSystemUserId());
+    lock.setSessionId(session);
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MINUTE,10);
     Date expires = cal.getTime();
@@ -95,8 +105,12 @@ public Integer getLock(Integer table, Integer row) throws Exception {
 }
 
 public void giveUpLock(Integer table, Integer row){
+    giveUpLock(table,row,"");
+}
+
+public void giveUpLock(Integer table, Integer row, String session) {
     try {
-        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row+" and systemUserId = "+getSystemUserId());
+        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row+" and systemUserId = "+getSystemUserId()+" and sessionId = '"+session+"'");
         Lock lock = (Lock)query.getSingleResult();
         manager.remove(lock);
     }catch(Exception e){
@@ -108,12 +122,9 @@ public void giveUpUserLocks(){
     
 }
 
-private Integer getSystemUserId(){
-    log.debug(ctx.getCallerPrincipal().getName()+" in LockBean "+ctx.toString());
+public Integer getSystemUserId(){
         try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
+            return login.getSystemUserId();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

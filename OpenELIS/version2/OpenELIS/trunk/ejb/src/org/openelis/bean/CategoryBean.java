@@ -26,6 +26,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -52,7 +53,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -62,8 +62,6 @@ public class CategoryBean implements CategoryRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    private SystemUserUtilLocal sysUser;
-    
     @Resource
     private SessionContext ctx;
     
@@ -76,7 +74,6 @@ public class CategoryBean implements CategoryRemote {
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
         
     }
    
@@ -87,21 +84,6 @@ public class CategoryBean implements CategoryRemote {
         CategoryDO category = (CategoryDO) query.getSingleResult();// getting category with address and contacts
 
         return category;
-    }
-
- 
-
-    public Integer getSystemUserId() {
-        try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-        }
-        
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {

@@ -56,6 +56,9 @@ public class Lock {
 
   @Column(name="system_user_id")
   private Integer systemUserId;             
+  
+  @Column(name="session_id")
+  private String sessionId;
 
 
   @Transient
@@ -107,6 +110,16 @@ public class Lock {
     if((systemUserId == null && this.systemUserId != null) || 
        (systemUserId != null && !systemUserId.equals(this.systemUserId)))
       this.systemUserId = systemUserId;
+  }
+  
+  public String getSessionId() {
+      return sessionId;
+  }
+  
+  public void setSessionId(String sessionId) {
+      if((sessionId == null && this.sessionId != null) ||
+         (sessionId != null && !sessionId.equals(this.sessionId)))
+          this.sessionId = sessionId;
   }
   
 }   

@@ -25,6 +25,7 @@ import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -49,7 +50,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -58,8 +58,6 @@ public class StandardNoteBean implements StandardNoteRemote{
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-	
-	private SystemUserUtilLocal sysUser;
 	
 	@Resource
 	private SessionContext ctx;
@@ -71,7 +69,6 @@ public class StandardNoteBean implements StandardNoteRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
 
     @RolesAllowed("standardnote-delete")
@@ -127,17 +124,6 @@ public class StandardNoteBean implements StandardNoteRemote{
         lockBean.giveUpLock((Integer)query.getSingleResult(),standardNoteId);
 		
 		return getStandardNote(standardNoteId);
-	}
-	
-	public Integer getSystemUserId() {
-		try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }  
 	}
 
 	public List query(HashMap fields, int first, int max) throws Exception {

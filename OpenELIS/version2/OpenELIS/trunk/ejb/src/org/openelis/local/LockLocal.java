@@ -26,6 +26,14 @@ public interface LockLocal {
     
     public void giveUpLock(Integer table, Integer row);
     
+    public boolean isLocked(Integer table, Integer row, String session);
+    
+    public Integer getLock(Integer table, Integer row, String session) throws Exception;
+    
+    public void giveUpLock(Integer table, Integer row, String session);
+    
     public void giveUpUserLocks();
+    
+    public Integer getSystemUserId();
 
 }

@@ -24,9 +24,9 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestTrailerMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -48,7 +48,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
@@ -58,8 +57,6 @@ public class TestTrailerBean implements TestTrailerRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-	private SystemUserUtilLocal sysUser;
-	
 	@Resource
 	private SessionContext ctx;
 	
@@ -70,7 +67,6 @@ public class TestTrailerBean implements TestTrailerRemote{
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
     @RolesAllowed("testtrailer-delete")
@@ -101,18 +97,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         }	
 		
 		lockBean.giveUpLock(testTrailerTableId, testTrailerId);
-	}
-
-	public Integer getSystemUserId() {
-		try {
-            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-                                                                 .getName());
-            return systemUserDO.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }   
-	}
+    }
 
 	public TestTrailerDO getTestTrailer(Integer testTrailerId) {
 		Query query = manager.createNamedQuery("TestTrailer.TestTrailer");

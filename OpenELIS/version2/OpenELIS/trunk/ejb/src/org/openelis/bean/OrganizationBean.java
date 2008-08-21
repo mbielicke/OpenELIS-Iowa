@@ -30,9 +30,9 @@ import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -56,7 +56,6 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
     @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
 })
@@ -66,9 +65,6 @@ public class OrganizationBean implements OrganizationRemote {
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-	@EJB
-	private SystemUserUtilLocal sysUser;
 	
 	@Resource
 	private SessionContext ctx;
@@ -82,7 +78,6 @@ public class OrganizationBean implements OrganizationRemote {
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
         addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
     
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
@@ -105,7 +100,8 @@ public class OrganizationBean implements OrganizationRemote {
 	//@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception{
-        SecurityInterceptor.applySecurity("organization", ModuleFlags.UPDATE);
+        System.out.println("local cache alive "+CachingManager.isAlive("security"));
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "organization", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
         lockBean.getLock((Integer)query.getSingleResult(),organizationId);
@@ -115,8 +111,8 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	//@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
-    public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List contacts) throws Exception{
-        SecurityInterceptor.applySecurity("organization", ModuleFlags.UPDATE);
+    public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List<OrganizationContactDO> contacts) throws Exception{
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),"organization", ModuleFlags.UPDATE);
 	    //organization reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "organization");
@@ -161,61 +157,64 @@ public class OrganizationBean implements OrganizationRemote {
         }
         
         //update contacts
-        for (int i=0; i<contacts.size();i++) {
-			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
-            OrganizationContact orgContact = null;
+        if(contacts != null) {
+            for (OrganizationContactDO contactDO : contacts) {
+                OrganizationContact orgContact = null;
             
-            //validate the organization record and its address
-            exceptionList = new ArrayList();
-            validateContactAndAddress(contactDO, i, exceptionList);
-            if(exceptionList.size() > 0){
-            	throw (RPCException)exceptionList.get(0);
-            }
+                //validate the organization record and its address
+                exceptionList = new ArrayList();
+                validateContactAndAddress(contactDO, contacts.indexOf(contactDO), exceptionList);
+                if(exceptionList.size() > 0){
+                    throw (RPCException)exceptionList.get(0);
+                }
             
-            if (contactDO.getId() == null)
-            	orgContact = new OrganizationContact();
-            else
-            	orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+                if (contactDO.getId() == null)
+                    orgContact = new OrganizationContact();
+                else
+                    orgContact = manager.find(OrganizationContact.class, contactDO.getId());
 
-            if(contactDO.getDelete() && orgContact.getId() != null){
-            	//delete the contact record and the address record from the database
-            	manager.remove(orgContact);
-            	addressBean.deleteAddress(contactDO.getAddressDO());
+                if(contactDO.getDelete() && orgContact.getId() != null){
+                    //delete the contact record and the address record from the database
+                    manager.remove(orgContact);
+                    addressBean.deleteAddress(contactDO.getAddressDO());
             	
-            }else{
+                }else{
 //	            	send the contact address to the address bean
-	            Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+                    Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
 		                
-	            orgContact.setContactTypeId(contactDO.getContactType());
-		        orgContact.setName(contactDO.getName());
-		        orgContact.setOrganizationId(organization.getId());
-		        orgContact.setAddressId(contactAddressId);
+                    orgContact.setContactTypeId(contactDO.getContactType());
+                    orgContact.setName(contactDO.getName());
+                    orgContact.setOrganizationId(organization.getId());
+                    orgContact.setAddressId(contactAddressId);
 		            
-		        if (orgContact.getId() == null) {
-		            manager.persist(orgContact);
-		        }
-           }
-		}
+                    if (orgContact.getId() == null) {
+                        manager.persist(orgContact);
+                    }
+                }
+            }
+        }
         
         
         
 //          update note
-        Note note = null;
-        //we need to make sure the note is filled out...
-        if(noteDO.getText() != null || noteDO.getSubject() != null){
-        	note = new Note();
-            note.setIsExternal(noteDO.getIsExternal());
-            note.setReferenceId(organization.getId());
-            note.setReferenceTableId(organizationReferenceId);
-            note.setSubject(noteDO.getSubject());
-            note.setSystemUserId(getSystemUserId());
-            note.setText(noteDO.getText());
-        	note.setTimestamp(Datetime.getInstance());
-    	}
+        if(noteDO != null) {
+            Note note = null;
+            //  we need to make sure the note is filled out...
+            if(noteDO.getText() != null || noteDO.getSubject() != null){
+                note = new Note();
+                note.setIsExternal(noteDO.getIsExternal());
+                note.setReferenceId(organization.getId());
+                note.setReferenceTableId(organizationReferenceId);
+                note.setSubject(noteDO.getSubject());
+                note.setSystemUserId(lockBean.getSystemUserId());
+                note.setText(noteDO.getText());
+                note.setTimestamp(Datetime.getInstance());
+            }
         
-//          insert into note table if necessary
-        if(note != null && note.getId() == null){
-        	manager.persist(note);
+//         insert into note table if necessary
+            if(note != null && note.getId() == null){
+                manager.persist(note);
+            }
         }
 
         lockBean.giveUpLock(organizationReferenceId,organization.getId()); 
@@ -242,17 +241,6 @@ public class OrganizationBean implements OrganizationRemote {
 
         return orgNotes;
 	}
-
-	public Integer getSystemUserId(){
-	        try {
-	            SystemUserDO systemUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal()
-	                                                                 .getName());
-	            return systemUserDO.getId();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return null;
-	        }         
-	    }
 
 	public List query(HashMap fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
