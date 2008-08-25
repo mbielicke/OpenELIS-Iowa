@@ -42,8 +42,8 @@
 <screen id= "SystemVariable" name="{resource:getString($constants,'systemVariable')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel">  
-  					<CollapsePanel key="collapsePanel">
-						<azTable colwidths ="175" height="235px" key="azTable" maxRows="10" tablewidth="auto" title="" width="100%"  headers = "{resource:getString($constants,'name')}">
+  					<CollapsePanel key="collapsePanel" height="235px">
+						<azTable colwidths ="175" key="azTable" maxRows="10" tablewidth="auto" title="" width="100%"  headers = "{resource:getString($constants,'name')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
