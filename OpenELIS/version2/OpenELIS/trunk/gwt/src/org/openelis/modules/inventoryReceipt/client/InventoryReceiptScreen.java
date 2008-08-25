@@ -32,10 +32,12 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -70,7 +72,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     private ScreenAutoDropdown itemLocation;
     private ScreenCalendar itemExpDate;
     private ScreenCheck addToExisiting;
-    private KeyListManager keyList = new KeyListManager();
+    private ButtonPanel      atozButtons;
+    private KeyListManager   keyList = new KeyListManager();
     
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
@@ -128,6 +131,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     public void afterDraw(boolean sucess) {
+        AToZTable atozTable;
         orgAptSuiteText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit());        
         orgAddressText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getStreetAddress());
         orgCityText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getCity());
@@ -149,8 +153,16 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         receiptsController.setAutoAdd(false);
         addCommandListener(receiptsController);
         
-        addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        atozTable = (AToZTable)getWidget("azTable");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+        
+        CommandChain formChain = new CommandChain();
+        formChain.addCommand(this);
+        formChain.addCommand(bpanel);
+        formChain.addCommand(keyList);
+        formChain.addCommand(atozTable);
+        formChain.addCommand(atozButtons);
         
         super.afterDraw(sucess);
     }

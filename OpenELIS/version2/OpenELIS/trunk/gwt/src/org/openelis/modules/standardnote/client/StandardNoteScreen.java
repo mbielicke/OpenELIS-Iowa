@@ -101,16 +101,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 		nameTextbox.setFocus(true);
     }
 
-	public Request commitQuery(FormRPC rpcQuery) {
-    	Request ret = super.commitQuery(rpcQuery);
-    	
-    	//enable the text area
-    	textArea.enable(true);
-        
-        return ret;
-    }
-
-    private void getStandardNotes(String query) {
+	private void getStandardNotes(String query) {
     	if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
     
     		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");

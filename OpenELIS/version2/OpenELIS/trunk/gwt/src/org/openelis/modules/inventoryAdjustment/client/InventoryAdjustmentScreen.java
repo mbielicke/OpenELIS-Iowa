@@ -23,6 +23,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -30,6 +31,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -63,6 +65,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     private static DataModel storesDropdownModel;
     private ScreenAutoDropdown storesDropdown;
     private ScreenCalendar adjustmentDateText;
+    private KeyListManager   keyList = new KeyListManager();
     
     private InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     
@@ -78,12 +81,11 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     public void afterDraw(boolean sucess) {
         AutoCompleteDropdown drop;
         loaded = true;
-        addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         removeRowButton = (AppButton)getWidget("removeRowButton");
         adjustmentsController = ((TableWidget)getWidget("adjustmentsTable")).controller;
         adjustmentsController.setAutoAdd(false);
+        addCommandListener(adjustmentsController);
         
         idText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getId());
         adjustmentDateText = (ScreenCalendar) widgets.get(InventoryAdjustmentMeta.getAdjustmentDate());
@@ -96,6 +98,15 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
          
         drop = (AutoCompleteDropdown)getWidget(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId());
         drop.setModel(storesDropdownModel);
+        
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
+        
+        updateChain.add(afterUpdate);
         
         super.afterDraw(sucess);
         

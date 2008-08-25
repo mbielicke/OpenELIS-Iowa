@@ -105,7 +105,7 @@
     				</xsl:with-param>
     			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
-    			<xsl:call-template name="addButton">
+    			<xsl:call-template name="processButton">
     				<xsl:with-param name="language">
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
@@ -208,10 +208,7 @@
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown cat="organization" key="organization" serviceUrl="OpenELISServlet?service=org.openelis.modules.fillOrder.server.FillOrderService" case="upper" width="164px" tab="">
-											<headers>Name,Street,City,St</headers>
-											<widths>180,110,100,20</widths>
-										</autoDropdown>
+										<textbox key="test" width="203px" tab="??,??"/>
 									</widget>		
 								</row>
 								<row>

@@ -102,6 +102,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
             ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
             ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
                     
+            updateChain.add(afterUpdate);
+            
             super.afterDraw(success); 
         }           
         

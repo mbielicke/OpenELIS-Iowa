@@ -94,30 +94,57 @@
 					<row>								
 						<text style="Prompt">Status:</text>
 						<autoDropdown key="test" case="mixed" width="90px" popWidth="auto" tab="??,??"/>
-						<text style="Prompt">Shipped From:</text>
-						<autoDropdown key="test" case="mixed" width="90px" popWidth="auto" tab="??,??"/>
+						<text style="Prompt"># of Packages:</text>
+						<widget colspan="3">
+							<textbox case="mixed" key="test" width="60px" tab="??,??"/>
+						</widget>
+					</row>
+					<row>								
+						<text style="Prompt">Ship From:</text>
+						<autoDropdown key="test" case="mixed" width="172px" popWidth="auto" tab="??,??"/>
+						<text style="Prompt">Shipped To:</text>
+						<widget colspan="3">
+							<autoDropdown key="test" case="mixed" width="172px" popWidth="auto" tab="??,??">
+								<headers>Name,Street,City,St</headers>
+								<widths>180,110,100,20</widths>
+							</autoDropdown>
+						</widget>
 					</row>
 					<row>								
 						<text style="Prompt">Processed Date:</text>
-						<calendar key="test" width="80px" begin="0" end="2" tab="??,??"/>							
-						<text style="Prompt">Shipped To:</text>
-						<autoDropdown key="test" case="mixed" width="172px" popWidth="auto" tab="??,??">
-							<headers>Name,Street,City,St</headers>
-							<widths>180,110,100,20</widths>
-						</autoDropdown>
+						<calendar key="test" width="80px" begin="0" end="2" tab="??,??"/>		
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="test" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>						
 					</row>
-					<row>								
+					<row>
 						<text style="Prompt">Processed By:</text>
 						<textbox case="mixed" key="test" width="203px" tab="??,??"/>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="test" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>	
+					</row>
+					<row>
 						<text style="Prompt">Shipped Date:</text>
-						<calendar key="test" width="80px" begin="0" end="2" tab="??,??"/>							
-						
+						<calendar key="test" width="80px" begin="0" end="2" tab="??,??"/>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="test" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>
 					</row>
 					<row>								
 						<text style="Prompt">Shipped Method:</text>
 						<autoDropdown key="test" case="mixed" width="140px" popWidth="auto" tab="??,??"/>
-						<text style="Prompt"># of Containers:</text>
-						<textbox case="mixed" key="test" width="60px" tab="??,??"/>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+						<widget>
+							<textbox case="mixed" key="test" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+						<widget>
+							<textbox case="mixed" key="test" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>						
 					</row>
 					<row>	
 						<widget colspan="3">
@@ -135,8 +162,8 @@
 								<colAligns>left</colAligns>
 							</table>
 						</widget>	
-						<widget valign="top">						
-						<table key="trackingNumbersTable" manager="this" maxRows="4" showError="false" showScroll="true" title="" width="auto">
+						<widget valign="top" colspan="3">						
+						<table key="trackingNumbersTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
 							<headers>Tracking #'s</headers>
 							<widths>180</widths>
 							<editors>
