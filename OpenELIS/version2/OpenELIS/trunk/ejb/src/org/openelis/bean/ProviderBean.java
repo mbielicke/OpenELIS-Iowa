@@ -328,9 +328,6 @@ public class ProviderBean implements ProviderRemote {
        if(location == null || "".equals(location)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getLocation()));
          }
-       if(state == null || "".equals(state)){            
-           exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getAddress().getState()));
-         }
        if(city == null || "".equals(city)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getCity()));
          }
