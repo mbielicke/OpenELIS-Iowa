@@ -38,13 +38,13 @@
 	  		<xsl:for-each select="favorite">
 			    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
 			    <xsl:variable name="value"><xsl:value-of select="@value"/></xsl:variable>
-		        <menuItem style="TopMenuRowContainer" enabled="true"  
-			              hover="Hover"
-				          icon="{$label}Icon"
-		        		  label="{resource:getString($constants,$label)}"
-				          description=""
-				          value="{$value}"
-				          onClick="org.openelis.modules.main.client.openelis.OpenELIS"/>
+			   <menuItem  style="TopMenuRowContainer" enabled="true"  
+	          		     hover="Hover"
+	          	         icon="{$label}Icon"
+	   		  		     label="{resource:getString($constants,$label)}"
+	          	         description="" 
+	                     class="{$value}"
+	                     onClick="org.openelis.modules.main.client.openelis.OpenELIS"/>
 			    </xsl:for-each>
 			</menuPanel>
 	</display>

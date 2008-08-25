@@ -49,59 +49,52 @@
     <style type="text/css">
         .inputfield
         {
-            border-style:solid; border-width:1px;
-            border-color:black;
-            padding-left: 0.4em;
+           border:solid 1px black;
+            padding-left: 5px;
+            background:transparent; 
         }
         .inputbackground
         {
-            background-image: url("login.jpg");
+            background-image: url("signInBg.jpg");
             background-repeat:no-repeat;
-            width: 450px;
+            width:433px;
+            height:312px;
         }
         .submit
         {
-            //background-image: url("signIn.gif");
-            border-width:1px solid gold;
+            background: url("signIn.gif") no-repeat;
+            border-width:0px;
             width: 75px;
             height: 20px;
-            padding-left: 0.4em;
-            font-size:10px;
+            color:#486095;
+            cursor:pointer;
         }
     </style>
 </head>
 
 <body onLoad="focusLogin()">
 
-
-    <font face="Arial,Helvetica">
-    </font>
     <table align="center">
-        <tr><td><br/></td></tr>
-        <tr><td><br/></td></tr>
-        <tr><td><br/></td></tr>
-        <tr><td><br/></td></tr>
-        <tr><td><br/></td></tr>
+        <tr><td height="200px"></td></tr>
+
         <tr>
             <td>
                 <form method="post" name="login_form" autocomplete="off" action="{action}">
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
-                            <tr><td colspan='2' style="height: 150px;"></td></tr>
-                            <tr><th align="right" width='160'><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,'username')"/></font></th>
+                            <tr><td colspan='2' style="height: 130px;"></td></tr>
+                            <tr><td align="right" width='140'>
+                                <font face="Arial,Helvetica">
+                                    <xsl:value-of select="resource:getString($constants,'username')"/></font></td>
                                 <td align="left"><input type="text" name="username" class="inputfield" value='' onChange="javascript:this.value=this.value.toLowerCase();"/></td>
                             </tr>
-                            <tr><th align="right"><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,'password')"/></font></th>
+                            <tr><td align="right" class="ptext"><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,'password')"/></font></td>
                                 <td align="left"><input type="password" name="password" class="inputfield"/></td>
                             </tr>
                             <tr><td align="right"></td>
-                                <td align="left"><font face="Arial,Helvetica" color="#486095"><input type="submit" border="0" class="submit" value="{resource:getString($constants,'signin')}"/></font></td>
+                                <td align="left" height="100px" valign="top"><font face="Arial,Helvetica" color="#486095"><input type="submit" value="{resource:getString($constants,'signin')}" border="0" class="submit"/></font></td>
                             </tr>
-                            <tr>
-                              <td colspan='2' align='left'></td>
-                            </tr>
-                            <tr><td colspan='2'><br/></td></tr>
-                            <tr><td colspan='2'><br/></td></tr>
+
                         </table>
                     </center>
                </form>
@@ -110,7 +103,7 @@
         <xsl:for-each select="error">
  		 <tr>
  		    <xsl:variable name="errorKey" select="."/>
-		    <td style="color:red;"><xsl:value-of select="resource:getString($constants,$errorKey)"/></td>
+ 		     <td style="color:#ac0000;"><font face="Arial,Helvetica"><xsl:value-of select="resource:getString($constants,$errorKey)"/></font></td>
 		  </tr>
 		</xsl:for-each>
     </table>
