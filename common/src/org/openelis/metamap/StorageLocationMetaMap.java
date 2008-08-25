@@ -50,12 +50,13 @@ public class StorageLocationMetaMap extends StorageLocationMeta implements MetaM
     }
     
     public boolean hasColumn(String name){
+        if(name.startsWith("childStorageLocation.storageUnit.description"))
+            return CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.hasColumn(name);  
         if(name.startsWith("childStorageLocation.") && !child)
             return CHILD_STORAGE_LOCATION_META.hasColumn(name);
         if(name.startsWith("storageUnit."))
             return STORAGE_UNIT_META.hasColumn(name);
-        if(name.startsWith("childUnit."))
-            return CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.hasColumn(name);           
+                 
        
         return super.hasColumn(name);
     }
