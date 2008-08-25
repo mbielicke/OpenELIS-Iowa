@@ -43,27 +43,27 @@
         <menuItem enabled="false"
 	              hover="Hover">
 	      <menuDisplay>
-	        <panel layout="table" xsi:type="Table" style="TopMenuRowContainer">
+	        <TablePanel style="TopMenuRowContainer">
 	          <row>
 	           <widget align="right">
-	             <panel layout="horizontal" xsi:type="Panel">
+	             <HorizontalPanel>
 	               <widget>
 	                 <check key="{$value}"/>
 	               </widget>
-	             </panel>
+	             </HorizontalPanel>
 	           </widget>
 	            <widget>
-	              <panel layout="vertical" xsi:type="Panel">
+	              <VerticalPanel>
 	                <widget style="topMenuItemMiddle">
 	                  <label wordwrap="true" text="{resource:getString($constants,$label)}" style="topMenuItemTitle,locked"/>
 	                </widget>
 	                <widget>
 	                  <label wordwrap="true" text="{resource:getString($constants,$description)}" style="topMenuItemDesc,locked"/>
 	                </widget>
-	             </panel>
+	             </VerticalPanel>
 	           </widget>
 	         </row>  
-	        </panel>
+	        </TablePanel>
 	      </menuDisplay>
 	    </menuItem>
 	  </xsl:for-each>
