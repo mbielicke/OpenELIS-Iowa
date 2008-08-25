@@ -181,6 +181,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        queryContactCountry.setModel(countryDropDown);              
         
 
+       fetchChain.add(afterFetch);
+       updateChain.add(afterUpdate);
+       commitUpdateChain.add(afterCommitUpdate);
+       commitAddChain.add(afterCommitAdd);
+       
        super.afterDraw(success);
     }
     
