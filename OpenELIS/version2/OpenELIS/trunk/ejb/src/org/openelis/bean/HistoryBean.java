@@ -29,9 +29,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.openelis.entity.History;
 import org.openelis.local.HistoryLocal;
-import org.openelis.persistence.CachingManager;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.local.LoginLocal;
 import org.openelis.utils.Auditable;
 
 @Stateless
@@ -42,6 +40,9 @@ public class HistoryBean implements HistoryLocal {
 
 	    @PersistenceContext(unitName = "openelis")
 	    EntityManager manager;
+        
+        @EJB
+        private LoginLocal login;
 
 	    private Logger log = Logger.getLogger(this.getClass());
 
@@ -67,7 +68,7 @@ public class HistoryBean implements HistoryLocal {
 	                if(princ.equals(""))
 	                    history.setSystemUserId(0);
 	                else
-	                    history.setSystemUserId(getSystemUserId());
+	                    history.setSystemUserId(login.getSystemUserId());
 	            }catch(Exception e){
 	                history.setSystemUserId(0);
 	            }
@@ -80,17 +81,6 @@ public class HistoryBean implements HistoryLocal {
 	            log.error(e.getMessage());
 	            e.printStackTrace();
 	        }
-	    }
-
-	    private Integer getSystemUserId(){
-	        try {
-	            SystemUserDO systemUserDO = (SystemUserDO)CachingManager.getElement("security", ctx.getCallerPrincipal().getName()+"userdo");
-	                return systemUserDO.getId();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return null;
-	        } finally {
-            }        
 	    }
         
         public List getHistoryEntries(Integer referenceId, Integer referenceTable) {
