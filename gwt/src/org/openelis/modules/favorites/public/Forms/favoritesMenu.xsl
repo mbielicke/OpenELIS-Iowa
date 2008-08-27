@@ -34,7 +34,7 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="organizeFavoritesAdd" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" width="220px">
+         	<menuPanel layout="vertical" style="topMenuContainer" key="favoritesMenu" width="220px" >
 	  		<xsl:for-each select="favorite">
 			    <xsl:variable name="label"><xsl:value-of select="@label"/></xsl:variable>
 			    <xsl:variable name="value"><xsl:value-of select="@value"/></xsl:variable>
