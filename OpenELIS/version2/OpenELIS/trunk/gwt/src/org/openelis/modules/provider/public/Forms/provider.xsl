@@ -144,7 +144,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    
     <TabPanel height= "200px" key= "provTabPanel"  halign="center" >
      <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel spacing= "0" padding="0" overflow="hidden">
+      <VerticalPanel spacing= "0" padding="0">
        <widget valign="top">
         <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false" showScroll="true">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,

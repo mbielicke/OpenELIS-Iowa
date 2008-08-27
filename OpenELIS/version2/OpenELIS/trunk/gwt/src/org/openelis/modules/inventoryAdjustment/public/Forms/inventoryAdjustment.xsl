@@ -129,7 +129,7 @@
 						<autoDropdown key="{inventoryItemMeta:getStoreId($invItem)}" case="mixed" width="205px" tab="{meta:getId($adj)},{meta:getSystemUserId($adj)}"/>
 					</row>
 				</TablePanel>
-				<VerticalPanel spacing="0" padding="0" overflow="hidden">
+				<VerticalPanel spacing="0" padding="0">
 					<widget valign="top">
 						<table width="auto" key="adjustmentsTable" manager="this" maxRows="14" title="" showError="false" showScroll="true">
 							<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,

@@ -216,7 +216,7 @@
 				<TabPanel height="200px" key="orderTabPanel" halign="center">
 					<!-- TAB 1 (items) -->
 					<tab key="itemsTab" text="{resource:getString($constants,'items')}">
-							<VerticalPanel spacing="0" padding="0" overflow="hidden">
+							<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
 								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
@@ -279,7 +279,7 @@
 					</tab>		
 					<!-- TAB 2 (receipts) -->	
 					<tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
-						<VerticalPanel spacing="0" padding="0" overflow="hidden">
+						<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
 								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,

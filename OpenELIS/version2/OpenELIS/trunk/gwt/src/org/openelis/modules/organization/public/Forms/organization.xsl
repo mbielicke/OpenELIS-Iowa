@@ -163,10 +163,10 @@
 								</row>
 							</TablePanel>
 							<!-- TAB PANEL -->
-							<TabPanel halign="center" height="200px" key="orgTabPanel">
+							<TabPanel halign="center" key="orgTabPanel">
 								<!-- TAB 1 -->
 								<tab key="contactsTab" text="{resource:getString($constants,'contact')}">
-									<VerticalPanel overflow="hidden" padding="0" spacing="0">
+									<VerticalPanel valign="top" padding="0" spacing="0">
 										<widget valign="top">
 											<table key="contactsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="true" title="" width="574px">
 												<headers>
@@ -252,7 +252,7 @@
 								</tab>
 								<!-- START TAB 2 -->
 								<tab text="{resource:getString($constants,'identifier')}">
-									<VerticalPanel overflow="hidden" padding="0" spacing="0">
+									<VerticalPanel padding="0" spacing="0">
 										<widget valign="top">
 											<table key="identifierstsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="true" title="" width="auto">
 												<headers>
