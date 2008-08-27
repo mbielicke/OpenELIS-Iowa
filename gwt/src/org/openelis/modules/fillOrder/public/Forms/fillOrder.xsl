@@ -125,7 +125,7 @@
 		</AbsolutePanel>
 		<!--end button panel-->
 			<VerticalPanel>
-				<VerticalPanel spacing="0" padding="0" overflow="hidden">
+				<VerticalPanel spacing="0" padding="0">
 			<widget valign="top">
 						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,

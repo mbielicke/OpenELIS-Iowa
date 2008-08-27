@@ -217,7 +217,7 @@
 			<TabPanel height="200px" key="orderTabPanel" halign="center">
 				<!-- TAB 1 (items) -->
 				<tab key="itemsTab" text="{resource:getString($constants,'items')}">
-					<VerticalPanel spacing="0" padding="0" overflow="hidden">
+					<VerticalPanel spacing="0" padding="0">
 						<widget valign="top">
 							<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
