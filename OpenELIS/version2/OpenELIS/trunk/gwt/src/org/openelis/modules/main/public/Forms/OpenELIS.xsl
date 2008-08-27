@@ -555,7 +555,7 @@
        </AbsolutePanel>
        <HorizontalPanel>
           <VerticalPanel key="favoritesPanel" visible="false" width="220px">
-            <HorizontalPanel style="Header" width="100%" height="20px">
+            <HorizontalPanel style="FavoritesHeader" width="100%" height="20px">
                 <text style="ScreenWindowLabel">Favorites</text>
               <widget halign="right">
                 <appButton action="editFavorites" key="EditFavorites" onclick="this">
