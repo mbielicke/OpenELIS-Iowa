@@ -34,13 +34,14 @@ public class OrderItemDO implements Serializable{
     protected Integer transactionId;
     protected String catalogNumber;
     protected Double unitCost;
+    protected Integer quantityOnHand;
     
     protected Boolean delete = false;
     
     public OrderItemDO(){
         
     }
-    
+
     public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, Integer quantityRequested){
         setId(id);
         setOrder(order);
@@ -49,7 +50,8 @@ public class OrderItemDO implements Serializable{
      }
     
     public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantityRequested, String store, Integer locationId,
-                       String childStorageLocName, String childStorageLocLocation, String parentStorageLocName, String childStorageUnit, Integer transactionId){
+                       String childStorageLocName, String childStorageLocLocation, String parentStorageLocName, String childStorageUnit, Integer transactionId, 
+                       Integer quantityOnHand){
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
@@ -58,6 +60,7 @@ public class OrderItemDO implements Serializable{
         setStore(store);
         setLocationId(locationId);
         setTransactionId(transactionId);
+        setQuantityOnHand(quantityOnHand);
         
         //build the storage location string
         String storageLocation = "";
@@ -174,5 +177,13 @@ public class OrderItemDO implements Serializable{
 
     public void setUnitCost(Double unitCost) {
         this.unitCost = unitCost;
+    }
+
+    public Integer getQuantityOnHand() {
+        return quantityOnHand;
+    }
+
+    public void setQuantityOnHand(Integer quantityOnHand) {
+        this.quantityOnHand = quantityOnHand;
     }
 }
