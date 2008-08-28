@@ -38,6 +38,7 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
+import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
@@ -266,6 +267,10 @@ public class OrderBean implements OrderRemote{
         query.setParameter("name", "order_shipping_note");
         Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
         
+        query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        query.setParameter("systemName", "order_status_completed");
+        Integer orderCompletedStatusId = (Integer)query.getSingleResult();
+        
         if(orderDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
             lockBean.getLock(orderReferenceId,orderDO.getId());
@@ -357,6 +362,12 @@ public class OrderBean implements OrderRemote{
                
                if (transLocOrder.getId() == null) {
                    manager.persist(transLocOrder);
+               }
+               
+               //we need to update the quantity on the location if it is set to complete
+               if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && orderDO.getStatusId().equals(orderCompletedStatusId)){
+                   InventoryLocation loc = manager.find(InventoryLocation.class, orderItemDO.getLocationId());                   
+                   loc.setQuantityOnhand(orderItemDO.getQuantityOnHand() - orderItemDO.getQuantityRequested());
                }
            }
         }
@@ -494,5 +505,21 @@ public class OrderBean implements OrderRemote{
         if(orderItemDO.getInventoryItemId() == null || "".equals(orderItemDO.getInventoryItemId())){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
         }
+    }
+    
+    public List validateQuantities(List items){
+        List exceptionList = new ArrayList();
+        
+        for(int i=0; i<items.size();i++){            
+            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
+            
+            //quantity on hand needs to be >= quantity requested
+            if(orderItemDO.getQuantityRequested() != null && orderItemDO.getQuantityOnHand() != null && 
+                            orderItemDO.getQuantityOnHand() < orderItemDO.getQuantityRequested()){
+                exceptionList.add(new TableFieldErrorException("notEnoughQuantityOnHand", i, OrderMetaMap.ORDER_ITEM_META.getQuantityRequested()));
+            }
+        }
+        
+        return exceptionList;
     }
 }
