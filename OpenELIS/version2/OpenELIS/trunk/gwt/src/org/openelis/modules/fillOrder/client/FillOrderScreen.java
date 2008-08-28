@@ -16,13 +16,23 @@
 package org.openelis.modules.fillOrder.client;
 
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.QueryTable;
+import org.openelis.gwt.widget.table.TableAutoDropdown;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,67 +41,106 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, TableManager{
     
-    //private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
+    private static boolean loaded = false;
+    private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
+    
+    private OrderMetaMap OrderMeta = new OrderMetaMap();
+    
+    private AppButton removeRowButton;
     private EditTable fillItemsController;
+    
+    private KeyListManager keyList = new KeyListManager();
 
     public FillOrderScreen() {
-        super("org.openelis.modules.fillOrder.server.FillOrderService", false);
+        super("org.openelis.modules.fillOrder.server.FillOrderService", !loaded);
     }
     
-    public void onClick(Widget sender) {
+    public void performCommand(Enum action, Object obj) {
+        if(action == KeyListManager.Action.FETCH){
+            fetch();
+        }else{
+            super.performCommand(action, obj);
+        }
+    }      
     
+    public void onClick(Widget sender) {
+        if(sender == removeRowButton)
+            onRemoveRowButtonClick();        
     }
     
     public void afterDraw(boolean success) {
-        fillItemsController = ((TableWidget)getWidget("fillItemsTable")).controller;
-        fillItemsController.setAutoAdd(false);
+        TableWidget d;
+        QueryTable q;
+        ScreenTableWidget sw;
+        AutoCompleteDropdown drop;
         
-        addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);        
+        loaded = true;
+        
+        fillItemsController = ((TableWidget)getWidget("fillItemsTable")).controller;
+        addCommandListener(fillItemsController);
+        
+        removeRowButton = (AppButton)getWidget("removeRowButton");
+        
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
+        
+        if (costCenterDropdown == null) {
+            costCenterDropdown = (DataModel)initData.get("costCenter");
+            shipFromDropdown = (DataModel)initData.get("shipFrom");
+            statusDropdown = (DataModel)initData.get("status");
+        }
+        
+        //
+        // cost center dropdown
+        //
+        drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
+        drop.setModel(costCenterDropdown);
+
+        sw = (ScreenTableWidget)widgets.get("fillItemsTable");
+        d = (TableWidget)sw.getWidget();
+        q = (QueryTable)sw.getQueryWidget().getWidget();
+        
+        //
+        // status dropdown
+        //
+        ((TableAutoDropdown)d.controller.editors[2]).setModel(statusDropdown);
+        ((TableAutoDropdown)q.editors[2]).setModel(statusDropdown);
+        
+        //
+        // ship from dropdown
+        //
+        ((TableAutoDropdown)d.controller.editors[4]).setModel(shipFromDropdown);
+        ((TableAutoDropdown)q.editors[4]).setModel(shipFromDropdown);
+        
         super.afterDraw(success);
         
     }
     
-    public void add() {
-        fillItemsController.setAutoAdd(true);
-        super.add();
-    }
-    
-    public void update() {
-        fillItemsController.setAutoAdd(true);
-        super.update();
-    }
-    
-    public void abort() {
-        fillItemsController.setAutoAdd(false);
-        super.abort();  
-    }
-
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
-        public void onSuccess(Object result){
-            fillItemsController.setAutoAdd(false);
-            
-            //we need to do this reset to get rid of the last row
-            fillItemsController.reset();
-        }
+    public void query() {
+        super.query();
         
-        public void onFailure(Throwable caught){
-            
-        }
-  };
-  
-  protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
-      public void onSuccess(Object result){
-          fillItemsController.setAutoAdd(false);
-          
-          //we need to do this reset to get rid of the last row
-          fillItemsController.reset();
-      }
-      
-      public void onFailure(Throwable caught){
-          
-      }
-  };
+        removeRowButton.changeState(AppButton.ButtonState.DISABLED);
+    }
+    
+    public void fetch() {
+//      we dont need to call the super because we arent using the datamodel for lookups
+        //we are using it to fill the table
+        //super.fetch();
+        
+        DataModel model = keyList.getList();
+        
+        fillItemsController.model.reset();
+        fillItemsController.reset();
+        
+        loadFillItemsTableFromModel(model);
+               
+        if(model.size() > 0)
+            changeState(State.DISPLAY);
+    }
    
     //
     //start table manager methods
@@ -154,5 +203,24 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         
         return empty;
     }
+    
+    private void onRemoveRowButtonClick() {
+        int selectedRow = fillItemsController.selected;
+        if (selectedRow > -1 && fillItemsController.model.numRows() > 0) {
+            TableRow row = fillItemsController.model.getRow(selectedRow);
+            fillItemsController.model.hideRow(row);
 
+            // reset the model
+            fillItemsController.reset();
+            // need to set the deleted flag to "Y" also
+            StringField deleteFlag = new StringField();
+            deleteFlag.setValue("Y");
+
+            row.addHidden("deleteFlag", deleteFlag);
+        }
+    }
+
+    private void loadFillItemsTableFromModel(DataModel model){
+        
+    }
 }

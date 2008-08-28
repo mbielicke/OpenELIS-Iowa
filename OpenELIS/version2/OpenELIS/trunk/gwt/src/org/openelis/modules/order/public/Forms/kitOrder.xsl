@@ -418,6 +418,7 @@
       <dropdown key="{orgMeta:getName($organization)}" required="true"/>
       <dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
       <dropdown key="{orderMeta:getDescription($order)}" required="false"/>
+      <number key="originalStatus" type="integer" reset="false"/>
       
       <rpc key="shippingNote">
     	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>

@@ -284,7 +284,7 @@
 								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
-										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"QC")'/></headers>
+										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
 										<widths>80,155,95,40,55,130</widths>
 										<editors>
 											<label/>
@@ -307,9 +307,12 @@
 										<colAligns>left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" maxRows="10" title="" showError="false">
-										<headers>Date Rec,Item,UPC,Qty,Cost,QC</headers>
-										<widths>80,173,95,40,55,130</widths>
+									<queryTable width="auto" maxRows="10" title="" showError="false" showScroll="true">
+										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
+										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
+										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/>
+										</headers>
+										<widths>80,155,95,40,55,130</widths>
 										<editors>
 											<label/>
 											<label/>
@@ -324,7 +327,7 @@
 										<xsl:value-of select='invReceiptMeta:getUpc($receipt)'/>,
 										<xsl:value-of select='invReceiptMeta:getQuantityReceived($receipt)'/>,
 										<xsl:value-of select='invReceiptMeta:getUnitCost($receipt)'/>,
-										<xsl:value-of select='invReceiptMeta:getQcReference($receipt)'/>
+										<xsl:value-of select='invReceiptMeta:getExternalReference($receipt)'/>
 										</fields>
 									</queryTable>
 									</query>
@@ -419,7 +422,7 @@
 	  <queryString key="{invReceiptMeta:getUpc($receipt)}" required="false"/>
 	  <queryNumber key="{invReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
 	  <queryNumber key="{invReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
-	  <queryString key="{invReceiptMeta:getQcReference($receipt)}" required="false"/>
+	  <queryString key="{invReceiptMeta:getExternalReference($receipt)}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>
