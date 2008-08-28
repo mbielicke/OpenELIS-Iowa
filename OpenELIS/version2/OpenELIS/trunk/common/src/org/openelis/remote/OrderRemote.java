@@ -71,4 +71,7 @@ public interface OrderRemote {
      
      //method to validate the fields before the backend updates it in the database
      public List validateForAdd(OrderDO orderDO, String orderType, List items);
+     
+     //method to validate the quantities on hand
+     public List validateQuantities(List items);
 }
