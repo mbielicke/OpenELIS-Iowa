@@ -55,7 +55,8 @@ import org.openelis.utils.Auditable;
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
     @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, o.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from TransReceiptOrder i left join i.inventoryReceipt r left join i.orderItem o where o.orderId = :id"),
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from TransReceiptOrder i left join i.inventoryReceipt r left join i.orderItem o where o.orderId = :id " +
+                            " order by r.receivedDate desc "),
     @NamedQuery(name = "Order.descriptionAutoLookup", query = "select distinct new org.openelis.domain.IdNameDO(o.description) from Order o where o.description like :desc")})
             
 @Entity

@@ -169,7 +169,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_STORE_META.getId());
         qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
         
-        qb.setOrderBy(InventoryReceiptMap.getReceivedDate()+", "+InventoryReceiptMap.ORDER_ITEM_META.ORDER_META.getId());
+        qb.setOrderBy(InventoryReceiptMap.getReceivedDate()+" DESC, "+InventoryReceiptMap.ORGANIZATION_META.getName());
         
         sb.append(qb.getEJBQL());
 
