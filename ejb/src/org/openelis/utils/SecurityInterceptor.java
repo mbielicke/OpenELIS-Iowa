@@ -4,6 +4,7 @@ import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.SecuritySection.SectionFlags;
 import org.openelis.persistence.CachingManager;
+import org.openelis.persistence.JBossCachingManager;
 
 public class SecurityInterceptor {
         
@@ -73,7 +74,7 @@ public class SecurityInterceptor {
     */
     
     public static void applySecurity(String user, String module, ModuleFlags flag) throws Exception {
-        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        SecurityUtil security = (SecurityUtil)JBossCachingManager.getElement("openelis","security", user+"util"); 
         try {
             if(!security.has(module, flag)){
                 throw new Exception("You do not have suffiecient permissions");
@@ -85,7 +86,7 @@ public class SecurityInterceptor {
     }
     
     public static void applySecurity(String user, String module, SectionFlags flag) throws Exception {
-        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        SecurityUtil security = (SecurityUtil)JBossCachingManager.getElement("openelis","security", user+"util"); 
         try {
             if(!security.has(module, flag)){
                 throw new Exception("You do not have sufficeient permissions");
@@ -97,7 +98,7 @@ public class SecurityInterceptor {
     }
     
     public static void applySecurity(String user, SecurityModuleElement[] elems, boolean hasAll) throws Exception{
-        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        SecurityUtil security = (SecurityUtil)JBossCachingManager.getElement("openelis","security", user+"util"); 
         try {
             for(int i = 0; i < elems.length; i++) {
                 if(!security.has(elems[i].name, elems[i].flag) && hasAll){
@@ -113,7 +114,7 @@ public class SecurityInterceptor {
     }
     
     public static void applySecurity(String user, SecuritySectionElement[] elems, boolean hasAll) throws Exception{
-        SecurityUtil security = (SecurityUtil)CachingManager.getElement("security", user+"util"); 
+        SecurityUtil security = (SecurityUtil)JBossCachingManager.getElement("openelis","security", user+"util"); 
         try {
             for(int i = 0; i < elems.length; i++) {
                 if(!security.has(elems[i].name, elems[i].flag) && hasAll){
