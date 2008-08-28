@@ -232,6 +232,8 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         List orderItems = new ArrayList();
         NoteDO customerNote = new NoteDO();
         NoteDO shippingNote = new NoteDO();
+        Integer originalStatus = (Integer)rpcSend.getFieldValue("originalStatus");
+        boolean qtyErrors = false;
         
         String orderType = (String)rpcSend.getFieldValue("orderType");
 
@@ -262,9 +264,29 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         TableModel itemsTable = (TableModel)((FormRPC)rpcSend.getField("items")).getField("itemsTable").getValue();
         orderItems = getOrderItemsListFromRPC(itemsTable, orderDO.getId(), orderType);     
         
+        //if the status changed we need to verify we have enough quantity to fill the order
+        if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && !originalStatus.equals(orderDO.getStatusId())){
+            CategoryRemote catRemote = (CategoryRemote) EJBFactory.lookup("openelis/CategoryBean/remote");
+            try {
+                Integer completedStatusId = catRemote.getEntryIdForSystemName("order_status_completed");
+                
+                if(orderDO.getStatusId().equals(completedStatusId)){
+                    //validate the quantities
+                    List exceptionList = remote.validateQuantities(orderItems);
+                    
+                    if(exceptionList.size() > 0){
+                        setRpcErrors(exceptionList, itemsTable, rpcSend);
+                        qtyErrors = true;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
         //validate the fields on the backend
         List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems, ((FormRPC)rpcSend.getField("items")).load);
-        if(exceptionList.size() > 0){
+        if(exceptionList.size() > 0 || qtyErrors){
             setRpcErrors(exceptionList, itemsTable, rpcSend);
             
             return rpcSend;
@@ -300,11 +322,37 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         String orderType = (String)rpcReturn.getFieldValue("orderType");
+        StringObject orderTypeObj = new StringObject(orderType);
         
         OrderDO orderDO = remote.getOrderAndUnlock((Integer)key.getKey().getValue(), orderType, SessionManager.getSession().getId());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, orderDO);
+        
+        if(((FormRPC)rpcReturn.getField("items")).load){
+            FormRPC itemsRpc = (FormRPC)rpcReturn.getField("items");
+            loadItems(key, new BooleanObject(false), orderTypeObj, itemsRpc);
+        }
+        
+        if(rpcReturn.getField("receipts") != null && ((FormRPC)rpcReturn.getField("receipts")).load){
+            FormRPC receiptsRpc = (FormRPC)rpcReturn.getField("receipts");
+            loadReceipts(key, receiptsRpc);
+        }
+        
+        if(rpcReturn.getField("shippingNote") != null && ((FormRPC)rpcReturn.getField("shippingNote")).load){
+            FormRPC shippingNoteRpc = (FormRPC)rpcReturn.getField("shippingNote");
+            loadOrderShippingNotes(key, shippingNoteRpc);
+        }
+        
+        if(rpcReturn.getField("reportToBillTo") != null && ((FormRPC)rpcReturn.getField("reportToBillTo")).load){
+            FormRPC reportToBillToRpc = (FormRPC)rpcReturn.getField("reportToBillTo");
+            loadReportToBillTo(key, reportToBillToRpc);
+        }
+        
+        if(rpcReturn.getField("custNote") != null && ((FormRPC)rpcReturn.getField("custNote")).load){
+            FormRPC custNoteRpc = (FormRPC)rpcReturn.getField("custNote");
+            loadCustomerNotes(key, custNoteRpc);
+        }
         
         return rpcReturn;  
     }
@@ -404,7 +452,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         if(!loaded){        
             DataModel statusDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderStatusDropdown");
             DataModel storeDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderStoreDropdown");
-            DataModel costCenterDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderCostCenterDropdown");
+            DataModel costCenterDropdownField = (DataModel)CachingManager.getElement("InitialData", "costCenterDropdown");
             DataModel shipFromDropdownField = (DataModel)CachingManager.getElement("InitialData", "shipFromDropdown");
             
             //status dropdown
@@ -420,7 +468,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             //cost center type dropdown
             if(costCenterDropdownField == null){
                 costCenterDropdownField = getInitialModel("costCenter");
-                CachingManager.putElement("InitialData", "orderCostCenterDropdown", costCenterDropdownField);
+                CachingManager.putElement("InitialData", "costCenterDropdown", costCenterDropdownField);
             }
             if(OrderRemote.KITS.equals(action)){
                 //ship from dropdown
@@ -948,6 +996,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             //contact data
             NumberField itemId = (NumberField)row.getHidden("itemId");
             NumberField locationId = (NumberField)row.getHidden("locationId");
+            NumberField qtyOnHand = (NumberField)row.getHidden("qtyOnHand");
             NumberField inventoryTransactionId = (NumberField)row.getHidden("transactionId");
             StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
             if(deleteFlag == null){
@@ -973,6 +1022,9 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                 
                 if(locationId != null)
                     orderItemDO.setLocationId((Integer)locationId.getValue());
+                
+                if(qtyOnHand != null)
+                    orderItemDO.setQuantityOnHand((Integer)qtyOnHand.getValue());
                 
                 if(inventoryTransactionId != null)
                     orderItemDO.setTransactionId((Integer)inventoryTransactionId.getValue());
@@ -1134,6 +1186,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                    TableRow row = orderItemsModel.createRow();
                    NumberField id = new NumberField(orderItemRow.getId());
                    NumberField locationId = new NumberField(orderItemRow.getLocationId());
+                   NumberField qtyOnHand = new NumberField(orderItemRow.getQuantityOnHand());
                    NumberField inventoryTransactionId = new NumberField(orderItemRow.getTransactionId());
                    
                    id.setValue(orderItemRow.getId());
@@ -1145,6 +1198,9 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                     
                     if(orderItemRow.getLocationId() != null)
                         row.addHidden("locationId", locationId);
+                    
+                    if(orderItemRow.getQuantityOnHand() != null)
+                        row.addHidden("qtyOnHand", qtyOnHand);
                     
                     if(orderItemRow.getTransactionId() != null)
                         row.addHidden("transactionId", inventoryTransactionId);
@@ -1198,7 +1254,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                     row.getColumn(2).setValue(receiptRow.getUpc());
                     row.getColumn(3).setValue(receiptRow.getQuantityReceived());
                     row.getColumn(4).setValue(receiptRow.getUnitCost());
-                    row.getColumn(5).setValue(receiptRow.getQcReference());
+                    row.getColumn(5).setValue(receiptRow.getExternalReference());
                     
                     receiptsModel.addRow(row);
            } 

@@ -67,7 +67,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
 
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
-    private static final int leftTableRowsPerPage = 1000;
+    private static final int leftTableRowsPerPage = 250;
     
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     

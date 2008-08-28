@@ -261,7 +261,9 @@
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
+      
       <string key="orderType" reset="false"/>
+      <number key="originalStatus" type="integer" reset="false"/>
       
       <rpc key="shippingNote">
     	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>

@@ -700,7 +700,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMaxLevel(), inventoryItemDO.getQuantityMaxLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMinLevel(), inventoryItemDO.getQuantityMinLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityToReorder(), inventoryItemDO.getQuantityToReorder());
-        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), inventoryItemDO.getStore());    }
+        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), inventoryItemDO.getStore());    
+    
+    }
     
     private InventoryItemDO getInventoryItemDOFromRPC(FormRPC rpcSend){
         InventoryItemDO inventoryItemDO = new InventoryItemDO();

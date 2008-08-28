@@ -168,7 +168,7 @@
 								<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 								<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
 							</fields>
-							<sorts>false,false,false,false,false,false,false,false,false,false</sorts>
+							<sorts>false,false,true,true,true,false,false,false,true,true</sorts>
 							<filters>false,false,false,false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left,right,left,left</colAligns>
 						</table>

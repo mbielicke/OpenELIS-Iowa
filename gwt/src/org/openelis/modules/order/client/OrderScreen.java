@@ -295,6 +295,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     };
     */
     
+    public void update() {
+        if(rpc.getField("originalStatus") != null)
+            rpc.setFieldValue("originalStatus", (Integer)((AutoCompleteDropdown)status.getWidget()).getSelectedValue());
+        super.update();
+        
+    }
+    
     public void query() {
         super.query();
         
@@ -456,6 +463,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                     StringField storeLabel = new StringField();
                     StringField locationLabel = new StringField();
                     NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
+                    NumberField qtyOnHand = new NumberField(NumberObject.Type.INTEGER);
                     storeLabel.setValue((String)((StringObject)selectedRow.getObject(1)).getValue());
 
                     tableRow.setColumn(2, storeLabel);
@@ -470,7 +478,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                         ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
                         
                         locationId.setValue((Integer)((NumberObject)selectedRow.getObject(6)).getValue());
+                        qtyOnHand.setValue((Integer)((NumberObject)selectedRow.getObject(5)).getValue());
                         tableRow.addHidden("locationId", locationId);
+                        tableRow.addHidden("qtyOnHand", qtyOnHand);
                     }
 
                     startedLoadingTable = false;

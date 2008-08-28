@@ -183,7 +183,12 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         
         //fill the model with the query results
         int i=0;
+        
+        if(model == null)
+            model = new DataModel();
+        else
         model.clear();
+        
         while(i < inventoryAdjustmentNames.size() && i < leftTableRowsPerPage) {
             IdNameDateDO resultDO = (IdNameDateDO)inventoryAdjustmentNames.get(i);
  
