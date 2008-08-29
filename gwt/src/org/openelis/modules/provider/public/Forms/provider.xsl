@@ -143,8 +143,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
    </TablePanel>
    
     <TabPanel height= "200px" key= "provTabPanel"  halign="center" >
-     <tab key= "tab1" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel spacing= "0" padding="0">
+     <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
+      <VerticalPanel spacing= "0" padding="0" overflow="hidden">
        <widget valign="top">
         <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false" showScroll="true">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -241,7 +241,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 	</VerticalPanel> 									
   </tab>
   
-  <tab key="noteTab" text="{resource:getString($constants,'note')}">
+  <tab key="notesTab" text="{resource:getString($constants,'note')}">
 						<VerticalPanel key="secMod3" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 										<row>
@@ -294,10 +294,16 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <string key="{meta:getFirstName($pro)}"  required="false"/> 
   <string key="{meta:getNpi($pro)}" required="false"/>
   <string key="{meta:getMiddleName($pro)}"  required="false"/>	
-  <table key="providerAddressTable"/>						      		       
-  <string key="{note:getSubject($note)}" required="false"/>
-  <string key="{note:getText($note)}" required="false"/>
   <dropdown key="{meta:getTypeId($pro)}" type="integer" required = "true"/>
+   <rpc key = "addresses">
+    <table key="providerAddressTable"/>						      		       
+   </rpc>
+   <rpc key = "notes"> 
+    <string key="{note:getSubject($note)}" required="false"/>
+    <string key="{note:getText($note)}" required="false"/>
+    <string key="notesPanel"/>
+   </rpc>
+   <string key="provTabPanel" reset="false">addressesTab</string>
 </rpc>
 					   
 <rpc key= "query">     
@@ -310,18 +316,18 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="{note:getText($note)}" /> 
   <dropdown key="{meta:getTypeId($pro)}" type="integer" required = "false"/>                            
   <queryString key="{location:getLocation($loc)}" required="false"/>
-  	  <queryString key="{location:getExternalId($loc)}" required="false"/>
-	  <queryString key="{addr:getMultipleUnit($locAddr)}" required="false"/>
-	  <queryString key="{addr:getStreetAddress($locAddr)}" required="false"/>
-	  <queryString key="{addr:getCity($locAddr)}" required="false"/>
-	  <dropdown key="{addr:getState($locAddr)}" required="false"/>
-	  <queryString key="{addr:getZipCode($locAddr)}" required="false"/>
-	  <queryString key="{addr:getWorkPhone($locAddr)}" required="false"/>
-	  <queryString key="{addr:getHomePhone($locAddr)}" required="false"/>
-	  <queryString key="{addr:getCellPhone($locAddr)}" required="false"/>
-	  <queryString key="{addr:getFaxPhone($locAddr)}" required="false"/>
-	  <queryString key="{addr:getEmail($locAddr)}" required="false"/>
-	  <dropdown key="{addr:getCountry($locAddr)}" required="false"/>
+  <queryString key="{location:getExternalId($loc)}" required="false"/>
+  <queryString key="{addr:getMultipleUnit($locAddr)}" required="false"/>
+  <queryString key="{addr:getStreetAddress($locAddr)}" required="false"/>
+  <queryString key="{addr:getCity($locAddr)}" required="false"/>
+  <dropdown key="{addr:getState($locAddr)}" required="false"/>
+  <queryString key="{addr:getZipCode($locAddr)}" required="false"/>
+  <queryString key="{addr:getWorkPhone($locAddr)}" required="false"/>
+  <queryString key="{addr:getHomePhone($locAddr)}" required="false"/>
+  <queryString key="{addr:getCellPhone($locAddr)}" required="false"/>
+  <queryString key="{addr:getFaxPhone($locAddr)}" required="false"/>
+  <queryString key="{addr:getEmail($locAddr)}" required="false"/>
+  <dropdown key="{addr:getCountry($locAddr)}" required="false"/>
 </rpc>
 
 <rpc key="queryByLetter">

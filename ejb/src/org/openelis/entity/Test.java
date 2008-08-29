@@ -27,6 +27,7 @@ import org.openelis.entity.Method;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +38,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,7 +47,12 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailerId = :id"),
     @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
-    @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.methodId  = m.id order by t.name, m.name")})
+    @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.methodId  = m.id order by t.name, m.name"),
+    @NamedQuery(name = "Test.TestIdNameMethodId", query = "select distinct new org.openelis.domain.TestIdNameMethodIdDO(t.id, t.name, t.methodId) " + "  from Test t where t.id = :id"),
+    @NamedQuery(name = "Test.TestDetails", query = "select distinct new org.openelis.domain.TestDetailsDO(t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
+                                                  "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.sectionId,t.scriptletId," +
+                                                        "t.testFormatId,t.revisionMethodId) " + "  from Test t where t.id = :id"),
+    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t order by t.name")})
 
 @Entity
 @Table(name="test")
@@ -121,6 +128,14 @@ public class Test implements Auditable, Cloneable {
   @JoinColumn(name = "method_id",insertable = false, updatable = false)
   private Method method;
   
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestPrep> testPrep;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestTypeOfSample> testTypeOfSample;  
+  
   @Transient
   private Test original;
 
@@ -185,8 +200,8 @@ public class Test implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    if((activeBegin == null && this.activeBegin != null) || 
-       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+    if((active_begin == null && this.activeBegin != null) || (active_begin != null && this.activeBegin == null) ||
+       (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeBegin))))
       this.activeBegin = active_begin.getDate();
   }
 
@@ -196,8 +211,8 @@ public class Test implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    if((activeEnd == null && this.activeEnd != null) || 
-       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+    if((active_end == null && this.activeEnd != null) || (active_end != null && this.activeEnd == null) ||
+       (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeEnd))))
       this.activeEnd = active_end.getDate();
   }
 
@@ -390,5 +405,18 @@ public class Test implements Auditable, Cloneable {
   public void setMethod(Method method) {
       this.method = method;
   }
+public Collection<TestPrep> getTestPrep() {
+    return testPrep;
+}
+public void setTestPrep(Collection<TestPrep> testPrep) {
+    this.testPrep = testPrep;
+}
+public Collection<TestTypeOfSample> getTestTypeOfSample() {
+    return testTypeOfSample;
+}
+public void setTestTypeOfSample(Collection<TestTypeOfSample> testTypeOfSample) {
+    this.testTypeOfSample = testTypeOfSample;
+}
+
   
 }   

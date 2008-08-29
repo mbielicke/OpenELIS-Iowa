@@ -23,22 +23,15 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoDropdown;
@@ -64,25 +57,17 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 public class ProviderScreen extends OpenELISScreenForm implements ClickListener, TabListener{
 
-    
-    private boolean loadNotes = true; // tells whether notes tab is to be filled with data
-    private boolean loadAddresses = true; // tells whether addresses tab is to be filled with data
-    private boolean clearNotes = false; // tells whether notes panel is to be cleared 
-    private boolean clearAddresses = false; // tells whether addresses tab is to be cleared
+      
     
     private ScreenVertical svp = null;
     private AppButton removeContactButton, standardNoteButton;
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
-    private TextBox subjectBox = null;
     private ScreenTextArea noteArea = null;
-    private EditTable provAddController = null;
-    private TabPanel noteTab = null;    
+    private EditTable provAddController = null;    
     private ScreenAutoDropdown displayType = null;
     private KeyListManager keyList = new KeyListManager();
     
-    private StringField note = null; 
-    private StringField subject = null;
     
     private static boolean loaded = false;
 
@@ -138,11 +123,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         provId = (ScreenTextBox)widgets.get(ProvMeta.getId());
         lastName = (TextBox)getWidget(ProvMeta.getLastName());
-        subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
+        //subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
         noteArea = (ScreenTextArea)widgets.get(ProvMeta.getNote().getText());
         svp = (ScreenVertical) widgets.get("notesPanel");
         
-        noteTab = (TabPanel)getWidget("provTabPanel");  
+        //noteTab = (TabPanel)getWidget("provTabPanel");  
         
         displayType = (ScreenAutoDropdown)widgets.get(ProvMeta.getTypeId());
         
@@ -181,25 +166,12 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        queryContactCountry.setModel(countryDropDown);              
         
 
-       fetchChain.add(afterFetch);
+  
        updateChain.add(afterUpdate);
-       commitUpdateChain.add(afterCommitUpdate);
-       commitAddChain.add(afterCommitAdd);
        
        super.afterDraw(success);
     }
     
-    protected AsyncCallback afterFetch = new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-        
-        }
-        public void onSuccess(Object result) {
-            loadAddresses = true;
-            loadNotes = true;                                
-            loadTabs();        
-        }
-           
-    };
        
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {
@@ -210,62 +182,18 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
             standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
             
             provId.enable(false);
+                           
             
-            // this code is for the event of the update mode being enabled 
-            loadAddresses = true;
-            loadNotes = true;                
-            
-            loadTabs(); 
             //      set focus to the last name field
             lastName.setFocus(true);
         }
            
     };
        
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-        }
-        public void onSuccess(Object result) {
-           loadNotes = true;
-           clearNotes = true;                
-           loadTabs();
-           clearNotesFields(); 
-        }
-    };
        
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-        }
-        public void onSuccess(Object result) {
-            loadNotes = true;
-            clearNotes = true;    
-            
-            loadAddresses = true;
-            clearAddresses = false;
-            
-            Integer provId = (Integer)rpc.getFieldValue(ProvMeta.getId());
-            NumberObject provIdObj = new NumberObject(provId);
-            
-//          done because key is set to null in AppScreenForm for the add operation 
-            if(key ==null){  
-                key = new DataSet();
-                key.setKey(provIdObj);
-                
-            }else{
-                key.setKey(provIdObj);
-                
-            }
-            
-            loadTabs();
-                    
-            clearNotesFields();
-            
-        }
-           
-    };
 
     public void query(){
-    	clearNotes();   	       
+    	//clearNotes();   	       
        super.query();
     
         //    set focus to the last name field
@@ -299,11 +227,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     }
 
     public void update() {                        
-        note = (StringField)rpc.getField(ProvMeta.getNote().getText());             
-        note.setValue("");
-                 
-        subject = (StringField)rpc.getField(ProvMeta.getNote().getSubject());
-        subject.setValue("");
         
         
         //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
@@ -317,21 +240,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
       provAddController.setAutoAdd(false);      
       
-      if(state == FormInt.State.ADD || state == FormInt.State.QUERY){
-          loadAddresses = false;
-          clearAddresses = true;
-          
-          loadNotes = false;
-          clearNotes = true;
-      }else{
-          loadAddresses = true;
-          loadNotes = true;
-      }
       
       //the super needs to ge before the load tabs method or the table wont load.
       super.abort();
       
-      loadTabs();                                
+                                
     }
     
     public Request commitQuery(FormRPC rpcQuery){
@@ -354,22 +267,13 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
     }
     
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int index){
-       // this code is for the generic situation of a tab being clicked  
-                
-        if(index ==0 && loadAddresses){
-          if(clearAddresses){
-            clearAddresses();
-           } 
-          fillAddressModel();
-          loadAddresses = false;
-        }
-        else if(index ==1 && loadNotes){
-           if(clearNotes){ 
-            clearNotes();
-           } 
-           fillNotesModel();
-           loadNotes = false;      
+    public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
+        if(state != FormInt.State.QUERY){
+            if (index == 0 && !((FormRPC)rpc.getField("addresses")).load) {
+                fillAddressModel();
+            } else if (index == 1 && !((FormRPC)rpc.getField("notes")).load) {
+                fillNotesModel();
+            }
         }
         return true;
     }
@@ -390,151 +294,48 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
    private void fillNotesModel(){  
        
-       Integer providerId = null;
-       boolean getModel = false;  
-     
-     // access the database only if id is not null 
-      if(key!=null){ 
-       if(key.getKey()!=null){        
-         getModel = true;
-         providerId = (Integer)key.getKey().getValue();          
-        }else{
-            clearNotes = false;
-        }
-      }else{
-          clearNotes = false;
-      } 
-        
-       if(getModel){ 
-         window.setStatus("","spinnerIcon");
-         
-         NumberObject provId = new NumberObject(providerId);
-         
-        // prepare the argument list for the getObject function
-         DataObject[] args = new DataObject[] {provId}; 
-         
-        screenService.getObject("getNotesModel", args, new AsyncCallback(){
-           public void onSuccess(Object result){  
+       if(key == null)
+           return;
+       
+       window.setStatus("","spinnerIcon");
+       
+       screenService.getObject("loadNotes", new DataObject[] {key,rpc.getField("notes")}, new AsyncCallback(){
+           public void onSuccess(Object result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
-          	   String xmlString = (String) ((StringObject)result).getValue();               
-               svp.load(xmlString);
-               
-               if(((VerticalPanel)svp.getPanel()).getWidgetCount() > 0){
-                   clearNotes = true;
-                }else {
-                    clearNotes = false;
-                }
-               
+               load((FormRPC)result);
+               rpc.setField("notes",(FormRPC)result);
                window.setStatus("","");
            }
-           
+                  
            public void onFailure(Throwable caught){
                Window.alert(caught.getMessage());
+               window.setStatus("","");
            }
-       }); 
-     }       
+       });       
    }
    
    private void fillAddressModel(){
-    try{          
-     Integer providerId = null;
-     boolean getModel = false;             
-          
-     // access the database only if id is not null 
-    if(key!=null){
-      if(key.getKey()!=null){        
-        getModel = true;
-        providerId = (Integer)key.getKey().getValue();         
-      }else{
-        clearAddresses = false;  
-      }   
-     }else {
-        clearAddresses = false;
-     } 
-     
-      if(getModel){
-          window.setStatus("","spinnerIcon");
-          
-          NumberObject provId = new NumberObject(providerId);
-          TableField tf = new TableField();
-          tf.setValue(provAddController.model);
-          
-         //prepare the argument list for the getObject function
-          DataObject[] args = new DataObject[] {provId, tf};
-          
-       screenService.getObject("getAddressModel", args , new AsyncCallback(){
-           public void onSuccess(Object result){
-               // get the table model and load it in the table 
-               rpc.setFieldValue("providerAddressTable",(TableModel)((TableField)result).getValue());
-               
-               provAddController.setModel((TableModel)((TableField)result).getValue());                             
-                
-               if(provAddController.model.numRows()>0){      
-                   clearAddresses = true;
-               }else{
-                   clearAddresses = false;
-               }        
-               
+       if(key == null)
+           return;
+       
+       window.setStatus("","spinnerIcon");
+       
+       screenService.getObject("loadAddresses", new DataObject[] {key,rpc.getField("addresses")}, new AsyncCallback() {
+           public void onSuccess(Object result) {
+              
+               load((FormRPC)result);
+               rpc.setField("addresses", (FormRPC)result);
                window.setStatus("","");
+
            }
-          
-           public void onFailure(Throwable caught){
+           public void onFailure(Throwable caught) {
                Window.alert(caught.getMessage());
+               window.setStatus("","");
            }
        });
       } 
-    }catch(Exception ex){
-        Window.alert(ex.getMessage());
-        ex.printStackTrace();
-    } 
-   }
-   
-   private void clearNotesFields(){
-    //the note subject and body fields need to be refeshed after every successful commit 
-                  
-      subjectBox.setText("");
-      
-      ((TextArea)noteArea.getWidget()).setText("");           
-      rpc.setFieldValue(ProvMeta.getNote().getSubject(), null);
-      rpc.setFieldValue(ProvMeta.getNote().getText(), null);  
-   }
-   
-   private void loadTabs(){        
-       int selectedTab = noteTab.getTabBar().getSelectedTab();     
-                         
-       if(selectedTab == 0 && loadAddresses){ 
-          if(clearAddresses){ 
-           clearAddresses(); 
-          } 
-         //load the table  
-          fillAddressModel();
-         // don't load it again unless the mode changes or a new fetch is done  
-          loadAddresses = false;
-       }
-      
-       else if(selectedTab == 1 && loadNotes){
-          if(clearNotes){ 
-           clearNotes(); 
-          } 
-         //load the notes model          
-          fillNotesModel();
-       // don't load it again unless the mode changes or a new fetch is done  
-          loadNotes = false;
-
-       }
-   }     
-   
-   private void clearAddresses(){       
-                 
-       provAddController.model.reset(); 
-       provAddController.setModel(provAddController.model);
-       rpc.setFieldValue("providerAddressTable",provAddController.model);
-   }
-   
-   private void clearNotes(){        
      
-     svp.clear();          
-   }
+      
    
    private void onStandardNoteButtonClick(){
 	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
