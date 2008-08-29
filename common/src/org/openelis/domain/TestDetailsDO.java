@@ -1,7 +1,25 @@
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import org.openelis.util.Datetime;
+
 
 
 public class TestDetailsDO implements Serializable{
@@ -17,9 +35,9 @@ public class TestDetailsDO implements Serializable{
     
     protected String isActive;             
 
-    protected Date activeBegin;             
+    protected Datetime activeBegin;             
 
-    protected Date activeEnd;             
+    protected Datetime activeEnd;             
 
     protected String isReportable;             
 
@@ -36,7 +54,7 @@ public class TestDetailsDO implements Serializable{
     protected Integer labelId;             
 
     protected Integer labelQty;             
-
+    
     protected Integer testTrailerId;             
 
     protected Integer sectionId;             
@@ -63,8 +81,8 @@ public class TestDetailsDO implements Serializable{
         this.description = description;
         this.reportingDescription = reportingDescription;
         this.isActive = isActive;
-        this.activeBegin = activeBegin;
-        this.activeEnd = activeEnd;
+        setActiveBegin(activeBegin);
+        setActiveEnd(activeEnd);
         this.isReportable = isReportable;
         this.timeTransit = timeTransit;
         this.timeHolding = timeHolding;
@@ -76,25 +94,26 @@ public class TestDetailsDO implements Serializable{
         this.testTrailerId = testTrailerId;
         this.sectionId = sectionId;
         this.scriptletId = scriptletId;
-        this.testFormatId = testFormatId;
+        this.testFormatId = testFormatId;        
         this.revisionMethodId = revisionMethodId;
         
     }
     
-    public Date getActiveBegin() {
+    public Datetime getActiveBegin() {
         return activeBegin;
     }
 
     public void setActiveBegin(Date activeBegin) {
-        this.activeBegin = activeBegin;
+        //this.activeBegin = activeBegin;
+        this.activeBegin = new Datetime(Datetime.YEAR,Datetime.DAY,activeBegin);
     }
 
-    public Date getActiveEnd() {
+    public Datetime getActiveEnd() {
         return activeEnd;
     }
 
     public void setActiveEnd(Date activeEnd) {
-        this.activeEnd = activeEnd;
+        this.activeEnd = new Datetime(Datetime.YEAR,Datetime.DAY,activeEnd);
     }
 
     public String getDescription() {
@@ -224,5 +243,6 @@ public class TestDetailsDO implements Serializable{
     public void setTimeTransit(Integer timeTransit) {
         this.timeTransit = timeTransit;
     }
+
 
 }
