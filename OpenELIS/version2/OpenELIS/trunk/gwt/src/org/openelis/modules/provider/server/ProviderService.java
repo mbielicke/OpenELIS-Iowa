@@ -29,7 +29,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -68,7 +67,6 @@ public class ProviderService implements AppScreenFormServiceInt{
     private static final int leftTableRowsPerPage = 19;
     
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
-           
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {        
@@ -151,13 +149,14 @@ public class ProviderService implements AppScreenFormServiceInt{
     
         NoteDO providerNote = new NoteDO();       
         
-        TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
+        TableModel addressTable = (TableModel)((FormRPC)rpcSend.getField("addresses")).getField("providerAddressTable").getValue();;
         Integer providerId = providerDO.getId();
                 
         ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
                                         
-        providerNote.setSubject((String)rpcSend.getFieldValue(ProvMeta.getNote().getSubject()));
-        providerNote.setText((String)rpcSend.getFieldValue(ProvMeta.getNote().getText()));
+//      build the noteDo from the form
+        providerNote.setSubject((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(ProvMeta.getNote().getSubject()));
+        providerNote.setText((String)((FormRPC)rpcSend.getField("notes")).getFieldValue(ProvMeta.getNote().getText()));
         providerNote.setIsExternal("Y");
         
         List<Exception> exceptionList = remote.validateForAdd(providerDO, provAddDOList);
@@ -181,7 +180,23 @@ public class ProviderService implements AppScreenFormServiceInt{
          
         providerDO.setId(providerId);
         
-        setFieldsInRPC(rpcReturn, providerDO);        
+        setFieldsInRPC(rpcReturn, providerDO); 
+        
+        String tab = (String)rpcReturn.getFieldValue("provTabPanel");
+        if(tab.equals("notesTab")){
+            DataSet key = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, providerDO.getId());
+            key.setKey(id);
+            
+            loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+        }
+        
+        //we need to set the notes load param to true because update doesnt call resetRPC
+        ((FormRPC)rpcReturn.getField("notes")).load = false;
+        
+        //we need to clear out the note subject and the note text fields after a commit
+        ((FormRPC)rpcReturn.getField("notes")).setFieldValue(ProvMeta.getNote().getSubject(), null);
+        ((FormRPC)rpcReturn.getField("notes")).setFieldValue(ProvMeta.getNote().getText(), null);
         
         return rpcReturn;
     }
@@ -190,15 +205,19 @@ public class ProviderService implements AppScreenFormServiceInt{
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpcSend);
     
+        ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
         NoteDO providerNote = new NoteDO();       
         
-        TableModel addressTable = (TableModel)rpcSend.getField("providerAddressTable").getValue();
-                
-        ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerDO.getId());
-                                        
-        providerNote.setSubject((String)rpcSend.getFieldValue(ProvMeta.getNote().getSubject()));
-        providerNote.setText((String)rpcSend.getFieldValue(ProvMeta.getNote().getText()));
-        providerNote.setIsExternal("Y");
+        TableModel addressTable = (TableModel)((FormRPC)rpcSend.getField("addresses")).getField("providerAddressTable").getValue();;
+        if(((FormRPC)rpcSend.getField("addresses")).load)        
+         provAddDOList = getProviderAddressListFromRPC(addressTable,providerDO.getId());
+         
+        if(((FormRPC)rpcSend.getField("notes")).load){
+         FormRPC notesRPC = (FormRPC)rpcSend.getField("notes");  
+         providerNote.setSubject((String)notesRPC.getFieldValue(ProvMeta.getNote().getSubject()));
+         providerNote.setText((String)notesRPC.getFieldValue(ProvMeta.getNote().getText()));
+         providerNote.setIsExternal("Y");
+        }
         
         List<Exception> exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
         if(exceptionList.size() > 0){
@@ -219,12 +238,30 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             setRpcErrors(exceptionList, addressTable, rpcSend);
             
+//          we need to refresh the notes tab if it is showing            
+            
             return rpcSend;
         }
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, providerDO);
-                              
+         
+        String tab = (String)rpcReturn.getFieldValue("provTabPanel");
+        if(tab.equals("notesTab")){
+            DataSet key = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, providerDO.getId());
+            key.setKey(id);
+            
+            loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+        }
+        
+        //we need to set the notes load param to true because update doesnt call resetRPC
+        ((FormRPC)rpcReturn.getField("notes")).load = false;
+        
+        //we need to clear out the note subject and the note text fields after a commit
+        ((FormRPC)rpcReturn.getField("notes")).setFieldValue(ProvMeta.getNote().getSubject(), null);
+        ((FormRPC)rpcReturn.getField("notes")).setFieldValue(ProvMeta.getNote().getText(), null);
+        
         return rpcReturn;
     }
 
@@ -245,7 +282,18 @@ public class ProviderService implements AppScreenFormServiceInt{
              }  
     //      set the fields in the RPC
               setFieldsInRPC(rpcReturn, provDO);
-            return rpcReturn;
+              
+              if(((FormRPC)rpcReturn.getField("addresses")).load){
+                  FormRPC contactsRPC = (FormRPC)rpcReturn.getField("addresses");
+                  getAddressesModel((NumberObject)key.getKey(), (TableField)contactsRPC.getField("providerAddressTable"));
+              }
+              
+              if(((FormRPC)rpcReturn.getField("notes")).load){
+                  FormRPC notesRpc = (FormRPC)rpcReturn.getField("notes");
+                  notesRpc.setFieldValue("notesPanel",getNotesModel((NumberObject)key.getKey()).getValue());
+              }
+              return rpcReturn;
+           
         }
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
@@ -255,9 +303,30 @@ public class ProviderService implements AppScreenFormServiceInt{
             ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
     //      set the fields in the RPC
             setFieldsInRPC(rpcReturn, provDO);
-                                                          
+             
+            String tab = (String)rpcReturn.getFieldValue("provTabPanel");
+            if(tab.equals("addressesTab")){
+                loadAddresses(key,(FormRPC)rpcReturn.getField("addresses"));
+            }
+           
+            if(tab.equals("notesTab")){
+                loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+            }
             return rpcReturn;
         }
+    
+    public FormRPC loadAddresses(DataSet key, FormRPC rpcReturn) throws RPCException {
+        getAddressesModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("providerAddressTable"));
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+    
+    public FormRPC loadNotes(DataSet key, FormRPC rpcReturn) throws RPCException {
+        StringObject so = getNotesModel((NumberObject)key.getKey());
+        rpcReturn.setFieldValue("notesPanel",so.getValue());
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
@@ -271,8 +340,16 @@ public class ProviderService implements AppScreenFormServiceInt{
                  throw new RPCException(ex.getMessage());
              }  
     //      set the fields in the RPC
-             setFieldsInRPC(rpcReturn, provDO);
-                    
+             setFieldsInRPC(rpcReturn, provDO);              
+
+             String tab = (String)rpcReturn.getFieldValue("provTabPanel");
+             if(tab.equals("addressesTab")){
+                 loadAddresses(key,(FormRPC)rpcReturn.getField("addresses"));
+             }
+            
+             if(tab.equals("notesTab")){
+                 loadNotes(key, (FormRPC)rpcReturn.getField("notes"));
+             }
                                                           
             return rpcReturn;
         }
@@ -375,6 +452,14 @@ public class ProviderService implements AppScreenFormServiceInt{
         return null;
     }
 
+    
+    public void getAddressesModel(NumberObject orgId,TableField model){
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        List contactsList = remote.getProviderAddresses((Integer)orgId.getValue());
+        fillAddressTable((TableModel)model.getValue(),contactsList);
+
+    }
+    
     public DataModel getInitialModel(String cat) {        
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
@@ -487,16 +572,16 @@ public class ProviderService implements AppScreenFormServiceInt{
             
             String userName = user.getLoginName().trim();  
 
-             Element mainRowPanel = (Element) doc.createElement("panel");
-             Element topRowPanel = (Element) doc.createElement("panel");
-             Element titleWidgetTag = (Element) doc.createElement("widget");
-             Element titleText = (Element) doc.createElement("text");
-             Element authorWidgetTag = (Element) doc.createElement("widget");
-             Element authorPanel = (Element) doc.createElement("panel");
-             Element dateText = (Element) doc.createElement("text");
-             Element authorText = (Element) doc.createElement("text");
-             Element bodyWidgetTag = (Element) doc.createElement("widget");
-             Element bodytextTag = (Element) doc.createElement("text");
+            Element mainRowPanel = (Element) doc.createElement("VerticalPanel");
+            Element topRowPanel = (Element) doc.createElement("HorizontalPanel");
+            Element titleWidgetTag = (Element) doc.createElement("widget");
+            Element titleText = (Element) doc.createElement("text");
+            Element authorWidgetTag = (Element) doc.createElement("widget");
+            Element authorPanel = (Element) doc.createElement("VerticalPanel");
+            Element dateText = (Element) doc.createElement("text");
+            Element authorText = (Element) doc.createElement("text");
+            Element bodyWidgetTag = (Element) doc.createElement("widget");
+            Element bodytextTag =  (Element) doc.createElement("text");
              
              mainRowPanel.setAttribute("key", "note"+i);
              if(i % 2 == 1){
@@ -504,16 +589,13 @@ public class ProviderService implements AppScreenFormServiceInt{
              }else{
                  mainRowPanel.setAttribute("style", "TableRow");
              }
-             mainRowPanel.setAttribute("layout", "vertical");
-             mainRowPanel.setAttribute("width", "531px");
-             
-             topRowPanel.setAttribute("layout", "horizontal");
-             topRowPanel.setAttribute("width", "531px");
+             mainRowPanel.setAttribute("width", "530px");
+
+             topRowPanel.setAttribute("width", "530px");
              titleText.setAttribute("key", "note"+i+"Title");
              titleText.setAttribute("style", "notesSubjectText");
              titleText.appendChild(doc.createTextNode(subject));
              authorWidgetTag.setAttribute("halign", "right");
-             authorPanel.setAttribute("layout", "vertical");
              dateText.setAttribute("key", "note"+i+"Date");
              dateText.appendChild(doc.createTextNode(date));
              authorText.setAttribute("key", "note"+i+"Author");

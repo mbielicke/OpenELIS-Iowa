@@ -31,10 +31,13 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQuery(name = "Method.MethodIdName", query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + "  from Method m order by m.name")
 
 @Entity
 @Table(name="method")

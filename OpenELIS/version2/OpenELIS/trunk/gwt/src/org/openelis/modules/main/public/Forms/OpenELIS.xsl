@@ -321,10 +321,10 @@
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Test</xsl:with-param>
 				      <xsl:with-param name="label">test</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">TestScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>				      
 				    </xsl:call-template>				
 				    <xsl:call-template name="menuItem">
@@ -555,7 +555,7 @@
        </AbsolutePanel>
        <HorizontalPanel>
           <VerticalPanel key="favoritesPanel" visible="false" width="220px">
-            <HorizontalPanel style="FavoritesHeader" width="100%" height="20px">
+            <HorizontalPanel style="Header" width="100%" height="20px">
                 <text style="ScreenWindowLabel">Favorites</text>
               <widget halign="right">
                 <appButton action="editFavorites" key="EditFavorites" onclick="this">
