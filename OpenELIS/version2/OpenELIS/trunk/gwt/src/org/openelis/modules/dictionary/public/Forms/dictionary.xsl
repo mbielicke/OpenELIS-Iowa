@@ -158,7 +158,7 @@
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
-								<colAligns>center,left,center,right,left</colAligns>
+								<colAligns>left,left,left,left,left</colAligns>
 							</table>
 						  <query>
 						   	<queryTable width = "auto" maxRows = "11"  title="" showError="false">
@@ -180,7 +180,7 @@
 								</fields>
 								<sorts>true,true,true,true,true</sorts>
 								<filters>false,false,false,false,false</filters>
-								<colAligns>center,left,center,right,left</colAligns>
+								<colAligns>left,left,left,left,left</colAligns>
 							</queryTable>
 						  </query>						  
 						</widget>								                
