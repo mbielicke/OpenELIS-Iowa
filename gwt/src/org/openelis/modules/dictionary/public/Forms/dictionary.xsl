@@ -161,11 +161,11 @@
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
 						  <query>
-						   	<queryTable width = "auto" maxRows = "11"  title="" showError="false">
+						   	<queryTable width = "auto" maxRows = "11"  title="" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,105,85,120,148</widths>
+								<widths>45,105,85,120,130</widths>
 								<editors>									
 								    <check threeState="true"/>											
 									<textbox/>									
