@@ -49,11 +49,6 @@ public class OrderDO implements Serializable{
         
     }
 
-    public OrderDO(Integer id, Date orderedDate){
-        setId(id);
-        setOrderedDate(orderedDate);
-    }
-    
     //constructor without address values
     public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
                    Integer costCenter, Integer organizationId, String isExternal, String externalOrderNumber, 

@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.metamap.OrderMetaMap;
@@ -65,67 +67,46 @@ public class FillOrderBean implements FillOrderRemote {
         QueryBuilder qb = new QueryBuilder();
 
         qb.setMeta(OrderMap);
-        
-        /*qb.setSelect("distinct new org.openelis.domain.InventoryReceiptDO("+
-                         InventoryReceiptMap.getId()+", "+
-                         InventoryReceiptMap.ORDER_ITEM_META.ORDER_META.getId()+", "+
-                         InventoryReceiptMap.getReceivedDate()+", "+
-                         InventoryReceiptMap.getUpc()+", "+                         
-                         InventoryReceiptMap.getInventoryItemId()+", "+
-                         InventoryReceiptMap.INVENTORY_ITEM_META.getName()+", "+
-                         InventoryReceiptMap.ORDER_ITEM_META.getId()+", "+
-                         InventoryReceiptMap.getOrganizationId()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.getName()+", "+
-                         InventoryReceiptMap.getQuantityReceived()+", "+
-                         InventoryReceiptMap.ORDER_ITEM_META.getUnitCost()+", "+
-                         InventoryReceiptMap.getQcReference()+", "+
-                         InventoryReceiptMap.getExternalReference()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getCity()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getState()+", "+
-                         InventoryReceiptMap.ORGANIZATION_META.ADDRESS.getZipCode()+", "+
-                         InventoryReceiptMap.INVENTORY_ITEM_META.getDescription()+", "+
-                         InventoryReceiptMap.DICTIONARY_STORE_META.getEntry()+", "+
-                         InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getEntry()+", "+
-                         InventoryReceiptMap.ORDER_ITEM_META.getQuantityRequested()+", "+
-                         InventoryReceiptMap.INVENTORY_ITEM_META.getIsBulk()+", "+
-                         InventoryReceiptMap.INVENTORY_ITEM_META.getIsLotMaintained()+", "+
-                         InventoryReceiptMap.INVENTORY_ITEM_META.getIsSerialMaintained()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getName()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.STORAGE_UNIT_META.getDescription()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber()+", "+
-                         InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate()+", " + 
-                         InventoryReceiptMap.TRANS_RECEIPT_ORDER_META.getId()+" ) ");*/
-        qb.setSelect("distinct new org.openelis.domain.OrderDO(" +
-                     OrderMap.getId()+", "+
-                     OrderMap.getOrderedDate()+") ");
-        
+System.out.println("1");
+        qb.setSelect("distinct new org.openelis.domain.FillOrderDO(" +
+                     OrderMap.getId()+", " +
+                     OrderMap.getStatusId()+", " +
+                     OrderMap.getOrderedDate()+", " +
+                     OrderMap.getShipFromId()+", " +
+                     OrderMap.ORDER_ORGANIZATION_META.getId()+", " +
+                     OrderMap.ORDER_ORGANIZATION_META.getName()+", " +
+                     OrderMap.getDescription()+", " +
+                     OrderMap.getNeededInDays()+", "+
+                     //"("+OrderMap.getNeededInDays()+"-(" +
+                            //"current_date()-date("+OrderMap.getOrderedDate()+"), "+
+                     OrderMap.getRequestedBy()+", "+
+                     OrderMap.getCostCenterId()+" ,"+
+                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
+                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
+                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
+                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getState()+", "+
+                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()+") ");
+        System.out.println("2");
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields); 
-
-        /*qb.addWhere(InventoryReceiptMap.getInventoryItemId() + " = " + InventoryReceiptMap.INVENTORY_ITEM_META.getId());
-        qb.addWhere(InventoryReceiptMap.getOrganizationId() + " = " + InventoryReceiptMap.ORGANIZATION_META.getId());
-        qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_STORE_META.getId());
-        qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
-        */
+System.out.println("3");
+        qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
+        qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
         
         qb.setOrderBy(OrderMap.getId());
-        
+        System.out.println("4");
         sb.append(qb.getEJBQL());
-
+System.out.println("5");
         Query query = manager.createQuery(sb.toString());
-    
+    System.out.println("6");
         if(first > -1 && max > -1)
          query.setMaxResults(first+max);
         
         //set the parameters in the query
         qb.setQueryParams(query);
-        
+        System.out.println("7");
         List returnList = GetPage.getPage(query.getResultList(), first, max);
-        
+        System.out.println("8");
         if(returnList == null)
          throw new LastPageException();
         else
@@ -150,13 +131,11 @@ public class FillOrderBean implements FillOrderRemote {
         return queryResultList;
     }
 
-    public List validateForAdd(List orders) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List validateForUpdate(List orders) {
-        // TODO Auto-generated method stub
+    public List validateForProcess(List orders) {
+        List exceptionList = new ArrayList();
+        //all ship froms need to match
+        
+        //all ship tos need to match
         return null;
     }
 

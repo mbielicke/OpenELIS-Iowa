@@ -23,8 +23,5 @@ public interface FillOrderRemote {
      public Integer getSystemUserId();
           
      //method to validate the fields before the backend updates it in the database
-     public List validateForUpdate(List orders);
-     
-     //method to validate the fields before the backend updates it in the database
-     public List validateForAdd(List orders);
+     public List validateForProcess(List orders);
 }
