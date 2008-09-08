@@ -31,14 +31,14 @@ public class TestAnalyteMeta implements Meta {
               ID					="id",
               TEST_ID					="testId",
               RESULT_GROUP_ID					="resultGroupId",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               TYPE_ID					="typeId",
               ANALYTE_ID					="analyteId",
               IS_REPORTABLE					="isReportable",
               SCRIPTLET_ID					="scriptletId";
 
   	private static final String[] columnNames = {
-  	  ID,TEST_ID,RESULT_GROUP_ID,SORT_ORDER_ID,TYPE_ID,ANALYTE_ID,IS_REPORTABLE,SCRIPTLET_ID};
+  	  ID,TEST_ID,RESULT_GROUP_ID,SORT_ORDER,TYPE_ID,ANALYTE_ID,IS_REPORTABLE,SCRIPTLET_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -83,8 +83,8 @@ public class TestAnalyteMeta implements Meta {
         return path + RESULT_GROUP_ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getTypeId() {

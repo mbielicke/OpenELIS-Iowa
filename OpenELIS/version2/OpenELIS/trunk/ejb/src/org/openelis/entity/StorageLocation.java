@@ -42,9 +42,9 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
+@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
-@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrderId,s.name, " +
+@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
 " s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
@@ -68,8 +68,8 @@ public class StorageLocation implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sort_order_id")
-  private Integer sortOrderId;             
+  @Column(name="sort_order")
+  private Integer sortOrder;             
 
   @Column(name="name")
   private String name;             
@@ -111,13 +111,13 @@ public class StorageLocation implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSortOrderId() {
-    return sortOrderId;
+  public Integer getSortOrder() {
+    return sortOrder;
   }
-  public void setSortOrderId(Integer sortOrderId) {
-    if((sortOrderId == null && this.sortOrderId != null) || 
-       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
-      this.sortOrderId = sortOrderId;
+  public void setSortOrder(Integer sortOrder) {
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public String getName() {
@@ -179,7 +179,7 @@ public class StorageLocation implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
 
       AuditUtil.getChangeXML(name,original.name,doc,"name");
 

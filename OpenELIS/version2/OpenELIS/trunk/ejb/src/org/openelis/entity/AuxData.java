@@ -46,8 +46,8 @@ public class AuxData implements Auditable, Cloneable {
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="sort_order_id")
-  private Integer sortOrderId;             
+  @Column(name="sort_order")
+  private Integer sortOrder;             
 
   @Column(name="aux_field_id")
   private Integer auxFieldId;             
@@ -81,13 +81,13 @@ public class AuxData implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getSortOrderId() {
-    return sortOrderId;
+  public Integer getSortOrder() {
+    return sortOrder;
   }
-  public void setSortOrderId(Integer sortOrderId) {
-    if((sortOrderId == null && this.sortOrderId != null) || 
-       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
-      this.sortOrderId = sortOrderId;
+  public void setSortOrder(Integer sortOrder) {
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public Integer getAuxFieldId() {
@@ -158,7 +158,7 @@ public class AuxData implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
 
       AuditUtil.getChangeXML(auxFieldId,original.auxFieldId,doc,"aux_field_id");
 

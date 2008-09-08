@@ -29,7 +29,7 @@ public class StorageLocationMeta implements Meta {
 	
 	private static final String
               ID					="id",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               NAME					="name",
               LOCATION					="location",
               PARENT_STORAGE_LOCATION_ID					="parentStorageLocationId",
@@ -37,7 +37,7 @@ public class StorageLocationMeta implements Meta {
               IS_AVAILABLE					="isAvailable";
 
   	private static final String[] columnNames = {
-  	  ID,SORT_ORDER_ID,NAME,LOCATION,PARENT_STORAGE_LOCATION_ID,STORAGE_UNIT_ID,IS_AVAILABLE};
+  	  ID,SORT_ORDER,NAME,LOCATION,PARENT_STORAGE_LOCATION_ID,STORAGE_UNIT_ID,IS_AVAILABLE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -74,8 +74,8 @@ public class StorageLocationMeta implements Meta {
         return path + ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getName() {

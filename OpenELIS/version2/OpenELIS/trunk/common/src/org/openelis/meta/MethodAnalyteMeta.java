@@ -31,12 +31,12 @@ public class MethodAnalyteMeta implements Meta {
               ID					="id",
               METHOD_ID					="methodId",
               RESULT_GROUP_ID					="resultGroupId",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               TYPE					="type",
               ANALYTE_ID					="analyteId";
 
   	private static final String[] columnNames = {
-  	  ID,METHOD_ID,RESULT_GROUP_ID,SORT_ORDER_ID,TYPE,ANALYTE_ID};
+  	  ID,METHOD_ID,RESULT_GROUP_ID,SORT_ORDER,TYPE,ANALYTE_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -81,8 +81,8 @@ public class MethodAnalyteMeta implements Meta {
         return path + RESULT_GROUP_ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getType() {
