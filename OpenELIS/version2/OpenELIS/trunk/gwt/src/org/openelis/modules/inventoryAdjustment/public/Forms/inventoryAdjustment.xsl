@@ -160,11 +160,11 @@
 							<colAligns>left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
-							<queryTable width="auto" title="" maxRows="14" showError="false">
+							<queryTable width="auto" title="" maxRows="14" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-								<widths>50,214,234,60,60,60</widths>
+								<widths>50,205,225,60,60,60</widths>
 								<editors>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>

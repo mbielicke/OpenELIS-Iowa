@@ -48,7 +48,7 @@ import org.openelis.util.UTFResource;
 
 public class TestTrailerService implements AppScreenFormServiceInt {
 
-	private static final int leftTableRowsPerPage = 11;
+	private static final int leftTableRowsPerPage = 9;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	

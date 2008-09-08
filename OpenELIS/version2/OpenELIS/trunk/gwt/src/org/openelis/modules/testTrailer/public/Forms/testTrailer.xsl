@@ -41,10 +41,10 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="TestTrailer" name="{resource:getString($constants,'trailerForTest')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
-			<!--left table goes here -->
-			<CollapsePanel key="collapsePanel">
-			    <azTable width="100%" key="azTable" maxRows="11" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+		<HorizontalPanel spacing="0" padding="0" height="225px" style="WhiteContentPanel">
+		<!--left table goes here -->
+			<CollapsePanel key="collapsePanel" height="225px">
+			    <azTable colwidths="175" key="azTable" maxRows="9" tablewidth="auto" title="{resource:getString($constants,'name')}" width="100%">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -114,7 +114,7 @@
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
-						<textarea key="{testTrailerMeta:getText($meta)}" width="300px" height="170px" tab="{testTrailerMeta:getName($meta)},{testTrailerMeta:getDescription($meta)}"/>
+						<textarea key="{testTrailerMeta:getText($meta)}" width="300px" height="145px" tab="{testTrailerMeta:getName($meta)},{testTrailerMeta:getDescription($meta)}"/>
 					</row>
 				</TablePanel>
 				</VerticalPanel>

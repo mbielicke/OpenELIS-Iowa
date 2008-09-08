@@ -173,12 +173,12 @@
 							<colAligns>left,left,left,left,left,left,left,right,left,left</colAligns>
 						</table>
 						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false">
+							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
 							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extQC")'/>,
 							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-								<widths>40,65,80,149,164,40,40,45,70,95</widths>
+								<widths>40,65,80,130,155,40,40,55,70,95</widths>
 								<editors>
 									<textbox case="mixed"/>
 									<calendar begin="0" end="2"/>

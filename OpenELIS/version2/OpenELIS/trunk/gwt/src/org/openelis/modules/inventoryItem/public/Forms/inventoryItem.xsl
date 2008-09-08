@@ -267,10 +267,10 @@
 										<colAligns>left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" title="" maxRows="9" showError="false">
+									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
-										<widths>125,353,104</widths>
+										<widths>125,335,104</widths>
 										<editors>
 											<textbox case="lower"/>
 											<textbox case="mixed"/>
@@ -320,11 +320,11 @@
 										<colAligns>left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" title="" maxRows="10" showError="false">
+									<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
-										<xsl:value-of select='resource:getString($constants,"serialNum")'/>,
+										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>180,70,70,133,123</widths>
+										<widths>162,70,70,133,123</widths>
 										<editors>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>

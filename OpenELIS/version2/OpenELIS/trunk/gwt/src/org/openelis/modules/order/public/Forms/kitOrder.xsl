@@ -243,10 +243,10 @@
 								<colAligns>left,left,left,left</colAligns>
 							</table>
 							<query>
-								<queryTable width="auto" maxRows="9" title="" showError="false">
+								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="true">
 									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 									<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-									<widths>60,188,164,167</widths>
+									<widths>60,170,164,167</widths>
 									<editors>
 										<textbox case="mixed"/>
 										<textbox case="lower"/>

@@ -15,29 +15,62 @@
 */
 package org.openelis.modules.shipping.client;
 
+import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.ModelObject;
+import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.ShippingMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager{
 
-    //private static boolean loaded = false;
+    private static boolean loaded = false;
     
-    //private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
+    private static DataModel statusDropdownModel, shipFromDropdownModel, shippingMethodDropdownModel;
+    private boolean loadedFromAnotherScreen = false;
+    private Integer shipFromId, shipToId;
+    private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
+    
+    private AutoCompleteDropdown statusDropdown;
+    
+    private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
     private EditTable itemsController, trackingNumbersController;
     
     public ShippingScreen() {
-        super("org.openelis.modules.shipping.server.ShippingService", false);
+        super("org.openelis.modules.shipping.server.ShippingService", !loaded);
+    }
+    
+    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText) {
+        super("org.openelis.modules.shipping.server.ShippingService", !loaded);
+        loadedFromAnotherScreen = true;
+        
+        this.shipFromId = shipFromId;
+        this.shipToId = shipToId;
+        this.shipToText = shipToText;   
+        this.multUnitText = multUnitText;
+        this.streetAddressText = streetAddressText;
+        this.cityText = cityText;
+        this.stateText = stateText;
+        this.zipCodeText = zipCodeText;
     }
     
     public void onClick(Widget sender) {
@@ -45,7 +78,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     }
     
     public void afterDraw(boolean success) {
-     //   loaded = true;
+        AutoCompleteDropdown drop;
+        loaded = true;
 
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
@@ -54,21 +88,124 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         trackingNumbersController.setAutoAdd(false);
 
         addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);        
+        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        
+        statusDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.getStatusId()); 
+        
+        if (statusDropdownModel == null) {           
+            statusDropdownModel = (DataModel)initData.get("status");
+            shipFromDropdownModel = (DataModel)initData.get("shipFrom");
+            shippingMethodDropdownModel = (DataModel)initData.get("shippingMethod");
+        }
+        
+        //
+        // status dropdown
+        //
+        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getStatusId());
+        drop.setModel(statusDropdownModel);
+        
+        //
+        // ship from dropdown
+        //
+        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.ORDER_META.getShipFromId());
+        drop.setModel(shipFromDropdownModel);
+        
+        //
+        // shipping method dropdown
+        //
+        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getShippedMethodId());
+        drop.setModel(shippingMethodDropdownModel);
+
         super.afterDraw(success);
+        
+        if(loadedFromAnotherScreen)
+            putInAddAndLoadData();
     }
     
     public void add() {
+       super.add();
+       
+       window.setStatus("","spinnerIcon");
+       
+       DataObject[] args = new DataObject[0]; 
+         
+       screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
+           public void onSuccess(Object result){    
+             // get the datamodel, load the fields in the form
+               DataModel model = (DataModel) ((ModelObject)result).getValue();
+               DataSet set = model.get(0);
+               
+               /*
+               set.addObject(status);
+               set.addObject(processedDate);
+               set.addObject(processedBy);
+               set.addObject(shippedDate);
+               */
+
+               //load the values
+               //status.load((DropDownField)set.getObject(0));
+               //orderDate.load((StringField)set.getObject(1));
+               //requestedBy.load((StringField)set.getObject(2));
+               
+               //set the values in the rpc
+               rpc.setFieldValue(ShippingMeta.getStatusId(), (Integer)((DropDownField)set.getObject(0)).getValue());
+               rpc.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.getObject(1)).getValue());
+               rpc.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.getObject(2)).getValue());
+               rpc.setFieldValue(ShippingMeta.getShippedDate(), (DatetimeRPC)((DateField)set.getObject(3)).getValue());
+               
+               loadScreen(rpc);
+               
+               window.setStatus("","");
+           }
+           
+           public void onFailure(Throwable caught){
+               Window.alert(caught.getMessage());
+           }
+       }); 
+       
+       statusDropdown.setFocus(true);
+    }
+    
+    private void putInAddAndLoadData(){
+        add();
+        
+        //set the values after the screen is in add mode
+        rpc.setFieldValue(ShippingMeta.ORDER_META.getShipFromId(), shipFromId);
+        
+        if(shipToId != null){
+            DataSet shipToSet = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
+            StringObject text = new StringObject();
+            id.setValue(shipToId);
+            text.setValue(shipToText);
+            shipToSet.setKey(id);
+            shipToSet.addObject(text);
+            rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.getName(), shipToSet);
+        }
+        
+        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnitText);
+        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddressText);
+        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getCity(), cityText);
+        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getState(), stateText);
+        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getZipCode(), zipCodeText);
+
+        loadScreen(rpc);
+    }
+    
+    /*public void add() {
         itemsController.setAutoAdd(true);
         trackingNumbersController.setAutoAdd(true);
         super.add();
     }
+    */
     
+    /*
     public void update() {
         itemsController.setAutoAdd(true);
         trackingNumbersController.setAutoAdd(true);
         super.update();
     }
+    */
     
     public void abort() {
         itemsController.setAutoAdd(false);

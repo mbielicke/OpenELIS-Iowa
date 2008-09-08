@@ -41,9 +41,10 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "SystemVariable" name="{resource:getString($constants,'systemVariable')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel">  
-  					<CollapsePanel key="collapsePanel" height="235px">
-						<azTable colwidths ="175" key="azTable" maxRows="10" tablewidth="auto" title="" width="100%"  headers = "{resource:getString($constants,'name')}">
+
+ <HorizontalPanel spacing= "0" padding= "0" height="225px" style="WhiteContentPanel">  
+  					<CollapsePanel key="collapsePanel" height="225px">
+						<azTable colwidths ="175" key="azTable" maxRows="9" tablewidth="auto" title="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>

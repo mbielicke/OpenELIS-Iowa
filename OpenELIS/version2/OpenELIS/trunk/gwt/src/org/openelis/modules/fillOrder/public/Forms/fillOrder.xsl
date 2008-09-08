@@ -17,7 +17,7 @@
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
-                xmlns:meta="xalan://org.openelis.metamap.OrderMetaMap" 
+                xmlns:meta="xalan://org.openelis.metamap.FillOrderMetaMap" 
                 xmlns:orderItemMeta="xalan://org.openelis.metamap.OrderItemMetaMap"
                 xmlns:orgMeta="xalan://org.openelis.metamap.OrderOrganizationMetaMap"
                 xmlns:addrMeta="xalan://org.openelis.meta.AddressMeta"
@@ -34,7 +34,7 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.FillOrderMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="orderItemMeta">
@@ -98,14 +98,14 @@
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/></headers>
-							<widths>20,45,120,65,120,120,145,60,60</widths>										
+							<widths>20,45,90,65,120,150,145,60,60</widths>										
 							<editors>
 								<check/>
 								<textbox case="mixed"/>
 								<autoDropdown case="mixed" width="100px"/>
-								<textbox case="mixed"/>
+								<calendar begin="0" end="2"/>							
 								<autoDropdown case="mixed" width="100px"/>
-								<textbox case="mixed"/>
+								<autoDropdown case="upper" width="130px"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>								
@@ -114,12 +114,12 @@
 								<check key="process" type="integer" required="false"/>
 								<string key="{meta:getId($order)}" required="true"/>
 								<dropdown key="{meta:getStatusId($order)}" required="false"/>
-								<string key="{meta:getOrderedDate($order)}" required="false"/>
+								<date key="{meta:getOrderedDate($order)}" begin="0" end="2" required="false"/>
 								<dropdown key="{meta:getShipFromId($order)}" required="false"/>
-								<string key="{meta:getOrganizationId($order)}" required="false"/>
+								<dropdown key="{orgMeta:getName($org)}" required="false"/>
 								<string key="{meta:getDescription($order)}" required="false"/>
-								<string key="{meta:getNeededInDays($order)}" required="false"/>
-								<string key="daysLeft" required="false"/>
+								<number key="{meta:getNeededInDays($order)}" type="integer" required="false"/>
+								<number key="daysLeft" type="integer" required="false"/>
 							</fields>
 							<sorts>false,false,true,false,true,true,true,false,false</sorts>
 							<filters>false,false,false,false,false,false,false,false,false</filters>
@@ -127,11 +127,11 @@
 						</table>
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
-								<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
+							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/></headers>
-								<widths>20,45,120,65,120,120,145,60,60</widths>
+							<widths>20,45,90,65,120,150,145,60,60</widths>			
 								<editors>
 									<label/>
 									<textbox case="mixed"/>
@@ -146,20 +146,12 @@
 								<fields>
 								process,<xsl:value-of select='meta:getId($order)'/>,<xsl:value-of select='meta:getStatusId($order)'/>,
 								<xsl:value-of select='meta:getOrderedDate($order)'/>,<xsl:value-of select='meta:getShipFromId($order)'/>,
-								<xsl:value-of select='meta:getOrganizationId($order)'/>,<xsl:value-of select='meta:getDescription($order)'/>,
+								<xsl:value-of select='orgMeta:getName($org)'/>,<xsl:value-of select='meta:getDescription($order)'/>,
 								<xsl:value-of select='meta:getNeededInDays($order)'/>,daysLeft
 								</fields>
 							</queryTable>
 							</query>
 						</widget>
-						<widget style="WhiteContentPanel" halign="center">									
-							<appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">
-								<HorizontalPanel>
-              						<AbsolutePanel style="RemoveRowButtonImage"/>
-                						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							              </HorizontalPanel>
-						            </appButton>
-						            </widget>
 							</VerticalPanel>
 						
 				</VerticalPanel>
@@ -173,13 +165,13 @@
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
 									<widget colspan="3">
-										<textbox key="{meta:getRequestedBy($order)}" width="203px" tab="??,??"/>
+										<textbox key="{meta:getRequestedBy($order)}" width="203px" alwaysDisabled="true"/>
 									</widget>		
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown key="{meta:getCostCenterId($order)}" case="mixed" width="164px" tab=""/>
+										<autoDropdown key="{meta:getCostCenterId($order)}" case="mixed" width="164px" alwaysDisabled="true"/>
 									</widget>		
 								</row>
 								<row>
@@ -223,7 +215,7 @@
 	<rpc key="display">
 		<table key="fillItemsTable"/>
 		<string key="{meta:getRequestedBy($order)}" required="true"/>
-		<dropdown key="{meta:getCostCenterId($order)}" required="true"/>
+		<dropdown key="{meta:getCostCenterId($order)}" required="false"/>
 	</rpc>
 	
 	<rpc key="query">
@@ -233,7 +225,7 @@
     	<dropdown key="{meta:getStatusId($order)}" required="false"/>
 		<queryDate key="{meta:getOrderedDate($order)}" begin="0" end="2" required="false"/>
 		<dropdown key="{meta:getShipFromId($order)}" required="false"/>
-		<queryString key="{meta:getOrganizationId($order)}" required="false"/>
+		<queryString key="{orgMeta:getName($org)}" required="false"/>
 		<queryString key="{meta:getDescription($order)}" required="false"/>
 		<queryNumber key="{meta:getNeededInDays($order)}" type="integer" required="false"/>
 	 	<queryString key="daysLeft" type="integer" required="false"/> 
