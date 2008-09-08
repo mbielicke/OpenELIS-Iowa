@@ -30,12 +30,12 @@ public class PanelItemMeta implements Meta {
 	private static final String
               ID					="id",
               PANEL_ID					="panelId",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               TEST_NAME					="testName",
               METHOD_NAME					="methodName";
 
   	private static final String[] columnNames = {
-  	  ID,PANEL_ID,SORT_ORDER_ID,TEST_NAME,METHOD_NAME};
+  	  ID,PANEL_ID,SORT_ORDER,TEST_NAME,METHOD_NAME};
   	  
 	private HashSet<String> columnHashList;
     
@@ -77,7 +77,7 @@ public class PanelItemMeta implements Meta {
     } 
 
     public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+        return path + SORT_ORDER;
     } 
 
     public String getTestName() {

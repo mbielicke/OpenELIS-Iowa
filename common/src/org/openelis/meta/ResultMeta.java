@@ -30,7 +30,7 @@ public class ResultMeta implements Meta {
 	private static final String
               ID					="id",
               ANALYSIS_ID					="analysisId",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               IS_REPORTABLE					="isReportable",
               ANALYTE_ID					="analyteId",
               TYPE_ID					="typeId",
@@ -39,7 +39,7 @@ public class ResultMeta implements Meta {
               QUANT_LIMIT					="quantLimit";
 
   	private static final String[] columnNames = {
-  	  ID,ANALYSIS_ID,SORT_ORDER_ID,IS_REPORTABLE,ANALYTE_ID,TYPE_ID,VALUE,TEST_RESULT_ID,QUANT_LIMIT};
+  	  ID,ANALYSIS_ID,SORT_ORDER,IS_REPORTABLE,ANALYTE_ID,TYPE_ID,VALUE,TEST_RESULT_ID,QUANT_LIMIT};
   	  
 	private HashSet<String> columnHashList;
     
@@ -80,8 +80,8 @@ public class ResultMeta implements Meta {
         return path + ANALYSIS_ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getIsReportable() {

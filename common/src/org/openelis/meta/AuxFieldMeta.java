@@ -29,7 +29,7 @@ public class AuxFieldMeta implements Meta {
 	
 	private static final String
               ID					="id",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               ANALYTE_ID					="analyteId",
               REFERENCE_TABLE_ID					="referenceTableId",
               IS_REQUIRED					="isRequired",
@@ -38,7 +38,7 @@ public class AuxFieldMeta implements Meta {
               SCRIPTLET_ID					="scriptletId";
 
   	private static final String[] columnNames = {
-  	  ID,SORT_ORDER_ID,ANALYTE_ID,REFERENCE_TABLE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
+  	  ID,SORT_ORDER,ANALYTE_ID,REFERENCE_TABLE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -75,8 +75,8 @@ public class AuxFieldMeta implements Meta {
         return path + ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getAnalyteId() {

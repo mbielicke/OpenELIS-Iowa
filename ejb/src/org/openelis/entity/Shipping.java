@@ -35,7 +35,10 @@ public class Shipping implements Auditable, Cloneable {
   private Integer statusId;             
 
   @Column(name="shipped_from_id")
-  private Integer shippedFromId;             
+  private Integer shippedFromId;     
+  
+  @Column(name="shipped_to_id")
+  private Integer shippedToId;  
 
   @Column(name="processed_by_id")
   private Integer processedById;             
@@ -50,8 +53,10 @@ public class Shipping implements Auditable, Cloneable {
   private Date shippedDate;             
 
   @Column(name="number_of_packages")
-  private Short numberOfPackages;             
-
+  private Short numberOfPackages;  
+  
+  @Column(name="cost")
+  private Double cost;
 
   @Transient
   private Shipping original;
@@ -83,6 +88,15 @@ public class Shipping implements Auditable, Cloneable {
        (shippedFromId != null && !shippedFromId.equals(this.shippedFromId)))
       this.shippedFromId = shippedFromId;
   }
+  
+  public Integer getShippedToId() {
+      return shippedToId;
+    }
+    public void setShippedToId(Integer shippedToId) {
+      if((shippedToId == null && this.shippedToId != null) || 
+         (shippedToId != null && !shippedToId.equals(this.shippedToId)))
+        this.shippedToId = shippedToId;
+    }
 
   public Integer getProcessedById() {
     return processedById;
@@ -132,7 +146,16 @@ public class Shipping implements Auditable, Cloneable {
        (numberOfPackages != null && !numberOfPackages.equals(this.numberOfPackages)))
       this.numberOfPackages = numberOfPackages;
   }
-
+  
+  public Double getCost() {
+      return cost;
+    }
+  
+  public void setCost(Double cost) {
+      if((cost == null && this.cost != null) || 
+         (cost != null && !cost.equals(this.cost)))
+        this.cost = cost;
+    }
   
   public void setClone() {
     try {
@@ -150,6 +173,8 @@ public class Shipping implements Auditable, Cloneable {
       AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
 
       AuditUtil.getChangeXML(shippedFromId,original.shippedFromId,doc,"shipped_from_id");
+      
+      AuditUtil.getChangeXML(shippedToId,original.shippedToId,doc,"shipped_to_id");
 
       AuditUtil.getChangeXML(processedById,original.processedById,doc,"processed_by_id");
 
@@ -160,6 +185,8 @@ public class Shipping implements Auditable, Cloneable {
       AuditUtil.getChangeXML(shippedDate,original.shippedDate,doc,"shipped_date");
 
       AuditUtil.getChangeXML(numberOfPackages,original.numberOfPackages,doc,"number_of_packages");
+      
+      AuditUtil.getChangeXML(cost,original.cost,doc,"cost");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

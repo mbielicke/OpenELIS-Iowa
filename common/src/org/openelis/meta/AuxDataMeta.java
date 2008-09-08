@@ -29,7 +29,7 @@ public class AuxDataMeta implements Meta {
 	
 	private static final String
               ID					="id",
-              SORT_ORDER_ID					="sortOrderId",
+              SORT_ORDER					="sortOrder",
               AUX_FIELD_ID					="auxFieldId",
               REFERENCE_ID					="referenceId",
               REFERENCE_TABLE_ID					="referenceTableId",
@@ -38,7 +38,7 @@ public class AuxDataMeta implements Meta {
               VALUE					="value";
 
   	private static final String[] columnNames = {
-  	  ID,SORT_ORDER_ID,AUX_FIELD_ID,REFERENCE_ID,REFERENCE_TABLE_ID,IS_REPORTABLE,TYPE_ID,VALUE};
+  	  ID,SORT_ORDER,AUX_FIELD_ID,REFERENCE_ID,REFERENCE_TABLE_ID,IS_REPORTABLE,TYPE_ID,VALUE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -75,8 +75,8 @@ public class AuxDataMeta implements Meta {
         return path + ID;
     } 
 
-    public String getSortOrderId() {
-        return path + SORT_ORDER_ID;
+    public String getSortOrder() {
+        return path + SORT_ORDER;
     } 
 
     public String getAuxFieldId() {

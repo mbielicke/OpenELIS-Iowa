@@ -55,8 +55,8 @@ public class TestAnalyte implements Auditable, Cloneable {
   @Column(name="result_group_id")
   private Integer resultGroupId;             
 
-  @Column(name="sort_order_id")
-  private Integer sortOrderId;             
+  @Column(name="sort_order")
+  private Integer sortOrder;             
 
   @Column(name="type_id")
   private Integer typeId;             
@@ -102,13 +102,13 @@ public class TestAnalyte implements Auditable, Cloneable {
       this.resultGroupId = resultGroupId;
   }
 
-  public Integer getSortOrderId() {
-    return sortOrderId;
+  public Integer getSortOrder() {
+    return sortOrder;
   }
-  public void setSortOrderId(Integer sortOrderId) {
-    if((sortOrderId == null && this.sortOrderId != null) || 
-       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
-      this.sortOrderId = sortOrderId;
+  public void setSortOrder(Integer sortOrder) {
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public Integer getTypeId() {
@@ -165,7 +165,7 @@ public class TestAnalyte implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
 
-      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
 
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 

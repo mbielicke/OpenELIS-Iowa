@@ -49,8 +49,8 @@ public class PanelItem implements Auditable, Cloneable {
   @Column(name="panel_id")
   private Integer panelId;             
 
-  @Column(name="sort_order_id")
-  private Integer sortOrderId;             
+  @Column(name="sort_order")
+  private Integer sortOrder;             
 
   @Column(name="test_name")
   private String testName;             
@@ -81,13 +81,13 @@ public class PanelItem implements Auditable, Cloneable {
       this.panelId = panelId;
   }
 
-  public Integer getSortOrderId() {
-    return sortOrderId;
+  public Integer getSortOrder() {
+    return sortOrder;
   }
-  public void setSortOrderId(Integer sortOrderId) {
-    if((sortOrderId == null && this.sortOrderId != null) || 
-       (sortOrderId != null && !sortOrderId.equals(this.sortOrderId)))
-      this.sortOrderId = sortOrderId;
+  public void setSortOrder(Integer sortOrder) {
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
   }
 
   public String getTestName() {
@@ -124,7 +124,7 @@ public class PanelItem implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(panelId,original.panelId,doc,"panel_id");
 
-      AuditUtil.getChangeXML(sortOrderId,original.sortOrderId,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
 
       AuditUtil.getChangeXML(testName,original.testName,doc,"test_name");
 
