@@ -30,6 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,8 +39,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 
-@NamedQuery(name = "TestTypeOfSample.TestTypeOfSample", query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) " 
-                                            + "  from TestTypeOfSample ts where ts.testId = :id")
+@NamedQueries({@NamedQuery(name = "TestTypeOfSample.TestTypeOfSample", query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) " 
+                                            + "  from TestTypeOfSample ts where ts.testId = :id"),
+               @NamedQuery(name = "TestTypeOfSample.TestTypeOfSampleByTestId", query = "from TestTypeOfSample ts where ts.testId = :testId")})
             
 @Entity
 @Table(name="test_type_of_sample")

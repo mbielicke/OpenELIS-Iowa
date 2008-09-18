@@ -52,7 +52,8 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.TestDetails", query = "select distinct new org.openelis.domain.TestDetailsDO(t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                                                   "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.sectionId,t.scriptletId," +
                                                         "t.testFormatId,t.revisionMethodId) " + "  from Test t where t.id = :id"),
-    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t order by t.name")})
+    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name"),
+    @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name")})
 
 @Entity
 @Table(name="test")
@@ -135,6 +136,14 @@ public class Test implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Collection<TestTypeOfSample> testTypeOfSample;  
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestReflex> testReflex;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestWorksheet> testWorksheet;
   
   @Transient
   private Test original;
@@ -416,6 +425,18 @@ public Collection<TestTypeOfSample> getTestTypeOfSample() {
 }
 public void setTestTypeOfSample(Collection<TestTypeOfSample> testTypeOfSample) {
     this.testTypeOfSample = testTypeOfSample;
+}
+public Collection<TestReflex> getTestReflex() {
+    return testReflex;
+}
+public void setTestReflex(Collection<TestReflex> testReflex) {
+    this.testReflex = testReflex;
+}
+public Collection<TestWorksheet> getTestWorksheet() {
+    return testWorksheet;
+}
+public void setTestWorksheet(Collection<TestWorksheet> testWorksheet) {
+    this.testWorksheet = testWorksheet;
 }
 
   

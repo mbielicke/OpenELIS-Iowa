@@ -18,9 +18,14 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.SampleTypePrepTestListDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
+import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestWorksheetDO;
+import org.openelis.domain.TestWorksheetItemDO;
 
 @Remote
 public interface TestRemote {
@@ -35,20 +40,42 @@ public interface TestRemote {
 
     public TestDetailsDO getTestDetails(Integer testId);
 
-    public SampleTypePrepTestListDO getSampleTypesAndPrepTests(Integer testId);
+    public List<TestPrepDO> getTestPreps(Integer testId);
+    
+    public List<TestReflexDO> getTestReflexes(Integer testId);
+    
+    public List<TestTypeOfSampleDO> getTestTypeOfSamples(Integer testId);
+    
+    public TestWorksheetDO getTestWorksheet(Integer testId);
+    
+    public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId);
 
     public Integer updateTest(TestIdNameMethodIdDO testIdNameMethod,
                               TestDetailsDO testDetails,
-                              SampleTypePrepTestListDO listDO) throws Exception;
-
+                              List<TestPrepDO> prepTestDOList,
+                              List<TestTypeOfSampleDO> sampleTypeDOList,
+                              List<TestReflexDO> testReflexDOList,
+                              TestWorksheetDO worksheetDO,
+                              List<TestWorksheetItemDO> itemDOList) throws Exception;
+    
     public List query(HashMap fields, int first, int max) throws Exception;
 
     public List validateForUpdate(TestIdNameMethodIdDO testIdNameMethod,
-                                  TestDetailsDO testDetails,SampleTypePrepTestListDO listDO);
+                                  TestDetailsDO testDetails,
+                                  List<TestPrepDO> prepTestDOList,
+                                  List<TestTypeOfSampleDO> sampleTypeDOList,
+                                  List<TestReflexDO> testReflexDOList,
+                                  TestWorksheetDO worksheetDO,
+                                  List<TestWorksheetItemDO> itemDOList);
 
     public List validateForAdd(TestIdNameMethodIdDO testIdNameMethod,
-                               TestDetailsDO testDetails,SampleTypePrepTestListDO listDO);
-
+                               TestDetailsDO testDetails,
+                               List<TestPrepDO> prepTestDOList,
+                               List<TestTypeOfSampleDO> sampleTypeDOList,
+                               List<TestReflexDO> testReflexDOList,
+                               TestWorksheetDO worksheetDO,
+                               List<TestWorksheetItemDO> itemDOList);
+    
     public List getMethodDropDownValues();
 
     public List getLabelDropDownValues();
@@ -58,5 +85,12 @@ public interface TestRemote {
     public List getScriptletDropDownValues();
 
     public List getPrepTestDropDownValues();
-
+    
+    public List getTestAnalyteDropDownValues(Integer testId);
+    
+    public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId);
+    
+    public List<IdNameDO> getTestResultsforTest(Integer testId);
+    
+    public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);  
 }

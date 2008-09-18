@@ -16,6 +16,7 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.MethodMeta;
 import org.openelis.meta.TestMeta;
 
 public class TestMetaMap extends TestMeta implements MetaMap {
@@ -26,12 +27,22 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             
     public TestMetaMap(String path){
         super(path);        
+        
     }
     
     private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
     
     private TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE = new TestTypeOfSampleMetaMap("testTypeOfSample."); 
     
+    private TestReflexMetaMap TEST_REFLEX = new TestReflexMetaMap("testReflex."); 
+    
+    private TestWorksheetMetaMap TEST_WORKSHEET = new TestWorksheetMetaMap("testWorksheet.");
+    
+    private MethodMeta METHOD = new MethodMeta("t.method.");
+    
+    public MethodMeta getMethod(){
+        return METHOD;
+    }
     
     public static TestMetaMap getInstance(){
         return new TestMetaMap();
@@ -45,11 +56,25 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         return TEST_TYPE_OF_SAMPLE;
     }
     
+    public TestReflexMetaMap getTestReflex(){
+        return TEST_REFLEX;
+    } 
+    
+    public TestWorksheetMetaMap getTestWorksheet(){
+        return TEST_WORKSHEET;
+    }
+    
     public boolean hasColumn(String name){        
         if(name.startsWith("testPrep."))
             return TEST_PREP.hasColumn(name);
         if(name.startsWith("testTypeOfSample."))
             return TEST_TYPE_OF_SAMPLE.hasColumn(name);
+        if(name.startsWith("testReflex."))
+            return TEST_REFLEX.hasColumn(name);
+        if(name.startsWith("testWorksheet."))
+            return TEST_WORKSHEET.hasColumn(name);
+        if(name.startsWith(path+"method."))
+            return METHOD.hasColumn(name);
         return super.hasColumn(name);
     }
     
@@ -59,6 +84,10 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             from += ", IN (t.testPrep) testPrep ";
         if(name.indexOf("testTypeOfSample.") > -1)
             from += ", IN (t.testTypeOfSample) testTypeOfSample "; 
+        if(name.indexOf("testReflex.") > -1)
+            from += ", IN (t.testReflex) testReflex ";  
+        if(name.indexOf("testWorksheet.") > -1)
+            from += ", IN (t.testWorksheet) testWorksheet ";
         return from;
     }
     
