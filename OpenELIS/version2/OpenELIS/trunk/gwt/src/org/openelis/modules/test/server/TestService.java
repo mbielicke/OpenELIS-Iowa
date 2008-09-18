@@ -17,14 +17,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
+import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.QaEventTestDropdownDO;
-import org.openelis.domain.SampleTypePrepTestListDO;
 import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestWorksheetDO;
+import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -36,32 +40,29 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.widget.pagedtree.TreeModel;
-import org.openelis.gwt.widget.pagedtree.TreeModelItem;
 
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
+import org.openelis.metamap.TestReflexMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.security.domain.SectionIdNameDO;
-import org.openelis.security.meta.SystemUserSectionMeta;
 import org.openelis.security.remote.SystemUserUtilRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.Datetime;
@@ -87,9 +88,19 @@ public class TestService implements AppScreenFormServiceInt {
             loadTestDetails(key, detailsRPC);
         }
 
-        if (((FormRPC)rpcReturn.getField("sampleAndPrep")).load) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleAndPrep");
-            loadSampleTypesPrepTests(key, samplePrepRPC);
+        if (((FormRPC)rpcReturn.getField("sampleType")).load) {
+            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
+            loadSampleTypes(key, samplePrepRPC);
+        }
+
+        if (((FormRPC)rpcReturn.getField("prepAndReflex")).load) {
+            FormRPC prepAndReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
+            loadPrepTestsReflexTests(key, prepAndReflexRPC);
+        }
+        
+        if (((FormRPC)rpcReturn.getField("worksheet")).load) {
+            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
+            loadWorksheetLayout(key, worksheetRPC);
         }
 
         return rpcReturn;
@@ -116,6 +127,7 @@ public class TestService implements AppScreenFormServiceInt {
                 if (e instanceof LastPageException) {
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
                 } else {
+                    e.printStackTrace();
                     throw new RPCException(e.getMessage());
                 }
             }
@@ -129,6 +141,7 @@ public class TestService implements AppScreenFormServiceInt {
                 testNames = remote.query(fields, 0, leftTableRowsPerPage);
 
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }
 
@@ -138,14 +151,17 @@ public class TestService implements AppScreenFormServiceInt {
 
         // fill the model with the query results
         int i = 0;
-        // model.clear();
-        model = new DataModel();
+        if(model == null)
+            model = new DataModel();
+        else 
+            model.clear();
         while (i < testNames.size() && i < leftTableRowsPerPage) {
-            IdNameDO resultDO = (IdNameDO)testNames.get(i);
+            IdLastNameFirstNameDO resultDO = (IdLastNameFirstNameDO)testNames.get(i);
 
             DataSet row = new DataSet();
             NumberObject id = new NumberObject(resultDO.getId());
-            StringObject name = new StringObject(resultDO.getName());
+            StringObject name = new StringObject(resultDO.getLastName()
+                                                 +", "+resultDO.getFirstName());
 
             row.setKey(id);
             row.addObject(name);
@@ -155,12 +171,18 @@ public class TestService implements AppScreenFormServiceInt {
 
         return model;
     }
-    
+
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         TestDetailsDO testDetailsDO = new TestDetailsDO();
-        SampleTypePrepTestListDO listDO = null;
+        
+        List<TestPrepDO> prepTestDOList = null;
+        List<TestTypeOfSampleDO> sampleTypeDOList = null;
+        List<TestReflexDO> testReflexDOList = null;
+        
+        TestWorksheetDO worksheetDO = null;
+        List<TestWorksheetItemDO> itemsDOList = null;
 
         Integer testId;
 
@@ -168,11 +190,23 @@ public class TestService implements AppScreenFormServiceInt {
         // if(((FormRPC)rpcSend.getField("details")).load){
         testDetailsDO = getTestDetailsDOFromRPC((FormRPC)rpcReturn.getField("details"));
         // }
-        listDO = getSampleTypeAndPrepTestsFromRPC((FormRPC)rpcReturn.getField("sampleAndPrep"),
+        sampleTypeDOList = getSampleTypesFromRPC((FormRPC)rpcReturn.getField("sampleType"),
                                                   null);
-        List exceptionList = remote.validateForUpdate(testDO,
-                                                      testDetailsDO,
-                                                      listDO);
+        
+        prepTestDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
+                                             null);
+        //testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+                                                  //,null);
+        
+        itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));
+        worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
+                                             null);
+        
+        
+        List exceptionList = remote.validateForAdd(testDO,testDetailsDO,
+                                                   prepTestDOList,sampleTypeDOList,
+                                                   testReflexDOList,worksheetDO,
+                                                   itemsDOList);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);
 
@@ -180,7 +214,9 @@ public class TestService implements AppScreenFormServiceInt {
         }
 
         try {
-            testId = remote.updateTest(testDO, testDetailsDO, listDO);
+            testId = remote.updateTest(testDO,testDetailsDO,prepTestDOList,
+                                       sampleTypeDOList,testReflexDOList,worksheetDO,
+                                       itemsDOList);
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
@@ -207,20 +243,44 @@ public class TestService implements AppScreenFormServiceInt {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         TestDetailsDO testDetailsDO = null;
-        SampleTypePrepTestListDO listDO = null;
+        List<TestPrepDO> testPrepDOList = null;
+        List<TestTypeOfSampleDO> sampleTypeDOList = null;
+        List<TestReflexDO> testReflexDOList= null;
+        TestWorksheetDO worksheetDO = null;
+        List<TestWorksheetItemDO> itemsDOList = null;
 
         testDO = getTestIdNameMethodIdDOFromRPC(rpcSend);
+        NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
+        
         if (((FormRPC)rpcSend.getField("details")).load)
             testDetailsDO = getTestDetailsDOFromRPC((FormRPC)rpcReturn.getField("details"));
 
-        if (((FormRPC)rpcSend.getField("sampleAndPrep")).load) {
-            NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
-            listDO = getSampleTypeAndPrepTestsFromRPC((FormRPC)rpcReturn.getField("sampleAndPrep"),
+        if (((FormRPC)rpcSend.getField("prepAndReflex")).load) {
+            
+            testPrepDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
+                                                      (Integer)testId.getValue());
+            
+           // testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+             //                                         ,(Integer)testId.getValue());
+            
+            
+        }
+        
+        if (((FormRPC)rpcSend.getField("sampleType")).load) {            
+            sampleTypeDOList = getSampleTypesFromRPC((FormRPC)rpcReturn.getField("sampleType"),
                                                       (Integer)testId.getValue());
         }
-        List exceptionList = remote.validateForUpdate(testDO,
-                                                      testDetailsDO,
-                                                      listDO);
+        
+        if (((FormRPC)rpcSend.getField("worksheet")).load) {
+            itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));
+            worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
+                                                 (Integer)testId.getValue());
+        }
+        
+        List exceptionList = remote.validateForUpdate(testDO,testDetailsDO,
+                                                      testPrepDOList,sampleTypeDOList,
+                                                      testReflexDOList,worksheetDO,
+                                                      itemsDOList);
 
         System.out.println("exceptionList.size " + exceptionList.size());
 
@@ -231,7 +291,10 @@ public class TestService implements AppScreenFormServiceInt {
         }
 
         try {
-            remote.updateTest(testDO, testDetailsDO, listDO);
+            remote.updateTest(testDO,testDetailsDO,
+                              testPrepDOList,sampleTypeDOList,
+                              testReflexDOList,worksheetDO,
+                              itemsDOList);
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
@@ -239,7 +302,7 @@ public class TestService implements AppScreenFormServiceInt {
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }
-            // return rpcSend;
+            
         }
         setFieldsInRPC(rpcReturn, testDO);
         return rpcReturn;
@@ -257,10 +320,21 @@ public class TestService implements AppScreenFormServiceInt {
             loadTestDetails(key, (FormRPC)rpcReturn.getField("details"));
         }
 
-        if (tab.equals("sampleAndPrepTab")) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleAndPrep");
-            loadSampleTypesPrepTests(key, samplePrepRPC);
+        if (tab.equals("sampleTypeTab")) {
+            FormRPC sampleTypeRPC = (FormRPC)rpcReturn.getField("sampleType");
+            loadSampleTypes(key, sampleTypeRPC);
         }
+
+        if (tab.equals("prepAndReflexTab")) {
+            FormRPC prepReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
+            loadPrepTestsReflexTests(key, prepReflexRPC);
+        }
+        
+        if (tab.equals("worksheetTab")) {
+            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
+            loadWorksheetLayout(key, worksheetRPC);
+        }
+        
         return rpcReturn;
     }
 
@@ -285,9 +359,19 @@ public class TestService implements AppScreenFormServiceInt {
             loadTestDetails(key, (FormRPC)rpcReturn.getField("details"));
         }
 
-        if (tab.equals("sampleAndPrepTab")) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleAndPrep");
-            loadSampleTypesPrepTests(key, samplePrepRPC);
+        if (tab.equals("sampleTypeTab")) {
+            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
+            loadSampleTypes(key, samplePrepRPC);
+        }
+
+        if (tab.equals("prepAndReflexTab")) {
+            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
+            loadPrepTestsReflexTests(key, samplePrepRPC);
+        }
+        
+        if (tab.equals("worksheetTab")) {
+            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
+            loadWorksheetLayout(key, worksheetRPC);
         }
 
         return rpcReturn;
@@ -317,7 +401,22 @@ public class TestService implements AppScreenFormServiceInt {
                                                                                   "measureUnitDropDown");
         DataModel prepTestDropDownField = (DataModel)CachingManager.getElement("InitialData",
                                                                                "prepTestDropDown");
+        
+        DataModel testReflexFlagsDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                                               "testReflexFlagsDropDown");
 
+        DataModel testFormatDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                                         "testFormatDropDown");
+        
+        DataModel revisionMethodDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                                           "revisionMethodDropDown");
+        
+        DataModel testWSNumFormatDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                                        "testWSNumFormatDropDown");
+        
+        DataModel testWSItemTypeDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                                          "testWSItemTypeDropDown");
+        
         if (methodDropDownField == null) {
             methodDropDownField = getInitialModel("method");
             CachingManager.putElement("InitialData",
@@ -344,6 +443,20 @@ public class TestService implements AppScreenFormServiceInt {
             CachingManager.putElement("InitialData",
                                       "sectionDropDown",
                                       sectionDropDownField);
+        }
+        
+        if (testFormatDropDownField == null) {
+            testFormatDropDownField = getInitialModel("testFormat");
+            CachingManager.putElement("InitialData",
+                                      "testFormatDropDown",
+                                      testFormatDropDownField);
+        }
+        
+        if (revisionMethodDropDownField == null) {
+            revisionMethodDropDownField = getInitialModel("revisionMethod");
+            CachingManager.putElement("InitialData",
+                                      "revisionMethodDropDown",
+                                       revisionMethodDropDownField);
         }
 
         if (scriptletDropDownField == null) {
@@ -373,17 +486,52 @@ public class TestService implements AppScreenFormServiceInt {
                                       "prepTestDropDown",
                                       prepTestDropDownField);
         }
+        
+        if (testReflexFlagsDropDownField == null) {
+            testReflexFlagsDropDownField = getInitialModel("testReflexFlags");
+            CachingManager.putElement("InitialData",
+                                      "testReflexFlagsDropDown",
+                                      testReflexFlagsDropDownField);
+        }
+        
+        if (testReflexFlagsDropDownField == null) {
+            testReflexFlagsDropDownField = getInitialModel("testReflexFlags");
+            CachingManager.putElement("InitialData",
+                                      "testReflexFlagsDropDown",
+                                      testReflexFlagsDropDownField);
+        }
+        
+        if (testWSNumFormatDropDownField == null) {           
+          testWSNumFormatDropDownField = getInitialModel("testWSNumFormat");  
+          CachingManager.putElement("InitialData",
+                                      "testWSNumFormatDropDown",
+                                      testWSNumFormatDropDownField);
+        
+        }
+        
+        if (testWSItemTypeDropDownField == null) {           
+            testWSItemTypeDropDownField = getInitialModel("testWSItemType");  
+            CachingManager.putElement("InitialData",
+                                        "testWSItemTypeDropDown",
+                                        testWSItemTypeDropDownField);
+          
+          }
 
-        HashMap map = new HashMap();
+        HashMap<String, DataObject> map = new HashMap<String, DataObject>();
         map.put("xml", xml);
         map.put("methods", methodDropDownField);
         map.put("labels", labelDropDownField);
         map.put("testTrailers", testTrailerDropDownField);
         map.put("scriptlets", scriptletDropDownField);
         map.put("sections", sectionDropDownField);
+        map.put("testFormats", testFormatDropDownField);
+        map.put("revisionMethods", revisionMethodDropDownField);
         map.put("sampleTypes", sampleTypeDropDownField);
         map.put("unitsOfMeasure", measureUnitDropDownField);
         map.put("prepTests", prepTestDropDownField);
+        map.put("testReflexFlags", testReflexFlagsDropDownField);
+        map.put("testWSNumFormats", testWSNumFormatDropDownField);
+        map.put("testWSItemTypes", testWSItemTypeDropDownField);
         return map;
     }
 
@@ -407,22 +555,30 @@ public class TestService implements AppScreenFormServiceInt {
             values = remote.getTestTrailerDropDownValues();
         } else if (cat.equals("scriptlet")) {
             values = remote.getScriptletDropDownValues();
+        }else if (cat.equals("revisionMethod")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("revision_method"));
+        }else if (cat.equals("testFormat")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_format"));
         } else if (cat.equals("unitOfMeasure")) {
             values = catRemote.getDropdownValues(catRemote.getCategoryId("unit_of_measure"));
         } else if (cat.equals("sampleType")) {
             values = catRemote.getDropdownValues(catRemote.getCategoryId("type_of_sample"));
-        } else if (cat.equals("prepTest")) {
-            //values = remote.getPrepTestDropDownValues();
+        } else if (cat.equals("prepTest")) {            
             List<QaEventTestDropdownDO> qaedDOList = remote.getPrepTestDropDownValues();
-            loadPrepTestDropDown(qaedDOList,model);
-        } else if (cat.equals("section")) {
+            loadPrepTestDropDown(qaedDOList, model);
+        }else if (cat.equals("testReflexFlags")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
+        }else if (cat.equals("testWSNumFormat")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
+        }else if (cat.equals("testWSItemType")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
+        }else if (cat.equals("section")) {
             SystemUserUtilRemote utilRemote = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
             List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
 
             if (sections != null) {
                 loadSectionDropDown(sections, model);
-            }
-            // return model;
+            }            
         }
 
         if (values != null) {
@@ -431,6 +587,141 @@ public class TestService implements AppScreenFormServiceInt {
 
         return model;
     }
+    
+    public DataModel getTestAnalyteModel(NumberObject key){
+        TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<IdNameDO> list = remote.getTestAnalyteDropDownValues((Integer)key.getValue());
+        DataModel model = new DataModel();
+        DataSet blankset = new DataSet();
+
+        StringObject blankStringId = new StringObject();
+
+        blankStringId.setValue("");
+        blankset.addObject(blankStringId);
+
+        NumberObject blankNumberId = new NumberObject(-1);
+        blankset.setKey(blankNumberId);
+
+        model.add(blankset);
+
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            IdNameDO methodDO = (IdNameDO)iter.next();
+
+            DataSet set = new DataSet();
+            // id
+            Integer dropdownId = methodDO.getId();
+            // entry
+            String dropdownText = methodDO.getName();
+
+            StringObject textObject = new StringObject(dropdownText);
+            NumberObject numberId = new NumberObject(dropdownId);
+
+            set.addObject(textObject);
+
+            set.setKey(numberId);
+
+            model.add(set);
+        }
+        
+        return model;
+    }
+    
+    public DataModel getTestResultModel(NumberObject testId, NumberObject analyteId){
+        TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<IdNameDO> list = remote.getTestResultsForTestAnalyte((Integer)testId.getValue(),(Integer)analyteId.getValue());
+        DataModel model = new DataModel();
+        DataSet blankset = new DataSet();
+
+        StringObject blankStringId = new StringObject();
+
+        blankStringId.setValue("");
+        blankset.addObject(blankStringId);
+
+        NumberObject blankNumberId = new NumberObject(-1);
+        blankset.setKey(blankNumberId);
+
+        model.add(blankset);
+
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            IdNameDO methodDO = (IdNameDO)iter.next();
+
+            DataSet set = new DataSet();
+            // id
+            Integer dropdownId = methodDO.getId();
+            // entry
+            String dropdownText = methodDO.getName();
+
+            StringObject textObject = new StringObject(dropdownText);
+            NumberObject numberId = new NumberObject(dropdownId);
+
+            set.addObject(textObject);
+
+            set.setKey(numberId);
+
+            model.add(set);
+        }
+        
+        return model; 
+    }
+    
+    public DataModel getTestResultModel(NumberObject testId){
+        TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<IdNameDO> list = remote.getTestResultsforTest((Integer)testId.getValue());
+        //List<DataModel> modelList = new ArrayList<DataModel>();
+         //for(int iter = 0;iter < list.size(); iter++){
+             DataModel model = new DataModel();
+             DataSet blankset = new DataSet();
+
+             StringObject blankStringId = new StringObject();
+
+             blankStringId.setValue("");
+             blankset.addObject(blankStringId);
+
+             NumberObject blankNumberId = new NumberObject(-1);
+             blankset.setKey(blankNumberId);
+
+             model.add(blankset);
+
+             for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+                 IdNameDO methodDO = (IdNameDO)iterator.next();
+
+                 DataSet set = new DataSet();
+                 // id
+                 Integer dropdownId = methodDO.getId();
+                 // entry
+                 String dropdownText = methodDO.getName();
+
+                 StringObject textObject = new StringObject(dropdownText);
+                 NumberObject numberId = new NumberObject(dropdownId);
+
+                 set.addObject(textObject);
+
+                 set.setKey(numberId);
+
+                 model.add(set);
+             }
+             //modelList.add(model);
+         //}
+         //return modelList;
+         return model;
+    }
+    
+    public DataMap getTestResultModelMap(NumberObject testId){
+      TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+      HashMap<Integer,List<IdNameDO>> listMap = remote.getAnalyteResultsMap((Integer)testId.getValue());
+      HashMap<String, DataModel> modelMap = new HashMap<String, DataModel>();            
+      DataMap dataMap = new DataMap();      
+       for (Iterator iter = listMap.entrySet().iterator(); iter.hasNext();){ 
+              Entry<Integer,List<IdNameDO>> entry = (Entry<Integer,List<IdNameDO>>)iter.next();
+              List<IdNameDO> list = (List<IdNameDO>)listMap.get(entry.getKey());              
+              DataModel dataModel = new DataModel();
+              loadDropDown(list, dataModel);
+              modelMap.put(entry.getKey().toString(), dataModel);             
+          }
+        dataMap.setValue(modelMap); 
+        return dataMap;
+      }
+
 
     public FormRPC loadTestDetails(DataSet key, FormRPC rpcReturn) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -440,62 +731,36 @@ public class TestService implements AppScreenFormServiceInt {
         return rpcReturn;
     }
 
-    public FormRPC loadSampleTypesPrepTests(DataSet key, FormRPC rpcReturn) {
+    public FormRPC loadSampleTypes(DataSet key, FormRPC rpcReturn) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        SampleTypePrepTestListDO listDO = remote.getSampleTypesAndPrepTests((Integer)((NumberObject)key.getKey()).getValue());
-        fillSampleTypePrepTest(listDO, rpcReturn);
+        List<TestTypeOfSampleDO> list = remote.getTestTypeOfSamples((Integer)((NumberObject)key.getKey()).getValue());
+        fillSampleTypes(list, rpcReturn);
         rpcReturn.load = true;
         return rpcReturn;
     }
 
-    private SampleTypePrepTestListDO getSampleTypeAndPrepTestsFromRPC(FormRPC rpcSend,
-                                                                      Integer testId) {
-        TableModel model = (TableModel)rpcSend.getField("sampleTypeTable")
-                                              .getValue();
+    public FormRPC loadPrepTestsReflexTests(DataSet key, FormRPC rpcReturn) {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
+        fillPrepTests(prepList, rpcReturn);
+        //List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
+        //fillTestReflexes(reflexList,rpcReturn);
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+        
+    public FormRPC loadWorksheetLayout(DataSet key, FormRPC rpcReturn){
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        TestWorksheetDO worksheetDO = remote.getTestWorksheet((Integer)((NumberObject)key.getKey()).getValue());
+        List<TestWorksheetItemDO> itemDOList = remote.getTestWorksheetItems((Integer)((NumberObject)key.getKey()).getValue());
+        fillWorksheet(worksheetDO, itemDOList, rpcReturn);
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
 
-        SampleTypePrepTestListDO listDO = new SampleTypePrepTestListDO();
+    private List<TestPrepDO> getPrepTestsFromRPC(FormRPC rpcSend,Integer testId) {
 
-        List<TestTypeOfSampleDO> typeOfSampleDOList = new ArrayList<TestTypeOfSampleDO>();
-
-        for (int i = 0; i < model.numRows(); i++) {
-            TableRow row = model.getRow(i);
-            TestTypeOfSampleDO testTypeOfSampleDO = new TestTypeOfSampleDO();
-
-            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            if (deleteFlag == null) {
-                testTypeOfSampleDO.setDelete(false);
-            } else {
-                testTypeOfSampleDO.setDelete("Y".equals(deleteFlag.getValue()));
-            }
-
-            NumberField id = (NumberField)row.getHidden("id");
-            if (id != null) {
-                if (id.getValue() != null) {
-                    testTypeOfSampleDO.setId((Integer)id.getValue());
-                }
-            }
-
-            testTypeOfSampleDO.setTestId(testId);
-
-            DropDownField typeOfSampleId = (DropDownField)row.getColumn(0);
-            if (typeOfSampleId != null) {
-                if (typeOfSampleId.getValue() != null && !typeOfSampleId.getValue().equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
-                }
-            }
-
-            DropDownField unitOfMeasureId = (DropDownField)row.getColumn(1);
-            if (unitOfMeasureId != null) {
-                if (unitOfMeasureId.getValue() != null && !unitOfMeasureId.getValue().equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
-                }
-            }
-
-            typeOfSampleDOList.add(testTypeOfSampleDO);
-        }
-        listDO.setTypeOfSampleDOList(typeOfSampleDOList);
-
-        model = (TableModel)rpcSend.getField("testPrepTable").getValue();
+        TableModel model = (TableModel)rpcSend.getField("testPrepTable").getValue();
 
         List<TestPrepDO> testPrepDOList = new ArrayList<TestPrepDO>();
         for (int j = 0; j < model.numRows(); j++) {
@@ -522,7 +787,8 @@ public class TestService implements AppScreenFormServiceInt {
 
             DropDownField prepTestId = (DropDownField)row.getColumn(0);
             if (prepTestId != null) {
-                if (prepTestId.getValue() != null && !prepTestId.getValue().equals(new Integer(-1))) {
+                if (prepTestId.getValue() != null && !prepTestId.getValue()
+                                                                .equals(new Integer(-1))) {
                     testPrepDO.setPrepTestId((Integer)prepTestId.getValue());
                 }
             }
@@ -533,10 +799,185 @@ public class TestService implements AppScreenFormServiceInt {
             testPrepDOList.add(testPrepDO);
         }
 
-        listDO.setTestPrepDOList(testPrepDOList);
-        
-        return listDO;
+
+        return testPrepDOList;
     }
+
+    private List<TestTypeOfSampleDO> getSampleTypesFromRPC(FormRPC rpcSend,
+                                                           Integer testId) {
+        TableModel model = (TableModel)rpcSend.getField("sampleTypeTable")
+                                              .getValue();
+        
+
+        List<TestTypeOfSampleDO> typeOfSampleDOList = new ArrayList<TestTypeOfSampleDO>();
+
+        for (int i = 0; i < model.numRows(); i++) {
+            TableRow row = model.getRow(i);
+            TestTypeOfSampleDO testTypeOfSampleDO = new TestTypeOfSampleDO();
+
+            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            if (deleteFlag == null) {
+                testTypeOfSampleDO.setDelete(false);
+            } else {
+                testTypeOfSampleDO.setDelete("Y".equals(deleteFlag.getValue()));
+            }
+
+            NumberField id = (NumberField)row.getHidden("id");
+            if (id != null) {
+                if (id.getValue() != null) {
+                    testTypeOfSampleDO.setId((Integer)id.getValue());
+                }
+            }
+
+            testTypeOfSampleDO.setTestId(testId);
+
+            DropDownField typeOfSampleId = (DropDownField)row.getColumn(0);
+            if (typeOfSampleId != null) {
+                if (typeOfSampleId.getValue() != null && !typeOfSampleId.getValue()
+                                                                        .equals(new Integer(-1))) {
+                    testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
+                }
+            }
+
+            DropDownField unitOfMeasureId = (DropDownField)row.getColumn(1);
+            if (unitOfMeasureId != null) {
+                if (unitOfMeasureId.getValue() != null && !unitOfMeasureId.getValue()
+                                                                          .equals(new Integer(-1))) {
+                    testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
+                }
+            }
+
+            typeOfSampleDOList.add(testTypeOfSampleDO);
+        }
+        
+        return typeOfSampleDOList;
+    }
+    
+    private List<TestReflexDO> getTestReflexesFromRPC(FormRPC rpcSend,Integer testId){
+        TableModel model = (TableModel)rpcSend.getField("testReflexTable").getValue();
+        List<TestReflexDO> list = new ArrayList<TestReflexDO>();
+         for (int i = 0; i < model.numRows(); i++) {
+            TableRow row = model.getRow(i);
+            TestReflexDO refDO = new TestReflexDO();
+            
+            NumberField id = (NumberField)row.getHidden("id");
+            if (id != null) {
+                if (id.getValue() != null) {
+                    refDO.setId((Integer)id.getValue());
+                }
+            }
+
+            refDO.setTestId(testId);
+            
+            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            if (deleteFlag == null) {
+                refDO.setDelete(false);
+            } else {
+                refDO.setDelete("Y".equals(deleteFlag.getValue()));
+            }
+            
+            DropDownField addTestId = (DropDownField)row.getColumn(0);
+            if (addTestId != null) {
+                if (addTestId.getValue() != null && !addTestId.getValue()
+                                                                        .equals(new Integer(-1))) {
+                    refDO.setAddTestId((Integer)addTestId.getValue());                    
+                }
+            }
+            
+            DropDownField analyteId = (DropDownField)row.getColumn(1);
+            if (analyteId != null) {
+                if (analyteId.getValue() != null && !analyteId.getValue()
+                                                                        .equals(new Integer(-1))) {
+                    refDO.setTestAnalyteId((Integer)analyteId.getValue());                    
+                }
+            }
+            
+            DropDownField resultId = (DropDownField)row.getColumn(2);
+            if (resultId != null) {
+                if (resultId.getValue() != null && !resultId.getValue()
+                                                                        .equals(new Integer(-1))) {
+                    refDO.setTestResultId((Integer)resultId.getValue());                    
+                }
+            }
+            
+            DropDownField flagsId = (DropDownField)row.getColumn(3);
+            if (flagsId != null) {
+                if (flagsId.getValue() != null && !flagsId.getValue()
+                                                  .equals(new Integer(-1))) {
+                    refDO.setFlagsId((Integer)flagsId.getValue());                    
+                }
+            }
+            list.add(refDO);
+         }   
+        return list;
+    }
+    
+    private TestWorksheetDO getTestWorkSheetFromRPC(FormRPC rpcSend, Integer testId){
+      TestWorksheetDO worksheetDO = new TestWorksheetDO();
+      worksheetDO.setBatchCapacity((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getBatchCapacity()));
+      worksheetDO.setId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getId()));
+      worksheetDO.setNumberFormatId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getNumberFormatId()));
+      worksheetDO.setTestId(testId);
+      worksheetDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getScriptletId()));
+      worksheetDO.setTotalCapacity((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity()));
+      return worksheetDO;
+    }
+    
+    private List<TestWorksheetItemDO> getWorksheetItemsFromRPC(FormRPC rpcSend) {
+        TableModel model = (TableModel)rpcSend.getField("worksheetTable")
+                                              .getValue();
+        
+        List<TestWorksheetItemDO> worksheetItemDOList = new ArrayList<TestWorksheetItemDO>();
+
+        for (int i = 0; i < model.numRows(); i++) {
+            TableRow row = model.getRow(i);
+            TestWorksheetItemDO worksheetItemDO = new TestWorksheetItemDO();
+
+            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            if (deleteFlag == null) {
+                worksheetItemDO.setDelete(false);
+            } else {
+                worksheetItemDO.setDelete("Y".equals(deleteFlag.getValue()));
+            }
+
+            NumberField id = (NumberField)row.getHidden("id");
+            if (id != null) {
+                if (id.getValue() != null) {
+                    worksheetItemDO.setId((Integer)id.getValue());
+                }
+            }
+
+            NumberField worksheetId  = (NumberField)rpcSend.getField(TestMeta.getTestWorksheet().getId());
+            if (worksheetId != null) {
+                if (worksheetId.getValue() != null) {
+                    worksheetItemDO.setTestWorksheetId((Integer)worksheetId.getValue());
+                }
+            }
+
+            NumberField position = (NumberField)row.getColumn(0);
+            if (position != null) {
+                worksheetItemDO.setPosition((Integer)position.getValue());
+             }
+            
+
+            DropDownField typeId = (DropDownField)row.getColumn(1);
+            if (typeId != null) {
+                if (typeId.getValue() != null && !typeId.getValue().equals(new Integer(-1))) {
+                    worksheetItemDO.setTypeId((Integer)typeId.getValue());
+                }
+            }
+            
+            StringField qcName = (StringField)row.getColumn(2);
+            if(qcName!=null){
+                worksheetItemDO.setQcName((String)qcName.getValue()); 
+            }
+            
+            worksheetItemDOList.add(worksheetItemDO);
+        }
+        
+        return worksheetItemDOList;
+    }
+    
 
     private void setFieldsInRPC(FormRPC rpcReturn, TestIdNameMethodIdDO testDO) {
         rpcReturn.setFieldValue(TestMeta.getId(), testDO.getId());
@@ -550,7 +991,7 @@ public class TestService implements AppScreenFormServiceInt {
         rpcReturn.setFieldValue(TestMeta.getReportingDescription(),
                                 testDetailsDO.getReportingDescription());
         rpcReturn.setFieldValue(TestMeta.getIsActive(),
-                                testDetailsDO.getIsActive());
+                                testDetailsDO.getIsActive());        
         rpcReturn.setFieldValue(TestMeta.getActiveBegin(),
                                 DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
@@ -560,9 +1001,9 @@ public class TestService implements AppScreenFormServiceInt {
                                 DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         testDetailsDO.getActiveEnd()
-                                                                     .getDate()));
+                                                                     .getDate()));        
         rpcReturn.setFieldValue(TestMeta.getIsReportable(),
-                                testDetailsDO.getIsReportable());
+                                testDetailsDO.getIsReportable());        
         rpcReturn.setFieldValue(TestMeta.getTestTrailerId(),
                                 testDetailsDO.getTestTrailerId());
         rpcReturn.setFieldValue(TestMeta.getTimeTransit(),
@@ -570,31 +1011,32 @@ public class TestService implements AppScreenFormServiceInt {
         rpcReturn.setFieldValue(TestMeta.getTimeHolding(),
                                 testDetailsDO.getTimeHolding());
         rpcReturn.setFieldValue(TestMeta.getTimeTaAverage(),
-                                testDetailsDO.getTimeTaAverage());
+                                testDetailsDO.getTimeTaAverage());                
         rpcReturn.setFieldValue(TestMeta.getTimeTaWarning(),
                                 testDetailsDO.getTimeTaWarning());
         rpcReturn.setFieldValue(TestMeta.getTimeTaMax(),
-                                testDetailsDO.getTimeTaMax());
+                                testDetailsDO.getTimeTaMax());                      
         rpcReturn.setFieldValue(TestMeta.getLabelId(),
                                 testDetailsDO.getLabelId());
         rpcReturn.setFieldValue(TestMeta.getLabelQty(),
-                                testDetailsDO.getLabelQty());
+                               testDetailsDO.getLabelQty());                       
         rpcReturn.setFieldValue(TestMeta.getSectionId(),
                                 testDetailsDO.getSectionId());
         rpcReturn.setFieldValue(TestMeta.getScriptletId(),
-                                testDetailsDO.getScriptletId());
+                                testDetailsDO.getScriptletId());        
         rpcReturn.setFieldValue(TestMeta.getTestFormatId(),
-                                testDetailsDO.getTestFormatId());
+                                testDetailsDO.getTestFormatId());                        
         rpcReturn.setFieldValue(TestMeta.getRevisionMethodId(),
-                                testDetailsDO.getRevisionMethodId());
+                                testDetailsDO.getRevisionMethodId());                  
+        
+        
     }
 
-    private void fillSampleTypePrepTest(SampleTypePrepTestListDO listDO,
-                                        FormRPC rpcReturn) {
-        List<TestPrepDO> testPrepDOList = listDO.getTestPrepDOList();
+    private void fillPrepTests(List<TestPrepDO> testPrepDOList,
+                               FormRPC rpcReturn) {
+
         TableModel model = (TableModel)rpcReturn.getField("testPrepTable")
                                                 .getValue();
-        // new TableModel();
         model.reset();
         if (testPrepDOList.size() > 0) {
             for (int iter = 0; iter < testPrepDOList.size(); iter++) {
@@ -612,12 +1054,45 @@ public class TestService implements AppScreenFormServiceInt {
 
                 model.addRow(row);
             }
+            
         }
+    }
+    
+    private void fillTestReflexes(List<TestReflexDO> testReflexDOList,
+                                  FormRPC rpcReturn){
+        TableModel model = (TableModel)rpcReturn.getField("testReflexTable")
+                                                .getValue();
+        model.reset();        
+        if(testReflexDOList.size() > 0){
+           //modelList = new ArrayList<DataModel>();
+            for(int iter = 0; iter < testReflexDOList.size(); iter++){
+              TestReflexDO refDO = testReflexDOList.get(iter);
+              TableRow row = model.createRow();
+              
+              NumberField id = new NumberField(refDO.getId());
 
-        List<TestTypeOfSampleDO> sampleTypeDOList = listDO.getTypeOfSampleDOList();
+              row.addHidden("id", id);
+            
+              row.getColumn(0).setValue(refDO.getAddTestId());
 
-        // model = new TableModel();
-        model = (TableModel)rpcReturn.getField("sampleTypeTable").getValue();
+              row.getColumn(1).setValue(refDO.getTestAnalyteId());
+              
+              row.getColumn(2).setValue(refDO.getTestResultId());
+              
+              row.getColumn(3).setValue(refDO.getFlagsId());                                                                    
+                           
+               model.addRow(row);
+            }
+        }
+        
+    }
+        
+
+    private void fillSampleTypes(List<TestTypeOfSampleDO> sampleTypeDOList,
+                                 FormRPC rpcReturn) {
+
+        TableModel model = (TableModel)rpcReturn.getField("sampleTypeTable")
+                                                .getValue();
         model.reset();
 
         if (sampleTypeDOList.size() > 0) {
@@ -642,17 +1117,63 @@ public class TestService implements AppScreenFormServiceInt {
         }
 
     }
+    
+    private void fillWorksheet(TestWorksheetDO worksheetDO, 
+                               List<TestWorksheetItemDO> worksheetItemList,
+                               FormRPC rpcReturn){
+       if(worksheetDO!=null){ 
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getBatchCapacity(),
+                                worksheetDO.getBatchCapacity());
+        
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getNumberFormatId(),
+                                worksheetDO.getNumberFormatId());    
+        
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getScriptletId(),
+                                worksheetDO.getScriptletId());    
+        
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getId(),
+                                worksheetDO.getId());  
+        
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getTotalCapacity(),
+                                worksheetDO.getTotalCapacity());
+       } 
+        TableModel model = (TableModel)rpcReturn.getField("worksheetTable").getValue();
+                 model.reset();
+
+        if (worksheetItemList.size() > 0) {
+         for (int iter = 0; iter < worksheetItemList.size(); iter++) {
+             TestWorksheetItemDO worksheetItemDO = (TestWorksheetItemDO)worksheetItemList.get(iter);
+
+           TableRow row = model.createRow();                     
+
+           NumberField id = new NumberField(worksheetItemDO.getId());
+
+           row.addHidden("id", id);                         
+
+           row.getColumn(0).setValue(worksheetItemDO.getPosition());
+
+           row.getColumn(1).setValue(worksheetItemDO.getTypeId());
+           
+           row.getColumn(2).setValue(worksheetItemDO.getQcName());
+
+           model.addRow(row);
+        }
+
+      }
+        
+    }
+    
 
     private TestIdNameMethodIdDO getTestIdNameMethodIdDOFromRPC(FormRPC rpcSend) {
         NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         testDO.setId((Integer)testId.getValue());
         testDO.setName(((String)rpcSend.getFieldValue(TestMeta.getName())));
-        Integer methodId = ((Integer)rpcSend.getFieldValue(TestMeta.getMethodId()));        
-            if (methodId != null && !methodId.equals(new Integer(-1))) {
-                testDO.setMethodId(methodId);
-            }
-          
+        Integer methodId = ((Integer)rpcSend.getFieldValue(TestMeta.getMethodId()));
+        if (methodId != null && !methodId.equals(new Integer(-1))) {
+            testDO.setMethodId(methodId);
+        }
+
         return testDO;
     }
 
@@ -669,45 +1190,45 @@ public class TestService implements AppScreenFormServiceInt {
         testDetailsDO.setDescription((String)rpcSend.getFieldValue(TestMeta.getDescription()));
         testDetailsDO.setIsActive((String)rpcSend.getFieldValue(TestMeta.getIsActive()));
         testDetailsDO.setIsReportable((String)rpcSend.getFieldValue(TestMeta.getIsReportable()));
-        
-        Integer labelId = (Integer)rpcSend.getFieldValue(TestMeta.getLabelId());                
-            if (labelId != null && !labelId.equals(new Integer(-1))) {
-                testDetailsDO.setLabelId(labelId);
-            }
-        
-        //testDetailsDO.setLabelId((Integer)rpcSend.getFieldValue(TestMeta.getLabelId()));
+
+        Integer labelId = (Integer)rpcSend.getFieldValue(TestMeta.getLabelId());
+        if (labelId != null && !labelId.equals(new Integer(-1))) {
+            testDetailsDO.setLabelId(labelId);
+        }
+
+        // testDetailsDO.setLabelId((Integer)rpcSend.getFieldValue(TestMeta.getLabelId()));
         testDetailsDO.setLabelQty((Integer)rpcSend.getFieldValue(TestMeta.getLabelQty()));
         testDetailsDO.setReportingDescription((String)rpcSend.getFieldValue(TestMeta.getReportingDescription()));
-        
-        Integer rmId = (Integer)rpcSend.getFieldValue(TestMeta.getRevisionMethodId());                
-            if (rmId != null && !rmId.equals(new Integer(-1))) {
-                testDetailsDO.setRevisionMethodId(rmId);
-            }
-                
-        //testDetailsDO.setRevisionMethodId((Integer)rpcSend.getFieldValue(TestMeta.getRevisionMethodId()));
+
+        Integer rmId = (Integer)rpcSend.getFieldValue(TestMeta.getRevisionMethodId());
+        if (rmId != null && !rmId.equals(new Integer(-1))) {
+            testDetailsDO.setRevisionMethodId(rmId);
+        }
+
+        // testDetailsDO.setRevisionMethodId((Integer)rpcSend.getFieldValue(TestMeta.getRevisionMethodId()));
         Integer scrId = (Integer)rpcSend.getFieldValue(TestMeta.getScriptletId());
-             if (scrId != null && !scrId.equals(new Integer(-1))) {
-                testDetailsDO.setScriptletId(scrId);
-          }           
-        //testDetailsDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getScriptletId()));
-        Integer sectionId = (Integer)rpcSend.getFieldValue(TestMeta.getSectionId());        
-            if (sectionId != null && !sectionId.equals(new Integer(-1))) {
-                testDetailsDO.setSectionId(sectionId);
-            }
-                          
-        //testDetailsDO.setSectionId((Integer)rpcSend.getFieldValue(TestMeta.getSectionId()));
-        Integer tfId  = (Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId());        
-         if (tfId != null && !tfId.equals(new Integer(-1))) {
-               testDetailsDO.setTestFormatId(tfId);
-         }  
-        //testDetailsDO.setTestFormatId((Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId()));        
-        
-        Integer ttId  = (Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId());                
-          if (ttId != null && !ttId.equals(new Integer(-1))) {
-               testDetailsDO.setTestFormatId(ttId);            
-         }
-        
-        //testDetailsDO.setTestTrailerId((Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId()));
+        if (scrId != null && !scrId.equals(new Integer(-1))) {
+            testDetailsDO.setScriptletId(scrId);
+        }
+        // testDetailsDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getScriptletId()));
+        Integer sectionId = (Integer)rpcSend.getFieldValue(TestMeta.getSectionId());
+        if (sectionId != null && !sectionId.equals(new Integer(-1))) {
+            testDetailsDO.setSectionId(sectionId);
+        }
+
+        // testDetailsDO.setSectionId((Integer)rpcSend.getFieldValue(TestMeta.getSectionId()));
+        Integer tfId = (Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId());
+        if (tfId != null && !tfId.equals(new Integer(-1))) {
+            testDetailsDO.setTestFormatId(tfId);
+        }
+        // testDetailsDO.setTestFormatId((Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId()));
+
+        Integer ttId = (Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId());
+        if (ttId != null && !ttId.equals(new Integer(-1))) {
+            testDetailsDO.setTestFormatId(ttId);
+        }
+
+        // testDetailsDO.setTestTrailerId((Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId()));
         testDetailsDO.setTimeHolding((Integer)rpcSend.getFieldValue(TestMeta.getTimeHolding()));
         testDetailsDO.setTimeTaAverage((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaAverage()));
         testDetailsDO.setTimeTaMax((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaMax()));
@@ -717,38 +1238,56 @@ public class TestService implements AppScreenFormServiceInt {
     }
 
     private void setRpcErrors(List exceptionList, FormRPC rpcSend) {
-        TableModel sampleTypeTable = (TableModel)((FormRPC)rpcSend.getField("sampleAndPrep")).getField("sampleTypeTable")
-                                                                                        .getValue();
-        TableModel prepTestTable = (TableModel)((FormRPC)rpcSend.getField("sampleAndPrep")).getField("testPrepTable")
-                                                                                      .getValue();
+        TableModel sampleTypeTable = (TableModel)((FormRPC)rpcSend.getField("sampleType")).getField("sampleTypeTable")
+                                                                                             .getValue();
+        TableModel prepTestTable = (TableModel)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testPrepTable")
+                                                                                           .getValue();
         
+        TableModel testReflexTable = (TableModel)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable")
+                                                                                           .getValue();
+
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
         for (int i = 0; i < exceptionList.size(); i++) {
             if (exceptionList.get(i) instanceof TableFieldErrorException) {
                 FieldErrorException ferrex = (FieldErrorException)exceptionList.get(i);
-                
-                if (ferrex.getFieldName().startsWith(TestPrepMetaMap.getTableName()+":")){
-                  String fieldName =   ((TableFieldErrorException)exceptionList.get(i)).getFieldName().substring(TestPrepMetaMap.getTableName().length()+1);  
-                  TableRow row = prepTestTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                  row.getColumn(prepTestTable.getColumnIndexByFieldName(fieldName))
-                   .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                }else if (ferrex.getFieldName().startsWith(TestTypeOfSampleMetaMap.getTableName()+":")){
-                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName().substring(TestTypeOfSampleMetaMap.getTableName().length()+1);  
+
+                if (ferrex.getFieldName()
+                          .startsWith(TestPrepMetaMap.getTableName() + ":")) {
+                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                                                                       .substring(TestPrepMetaMap.getTableName()
+                                                                                                                 .length() + 1);
+                    TableRow row = prepTestTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                    row.getColumn(prepTestTable.getColumnIndexByFieldName(fieldName))
+                       .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                } else if (ferrex.getFieldName()
+                                 .startsWith(TestTypeOfSampleMetaMap.getTableName() + ":")) {
+                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                                                                       .substring(TestTypeOfSampleMetaMap.getTableName()
+                                                                                                                         .length() + 1);
                     TableRow row = sampleTypeTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
                     row.getColumn(sampleTypeTable.getColumnIndexByFieldName(fieldName))
-                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                  }
-              } else if (exceptionList.get(i) instanceof FieldErrorException){
+                       .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                }
+                else if (ferrex.getFieldName()
+                                .startsWith(TestReflexMetaMap.getTableName() + ":")) {
+                   String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                                                                      .substring(TestReflexMetaMap.getTableName()
+                                                                                                                        .length() + 1);
+                   TableRow row = testReflexTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                   row.getColumn(testReflexTable.getColumnIndexByFieldName(fieldName))
+                      .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+               }
+            } else if (exceptionList.get(i) instanceof FieldErrorException) {
                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
-                       .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));                
-              } 
+                       .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            }
             // if the error is on the entire form
             else if (exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }
         rpcSend.status = Status.invalid;
-    }
+    }       
 
     private void loadDropDown(List<IdNameDO> list, DataModel model) {
         DataSet blankset = new DataSet();
@@ -816,56 +1355,53 @@ public class TestService implements AppScreenFormServiceInt {
             model.add(set);
         }
     }
-    
-    private void loadPrepTestDropDown(List<QaEventTestDropdownDO> qaedDOList,DataModel model){
-       
-            DataSet blankset = new DataSet();           
-            StringObject blankStringId = new StringObject();
-                          
-             
-            blankStringId.setValue("");
-            blankset.addObject(blankStringId);
-            
-            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-            blankNumberId.setValue(new Integer(-1));
-            
 
-            blankset.setKey(blankNumberId);
-    
-            model.add(blankset);                
-    
-        int i=0;
-        while(i < qaedDOList.size()){
+    private void loadPrepTestDropDown(List<QaEventTestDropdownDO> qaedDOList,
+                                      DataModel model) {
+
+        DataSet blankset = new DataSet();
+        StringObject blankStringId = new StringObject();
+
+        blankStringId.setValue("");
+        blankset.addObject(blankStringId);
+
+        NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
+        blankNumberId.setValue(new Integer(-1));
+
+        blankset.setKey(blankNumberId);
+
+        model.add(blankset);
+
+        int i = 0;
+        while (i < qaedDOList.size()) {
             DataSet set = new DataSet();
-            
-        //id
-        Integer dropdownId = null;
-        //entry
-        String dropDownText = null;
-        //method
-        String methodName = null;
-        
-        
-            QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO) qaedDOList.get(i);
+
+            // id
+            Integer dropdownId = null;
+            // entry
+            String dropDownText = null;
+            // method
+            String methodName = null;
+
+            QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO)qaedDOList.get(i);
             dropdownId = resultDO.getId();
             dropDownText = resultDO.getTest();
             methodName = resultDO.getMethod();
-                
-        StringObject textObject = new StringObject();
-                    
-        
-        textObject.setValue(dropDownText+" / "+methodName);       
-        
-        set.addObject(textObject);            
 
-        NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
+            StringObject textObject = new StringObject();
 
-        numberId.setValue(dropdownId);
+            textObject.setValue(dropDownText + " , " + methodName);
 
-            set.setKey(numberId);           
-        
-        model.add(set);
-        i++;
-       }
+            set.addObject(textObject);
+
+            NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
+
+            numberId.setValue(dropdownId);
+
+            set.setKey(numberId);
+
+            model.add(set);
+            i++;
+        }
     }
 }

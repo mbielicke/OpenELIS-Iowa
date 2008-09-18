@@ -19,7 +19,10 @@
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.TestMetaMap"
                 xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
-                xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"                 
+                xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
+                xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" 
+                xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap"  
+                xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"              
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -38,11 +41,23 @@
 	<xalan:component prefix="testTOS">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"/>
 	</xalan:component>
+	<xalan:component prefix="testRef">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestReflexMetaMap"/>
+	</xalan:component>
+	<xalan:component prefix="testWrksht">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetMetaMap"/>
+	</xalan:component>
+	<xalan:component prefix="testWrkshtItm">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"/>
+	</xalan:component>
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="test" select="meta:new()"/>
 	   <xsl:variable name="tp" select="meta:getTestPrep($test)"/>
-	   <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)"/>	   
+	   <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)"/>	 
+	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
+	   <xsl:variable name="tws" select="meta:getTestWorksheet($test)"/> 
+	   <xsl:variable name="twsi" select="testWrksht:getTestWorksheetItem($tws)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -55,12 +70,12 @@
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'name')}" width="100%">
+						<azTable colwidths="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
-					</CollapsePanel>
+					</CollapsePanel>					
 					<VerticalPanel spacing="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
@@ -110,7 +125,9 @@
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						<VerticalPanel>
+						<HorizontalPanel padding="0" spacing="0">
+						<VerticalPanel width = "10px"/>
+						 <VerticalPanel>						
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
@@ -120,11 +137,11 @@
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
 									<textbox case="lower" key="{meta:getName($test)}" tab="{meta:getMethodId($test)},{meta:getId($test)}" max="20" width="145px"/>																	
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'method')"/>:</text>
-								   <autoDropdown case="lower" key="{meta:getMethodId($test)}" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px"/>
+								   <autoDropdown case="mixed" key="{meta:getMethodId($test)}" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px"/>
 								</row>	
 						     </TablePanel>	
-						     <!--<VerticalPanel height = "50px"/>	-->
-							<TabPanel halign="center" width = "590px" key="testTabPanel" >
+						   <VerticalPanel height = "10px"/>						   							    
+							<TabPanel halign="center" width = "585px" key="testTabPanel" >
 							 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}"  >							  
 							   <VerticalPanel padding="0" spacing="0"> 
 							    <TablePanel style="Form">								
@@ -139,11 +156,7 @@
 									<widget colspan = "2">
 										<textbox key="{meta:getReportingDescription($test)}" tab="{meta:getIsReportable($test)},{meta:getDescription($test)}" max="60" width="425px"/>
 									</widget>
-								</row>
-								<row>
-								    <text style="Prompt"><xsl:value-of select='resource:getString($constants,"reportable")'/>:</text>
-								    <check key="{meta:getIsReportable($test)}" tab="{meta:getTimeTaMax($test)},{meta:getReportingDescription($test)}"/>
-								</row>    
+								</row>								    
 								</TablePanel>
 								<HorizontalPanel>
 								<VerticalPanel style="Form">
@@ -151,13 +164,13 @@
 								 <legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"turnAround")'/></text></legend>
 								 <content><TablePanel style="Form">
 								 <row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"turnAroundMax")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"turnAroundMax")'/>:</text>
 									<textbox key="{meta:getTimeTaMax($test)}" tab="{meta:getTimeTaAverage($test)},{meta:getIsReportable($test)}" width = "50px"/>	
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'timeTransit')"/>:</text>
 									<textbox key="{meta:getTimeTransit($test)}" tab="{meta:getTimeHolding($test)},{meta:getTimeTaWarning($test)}" max="30" width="50px"/>
 								 </row>	
 								 <row>						
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"turnAroundAverage")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"turnAroundAverage")'/>:</text>
 									<textbox key="{meta:getTimeTaAverage($test)}" tab="{meta:getTimeTaWarning($test)},{meta:getTimeTaMax($test)}" width = "50px"/>
 
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'timeHolding')"/>:</text>									
@@ -165,35 +178,31 @@
 
 								 </row>
 								 <row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"turnAroundWarn")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"turnAroundWarn")'/>:</text>
 									<textbox key="{meta:getTimeTaWarning($test)}" tab="{meta:getTimeTransit($test)},{meta:getTimeTaAverage($test)}" width = "50px"/>									
-								</row>								
+								</row>	
+															
 								</TablePanel>
 								</content>
 								</titledPanel>
-								<!--<TablePanel style = "Form">								  
-								<row> 								   
-																											   
-								 </row>
-								 </TablePanel>-->
 								</VerticalPanel>
 								<VerticalPanel style="Form"> 								
 								<titledPanel key="borderedPanel1">
 								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"activity")'/></text></legend>
 								<content><TablePanel style="Form">
 								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									<check key="{meta:getIsActive($test)}" tab="{meta:getActiveBegin($test)},{meta:getTimeHolding($test)}"/>									
 								<!--</row>
 								<row>-->
 								    
 								</row>
 								<row>
-								 <text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
+								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
 								 <calendar key="{meta:getActiveBegin($test)}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" onChange="this" begin="0" end="2" width = "70px"/>																	
 								 </row>
 								 <row>
-								 <text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
+								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
 								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" onChange="this" begin="0" end="2" width = "70px"/>
 								</row>
 																						
@@ -208,13 +217,13 @@
 								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"label")'/></text></legend>
 								<content><TablePanel style="Form">
 								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
 									<widget>
 										<autoDropdown key="{meta:getLabelId($test)}" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}"  case="mixed" width="215px" />
 									</widget>
 								</row>
 								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"quantity")'/>:</text>
+									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"quantity")'/>:</text>
 									<textbox key="{meta:getLabelQty($test)}" tab="{meta:getTestTrailerId($test)},{meta:getLabelId($test)}" width = "50px"/>
 								</row>															
 								</TablePanel>
@@ -222,40 +231,45 @@
 								</titledPanel>
 								</VerticalPanel>
 								<TablePanel style = "Form">
+								<row>								    
+								</row>
+								
+								<row>
+								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'section')"/>:</text>
+								   <autoDropdown  key="{meta:getSectionId($test)}" tab="{meta:getScriptletId($test)},{meta:getTestFormatId($test)}" width="145px"/>
+								</row>								
 								<row>								  
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>
+								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>
 								   <widget>
 								    <autoDropdown key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getLabelQty($test)}" width="145px"/>
 								   </widget>
-								 </row>
-								 <row>  
+								 </row>								 								  								
+								   <!--</row> 
+								   <row>-->								  
+								 <row>	  
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>
 								   <widget> 
 								    <autoDropdown  key="{meta:getTestFormatId($test)}" tab="{meta:getSectionId($test)},{meta:getTestTrailerId($test)}" width="145px"/>
 								   </widget>
-								   </row>
-								   <row>
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'section')"/>:</text>
-								   <autoDropdown  key="{meta:getSectionId($test)}" tab="{meta:getScriptletId($test)},{meta:getTestFormatId($test)}" width="145px"/>
-								  </row> 								
-								   <!--</row> 
-								   <row>-->								  
-								 <row>
-								  								   
 								 </row>
-                                  </TablePanel>                                                                     																										
-								 </HorizontalPanel>								 
+                                 </TablePanel>                                                                     																										
+								 </HorizontalPanel>	
+								 <TablePanel style = "Form">
+								  <row>
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
+								   <autoDropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getDescription($test)},{meta:getScriptletId($test)}" width="190px"/>								   								  
+								  								
+								   <text style="Prompt" halign="left"><xsl:value-of select='resource:getString($constants,"reportable")'/>:</text>
+								   <check key="{meta:getIsReportable($test)}" tab="{meta:getTimeTaMax($test)},{meta:getReportingDescription($test)}"/>
+								  </row>						
+								 </TablePanel>	 
 		                          <TablePanel style = "Form">
 		                          <row>
 		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								   <autoDropdown key="{meta:getScriptletId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getSectionId($test)}" width="285px"/>
-								  </row>
-								   <row>
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
-								   <autoDropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getDescription($test)},{meta:getScriptletId($test)}" width="145px"/>								   
-								 </row>
+								   <autoDropdown key="{meta:getScriptletId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getSectionId($test)}" width="235px"/>
+								  </row> 								  								   
 		                         </TablePanel> 
-		                         <VerticalPanel height = "5px"/>		                         
+		                         <VerticalPanel height = "20px"/>		                         
 							  </VerticalPanel>							  							 
 							</tab>
 							<tab key="analyteTab" text="{resource:getString($constants,'testAnalyte')}">
@@ -263,10 +277,10 @@
 							<VerticalPanel style="Form">
 							 <VerticalPanel key="treeContainer" height="250px" width="375px" overflow="auto">
 							  <pagedtree key="analyteTree" vertical="true" height = "200px" width = "325px" itemsPerPage="1000" title=""/>			                   			
-							</VerticalPanel>
+							 </VerticalPanel>
 							<HorizontalPanel> 			                    
 								<widget halign="center" style="WhiteContentPanel">
-											<appButton action="removeIdentifierRow" key="removeIdentifierButton" onclick="this" style="Button">
+											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">
 												<HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
 													<text><xsl:value-of select="resource:getString($constants,'addAnalyte')"/></text>
@@ -274,7 +288,7 @@
 											</appButton>
 										</widget>	
 								<widget halign="center" style="WhiteContentPanel">
-											<appButton action="removeIdentifierRow" key="removeIdentifierButton" onclick="this" style="Button">
+											<appButton action="removeIdentifierRow" key="removeAnalyteButton" onclick="this" style="Button">
 												<HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
 													<text><xsl:value-of select="resource:getString($constants,'removeAnalyte')"/></text>
@@ -285,60 +299,9 @@
 							</VerticalPanel>							
 						  </HorizontalPanel>	 
 							</tab>
-							<tab key="sampleAndPrepTab" text="{resource:getString($constants,'sampleAndPrep')}">
+							<tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
 							 <VerticalPanel>
-							   <VerticalPanel overflow="hidden" padding="0" spacing="0">
-										<widget valign="top">
-											<table key="sampleTypeTable" manager="SampleTypeTable" maxRows="5" showError="false" showScroll="true" title="" width="auto">
-												<headers>
-													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
-													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
-												</headers>
-												<widths>255,255</widths>
-												<editors>
-													<autoDropdown case = "mixed" width="240px" />
-													<autoDropdown case = "mixed" width="240px"/>
-												</editors>
-												<fields>
-													<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
-													<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
-												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
-											</table>
-											<query>
-												<queryTable maxRows="5" showError="false" title="" width="auto">
-													<headers>
-														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
-													    <xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
-													</headers>
-													<widths>255,255</widths>
-													<editors>													
-														<autoDropdown case="mixed" multiSelect="true" width="240px"/>
-														<autoDropdown case="mixed" multiSelect="true" width="240px"/>
-													</editors>
-													<fields>
-														<xsl:value-of select='testTOS:getTypeOfSampleId($tos)'/>,
-													    <xsl:value-of select='testTOS:getUnitOfMeasureId($tos)'/>
-													</fields>
-													<sorts>false,false</sorts>
-												    <filters>false,false</filters>
-												    <colAligns>left,left</colAligns>
-												</queryTable>
-											</query>
-							 			 </widget>	
-							 			 <widget style="WhiteContentPanel" halign="center">
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="RemoveRowButtonImage"/>
-						                      <widget>
-                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </widget>
-							               </HorizontalPanel>
-						                 </appButton>
-						                </widget> 
-							 		</VerticalPanel>	
+							   <VerticalPanel overflow="hidden" padding="0" spacing="0">							    						     	
 							 		<VerticalPanel overflow="hidden" padding="0" spacing="0">
 										<widget valign="top">
 											<table key="testPrepTable" manager="TestPrepTable" maxRows="5" showError="false" showScroll="true" title="" width="auto">
@@ -346,9 +309,9 @@
 													<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,													
 													<xsl:value-of select="resource:getString($constants,'optional')"/>
 												</headers>
-												<widths>170,50</widths>
+												<widths>470,70</widths>
 												<editors>
-													<autoDropdown case="mixed" width="150px"/>
+													<autoDropdown case="mixed" width="460px"/>
 													<check/>													
 												</editors>
 												<fields>
@@ -360,14 +323,14 @@
 												<colAligns>left,left</colAligns>
 											</table>
 											 <query>
-												<queryTable maxRows="5" showError="false" title="" width="auto">
+												<queryTable maxRows="5" showError="false" title="" showScroll="true" width="auto">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,														
 														<xsl:value-of select="resource:getString($constants,'optional')"/>													
 													</headers>
-													<widths>170,50</widths>
+													<widths>470,70</widths>
 													<editors>													
-														<autoDropdown case="mixed" multiSelect="true" width="150px"/>														
+														<autoDropdown case="mixed" multiSelect="true" width="460px"/>														
 														<check threeState = "true"/>														
 													</editors>
 													<fields>
@@ -390,13 +353,224 @@
 							               </HorizontalPanel>
 						                 </appButton>
 						                </widget>
-							 		</VerticalPanel> 		
-						       </VerticalPanel>	 
+						                
+						              <widget valign="top">
+							   <table key="testReflexTable" manager="TestReflexTable" maxRows="5" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+												    <xsl:value-of select="resource:getString($constants,'reflexiveTest')"/>,
+													<xsl:value-of select="resource:getString($constants,'testAnalyte')"/>,													
+													<xsl:value-of select="resource:getString($constants,'result')"/>,
+													<xsl:value-of select="resource:getString($constants,'flags')"/>																										
+												</headers>
+												<widths>150,140,140,102</widths>
+												<editors>
+													<autoDropdown case="mixed" width="140px"/>
+													<autoDropdown case="mixed" width="120px" onchange = "this"/>
+													<autoDropdown case="mixed" width="120px"/>
+													<autoDropdown case="mixed" width="95px"/>													
+												</editors>
+												<fields>
+												    <dropdown key="{testRef:getAddTestId($tref)}" required="true"/>
+													<dropdown key="{testRef:getTestAnalyteId($tref)}" required="true"/>													
+													<dropdown key="{testRef:getTestResultId($tref)}" required="true"/>	
+													<dropdown key="{testRef:getFlagsId($tref)}" required="false"/>																									
+												</fields>
+												<sorts>false,false,false,false</sorts>
+												<filters>false,false,false,false</filters>
+												<colAligns>left,left,left,left</colAligns>
+								</table>
+								<query>
+								 <queryTable maxRows="5" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+												    <xsl:value-of select="resource:getString($constants,'reflexiveTest')"/>,
+													<xsl:value-of select="resource:getString($constants,'testAnalyte')"/>,													
+													<xsl:value-of select="resource:getString($constants,'result')"/>,
+													<xsl:value-of select="resource:getString($constants,'flags')"/>																										
+												</headers>
+												<widths>150,140,140,102</widths>
+												<editors>
+													<autoDropdown case="mixed" multiSelect="true" width="140px"/>
+													<autoDropdown case="mixed" multiSelect="true" width="120px"/>
+													<autoDropdown case="mixed" multiSelect="true" width="120px"/>
+													<autoDropdown case="mixed" multiSelect="true" width="95px"/>													
+												</editors>
+												<fields>
+												    <xsl:value-of select='testRef:getAddTestId($tref)'/>,
+													<xsl:value-of select='testRef:getTestAnalyteId($tref)'/>,													
+													<xsl:value-of select='testRef:getTestResultId($tref)'/>,	
+													<xsl:value-of select='testRef:getFlagsId($tref)'/>																									
+												</fields>
+												<sorts>false,false,false,false</sorts>
+												<filters>false,false,false,false</filters>
+												<colAligns>left,left,left,left</colAligns>
+								</queryTable>
+								</query>
+						      </widget>
+						       <widget style="WhiteContentPanel" halign="center">
+									       <appButton action="removeRow" onclick="this" style="Button" key="removeReflexTestButton">
+									        <HorizontalPanel>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+						                      <widget>
+                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							                 </widget>
+							               </HorizontalPanel>
+						                 </appButton>
+						                </widget>										 
+							 </VerticalPanel>	  
+							</VerticalPanel> 		
+						   </VerticalPanel>	 
 							</tab>
-						  </TabPanel>
-						 	
+							<tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
+							 <VerticalPanel>
+							  	<widget valign="top">
+											<table key="sampleTypeTable" manager="SampleTypeTable" maxRows="13" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
+													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
+												</headers>
+												<widths>270,270</widths>
+												<editors>
+													<autoDropdown case = "mixed" width="260px" />
+													<autoDropdown case = "mixed" width="260px"/>
+												</editors>
+												<fields>
+													<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
+													<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
+												</fields>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+											</table>
+											<query>
+												<queryTable maxRows="13" showError="false" title="" showScroll="true" width="auto">
+													<headers>
+														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
+													    <xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
+													</headers>													
+													<widths>270,270</widths>
+													<editors>													
+														<autoDropdown case="mixed" multiSelect="true" width="260px"/>
+														<autoDropdown case="mixed" multiSelect="true" width="260px"/>
+													</editors>
+													<fields>
+														<xsl:value-of select='testTOS:getTypeOfSampleId($tos)'/>,
+													    <xsl:value-of select='testTOS:getUnitOfMeasureId($tos)'/>
+													</fields>
+													<sorts>false,false</sorts>
+												    <filters>false,false</filters>
+												    <colAligns>left,left</colAligns>
+												</queryTable>
+											</query>
+							 			 </widget>	
+							 			 <widget style="WhiteContentPanel" halign="center">
+									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
+									        <HorizontalPanel>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+						                      <widget>
+                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							                 </widget>
+							               </HorizontalPanel>
+						                 </appButton>
+						                </widget>
+							 </VerticalPanel>
+							</tab>
+							<tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">							
+							<VerticalPanel>							
+							 <VerticalPanel>
+							  <TablePanel style="Form">
+							   <row>
+							     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'numberBy')"/>:</text>
+								 <widget colspan = "4">
+								  <autoDropdown case="mixed" key="{testWrksht:getNumberFormatId($tws)}" tab="{testWrksht:getBatchCapacity($tws)}, {testWrksht:getScriptletId($tws)}" width="145px"/>
+								 </widget>
+								</row>								
+								<row>								
+								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'batchCapacity')"/>:</text>																	 
+								  <widget>
+								   <textbox  key="{testWrksht:getBatchCapacity($tws)}" tab="{testWrksht:getTotalCapacity($tws)},{testWrksht:getNumberFormatId($tws)}" width="40px"/>									
+								  </widget>
+								<!--</row>
+								<row>-->
+								<widget valign="middle">								
+								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'totalCapacity')"/>:</text>									
+								</widget> 
+								<widget>
+								  <textbox key="{testWrksht:getTotalCapacity($tws)}" tab="{testWrksht:getScriptletId($tws)},{testWrksht:getBatchCapacity($tws)}" width="40px"/>																	
+								 </widget>
+								</row>	
+								<row>
+							     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
+								 <widget colspan = "3">
+								  <autoDropdown case="mixed" key="{testWrksht:getScriptletId($tws)}" tab="{testWrksht:getNumberFormatId($tws)}, {testWrksht:getTotalCapacity($tws)}" width="235px"/>
+								 </widget>
+								</row>															    
+							  </TablePanel>
+							 </VerticalPanel>
+							<VerticalPanel>
+							 <widget valign="top">
+							   <table key="worksheetTable" manager="TestWorksheetItemTable" maxRows="9" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+												    <xsl:value-of select="resource:getString($constants,'position')"/>,
+													<xsl:value-of select="resource:getString($constants,'type')"/>,													
+													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																						
+												</headers>
+												<widths>45,150,340</widths>
+												<editors>
+													<textbox/>
+													<autoDropdown case="mixed" width="120px"/>
+													<textbox/>																						
+												</editors>
+												<fields>
+												    <number key="{testWrkshtItm:getPosition($twsi)}" type="integer" required="true"/>
+													<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
+													<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>																										
+												</fields>
+												<sorts>false,false,false</sorts>
+												<filters>false,false,false</filters>
+												<colAligns>left,left,left</colAligns>
+								</table>
+								<query>
+								 <queryTable maxRows="9" showError="false" showScroll="true" title="" width="auto">
+												<headers>
+												    <xsl:value-of select="resource:getString($constants,'position')"/>,
+													<xsl:value-of select="resource:getString($constants,'type')"/>,													
+													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																							
+												</headers>
+												<widths>50,150,340</widths>
+												<editors>
+													<textbox/>
+													<autoDropdown multiSelect="true" case="mixed" width="120px"/>
+													<textbox/>													
+												</editors>
+												<fields>
+												    <xsl:value-of select='testWrkshtItm:getPosition($twsi)'/>,
+													<xsl:value-of select='testWrkshtItm:getTypeId($twsi)'/>,													
+													<xsl:value-of select='testWrkshtItm:getQcName($twsi)'/>																																						
+												</fields>
+												<sorts>false,false,false</sorts>
+												<filters>false,false,false</filters>
+												<colAligns>left,left,left</colAligns>
+								</queryTable>
+								</query>
+						      </widget>	
+							 			 <widget style="WhiteContentPanel" halign="center">
+									       <appButton action="removeRow" onclick="this" style="Button" key="removeWSItemButton">
+									        <HorizontalPanel>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+						                      <widget>
+                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							                 </widget>
+							               </HorizontalPanel>
+						                 </appButton>
+						                </widget>
+							  </VerticalPanel>
+						     </VerticalPanel>
+							</tab>
+						  </TabPanel>							  								 					    			 	
 						</VerticalPanel>
-					</VerticalPanel>
+						<VerticalPanel width = "10px"/>
+					  </HorizontalPanel>			
+					</VerticalPanel>					
 				</HorizontalPanel>
 			</display>
 			<rpc key="display">
@@ -424,9 +598,20 @@
 				<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
 			</rpc>			
-			<rpc key = "sampleAndPrep"> 
-			 <table key="sampleTypeTable"/>
+			<rpc key = "prepAndReflex"> 			 
 			 <table key="testPrepTable"/>
+			 <table key="testReflexTable"/>			 			 
+			</rpc> 
+			<rpc key = "sampleType"> 
+		 	 <table key="sampleTypeTable"/>
+			</rpc>
+			<rpc key = "worksheet">
+			 <number key="{testWrksht:getId($tws)}" required="false" type="integer"/>
+			 <dropdown key="{testWrksht:getNumberFormatId($tws)}" required="false" type="integer"/>
+			 <dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
+			 <number key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
+			 <number key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>
+		 	 <table key="worksheetTable"/>
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
@@ -452,8 +637,19 @@
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
 				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="false" type="integer"/>					
 				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" required="false" type="integer"/> 
-				<dropdown key="{testPrep:getPrepTestId($tp)}" required="false" type="integer"/>				
+				<dropdown key="{testPrep:getPrepTestId($tp)}" required="false" type="integer"/>	
+				<dropdown key="{testRef:getAddTestId($tref)}" required="false" type="integer"/>
+				<dropdown key="{testRef:getTestAnalyteId($tref)}" required="false" type="integer"/>
+				<dropdown key="{testRef:getTestResultId($tref)}" required="false" type="integer"/>
+				<dropdown key="{testRef:getFlagsId($tref)}" required="false" type="integer"/>			
 				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
+				<dropdown key="{testWrksht:getNumberFormatId($tws)}" required="false" type="integer"/>
+				<dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
+				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
+				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
+				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
+				<dropdown key="{testWrkshtItm:getTypeId($twsi)}" required="false" type="integer"/>
+				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>			
 			</rpc>
 			<rpc key="queryByLetter">
 			 <queryString key="{meta:getName($test)}"/>				
