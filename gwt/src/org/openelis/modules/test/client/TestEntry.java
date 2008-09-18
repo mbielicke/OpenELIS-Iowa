@@ -51,6 +51,21 @@ public class TestEntry implements AppModule {
                                   }
            }
        );
+        ClassFactory.addClass(new String[] {"TestReflexTable"}, 
+                              new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      return new TestReflexTable();
+                                  }
+           }
+       );
+        ClassFactory.addClass(new String[] {"TestWorksheetItemTable"}, 
+                              new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      return new TestWorksheetItemTable();
+                                  }
+           }
+       ); 
+        
 
     }
 

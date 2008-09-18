@@ -56,8 +56,8 @@
 	<display>
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
-			 		<CollapsePanel key="collapsePanel">
-						<azTable colwidths ="175" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
+			 		<CollapsePanel key="collapsePanel" height="450px">
+						<azTable colwidths ="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -110,7 +110,7 @@
 		</AbsolutePanel>
 		<!--end button panel-->
 			          		
-						<VerticalPanel spacing="0"  xsi:type="Panel">							
+						<VerticalPanel spacing="0" padding = "0" xsi:type="Panel">							
 							<TablePanel key="secMod" layout="table" style="Form"  xsi:type="Table">																							
 								<row>
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"catName")'/></text>
@@ -131,11 +131,11 @@
 								</row>						  							
 						</TablePanel>
 					</VerticalPanel>
-					<VerticalPanel height="10px"/>
+					<!--<VerticalPanel height="3px"/>-->
 					
-					<VerticalPanel  spacing="3" xsi:type="Panel">
+					<VerticalPanel  spacing="0" padding = "0" xsi:type="Panel">
 						<widget>
-							<table maxRows = "11" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="true">
+							<table maxRows = "13" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -161,7 +161,7 @@
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
 						  <query>
-						   	<queryTable width = "auto" maxRows = "11"  title="" showError="false" showScroll="true">
+						   	<queryTable width = "auto" maxRows = "13"  title="" showError="false" showScroll="true">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
