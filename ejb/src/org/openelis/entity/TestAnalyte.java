@@ -22,22 +22,25 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-@NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id")})
+@NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
+               @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
+               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(ta.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name")})
 
 @Entity
 @Table(name="test_analyte")
@@ -70,7 +73,10 @@ public class TestAnalyte implements Auditable, Cloneable {
   @Column(name="scriptlet_id")
   private Integer scriptletId;             
 
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analyte_id",insertable = false, updatable = false)
+  private Analyte analyte;
+  
   @Transient
   private TestAnalyte original;
 
@@ -105,7 +111,7 @@ public class TestAnalyte implements Auditable, Cloneable {
   public Integer getSortOrder() {
     return sortOrder;
   }
-  public void setSortOrder(Integer sortOrder) {
+  public void setsortOrder(Integer sortOrder) {
     if((sortOrder == null && this.sortOrder != null) || 
        (sortOrder != null && !sortOrder.equals(this.sortOrder)))
       this.sortOrder = sortOrder;
@@ -165,7 +171,7 @@ public class TestAnalyte implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
 
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
@@ -186,5 +192,11 @@ public class TestAnalyte implements Auditable, Cloneable {
   public String getTableName() {
     return "test_analyte";
   }
+public Analyte getAnalyte() {
+    return analyte;
+}
+public void setAnalyte(Analyte analyte) {
+    this.analyte = analyte;
+}
   
 }   

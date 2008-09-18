@@ -31,6 +31,8 @@ public class TestIdNameMethodIdDO implements Serializable {
     
     protected Integer methodId;
     
+    protected Boolean delete = false;
+    
     public TestIdNameMethodIdDO(){               
         
     }
@@ -63,6 +65,14 @@ public class TestIdNameMethodIdDO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
     }
 
 }

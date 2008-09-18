@@ -22,19 +22,27 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+@NamedQueries({@NamedQuery(name = "TestReflex.TestReflexDOList", 
+                 query = "select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
+                         " tr.testResultId, tr.flagsId, tr.addTestId, r.value) " +
+                         " from TestReflex tr left join tr.testResult r where tr.testId = :testId")})
 
 @Entity
 @Table(name="test_reflex")
@@ -61,6 +69,13 @@ public class TestReflex implements Auditable, Cloneable {
   @Column(name="add_test_id")
   private Integer addTestId;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "flags_id",insertable = false, updatable = false)
+  private Dictionary dictionary;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_result_id",insertable = false, updatable = false)
+  private TestResult testResult;
 
   @Transient
   private TestReflex original;
@@ -155,5 +170,17 @@ public class TestReflex implements Auditable, Cloneable {
   public String getTableName() {
     return "test_reflex";
   }
+public Dictionary getDictionary() {
+    return dictionary;
+}
+public void setDictionary(Dictionary dictionary) {
+    this.dictionary = dictionary;
+}
+public TestResult getTestResult() {
+    return testResult;
+}
+public void setTestResult(TestResult testResult) {
+    this.testResult = testResult;
+}
   
 }   

@@ -20,12 +20,12 @@ package org.openelis.entity;
   * TestWorksheetItem Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -57,8 +57,7 @@ public class TestWorksheetItem implements Auditable, Cloneable {
 
   @Column(name="qc_name")
   private String qcName;             
-
-
+  
   @Transient
   private TestWorksheetItem original;
 

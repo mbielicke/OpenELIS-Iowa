@@ -43,7 +43,8 @@ import org.openelis.utils.Auditable;
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
 @NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.typeId,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
-                                                             "  from QaEvent q where q.id = :id")})
+                                                             "  from QaEvent q where q.id = :id"),
+               @NamedQuery(name = "QaEvent.IdByTestId", query = "select q.id from QaEvent q where q.testId = :testId")})
                
 public class QaEvent implements Auditable, Cloneable {
   

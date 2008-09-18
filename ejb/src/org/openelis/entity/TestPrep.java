@@ -31,14 +31,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional) " 
-    + "  from TestPrep tp where tp.testId = :id ")
+@NamedQueries({@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional) " 
+                                                       + "  from TestPrep tp where tp.testId = :id "),
+               @NamedQuery(name = "TestPrep.TestPrepByTestId", query = "from TestPrep tp where tp.testId = :testId")})
     
 @Entity
 @Table(name="test_prep")

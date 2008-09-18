@@ -26,10 +26,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.persistence.CachingManager;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
