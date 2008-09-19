@@ -1,3 +1,18 @@
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.domain;
 
 import java.io.Serializable;
@@ -12,18 +27,18 @@ public class ShippingAddAutoFillDO implements Serializable{
     
     protected Integer status;
     protected Datetime processedDate;
-    protected Datetime shippedDate;
     protected String processedBy;
+    protected Integer systemUserId;
     
     public ShippingAddAutoFillDO(){
         
     }
     
-    public ShippingAddAutoFillDO(Integer status, Date processedDate, Date shippedDate, String processedBy){
+    public ShippingAddAutoFillDO(Integer status, Date processedDate, String processedBy, Integer systemUserId){
         setStatus(status);
         setProcessedDate(processedDate);
-        setShippedDate(shippedDate);
         setProcessedBy(processedBy);
+        setSystemUserId(systemUserId);
     }
 
     public String getProcessedBy() {
@@ -42,19 +57,19 @@ public class ShippingAddAutoFillDO implements Serializable{
         this.processedDate = new Datetime(Datetime.YEAR, Datetime.DAY, processedDate);
     }
 
-    public Datetime getShippedDate() {
-        return shippedDate;
-    }
-
-    public void setShippedDate(Date shippedDate) {
-        this.shippedDate = new Datetime(Datetime.YEAR, Datetime.DAY, shippedDate);
-    }
-
     public Integer getStatus() {
         return status;
     }
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getSystemUserId() {
+        return systemUserId;
+    }
+
+    public void setSystemUserId(Integer systemUserId) {
+        this.systemUserId = systemUserId;
     }
 }

@@ -24,15 +24,29 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap{
     
     public OrganizationMetaMap() {
         super("o.");
+        ADDRESS = new AddressMeta("o.address.");
+        PARENT_ORGANIZATION = new OrganizationMeta("o.parentOrganization.");
+        ORGANIZATION_CONTACT = new OrganizationContactMetaMap("contacts.");
+        NOTE = new NoteMeta("notes.");
+
     }
     
-    public AddressMeta ADDRESS = new AddressMeta("o.address.");
+    public OrganizationMetaMap(String path) {
+        super(path);
+        
+        ADDRESS = new AddressMeta(path+"address.");
+        PARENT_ORGANIZATION = new OrganizationMeta(path+"parentOrganization.");
+        ORGANIZATION_CONTACT = new OrganizationContactMetaMap("contacts.");
+        NOTE = new NoteMeta("notes.");
+    }
     
-    public OrganizationMeta PARENT_ORGANIZATION = new OrganizationMeta("o.parentOrganization.");
+    public AddressMeta ADDRESS;
     
-    public OrganizationContactMetaMap ORGANIZATION_CONTACT = new OrganizationContactMetaMap("contacts.");
+    public OrganizationMeta PARENT_ORGANIZATION;
     
-    public NoteMeta NOTE = new NoteMeta("notes.");
+    public OrganizationContactMetaMap ORGANIZATION_CONTACT;
+    
+    public NoteMeta NOTE;
 
     public AddressMeta getAddress() {
         return ADDRESS;
@@ -55,9 +69,9 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap{
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith("o.address."))
+        if(name.startsWith(path+"address."))
             return ADDRESS.hasColumn(name);
-        if(name.startsWith("o.parentOrganization."))
+        if(name.startsWith(path+"parentOrganization."))
             return PARENT_ORGANIZATION.hasColumn(name);
         if(name.startsWith("notes."))
             return NOTE.hasColumn(name);
