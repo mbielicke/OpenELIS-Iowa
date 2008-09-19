@@ -56,6 +56,7 @@ import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
+import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
@@ -478,6 +479,10 @@ public class TestBean implements TestRemote {
       validateTestPrep(exceptionList,prepTestDOList);
      if(testReflexDOList!=null)
       validateTestReflex(exceptionList,testReflexDOList);  
+     if(worksheetDO!=null)
+         validateTestWorksheet(exceptionList,worksheetDO);
+     if(itemDOList!=null)
+         validateTestWorksheetItems(exceptionList,itemDOList);
      return exceptionList;
     }
 
@@ -496,6 +501,10 @@ public class TestBean implements TestRemote {
          validateTestPrep(exceptionList,prepTestDOList);
         if(testReflexDOList!=null)
             validateTestReflex(exceptionList,testReflexDOList); 
+        if(worksheetDO!=null)
+            validateTestWorksheet(exceptionList,worksheetDO);
+        if(itemDOList!=null)
+            validateTestWorksheetItems(exceptionList,itemDOList);
         return exceptionList;
     }    
     
@@ -647,12 +656,91 @@ public class TestBean implements TestRemote {
       }
     
     public void validateTestWorksheet(List<Exception> exceptionList,TestWorksheetDO worksheetDO){
+        boolean checkForMultiple = true;
+        if(worksheetDO.getBatchCapacity()==null){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+               "worksheet:" + TestMeta.getTestWorksheet().getBatchCapacity()));
+            checkForMultiple = false;
+        }
+        if(worksheetDO.getTotalCapacity()==null){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+               "worksheet:" + TestMeta.getTestWorksheet().getTotalCapacity()));
+            checkForMultiple = false;
+        }
+        
+        if(worksheetDO.getBatchCapacity()!=null && worksheetDO.getBatchCapacity() <= 0){
+            exceptionList.add(new FieldErrorException("batchCapacityMoreThanZeroException",
+               "worksheet:" + TestMeta.getTestWorksheet().getBatchCapacity()));
+            checkForMultiple = false;
+        }
+        
+        if(worksheetDO.getTotalCapacity()!=null && worksheetDO.getTotalCapacity() <= 0){
+            exceptionList.add(new FieldErrorException("totalCapacityMoreThanZeroException",
+               "worksheet:" + TestMeta.getTestWorksheet().getTotalCapacity()));
+            checkForMultiple = false;
+        }
+        
+        if(worksheetDO.getNumberFormatId()==null){
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+               "worksheet:" + TestMeta.getTestWorksheet().getNumberFormatId()));
+        }
+        
+        if(checkForMultiple){
+            if((worksheetDO.getTotalCapacity()%worksheetDO.getBatchCapacity())!=0){
+                exceptionList.add(new FieldErrorException("totalCapacityMultipleException",
+                 "worksheet:" + TestMeta.getTestWorksheet().getTotalCapacity()));
+            }
+        }
+        
         
     }
     
     public void validateTestWorksheetItems(List<Exception> exceptionList,
                                            List<TestWorksheetItemDO> itemDOList) {
-        
+        for(int i = 0; i < itemDOList.size(); i++){
+            TestWorksheetItemDO itemDO = itemDOList.get(i);
+            boolean checkPosition = true; 
+            if(itemDO.getQcName()==null || ("").equals(itemDO.getQcName())){
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
+                .getTestWorksheetItem().getQcName()));
+            }
+            if(itemDO.getTypeId()==null){
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
+                 .getTestWorksheetItem().getTypeId()));
+                checkPosition = false;    
+            }
+            
+            
+            if(itemDO.getPosition()!=null && itemDO.getPosition()<= 0){
+                exceptionList.add(new TableFieldErrorException("posMoreThanZeroException", i,
+                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
+                 .getTestWorksheetItem().getPosition()));  
+                checkPosition = false;
+            }
+            
+            if(checkPosition){
+                Query query = manager.createNamedQuery("Dictionary.SystemNameById");
+                query.setParameter("id", itemDO.getTypeId());
+                String sysName = (String)query.getSingleResult();
+             if(itemDO.getPosition()==null){
+                    if("pos_duplicate".equals(sysName)||"pos_fixed".equals(sysName)){
+                        exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException", i,
+                         TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
+                         .getTestWorksheetItem().getPosition()));
+                    }
+                }   
+             if(itemDO.getPosition()!=null && itemDO.getPosition() == 1){               
+               if("pos_duplicate".equals(sysName)){
+                   exceptionList.add(new TableFieldErrorException("posOneDuplicateException", i,
+                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
+                    .getTestWorksheetItem().getTypeId()));
+               }                              
+            }
+             
+          } 
+        }
     }
 
     public TestWorksheetDO getTestWorksheet(Integer testId) {

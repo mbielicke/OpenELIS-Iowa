@@ -20,8 +20,6 @@ package org.openelis.entity;
   * TestWorksheetItem Entity POJO for database 
   */
 
-import java.util.Collection;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.util.XMLUtil;
