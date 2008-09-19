@@ -1,4 +1,18 @@
-
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.entity;
 
 /**
@@ -14,13 +28,23 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Shipping.Shipping", query = "select new org.openelis.domain.ShippingDO(s.id, s.statusId, s.shippedFromId, s.shippedToId, shipTo.name, " +
+            " s.processedById, s.processedDate, s.shippedMethodId, s.shippedDate, s.numberOfPackages, s.cost, shipTo.address.multipleUnit, shipTo.address.streetAddress, " +
+            " shipTo.address.city, shipTo.address.state, shipTo.address.zipCode) from Shipping s LEFT JOIN s.shipTo shipTo where s.id = :id")})
+              
 @Entity
 @Table(name="shipping")
 @EntityListeners({AuditUtil.class})
@@ -53,10 +77,14 @@ public class Shipping implements Auditable, Cloneable {
   private Date shippedDate;             
 
   @Column(name="number_of_packages")
-  private Short numberOfPackages;  
+  private Integer numberOfPackages;  
   
   @Column(name="cost")
   private Double cost;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "shipped_to_id", insertable = false, updatable = false)
+  private Organization shipTo;
 
   @Transient
   private Shipping original;
@@ -110,12 +138,12 @@ public class Shipping implements Auditable, Cloneable {
   public Datetime getProcessedDate() {
     if(processedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,processedDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,processedDate);
   }
-  public void setProcessedDate (Datetime processed_date){
-    if((processedDate == null && this.processedDate != null) || 
-       (processedDate != null && !processedDate.equals(this.processedDate)))
-      this.processedDate = processed_date.getDate();
+  public void setProcessedDate (Datetime processedDate){
+    if((processedDate == null && this.processedDate != null) || (processedDate != null && this.processedDate == null) || 
+       (processedDate != null && !processedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.processedDate))))
+      this.processedDate = processedDate.getDate();
   }
 
   public Integer getShippedMethodId() {
@@ -130,18 +158,18 @@ public class Shipping implements Auditable, Cloneable {
   public Datetime getShippedDate() {
     if(shippedDate == null)
       return null;
-    return new Datetime(Datetime.YEAR,Datetime.SECOND,shippedDate);
+    return new Datetime(Datetime.YEAR,Datetime.DAY,shippedDate);
   }
-  public void setShippedDate (Datetime shipped_date){
-    if((shippedDate == null && this.shippedDate != null) || 
-       (shippedDate != null && !shippedDate.equals(this.shippedDate)))
-      this.shippedDate = shipped_date.getDate();
+  public void setShippedDate (Datetime shippedDate){
+    if((shippedDate == null && this.shippedDate != null) || (shippedDate != null && this.shippedDate == null) || 
+       (shippedDate != null && !shippedDate.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.shippedDate))))
+      this.shippedDate = shippedDate.getDate();
   }
 
-  public Short getNumberOfPackages() {
+  public Integer getNumberOfPackages() {
     return numberOfPackages;
   }
-  public void setNumberOfPackages(Short numberOfPackages) {
+  public void setNumberOfPackages(Integer numberOfPackages) {
     if((numberOfPackages == null && this.numberOfPackages != null) || 
        (numberOfPackages != null && !numberOfPackages.equals(this.numberOfPackages)))
       this.numberOfPackages = numberOfPackages;

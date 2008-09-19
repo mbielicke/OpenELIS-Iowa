@@ -58,11 +58,11 @@ import org.openelis.utils.Auditable;
                                " ii.storeId = dictStore.id and ii.dispensedUnitsId = dicDisUnits.id " +                                
                                " and oi.id = :id order by o.id "),
     @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
-                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' and " + 
+                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
                             " oi.quantityRequested > (SELECT sum(tr.quantity) FROM TransReceiptOrder tr where tr.orderItemId = oi.id) " + 
                             " and o.id = :id"),
     @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
-                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_completed' " +
+                            " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' " +
                             " and o.id = :id"),
     @NamedQuery(name = "InventoryReceipt.InventoryItemByUPC", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
                             " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +

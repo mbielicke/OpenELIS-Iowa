@@ -247,13 +247,7 @@ public class OrganizationBean implements OrganizationRemote {
         QueryBuilder qb = new QueryBuilder();
 
         qb.setMeta(OrgMeta);
- 
-        /*
-         * o.id, oi.inventoryItemId, oi.inventoryItem.name,
-         * oi.id, o.organizationId,orgz.name,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state,
-         * orgz.address.zipCode, ii.description, dictStore.entry, dictPurch.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained
-         */
-        
+      
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
        
         //this method is going to throw an exception if a column doesnt match

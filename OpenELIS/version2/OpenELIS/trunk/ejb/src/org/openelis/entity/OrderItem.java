@@ -45,7 +45,8 @@ import org.w3c.dom.Element;
                             " left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where oi.inventoryItem.storeId = d.id and oi.orderId = :id"),
     @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
-                            " d.entry, o.catalogNumber, o.unitCost) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id")})
+                            " d.entry, o.catalogNumber, o.unitCost) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id"),
+    @NamedQuery(name = "OrderItem.OrderItemName", query = "select ii.name from OrderItem o left join o.inventoryItem ii where o.id = :id")})
                             
                             
 @Entity
