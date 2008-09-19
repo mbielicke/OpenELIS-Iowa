@@ -52,7 +52,8 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Dictionary.IdBySystemName", query = "select d.id from Dictionary d where d.systemName = :systemName"),
 @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
 @NamedQuery(name = "Dictionary.CategoryIdBySystemName", query = "select d.categoryId from Dictionary d where d.systemName = :systemName"),
-@NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.categoryId from Dictionary d where d.entry = :entry")})
+@NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.categoryId from Dictionary d where d.entry = :entry"),
+@NamedQuery(name = "Dictionary.SystemNameById", query = "select d.systemName from Dictionary d where d.id = :id")})
 
 @Entity
 @Table(name="dictionary")
