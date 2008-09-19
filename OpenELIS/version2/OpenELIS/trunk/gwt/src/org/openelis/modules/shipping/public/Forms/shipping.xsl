@@ -18,8 +18,7 @@
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.ShippingMetaMap" 
-                xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap" 
-                xmlns:orgMeta="xalan://org.openelis.metamap.OrderOrganizationMetaMap"
+                xmlns:orgMeta="xalan://org.openelis.metamap.OrganizationMetaMap"
                 xmlns:addr="xalan://org.openelis.meta.AddressMeta"
                 xmlns:trackingMeta="xalan://org.openelis.meta.ShippingTrackingMeta" 
                 xmlns:shippingItemMeta="xalan://org.openelis.meta.ShippingItemMeta" 
@@ -38,13 +37,14 @@
   <xalan:component prefix="meta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ShippingMetaMap"/>
   </xalan:component>
-  
+  <!--
+  xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap" 
   <xalan:component prefix="orderMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
   </xalan:component>
-  
+  -->
   <xalan:component prefix="orgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addr">
@@ -61,8 +61,8 @@
   
   <xsl:template match="doc"> 
     <xsl:variable name="shipping" select="meta:new()"/>
-    <xsl:variable name="order" select="meta:getOrderMeta($shipping)"/>
-    <xsl:variable name="organization" select="orderMeta:getOrderOrganization($order)"/>
+<!--    <xsl:variable name="order" select="meta:getOrderMeta($shipping)"/>-->
+    <xsl:variable name="organization" select="meta:getOrganizationMeta($shipping)"/>
     <xsl:variable name="orgAddress" select="orgMeta:getAddress($organization)"/>
     <xsl:variable name="tracking" select="meta:getTrackingMeta($shipping)"/>
     <xsl:variable name="items" select="meta:getShippingItemMeta($shipping)"/>
@@ -122,26 +122,38 @@
 						<HorizontalPanel style="FormVerticalSpacing"/>
 					</row>
 					<row>								
-						<text style="Prompt">Status:</text>
-						<autoDropdown key="{meta:getStatusId($shipping)}" case="mixed" width="90px" popWidth="auto" tab="{meta:getNumberOfPackages($shipping)},{meta:getShippedMethodId($shipping)}"/>
-						<text style="Prompt"># of Packages:</text>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
+						<autoDropdown key="{meta:getStatusId($shipping)}" case="mixed" width="90px" popWidth="auto" tab="{meta:getShippedDate($shipping)},{meta:getShippedMethodId($shipping)}"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedDate')"/>:</text>
 						<widget colspan="3">
-							<textbox case="mixed" key="{meta:getNumberOfPackages($shipping)}" width="60px" tab="{orderMeta:getShipFromId($order)},{meta:getStatusId($shipping)}"/>
+							<calendar key="{meta:getShippedDate($shipping)}" width="80px" begin="0" end="2" tab="{meta:getNumberOfPackages($shipping)},{meta:getStatusId($shipping)}"/>						
 						</widget>
 					</row>
 					<row>								
-						<text style="Prompt">Ship From:</text>
-						<autoDropdown key="{orderMeta:getShipFromId($order)}" case="mixed" width="172px" popWidth="auto" tab="{orgMeta:getName($organization)},{meta:getNumberOfPackages($shipping)}"/>
-						<text style="Prompt">Shipped To:</text>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'numPackages')"/>:</text>
+						<textbox case="mixed" key="{meta:getNumberOfPackages($shipping)}" width="60px" tab="{meta:getCost($shipping)},{meta:getShippedDate($shipping)}"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'cost')"/>:</text>
 						<widget colspan="3">
-							<autoDropdown key="{orgMeta:getName($organization)}" case="mixed" width="172px" popWidth="auto" tab="{meta:getProcessedDate($shipping)},{orderMeta:getShipFromId($order)}">
+							<textbox case="mixed" key="{meta:getCost($shipping)}" width="60px" tab="{meta:getShippedFromId($shipping)},{meta:getNumberOfPackages($shipping)}"/>
+						</widget>
+					</row>						
+					<row>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedFrom')"/>:</text>
+						<autoDropdown key="{meta:getShippedFromId($shipping)}" case="mixed" width="172px" popWidth="auto" tab="{orgMeta:getName($organization)},{meta:getCost($shipping)}"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedTo')"/>:</text>
+						<widget colspan="3">
+							<autoDropdown case="upper" cat="shippedTo" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.shipping.server.ShippingService" width="172px" tab="{meta:getProcessedDate($shipping)},{meta:getShippedFromId($shipping)}">
 								<headers>Name,Street,City,St</headers>
 								<widths>180,110,100,20</widths>
 							</autoDropdown>
+							<query>
+								<textbox case="upper" width="198px"/>
+							</query>
+							
 						</widget>
 					</row>
 					<row>								
-						<text style="Prompt">Processed Date:</text>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'processedDate')"/>:</text>
 						<calendar key="{meta:getProcessedDate($shipping)}" width="80px" begin="0" end="2" tab="{meta:getProcessedById($shipping)},{orgMeta:getName($organization)}"/>		
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
@@ -149,24 +161,25 @@
 						</widget>						
 					</row>
 					<row>
-						<text style="Prompt">Processed By:</text>
-						<textbox case="mixed" key="{meta:getProcessedById($shipping)}" width="203px" tab="{meta:getShippedDate($shipping)},{meta:getProcessedDate($shipping)}"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'processedBy')"/>:</text>
+						<textbox case="mixed" key="{meta:getProcessedById($shipping)}" width="203px" tab="{meta:getShippedMethodId($shipping)},{meta:getProcessedDate($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 						<widget colspan="3">
 							<textbox case="upper" key="{addr:getStreetAddress($orgAddress)}" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 						</widget>	
 					</row>
 					<row>
-						<text style="Prompt">Shipped Date:</text>
-						<calendar key="{meta:getShippedDate($shipping)}" width="80px" begin="0" end="2" tab="{meta:getShippedMethodId($shipping)},{meta:getProcessedById($shipping)}"/>
+						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedMethod')"/>:</text>
+						<autoDropdown key="{meta:getShippedMethodId($shipping)}" case="mixed" width="140px" popWidth="auto" tab="{meta:getStatusId($shipping)},{meta:getProcessedById($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
 							<textbox case="upper" key="{addr:getCity($orgAddress)}" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 						</widget>
 					</row>
 					<row>								
-						<text style="Prompt">Shipped Method:</text>
-						<autoDropdown key="{meta:getShippedMethodId($shipping)}" case="mixed" width="140px" popWidth="auto" tab="{meta:getStatusId($shipping)},{meta:getShippedDate($shipping)}"/>
+						<widget colspan="2">
+						<HorizontalPanel/>
+						</widget>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
 							<textbox case="mixed" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -179,10 +192,10 @@
 					<row>	
 						<widget colspan="3">
 							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
-								<headers>Items Shipped</headers>
+								<headers><xsl:value-of select="resource:getString($constants,'itemsShipped')"/></headers>
 								<widths>395</widths>
 								<editors>
-									<textbox case="mixed"/>
+									<label/>
 								</editors>
 								<fields>
 									<string key="test" required="true"/>
@@ -194,7 +207,7 @@
 						</widget>	
 						<widget valign="top" colspan="3">						
 						<table key="trackingNumbersTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
-							<headers>Tracking #'s</headers>
+							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
 							<editors>
 								<textbox case="mixed"/>
@@ -214,9 +227,11 @@
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
+		<number key="{meta:getId($shipping)}" type="integer" required="false"/>
 		<dropdown key="{meta:getStatusId($shipping)}" required="true"/>
 		<number key="{meta:getNumberOfPackages($shipping)}" type="integer" required="true"/>
-		<dropdown key="{orderMeta:getShipFromId($order)}" required="true"/>
+		<number key="{meta:getCost($shipping)}" type="double" required="false"/>
+		<dropdown key="{meta:getShippedFromId($shipping)}" required="true"/>
 		<dropdown key="{orgMeta:getName($organization)}" required="true"/>
 		<date key="{meta:getProcessedDate($shipping)}" begin="0" end="2" required="false"/>
 	    <string key="{meta:getProcessedById($shipping)}" required="false"/>
@@ -227,18 +242,19 @@
 	    <string key="{addr:getCity($orgAddress)}" required="false"/>
 	    <string key="{addr:getState($orgAddress)}" required="false"/>
 	    <string key="{addr:getZipCode($orgAddress)}" required="false"/>
-	
+        <number key="systemUserId" type="integer" required="false"/>
+
     	<table key="itemsTable"/>
 	   	<table key="trackingNumbersTable"/>
 	</rpc>
 	<rpc key="query">
-		<dropdown key="{meta:getStatusId($shipping)}" required="false"/>
-		<queryNumber key="{meta:getNumberOfPackages($shipping)}" type="integer" required="false"/>
-		<dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
-		<dropdown key="{orgMeta:getName($organization)}" required="false"/>
-		<queryDate key="{meta:getProcessedDate($shipping)}" begin="0" end="2" required="false"/>
-	    <queryString key="{meta:getProcessedById($shipping)}" required="false"/>
-   	    <queryDate key="{meta:getShippedDate($shipping)}" begin="0" end="2" required="false"/>
+		<dropdown key="{meta:getStatusId($shipping)}"/>
+		<queryNumber key="{meta:getNumberOfPackages($shipping)}" type="integer"/>
+		<queryNumber key="{meta:getCost($shipping)}" type="double"/>
+		<dropdown key="{meta:getShippedFromId($shipping)}"/>
+		<queryString key="{orgMeta:getName($organization)}"/>
+		<queryDate key="{meta:getProcessedDate($shipping)}" begin="0" end="2"/>
+   	    <queryDate key="{meta:getShippedDate($shipping)}" begin="0" end="2"/>
 	    <dropdown key="{meta:getShippedMethodId($shipping)}" required="false"/>
 	</rpc>
 </screen>

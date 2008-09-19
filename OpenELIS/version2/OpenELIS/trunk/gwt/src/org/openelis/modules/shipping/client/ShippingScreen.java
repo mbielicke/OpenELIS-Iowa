@@ -21,11 +21,14 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -38,10 +41,12 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager{
+public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager, ChangeListener{
 
     private static boolean loaded = false;
     
@@ -49,17 +54,23 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     private boolean loadedFromAnotherScreen = false;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
+    private DataModel itemsShippedModel;
+    
+    private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
+    private AutoCompleteDropdown shippedToDropdown;
     
     private AutoCompleteDropdown statusDropdown;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
     private EditTable itemsController, trackingNumbersController;
     
+    private KeyListManager keyList = new KeyListManager();
+    
     public ShippingScreen() {
         super("org.openelis.modules.shipping.server.ShippingService", !loaded);
     }
     
-    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText) {
+    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText, DataModel itemsShippedModel) {
         super("org.openelis.modules.shipping.server.ShippingService", !loaded);
         loadedFromAnotherScreen = true;
         
@@ -71,24 +82,59 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         this.cityText = cityText;
         this.stateText = stateText;
         this.zipCodeText = zipCodeText;
+        this.itemsShippedModel = itemsShippedModel;
     }
     
     public void onClick(Widget sender) {
     
     }
     
+    public void onChange(Widget sender) {
+        super.onChange(sender);
+        
+        if(sender == shippedToDropdown){
+            if(shippedToDropdown.getSelected().size() > 0){
+                DataSet selectedRow = (DataSet)shippedToDropdown.getSelected().get(0);
+                
+                //load address
+                shippedToAddress.setText((String)((StringObject)selectedRow.getObject(1)).getValue());
+                //load city
+                shippedToCity.setText((String)((StringObject)selectedRow.getObject(2)).getValue());
+                //load state
+                shippedToState.setText((String)((StringObject)selectedRow.getObject(3)).getValue());               
+                //load apt/suite
+                shippedToAptSuite.setText((String)((StringObject)selectedRow.getObject(4)).getValue());
+                //load zipcode
+                shippedToZipCode.setText((String)((StringObject)selectedRow.getObject(5)).getValue());
+            }            
+        }   
+    }
+    
     public void afterDraw(boolean success) {
         AutoCompleteDropdown drop;
         loaded = true;
+        
+        //shipped to address fields
+        shippedToAptSuite  = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit());
+        shippedToAddress = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress());
+        shippedToCity = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity());
+        shippedToState = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getState());
+        shippedToZipCode = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode());
+        
+        shippedToDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.ORGANIZATION_META.getName());
 
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
 
         trackingNumbersController = ((TableWidget)getWidget("trackingNumbersTable")).controller;
-        trackingNumbersController.setAutoAdd(false);
+        addCommandListener(trackingNumbersController);
 
-        addCommandListener((ButtonPanel)getWidget("buttons"));
-        ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(keyList);
+        chain.addCommand(bpanel);
         
         statusDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.getStatusId()); 
         
@@ -107,7 +153,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         //
         // ship from dropdown
         //
-        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.ORDER_META.getShipFromId());
+        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getShippedFromId());
         drop.setModel(shipFromDropdownModel);
         
         //
@@ -135,24 +181,12 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
                DataModel model = (DataModel) ((ModelObject)result).getValue();
                DataSet set = model.get(0);
                
-               /*
-               set.addObject(status);
-               set.addObject(processedDate);
-               set.addObject(processedBy);
-               set.addObject(shippedDate);
-               */
-
-               //load the values
-               //status.load((DropDownField)set.getObject(0));
-               //orderDate.load((StringField)set.getObject(1));
-               //requestedBy.load((StringField)set.getObject(2));
-               
                //set the values in the rpc
                rpc.setFieldValue(ShippingMeta.getStatusId(), (Integer)((DropDownField)set.getObject(0)).getValue());
                rpc.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.getObject(1)).getValue());
                rpc.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.getObject(2)).getValue());
-               rpc.setFieldValue(ShippingMeta.getShippedDate(), (DatetimeRPC)((DateField)set.getObject(3)).getValue());
-               
+               rpc.setFieldValue("systemUserId", (Integer)((NumberField)set.getObject(3)).getValue());
+                            
                loadScreen(rpc);
                
                window.setStatus("","");
@@ -170,7 +204,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         add();
         
         //set the values after the screen is in add mode
-        rpc.setFieldValue(ShippingMeta.ORDER_META.getShipFromId(), shipFromId);
+        rpc.setFieldValue(ShippingMeta.getShippedFromId(), shipFromId);
         
         if(shipToId != null){
             DataSet shipToSet = new DataSet();
@@ -180,14 +214,15 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
             text.setValue(shipToText);
             shipToSet.setKey(id);
             shipToSet.addObject(text);
-            rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.getName(), shipToSet);
+            rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), shipToSet);
         }
         
-        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnitText);
-        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddressText);
-        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getCity(), cityText);
-        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getState(), stateText);
-        rpc.setFieldValue(ShippingMeta.ORDER_META.ORDER_ORGANIZATION_META.ADDRESS.getZipCode(), zipCodeText);
+        rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnitText);
+        rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddressText);
+        rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity(), cityText);
+        rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState(), stateText);
+        rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode(), zipCodeText);
+        loadItemsShippedTableFromModel(itemsShippedModel);
 
         loadScreen(rpc);
     }
@@ -290,5 +325,20 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     //
     //end table manager methods
     //
+    
+    private void loadItemsShippedTableFromModel(DataModel model){
+        itemsController.model.reset();
+        for(int i=0; i<model.size(); i++){
+            DataSet set = model.get(i);
+            
+            TableRow tableRow = new TableRow();     
+            
+            tableRow.addColumn((StringField)set.getObject(0));
+            tableRow.addHidden("referenceTableId", (NumberField)set.getObject(3));
+            tableRow.addHidden("referenceId", (NumberField)set.getKey());
+            
+            ((EditTable)itemsController).addRow(tableRow);
+        }
+    }
     
 }

@@ -126,7 +126,6 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         // disable auto add and make sure there are no rows in the table
         //
         contactsController = ((TableWidget)getWidget("contactsTable")).controller;
-        contactsController.setAutoAdd(false);
         ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
         addCommandListener(contactsController);
 
