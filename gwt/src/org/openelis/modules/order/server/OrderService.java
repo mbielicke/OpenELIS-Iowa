@@ -268,7 +268,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && !originalStatus.equals(orderDO.getStatusId())){
             CategoryRemote catRemote = (CategoryRemote) EJBFactory.lookup("openelis/CategoryBean/remote");
             try {
-                Integer completedStatusId = catRemote.getEntryIdForSystemName("order_status_completed");
+                Integer completedStatusId = catRemote.getEntryIdForSystemName("order_status_processed");
                 
                 if(orderDO.getStatusId().equals(completedStatusId)){
                     //validate the quantities

@@ -25,8 +25,10 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.common.data.TableRow;
@@ -37,7 +39,6 @@ import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableAutoDropdown;
@@ -59,10 +60,20 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
+    private static Integer orderItemReferenceTableId;
+    private static DropDownField pendingStatusField;
+    private DataModel selectedOrderItems = new DataModel();
+    private List checkedOrderIds = new ArrayList();
+    ScreenTableWidget fillItemsTable;
+    private boolean ranAction = false;
+    private int lastIndex = -2;
+    private boolean checked = false;
+    private boolean clicked = false;
+    private boolean ranFinishedEditing = true;
     
     private FillOrderMetaMap OrderMeta = new FillOrderMetaMap();
     
-    private EditTable fillItemsController;
+    private EditTable fillItemsController, orderItemsController;
     
     private TextBox requestedByText, orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText;
     private AutoCompleteDropdown costCenterDrop;
@@ -84,12 +95,21 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     }      
     
     public void onClick(Widget sender) {
+        /*if(sender instanceof CheckBox){
+            Window.alert("onClick() - ranFinsiedEditing("+ranFinishedEditing+")");
+            if(!ranFinishedEditing){
+                ranAction = true;
+                fillOrderCheck(fillItemsController.selected, ((CheckBox)sender).getState().equals(CheckBox.CHECKED));
+            }
+            
+            clicked = true;
+            checked = CheckBox.CHECKED.equals(((CheckBox)sender).getState());
+        }*/
     }
     
     public void afterDraw(boolean success) {
         TableWidget d;
         QueryTable q;
-        ScreenTableWidget sw;
         AutoCompleteDropdown drop;
         
         loaded = true;
@@ -103,7 +123,8 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         costCenterDrop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
         
         fillItemsController = ((TableWidget)getWidget("fillItemsTable")).controller;
-        addCommandListener(fillItemsController);
+        orderItemsController = ((TableWidget)getWidget("orderItemsTable")).controller;
+        //addCommandListener(fillItemsController);
         
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -116,6 +137,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
             costCenterDropdown = (DataModel)initData.get("costCenter");
             shipFromDropdown = (DataModel)initData.get("shipFrom");
             statusDropdown = (DataModel)initData.get("status");
+            orderItemReferenceTableId = (Integer)((NumberObject)initData.get("orderItemReferenceTableId")).getValue();
         }
         
         //
@@ -124,9 +146,9 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
         drop.setModel(costCenterDropdown);
 
-        sw = (ScreenTableWidget)widgets.get("fillItemsTable");
-        d = (TableWidget)sw.getWidget();
-        q = (QueryTable)sw.getQueryWidget().getWidget();
+        fillItemsTable = (ScreenTableWidget)widgets.get("fillItemsTable");
+        d = (TableWidget)fillItemsTable.getWidget();
+        q = (QueryTable)fillItemsTable.getQueryWidget().getWidget();
         
         //
         // status dropdown
@@ -142,6 +164,12 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         
         super.afterDraw(success);
         
+        /*if(pendingStatusField == null){
+            Integer pendingValue = (Integer)((NumberObject)initData.get("pendingValue")).getValue();
+            pendingStatusField = ((DropDownField)forms.get("query").getField(OrderMeta.getStatusId())).getInstance();   
+            pendingStatusField.setValue(pendingValue);
+        }*/
+        
     }
     
     public void fetch() {
@@ -155,22 +183,22 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         
         loadFillItemsTableFromModel(model);
                
-        if(model.size() > 0){
+        if(model.size() > 0)
             changeState(State.DISPLAY);
-            fillItemsController.enabled(true);
-        }
+            //fillItemsController.enabled(true);
+        //}
     }
     
-    public void update() {
-        //we need to keep track of which rows are selected...
-        fillItemsCheckedRowsList.clear();
-        TableModel model = fillItemsController.model;
-        for(int i=0; i<model.numRows(); i++){
-            CheckField check = (CheckField)model.getFieldAt(i, 0);
-            if(CheckBox.CHECKED.equals(check.getValue())){
-                NumberField orderId = (NumberField)model.getFieldAt(i, 1);
-                fillItemsCheckedRowsList.add((Integer)orderId.getValue());
-            }
+    public void add() {
+        //super.add();
+        key = null;
+        enable(true);
+        changeState(State.ADD);
+        window.setStatus(consts.get("enterInformationPressCommit"),"");
+    }
+    
+/*    public void update() {
+        
         }
         
         resetRPC();
@@ -203,17 +231,37 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                 changeState(State.UPDATE);
             }
         });
-    }
+    }*/
+    
+    /*public void query() {
+        super.query();
+        ((TableAutoDropdown)((QueryTable)fillItemsTable.getQueryWidget().getWidget()).editors[2]).setField(pendingStatusField);
+        ((TableAutoDropdown)((QueryTable)fillItemsTable.getQueryWidget().getWidget()).editors[2]).saveValue();
+        ((TableAutoDropdown)((QueryTable)fillItemsTable.getQueryWidget().getWidget()).editors[2]).setDisplay();
+        //((TableAutoDropdown)((QueryTable)fillItemsTable.getQueryWidget().getWidget()).editors[2]).setDisplay();
+        //fillItemsController.load(0);
+    }*/
     
     public void commit() {
-        if (state == State.UPDATE)
+        if (state == State.ADD){
+            //we need to keep track of which rows are selected...
+            fillItemsCheckedRowsList.clear();
+            TableModel model = fillItemsController.model;
+            for(int i=0; i<model.numRows(); i++){
+                CheckField check = (CheckField)model.getFieldAt(i, 0);
+                if(CheckBox.CHECKED.equals(check.getValue())){
+                    NumberField orderId = (NumberField)model.getFieldAt(i, 1);
+                    fillItemsCheckedRowsList.add((Integer)orderId.getValue());
+                }
+            }
+            
             onProcessingCommitClick();
-        else
+        }else
             super.commit();
     }
     
     public void abort() {
-        if(state == State.UPDATE){
+        if(state == State.ADD){
             window.setStatus("","spinnerIcon");
             clearErrors();
             resetRPC();
@@ -250,13 +298,20 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     //start table manager methods
     //
     public boolean canSelect(int row, TableController controller) {        
-        if(state == FormInt.State.DISPLAY)           
+        if(state == FormInt.State.ADD || state == FormInt.State.DISPLAY)           
             return true;
         return false;
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
-        if(state == FormInt.State.DISPLAY && col == 0)           
+        //lastIndex = row;
+        //Window.alert("canEdit()");
+        //ranFinishedEditing = false;
+        //if(clicked)
+        //    fillOrderCheck(row, checked);
+        
+        
+        if(state == FormInt.State.ADD && col == 0)           
             return true;
         
        return false;
@@ -266,37 +321,118 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         return true;
     }
 
-    public boolean action(int row, int col, TableController controller) {  
-        TableRow tableRow=null;
-        
-        if(row >=0 && controller.model.numRows() > row)
-            tableRow = controller.model.getRow(row);
-        
-        if(tableRow != null){
-            if(tableRow.getHidden("streetAddress") != null && tableRow.getHidden("city") != null){
-                orgAptSuiteText.setText((String)((StringField)tableRow.getHidden("multUnit")).getValue());
-                orgAddressText.setText((String)((StringField)tableRow.getHidden("streetAddress")).getValue());
-                orgCityText.setText((String)((StringField)tableRow.getHidden("city")).getValue());
-                orgStateText.setText((String)((StringField)tableRow.getHidden("state")).getValue());
-                orgZipCodeText.setText((String)((StringField)tableRow.getHidden("zipCode")).getValue());
+    public boolean action(final int row, int col, TableController controller) {  
+        //Window.alert("action()");
+        if(controller == fillItemsController){
+            final TableRow tableRow;
+            
+            if(row >=0 && controller.model.numRows() > row)
+                tableRow = controller.model.getRow(row);
+            else 
+                tableRow = null;
+            
+            if(tableRow != null){
+             //   if(col != 0){
+                    if(CheckBox.CHECKED.equals(((CheckField)tableRow.getColumn(0)).getValue())){
+                        //if the row is already checked we need to show the check items model
+                        loadOrderItemsTableFromModel(selectedOrderItems);
+                    }else{
+                        ModelField modelField = (ModelField)tableRow.getHidden("orderItems");
+                        if(modelField == null){
+                        //we need to look up the order items if they arent there yet
+                        window.setStatus("","spinnerIcon");
+                        
+                        NumberObject orderIdObj = new NumberObject((Integer)((NumberField)tableRow.getColumn(1)).getValue());
+                        
+                        // prepare the argument list for the getObject function
+                        DataObject[] args = new DataObject[] {orderIdObj}; 
+                        
+                        screenService.getObject("getOrderItems", args, new AsyncCallback(){
+                            public void onSuccess(Object result){
+                                if(result != null){
+                                    ModelField modelField = new ModelField();
+                                    modelField.setValue(((ModelObject)result).getValue());
+                                    tableRow.addHidden("orderItems", modelField);
+                                    
+                                    loadOrderItemsTableFromModel((DataModel)modelField.getValue());
+                                }
+                                
+                                window.setStatus("","");
+                            }
+                            
+                            public void onFailure(Throwable caught){
+                                Window.alert(caught.getMessage());
+                            }
+                        });
+                        }else
+                            loadOrderItemsTableFromModel((DataModel)modelField.getValue());
+                        
+                        
+                        if(tableRow.getHidden("streetAddress") != null && tableRow.getHidden("city") != null){
+                            orgAptSuiteText.setText((String)((StringField)tableRow.getHidden("multUnit")).getValue());
+                            orgAddressText.setText((String)((StringField)tableRow.getHidden("streetAddress")).getValue());
+                            orgCityText.setText((String)((StringField)tableRow.getHidden("city")).getValue());
+                            orgStateText.setText((String)((StringField)tableRow.getHidden("state")).getValue());
+                            orgZipCodeText.setText((String)((StringField)tableRow.getHidden("zipCode")).getValue());
+                        }
+                        
+                        if(tableRow.getHidden("requestedBy") != null)
+                            requestedByText.setText((String)((StringField)tableRow.getHidden("requestedBy")).getValue());
+                        
+                        if(tableRow.getHidden("costCenter") != null)
+                            costCenterDrop.setSelected((ArrayList)((DropDownField)tableRow.getHidden("costCenter")).getSelections());
+                    }
+                
+                /*}else{
+                    if(tableRow.getHidden("orderItems") == null){
+                        //if(!ranAction){
+                        //    ranAction = true;
+                        //    fillOrderCheck(row, ((CheckField)tableRow.getColumn(0)).getValue().equals(CheckBox.CHECKED));
+                      //  }
+                    //}else{
+//                  we need to look up the order items if they arent there yet
+                    window.setStatus("","spinnerIcon");
+                    
+                    NumberObject orderIdObj = new NumberObject((Integer)((NumberField)tableRow.getColumn(1)).getValue());
+                    
+                    // prepare the argument list for the getObject function
+                    DataObject[] args = new DataObject[] {orderIdObj}; 
+                    
+                    screenService.getObject("getOrderItems", args, new AsyncCallback(){
+                        public void onSuccess(Object result){
+                            if(result != null){
+                                ModelField modelField = new ModelField();
+                                modelField.setValue(((ModelObject)result).getValue());
+                                tableRow.addHidden("orderItems", modelField);
+                                
+                             //   if(!ranAction){
+                             //       ranAction = true;
+                             //       fillOrderCheck(row, ((CheckField)tableRow.getColumn(0)).getValue().equals(CheckBox.CHECKED));
+                             //   }
+
+                            }
+                            
+                            window.setStatus("","");
+                        }
+                        
+                        public void onFailure(Throwable caught){
+                            Window.alert(caught.getMessage());
+                        }
+                    });
+                    }
+               // }
+                }*/
+            }else{
+                orgAptSuiteText.setText("");
+                orgAddressText.setText("");
+                orgCityText.setText("");
+                orgStateText.setText("");
+                orgZipCodeText.setText("");
+                requestedByText.setText("");
+                costCenterDrop.reset();
             }
-            
-            if(tableRow.getHidden("requestedBy") != null)
-                requestedByText.setText((String)((StringField)tableRow.getHidden("requestedBy")).getValue());
-            
-            if(tableRow.getHidden("costCenter") != null)
-                costCenterDrop.setSelected((ArrayList)((DropDownField)tableRow.getHidden("costCenter")).getSelections());
-            
-        }else{
-            orgAptSuiteText.setText("");
-            orgAddressText.setText("");
-            orgCityText.setText("");
-            orgStateText.setText("");
-            orgZipCodeText.setText("");
-            requestedByText.setText("");
-            costCenterDrop.reset();
         }
-        
+                
         return false;
     }
 
@@ -304,7 +440,14 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         return false;     
     }
 
-    public void finishedEditing(int row, int col, TableController controller) {}
+    public void finishedEditing(int row, int col, TableController controller) {
+        /*Window.alert("finishedEditing()");
+        lastIndex = -2;
+        ranFinishedEditing = true;*/
+        if(row > -1 && col == 0){
+            fillOrderCheck(row, CheckBox.CHECKED.equals(((CheckField)((EditTable)controller).model.getFieldAt(row, col)).getValue()));
+        }
+    }
 
     public boolean doAutoAdd(TableRow row, TableController controller) {
         //return !tableRowEmpty(row);
@@ -328,36 +471,6 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     //end table manager methods
     //
     
-    /*private boolean tableRowEmpty(TableRow row){
-        boolean empty = true;
-        
-        //we want to ignore the first column since it is a check field
-        for(int i=1; i<row.numColumns(); i++){
-            if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
-                empty = false;
-                break;
-            }
-        }
-        
-        return empty;
-    }*/
-    
-    private void onRemoveRowButtonClick() {
-        int selectedRow = fillItemsController.selected;
-        if (selectedRow > -1 && fillItemsController.model.numRows() > 0) {
-            TableRow row = fillItemsController.model.getRow(selectedRow);
-            fillItemsController.model.hideRow(row);
-
-            // reset the model
-            fillItemsController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
-        }
-    }
-
     private void loadFillItemsTableFromModel(DataModel model){
         for(int i=0; i<model.size(); i++){
             DataSet set = model.get(i);
@@ -392,7 +505,22 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         }
     }
     
+    private void loadOrderItemsTableFromModel(DataModel model){
+        orderItemsController.model.reset();
+        for(int i=0; i<model.size(); i++){
+            DataSet set = model.get(i);
+            
+            TableRow tableRow = new TableRow();     
+            tableRow.addColumn((StringField)set.getObject(0));
+            tableRow.addColumn((NumberField)set.getObject(1));
+            tableRow.addColumn((StringField)set.getObject(2));
+            
+            ((EditTable)orderItemsController).addRow(tableRow);
+        }
+    }
+    
     private void onProcessingCommitClick() {
+    //    fillOrderCheck(0, true);
         PopupPanel shippingPopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(shippingPopupPanel,
                                                      "Shipping",
@@ -416,7 +544,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         pickerWindow.setContent(new ShippingScreen((Integer)((DropDownField)row.getColumn(4)).getValue(), (Integer)((DropDownField)row.getColumn(5)).getValue(), 
                                                    (String)((DropDownField)row.getColumn(5)).getTextValue(), (String)row.getHidden("multUnit").getValue(), 
                                                    (String)row.getHidden("streetAddress").getValue(), (String)row.getHidden("city").getValue(), (String)row.getHidden("state").getValue(), 
-                                                   (String)row.getHidden("zipCode").getValue()));
+                                                   (String)row.getHidden("zipCode").getValue(), selectedOrderItems));
 
         shippingPopupPanel.add(pickerWindow);
         int left = this.getAbsoluteLeft();
@@ -424,4 +552,102 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         shippingPopupPanel.setPopupPosition(left, top);
         shippingPopupPanel.show();
     }
+    
+    private void fillOrderCheck(int rowIndex, boolean checked){
+      //  Window.alert("1");
+      //  if(!ranAction && lastIndex != fillItemsController.selected)
+      //      return;
+     //   else{
+            final TableRow row = fillItemsController.model.getRow(rowIndex);
+            ModelField modelField = (ModelField)row.getHidden("orderItems");
+            final DataModel orderItemsModel;
+            
+            if(modelField != null)
+                orderItemsModel = (DataModel)modelField.getValue();
+            else
+                orderItemsModel = null;
+            if(checked){     //add the order id to the selected list
+                checkedOrderIds.add((Integer)((NumberField)row.getColumn(1)).getValue());
+            }else{            //remove the order id from the selected list
+                checkedOrderIds.remove((Integer)((NumberField)row.getColumn(1)).getValue());
+    }
+            
+           if(orderItemsModel != null){
+               if(checked){     //we need to add the order items from the selected row
+                   for(int i=0; i<orderItemsModel.size(); i++){
+                       DataSet set = orderItemsModel.get(i).getInstance();
+                       int j=0;
+                       if(selectedOrderItems.size() > 0)
+                       while(j<selectedOrderItems.size() && !set.getKey().equals(selectedOrderItems.get(j).getKey()))
+                           j++;
+                       
+                       if(j == selectedOrderItems.size()){   //we need to add a new item
+                          selectedOrderItems.add(set);
+                       }else{                            //we need to add this quantity to an exisiting row
+                          DataSet itemSet = selectedOrderItems.get(j);
+                          NumberObject itemQuantityObject = (NumberObject)itemSet.getObject(1);
+                          itemQuantityObject.setValue((Integer)itemQuantityObject.getValue() + (Integer)((NumberObject)set.getObject(1)).getValue());
+                       }
+                           
+                   }  
+               }else{           //we need to rebuild the order items model from scratch using the checkedOrderItems list
+                   selectedOrderItems.clear();
+                   TableModel model = fillItemsController.model;
+                   for(int k=0; k<model.numRows(); k++){
+                       if(checkedOrderIds.contains((Integer)((NumberField)model.getFieldAt(k, 1)).getValue())){
+                           TableRow itemsRow = model.getRow(k);
+                           DataModel orderChildModel = (DataModel)((ModelField)itemsRow.getHidden("orderItems")).getValue();
+                           
+                           for(int l=0;l<orderChildModel.size(); l++)
+                               selectedOrderItems.add(orderItemsModel.get(l).getInstance());
+                           
+                       }
+                   }
+                   
+               }                
+                
+               if(!checked && selectedOrderItems.size() == 0)
+                   loadOrderItemsTableFromModel(orderItemsModel);
+               else
+                   loadOrderItemsTableFromModel(selectedOrderItems);
+               
+                //orderItemsController.reset();
+            }else{
+                window.setStatus("","spinnerIcon");
+                
+                NumberObject orderIdObj = new NumberObject((Integer)((NumberField)row.getColumn(1)).getValue());
+                
+                // prepare the argument list for the getObject function
+                DataObject[] args = new DataObject[] {orderIdObj}; 
+                
+                screenService.getObject("getOrderItems", args, new AsyncCallback(){
+                    public void onSuccess(Object result){
+                        if(result != null){
+                            ModelField modelField = new ModelField();
+                            DataModel orderItemsModel = (DataModel)((ModelObject)result).getValue();
+                            modelField.setValue(((ModelObject)result).getValue());
+
+                            row.addHidden("orderItems", modelField);
+                            
+                            for(int i=0; i<orderItemsModel.size(); i++){
+                                selectedOrderItems.add(orderItemsModel.get(i).getInstance());
+                            }
+                            
+                            loadOrderItemsTableFromModel(selectedOrderItems);
+                            //orderItemsController.reset();
+                        }
+                        
+                        window.setStatus("","");
+                    }
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+           ranAction = false;
+        }
+        
+        
+    //}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openelis.domain.FillOrderDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrderItemDO;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
@@ -210,7 +211,8 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         DataModel shipFromDropdownField = (DataModel)CachingManager.getElement("InitialData", "shipFromDropdown");
         DataModel costCenterDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderCostCenterDropdown");
         DataModel statusDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderStatusDropdown");
-       
+        NumberObject orderItemReferenceTableId = (NumberObject)CachingManager.getElement("InitialData", "orderItemReferenceTableId");
+        
         //status dropdown
         if(statusDropdownField == null){
             statusDropdownField = getInitialModel("status");
@@ -227,12 +229,28 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             costCenterDropdownField = getInitialModel("costCenter");
             CachingManager.putElement("InitialData", "costCenterDropdown", costCenterDropdownField);
         }
+        //reference table id
+        if(orderItemReferenceTableId == null){
+            FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
+            orderItemReferenceTableId = new NumberObject(remote.getOrderItemReferenceTableId());
+            CachingManager.putElement("InitialData", "orderItemReferenceTableId", orderItemReferenceTableId);
+        }
+        
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer pendingValue = null;
+        try{
+            pendingValue = remote.getEntryIdForSystemName("order_status_pending");    
+        }catch(Exception e){}
+        
+        NumberObject pendingValueObj = new NumberObject(pendingValue);
         
         HashMap map = new HashMap();
         map.put("xml", xml);
         map.put("status", statusDropdownField);
         map.put("costCenter", costCenterDropdownField);
         map.put("shipFrom", shipFromDropdownField);
+        map.put("pendingValue", pendingValueObj);
+        map.put("orderItemReferenceTableId", orderItemReferenceTableId);
         
         return map;
     }
@@ -317,7 +335,7 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
                     rpc.getFieldValue(FillOrderMeta.getStatusId()) == null && 
                     "".equals(rpc.getFieldValue(FillOrderMeta.getOrderedDate())) && 
                     rpc.getFieldValue(FillOrderMeta.getShipFromId()) == null &&
-                    rpc.getFieldValue(FillOrderMeta.getOrganizationId()) != null && 
+                    rpc.getFieldValue(FillOrderMeta.getOrganizationId()) == null && 
                     "".equals(rpc.getFieldValue(FillOrderMeta.getDescription())) && 
                     "".equals(rpc.getFieldValue(FillOrderMeta.getNeededInDays())) && 
                     //DAYS LEFT"".equals(rpc.getFieldValue(FillOrderMeta.InventoryReceiptMeta.getQcReference())) && 
@@ -401,5 +419,34 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             model.add(row);
             i++;
         } 
+    }
+    
+    public ModelObject getOrderItems(NumberObject orderId) {
+        FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
+        List orderItems = remote.getOrderItems((Integer)orderId.getValue());
+        ModelObject modelObj = new ModelObject();
+        DataModel model = new DataModel();
+        Integer orderItemReferenceTableId = (Integer)((NumberObject)CachingManager.getElement("InitialData", "orderItemReferenceTableId")).getValue();
+        
+        for(int i=0; i<orderItems.size(); i++){
+            OrderItemDO itemDO = (OrderItemDO)orderItems.get(i);
+            DataSet set = new DataSet();
+            NumberField orderItemId = new NumberField(itemDO.getId());
+            set.setKey(orderItemId);
+            StringField itemName = new StringField(itemDO.getInventoryItem());
+            set.addObject(itemName);
+            NumberField quan = new NumberField(itemDO.getQuantityRequested());
+            set.addObject(quan);
+            StringField loc = new StringField(itemDO.getLocation());
+            set.addObject(loc);
+            NumberField referenceTableId = new NumberField(orderItemReferenceTableId);
+            set.addObject(referenceTableId);            
+            
+           model.add(set);
+        }
+        
+        modelObj.setValue(model);
+        
+        return modelObj;
     }
 }
