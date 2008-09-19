@@ -1,4 +1,18 @@
-
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.meta;
 
 /**
@@ -16,14 +30,16 @@ public class ShippingMeta implements Meta {
               ID					="id",
               STATUS_ID					="statusId",
               SHIPPED_FROM_ID					="shippedFromId",
+              SHIPPED_TO_ID                 ="shippedToId",
               PROCESSED_BY_ID					="processedById",
               PROCESSED_DATE					="processedDate",
               SHIPPED_METHOD_ID					="shippedMethodId",
               SHIPPED_DATE					="shippedDate",
-              NUMBER_OF_PACKAGES					="numberOfPackages";
+              NUMBER_OF_PACKAGES					="numberOfPackages",
+              COST                           ="cost";
 
   	private static final String[] columnNames = {
-  	  ID,STATUS_ID,SHIPPED_FROM_ID,PROCESSED_BY_ID,PROCESSED_DATE,SHIPPED_METHOD_ID,SHIPPED_DATE,NUMBER_OF_PACKAGES};
+  	  ID,STATUS_ID,SHIPPED_FROM_ID,SHIPPED_TO_ID,PROCESSED_BY_ID,PROCESSED_DATE,SHIPPED_METHOD_ID,SHIPPED_DATE,NUMBER_OF_PACKAGES,COST};
   	  
 	private HashSet<String> columnHashList;
     
@@ -67,6 +83,10 @@ public class ShippingMeta implements Meta {
     public String getShippedFromId() {
         return path + SHIPPED_FROM_ID;
     } 
+    
+    public String getShippedToId(){
+        return path + SHIPPED_TO_ID;
+    }
 
     public String getProcessedById() {
         return path + PROCESSED_BY_ID;
@@ -87,6 +107,7 @@ public class ShippingMeta implements Meta {
     public String getNumberOfPackages() {
         return path + NUMBER_OF_PACKAGES;
     } 
-
-  
+    public String getCost(){
+        return path + COST;
+    }  
 }   

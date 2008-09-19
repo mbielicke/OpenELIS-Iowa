@@ -1,3 +1,18 @@
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
@@ -11,21 +26,27 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     public ShippingMetaMap() {
         super("ship.");
         
-        ORDER_META = new OrderMetaMap("ordr.");
+        ORGANIZATION_META = new OrganizationMetaMap("orgz.");
+      //  ORDER_META = new OrderMetaMap("ordr.");
         
         TRACKING_META = new ShippingTrackingMeta("shippingTracking.");
             
         SHIPPING_ITEM_META = new ShippingItemMeta("shippingItem.");
     }
     
-    public OrderMetaMap ORDER_META;
+    public OrganizationMetaMap ORGANIZATION_META;
+    //public OrderMetaMap ORDER_META;
     
     public ShippingTrackingMeta TRACKING_META;
         
     public ShippingItemMeta SHIPPING_ITEM_META;
     
-    public OrderMetaMap getOrderMeta(){
+    /*public OrderMetaMap getOrderMeta(){
         return ORDER_META;
+    }*/
+    
+    public OrganizationMetaMap getOrganizationMeta(){
+        return ORGANIZATION_META;
     }
     
     public ShippingTrackingMeta getTrackingMeta(){
@@ -37,13 +58,23 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     }
     
     public String buildFrom(String where) {
-        // TODO Auto-generated method stub
-        return null;
+        String from = "Shipping ship ";
+        if(where.indexOf("orgz.") > -1)
+            from += ", IN (ship.shipTo) orgz ";
+        /*if(name.indexOf("contacts.") > -1)
+            from += ", IN (o.organizationContact) contacts ";*/ 
+        return from;
     }
 
     public boolean hasColumn(String columnName) {
-        // TODO Auto-generated method stub
-        return false;
+        if(columnName.startsWith("orgz."))
+            return ORGANIZATION_META.hasColumn(columnName);
+        if(columnName.startsWith("shippingTracking."))
+            return TRACKING_META.hasColumn(columnName);
+        if(columnName.startsWith("shippingItem."))
+            return SHIPPING_ITEM_META.hasColumn(columnName);
+        
+        return super.hasColumn(columnName);
     }
 
 }
