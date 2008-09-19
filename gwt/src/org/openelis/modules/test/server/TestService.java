@@ -58,6 +58,7 @@ import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
+import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -197,11 +198,11 @@ public class TestService implements AppScreenFormServiceInt {
                                              null);
         //testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
                                                   //,null);
-        
-        itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));
-        worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
+        if (((FormRPC)rpcSend.getField("worksheet")).load) {
+         itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));               
+         worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
                                              null);
-        
+        }
         
         List exceptionList = remote.validateForAdd(testDO,testDetailsDO,
                                                    prepTestDOList,sampleTypeDOList,
@@ -913,13 +914,50 @@ public class TestService implements AppScreenFormServiceInt {
     }
     
     private TestWorksheetDO getTestWorkSheetFromRPC(FormRPC rpcSend, Integer testId){
-      TestWorksheetDO worksheetDO = new TestWorksheetDO();
-      worksheetDO.setBatchCapacity((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getBatchCapacity()));
-      worksheetDO.setId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getId()));
-      worksheetDO.setNumberFormatId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getNumberFormatId()));
-      worksheetDO.setTestId(testId);
-      worksheetDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getScriptletId()));
-      worksheetDO.setTotalCapacity((Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity()));
+      TestWorksheetDO worksheetDO = null;
+      Integer bc = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getBatchCapacity());
+      if(bc!=null){
+       if(worksheetDO==null)
+           worksheetDO = new TestWorksheetDO();   
+        worksheetDO.setBatchCapacity(bc);
+      }  
+      Integer id = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getId());
+      if(id!=null){
+       if(worksheetDO==null)
+           worksheetDO = new TestWorksheetDO();   
+       worksheetDO.setId(id);
+      } 
+      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getNumberFormatId());
+       if(numFormId!=null){
+         if(numFormId.getValue()!=null && !numFormId.getValue().equals(new Integer(-1))){ 
+             if(worksheetDO==null)
+                 worksheetDO = new TestWorksheetDO();  
+             worksheetDO.setNumberFormatId((Integer)numFormId.getValue());
+         }  
+       }   
+       
+      if(testId!=null){
+          if(worksheetDO==null)
+              worksheetDO = new TestWorksheetDO();  
+          worksheetDO.setTestId(testId);
+      } 
+      
+      DropDownField scrId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getScriptletId());
+      if(scrId!=null){
+          if(scrId.getValue()!=null && !scrId.getValue().equals(new Integer(-1))){
+              if(worksheetDO==null)
+                  worksheetDO = new TestWorksheetDO();  
+              worksheetDO.setScriptletId((Integer)scrId.getValue());
+          }  
+        }
+      
+      Integer tc = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity());      
+      if(tc !=null){
+          if(worksheetDO==null)
+              worksheetDO = new TestWorksheetDO();   
+          worksheetDO.setTotalCapacity(tc);
+      }
+       
       return worksheetDO;
     }
     
@@ -1245,6 +1283,9 @@ public class TestService implements AppScreenFormServiceInt {
         
         TableModel testReflexTable = (TableModel)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable")
                                                                                            .getValue();
+        
+        TableModel worksheetTable = (TableModel)((FormRPC)rpcSend.getField("worksheet")).getField("worksheetTable")
+                                                                         .getValue();
 
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
@@ -1278,7 +1319,31 @@ public class TestService implements AppScreenFormServiceInt {
                    row.getColumn(testReflexTable.getColumnIndexByFieldName(fieldName))
                       .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                }
+                else if (ferrex.getFieldName()
+                                .startsWith(TestWorksheetItemMetaMap.getTableName() + ":")) {
+                   String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                        .substring(TestWorksheetItemMetaMap.getTableName().length() + 1);
+                   
+                   TableRow row = worksheetTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+                   row.getColumn(worksheetTable.getColumnIndexByFieldName(fieldName))
+                      .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+               } 
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
+                String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
+                if(nameWithRPC.startsWith("worksheet:")){
+                    String fieldName = nameWithRPC.substring(10);
+                    FormRPC workSheetRPC = (FormRPC)rpcSend.getField("worksheet");
+                    
+                    workSheetRPC.getField(fieldName)
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                    
+                }else if(nameWithRPC.startsWith("details:")){
+                    String fieldName = nameWithRPC.substring(8);
+                    FormRPC detailsRPC = (FormRPC)rpcSend.getField("details");
+                    
+                    detailsRPC.getField(fieldName)
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                }
                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             }

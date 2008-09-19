@@ -48,7 +48,7 @@ public class TestWorksheetItemTable implements TableManager {
     }
 
     public boolean doAutoAdd(TableRow autoAddRow, TableController controller) {
-        return autoAddRow.getColumn(0).getValue() != null && !autoAddRow.getColumn(0).getValue().equals(0);
+        return autoAddRow.getColumn(0).getValue() != null;
     }
 
     public void finishedEditing(int row, int col, TableController controller) {
