@@ -521,7 +521,7 @@
 													<textbox/>																						
 												</editors>
 												<fields>
-												    <number key="{testWrkshtItm:getPosition($twsi)}" type="integer" required="true"/>
+												    <number key="{testWrkshtItm:getPosition($twsi)}" type="integer" required="false"/>
 													<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
 													<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>																										
 												</fields>
@@ -607,10 +607,10 @@
 			</rpc>
 			<rpc key = "worksheet">
 			 <number key="{testWrksht:getId($tws)}" required="false" type="integer"/>
-			 <dropdown key="{testWrksht:getNumberFormatId($tws)}" required="false" type="integer"/>
+			 <dropdown key="{testWrksht:getNumberFormatId($tws)}" required="true" type="integer"/>
 			 <dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
-			 <number key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
-			 <number key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>
+			 <number key="{testWrksht:getBatchCapacity($tws)}" required="true" type="integer"/>
+			 <number key="{testWrksht:getTotalCapacity($tws)}" required="true" type="integer"/>
 		 	 <table key="worksheetTable"/>
 			</rpc> 
 		  </rpc>
