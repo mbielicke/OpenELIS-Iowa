@@ -1,3 +1,18 @@
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -92,6 +107,8 @@ System.out.println("1");
 System.out.println("3");
         qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
         qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
+        qb.addWhere(OrderMap.getOrganizationId()+" is not null");
+        qb.addWhere(OrderMap.getIsExternal()+"='N'");
         
         qb.setOrderBy(OrderMap.getId());
         System.out.println("4");
@@ -129,6 +146,13 @@ System.out.println("5");
         unlockRecords(queryResultList);
                 
         return queryResultList;
+    }
+    
+    public List getOrderItems(Integer orderId) {
+        Query query = manager.createNamedQuery("OrderItem.OrderItemsWithLocByOrderId");
+        query.setParameter("id", orderId);
+        
+        return query.getResultList();
     }
 
     public List validateForProcess(List orders) {
@@ -227,5 +251,12 @@ System.out.println("5");
         for(int j=0; j<orderIds.size(); j++)
             lockBean.giveUpLock(orderId, (Integer)orderIds.get(j));
             */
+    }
+
+    public Integer getOrderItemReferenceTableId() {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order_item");
+        
+        return (Integer)query.getSingleResult();
     }
 }

@@ -268,7 +268,7 @@ public class OrderBean implements OrderRemote{
         Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
         
         query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "order_status_completed");
+        query.setParameter("systemName", "order_status_processed");
         Integer orderCompletedStatusId = (Integer)query.getSingleResult();
         
         if(orderDO.getId() != null){
