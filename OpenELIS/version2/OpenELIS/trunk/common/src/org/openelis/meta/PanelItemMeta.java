@@ -16,10 +16,6 @@
 
 package org.openelis.meta;
 
-/**
-  * PanelItem META Data
-  */
-
 import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 

@@ -18,18 +18,15 @@ import org.openelis.meta.TestWorksheetMeta;
 
 public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
 
-    public String buildFrom(String name) {        
-        //String from = "TestWorksheet testWorksheet ";
-        //if(name.indexOf("testWorksheetItem.") > -1)
-        //from += ", IN (testWorksheet.testWorksheetItem) testWorksheetItem ";
-        return "TestWorksheet ";
+    public String buildFrom(String name) {               
+        return "TestWorksheet ";       
     }
         
-    private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM ;  
+    /*private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM ;  
         
     public TestWorksheetItemMetaMap getTestWorksheetItem(){
         return TEST_WORKSHEET_ITEM;
-    }
+    }*/
     
     public TestWorksheetMetaMap(){
         super();
@@ -37,12 +34,12 @@ public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
     
     public TestWorksheetMetaMap(String path){
         super(path);   
-        TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap(path+"testWorksheetItem.");
+        //TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap(path+"testWorksheetItem.");
     }
     
     public boolean hasColumn(String name){     
-        if(name.startsWith(path+"testWorksheetItem."))
-            return TEST_WORKSHEET_ITEM.hasColumn(name); 
+        //if(name.startsWith(path+"testWorksheetItem."))
+            //return TEST_WORKSHEET_ITEM.hasColumn(name); 
         return super.hasColumn(name);
     }    
         
