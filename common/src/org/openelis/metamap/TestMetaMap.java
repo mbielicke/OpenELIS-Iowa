@@ -26,8 +26,7 @@ public class TestMetaMap extends TestMeta implements MetaMap {
     }
             
     public TestMetaMap(String path){
-        super(path);        
-        
+        super(path);               
     }
     
     private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
@@ -39,6 +38,12 @@ public class TestMetaMap extends TestMeta implements MetaMap {
     private TestWorksheetMetaMap TEST_WORKSHEET = new TestWorksheetMetaMap("testWorksheet.");
     
     private MethodMeta METHOD = new MethodMeta("t.method.");
+           
+    private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap("testWorksheetItem.");  
+    
+    public TestWorksheetItemMetaMap getTestWorksheetItem(){
+        return TEST_WORKSHEET_ITEM;
+    }
     
     public MethodMeta getMethod(){
         return METHOD;
@@ -73,6 +78,8 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             return TEST_REFLEX.hasColumn(name);
         if(name.startsWith("testWorksheet."))
             return TEST_WORKSHEET.hasColumn(name);
+        if(name.startsWith("testWorksheetItem."))
+            return TEST_WORKSHEET_ITEM.hasColumn(name);
         if(name.startsWith(path+"method."))
             return METHOD.hasColumn(name);
         return super.hasColumn(name);
@@ -86,8 +93,15 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             from += ", IN (t.testTypeOfSample) testTypeOfSample "; 
         if(name.indexOf("testReflex.") > -1)
             from += ", IN (t.testReflex) testReflex ";  
+        String wsFrom = ", IN (t.testWorksheet) testWorksheet ";
+        String wsiFrom = ", IN (testWorksheet.testWorksheetItem) testWorksheetItem ";
         if(name.indexOf("testWorksheet.") > -1)
-            from += ", IN (t.testWorksheet) testWorksheet ";
+            from += wsFrom;
+        if(name.indexOf("testWorksheetItem.") > -1)
+           if(from.indexOf(wsFrom)<0) 
+            from += wsFrom + wsiFrom;
+           else
+            from += wsiFrom;   
         return from;
     }
     

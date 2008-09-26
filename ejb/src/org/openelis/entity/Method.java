@@ -31,14 +31,18 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "Method.MethodIdName", query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + "  from Method m order by m.name")
-
+@NamedQueries({@NamedQuery(name = "Method.MethodIdName",query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + "  from Method m order by m.name"),
+               @NamedQuery(name = "Method.MethodById",query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
+                    "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd) " + "  from Method m where m.id = :id"),
+               @NamedQuery(name = "Method.MethodByName", query = "from Method m where m.name = :name order by m.name")})
+               
 @Entity
 @Table(name="method")
 @EntityListeners({AuditUtil.class})
@@ -123,8 +127,8 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    if((activeBegin == null && this.activeBegin != null) || 
-       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+      if((active_begin == null && this.activeBegin != null) || (active_begin != null && this.activeBegin == null) ||
+        (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeBegin))))
       this.activeBegin = active_begin.getDate();
   }
 
@@ -134,8 +138,8 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    if((activeEnd == null && this.activeEnd != null) || 
-       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+      if((active_end == null && this.activeEnd != null) || (active_end != null && this.activeEnd == null) ||
+        (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeEnd))))
       this.activeEnd = active_end.getDate();
   }
 

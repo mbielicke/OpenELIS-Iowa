@@ -402,7 +402,7 @@ public class TestBean implements TestRemote {
                      + ") ");*/
         qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("
                      +TestMeta.getId()+", "+TestMeta.getName()+", "
-                     +TestMeta.getMethod().getName() + ") ");       
+                     +TestMeta.getMethod().getName() + ") ");               
         
         qb.addWhere(fields);
 
@@ -532,6 +532,12 @@ public class TestBean implements TestRemote {
                 checkDuplicate = false;
             }
 
+            if (testDetailsDO.getIsActive() == null) {
+                exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                          "details:" + TestMeta.getIsActive()));
+                checkDuplicate = false;
+            }
+            
             if (testDetailsDO.getActiveBegin() == null) {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                           "details:" + TestMeta.getActiveBegin()));
@@ -542,6 +548,13 @@ public class TestBean implements TestRemote {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                           "details:" + TestMeta.getActiveEnd()));
                 checkDuplicate = false;
+            }
+            
+            if(checkDuplicate){
+                if(testDetailsDO.getActiveEnd().before(testDetailsDO.getActiveBegin())){
+                    exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));  
+                    checkDuplicate = false;
+                }
             }
             
           if(checkDuplicate){
@@ -556,10 +569,10 @@ public class TestBean implements TestRemote {
                       if(test.getIsActive().equals(testDetailsDO.getIsActive())){
                           if("Y".equals(testDetailsDO.getIsActive())){
                               exceptionList.add(new FormErrorException("testActiveException"));                                   
-                            }else{
+                              break; 
+                           }else{
                              // exceptionList.add(new FormErrorException("testInactiveTimeOverlap"));  
-                            }
-                            break;  
+                            }                              
                      }
                       if(test.getActiveBegin().before(testDetailsDO.getActiveEnd())&&
                                       (test.getActiveEnd().after(testDetailsDO.getActiveBegin()))){
@@ -702,21 +715,18 @@ public class TestBean implements TestRemote {
             boolean checkPosition = true; 
             if(itemDO.getQcName()==null || ("").equals(itemDO.getQcName())){
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
-                .getTestWorksheetItem().getQcName()));
+                TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getQcName()));
             }
             if(itemDO.getTypeId()==null){
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
-                 .getTestWorksheetItem().getTypeId()));
+                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
                 checkPosition = false;    
             }
             
             
             if(itemDO.getPosition()!=null && itemDO.getPosition()<= 0){
                 exceptionList.add(new TableFieldErrorException("posMoreThanZeroException", i,
-                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
-                 .getTestWorksheetItem().getPosition()));  
+                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
                 checkPosition = false;
             }
             
@@ -727,15 +737,13 @@ public class TestBean implements TestRemote {
              if(itemDO.getPosition()==null){
                     if("pos_duplicate".equals(sysName)||"pos_fixed".equals(sysName)){
                         exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException", i,
-                         TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
-                         .getTestWorksheetItem().getPosition()));
+                         TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));
                     }
                 }   
              if(itemDO.getPosition()!=null && itemDO.getPosition() == 1){               
                if("pos_duplicate".equals(sysName)){
                    exceptionList.add(new TableFieldErrorException("posOneDuplicateException", i,
-                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheet()
-                    .getTestWorksheetItem().getTypeId()));
+                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
                }                              
             }
              
