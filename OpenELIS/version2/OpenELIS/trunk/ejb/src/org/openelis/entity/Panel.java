@@ -20,21 +20,31 @@ package org.openelis.entity;
   * Panel Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "Panel.PanelById", query =  "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description) " +
+        "    from Panel p where p.id = :id"),
+        @NamedQuery(name = "Panel.PanelItemsByPanelId", query =  "select distinct new org.openelis.domain.PanelItemDO(pitem.id,p.id,pitem.sortOrder,pitem.testName,pitem.methodName) " +
+        "    from Panel p left join p.panelItem pitem where p.id = :id")})
 
 @Entity
 @Table(name="panel")
@@ -52,7 +62,10 @@ public class Panel implements Auditable, Cloneable {
   @Column(name="description")
   private String description;             
 
-
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<PanelItem> panelItem; 
+  
   @Transient
   private Panel original;
 
@@ -113,5 +126,11 @@ public class Panel implements Auditable, Cloneable {
   public String getTableName() {
     return "panel";
   }
+public Collection<PanelItem> getPanelItem() {
+    return panelItem;
+}
+public void setPanelItem(Collection<PanelItem> panelItem) {
+    this.panelItem = panelItem;
+}
   
 }   
