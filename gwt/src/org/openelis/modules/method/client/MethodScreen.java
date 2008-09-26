@@ -1,0 +1,156 @@
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations under
+* the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
+*/
+
+package org.openelis.modules.method.client;
+
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.metamap.MethodMetaMap;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+public class MethodScreen extends OpenELISScreenForm implements
+                                                    ClickListener,
+                                                    TabListener,
+                                                    ChangeListener {
+    private static boolean loaded = false;
+    
+    private ButtonPanel atozButtons;
+    
+    private KeyListManager keyList = new KeyListManager();
+    
+    private MethodMetaMap MethodMeta = new MethodMetaMap();
+
+    private ScreenTextBox methodId;
+    private TextBox methodName;
+    
+    public MethodScreen() {
+        super("org.openelis.modules.method.server.MethodService",!loaded);
+    }
+    
+    public void performCommand(Enum action, Object obj) {
+        if (obj instanceof AppButton) {
+            String baction = ((AppButton)obj).action;
+            if (baction.startsWith("query:")) {
+                getMethods(baction.substring(6, baction.length()));
+            }else
+                super.performCommand(action, obj);
+        } else{
+            super.performCommand(action, obj);
+        }
+    }
+    
+    public void onClick(Widget sender) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+        // TODO Auto-generated method stub
+
+    }
+    
+    public void afterDraw(boolean success) {
+        loaded = true;
+        
+        AToZTable atozTable;
+
+        //
+        // we are interested in getting button actions in two places,
+        // modelwidget and us.
+        //
+        atozTable = (AToZTable)getWidget("azTable");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+        
+        methodId = (ScreenTextBox)widgets.get(MethodMeta.getId());
+        methodName = (TextBox)getWidget(MethodMeta.getName());
+        
+        CommandChain formChain = new CommandChain();
+        formChain.addCommand(this);
+        formChain.addCommand(bpanel);
+        formChain.addCommand(keyList);
+        formChain.addCommand(atozTable);
+        formChain.addCommand(atozButtons);
+
+        bpanel.enableButton("delete", false);
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+        
+        updateChain.add(afterUpdate);
+        
+        super.afterDraw(success);
+    }
+    
+    public void query() {        
+        super.query();
+        methodId.setFocus(true);
+        
+    }
+    
+    public void add() {
+        super.add();
+        methodId.enable(false);
+        methodName.setFocus(true);      
+        
+    }
+  
+    protected AsyncCallback afterAdd = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            methodId.enable(false);
+            methodName.setFocus(true);                        
+        }
+    };
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            methodId.enable(false);
+            methodName.setFocus(true);            
+        }
+    };
+    private void getMethods(String query){
+       if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
+            FormRPC rpc;
+            rpc = (FormRPC)this.forms.get("queryByLetter");
+            rpc.setFieldValue(MethodMeta.getName(), query);
+            commitQuery(rpc);
+        }
+    }
+
+}
