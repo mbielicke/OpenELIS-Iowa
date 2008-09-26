@@ -78,35 +78,6 @@ public class TestService implements AppScreenFormServiceInt {
 
     private static final TestMetaMap TestMeta = new TestMetaMap();
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)key.getKey()
-                                                                             .getValue());
-        setFieldsInRPC(rpcReturn, testDO);
-
-        if (((FormRPC)rpcReturn.getField("details")).load) {
-            FormRPC detailsRPC = (FormRPC)rpcReturn.getField("details");
-            loadTestDetails(key, detailsRPC);
-        }
-
-        if (((FormRPC)rpcReturn.getField("sampleType")).load) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
-            loadSampleTypes(key, samplePrepRPC);
-        }
-
-        if (((FormRPC)rpcReturn.getField("prepAndReflex")).load) {
-            FormRPC prepAndReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
-            loadPrepTestsReflexTests(key, prepAndReflexRPC);
-        }
-        
-        if (((FormRPC)rpcReturn.getField("worksheet")).load) {
-            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
-            loadWorksheetLayout(key, worksheetRPC);
-        }
-
-        return rpcReturn;
-    }
-
     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
         List testNames;
         // if the rpc is null then we need to get the page
@@ -172,11 +143,11 @@ public class TestService implements AppScreenFormServiceInt {
 
         return model;
     }
-
+    
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
-        TestDetailsDO testDetailsDO = new TestDetailsDO();
+        TestIdNameMethodIdDO testDO = null;
+        TestDetailsDO testDetailsDO = null;
         
         List<TestPrepDO> prepTestDOList = null;
         List<TestTypeOfSampleDO> sampleTypeDOList = null;
@@ -184,9 +155,9 @@ public class TestService implements AppScreenFormServiceInt {
         
         TestWorksheetDO worksheetDO = null;
         List<TestWorksheetItemDO> itemsDOList = null;
-
+    
         Integer testId;
-
+    
         testDO = getTestIdNameMethodIdDOFromRPC(rpcSend);
         // if(((FormRPC)rpcSend.getField("details")).load){
         testDetailsDO = getTestDetailsDOFromRPC((FormRPC)rpcReturn.getField("details"));
@@ -210,10 +181,10 @@ public class TestService implements AppScreenFormServiceInt {
                                                    itemsDOList);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);
-
+    
             return rpcSend;
         }
-
+    
         try {
             testId = remote.updateTest(testDO,testDetailsDO,prepTestDOList,
                                        sampleTypeDOList,testReflexDOList,worksheetDO,
@@ -221,25 +192,20 @@ public class TestService implements AppScreenFormServiceInt {
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
-
+    
             exceptionList = new ArrayList();
             exceptionList.add(e);
-
+    
             setRpcErrors(exceptionList, rpcSend);
-
+    
             return rpcSend;
         }
-
+    
         testDO.setId(testId);
         setFieldsInRPC(rpcReturn, testDO);
         return rpcReturn;
     }
-
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
@@ -281,9 +247,7 @@ public class TestService implements AppScreenFormServiceInt {
         List exceptionList = remote.validateForUpdate(testDO,testDetailsDO,
                                                       testPrepDOList,sampleTypeDOList,
                                                       testReflexDOList,worksheetDO,
-                                                      itemsDOList);
-
-        System.out.println("exceptionList.size " + exceptionList.size());
+                                                      itemsDOList);        
 
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);
@@ -299,15 +263,52 @@ public class TestService implements AppScreenFormServiceInt {
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
-            else {
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());
-            }
+            
+            exceptionList = new ArrayList();
+            exceptionList.add(e);
+            
+            setRpcErrors(exceptionList,rpcSend);
+            
+            return rpcSend;
             
         }
         setFieldsInRPC(rpcReturn, testDO);
         return rpcReturn;
     }
+    
+    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)key.getKey()
+                                                                             .getValue());
+        setFieldsInRPC(rpcReturn, testDO);
+
+        if (((FormRPC)rpcReturn.getField("details")).load) {
+            FormRPC detailsRPC = (FormRPC)rpcReturn.getField("details");
+            loadTestDetails(key, detailsRPC);
+        }
+
+        if (((FormRPC)rpcReturn.getField("sampleType")).load) {
+            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
+            loadSampleTypes(key, samplePrepRPC);
+        }
+
+        if (((FormRPC)rpcReturn.getField("prepAndReflex")).load) {
+            FormRPC prepAndReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
+            loadPrepTestsReflexTests(key, prepAndReflexRPC);
+        }
+        
+        if (((FormRPC)rpcReturn.getField("worksheet")).load) {
+            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
+            loadWorksheetLayout(key, worksheetRPC);
+        }
+
+        return rpcReturn;
+    }   
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -336,6 +337,41 @@ public class TestService implements AppScreenFormServiceInt {
             loadWorksheetLayout(key, worksheetRPC);
         }
         
+        return rpcReturn;
+    }
+    
+    public FormRPC loadTestDetails(DataSet key, FormRPC rpcReturn) {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        TestDetailsDO testDetailsDO = remote.getTestDetails((Integer)((NumberObject)key.getKey()).getValue());
+        fillTestDetails(testDetailsDO, rpcReturn);
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+    
+    public FormRPC loadSampleTypes(DataSet key, FormRPC rpcReturn) {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<TestTypeOfSampleDO> list = remote.getTestTypeOfSamples((Integer)((NumberObject)key.getKey()).getValue());
+        fillSampleTypes(list, rpcReturn);
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+
+    public FormRPC loadPrepTestsReflexTests(DataSet key, FormRPC rpcReturn) {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
+        fillPrepTests(prepList, rpcReturn);
+        //List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
+        //fillTestReflexes(reflexList,rpcReturn);
+        rpcReturn.load = true;
+        return rpcReturn;
+    }
+        
+    public FormRPC loadWorksheetLayout(DataSet key, FormRPC rpcReturn){
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        TestWorksheetDO worksheetDO = remote.getTestWorksheet((Integer)((NumberObject)key.getKey()).getValue());
+        List<TestWorksheetItemDO> itemDOList = remote.getTestWorksheetItems((Integer)((NumberObject)key.getKey()).getValue());
+        fillWorksheet(worksheetDO, itemDOList, rpcReturn);
+        rpcReturn.load = true;
         return rpcReturn;
     }
 
@@ -540,54 +576,6 @@ public class TestService implements AppScreenFormServiceInt {
         // TODO Auto-generated method stub
         return null;
     }
-
-    public DataModel getInitialModel(String cat) {
-        DataModel model = new DataModel();
-        List<IdNameDO> values = null;
-
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-
-        if (cat.equals("method")) {
-            values = remote.getMethodDropDownValues();
-        } else if (cat.equals("label")) {
-            values = remote.getLabelDropDownValues();
-        } else if (cat.equals("testTrailer")) {
-            values = remote.getTestTrailerDropDownValues();
-        } else if (cat.equals("scriptlet")) {
-            values = remote.getScriptletDropDownValues();
-        }else if (cat.equals("revisionMethod")) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("revision_method"));
-        }else if (cat.equals("testFormat")) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_format"));
-        } else if (cat.equals("unitOfMeasure")) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("unit_of_measure"));
-        } else if (cat.equals("sampleType")) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("type_of_sample"));
-        } else if (cat.equals("prepTest")) {            
-            List<QaEventTestDropdownDO> qaedDOList = remote.getPrepTestDropDownValues();
-            loadPrepTestDropDown(qaedDOList, model);
-        }else if (cat.equals("testReflexFlags")) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
-        }else if (cat.equals("testWSNumFormat")) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
-        }else if (cat.equals("testWSItemType")) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
-        }else if (cat.equals("section")) {
-            SystemUserUtilRemote utilRemote = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-            List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
-
-            if (sections != null) {
-                loadSectionDropDown(sections, model);
-            }            
-        }
-
-        if (values != null) {
-            loadDropDown(values, model);
-        }
-
-        return model;
-    }
     
     public DataModel getTestAnalyteModel(NumberObject key){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -723,41 +711,53 @@ public class TestService implements AppScreenFormServiceInt {
         return dataMap;
       }
 
+    public DataModel getInitialModel(String cat) {
+        DataModel model = new DataModel();
+        List<IdNameDO> values = null;
 
-    public FormRPC loadTestDetails(DataSet key, FormRPC rpcReturn) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestDetailsDO testDetailsDO = remote.getTestDetails((Integer)((NumberObject)key.getKey()).getValue());
-        fillTestDetails(testDetailsDO, rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
-    }
+        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 
-    public FormRPC loadSampleTypes(DataSet key, FormRPC rpcReturn) {
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        List<TestTypeOfSampleDO> list = remote.getTestTypeOfSamples((Integer)((NumberObject)key.getKey()).getValue());
-        fillSampleTypes(list, rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
-    }
+        if (cat.equals("method")) {
+            values = remote.getMethodDropDownValues();
+        } else if (cat.equals("label")) {
+            values = remote.getLabelDropDownValues();
+        } else if (cat.equals("testTrailer")) {
+            values = remote.getTestTrailerDropDownValues();
+        } else if (cat.equals("scriptlet")) {
+            values = remote.getScriptletDropDownValues();
+        }else if (cat.equals("revisionMethod")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("revision_method"));
+        }else if (cat.equals("testFormat")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_format"));
+        } else if (cat.equals("unitOfMeasure")) {
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("unit_of_measure"));
+        } else if (cat.equals("sampleType")) {
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("type_of_sample"));
+        } else if (cat.equals("prepTest")) {            
+            List<QaEventTestDropdownDO> qaedDOList = remote.getPrepTestDropDownValues();
+            loadPrepTestDropDown(qaedDOList, model);
+        }else if (cat.equals("testReflexFlags")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
+        }else if (cat.equals("testWSNumFormat")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
+        }else if (cat.equals("testWSItemType")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
+        }else if (cat.equals("section")) {
+            SystemUserUtilRemote utilRemote = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
+            List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
 
-    public FormRPC loadPrepTestsReflexTests(DataSet key, FormRPC rpcReturn) {
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
-        fillPrepTests(prepList, rpcReturn);
-        //List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
-        //fillTestReflexes(reflexList,rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
-    }
-        
-    public FormRPC loadWorksheetLayout(DataSet key, FormRPC rpcReturn){
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestWorksheetDO worksheetDO = remote.getTestWorksheet((Integer)((NumberObject)key.getKey()).getValue());
-        List<TestWorksheetItemDO> itemDOList = remote.getTestWorksheetItems((Integer)((NumberObject)key.getKey()).getValue());
-        fillWorksheet(worksheetDO, itemDOList, rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
-    }
+            if (sections != null) {
+                loadSectionDropDown(sections, model);
+            }            
+        }
+
+        if (values != null) {
+            loadDropDown(values, model);
+        }
+
+        return model;
+    }    
 
     private List<TestPrepDO> getPrepTestsFromRPC(FormRPC rpcSend,Integer testId) {
 
@@ -1263,7 +1263,7 @@ public class TestService implements AppScreenFormServiceInt {
 
         Integer ttId = (Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId());
         if (ttId != null && !ttId.equals(new Integer(-1))) {
-            testDetailsDO.setTestFormatId(ttId);
+            testDetailsDO.setTestTrailerId(ttId);
         }
 
         // testDetailsDO.setTestTrailerId((Integer)rpcSend.getFieldValue(TestMeta.getTestTrailerId()));

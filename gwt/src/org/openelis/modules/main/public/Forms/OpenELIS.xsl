@@ -328,17 +328,17 @@
 				      <xsl:with-param name="args"></xsl:with-param>				      
 				    </xsl:call-template>				
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Method</xsl:with-param>
 				      <xsl:with-param name="label">method</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">MethodScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Panel</xsl:with-param>
 				      <xsl:with-param name="label">panel</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">PanelScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:if test="security:hasModule($security,'qaevent','SELECT')">

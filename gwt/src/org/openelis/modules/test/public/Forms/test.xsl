@@ -57,7 +57,7 @@
 	   <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)"/>	 
 	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
 	   <xsl:variable name="tws" select="meta:getTestWorksheet($test)"/> 
-	   <xsl:variable name="twsi" select="testWrksht:getTestWorksheetItem($tws)"/>
+	   <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -148,13 +148,13 @@
 								 <row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>
 									<widget colspan = "2">
-										<textbox  key="{meta:getDescription($test)}" tab="{meta:getReportingDescription($test)},{meta:getRevisionMethodId($test)}" max="60" width="425px"/>
+										<textbox  key="{meta:getDescription($test)}" tab="{meta:getReportingDescription($test)},{meta:getScriptletId($test)}" max="60" width="425px"/>
 									</widget>
 								</row>
 								<row>
 								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportDescription')"/>:</text>
 									<widget colspan = "2">
-										<textbox key="{meta:getReportingDescription($test)}" tab="{meta:getIsReportable($test)},{meta:getDescription($test)}" max="60" width="425px"/>
+										<textbox key="{meta:getReportingDescription($test)}" tab="{meta:getTimeTaMax($test)},{meta:getDescription($test)}" max="60" width="425px"/>
 									</widget>
 								</row>								    
 								</TablePanel>
@@ -224,7 +224,7 @@
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"quantity")'/>:</text>
-									<textbox key="{meta:getLabelQty($test)}" tab="{meta:getTestTrailerId($test)},{meta:getLabelId($test)}" width = "50px"/>
+									<textbox key="{meta:getLabelQty($test)}" tab="{meta:getSectionId($test)},{meta:getLabelId($test)}" width = "50px"/>
 								</row>															
 								</TablePanel>
 								</content>
@@ -236,12 +236,12 @@
 								
 								<row>
 								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'section')"/>:</text>
-								   <autoDropdown  key="{meta:getSectionId($test)}" tab="{meta:getScriptletId($test)},{meta:getTestFormatId($test)}" width="145px"/>
+								   <autoDropdown  key="{meta:getSectionId($test)}" tab="{meta:getTestTrailerId($test)},{meta:getLabelQty($test)}" width="145px"/>
 								</row>								
 								<row>								  
 								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>
 								   <widget>
-								    <autoDropdown key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getLabelQty($test)}" width="145px"/>
+								    <autoDropdown key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getSectionId($test)}" width="145px"/>
 								   </widget>
 								 </row>								 								  								
 								   <!--</row> 
@@ -249,7 +249,7 @@
 								 <row>	  
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>
 								   <widget> 
-								    <autoDropdown  key="{meta:getTestFormatId($test)}" tab="{meta:getSectionId($test)},{meta:getTestTrailerId($test)}" width="145px"/>
+								    <autoDropdown  key="{meta:getTestFormatId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getTestTrailerId($test)}" width="145px"/>
 								   </widget>
 								 </row>
                                  </TablePanel>                                                                     																										
@@ -257,16 +257,16 @@
 								 <TablePanel style = "Form">
 								  <row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
-								   <autoDropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getDescription($test)},{meta:getScriptletId($test)}" width="190px"/>								   								  
+								   <autoDropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getIsReportable($test)},{meta:getTestFormatId($test)}" width="190px"/>								   								  
 								  								
 								   <text style="Prompt" halign="left"><xsl:value-of select='resource:getString($constants,"reportable")'/>:</text>
-								   <check key="{meta:getIsReportable($test)}" tab="{meta:getTimeTaMax($test)},{meta:getReportingDescription($test)}"/>
+								   <check key="{meta:getIsReportable($test)}" tab="{meta:getScriptletId($test)},{meta:getRevisionMethodId($test)}"/>
 								  </row>						
 								 </TablePanel>	 
 		                          <TablePanel style = "Form">
 		                          <row>
 		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								   <autoDropdown key="{meta:getScriptletId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getSectionId($test)}" width="235px"/>
+								   <autoDropdown key="{meta:getScriptletId($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="235px"/>
 								  </row> 								  								   
 		                         </TablePanel> 
 		                         <VerticalPanel height = "20px"/>		                         
@@ -536,7 +536,7 @@
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																							
 												</headers>
-												<widths>50,150,340</widths>
+												<widths>45,150,340</widths>
 												<editors>
 													<textbox/>
 													<autoDropdown multiSelect="true" case="mixed" width="120px"/>
