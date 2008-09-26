@@ -62,6 +62,7 @@ import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenRichTextArea;
+import org.openelis.gwt.screen.ScreenScrollList;
 import org.openelis.gwt.screen.ScreenStack;
 import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTablePanel;
@@ -651,6 +652,17 @@ public class OpenELIS implements EntryPoint, EventListener {
                                         return new ScreenAToZTable();
                                     else if(args[0] instanceof Node)
                                         return new ScreenAToZTable((Node)args[0],(ScreenBase)args[1]);
+                                    return null;
+                                }
+                           
+      });
+      ClassFactory.addClass(new String[] {ScreenScrollList.class.getName(),ScreenScrollList.TAG_NAME}, 
+                            new ClassFactory.Factory() {
+                                public Object newInstance(Object[] args) {
+                                    if(args == null)
+                                        return new ScreenScrollList();
+                                    else if(args[0] instanceof Node)
+                                        return new ScreenScrollList((Node)args[0],(ScreenBase)args[1]);
                                     return null;
                                 }
                            

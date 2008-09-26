@@ -99,11 +99,11 @@ public class TestScreen extends OpenELISScreenForm implements
             }else
                 super.performCommand(action, obj);
         } else {
-            /*if(action == KeyListManager.Action.FETCH){
-                key = (DataSet)((Object[])obj)[0];
+            /*if(action == KeyListManager.Action.FETCH){                
+                key = (DataSet)((Object[])obj)[0];                
                 fillTestAnalyteDropDown();
                 fillTestResultDropDown();                
-                fillModelMap();                
+                fillModelMap();                             
             }*/
             super.performCommand(action, obj);
         }
@@ -261,7 +261,7 @@ public class TestScreen extends OpenELISScreenForm implements
        super.afterDraw(success);
               
     }
-    
+        
     public void query() {        
         super.query();
         testId.setFocus(true);
@@ -359,7 +359,7 @@ public class TestScreen extends OpenELISScreenForm implements
        
        screenService.getObject("loadTestDetails", new DataObject[] {key,rpc.getField("details")}, new AsyncCallback() {
            public void onSuccess(Object result) {              
-               load((FormRPC)result);
+               load((FormRPC)result);               
                rpc.setField("details", (FormRPC)result);
                window.setStatus("","");
 
