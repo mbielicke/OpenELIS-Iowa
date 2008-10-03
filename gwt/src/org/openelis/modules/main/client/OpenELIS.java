@@ -45,12 +45,13 @@ import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenAToZTable;
 import org.openelis.gwt.screen.ScreenAbsolute;
 import org.openelis.gwt.screen.ScreenAppButton;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
 import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenCollapsePanel;
+import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenHTML;
 import org.openelis.gwt.screen.ScreenHorizontal;
 import org.openelis.gwt.screen.ScreenLabel;
@@ -59,7 +60,7 @@ import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenPagedTree;
-import org.openelis.gwt.screen.ScreenQueryTableWidget;
+import org.openelis.gwt.screen.ScreenQueryTable;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenRichTextArea;
 import org.openelis.gwt.screen.ScreenScrollList;
@@ -75,10 +76,11 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
 import org.openelis.gwt.widget.ProxyListener;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableAutoComplete;
 import org.openelis.gwt.widget.table.TableCalendar;
 import org.openelis.gwt.widget.table.TableCheck;
 import org.openelis.gwt.widget.table.TableCollection;
+import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableTextBox;
@@ -221,13 +223,13 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenQueryTableWidget.class.getName(),ScreenQueryTableWidget.TAG_NAME},
+      ClassFactory.addClass(new String[] {ScreenQueryTable.class.getName(),ScreenQueryTable.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new ScreenQueryTableWidget();
+                                          return new ScreenQueryTable();
                                       else if(args[0] instanceof Node)
-                                          return new ScreenQueryTableWidget((Node)args[0],(ScreenBase)args[1]);
+                                          return new ScreenQueryTable((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -352,13 +354,23 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableAutoDropdown.class.getName(),TableAutoDropdown.TAG_NAME},
+      ClassFactory.addClass(new String[] {TableAutoComplete.class.getName(),TableAutoComplete.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new TableAutoDropdown();
+                                          return new TableAutoComplete();
                                       else if(args[0] instanceof Node)
-                                          return new TableAutoDropdown((Node)args[0], (ScreenBase)args[1]);
+                                          return new TableAutoComplete((Node)args[0], (ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {TableDropdown.class.getName(),TableDropdown.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableDropdown();
+                                      else if(args[0] instanceof Node)
+                                          return new TableDropdown((Node)args[0], (ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -613,13 +625,23 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {ScreenAutoDropdown.class.getName(),ScreenAutoDropdown.TAG_NAME},
+      ClassFactory.addClass(new String[] {ScreenAutoCompleteWidget.class.getName(),ScreenAutoCompleteWidget.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new ScreenAutoDropdown();
+                                          return new ScreenAutoCompleteWidget();
                                       else if(args[0] instanceof Node)
-                                          return new ScreenAutoDropdown((Node)args[0],(ScreenBase)args[1]);
+                                          return new ScreenAutoCompleteWidget((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {ScreenDropDownWidget.class.getName(),ScreenDropDownWidget.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenDropDownWidget();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenDropDownWidget((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });
