@@ -17,19 +17,15 @@ package org.openelis.modules.main.server;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
-import org.openelis.gwt.common.Filter;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.TableModel;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.gwt.services.TableServiceInt;
 import org.openelis.modules.favorites.client.FavoritesServiceInt;
 import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -39,7 +35,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, TableServiceInt, FavoritesServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, FavoritesServiceInt {
 
     private static final long serialVersionUID = 1L;
 
@@ -128,40 +124,6 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
 
 	public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException{
 		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match,params);
-	}
-
-	//table service methods
-	public TableModel filter(int col, Filter[] filters, int index, int selected) throws RPCException {
-		return ((TableServiceInt)getService()).filter(col, filters, index, selected);
-	}
-
-	public Filter[] getFilter(int col) {
-		try{
-			return ((TableServiceInt)getService()).getFilter(col);
-		}catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-	}
-
-	public TableModel getModel(TableModel model) throws RPCException {
-		return ((TableServiceInt)getService()).getModel(model);
-	}
-
-	public TableModel getPage(int page, int selected) throws RPCException {
-		return ((TableServiceInt)getService()).getPage(page, selected);
-	}
-
-	public String getTip(AbstractField key) throws RPCException {
-		return ((TableServiceInt)getService()).getTip(key);
-	}
-
-	public TableModel saveModel(TableModel model) throws RPCException {
-		return ((TableServiceInt)getService()).saveModel(model);
-	}
-
-	public TableModel sort(int col, boolean down, int index, int selected) throws RPCException {
-		return ((TableServiceInt)getService()).sort(col, down, index, selected);
 	}
 
     public String getEditFavorites() {
