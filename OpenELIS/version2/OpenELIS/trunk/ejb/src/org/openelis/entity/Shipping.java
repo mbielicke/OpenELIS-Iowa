@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -85,6 +87,10 @@ public class Shipping implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "shipped_to_id", insertable = false, updatable = false)
   private Organization shipTo;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
+  private Collection<ShippingTracking> shippingTracking;
 
   @Transient
   private Shipping original;
@@ -227,5 +233,17 @@ public class Shipping implements Auditable, Cloneable {
   public String getTableName() {
     return "shipping";
   }
+public Collection<ShippingTracking> getShippingTracking() {
+    return shippingTracking;
+}
+public void setShippingTracking(Collection<ShippingTracking> shippingTracking) {
+    this.shippingTracking = shippingTracking;
+}
+public Organization getShipTo() {
+    return shipTo;
+}
+public void setShipTo(Organization shipTo) {
+    this.shipTo = shipTo;
+}
   
 }   

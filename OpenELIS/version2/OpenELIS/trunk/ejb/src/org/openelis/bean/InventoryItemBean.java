@@ -15,26 +15,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InventoryComponentDO;
-import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.entity.InventoryComponent;
-import org.openelis.entity.InventoryItem;
-import org.openelis.entity.Note;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.persistence.CachingManager;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +30,24 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.InventoryComponentDO;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.entity.InventoryComponent;
+import org.openelis.entity.InventoryItem;
+import org.openelis.entity.Note;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.remote.InventoryItemRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -214,6 +212,8 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setQuantityMinLevel(inventoryItemDO.getQuantityMinLevel());
          inventoryItem.setQuantityToReorder(inventoryItemDO.getQuantityToReorder());
          inventoryItem.setStoreId(inventoryItemDO.getStore());
+         inventoryItem.setParentInventoryItemId(inventoryItemDO.getParentInventoryItemId());
+         inventoryItem.setParentRatio(inventoryItemDO.getParentRatio());
          
          if (inventoryItem.getId() == null) {
             manager.persist(inventoryItem);
@@ -333,6 +333,14 @@ public class InventoryItemBean implements InventoryItemRemote{
        
         query.setParameter("name",itemName);
         query.setParameter("store",storeId);
+        query.setMaxResults(maxResults);
+        
+        return query.getResultList();
+    }
+    
+    public List inventoryItemWithComponentsAutoCompleteLookupByName(String itemName, int maxResults){
+        Query query = manager.createNamedQuery("InventoryItem.AutocompleteItemByNameKits");
+        query.setParameter("name",itemName);
         query.setMaxResults(maxResults);
         
         return query.getResultList();

@@ -372,12 +372,23 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
 
     public List autoCompleteLocationLookupByName(String name, int maxResults){
-        Query query = null;
-        query = manager.createNamedQuery("InventoryLocation.AutoCompleteByName");
+        Query query = manager.createNamedQuery("InventoryLocation.AutoCompleteByName");
         query.setParameter("name",name);
         query.setParameter("loc",name);
         query.setParameter("desc",name);
         query.setMaxResults(maxResults);
+        return query.getResultList();
+    }
+    
+    public List autoCompleteLocationLookupByNameInvId(String name, Integer invId, int maxResults){
+        Query query = manager.createNamedQuery("InventoryLocation.AutoCompleteByNameInvId");
+        query.setParameter("name",name);
+        query.setParameter("loc",name);
+        query.setParameter("desc",name);
+        query.setParameter("id",invId);
+        
+        query.setMaxResults(maxResults);
+        
         return query.getResultList();
     }
     

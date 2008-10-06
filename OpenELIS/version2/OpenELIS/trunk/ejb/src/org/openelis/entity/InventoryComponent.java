@@ -20,13 +20,6 @@ package org.openelis.entity;
   * InventoryComponent Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.InventoryItem;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -39,13 +32,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 @NamedQueries({ @NamedQuery(name = "InventoryComponent.InventoryComponent", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
-    " c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
+    " c.quantity, i.id) from InventoryComponent c left join c.componentInventoryItem i  where c.id = :id"),
 @NamedQuery(name = "InventoryComponent.InventoryComponentsByItem", query = "select new org.openelis.domain.InventoryComponentDO(c.id,c.inventoryItemId,c.componentId,i.name,i.description, " +
-" c.quantity) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItemId = :id")})
+" c.quantity, i.id) from InventoryComponent c left join c.componentInventoryItem i  where c.inventoryItemId = :id")})
 
 
 @Entity
