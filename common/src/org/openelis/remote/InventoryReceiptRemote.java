@@ -42,6 +42,9 @@ public interface InventoryReceiptRemote {
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);
      
+     //auto complete lookup
+     public List autoCompleteLocationLookupByNameInvId(String name, Integer invId, int maxResults);
+     
      public List getInventoryItemsByUPC(String upc);
      
      //a way for the servlet to get the system user id

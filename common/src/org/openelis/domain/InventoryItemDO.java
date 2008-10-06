@@ -45,8 +45,11 @@ public class InventoryItemDO implements Serializable{
     protected Integer aveLeadTime;
 	protected double aveCost;
 	protected Integer aveDailyUse;
+    protected String parentInventoryItem;
+    protected Integer parentInventoryItemId;
+    protected Integer parentRatio;
 	
-	public InventoryItemDO(){
+    public InventoryItemDO(){
         
     }
     
@@ -54,7 +57,8 @@ public class InventoryItemDO implements Serializable{
                            Integer quantityMinLevel, Integer quantityMaxLevel, Integer quantityToReorder, 
                            Integer dispensedUnits, String isReorderAuto, String isLotMaintained, String isSerialMaintained,
                            String isActive, String isBulk, String isNotForSale, String isSubAssembly, String isLabor, String isNoInventory,
-                           String productUri, Integer aveLeadTime, double aveCost, Integer aveDailyUse){
+                           String productUri, Integer aveLeadTime, double aveCost, Integer aveDailyUse, Integer parentInventoryItemId, 
+                           String parentInventoryItem, Integer parentRatio){
         
         setId(id);
         setName(name);
@@ -78,6 +82,9 @@ public class InventoryItemDO implements Serializable{
         setAveLeadTime(aveLeadTime);
         setAveCost(aveCost);
         setAveDailyUse(aveDailyUse);
+        setParentInventoryItemId(parentInventoryItemId);
+        setParentInventoryItem(parentInventoryItem);
+        setParentRatio(parentRatio);
 	}
     
     public double getAveCost() {
@@ -255,4 +262,28 @@ public class InventoryItemDO implements Serializable{
     public void setStore(Integer store) {
         this.store = store;
     }   
+    
+    public Integer getParentInventoryItemId() {
+        return parentInventoryItemId;
+    }
+
+    public void setParentInventoryItemId(Integer parentInventoryItemId) {
+        this.parentInventoryItemId = parentInventoryItemId;
+    }
+
+    public Integer getParentRatio() {
+        return parentRatio;
+    }
+
+    public void setParentRatio(Integer parentRatio) {
+        this.parentRatio = parentRatio;
+    }
+
+    public String getParentInventoryItem() {
+        return parentInventoryItem;
+    }
+
+    public void setParentInventoryItem(String parentInventoryItem) {
+        this.parentInventoryItem = DataBaseUtil.trim(parentInventoryItem);
+    }
 }
