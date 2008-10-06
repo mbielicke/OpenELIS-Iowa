@@ -15,6 +15,29 @@
 */
 package org.openelis.modules.organization.client;
 
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenTextArea;
+import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.table.QueryTable;
+import org.openelis.gwt.widget.table.TableDropdown;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -25,32 +48,6 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZTable;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.QueryTable;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
-
 public class OrganizationScreen extends OpenELISScreenForm implements
                                                           ClickListener,
                                                           TabListener {
@@ -60,7 +57,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
                     contactTypeDropdown;
 
     private AppButton        removeContactButton, standardNoteButton;
-    private EditTable        contactsController;
+    private TableWidget       contactsTable;
     private ScreenTextBox    orgId;
     private ScreenTextArea   noteText;
     private TextBox          orgName;
@@ -99,7 +96,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         TableWidget d;
         QueryTable q;
         ScreenTableWidget sw;
-        AutoCompleteDropdown drop;
+        Dropdown drop;
         AToZTable atozTable;
 
         //
@@ -125,10 +122,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         // disable auto add and make sure there are no rows in the table
         //
-        contactsController = ((TableWidget)getWidget("contactsTable")).controller;
-        ((OrganizationContactsTable)contactsController.manager).setOrganizationForm(this);
-        addCommandListener(contactsController);
-
+        contactsTable = (TableWidget)getWidget("contactsTable");
+        contactsTable.model.enableAutoAdd(false);
+        
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
         orgName = (TextBox)getWidget(OrgMeta.getName());
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
@@ -139,7 +135,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
             contactTypeDropdown = (DataModel)initData.get("contacts");
         }
 
-        drop = (AutoCompleteDropdown)getWidget(OrgMeta.getAddress().getState());
+        drop = (Dropdown)getWidget(OrgMeta.getAddress().getState());
         drop.setModel(stateDropdown);
 
         sw = (ScreenTableWidget)widgets.get("contactsTable");
@@ -148,23 +144,23 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         // state dropdown
         //
-        ((TableAutoDropdown)d.controller.editors[5]).setModel(stateDropdown);
-        ((TableAutoDropdown)q.editors[5]).setModel(stateDropdown);
+        ((TableDropdown)d.columns.get(5).getColumnWidget()).setModel(stateDropdown);
+        ((TableDropdown)q.columns.get(5).getColumnWidget()).setModel(stateDropdown);
 
         //
         // country dropdowns
         //
-        drop = (AutoCompleteDropdown)getWidget(OrgMeta.getAddress().getCountry());
+        drop = (Dropdown)getWidget(OrgMeta.getAddress().getCountry());
         drop.setModel(countryDropdown);
 
-        ((TableAutoDropdown)d.controller.editors[7]).setModel(countryDropdown);
-        ((TableAutoDropdown)q.editors[7]).setModel(countryDropdown);
+        ((TableDropdown)d.columns.get(7).getColumnWidget()).setModel(countryDropdown);
+        ((TableDropdown)q.columns.get(7).getColumnWidget()).setModel(countryDropdown);
 
         //
         // contact type dropdowns
         //
-        ((TableAutoDropdown)d.controller.editors[0]).setModel(contactTypeDropdown);
-        ((TableAutoDropdown)q.editors[0]).setModel(contactTypeDropdown);
+        ((TableDropdown)d.columns.get(0).getColumnWidget()).setModel(contactTypeDropdown);
+        ((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(contactTypeDropdown);
         
 
         
@@ -172,7 +168,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         updateChain.add(afterUpdate);
         
         super.afterDraw(success);
-        ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsController.model);
+        ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsTable.model);
     }
     
     public void query() {
@@ -297,18 +293,19 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     private void onRemoveContactRowButtonClick() {
-        int selectedRow = contactsController.selected;
-        if (selectedRow > -1 && contactsController.model.numRows() > 0) {
-            TableRow row = contactsController.model.getRow(selectedRow);
-            contactsController.model.hideRow(row);
+        int selectedRow = contactsTable.model.getSelectedIndex();
+        if (selectedRow > -1 && contactsTable.model.numRows() > 0) {
+            //DataSet row = contactsTable.model.getRow(selectedRow);
+            contactsTable.model.deleteRow(selectedRow);
             
             // reset the model
-            contactsController.reset();
+            //contactsTable
+            //contactsTable.rescontactsController.reset();
             // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
+            //StringField deleteFlag = new StringField();
+            //deleteFlag.setValue("Y");
 
-            row.addHidden("deleteFlag", deleteFlag);
+            //row.addHidden("deleteFlag", deleteFlag);
         }
     }
     

@@ -276,6 +276,14 @@
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
 				    <html>&lt;hr/&gt;</html>
+	   				<xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">BuildKits</xsl:with-param>
+				      <xsl:with-param name="label">buildKits</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">BuildKitsScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>	
+				    <html>&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryReceipt</xsl:with-param>
 				      <xsl:with-param name="label">inventoryReceipt</xsl:with-param>
