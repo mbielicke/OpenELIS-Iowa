@@ -256,8 +256,10 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
             }
             
             onProcessingCommitClick();
-        }else
-            super.commit();
+        }else if(state == State.QUERY)
+            fillItemsCheckedRowsList.clear();
+
+        super.commit();
     }
     
     public void abort() {
@@ -304,15 +306,13 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     }
 
     public boolean canEdit(int row, int col, TableController controller) {
-        //lastIndex = row;
-        //Window.alert("canEdit()");
-        //ranFinishedEditing = false;
-        //if(clicked)
-        //    fillOrderCheck(row, checked);
-        
-        
-        if(state == FormInt.State.ADD && col == 0)           
+        if(controller == fillItemsController){
+            if(state == FormInt.State.ADD && col == 0)           
+                return true;
+        }else if(controller == orderItemsController){
+            //if the fillItemsController row is checked then then col==1 returns true
             return true;
+        }
         
        return false;
     }

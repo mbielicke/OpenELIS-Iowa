@@ -26,28 +26,22 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -123,7 +117,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
             StringObject name = new StringObject(resultDO.getName());
             
             row.setKey(id);         
-            row.addObject(name);
+            row.add(name);
             model.add(row);
             i++;
         } 
@@ -397,31 +391,33 @@ public class OrganizationService implements AppScreenFormServiceInt,
     public TableModel fillContactsTable(TableModel contactsModel, List contactsList){
     	try 
         {
-    		contactsModel.reset();
+    		contactsModel.clear();
     		
     		for(int iter = 0;iter < contactsList.size();iter++) {
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
-                   TableRow row = contactsModel.createRow();
-                   NumberField id = new NumberField(contactRow.getId());
-                   NumberField addId = new NumberField(contactRow.getAddressDO().getId());
-                    row.addHidden("contactId", id);
-                    row.addHidden("addId", addId);
-                    row.getColumn(0).setValue(contactRow.getContactType());
-                    row.getColumn(1).setValue(contactRow.getName());
-                    row.getColumn(2).setValue(contactRow.getAddressDO().getMultipleUnit());
-                    row.getColumn(3).setValue(contactRow.getAddressDO().getStreetAddress());
-                    row.getColumn(4).setValue(contactRow.getAddressDO().getCity());          
-                    row.getColumn(5).setValue(contactRow.getAddressDO().getState());
-                    row.getColumn(6).setValue(contactRow.getAddressDO().getZipCode());
-                    row.getColumn(7).setValue(contactRow.getAddressDO().getCountry());
-                    row.getColumn(8).setValue(contactRow.getAddressDO().getWorkPhone());
-                    row.getColumn(9).setValue(contactRow.getAddressDO().getHomePhone());
-                    row.getColumn(10).setValue(contactRow.getAddressDO().getCellPhone());
-                    row.getColumn(11).setValue(contactRow.getAddressDO().getFaxPhone());
-                    row.getColumn(12).setValue(contactRow.getAddressDO().getEmail());	                
-                    
-                    contactsModel.addRow(row);
+               DataSet row = contactsModel.createRow();
+               
+               NumberObject id = new NumberObject(contactRow.getId());
+               NumberObject addId = new NumberObject(contactRow.getAddressDO().getId());
+               row.setData(addId);
+               
+               row.setKey(id);
+                row.get(0).setValue(contactRow.getContactType());
+                row.get(1).setValue(contactRow.getName());
+                row.get(2).setValue(contactRow.getAddressDO().getMultipleUnit());
+                row.get(3).setValue(contactRow.getAddressDO().getStreetAddress());
+                row.get(4).setValue(contactRow.getAddressDO().getCity());          
+                row.get(5).setValue(contactRow.getAddressDO().getState());
+                row.get(6).setValue(contactRow.getAddressDO().getZipCode());
+                row.get(7).setValue(contactRow.getAddressDO().getCountry());
+                row.get(8).setValue(contactRow.getAddressDO().getWorkPhone());
+                row.get(9).setValue(contactRow.getAddressDO().getHomePhone());
+                row.get(10).setValue(contactRow.getAddressDO().getCellPhone());
+                row.get(11).setValue(contactRow.getAddressDO().getFaxPhone());
+                row.get(12).setValue(contactRow.getAddressDO().getEmail());	                
+                
+                contactsModel.addRow(row);
            } 
     		
         } catch (Exception e) {
@@ -561,7 +557,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
         	NumberObject blankNumberId = new NumberObject(0);
         	BooleanObject blankSelected = new BooleanObject();
             
-        	blankset.addObject(blankStringId);
+        	blankset.add(blankStringId);
         	
         	
         	if(cat.equals("contactType"))
@@ -585,7 +581,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     		NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
      	
     		textObject.setValue(dropdownText);
-    		set.addObject(textObject);
+    		set.add(textObject);
     		
     		if(cat.equals("contactType")){
     			numberId.setValue(dropdownId);
@@ -634,7 +630,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
 			id.setValue(organizationDO.getParentOrganizationId());
 			text.setValue(organizationDO.getParentOrganization());
 			parentOrgSet.setKey(id);
-			parentOrgSet.addObject(text);
+			parentOrgSet.add(text);
 			rpcReturn.setFieldValue(OrgMeta.PARENT_ORGANIZATION.getName(), parentOrgSet);
 		}
 	}
@@ -662,57 +658,70 @@ public class OrganizationService implements AppScreenFormServiceInt,
 	
 	private List<OrganizationContactDO> getOrgContactsListFromRPC(TableModel contactsTable, Integer orgId){
 		List<OrganizationContactDO> organizationContacts = new ArrayList<OrganizationContactDO>();
-		
-		for(int i=0; i<contactsTable.numRows(); i++){
+		DataModel model = contactsTable.getData();
+        List deletedRows = model.getDeletions();
+        
+		for(int i=0; i<model.size(); i++){
 			OrganizationContactDO contactDO = new OrganizationContactDO();
-			TableRow row = contactsTable.getRow(i);
+			DataSet row = model.get(i);
 			//contact data
-			NumberField contactId = (NumberField)row.getHidden("contactId");
-			NumberField addId = (NumberField)row.getHidden("addId");
-			StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-			if(deleteFlag == null){
-				contactDO.setDelete(false);
-			}else{
-				contactDO.setDelete("Y".equals(deleteFlag.getValue()));
-			}
+			NumberObject contactId = (NumberObject)row.getKey();
+			NumberObject addId = (NumberObject)row.getData();
+			//StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
+            //contactsTable.getde
+			//if(deleteFlag == null){
+			//contactDO.setDelete(false);
+			//}else{
+			//	contactDO.setDelete("Y".equals(deleteFlag.getValue()));
+			//}
+            
 			//if the user created the row and clicked the remove button before commit...
 			//we dont need to do anything with that row
-			if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && contactId == null){
+			//if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && contactId == null){
 				//do nothing
-			}else{
-				if(contactId != null)
-					contactDO.setId((Integer)contactId.getValue());
-				contactDO.setOrganization(orgId);
-				contactDO.setName((String)((StringField)row.getColumn(1)).getValue());
-				//contact address data
-				if(addId != null)
-				contactDO.getAddressDO().setId((Integer)addId.getValue());
-			    contactDO.setContactType((Integer)row.getColumn(0).getValue());
-				contactDO.getAddressDO().setMultipleUnit((String)((StringField)row.getColumn(2)).getValue());
-				contactDO.getAddressDO().setStreetAddress((String)((StringField)row.getColumn(3)).getValue());
-				contactDO.getAddressDO().setCity((String)((StringField)row.getColumn(4)).getValue());
-				contactDO.getAddressDO().setState((String)row.getColumn(5).getValue());
-				contactDO.getAddressDO().setZipCode((String)((StringField)row.getColumn(6)).getValue());
-				contactDO.getAddressDO().setCountry((String)row.getColumn(7).getValue());
-				contactDO.getAddressDO().setWorkPhone((String)((StringField)row.getColumn(8)).getValue());
-				contactDO.getAddressDO().setHomePhone((String)((StringField)row.getColumn(9)).getValue());
-				contactDO.getAddressDO().setCellPhone((String)((StringField)row.getColumn(10)).getValue());
-				contactDO.getAddressDO().setFaxPhone((String)((StringField)row.getColumn(11)).getValue());
-				contactDO.getAddressDO().setEmail((String)((StringField)row.getColumn(12)).getValue());
-				
-				organizationContacts.add(contactDO);	
-			}
+			//}else{
+			if(contactId != null)
+				contactDO.setId((Integer)contactId.getValue());
+			contactDO.setOrganization(orgId);
+			contactDO.setName((String)((StringField)row.get(1)).getValue());
+			//contact address data
+			if(addId != null)
+			contactDO.getAddressDO().setId((Integer)addId.getValue());
+		    contactDO.setContactType((Integer)row.get(0).getValue());
+			contactDO.getAddressDO().setMultipleUnit((String)((StringField)row.get(2)).getValue());
+			contactDO.getAddressDO().setStreetAddress((String)((StringField)row.get(3)).getValue());
+			contactDO.getAddressDO().setCity((String)((StringField)row.get(4)).getValue());
+			contactDO.getAddressDO().setState((String)row.get(5).getValue());
+			contactDO.getAddressDO().setZipCode((String)((StringField)row.get(6)).getValue());
+			contactDO.getAddressDO().setCountry((String)row.get(7).getValue());
+			contactDO.getAddressDO().setWorkPhone((String)((StringField)row.get(8)).getValue());
+			contactDO.getAddressDO().setHomePhone((String)((StringField)row.get(9)).getValue());
+			contactDO.getAddressDO().setCellPhone((String)((StringField)row.get(10)).getValue());
+			contactDO.getAddressDO().setFaxPhone((String)((StringField)row.get(11)).getValue());
+			contactDO.getAddressDO().setEmail((String)((StringField)row.get(12)).getValue());
+			
+			organizationContacts.add(contactDO);	
 		}
+        
+        for(int j=0; j<deletedRows.size(); j++){
+            DataSet deletedRow = (DataSet)deletedRows.get(j);
+            if(deletedRow.getKey() != null){
+                OrganizationContactDO contactDO = new OrganizationContactDO();
+                contactDO.setDelete(true);
+                contactDO.setId((Integer)((NumberObject)deletedRow.getKey()).getValue());
+                contactDO.getAddressDO().setId((Integer)((NumberObject)deletedRow.getData()).getValue());
+            }
+        }
 		
 		return organizationContacts;
 	}
 	
 	private void setRpcErrors(List exceptionList, TableModel contactsTable, FormRPC rpcSend){
-    	//we need to get the keys and look them up in the resource bundle for internationalization
+    /*	//we need to get the keys and look them up in the resource bundle for internationalization
     	for (int i=0; i<exceptionList.size();i++) {
     		//if the error is inside the org contacts table
     		if(exceptionList.get(i) instanceof TableFieldErrorException){
-    			TableRow row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
+    			DataSet row = contactsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
     			row.getColumn(contactsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
     																	.addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
     		//if the error is on the field
@@ -723,6 +732,7 @@ public class OrganizationService implements AppScreenFormServiceInt,
     			rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
     	}	
     	rpcSend.status = Status.invalid;
+        */
     }
 
     private DataModel getParentOrgMatches(String match){
@@ -761,16 +771,16 @@ public class OrganizationService implements AppScreenFormServiceInt,
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject addressObject = new StringObject();
             addressObject.setValue(address);
-            data.addObject(addressObject);
+            data.add(addressObject);
             StringObject cityObject = new StringObject();
             cityObject.setValue(city);
-            data.addObject(cityObject);
+            data.add(cityObject);
             StringObject stateObject = new StringObject();
             stateObject.setValue(state);
-            data.addObject(stateObject);
+            data.add(stateObject);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            

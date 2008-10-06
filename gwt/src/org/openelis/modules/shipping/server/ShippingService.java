@@ -87,7 +87,6 @@ public class ShippingService implements
                 throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
             HashMap<String, AbstractField> fields = rpc.getFieldMap();
-            fields.remove("itemsTable");
             fields.remove("trackingNumbersTable");
 
             ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");

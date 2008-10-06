@@ -109,7 +109,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
                 StringObject name = new StringObject(nameResult);
                 
                 row.setKey(id);         
-                row.addObject(name);
+                row.add(name);
                 model.add(row);
                 i++;
              } 
@@ -299,7 +299,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			NumberObject id = new NumberObject(analyteDO.getParentAnalyteId());
 			StringObject text = new StringObject(analyteDO.getParentAnalyte());
 			parentAnalyteSet.setKey(id);
-			parentAnalyteSet.addObject(text);
+			parentAnalyteSet.add(text);
 			rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), parentAnalyteSet);
 		}
 	}
@@ -340,7 +340,7 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 			//columns
 			StringObject nameObject = new StringObject();
 			nameObject.setValue(name);
-			data.addObject(nameObject);
+			data.add(nameObject);
 			
 			//add the dataset to the datamodel
 			dataModel.add(data);

@@ -29,6 +29,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.FormInt;
@@ -55,6 +56,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
     private DataModel itemsShippedModel;
+    private AppButton removeRowButton;
     
     private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
     private AutoCompleteDropdown shippedToDropdown;
@@ -86,7 +88,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     }
     
     public void onClick(Widget sender) {
-    
+        if (sender == removeRowButton)
+            onRemoveRowButtonClick();
     }
     
     public void onChange(Widget sender) {
@@ -123,6 +126,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         
         shippedToDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.ORGANIZATION_META.getName());
 
+        removeRowButton = (AppButton)getWidget("removeRowButton");
+        
         itemsController = ((TableWidget)getWidget("itemsTable")).controller;
         itemsController.setAutoAdd(false);
 
@@ -227,20 +232,16 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         loadScreen(rpc);
     }
     
-    /*public void add() {
-        itemsController.setAutoAdd(true);
-        trackingNumbersController.setAutoAdd(true);
-        super.add();
+    public void query() {
+        super.query();
+        removeRowButton.changeState(AppButton.ButtonState.DISABLED);
+        statusDropdown.setFocus(true);
     }
-    */
     
-    /*
     public void update() {
-        itemsController.setAutoAdd(true);
-        trackingNumbersController.setAutoAdd(true);
         super.update();
+        statusDropdown.setFocus(true);
     }
-    */
     
     public void abort() {
         itemsController.setAutoAdd(false);
@@ -338,6 +339,22 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
             tableRow.addHidden("referenceId", (NumberField)set.getKey());
             
             ((EditTable)itemsController).addRow(tableRow);
+        }
+    }
+    
+    private void onRemoveRowButtonClick() {
+        int selectedRow = trackingNumbersController.selected;
+        if (selectedRow > -1 && trackingNumbersController.model.numRows() > 0) {
+            TableRow row = trackingNumbersController.model.getRow(selectedRow);
+            trackingNumbersController.model.hideRow(row);
+            
+            // reset the model
+            trackingNumbersController.reset();
+            // need to set the deleted flag to "Y" also
+            StringField deleteFlag = new StringField();
+            deleteFlag.setValue("Y");
+
+            row.addHidden("deleteFlag", deleteFlag);
         }
     }
     

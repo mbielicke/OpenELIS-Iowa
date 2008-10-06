@@ -16,10 +16,13 @@
 package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -39,6 +42,7 @@ import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
@@ -59,7 +63,7 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager {
+public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, AutoCompleteCallInt {
     
     private EditTable        receiptsController;
     private boolean doAutoAdd = true;
@@ -869,5 +873,35 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             
             ((EditTable)receiptsController).addRow(tableRow);
         }
+    }
+
+    //
+    //auto complete call
+    //
+    public void callForMatches(final AutoCompleteDropdown widget, DataModel model, String text) {
+        HashMap params = new HashMap();
+        params.put("addToExisting", rpc.getField("addToExisting"));
+        
+        StringObject catObj = new StringObject(widget.cat);
+        ModelObject modelObj = new ModelObject(model);
+        StringObject matchObj = new StringObject(text);
+        DataMap paramsObj = new DataMap(params);
+        
+        // prepare the argument list for the getObject function
+        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        
+        
+        screenService.getObject("getMatchesObj", args, new AsyncCallback() {
+            public void onSuccess(Object result) {
+                widget.showAutoMatches((DataModel)((ModelObject)result).getValue());
+            }
+            
+            public void onFailure(Throwable caught) {
+                if(caught instanceof FormErrorException){
+                    window.setStatus(caught.getMessage(), "ErrorPanel");
+                }else
+                    Window.alert(caught.getMessage());
+            }
+        });
     }
 }

@@ -147,7 +147,7 @@
 								<widths>180,110,100,20</widths>
 							</autoDropdown>
 							<query>
-								<textbox case="upper" width="198px"/>
+								<textbox case="upper" width="188px"/>
 							</query>
 							
 						</widget>
@@ -189,8 +189,10 @@
 							<textbox case="mixed" key="{addr:getZipCode($orgAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 						</widget>						
 					</row>
-					<row>	
-						<widget colspan="3">
+					</TablePanel>
+					<HorizontalPanel>
+						<widget>
+<!--						<VerticalPanel>-->
 							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
 								<headers><xsl:value-of select="resource:getString($constants,'itemsShipped')"/></headers>
 								<widths>395</widths>
@@ -204,24 +206,48 @@
 								<filters>false</filters>
 								<colAligns>left</colAligns>
 							</table>
+<!--							<VerticalPanel height="5px"/>
+							</VerticalPanel>-->
 						</widget>	
-						<widget valign="top" colspan="3">						
-						<table key="trackingNumbersTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
+						<VerticalPanel>
+						<widget>						
+						<!--<VerticalPanel>-->
+						<table key="trackingNumbersTable" manager="this" maxRows="5" showError="false" showScroll="true" title="" width="auto">
 							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
 							<editors>
-								<textbox case="mixed"/>
+								<textbox case="mixed" max="30"/>
 							</editors>
 							<fields>
-								<string key="test" required="true"/>
+								<string key="{trackingMeta:getTrackingNumber($tracking)}" required="true"/>
 							</fields>
 							<sorts>false</sorts>
 							<filters>false</filters>
 							<colAligns>left</colAligns>
 						</table>
+						<query>
+							<queryTable maxRows="5" showError="false" title="" width="auto" showScroll="true">
+								<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
+								<widths>180</widths>
+								<editors>
+									<textbox case="mixed"/>
+								</editors>
+								<fields>
+									<xsl:value-of select="trackingMeta:getTrackingNumber($tracking)"/>
+								</fields>
+							</queryTable>
+						</query>
 						</widget>
-					</row>
-				</TablePanel>
+						<widget halign="center" style="WhiteContentPanel">
+							<appButton action="removeRow" key="removeRowButton" onclick="this" style="Button">
+								<HorizontalPanel>
+									<AbsolutePanel style="RemoveRowButtonImage"/>
+									<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+								</HorizontalPanel>
+							</appButton>
+						</widget>
+						</VerticalPanel>
+					</HorizontalPanel>
 				</VerticalPanel>
 			</VerticalPanel>
 		</HorizontalPanel>
@@ -256,6 +282,9 @@
 		<queryDate key="{meta:getProcessedDate($shipping)}" begin="0" end="2"/>
    	    <queryDate key="{meta:getShippedDate($shipping)}" begin="0" end="2"/>
 	    <dropdown key="{meta:getShippedMethodId($shipping)}" required="false"/>
+	    
+	    <table key="trackingNumbersTable"/>
+	    <queryString key="{trackingMeta:getTrackingNumber($tracking)}" required="false"/>
 	</rpc>
 </screen>
   </xsl:template>

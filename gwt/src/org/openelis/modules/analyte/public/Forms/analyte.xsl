@@ -121,10 +121,10 @@
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
 						<widget>	
-							<autoDropdown cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
+							<autoComplete cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
 								<headers>Name</headers>
 								<widths>194</widths>
-							</autoDropdown>
+							</autoComplete>
 							<query>
 								<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}"/>
 							</query>

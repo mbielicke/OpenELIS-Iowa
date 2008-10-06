@@ -227,14 +227,6 @@
 							<colAligns>left,left,left</colAligns>
 						</table>
 						</VerticalPanel>
-						<VerticalPanel>
-						<VerticalPanel height="10px"/>
-						<appButton action="package" key="packageButton" onclick="this" style="Button">
-							<HorizontalPanel>
-								<text><xsl:value-of select="resource:getString($constants,'package')"/></text>
-							</HorizontalPanel>
-						</appButton>
-					</VerticalPanel>
 					</HorizontalPanel>
 					</VerticalPanel>				
 		</HorizontalPanel>

@@ -37,7 +37,7 @@
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryItemMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="noteMeta">
@@ -62,6 +62,7 @@
   
   <xsl:template match="doc"> 
     <xsl:variable name="invItem" select="meta:new()"/>
+    <xsl:variable name="parentInvItem" select="meta:getParentInventoryItem($invItem)"/>
     <xsl:variable name="component" select="meta:getInventoryComponent($invItem)"/>
     <xsl:variable name="location" select="meta:getInventoryLocation($invItem)"/>
     <xsl:variable name="note" select="meta:getNote($invItem)"/>
@@ -251,7 +252,7 @@
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
 										<editors>
-											<autoDropdown cat="component" case="lower" autoParams="InventoryComponentAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
+											<autoDropdown cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
 												<widths>118</widths>
 											</autoDropdown>
 											<label/>
@@ -350,7 +351,7 @@
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
 							<widget colspan="5">
-								<textbox case="mixed" key="{meta:getProductUri($invItem)}" width="490px" max="80"/>
+								<textbox case="mixed" key="{meta:getProductUri($invItem)}" width="490px" max="80" tab="{invItemMeta:getName($parentInvItem)},{meta:getParentRatio($invItem)}"/>
 							</widget>									
 						</row>
 						<row>
@@ -367,6 +368,18 @@
 								<textbox key="{meta:getAverageDailyUse($invItem)}" style="ScreenTextboxDisplayOnly" alwaysDisabled="true" width="55px" max="30"/>
 							</widget>
 						</row>
+						<row>
+							<text style="Prompt">Parent Item:</text>
+							<widget colspan="3">
+								<autoDropdown key="{invItemMeta:getName($parentInvItem)}" cat="parentItem" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" case="mixed" width="210px" tab="??,??">
+									<headers>Name,Store</headers>
+									<widths>135,130</widths>
+								</autoDropdown>
+							</widget>
+							<text style="Prompt">Parent Ratio:</text>
+							<textbox key="{meta:getParentRatio($invItem)}"  width="55px" max="30" tab="{meta:getProductUri($invItem)},{invItemMeta:getName($parentInvItem)}"/>
+						</row>
+						
 						</TablePanel>
 						</VerticalPanel>
 					</tab>
@@ -440,6 +453,9 @@
       <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
       <number key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
       
+      <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
+      <number key="{meta:getParentRatio($invItem)}" type="integer" required="false"/>
+      
       <rpc key="components">
 	      <table key="componentsTable"/>
       </rpc>
@@ -488,6 +504,9 @@
       <queryNumber key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
       <queryNumber key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
       <queryString key="{meta:getProductUri($invItem)}" required="false"/>
+      
+      <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
+      <queryNumber key="{meta:getParentRatio($invItem)}" type="integer" required="false"/>
       
       <!--comments tab-->
       <queryString key="{noteMeta:getSubject($note)}" max="60" required="false"/>

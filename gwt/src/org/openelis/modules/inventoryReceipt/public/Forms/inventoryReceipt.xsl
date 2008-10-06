@@ -271,7 +271,7 @@
 									</widget>	
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									<widget>
-									<autoDropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoParams="InventoryReceiptAutoParams" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
+									<autoDropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
 										<headers>Desc</headers>
 										<widths>300</widths>
 									</autoDropdown>

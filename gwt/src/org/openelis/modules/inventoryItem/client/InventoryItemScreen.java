@@ -15,25 +15,19 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.HashMap;
 
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -48,6 +42,7 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
@@ -61,7 +56,17 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener{
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, AutoCompleteCallInt{
 
     private boolean startedLoadingTable = false;
     private AppButton        removeComponentButton, standardNoteButton;
@@ -505,5 +510,34 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         }
         
         return empty;
+    }
+
+    public void callForMatches(final AutoCompleteDropdown widget, DataModel model, String text) {
+        HashMap params = new HashMap();
+        params.put("id", rpc.getField(InvItemMeta.getId()));
+        params.put("store", rpc.getField(InvItemMeta.getStoreId()));
+        params.put("name", rpc.getField(InvItemMeta.getName()));
+        
+        StringObject catObj = new StringObject(widget.cat);
+        ModelObject modelObj = new ModelObject(model);
+        StringObject matchObj = new StringObject(text);
+        DataMap paramsObj = new DataMap(params);
+        
+        // prepare the argument list for the getObject function
+        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        
+        
+        screenService.getObject("getMatchesObj", args, new AsyncCallback() {
+            public void onSuccess(Object result) {
+                widget.showAutoMatches((DataModel)((ModelObject)result).getValue());
+            }
+            
+            public void onFailure(Throwable caught) {
+                if(caught instanceof FormErrorException){
+                    window.setStatus(caught.getMessage(), "ErrorPanel");
+                }else
+                    Window.alert(caught.getMessage());
+            }
+        });
     }
 }

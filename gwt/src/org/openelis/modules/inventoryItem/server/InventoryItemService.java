@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.catalina.logger.SystemOutLogger;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameStoreDO;
 import org.openelis.domain.InventoryComponentDO;
+import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
@@ -37,10 +39,12 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -598,13 +602,56 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return locationsModel;
     }
     
+    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
+        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+        
+    }
+    
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
         if(cat.equals("component"))
             return getComponentMatches(match, params);
         else if(cat.equals("queryComponent"))
             return getComponentMatches(match, null);
+        else if(cat.equals("parentItem"))
+            return getParentItemMatches(match);
         
         return null;    
+    }
+    
+    private DataModel getParentItemMatches(String match) throws RPCException{
+        InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
+        DataModel dataModel = new DataModel();
+        List autoCompleteList;
+
+        String parsedMatch = match.replace('*', '%');
+        
+        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, false, false);
+        
+        for(int i=0; i < autoCompleteList.size(); i++){
+            InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
+            
+            Integer itemId = resultDO.getId();
+            String name = resultDO.getName();
+            String store = resultDO.getStore();
+            
+            DataSet data = new DataSet();
+            //hidden id
+            NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
+            idObject.setValue(itemId);
+            data.setKey(idObject);
+            //columns
+            StringObject nameObject = new StringObject();
+            nameObject.setValue(name);
+            data.addObject(nameObject);
+            StringObject storeObject = new StringObject();
+            storeObject.setValue(store);
+            data.addObject(storeObject);
+                        
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
+        
+        return dataModel;           
     }
     
     private DataModel getComponentMatches(String match, HashMap params) throws RPCException{
@@ -700,7 +747,22 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMaxLevel(), inventoryItemDO.getQuantityMaxLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMinLevel(), inventoryItemDO.getQuantityMinLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityToReorder(), inventoryItemDO.getQuantityToReorder());
-        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), inventoryItemDO.getStore());    
+        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), inventoryItemDO.getStore());
+        rpcReturn.setFieldValue(InvItemMeta.getParentRatio(), inventoryItemDO.getParentRatio());    
+        
+        //we need to create a dataset for the parent inventory item auto complete
+        if(inventoryItemDO.getParentInventoryItemId() == null)
+            rpcReturn.setFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName(), null);
+        else{
+            DataSet parentItemSet = new DataSet();
+            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
+            StringObject text = new StringObject();
+            id.setValue(inventoryItemDO.getParentInventoryItemId());
+            text.setValue(inventoryItemDO.getParentInventoryItem());
+            parentItemSet.setKey(id);
+            parentItemSet.addObject(text);
+            rpcReturn.setFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName(), parentItemSet);
+        }
     
     }
     
@@ -730,6 +792,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO.setQuantityMinLevel((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityMinLevel()));
         inventoryItemDO.setQuantityToReorder((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityToReorder()));
         inventoryItemDO.setStore((Integer)rpcSend.getFieldValue(InvItemMeta.getStoreId()));
+        inventoryItemDO.setParentInventoryItemId((Integer)rpcSend.getFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName()));
+        inventoryItemDO.setParentInventoryItem((String)((DropDownField)rpcSend.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).getTextValue());
+        inventoryItemDO.setParentRatio((Integer)rpcSend.getFieldValue(InvItemMeta.getParentRatio()));
         
         return inventoryItemDO;
     }
@@ -760,7 +825,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                 componentDO.setComponentName((String)((DropDownField)row.getColumn(0)).getTextValue());
                 componentDO.setComponentDesc((String)((StringField)row.getColumn(1)).getValue());
                 componentDO.setQuantity((Double)((NumberField)row.getColumn(2)).getValue());
-                componentDO.setInventoryItemId(itemId);
+                componentDO.setParentInventoryItemId(itemId);
                 
                 components.add(componentDO);    
             }
