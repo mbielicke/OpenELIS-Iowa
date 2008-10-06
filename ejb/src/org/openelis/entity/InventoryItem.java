@@ -29,6 +29,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -43,8 +44,8 @@ import org.w3c.dom.Element;
 
 @NamedQueries({ @NamedQuery(name = "InventoryItem.InventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.categoryId,i.storeId,i.quantityMinLevel, " +
                                " i.quantityMaxLevel,i.quantityToReorder, i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
-                            " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse) " +
-                            " from InventoryItem i where i.id = :id"),
+                            " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse, i.parentInventoryItemId, "+
+                            " pi.name, i.parentRatio) from InventoryItem i LEFT JOIN i.parentInventoryItem pi where i.id = :id"),
      @NamedQuery(name = "InventoryItem.AutocompleteByNameStoreCurrentName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
                             "  from InventoryItem i where i.name like :name and i.storeId = :store and i.name != :currentName and i.isActive = 'Y' order by i.name"),
      @NamedQuery(name = "InventoryItem.AutocompleteByName", query = "select new org.openelis.domain.IdNameDO(i.id, i.name) " +
@@ -81,6 +82,9 @@ import org.w3c.dom.Element;
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and ((i.isSerialMaintained = 'Y' and il.quantityOnhand > 0) or (i.isSerialMaintained = 'N')) and " +
                             " i.storeId = :store order by i.name"),
+     @NamedQuery(name = "InventoryItem.AutocompleteItemByNameKits", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+                            "  from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
+                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and 0 < (select count(ic.id) from InventoryComponent ic where ic.inventoryItemId=i.id) order by i.name"),
      @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description from InventoryItem i where i.id = :id"),
      @NamedQuery(name = "InventoryItem.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
                           + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='inventory_item') and n.referenceId = :id ORDER BY n.timestamp DESC"),
@@ -161,7 +165,13 @@ public class InventoryItem implements Auditable, Cloneable {
   private Double averageCost;             
 
   @Column(name="average_daily_use")
-  private Integer averageDailyUse;             
+  private Integer averageDailyUse;
+  
+  @Column(name="parent_inventory_item")
+  private Integer parentInventoryItemId;     
+  
+  @Column(name="parent_ratio")
+  private Integer parentRatio;     
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_item_id")
@@ -174,6 +184,10 @@ public class InventoryItem implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "reference_id", insertable = false, updatable = false)
   private Collection<Note> note;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_inventory_item", insertable = false, updatable = false)
+  private InventoryItem parentInventoryItem;
 
   @Transient
   private InventoryItem original;
@@ -376,7 +390,26 @@ public class InventoryItem implements Auditable, Cloneable {
        (averageDailyUse != null && !averageDailyUse.equals(this.averageDailyUse)))
       this.averageDailyUse = averageDailyUse;
   }
-
+  
+  public Integer getParentInventoryItemId() {
+      return parentInventoryItemId;
+  }
+  
+  public void setParentInventoryItemId(Integer parentInventoryItemId) {
+      if((parentInventoryItemId == null && this.parentInventoryItemId != null) || 
+         (parentInventoryItemId != null && !parentInventoryItemId.equals(this.parentInventoryItemId)))
+        this.parentInventoryItemId = parentInventoryItemId;
+  }
+    
+    public Integer getParentRatio() {
+        return parentRatio;
+    }
+  
+    public void setParentRatio(Integer parentRatio) {
+        if((parentRatio == null && this.parentRatio != null) || 
+           (parentRatio != null && !parentRatio.equals(this.parentRatio)))
+            this.parentRatio = parentRatio;
+    }
   
   public void setClone() {
     try {
@@ -432,6 +465,10 @@ public class InventoryItem implements Auditable, Cloneable {
       AuditUtil.getChangeXML(averageCost,original.averageCost,doc,"average_cost");
 
       AuditUtil.getChangeXML(averageDailyUse,original.averageDailyUse,doc,"average_daily_use");
+      
+      AuditUtil.getChangeXML(parentInventoryItemId,original.parentInventoryItemId,doc,"parent_inventory_item");
+      
+      AuditUtil.getChangeXML(parentRatio,original.parentRatio,doc,"parent_ratio");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -463,5 +500,11 @@ public class InventoryItem implements Auditable, Cloneable {
   public void setInventoryLocation(Collection<InventoryLocation> inventoryLocation) {
       this.inventoryLocation = inventoryLocation;
   }
+public InventoryItem getParentInventoryItem() {
+    return parentInventoryItem;
+}
+public void setParentInventoryItem(InventoryItem parentInventoryItem) {
+    this.parentInventoryItem = parentInventoryItem;
+}
   
 }   
