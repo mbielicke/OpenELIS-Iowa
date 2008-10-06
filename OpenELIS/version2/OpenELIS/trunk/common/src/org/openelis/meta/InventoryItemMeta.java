@@ -49,10 +49,14 @@ public class InventoryItemMeta implements Meta {
               PRODUCT_URI					="productUri",
               AVERAGE_LEAD_TIME					="averageLeadTime",
               AVERAGE_COST					="averageCost",
-              AVERAGE_DAILY_USE					="averageDailyUse";
+              AVERAGE_DAILY_USE					="averageDailyUse",
+              PARENT_INVENTORY_ITEM_ID             ="parentInventoryItemId",
+              PARENT_RATIO                      ="parentRatio";
 
   	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,CATEGORY_ID,STORE_ID,QUANTITY_MIN_LEVEL,QUANTITY_MAX_LEVEL,QUANTITY_TO_REORDER,DISPENSED_UNITS_ID,IS_REORDER_AUTO,IS_LOT_MAINTAINED,IS_SERIAL_MAINTAINED,IS_ACTIVE,IS_BULK,IS_NOT_FOR_SALE,IS_SUB_ASSEMBLY,IS_LABOR,IS_NO_INVENTORY,PRODUCT_URI,AVERAGE_LEAD_TIME,AVERAGE_COST,AVERAGE_DAILY_USE};
+  	  ID,NAME,DESCRIPTION,CATEGORY_ID,STORE_ID,QUANTITY_MIN_LEVEL,QUANTITY_MAX_LEVEL,QUANTITY_TO_REORDER,DISPENSED_UNITS_ID,IS_REORDER_AUTO,
+      IS_LOT_MAINTAINED,IS_SERIAL_MAINTAINED,IS_ACTIVE,IS_BULK,IS_NOT_FOR_SALE,IS_SUB_ASSEMBLY,IS_LABOR,IS_NO_INVENTORY,PRODUCT_URI,
+      AVERAGE_LEAD_TIME,AVERAGE_COST,AVERAGE_DAILY_USE,PARENT_INVENTORY_ITEM_ID,PARENT_RATIO};
   	  
 	private HashSet<String> columnHashList;
     
@@ -172,6 +176,12 @@ public class InventoryItemMeta implements Meta {
     public String getAverageDailyUse() {
         return path + AVERAGE_DAILY_USE;
     } 
-
-  
+    
+    public String getParentInventoryItemId() {
+        return path + PARENT_INVENTORY_ITEM_ID;
+    } 
+    
+    public String getParentRatio() {
+        return path + PARENT_RATIO;
+    }   
 }   

@@ -22,12 +22,10 @@ import org.openelis.meta.ShippingTrackingMeta;
 
 public class ShippingMetaMap extends ShippingMeta implements MetaMap{
 
-    private String parentPath = "";
     public ShippingMetaMap() {
         super("ship.");
         
         ORGANIZATION_META = new OrganizationMetaMap("orgz.");
-      //  ORDER_META = new OrderMetaMap("ordr.");
         
         TRACKING_META = new ShippingTrackingMeta("shippingTracking.");
             
@@ -35,15 +33,10 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     }
     
     public OrganizationMetaMap ORGANIZATION_META;
-    //public OrderMetaMap ORDER_META;
     
     public ShippingTrackingMeta TRACKING_META;
         
     public ShippingItemMeta SHIPPING_ITEM_META;
-    
-    /*public OrderMetaMap getOrderMeta(){
-        return ORDER_META;
-    }*/
     
     public OrganizationMetaMap getOrganizationMeta(){
         return ORGANIZATION_META;
@@ -59,10 +52,11 @@ public class ShippingMetaMap extends ShippingMeta implements MetaMap{
     
     public String buildFrom(String where) {
         String from = "Shipping ship ";
+        if(where.indexOf("shippingTracking.") > -1)
+            from += ", IN (ship.shippingTracking) shippingTracking ";
         if(where.indexOf("orgz.") > -1)
             from += ", IN (ship.shipTo) orgz ";
-        /*if(name.indexOf("contacts.") > -1)
-            from += ", IN (o.organizationContact) contacts ";*/ 
+
         return from;
     }
 

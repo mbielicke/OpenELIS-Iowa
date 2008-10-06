@@ -24,15 +24,27 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
 
     public InventoryItemMetaMap() {
         super("inventory_item.");
+        ITEM_NOTE = new NoteMeta("note.");
+        INVENTORY_COMPONENT = new InventoryComponentMetaMap("inventory_component.");
+        INVENTORY_LOCATION = new InventoryLocationMetaMap("inventory_location.");  
+        DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
+        PARENT_INVENTORY_ITEM = new InventoryItemMeta("inventory_item.parentInventoryItem.");
     }
     
-    public NoteMeta ITEM_NOTE = new NoteMeta("note.");
+    public InventoryItemMetaMap(String path) {
+        super(path);
+        ITEM_NOTE = new NoteMeta(path+"note.");
+        INVENTORY_COMPONENT = new InventoryComponentMetaMap(path+"inventory_component.");
+        INVENTORY_LOCATION = new InventoryLocationMetaMap(path+"inventory_location.");  
+        DICTIONARY_STORE_META = new DictionaryMeta(path+"dictStore.");
+        PARENT_INVENTORY_ITEM = new InventoryItemMeta(path+"parentInventoryItem.");
+    }
     
-    public InventoryComponentMetaMap INVENTORY_COMPONENT = new InventoryComponentMetaMap("inventory_component.");
-    
-    public InventoryLocationMetaMap INVENTORY_LOCATION = new InventoryLocationMetaMap("inventory_location.");  
-    
-    public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
+    public NoteMeta ITEM_NOTE;
+    public InventoryComponentMetaMap INVENTORY_COMPONENT;
+    public InventoryLocationMetaMap INVENTORY_LOCATION;  
+    public DictionaryMeta DICTIONARY_STORE_META;
+    public InventoryItemMeta PARENT_INVENTORY_ITEM;
     
     public NoteMeta getNote(){
         return ITEM_NOTE;
@@ -48,6 +60,10 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
     
     public DictionaryMeta getStoreDict(){
         return DICTIONARY_STORE_META;
+    }
+    
+    public InventoryItemMeta getParentInventoryItem(){
+        return PARENT_INVENTORY_ITEM;
     }
     
     public static InventoryItemMetaMap getInstance() {

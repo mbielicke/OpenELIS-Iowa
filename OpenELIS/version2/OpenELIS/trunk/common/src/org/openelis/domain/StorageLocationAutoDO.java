@@ -25,7 +25,16 @@ public class StorageLocationAutoDO implements Serializable{
     protected Integer id;
     protected String name;
     protected String location;
+    protected Integer qtyOnHand;
     
+    public Integer getQtyOnHand() {
+        return qtyOnHand;
+    }
+
+    public void setQtyOnHand(Integer qtyOnHand) {
+        this.qtyOnHand = qtyOnHand;
+    }
+
     public StorageLocationAutoDO(){
         
     }
@@ -35,6 +44,14 @@ public class StorageLocationAutoDO implements Serializable{
         setName(name);
         
         setLocation(name.trim()+", "+storageUnitDescription.trim()+" "+location.trim());
+    }
+    
+    public StorageLocationAutoDO(Integer id, String name, String location, String storageUnitDescription, Integer qtyOnHand){
+        setId(id);
+        setName(name);
+        
+        setLocation(name.trim()+", "+storageUnitDescription.trim()+" "+location.trim());
+        setQtyOnHand(qtyOnHand);
     }
 
     public String getLocation() {

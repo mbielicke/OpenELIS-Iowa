@@ -24,7 +24,8 @@ public class InventoryComponentDO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	protected Integer id;
-	protected Integer inventoryItemId;
+	protected Integer parentInventoryItemId;
+    protected Integer componentInventoryItemId;
 	protected Integer componentNameId;
 	protected String componentName;
 	protected String componentDesc;	
@@ -35,14 +36,16 @@ public class InventoryComponentDO implements Serializable{
     public InventoryComponentDO(){
         
     }
-    
-	public InventoryComponentDO(Integer id, Integer inventoryItemId, Integer componentNameId, String componentName, String componentDesc, Double quantity){
+
+	public InventoryComponentDO(Integer id, Integer parentInventoryItemId, Integer componentNameId, String componentName, String componentDesc, 
+                                Double quantity, Integer componentInventoryItemId){
 		setId(id);
-		setInventoryItemId(inventoryItemId);
+		setParentInventoryItemId(parentInventoryItemId);
 		setComponentNameId(componentNameId);
 		setComponentName(componentName);
 		setComponentDesc(componentDesc);
 		setQuantity(quantity);
+        setComponentInventoryItemId(componentInventoryItemId);
 	}
 
 	public String getComponentDesc() {
@@ -69,12 +72,12 @@ public class InventoryComponentDO implements Serializable{
 		this.id = id;
 	}
 
-	public Integer getInventoryItemId() {
-		return inventoryItemId;
+	public Integer getParentInventoryItemId() {
+		return parentInventoryItemId;
 	}
 
-	public void setInventoryItemId(Integer inventoryItemId) {
-		this.inventoryItemId = inventoryItemId;
+	public void setParentInventoryItemId(Integer parentInventoryItemId) {
+		this.parentInventoryItemId = parentInventoryItemId;
 	}
 
 	public double getQuantity() {
@@ -99,5 +102,13 @@ public class InventoryComponentDO implements Serializable{
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    public Integer getComponentInventoryItemId() {
+        return componentInventoryItemId;
+    }
+
+    public void setComponentInventoryItemId(Integer componentInventoryItemId) {
+        this.componentInventoryItemId = componentInventoryItemId;
     }
 }
