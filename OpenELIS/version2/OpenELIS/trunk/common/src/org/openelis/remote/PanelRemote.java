@@ -48,6 +48,8 @@ public interface PanelRemote {
     
     public List query(HashMap fields, int first, int max) throws Exception;
     
+    public void deletePanel(Integer panelId)throws Exception;
+    
     public List validateForUpdate(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
     
     public List validateForAdd(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
