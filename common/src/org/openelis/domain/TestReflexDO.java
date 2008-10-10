@@ -26,7 +26,6 @@
 package org.openelis.domain;
 
 import java.io.Serializable;
-import java.util.List;
 
 
 public class TestReflexDO implements Serializable {
