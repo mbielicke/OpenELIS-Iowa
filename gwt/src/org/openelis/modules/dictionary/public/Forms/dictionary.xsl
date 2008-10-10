@@ -133,7 +133,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>								
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"section")'/></text>
-									    <autoDropdown key="{meta:getSectionId($cat)}" case="lower" width="100px" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}"/>
+									    <dropdown key="{meta:getSectionId($cat)}" case="lower" width="100px" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}"/>
 								     							   						
 								</row>	
 								<row>									
@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
 					
 					<VerticalPanel  spacing="0" padding = "0" xsi:type="Panel">
 						<widget>
-							<table maxRows = "13" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="true">
+							<table maxRows = "13" width = "auto" manager = "DictionaryEntriesTable" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -156,9 +156,9 @@ UIRF Software License are applicable instead of those above.
 									<textbox max = "30"/>									
 									<textbox max = "10"/>									
 									<textbox/>																			
-									<autoDropdown cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
+									<autoComplete cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
 												<widths>123</widths>
-									</autoDropdown>
+									</autoComplete>
 								</editors>
 								<fields>																											
 									<check key="{dictionary:getIsActive($dictNew)}">Y</check>
@@ -172,7 +172,7 @@ UIRF Software License are applicable instead of those above.
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
 						  <query>
-						   	<queryTable width = "auto" maxRows = "13"  title="" showError="false" showScroll="true">
+						   	<queryTable width = "auto" maxRows = "13"  title="" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
@@ -227,6 +227,7 @@ UIRF Software License are applicable instead of those above.
 	  <queryString key="{dictionary:getLocalAbbrev($dictNew)}" required="false"/>
 	  <queryString key="{dictionary:getEntry($dictNew)}" required="false"/>
 	  <dropdown key="{relentry:getEntry($rel)}" required="false"/>
+	  <model key="dictEntTable"/>
 	</rpc>
 	<rpc key="queryByLetter">
       <queryString key="{meta:getName($cat)}"/>

@@ -124,11 +124,11 @@ UIRF Software License are applicable instead of those above.
     </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text> 		
-	  <autoDropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>									        
+	  <dropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>									        
      </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
-	  <autoDropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
+	  <dropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
 	  </row>		
 	  						
       <row>           
@@ -145,7 +145,7 @@ UIRF Software License are applicable instead of those above.
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="400px" height="200px" case="mixed" key="{meta:getReportingText($qae)}" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}"/>
+		  <textarea width="425px" height="250px" case="mixed" key="{meta:getReportingText($qae)}" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}"/>
 	    </widget> 
 	   </row>								          
                                  					                         

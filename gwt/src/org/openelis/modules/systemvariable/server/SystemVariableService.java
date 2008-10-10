@@ -125,7 +125,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
           svname.setValue(nameResult);                   
          row.setKey(id);          
 
-         row.addObject(svname);
+         row.add(svname);
 
          model.add(row);
          i++;

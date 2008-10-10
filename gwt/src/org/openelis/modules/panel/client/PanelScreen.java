@@ -25,21 +25,32 @@
 */
 package org.openelis.modules.panel.client;
 
+import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTableWidget;
+import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.ScrollList;
-import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableModel;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.dnd.DropListener;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PanelScreen extends OpenELISScreenForm implements
@@ -52,14 +63,46 @@ public class PanelScreen extends OpenELISScreenForm implements
 
     private KeyListManager keyList = new KeyListManager();
     
+    private ScreenTableWidget addedTestsTable = null;
+    private TableWidget addedTestsController = null; 
+    
+    private TableModel addTestModel = null;
+    
+    private static DataModel allTestsModel;
+    
+    private PanelMetaMap PanelMeta = new PanelMetaMap();
+    
+    private AppButton removeTestButton,moveUpButton, moveDownButton;
+    
+    private TableWidget allTestList;
+    
+    private TextBox panelName;
+    
     public void onClick(Widget sender) {
-        // TODO Auto-generated method stub
-
+        if (sender == removeTestButton)
+            onTestRowButtonClick(); 
+        if (sender == moveUpButton)
+         onMoveUpButtonClick();
+        if (sender == moveDownButton)
+         onMoveDownButtonClick();
     }
     
     public PanelScreen() {
         super("org.openelis.modules.panel.server.PanelService",!loaded);
     }
+    
+    public void performCommand(Enum action, Object obj) {
+        if (obj instanceof AppButton) {
+            String baction = ((AppButton)obj).action;
+            if (baction.startsWith("query:")) {
+                getPanels(baction.substring(6, baction.length()));
+            }else
+                super.performCommand(action, obj);
+         } else {                       
+            super.performCommand(action, obj);
+        }
+    }
+    
     
     public void afterDraw(boolean success) {
         loaded = true;
@@ -74,83 +117,84 @@ public class PanelScreen extends OpenELISScreenForm implements
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
                 
-        bpanel.enableButton("delete", false);
+        //bpanel.enableButton("delete", false);
         
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);        
+        if(allTestsModel==null){
+            allTestsModel = (DataModel)initData.get("allTests");
+            
+        }
+        
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);          
+        addedTestsTable = (ScreenTableWidget)widgets.get("addedTestTable");
+        addedTestsController = ((TableWidget)addedTestsTable.getWidget());   
+                
+        addTestModel = (TableModel)addedTestsController.model;                          
+        
+        removeTestButton = (AppButton)getWidget("removeTestButton");
+        moveUpButton = (AppButton)getWidget("moveUpButton");
+        moveDownButton = (AppButton)getWidget("moveDownButton");
+        
+        allTestList =  ((TableWidget)getWidget("allTestsTable"));
+        
+        
+        panelName = (TextBox)getWidget(PanelMeta.getName());
+        updateChain.add(afterUpdate);  
+                
         super.afterDraw(success);
         
-        ((ScrollList)getWidget("allTests")).setDataModel((DataModel)initData.get("allTests"));
-        ((ScrollList)getWidget("allTests")).scrollLoad(0);
+        allTestList.model.setModel(allTestsModel);
+        allTestList.model.refresh();
+        allTestList.enabled(false);
+        rpc.setFieldValue("addedTestTable",addTestModel.getData());
+      
   }
-
-    public boolean action(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
+    
+    public void query() {        
+        super.query();        
+        removeTestButton.changeState(ButtonState.DISABLED) ;
+        moveUpButton.changeState(ButtonState.DISABLED) ;
+        moveDownButton.changeState(ButtonState.DISABLED) ; 
+        allTestList.enabled(false);
     }
-
-    public boolean canDelete(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canEdit(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canInsert(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canSelect(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean doAutoAdd(TableRow addRow, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void finishedEditing(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void getNextPage(TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void getPage(int page) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void getPreviousPage(TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void rowAdded(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setModel(TableController controller, DataModel model) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
+    
+    public void add(){
+        super.add();
+        allTestList.enabled(true);
+        panelName.setFocus(true);
+    } 
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {            
+            panelName.setFocus(true);       
+            allTestList.enabled(true);
+        }
+    };           
 
     public void onDrop(Widget sender, Widget source) {
-        // TODO Auto-generated method stub
-        
+        if(sender == widgets.get("addedTestTable")){               
+            ScreenWidget dragged = (ScreenWidget)((ScreenWidget)source).getUserObject();
+            StringObject  key = (StringObject)dragged.getUserObject();
+            String display = (String)key.getValue();//((Label)dragged.getWidget()).getText();               
+            DataSet row = addedTestsController.model.createRow();            
+            String[] namesArray= display.split(", ");            
+            if(testAdded(namesArray[0],namesArray[1])){
+              boolean ok = Window.confirm("This test has already been added to the panel." +
+                    " Add it anyway?");
+              if(ok){    
+                  row.get(0).setValue(namesArray[0]);
+                  row.get(1).setValue(namesArray[1]);                  
+                  addTestModel.addRow(row);
+                  addTestModel.refresh();
+              }
+            }else{                
+                row.get(0).setValue(namesArray[0]);
+                row.get(1).setValue(namesArray[1]);                
+                addTestModel.addRow(row);
+                addTestModel.refresh();
+            }                         
+        }        
     }
 
     public void onDropEnter(Widget sender, Widget source) {
@@ -166,5 +210,84 @@ public class PanelScreen extends OpenELISScreenForm implements
     public void onDropOver(Widget sender, Widget source) {
         // TODO Auto-generated method stub
         
+    }
+                      
+    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canAutoAdd(TableWidget widget,DataSet addRow) {        
+       return false;
+    }
+
+    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {        
+        if(state == State.QUERY)
+            return true;
+       return false;
+    }
+
+    public boolean canSelect(TableWidget widget,DataSet set, int row) {        
+       if(state == State.UPDATE || state == State.ADD||
+                       state == State.QUERY)
+        return true;
+       
+       return false;
+    }
+    
+    private void getPanels(String query) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
+            FormRPC rpc;
+            rpc = (FormRPC)this.forms.get("queryByLetter");
+            rpc.setFieldValue(PanelMeta.getName(), query);
+            commitQuery(rpc);
+        }
+    }
+    
+    private boolean testAdded(String testName,String methodName){    
+         for(int iter = 0; iter <  addTestModel.numRows(); iter++){
+             String tname = (String)addTestModel.getRow(iter).get(0).getValue();
+             String mname = (String)addTestModel.getRow(iter).get(1).getValue();
+             if(tname.equals(testName)&& mname.equals(methodName)){                 
+                return true;
+             }
+             
+         }
+        return false; 
+    }
+    
+    private void onTestRowButtonClick(){
+        addTestModel.deleteRow(addTestModel.getData().getSelectedIndex());                
     } 
+    
+    private void onMoveUpButtonClick(){
+        int selIndex = addTestModel.getData().getSelectedIndex();
+        if(selIndex > 0){         
+         DataSet moveUpRow = addTestModel.getRow(selIndex);
+         DataSet movedownRow = addTestModel.getRow(selIndex-1);
+         addTestModel.setRow(selIndex, movedownRow);
+         addTestModel.setRow(selIndex-1, moveUpRow);
+         addTestModel.selectRow(selIndex-1);
+         addTestModel.refresh();
+      }  
+    }
+    
+      private void onMoveDownButtonClick(){
+          int selIndex = addTestModel.getData().getSelectedIndex();
+          if(selIndex < addTestModel.getData().size()-1){         
+           DataSet moveUpRow = addTestModel.getRow(selIndex+1);
+           DataSet movedownRow = addTestModel.getRow(selIndex);
+           addTestModel.setRow(selIndex+1, movedownRow);
+           addTestModel.setRow(selIndex, moveUpRow);
+           addTestModel.selectRow(selIndex+1);
+           addTestModel.refresh();
+        }                
+    }
+    
+    
 }

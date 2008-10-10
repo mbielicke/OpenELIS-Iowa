@@ -36,7 +36,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -125,7 +124,7 @@ public class LabelService implements AppScreenFormServiceInt {
             
             row.setKey(id);          
    
-            row.addObject(svname);
+            row.add(svname);
    
             model.add(row);
             i++;
@@ -307,7 +306,7 @@ public class LabelService implements AppScreenFormServiceInt {
                           
              
             blankStringId.setValue("");
-            blankset.addObject(blankStringId);
+            blankset.add(blankStringId);
             
             NumberObject blankNumberId = new NumberObject(-1);
 
@@ -330,7 +329,7 @@ public class LabelService implements AppScreenFormServiceInt {
             StringObject textObject = new StringObject();
              textObject.setValue(dropDownText);
              
-            set.addObject(textObject);
+            set.add(textObject);
             
             NumberObject numberId = new NumberObject(dropdownId);
 

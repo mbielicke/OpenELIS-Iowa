@@ -90,6 +90,7 @@ import org.openelis.gwt.widget.table.TableAutoComplete;
 import org.openelis.gwt.widget.table.TableCalendar;
 import org.openelis.gwt.widget.table.TableCheck;
 import org.openelis.gwt.widget.table.TableCollection;
+import org.openelis.gwt.widget.table.TableDragLabel;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
@@ -391,6 +392,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                           return new TableCollection();
                                       else if(args[0] instanceof Node)
                                           return new TableCollection((Node)args[0]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {TableDragLabel.class.getName(),TableDragLabel.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableDragLabel();
+                                      else if(args[0] instanceof Node)
+                                          return new TableDragLabel((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });

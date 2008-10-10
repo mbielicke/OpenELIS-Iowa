@@ -33,13 +33,12 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -50,8 +49,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     private static DataModel printerTypeDropDown ;
     private static DataModel scriptletDropdown;
     
-    private ScreenAutoDropdown displayPType = null;
-    private ScreenAutoDropdown displayScript = null;
+    private Dropdown displayPType = null;
+    private Dropdown displayScript = null;
     private TextBox nameTextbox;
     private KeyListManager keyList = new KeyListManager();
     
@@ -98,8 +97,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
         nameTextbox = (TextBox)getWidget(Meta.getName());
         startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
-        displayPType = (ScreenAutoDropdown)widgets.get(Meta.getPrinterTypeId());
-        displayScript = (ScreenAutoDropdown)widgets.get(Meta.getScriptletId());
+        displayPType = (Dropdown)getWidget(Meta.getPrinterTypeId());
+        displayScript = (Dropdown)getWidget(Meta.getScriptletId());
         
         //load dropdowns
        if(scriptletDropdown == null){
@@ -107,8 +106,8 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
            scriptletDropdown = (DataModel)initData.get("scriptlet");
        }                                             
             
-       ((AutoCompleteDropdown)displayPType.getWidget()).setModel(printerTypeDropDown);
-       ((AutoCompleteDropdown)displayScript.getWidget()).setModel(scriptletDropdown);
+       displayPType.setModel(printerTypeDropDown);
+       displayScript.setModel(scriptletDropdown);
         
         super.afterDraw(success);
     }
