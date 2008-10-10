@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'method')}" width="100%">
+						<azTable colwidths="175"  key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'method')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -116,16 +116,16 @@ UIRF Software License are applicable instead of those above.
 						<VerticalPanel width = "10px"/>
 						 <VerticalPanel>						
 							<TablePanel style="Form">
-								<row>
+								<!--<row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
 								   <widget colspan = "6">	
 									<textbox  key="{meta:getId($method)}" tab="{meta:getName($method)},{meta:getActiveEnd($method)}" width="50px"/>
 								   </widget>
-								</row> 	
+								</row> 	-->
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
 								  <widget colspan = "6">	
-									<textbox key="{meta:getName($method)}" case = "mixed" tab="{meta:getDescription($method)},{meta:getId($method)}" max="20" width="145px"/>																									    								   
+									<textbox key="{meta:getName($method)}" case = "mixed" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" max="20" width="145px"/>																									    								   
 								  </widget>
 								</row>
 								<row>
@@ -150,7 +150,7 @@ UIRF Software License are applicable instead of those above.
 								 <!--</row>
 								 <row>-->
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getId($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "70px"/>
+								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "70px"/>
 								</row>						
 						     </TablePanel>	
 						</VerticalPanel>   			

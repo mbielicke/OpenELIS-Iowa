@@ -25,104 +25,44 @@
 */
 package org.openelis.modules.dictionary.client;
 
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.TableRow;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableCellInputWidget;
-import org.openelis.gwt.widget.table.TableController;
+import org.openelis.gwt.common.data.DataSet;
+
 import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableWidget;
 
 
 public class DictionaryEntriesTable implements TableManager {
+
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
     
-    private DictionaryScreen dictionaryForm = null;
-    private TableRow relEntryRow = null;           
-
-    public void setDictionaryForm(DictionaryScreen dictionaryForm) {
-        this.dictionaryForm = dictionaryForm;
-    }
-
-    public boolean action(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDelete(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canEdit(int row, int col, TableController controller) {                
-        return true;
-    }
-
-    public boolean canInsert(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canSelect(int row, TableController controller) {   
-       if(dictionaryForm.state == FormInt.State.ADD 
-                       || dictionaryForm.state == FormInt.State.UPDATE 
-                       || dictionaryForm.state == FormInt.State.QUERY) 
-        return true;
-       
-       return false;
-    }
-
-    public boolean doAutoAdd(TableRow row, TableController controller) {              
-        if(row.getColumn(0).getValue() != null || row.getColumn(1).getValue() != null || row.getColumn(3).getValue() != null)
-            return true;
-        else
-            return false;
-    }
-
-    public void finishedEditing(int row, int col, TableController controller) {         
-        
-     }
-
-    public void getNextPage(TableController controller) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void getPage(int page) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void getPreviousPage(TableController controller) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void rowAdded(int row, TableController controller) {       
-         // TODO Auto-generated method stub
-    }
-
-    public void setModel(TableController controller, DataModel model) {
-        // TODO Auto-generated method stub
-
-    }
     
-    public void setRelatedEntryId(Integer entryId){
-        NumberField relEntryId = new NumberField(entryId); 
-        relEntryRow.addHidden("relEntryId", relEntryId);        
-    }    
-            
 
-    public void showError(int row, int col, TableController controller,String error) {
-         AbstractField field =  controller.model.getFieldAt(row, col);      
-         field.addError(error);
-         ((TableCellInputWidget)controller.view.table.getWidget(row,col)).drawErrors();
-    }
 
-    public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
     
     
     

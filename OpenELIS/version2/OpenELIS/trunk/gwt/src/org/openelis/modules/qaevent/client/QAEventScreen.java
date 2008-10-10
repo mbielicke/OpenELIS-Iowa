@@ -34,13 +34,12 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -48,8 +47,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
  public class QAEventScreen extends OpenELISScreenForm implements ClickListener{
    
      private TextBox tname = null;
-     private ScreenAutoDropdown displayType = null;
-     private ScreenAutoDropdown displayTest = null;
+     private Dropdown displayType = null;
+     private Dropdown displayTest = null;
      private ScreenTextArea reportingText = null;
      private KeyListManager keyList = new KeyListManager();
      
@@ -97,8 +96,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
              ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
                           
              tname = (TextBox)getWidget(QAEMeta.getName());
-             displayType = (ScreenAutoDropdown)widgets.get(QAEMeta.getTypeId());
-             displayTest = (ScreenAutoDropdown)widgets.get(QAEMeta.getTestId());
+             displayType = (Dropdown)getWidget(QAEMeta.getTypeId());
+             displayTest = (Dropdown)getWidget(QAEMeta.getTestId());
 
              reportingText = (ScreenTextArea)widgets.get(QAEMeta.getReportingText());       
          
@@ -109,9 +108,12 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
            }       
 
                                         
-            ((AutoCompleteDropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-            ((AutoCompleteDropdown)displayTest.getWidget()).setModel(testDropDown);
-                    
+           // ((Dropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
+           // ((Dropdown)displayTest.getWidget()).setModel(testDropDown);
+              
+           displayType.setModel(qaEventTypeDropDown);
+           displayTest.setModel(testDropDown);
+           
             updateChain.add(afterUpdate);
             
             super.afterDraw(success); 

@@ -60,7 +60,7 @@ public class MethodService implements AppScreenFormServiceInt {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    private static final int leftTableRowsPerPage = 20;
+    private static final int leftTableRowsPerPage = 19;
     
     private static final MethodMetaMap MethodMeta = new MethodMetaMap();
     
@@ -115,7 +115,7 @@ public class MethodService implements AppScreenFormServiceInt {
             StringObject name = new StringObject(resultDO.getName());
             
             row.setKey(id);         
-            row.addObject(name);
+            row.add(name);
             model.add(row);
             i++;
         } 

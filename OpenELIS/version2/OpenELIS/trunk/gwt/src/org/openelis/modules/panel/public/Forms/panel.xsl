@@ -33,7 +33,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:panelItem="xalan://org.openelis.metamap.PanelItemMetaMap"              
                 extension-element-prefixes="resource"
                 version="1.0">
-	<xsl:import href="aToZOneColumn.xsl"/>
+	<xsl:import href="aToZTwoColumns.xsl"/>
 	<xalan:component prefix="resource">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
 	</xalan:component>
@@ -47,8 +47,6 @@ UIRF Software License are applicable instead of those above.
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PanelItemMetaMap"/>
 	</xalan:component>	
 	
-	<xsl:preserve-space elements='resource:getString($constants,"moveUp")'/>
-	<xsl:preserve-space elements='resource:getString($constants,"moveDown")'/>
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="panel" select="meta:new()"/>
@@ -64,12 +62,15 @@ UIRF Software License are applicable instead of those above.
 			<display>
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'panel')}" width="100%">
+					<CollapsePanel key="collapsePanel" height="225px">
+					  <VerticalPanel>	
+						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" title="{resource:getString($constants,'panel')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+						<VerticalPanel height = "80px"/>
+					  </VerticalPanel>	
 					</CollapsePanel>					
 					<VerticalPanel spacing="0">
 						<!--button panel code-->
@@ -118,26 +119,23 @@ UIRF Software License are applicable instead of those above.
 									</xsl:with-param>
 								</xsl:call-template>
 							</buttonPanel>
+							
 						</AbsolutePanel>
-						<!--end button panel-->
-						<VerticalPanel width = "10px"/>
-						<VerticalPanel>
+						<!--end button panel-->						
+						<HorizontalPanel padding="0" spacing="0">
+						<HorizontalPanel width = "10px"/>
 						<VerticalPanel>						
 							<TablePanel style="Form">									
 								<row>
-								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
-								  <widget colspan = "6">	
-									<textbox key="meta:getName($panel)" case = "mixed"  max="20" width="145px"/>																									    								   
-								  </widget>
+								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>								  	
+								  <textbox key="{meta:getName($panel)}" case = "mixed" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" max="20" width="145px"/>
 								</row>
 								<row>
-								    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>
-									<widget colspan = "6">
-										<textbox  key="meta:getDescription($panel)" case = "mixed" max="60" width="425px"/>
-									</widget>
+								    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>									
+									<textbox  key="{meta:getDescription($panel)}" tab="{meta:getName($panel)},{meta:getName($panel)}" case = "mixed" max="60" width="425px"/>									
 								</row>														
 						     </TablePanel>	
-						  <VerticalPanel height = "20px"/>   
+						  <VerticalPanel height = "10px"/>   
 						  <HorizontalPanel>
 						      <!--<VerticalPanel>
 						       <table key="allTestsTable" manager="this" maxRows="16" showError="false" showScroll="true" title="" width="auto">												
@@ -161,41 +159,55 @@ UIRF Software License are applicable instead of those above.
 								
 						      </VerticalPanel>
 						      <VerticalPanel>
-						      <table key="addedTestTable" manager="this" maxRows="16" showError="false" showScroll="true" title="" width="auto">												
+						      			
+						      </VerticalPanel>-->						      						                                    
+                              <VerticalPanel style="Form">
+                                <!--<text ><xsl:value-of select="resource:getString($constants,'testsThisPanel')"/></text>-->
+                                <!--<scrolllist key="addedTests" drop="this" width="150px" maxRows="16" maxHeight="true">
+                                 <widths>150</widths>
+                                </scrolllist>-->
+                               <widget valign="top"> 
+                                <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" drop="this" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
 												 <xsl:value-of select="resource:getString($constants,'method')"/>
 												</headers>
-												<widths>80,80</widths>
+												<widths>140,140</widths>
 												<editors>
 													<label/>
-													<label/>													
+													<label/>												
 												</editors>
 												<fields>
 													<string key="{panelItem:getTestName($pi)}" required="true"/>
-													<string key="{panelItem:getMethodName($pi)}" required="true"/>
+													<string key="{panelItem:getMethodName($pi)}" required="true"/>													
 												</fields>
-												<sorts>false</sorts>
-												<filters>false</filters>
-												<colAligns>left</colAligns>
-								</table>			
-						      </VerticalPanel>-->						      
-						      <VerticalPanel style="Form">
-						       <text style="Prompt"><xsl:value-of select="resource:getString($constants,'allTests')"/></text>
-						       <scrolllist key="allTests" targets="addedTests" drop="this" width="150px" maxRows="16" maxHeight="true">
-                                  <widths>150</widths>
-                               </scrolllist>
-                              </VerticalPanel> 
-                               <VerticalPanel style="Form">
-                                <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testsThisPanel')"/></text>
-                                <scrolllist key="addedTests" drop="this" width="150px" maxRows="16" maxHeight="true">
-                                 <widths>150</widths>
-                                </scrolllist>
-                               </VerticalPanel>
-						      <VerticalPanel>	
-						         <VerticalPanel height = "120px" />			
-						         		        
-						        <widget style="WhiteContentPanel" valign="middle">
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+							    </table>
+							    <query>
+								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
+												<headers>
+												 <xsl:value-of select="resource:getString($constants,'test')"/>,
+												 <xsl:value-of select="resource:getString($constants,'method')"/>																										
+												</headers>
+												<widths>140,140</widths>
+												<editors>
+													<textbox case="mixed"/>
+													<textbox case="mixed"/>																										
+												</editors>
+												<fields>
+												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>																																																	
+												</fields>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+								</queryTable>
+								</query>
+							   </widget>
+							 <HorizontalPanel>	
+						       <HorizontalPanel width = "2px"/>
+						       <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="moveUp" onclick="this" style="Button" key="moveUpButton">
 									        <HorizontalPanel>
               						         <AbsolutePanel style="RemoveRowButtonImage"/>
@@ -204,7 +216,8 @@ UIRF Software License are applicable instead of those above.
 							                 </widget>
 							               </HorizontalPanel>
 						                 </appButton>
-						         </widget>						         
+						         </widget>
+						         <HorizontalPanel width = "3px"/>						         
 						         <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="removeRow" onclick="this" style="Button" key="moveDownButton">
 									        <HorizontalPanel>
@@ -215,6 +228,7 @@ UIRF Software License are applicable instead of those above.
 							               </HorizontalPanel>
 						                 </appButton>
 						        </widget>       
+						        <HorizontalPanel width = "3px"/>
 						         <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeTestButton">
 									        <HorizontalPanel>
@@ -225,25 +239,55 @@ UIRF Software License are applicable instead of those above.
 							               </HorizontalPanel>
 						                 </appButton>
 						         </widget>
-						      </VerticalPanel>
-						     </HorizontalPanel>						   
+						     </HorizontalPanel>
+                             </VerticalPanel>
+                             <HorizontalPanel width = "20px"/>
+						      <VerticalPanel style="Form" >						      
+						       <text ><xsl:value-of select="resource:getString($constants,'allTests')"/></text>
+						       <VerticalPanel height = "8px"/>
+						       <!--<scrolllist style="DragSelector" key="allTests" targets="addedTestTable" drop="this" width="200px" maxRows="9" maxHeight="true">
+                                  <widths>200</widths>
+                               </scrolllist>-->
+                               <table key="allTestsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
+												<!--<headers> 
+												 <xsl:value-of select="resource:getString($constants,'test')"/>,
+												 <xsl:value-of select="resource:getString($constants,'method')"/>
+												</headers>-->
+												<widths>200</widths>
+												<editors>
+													<dragLabel targets="addedTestTable"/>																									
+												</editors>
+												<fields>
+													<string key="test"/>													
+												</fields>
+												<sorts>false</sorts>
+												<filters>false</filters>
+												<colAligns>left</colAligns>
+								</table>
+                              </VerticalPanel> 
+						   </HorizontalPanel>						   
 						</VerticalPanel>
-					 </VerticalPanel>  	 						  			
+					 </HorizontalPanel>  	 						  			
 					</VerticalPanel>					
 				</HorizontalPanel>
 				
 			</display>
-			<rpc key="display">			 
-			 <string key="meta:getName($panel)" max = "20" required="true" />			 
-			 <string key="meta:getDescription($panel)" max="60" required="false"/>		 			 					
+			<rpc key="display">		
+			 <number key="{meta:getId($panel)}" type = "integer" required="false" />	 
+			 <string key="{meta:getName($panel)}" max = "20" required="true" />			 
+			 <string key="{meta:getDescription($panel)}" max="60" required="false"/>		 			 					
 		     <model key="allTests"/>
-		  </rpc>
-		  <rpc key="query">			 
-			 <queryString key="meta:getName($panel)"/>			 
-			 <queryString key="meta:getDescription($panel)"/>			 			 							
-			</rpc>
+		     <table key = "addedTestTable"/>
+		   </rpc>
+		   <rpc key="query">			 
+			 <queryString key="{meta:getName($panel)}"/>			 
+			 <queryString key="{meta:getDescription($panel)}"/>	
+			 <queryString key="{panelItem:getTestName($pi)}"/>		 			 							
+			 <queryString key="{panelItem:getMethodName($pi)}"/>
+			 <model key = "addedTestTable"/>
+		    </rpc>
 			<rpc key="queryByLetter">
-			 <queryString key="meta:getName($panel)"/>				
+			 <queryString key="{meta:getName($panel)}"/>				
 			</rpc>
 		</screen>
   </xsl:template>

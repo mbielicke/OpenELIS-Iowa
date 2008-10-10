@@ -28,13 +28,11 @@ package org.openelis.modules.method.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -58,7 +56,7 @@ public class MethodScreen extends OpenELISScreenForm implements
     
     private MethodMetaMap MethodMeta = new MethodMetaMap();
 
-    private ScreenTextBox methodId;
+    //private ScreenTextBox methodId;
     private TextBox methodName;
     
     public MethodScreen() {
@@ -105,7 +103,7 @@ public class MethodScreen extends OpenELISScreenForm implements
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
         
-        methodId = (ScreenTextBox)widgets.get(MethodMeta.getId());
+        //methodId = (ScreenTextBox)widgets.get(MethodMeta.getId());
         methodName = (TextBox)getWidget(MethodMeta.getName());
         
         CommandChain formChain = new CommandChain();
@@ -125,13 +123,13 @@ public class MethodScreen extends OpenELISScreenForm implements
     
     public void query() {        
         super.query();
-        methodId.setFocus(true);
-        
+        //methodId.setFocus(true);
+        methodName.setFocus(true);
     }
     
     public void add() {
         super.add();
-        methodId.enable(false);
+        //methodId.enable(false);
         methodName.setFocus(true);      
         
     }
@@ -140,7 +138,7 @@ public class MethodScreen extends OpenELISScreenForm implements
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
-            methodId.enable(false);
+            //methodId.enable(false);
             methodName.setFocus(true);                        
         }
     };
@@ -149,7 +147,7 @@ public class MethodScreen extends OpenELISScreenForm implements
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
-            methodId.enable(false);
+            //methodId.enable(false);
             methodName.setFocus(true);            
         }
     };

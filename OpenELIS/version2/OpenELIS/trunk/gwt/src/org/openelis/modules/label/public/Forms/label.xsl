@@ -122,11 +122,11 @@ UIRF Software License are applicable instead of those above.
     </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"printerType")'/>:</text>
-	  <autoDropdown key="{labelMeta:getPrinterTypeId($lbl)}" width = "90px" case="mixed" tab="{labelMeta:getScriptletId($lbl)},{labelMeta:getDescription($lbl)}"/>
+	  <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" width = "90px" case="mixed" tab="{labelMeta:getScriptletId($lbl)},{labelMeta:getDescription($lbl)}"/>
     </row>
     <row>
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
-       <autoDropdown key="{labelMeta:getScriptletId($lbl)}" width = "180px" case="mixed" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}"/>
+       <dropdown key="{labelMeta:getScriptletId($lbl)}" width = "180px" case="mixed" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}"/>
 	  </row>			  												                                           					                         
    </TablePanel>            
                

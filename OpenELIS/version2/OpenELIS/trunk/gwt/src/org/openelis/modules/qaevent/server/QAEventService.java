@@ -137,9 +137,9 @@ public class QAEventService implements AppScreenFormServiceInt{
             mname.setValue(mnameResult);
             row.setKey(id);          
    
-            row.addObject(qaname);
-            row.addObject(tname);
-            row.addObject(mname);
+            row.add(qaname);
+            row.add(tname);
+            row.add(mname);
             model.add(row);
             i++;
          }         
@@ -304,7 +304,7 @@ public class QAEventService implements AppScreenFormServiceInt{
                           
              
             blankStringId.setValue("");
-            blankset.addObject(blankStringId);
+            blankset.add(blankStringId);
             
             NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
             blankNumberId.setValue(new Integer(-1));
@@ -345,7 +345,7 @@ public class QAEventService implements AppScreenFormServiceInt{
          textObject.setValue(dropDownText);
         }
         
-        set.addObject(textObject);            
+        set.add(textObject);            
 
             NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
 

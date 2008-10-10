@@ -1,27 +1,17 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
+/**
+* The contents of this file are subject to the Mozilla Public License
+* Version 1.1 (the "License"); you may not use this file except in
+* compliance with the License. You may obtain a copy of the License at
+* http://www.mozilla.org/MPL/
 * 
 * Software distributed under the License is distributed on an "AS IS"
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
+* License for the specific language governing rights and limitations under
+* the License.
 * 
 * The Original Code is OpenELIS code.
 * 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
+* Copyright (C) The University of Iowa.  All Rights Reserved.
 */
 package org.openelis.modules.test.client;
 
@@ -31,23 +21,24 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.QueryTable;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableDropdown;
+import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -64,7 +55,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class TestScreen extends OpenELISScreenForm implements
                                                   ClickListener,
                                                   TabListener,
-                                                  ChangeListener{                                                  
+                                                  ChangeListener,
+                                                  TableManager{                                                  
     private static boolean loaded = false;
     
     private static DataModel methodDropdown,labelDropdown,
@@ -82,11 +74,12 @@ public class TestScreen extends OpenELISScreenForm implements
     private ScreenTableWidget prepTestTable, sampleTypeTable, 
                               testReflexTable,worksheetItemTable ;
     
-    private EditTable reflexTestContoller;
+    private TableWidget reflexTestContoller,prepTestController,
+                        wsItemController,sampleTypeController;
     
     private QueryTable reflexTestQueryTable;
     
-    private AutoCompleteDropdown analyteDropDown;
+    //private AutoCompleteDropdown analyteDropDown;
     
     private HashMap<String,DataModel> modelMap;
     
@@ -106,7 +99,7 @@ public class TestScreen extends OpenELISScreenForm implements
             String baction = ((AppButton)obj).action;
             if (baction.startsWith("query:")) {
                 getTests(baction.substring(6, baction.length()));
-            }else
+            }else                             
                 super.performCommand(action, obj);
         } else {
             /*if(action == KeyListManager.Action.FETCH){                
@@ -115,6 +108,17 @@ public class TestScreen extends OpenELISScreenForm implements
                 fillTestResultDropDown();                
                 fillModelMap();                             
             }*/
+            if(action == State.ADD ||action == State.UPDATE){
+                reflexTestContoller.model.enableAutoAdd(true);
+                wsItemController.model.enableAutoAdd(true);
+                prepTestController.model.enableAutoAdd(true);
+                sampleTypeController.model.enableAutoAdd(true);
+            }else{
+                reflexTestContoller.model.enableAutoAdd(false);
+                wsItemController.model.enableAutoAdd(false);
+                prepTestController.model.enableAutoAdd(false);
+                sampleTypeController.model.enableAutoAdd(false);
+            }
             super.performCommand(action, obj);
         }
     }
@@ -131,9 +135,9 @@ public class TestScreen extends OpenELISScreenForm implements
     }
     
     public void onChange(Widget sender){
-        analyteDropDown = (AutoCompleteDropdown)sender;
-        Integer analyteId = (Integer)analyteDropDown.getSelectedValue();
-         setTestResultsForAnalyte(analyteId);        
+        //analyteDropDown = (AutoCompleteDropdown)sender;
+        //Integer analyteId = (Integer)analyteDropDown.getSelectedValue();
+         //setTestResultsForAnalyte(analyteId);        
        }
 
     public void afterDraw(boolean success) {
@@ -141,9 +145,8 @@ public class TestScreen extends OpenELISScreenForm implements
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");        
         AToZTable atozTable = (AToZTable) getWidget("azTable");    
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        AutoCompleteDropdown drop;
+        Dropdown drop;
 
-        TableWidget d;
         QueryTable q;
         
         CommandChain chain = new CommandChain();
@@ -183,31 +186,31 @@ public class TestScreen extends OpenELISScreenForm implements
            
        }
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getMethodId());
+       drop = (Dropdown)getWidget(TestMeta.getMethodId());
        drop.setModel(methodDropdown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getLabelId());
+       drop = (Dropdown)getWidget(TestMeta.getLabelId());
        drop.setModel(labelDropdown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getTestTrailerId());
+       drop = (Dropdown)getWidget(TestMeta.getTestTrailerId());
        drop.setModel(testTrailerDropdown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getScriptletId());
+       drop = (Dropdown)getWidget(TestMeta.getScriptletId());
        drop.setModel(scriptletDropDown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getSectionId());
+       drop = (Dropdown)getWidget(TestMeta.getSectionId());
        drop.setModel(sectionDropDown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getRevisionMethodId());
+       drop = (Dropdown)getWidget(TestMeta.getRevisionMethodId());
        drop.setModel(revisionMethodDropDown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getTestFormatId());
+       drop = (Dropdown)getWidget(TestMeta.getTestFormatId());
        drop.setModel(testFormatDropDown);
        
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getTestWorksheet().getNumberFormatId());
+       drop = (Dropdown)getWidget(TestMeta.getTestWorksheet().getNumberFormatId());
        drop.setModel(testWSNumFormatDropDown);
               
-       drop = (AutoCompleteDropdown)getWidget(TestMeta.getTestWorksheet().getScriptletId());
+       drop = (Dropdown)getWidget(TestMeta.getTestWorksheet().getScriptletId());
        drop.setModel(scriptletDropDown);
        
        sampleTypeTable = (ScreenTableWidget)widgets.get("sampleTypeTable");
@@ -215,60 +218,73 @@ public class TestScreen extends OpenELISScreenForm implements
        testReflexTable = (ScreenTableWidget)widgets.get("testReflexTable"); 
        worksheetItemTable = (ScreenTableWidget)widgets.get("worksheetTable");       
        
-       d = (TableWidget)sampleTypeTable.getWidget();
-       q = (QueryTable)sampleTypeTable.getQueryWidget().getWidget();
-       
+       sampleTypeController = (TableWidget)sampleTypeTable.getWidget();
+       q = (QueryTable)sampleTypeTable.getQueryWidget().getWidget();          
        
        //
        // state dropdown
        //
-       ((TableAutoDropdown)d.controller.editors[0]).setModel(sampleTypeDropDown);
-       ((TableAutoDropdown)q.editors[0]).setModel(sampleTypeDropDown);
+       ((TableDropdown)sampleTypeController.columns.get(0).getColumnWidget()).setModel(sampleTypeDropDown);
+       ((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(sampleTypeDropDown);
        
-       ((TableAutoDropdown)d.controller.editors[1]).setModel(measureUnitDropDown);
-       ((TableAutoDropdown)q.editors[1]).setModel(measureUnitDropDown);
+       ((TableDropdown)sampleTypeController.columns.get(1).getColumnWidget()).setModel(measureUnitDropDown);
+       ((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(measureUnitDropDown);
        
-       addCommandListener(d.controller);
+       //addCommandListener(d.controller);
        
-       d = (TableWidget)prepTestTable.getWidget();
+       prepTestController = (TableWidget)prepTestTable.getWidget();
        q = (QueryTable)prepTestTable.getQueryWidget().getWidget();
+        
        //
        // state dropdown
        //
-       ((TableAutoDropdown)d.controller.editors[0]).setModel(prepTestDropDown);
-       ((TableAutoDropdown)q.editors[0]).setModel(prepTestDropDown); 
+       ((TableDropdown)prepTestController.columns.get(0).getColumnWidget()).setModel(prepTestDropDown);
+       ((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(prepTestDropDown); 
        
-       addCommandListener(d.controller);
+       //addCommandListener(d.controller);
        
-       d = (TableWidget)testReflexTable.getWidget();
+       reflexTestContoller = (TableWidget)testReflexTable.getWidget();
        reflexTestQueryTable = (QueryTable)testReflexTable.getQueryWidget().getWidget();
        
-       reflexTestContoller = d.controller;       
+                    
        //addCommandListener(reflexTestContoller);
        
-       TestReflexTable reflexTable = (TestReflexTable)reflexTestContoller.manager;
-       reflexTable.setTestForm(this);
+       //TestReflexTable reflexTable = (TestReflexTable)reflexTestContoller.manager;
+       //reflexTable.setTestForm(this);
        
-       ((TableAutoDropdown)reflexTestContoller.editors[0]).setModel(prepTestDropDown);
-       ((TableAutoDropdown)reflexTestQueryTable.editors[0]).setModel(prepTestDropDown); 
+       ((TableDropdown)reflexTestContoller.columns.get(0).getColumnWidget()).setModel(prepTestDropDown);
+       ((TableDropdown)reflexTestQueryTable.columns.get(0).getColumnWidget()).setModel(prepTestDropDown); 
        
-       ((TableAutoDropdown)reflexTestContoller.editors[3]).setModel(reflexTestFlagsDropDown);
-       ((TableAutoDropdown)reflexTestQueryTable.editors[3]).setModel(reflexTestFlagsDropDown);              
+       ((TableDropdown)reflexTestContoller.columns.get(3).getColumnWidget()).setModel(reflexTestFlagsDropDown);
+       ((TableDropdown)reflexTestQueryTable.columns.get(3).getColumnWidget()).setModel(reflexTestFlagsDropDown);              
               
        testId = (ScreenTextBox)widgets.get(TestMeta.getId());
        testName = (TextBox)getWidget(TestMeta.getName());
        
-       d = (TableWidget)worksheetItemTable.getWidget();
+       wsItemController = (TableWidget)worksheetItemTable.getWidget();
        q = (QueryTable)worksheetItemTable.getQueryWidget().getWidget();
        
-       ((TableAutoDropdown)d.controller.editors[1]).setModel(testWSItemTypeDropDown);
-       ((TableAutoDropdown)q.editors[1]).setModel(testWSItemTypeDropDown); 
+       ((TableDropdown)wsItemController.columns.get(1).getColumnWidget()).setModel(testWSItemTypeDropDown);
+       ((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(testWSItemTypeDropDown); 
        
-       addCommandListener(d.controller);
+       //addCommandListener(d.controller);
        
-       updateChain.add(afterUpdate);       
+       updateChain.add(afterUpdate);        
               
        super.afterDraw(success);
+       
+       
+       ((FormRPC)rpc.getField("sampleType")).setFieldValue("sampleTypeTable",
+                                             sampleTypeController.model.getData());
+       
+       ((FormRPC)rpc.getField("worksheet")).setFieldValue("worksheetTable",
+                                             wsItemController.model.getData());
+                    
+       ((FormRPC)rpc.getField("prepAndReflex")).setFieldValue("testPrepTable",
+                                               prepTestController.model.getData());
+       
+       ((FormRPC)rpc.getField("prepAndReflex")).setFieldValue("testReflexTable",
+                                               reflexTestContoller.model.getData());
               
     }
         
@@ -287,28 +303,23 @@ public class TestScreen extends OpenELISScreenForm implements
         super.add();
         testId.enable(false);
         testName.setFocus(true);
-        removeReflexTestButton.changeState(ButtonState.DISABLED) ;      
+        removeReflexTestButton.changeState(ButtonState.DISABLED) ; 
+        removeReflexTestButton.changeState(ButtonState.DISABLED) ; 
         
     }
   
-    protected AsyncCallback afterAdd = new AsyncCallback() {
-        public void onFailure(Throwable caught) {   
-        }
-        public void onSuccess(Object result) {
-            testId.enable(false);
-            testName.setFocus(true);            
-            removeReflexTestButton.changeState(ButtonState.DISABLED) ;      
-        }
-    };
     
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
             testId.enable(false);
-            testName.setFocus(true);            
+            testName.setFocus(true);
+            removeReflexTestButton.changeState(ButtonState.DISABLED) ;
         }
     }; 
+    
+    
     
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
     }
@@ -340,15 +351,44 @@ public class TestScreen extends OpenELISScreenForm implements
          DataModel model = (DataModel)modelMap.get(analyteId.toString()); 
          //AutoCompleteDropdown dropdown = (AutoCompleteDropdown)((TableAutoDropdown)reflexTestContoller.editors[2]).getWidget();
          //dropdown.clear();
-         ((TableAutoDropdown)reflexTestContoller.editors[2]).setModel(model);             
+         ((Dropdown)reflexTestContoller.columns.get(2).getColumnWidget()).setModel(model);             
            /* }
-            //public void onFailure(Throwable caught) {
-             //   Window.alert(caught.getMessage());
+            //public void onFailure(Throwable caught) {             
               //  window.setStatus("","");
             }
         });*/
        }
     }
+    
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+       public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+          if(widget == wsItemController){
+              return addRow.get(0).getValue() != null;
+          } else
+           return addRow.get(0).getValue() != null && !addRow.get(0).getValue().equals(-1);
+      }
+
+      public boolean canDelete(TableWidget widget, DataSet set, int row) {
+       // TODO Auto-generated method stub
+       return false;
+      }
+
+      public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+       if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
+           return true;       
+          return false;
+      }
+
+      public boolean canSelect(TableWidget widget, DataSet set, int row) {
+       if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
+           return true;       
+          return false;
+      }
+      
     private void getTests(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
             
@@ -452,7 +492,7 @@ public class TestScreen extends OpenELISScreenForm implements
        screenService.getObject("getTestAnalyteModel", new DataObject[] {testId}, new AsyncCallback() {
            public void onSuccess(Object result) {              
                DataModel model = (DataModel)result;
-               ((TableAutoDropdown)reflexTestContoller.editors[1]).setModel(model);
+               ((Dropdown)reflexTestContoller.columns.get(1).getColumnWidget()).setModel(model);
                
            }
            public void onFailure(Throwable caught) {
@@ -470,7 +510,7 @@ public class TestScreen extends OpenELISScreenForm implements
         screenService.getObject("getTestResultModel", new DataObject[] {testId}, new AsyncCallback() {
             public void onSuccess(Object result) {              
                 DataModel model = (DataModel)result;                
-                ((TableAutoDropdown)reflexTestContoller.editors[2]).setModel(model);
+                ((Dropdown)reflexTestContoller.columns.get(2).getColumnWidget()).setModel(model);
                 
             }
             public void onFailure(Throwable caught) {
@@ -495,79 +535,48 @@ public class TestScreen extends OpenELISScreenForm implements
                 window.setStatus("","");
             }
         });
-    }
-   
-   
-   
-   
+    }      
+      
    private void onSampleTypeRowButtonClick() {
-     EditTable controller = ((TableWidget)sampleTypeTable.getWidget()).controller;
-     
-       int selectedRow = controller.selected;
-       if (selectedRow > -1 && controller.model.numRows() > 0) {
-           TableRow row = controller.model.getRow(selectedRow);
-           controller.model.hideRow(row);
-           
-           // reset the model
-           controller.reset();
-           // need to set the deleted flag to "Y" also
-           StringField deleteFlag = new StringField();
-           deleteFlag.setValue("Y");
-
-           row.addHidden("deleteFlag", deleteFlag);
-       }
+     ((TableWidget)sampleTypeTable.getWidget()).model
+     .deleteRow(((TableWidget)sampleTypeTable.getWidget()).model.getData().getSelectedIndex());;
    }
    
    private void onPrepTestRowButtonClick() {
-       EditTable controller = ((TableWidget)prepTestTable.getWidget()).controller;
-       
-         int selectedRow = controller.selected;
-         if (selectedRow > -1 && controller.model.numRows() > 0) {
-             TableRow row = controller.model.getRow(selectedRow);
-             controller.model.hideRow(row);
-             
-             // reset the model
-             controller.reset();
-             // need to set the deleted flag to "Y" also
-             StringField deleteFlag = new StringField();
-             deleteFlag.setValue("Y");
-
-             row.addHidden("deleteFlag", deleteFlag);
-         }
+       ((TableWidget)prepTestTable.getWidget()).model
+        .deleteRow(((TableWidget)prepTestTable.getWidget()).model.getData().getSelectedIndex());
      }
    
    private void onWSItemRowButtonClick() {      
-       EditTable controller = ((TableWidget)worksheetItemTable.getWidget()).controller;
-         int selectedRow = controller.selected;
-         if (selectedRow > -1 && controller.model.numRows() > 0) {
-             TableRow row = controller.model.getRow(selectedRow);
-             controller.model.hideRow(row);
-             
-             // reset the model
-             controller.reset();
-             // need to set the deleted flag to "Y" also
-             StringField deleteFlag = new StringField();
-             deleteFlag.setValue("Y");
-
-             row.addHidden("deleteFlag", deleteFlag);
-         }
+       ((TableWidget)worksheetItemTable.getWidget()).model
+       .deleteRow(((TableWidget)worksheetItemTable.getWidget()).model.getData().getSelectedIndex());
      }
    
    private void onReflexTestRowButtonClick() {      
-       
-       int selectedRow = reflexTestContoller.selected;
-       if (selectedRow > -1 && reflexTestContoller.model.numRows() > 0) {
-           TableRow row = reflexTestContoller.model.getRow(selectedRow);
-           reflexTestContoller.model.hideRow(row);
-           
-           // reset the model
-           reflexTestContoller.reset();
-           // need to set the deleted flag to "Y" also
-           StringField deleteFlag = new StringField();
-           deleteFlag.setValue("Y");
-
-           row.addHidden("deleteFlag", deleteFlag);
-       }
+       reflexTestContoller.model.deleteRow(reflexTestContoller.model.getData().getSelectedIndex());
    }
- }  
+   
+   /*public void showError(int row, int col, TableController controller,String error) {
+   AbstractField field =  controller.model.getFieldAt(row, col);      
+   field.addError(error);
+   ((TableCellInputWidget)controller.view.table.getWidget(row,col)).drawErrors();
+}*/
 
+/*public boolean canEdit(int row, int col, TableController controller) {
+   if(col == 2){  
+    if(testForm.state != FormInt.State.QUERY){
+     if(row >= 0){           
+      TableRow trow = controller.model.getRow(row);
+      DropDownField analyteId = (DropDownField)trow.getColumn(1);
+      if (analyteId.getValue() != null && !analyteId.getValue().equals(new Integer(-1))){
+         testForm.setTestResultsForAnalyte((Integer)analyteId.getValue());
+      }else{
+          showError(row,col,controller,"An analyte must be selected before selecting a result value.");
+      }
+     }        
+    }
+   } 
+    
+     return false;
+ }*/
+ }  

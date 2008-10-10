@@ -32,32 +32,30 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class DictionaryScreen extends OpenELISScreenForm implements ClickListener{
 
-    private EditTable dictEntryController = null;
+    private TableWidget dictEntryController = null;
     private AppButton removeEntryButton = null;
     private TextBox tname = null;
     private KeyListManager keyList = new KeyListManager();
 
-    private ScreenAutoDropdown displaySection = null;
+    private Dropdown displaySection = null;
     private static boolean loaded = false;
     
     private static DataModel sectionDropDown = null;
@@ -101,27 +99,26 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
                
-        dictEntryController = ((TableWidget)getWidget("dictEntTable")).controller;
-        ((DictionaryEntriesTable)dictEntryController.manager).setDictionaryForm(this);
-        dictEntryController.setAutoAdd(false);
-        addCommandListener(dictEntryController);
+        dictEntryController = ((TableWidget)getWidget("dictEntTable"));
+
+        
 
         tname = (TextBox)getWidget(CatMap.getName());
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
-        displaySection = (ScreenAutoDropdown)widgets.get(CatMap.getSectionId());       
+        displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
         
         if (sectionDropDown == null) {
             sectionDropDown = (DataModel)initData.get("sections");
         }
 
-        ((AutoCompleteDropdown)displaySection.getWidget()).setModel(sectionDropDown);
+        displaySection.setModel(sectionDropDown);
         
         super.afterDraw(success);
         
         loaded = true;
-
+        rpc.setFieldValue("dictEntTable",dictEntryController.model.getData());
     }
 
     public void query() {
@@ -140,20 +137,50 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
     
     private void onRemoveRowButtonClick(){
-        int selectedRow = dictEntryController.selected;            
-        
-        if (selectedRow > -1 && dictEntryController.model.numRows() > 0) {
-            TableRow row = dictEntryController.model.getRow(selectedRow);
-            
-            dictEntryController.model.hideRow(row);
-
-            // reset the model
-            dictEntryController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
-        }
+        ((TableWidget)dictEntryController.getWidget()).model
+        .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());;       
     }
+    
+    public void setRelatedEntryId(Integer entryId){
+        NumberField relEntryId = new NumberField(entryId); 
+        
+        //relEntryRow.addHidden("relEntryId", relEntryId);        
+    }    
+            
+
+   /* public void showError(int row, int col, TableController controller,String error) {
+         AbstractField field =  controller.model.getFieldAt(row, col);      
+         field.addError(error);
+         ((TableCellInputWidget)controller.view.table.getWidget(row,col)).drawErrors();
+    }*/
+
+
+    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    public boolean canAutoAdd(TableWidget widget,DataSet row) {        
+        return row.get(0).getValue() != null && !row.get(0).getValue().equals(0);
+    }
+
+
+    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    public boolean canSelect(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    
 }
