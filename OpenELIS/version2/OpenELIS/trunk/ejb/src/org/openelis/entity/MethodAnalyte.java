@@ -31,10 +31,8 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -62,8 +60,11 @@ public class MethodAnalyte implements Auditable, Cloneable {
   @Column(name="method_id")
   private Integer methodId;             
 
-  @Column(name="result_group_id")
-  private Integer resultGroupId;             
+  @Column(name="analyte_group")
+  private Integer analyteGroup;             
+
+  @Column(name="result_group")
+  private Integer resultGroup;             
 
   @Column(name="sort_order")
   private Integer sortOrder;             
@@ -97,13 +98,22 @@ public class MethodAnalyte implements Auditable, Cloneable {
       this.methodId = methodId;
   }
 
-  public Integer getResultGroupId() {
-    return resultGroupId;
+  public Integer getAnalyteGroup() {
+    return analyteGroup;
   }
-  public void setResultGroupId(Integer resultGroupId) {
-    if((resultGroupId == null && this.resultGroupId != null) || 
-       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
-      this.resultGroupId = resultGroupId;
+  public void setAnalyteGroup(Integer analyteGroup) {
+    if((analyteGroup == null && this.analyteGroup != null) || 
+       (analyteGroup != null && !analyteGroup.equals(this.analyteGroup)))
+      this.analyteGroup = analyteGroup;
+  }
+
+  public Integer getResultGroup() {
+    return resultGroup;
+  }
+  public void setResultGroup(Integer resultGroup) {
+    if((resultGroup == null && this.resultGroup != null) || 
+       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
+      this.resultGroup = resultGroup;
   }
 
   public Integer getSortOrder() {
@@ -149,9 +159,11 @@ public class MethodAnalyte implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(methodId,original.methodId,doc,"method_id");
 
-      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
+      AuditUtil.getChangeXML(analyteGroup,original.analyteGroup,doc,"analyte_group");
 
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
+      AuditUtil.getChangeXML(resultGroup,original.resultGroup,doc,"result_group");
+
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
       AuditUtil.getChangeXML(type,original.type,doc,"type");
 
