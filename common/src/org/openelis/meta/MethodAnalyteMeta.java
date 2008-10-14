@@ -23,10 +23,8 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.meta;
+package org.openelis.meta;/**
 
-/**
-  * MethodAnalyte META Data
   */
 
 import java.util.HashSet;
@@ -37,15 +35,16 @@ public class MethodAnalyteMeta implements Meta {
 	private static final String entityName = "MethodAnalyte";
 	
 	private static final String
-              ID					="id",
-              METHOD_ID					="methodId",
-              RESULT_GROUP_ID					="resultGroupId",
+              ID					        ="id",
+              METHOD_ID					    ="methodId",
+              ANALYTE_GROUP					="analyteGroup",
+              RESULT_GROUP					="resultGroup",
               SORT_ORDER					="sortOrder",
-              TYPE					="type",
+              TYPE				        	="type",
               ANALYTE_ID					="analyteId";
 
   	private static final String[] columnNames = {
-  	  ID,METHOD_ID,RESULT_GROUP_ID,SORT_ORDER,TYPE,ANALYTE_ID};
+  	  ID,METHOD_ID,ANALYTE_GROUP,RESULT_GROUP,SORT_ORDER,TYPE,ANALYTE_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -86,8 +85,12 @@ public class MethodAnalyteMeta implements Meta {
         return path + METHOD_ID;
     } 
 
-    public String getResultGroupId() {
-        return path + RESULT_GROUP_ID;
+    public String getAnalyteGroup() {
+        return path + ANALYTE_GROUP;
+    } 
+
+    public String getResultGroup() {
+        return path + RESULT_GROUP;
     } 
 
     public String getSortOrder() {
