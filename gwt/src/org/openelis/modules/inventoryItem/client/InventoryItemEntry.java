@@ -34,22 +34,6 @@ public class InventoryItemEntry implements AppModule {
 
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
-
-        ClassFactory.addClass(new String[] {"InventoryLocationsTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new InventoryLocationsTable();
-                                  }
-                               }
-       );
-        
-        ClassFactory.addClass(new String[] {"InventoryComponentAutoParams"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new InventoryComponentAutoParams();
-                                  }
-                               }
-       );
         
         ClassFactory.addClass(new String[] {"InventoryItemScreen"}, 
                                new ClassFactory.Factory() {

@@ -170,13 +170,13 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
-									<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}"/>
+									<dropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}"/>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"vendor")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}">
+										<autoComplete cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}">
 											<headers>Name,Street,City,St</headers>
 											<widths>180,110,100,20</widths>
-										</autoDropdown>
+										</autoComplete>
 										<query>
 											<textbox case="upper" width="188px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}"/>
 										</query>
@@ -200,9 +200,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-									<autoDropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getExternalOrderNumber($order)},{orderMeta:getRequestedBy($order)}">
-										<widths>167</widths>
-									</autoDropdown>
+									<dropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getExternalOrderNumber($order)},{orderMeta:getRequestedBy($order)}"/>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 									<widget colspan="3">
 										<textbox case="upper" key="{addr:getCity($orgAddress)}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -229,17 +227,17 @@ UIRF Software License are applicable instead of those above.
 					<tab key="itemsTab" text="{resource:getString($constants,'items')}">
 							<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
+								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
 										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
 										<widths>60,178,163,70,87</widths>
 										<editors>
 											<textbox case="mixed"/>
-											<autoDropdown cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
+											<autoComplete cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
 												<headers>Name,Store, Dispensed Units</headers>
 												<widths>135,110,110</widths>
-											</autoDropdown>
+											</autoComplete>
 											<label/>
 											<textbox case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
 											<textbox case="mixed"/>
@@ -256,7 +254,7 @@ UIRF Software License are applicable instead of those above.
 										<colAligns>left,left,left,right,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="true">
+									<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
 										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
@@ -292,7 +290,7 @@ UIRF Software License are applicable instead of those above.
 					<tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
 						<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="receiptsTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
+								<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
 										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
@@ -318,7 +316,7 @@ UIRF Software License are applicable instead of those above.
 										<colAligns>left,left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" maxRows="10" title="" showError="false" showScroll="true">
+									<queryTable width="auto" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
 										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/>

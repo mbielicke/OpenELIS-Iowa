@@ -158,13 +158,13 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"shipFrom")'/>:</text>
-							<autoDropdown key="{orderMeta:getShipFromId($order)}" case="mixed" width="172px" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}"/>							
+							<dropdown key="{orderMeta:getShipFromId($order)}" case="mixed" width="172px" tab="{orgMeta:getName($organization)},{orderMeta:getNeededInDays($order)}"/>							
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"shipTo")'/>:</text>
 							<widget colspan="3">
-								<autoDropdown cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getStatusId($order)},{orderMeta:getShipFromId($order)}">
+								<autoComplete cat="organization" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orderMeta:getStatusId($order)},{orderMeta:getShipFromId($order)}">
 									<headers>Name,Street,City,St</headers>
 									<widths>180,110,100,20</widths>
-								</autoDropdown>
+								</autoComplete>
 								<query>
 									<textbox case="upper" width="188px"/>
 								</query>
@@ -172,7 +172,7 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
-							<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:getOrderedDate($order)},{orgMeta:getName($organization)}"/>
+							<dropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:getOrderedDate($order)},{orgMeta:getName($organization)}"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 							<widget colspan="3">
 								<textbox case="upper" key="{addr:getMultipleUnit($orgAddress)}" width="188px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -196,9 +196,7 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-							<autoDropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId($order)},{orderMeta:getRequestedBy($order)}">
-								<widths>167</widths>
-							</autoDropdown>
+							<dropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId($order)},{orderMeta:getRequestedBy($order)}"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 							<widget>
 							<textbox case="upper" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -211,10 +209,10 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 							<widget colspan="3">
-								<autoDropdown cat="orderDesc" key="{orderMeta:getDescription($order)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="mixed" width="300px" tab="??,??">
+								<autoComplete cat="orderDesc" key="{orderMeta:getDescription($order)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="mixed" width="300px" tab="??,??">
 									<headers>Description</headers>
 									<widths>310</widths>
-								</autoDropdown>
+								</autoComplete>
 								<query>
 									<textbox case="mixed" width="318px"/>
 								</query>
@@ -230,16 +228,16 @@ UIRF Software License are applicable instead of those above.
 				<tab key="itemsTab" text="{resource:getString($constants,'items')}">
 					<VerticalPanel spacing="0" padding="0">
 						<widget valign="top">
-							<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="true">
+							<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 								<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
 								<widths>60,170,164,167</widths>
 								<editors>
 									<textbox case="mixed"/>
-									<autoDropdown cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
+									<autoComplete cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
 										<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
 										<widths>135,110,160,70,70,30</widths>
-									</autoDropdown>
+									</autoComplete>
 									<label/>
 									<label/>
 								</editors>
@@ -254,7 +252,7 @@ UIRF Software License are applicable instead of those above.
 								<colAligns>left,left,left,left</colAligns>
 							</table>
 							<query>
-								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="true">
+								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 									<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
 									<widths>60,170,164,167</widths>
@@ -336,20 +334,20 @@ UIRF Software License are applicable instead of those above.
 							<row>
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reportTo")'/>:</text>
 								<widget colspan="4">
-									<autoDropdown cat="reportTo" key="{orgMeta:getName($reportTo)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}">
+									<autoComplete cat="reportTo" key="{orgMeta:getName($reportTo)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
-									</autoDropdown>
+									</autoComplete>
 									<query>
 										<textbox case="upper" width="188px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}"/>
 									</query>
 								</widget>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"billTo")'/>:</text>
 								<widget colspan="3">
-									<autoDropdown cat="billTo" key="{orgMeta:getName($billTo)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}">
+									<autoComplete cat="billTo" key="{orgMeta:getName($billTo)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
-									</autoDropdown>
+									</autoComplete>
 									<query>
 										<textbox case="upper" width="188px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}"/>
 									</query>

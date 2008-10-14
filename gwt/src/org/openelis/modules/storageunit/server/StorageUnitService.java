@@ -35,7 +35,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -49,8 +48,6 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.StorageUnitMeta;
-import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -131,7 +128,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
             id.setValue(idResult);
 
             row.setKey(id);
-            row.addObject(name);
+            row.add(name);
             model.add(row);
             i++;
         }
@@ -352,7 +349,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     
     		blankStringId.setValue("");
     		blankset.setKey(blankStringId);
-    		blankset.addObject(blankStringId);
+    		blankset.add(blankStringId);
     
     		returnModel.add(blankset);
         }
@@ -374,7 +371,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 			set.setKey(textObject);
 
 			stringId.setValue(dropdownText);
-			set.addObject(stringId);
+			set.add(stringId);
 
             returnModel.add(set);
 
@@ -408,8 +405,11 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
     private void setFieldsInRPC(FormRPC rpcReturn, StorageUnitDO storageUnitDO) {
     	rpcReturn.setFieldValue(StorageUnitMeta.getId(), storageUnitDO.getId());
-    	rpcReturn.setFieldValue(StorageUnitMeta.getCategory(), storageUnitDO.getCategory());
-    	rpcReturn.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
+        
+        if(storageUnitDO.getCategory() != null)
+            rpcReturn.setFieldValue(StorageUnitMeta.getCategory(), new DataSet(new StringObject(storageUnitDO.getCategory())));
+    	
+        rpcReturn.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
     	rpcReturn.setFieldValue(StorageUnitMeta.getIsSingular(), storageUnitDO.getIsSingular());
     }
 

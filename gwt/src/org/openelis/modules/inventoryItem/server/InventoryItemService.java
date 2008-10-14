@@ -38,6 +38,7 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -60,8 +61,6 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -84,7 +83,7 @@ import org.w3c.dom.Element;
 public class InventoryItemService implements AppScreenFormServiceInt, 
 									     AutoCompleteServiceInt {
     
-    private static final int leftTableRowsPerPage = 24;
+    private static final int leftTableRowsPerPage = 23;
     
     private static final InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
@@ -156,7 +155,8 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO = getInventoryItemDOFromRPC(rpcSend);
         
         //components info
-        TableModel componentsTable = (TableModel)((FormRPC)rpcSend.getField("components")).getField("componentsTable").getValue();
+        TableField componentsField = (TableField)((FormRPC)rpcSend.getField("components")).getField("componentsTable");
+        DataModel componentsTable = (DataModel)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());
         
         //build the noteDo from the form
@@ -169,7 +169,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         List exceptionList = remote.validateForAdd(inventoryItemDO, components);
         
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, componentsTable, rpcSend);
+            setRpcErrors(exceptionList, componentsField, rpcSend);
             return rpcSend;
         } 
         
@@ -181,7 +181,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, componentsTable, rpcSend);
+            setRpcErrors(exceptionList, componentsField, rpcSend);
             
             return rpcSend;
         }
@@ -220,7 +220,8 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         inventoryItemDO = getInventoryItemDOFromRPC(rpcSend);
         
         //components info
-        TableModel componentsTable = (TableModel)((FormRPC)rpcSend.getField("components")).getField("componentsTable").getValue();
+        TableField componentsField = (TableField)((FormRPC)rpcSend.getField("components")).getField("componentsTable");
+        DataModel componentsTable = (DataModel)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());   
         
         //build the noteDo from the form
@@ -232,7 +233,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         //validate the fields on the backend
         List exceptionList = remote.validateForUpdate(inventoryItemDO, components);
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, componentsTable, rpcSend);
+            setRpcErrors(exceptionList, componentsField, rpcSend);
             
             return rpcSend;
         } 
@@ -247,7 +248,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, componentsTable, rpcSend);
+            setRpcErrors(exceptionList, componentsField, rpcSend);
             
             return rpcSend;
         }
@@ -424,14 +425,14 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     public TableField getComponentsModel(NumberObject itemId, BooleanObject forDuplicate, TableField model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List componentsList = remote.getInventoryComponents((Integer)itemId.getValue());
-        model.setValue(fillComponentsTable((TableModel)model.getValue(),(Boolean)forDuplicate.getValue(), componentsList));
+        model.setValue(fillComponentsTable((DataModel)model.getValue(),(Boolean)forDuplicate.getValue(), componentsList));
         return model;
     }
     
     public TableField getLocationsModel(NumberObject itemId, StringObject isSerialized, TableField model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List locationsList = remote.getInventoryLocations((Integer)itemId.getValue());
-        model.setValue(fillLocationsTable((TableModel)model.getValue(), (String)isSerialized.getValue(), locationsList));
+        model.setValue(fillLocationsTable((DataModel)model.getValue(), (String)isSerialized.getValue(), locationsList));
         return model;
     }
     
@@ -530,37 +531,35 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return null;
     }
 
-    public TableModel fillComponentsTable(TableModel componentsModel, boolean forDuplicate, List componentsList){
+    public DataModel fillComponentsTable(DataModel componentsModel, boolean forDuplicate, List componentsList){
         try {
-            componentsModel.reset();
+            componentsModel.clear();
             
             for(int iter = 0;iter < componentsList.size();iter++) {
                 InventoryComponentDO componentRow = (InventoryComponentDO)componentsList.get(iter);
     
-                   TableRow row = componentsModel.createRow();
+                   DataSet row = componentsModel.createNewSet();
                    NumberField id = new NumberField(NumberObject.Type.INTEGER);
                    
                    if(componentRow.getId() != null && !forDuplicate){
                        id.setValue(componentRow.getId());
-                       row.addHidden("id", id);
+                       row.setKey(id);
                    }
 
 //                  we need to create a dataset for the component auto complete
                     if(componentRow.getComponentNameId() == null)
-                        row.getColumn(0).setValue(null);
+                        row.get(0).setValue(null);
                     else{
-                        DataSet componentSet = new DataSet();
-                        NumberObject componentId = new NumberObject(componentRow.getComponentNameId());
-                        StringObject componentText = new StringObject(componentRow.getComponentName());
-                        componentSet.setKey(componentId);
-                        componentSet.addObject(componentText);
-                        row.getColumn(0).setValue(componentSet);
+                        DataModel componentModel = new DataModel();
+                        componentModel.add(new NumberObject(componentRow.getComponentNameId()),new StringObject(componentRow.getComponentName()));
+                        ((DropDownField)row.get(0)).setModel(componentModel);
+                        row.get(0).setValue(componentModel.get(0));
                     }
                     
-                    row.getColumn(1).setValue(componentRow.getComponentDesc());
-                    row.getColumn(2).setValue(componentRow.getQuantity());     
+                    row.get(1).setValue(componentRow.getComponentDesc());
+                    row.get(2).setValue(componentRow.getQuantity());     
                     
-                    componentsModel.addRow(row);
+                    componentsModel.add(row);
            } 
             
         } catch (Exception e) {
@@ -572,35 +571,35 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return componentsModel;
     }
     
-    public TableModel fillLocationsTable(TableModel locationsModel, String isSerialized, List locationsList){
+    public DataModel fillLocationsTable(DataModel locationsModel, String isSerialized, List locationsList){
         try {
-            locationsModel.reset();
+            locationsModel.clear();
             
             for(int iter = 0;iter < locationsList.size();iter++) {
                 InventoryLocationDO locationRow = (InventoryLocationDO)locationsList.get(iter);
     
-                   TableRow row = locationsModel.createRow();
+                   DataSet row = locationsModel.createNewSet();
                    NumberField id = new NumberField(locationRow.getId());
            
-                    row.addHidden("id", id);
+                    row.setKey(id);
                     
-                    row.getColumn(0).setValue(locationRow.getStorageLocation());
-                    row.getColumn(1).setValue(locationRow.getLotNumber());
+                    row.get(0).setValue(locationRow.getStorageLocation());
+                    row.get(1).setValue(locationRow.getLotNumber());
                     
                     if(CheckBox.CHECKED.equals(isSerialized))
-                        row.getColumn(2).setValue(locationRow.getId());
+                        row.get(2).setValue(locationRow.getId());
                     else
-                        row.getColumn(2).setValue(null);
+                        row.get(2).setValue(null);
                     
                     Datetime expDate = locationRow.getExpirationDate();
                     if(expDate.getDate() != null)
-                        row.getColumn(3).setValue(expDate.toString());
+                        row.get(3).setValue(expDate.toString());
                     else
-                        row.getColumn(3).setValue(null);
+                        row.get(3).setValue(null);
                     
-                    row.getColumn(4).setValue(locationRow.getQuantityOnHand());
+                    row.get(4).setValue(locationRow.getQuantityOnHand());
                     
-                    locationsModel.addRow(row);
+                    locationsModel.add(row);
            } 
             
         } catch (Exception e) {
@@ -652,10 +651,10 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
-            data.addObject(storeObject);
+            data.add(storeObject);
                         
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -739,9 +738,9 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InvItemMeta.getAverageCost(), inventoryItemDO.getAveCost());
         rpcReturn.setFieldValue(InvItemMeta.getAverageDailyUse(), inventoryItemDO.getAveDailyUse());
         rpcReturn.setFieldValue(InvItemMeta.getAverageLeadTime(), inventoryItemDO.getAveLeadTime());
-        rpcReturn.setFieldValue(InvItemMeta.getCategoryId(), inventoryItemDO.getCategory());
+        rpcReturn.setFieldValue(InvItemMeta.getCategoryId(), new DataSet(new NumberObject(inventoryItemDO.getCategory())));
         rpcReturn.setFieldValue(InvItemMeta.getDescription(), inventoryItemDO.getDescription());
-        rpcReturn.setFieldValue(InvItemMeta.getDispensedUnitsId(), inventoryItemDO.getDispensedUnits());
+        rpcReturn.setFieldValue(InvItemMeta.getDispensedUnitsId(), new DataSet(new NumberObject(inventoryItemDO.getDispensedUnits())));
         rpcReturn.setFieldValue(InvItemMeta.getId(), inventoryItemDO.getId());
         rpcReturn.setFieldValue(InvItemMeta.getIsActive(), inventoryItemDO.getIsActive());
         rpcReturn.setFieldValue(InvItemMeta.getIsBulk(), inventoryItemDO.getIsBulk());
@@ -757,23 +756,18 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMaxLevel(), inventoryItemDO.getQuantityMaxLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityMinLevel(), inventoryItemDO.getQuantityMinLevel());
         rpcReturn.setFieldValue(InvItemMeta.getQuantityToReorder(), inventoryItemDO.getQuantityToReorder());
-        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), inventoryItemDO.getStore());
+        rpcReturn.setFieldValue(InvItemMeta.getStoreId(), new DataSet(new NumberObject(inventoryItemDO.getStore())));
         rpcReturn.setFieldValue(InvItemMeta.getParentRatio(), inventoryItemDO.getParentRatio());    
         
         //we need to create a dataset for the parent inventory item auto complete
         if(inventoryItemDO.getParentInventoryItemId() == null)
             rpcReturn.setFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName(), null);
         else{
-            DataSet parentItemSet = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject text = new StringObject();
-            id.setValue(inventoryItemDO.getParentInventoryItemId());
-            text.setValue(inventoryItemDO.getParentInventoryItem());
-            parentItemSet.setKey(id);
-            parentItemSet.addObject(text);
-            rpcReturn.setFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName(), parentItemSet);
+            DataModel parentItemModel = new DataModel();
+            parentItemModel.add(new NumberObject(inventoryItemDO.getParentInventoryItemId()),new StringObject(inventoryItemDO.getParentInventoryItem()));
+            ((DropDownField)rpcReturn.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).setModel(parentItemModel);
+            rpcReturn.setFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName(), parentItemModel.get(0));
         }
-    
     }
     
     private InventoryItemDO getInventoryItemDOFromRPC(FormRPC rpcSend){
@@ -809,35 +803,37 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return inventoryItemDO;
     }
     
-    private List getComponentsListFromRPC(TableModel componentsTable, Integer itemId){
+    private List getComponentsListFromRPC(DataModel componentsTable, Integer itemId){
         List components = new ArrayList();
-        
-        for(int i=0; i<componentsTable.numRows(); i++){
-            InventoryComponentDO componentDO = new InventoryComponentDO();
-            TableRow row = componentsTable.getRow(i);
-            //hidden data
-            NumberField id = (NumberField)row.getHidden("id");
-            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            if(deleteFlag == null){
-                componentDO.setDelete(false);
-            }else{
-                componentDO.setDelete("Y".equals(deleteFlag.getValue()));
-            }
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && id == null){
-                //do nothing
-            }else{
-                if(id != null)
-                    componentDO.setId((Integer)id.getValue());
+        List deletedRows = componentsTable.getDeletions();
 
-                componentDO.setComponentNameId((Integer)((DropDownField)row.getColumn(0)).getValue());
-                componentDO.setComponentName((String)((DropDownField)row.getColumn(0)).getTextValue());
-                componentDO.setComponentDesc((String)((StringField)row.getColumn(1)).getValue());
-                componentDO.setQuantity((Double)((NumberField)row.getColumn(2)).getValue());
-                componentDO.setParentInventoryItemId(itemId);
-                
-                components.add(componentDO);    
+        
+        for(int i=0; i<componentsTable.size(); i++){
+            InventoryComponentDO componentDO = new InventoryComponentDO();
+            DataSet row = componentsTable.get(i);
+            //hidden data
+            NumberField id = (NumberField)row.getKey();
+
+            if(id != null)
+                componentDO.setId((Integer)id.getValue());
+
+            componentDO.setComponentNameId((Integer)((DropDownField)row.get(0)).getValue());
+            componentDO.setComponentName((String)((DropDownField)row.get(0)).getTextValue());
+            componentDO.setComponentDesc((String)((StringField)row.get(1)).getValue());
+            componentDO.setQuantity((Double)((NumberField)row.get(2)).getValue());
+            componentDO.setParentInventoryItemId(itemId);
+            
+            components.add(componentDO);    
+        }
+        
+        for(int j=0; j<deletedRows.size(); j++){
+            DataSet deletedRow = (DataSet)deletedRows.get(j);
+            if(deletedRow.getKey() != null){
+                InventoryComponentDO componentDO = new InventoryComponentDO();
+                componentDO.setDelete(true);
+                componentDO.setId((Integer)((NumberObject)deletedRow.getKey()).getValue());
+                                
+                components.add(componentDO);
             }
         }
         
@@ -853,21 +849,24 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return descText;
     }
     
-    private void setRpcErrors(List exceptionList, TableModel componentsTable, FormRPC rpcSend){
+    private void setRpcErrors(List exceptionList, TableField componentsTable, FormRPC rpcSend){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
-            //if the error is inside the org contacts table
+            //if the error is inside the table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
-                TableRow row = componentsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                row.getColumn(componentsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
-                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                int rowindex = ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                componentsTable.getField(rowindex,((TableFieldErrorException)exceptionList.get(i)).getFieldName())
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-        }   
+            }        
+        
         rpcSend.status = Status.invalid;
     }
 }

@@ -34,12 +34,12 @@ import java.util.List;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -58,8 +58,7 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -193,16 +192,17 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         List inventoryReceipts = new ArrayList();
         
         //receipts table
-        TableModel receiptsTable = (TableModel)rpcSend.getField("receiptsTable").getValue();
+        TableField recieptsTableField = (TableField)rpcSend.getField("receiptsTable");
+        DataModel receiptsModel = (DataModel)recieptsTableField.getValue();
         
         //build the inventory receipts list DO from the form
-        inventoryReceipts = getInventoryReceiptsFromTable(receiptsTable);
+        inventoryReceipts = getInventoryReceiptsFromTable(receiptsModel);
         
         //validate the fields on the backend
         List exceptionList = remote.validateForAdd(inventoryReceipts);
         
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, receiptsTable, rpcSend);
+            setRpcErrors(exceptionList, recieptsTableField, rpcSend);
             return rpcSend;
         } 
         
@@ -214,7 +214,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, receiptsTable, rpcSend);
+            setRpcErrors(exceptionList, recieptsTableField, rpcSend);
             
             return rpcSend;
         }
@@ -228,16 +228,17 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         List inventoryReceipts = new ArrayList();
         
         //receipts table
-        TableModel receiptsTable = (TableModel)rpcSend.getField("receiptsTable").getValue();
+        TableField receiptsTableField = (TableField)rpcSend.getField("receiptsTable");
+        DataModel receiptsModel = (DataModel)receiptsTableField.getValue();
         
         //build the inventory receipts list DO from the form
-        inventoryReceipts = getInventoryReceiptsFromTable(receiptsTable);
+        inventoryReceipts = getInventoryReceiptsFromTable(receiptsModel);
         
         //validate the fields on the backend
         List exceptionList = remote.validateForAdd(inventoryReceipts);
         
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, receiptsTable, rpcSend);
+            setRpcErrors(exceptionList, receiptsTableField, rpcSend);
             return rpcSend;
         } 
         
@@ -249,7 +250,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, receiptsTable, rpcSend);
+            setRpcErrors(exceptionList, receiptsTableField, rpcSend);
             
             return rpcSend;
         }
@@ -346,7 +347,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             itemId.setValue(receiptDO.getInventoryItemId());
             itemText.setValue(receiptDO.getInventoryItem());            
             inventoryItemSet.setKey(itemId);
-            inventoryItemSet.addObject(itemText);
+            inventoryItemSet.add(itemText);
             inventoryItem.setValue(inventoryItemSet);
             
             //org set
@@ -356,7 +357,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             orgId.setValue(receiptDO.getOrganizationId());
             orgText.setValue(receiptDO.getOrganization());
             orgSet.setKey(orgId);
-            orgSet.addObject(orgText);
+            orgSet.add(orgText);
             org.setValue(orgSet);
             
             qtyReceived.setValue(receiptDO.getQuantityReceived());
@@ -389,7 +390,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
                 invLocId.setValue(receiptDO.getStorageLocationId());
                 invLocText.setValue(receiptDO.getStorageLocation());            
                 inventoryLocSet.setKey(invLocId);
-                inventoryLocSet.addObject(invLocText);
+                inventoryLocSet.add(invLocText);
                 inventoryLocation.setValue(inventoryLocSet);
             }else{
                 inventoryLocation.setValue(null);    
@@ -403,33 +404,33 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             receiptId.setValue(receiptDO.getId());            
             
            // row.setKey(id);         
-            set.addObject(orderNumber);
-            set.addObject(receivedDate);
-            set.addObject(upc);
-            set.addObject(inventoryItem);
-            set.addObject(org);
-            set.addObject(qtyReceived);
-            set.addObject(qtyRequested);
-            set.addObject(cost);
-            set.addObject(qc);
-            set.addObject(extRef);
-            set.addObject(multUnit);
-            set.addObject(streetAddress);
-            set.addObject(city);
-            set.addObject(state);
-            set.addObject(zipCode);
-            set.addObject(itemDesc);
-            set.addObject(itemStore);
-            set.addObject(itemDispensedUnit);
-            set.addObject(itemIsBulk);
-            set.addObject(itemIsLotMaintained);
-            set.addObject(itemIsSerialMaintained);
-            set.addObject(orderItemId);
-            set.addObject(addToExisting);
-            set.addObject(inventoryLocation);
-            set.addObject(lotNumber);
-            set.addObject(expDate);
-            set.addObject(receiptId);
+            set.add(orderNumber);
+            set.add(receivedDate);
+            set.add(upc);
+            set.add(inventoryItem);
+            set.add(org);
+            set.add(qtyReceived);
+            set.add(qtyRequested);
+            set.add(cost);
+            set.add(qc);
+            set.add(extRef);
+            set.add(multUnit);
+            set.add(streetAddress);
+            set.add(city);
+            set.add(state);
+            set.add(zipCode);
+            set.add(itemDesc);
+            set.add(itemStore);
+            set.add(itemDispensedUnit);
+            set.add(itemIsBulk);
+            set.add(itemIsLotMaintained);
+            set.add(itemIsSerialMaintained);
+            set.add(orderItemId);
+            set.add(addToExisting);
+            set.add(inventoryLocation);
+            set.add(lotNumber);
+            set.add(expDate);
+            set.add(receiptId);
             
             model.add(set);
         }
@@ -467,25 +468,25 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
-            data.addObject(storeObject);
+            data.add(storeObject);
             StringObject descObj = new StringObject();
             descObj.setValue(desc);
-            data.addObject(descObj);
+            data.add(descObj);
             //StringObject purUnitsObj = new StringObject();
             //purUnitsObj.setValue(purUnits);
             //data.addObject(purUnitsObj);
             StringObject isBulkObj = new StringObject();
             isBulkObj.setValue(itemIsBulk);
-            data.addObject(isBulkObj);
+            data.add(isBulkObj);
             StringObject isLotMaintainedObj = new StringObject();
             isLotMaintainedObj.setValue(itemIsLotMaintained);
-            data.addObject(isLotMaintainedObj);            
+            data.add(isLotMaintainedObj);            
             StringObject isSerialMaintainedObj = new StringObject();
             isSerialMaintainedObj.setValue(itemIsSerialMaintained);
-            data.addObject(isSerialMaintainedObj);
+            data.add(isSerialMaintainedObj);
             
             model.add(data);
         }
@@ -543,7 +544,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             //columns
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
-            set.addObject(descObject);
+            set.add(descObject);
             
             //add the dataset to the datamodel
             dataModel.add(set);                            
@@ -582,25 +583,25 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
-            data.addObject(storeObject);
+            data.add(storeObject);
             StringObject descObj = new StringObject();
             descObj.setValue(desc);
-            data.addObject(descObj);
+            data.add(descObj);
             //StringObject purUnitsObj = new StringObject();
             //purUnitsObj.setValue(purUnits);
             //data.addObject(purUnitsObj);
             StringObject isBulkObj = new StringObject();
             isBulkObj.setValue(itemIsBulk);
-            data.addObject(isBulkObj);
+            data.add(isBulkObj);
             StringObject isLotMaintainedObj = new StringObject();
             isLotMaintainedObj.setValue(itemIsLotMaintained);
-            data.addObject(isLotMaintainedObj);            
+            data.add(isLotMaintainedObj);            
             StringObject isSerialMaintainedObj = new StringObject();
             isSerialMaintainedObj.setValue(itemIsSerialMaintained);
-            data.addObject(isSerialMaintainedObj);
+            data.add(isSerialMaintainedObj);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -650,24 +651,24 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject addressObject = new StringObject();
             addressObject.setValue(address);
-            data.addObject(addressObject);
+            data.add(addressObject);
             StringObject cityObject = new StringObject();
             cityObject.setValue(city);
-            data.addObject(cityObject);
+            data.add(cityObject);
             StringObject stateObject = new StringObject();
             stateObject.setValue(state);
-            data.addObject(stateObject);
+            data.add(stateObject);
             
             //hidden fields
             StringObject aptSuiteObj = new StringObject();
             aptSuiteObj.setValue(aptSuite);
-            data.addObject(aptSuiteObj);
+            data.add(aptSuiteObj);
             StringObject zipCodeObj = new StringObject();
             zipCodeObj.setValue(zipCode);
-            data.addObject(zipCodeObj);
+            data.add(zipCodeObj);
             
             
             //add the dataset to the datamodel
@@ -677,98 +678,101 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         return dataModel;           
     }
     
-    private List getInventoryReceiptsFromTable(TableModel receiptsTable){
+    private List getInventoryReceiptsFromTable(DataModel receiptsTable){
         List inventoryReceipts = new ArrayList();
+        List deletedRows = receiptsTable.getDeletions();
         
-        for(int i=0; i<receiptsTable.numRows(); i++){
+        for(int i=0; i<receiptsTable.size(); i++){
             InventoryReceiptDO receiptDO = new InventoryReceiptDO();
-            TableRow row = receiptsTable.getRow(i);
+            DataSet row = receiptsTable.get(i);
 
-            DropDownField storageLocation = (DropDownField)row.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
-            StringField lotNum = (StringField)row.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
-            DateField expDate = (DateField)row.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
-            CheckField addToExisting = (CheckField)row.getHidden("addToExisting");
-            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            StringField itemIsBulk = (StringField)row.getHidden("itemIsBulk");
-            StringField itemIsLotMaintained = (StringField)row.getHidden("itemIsLotMaintained");
-            StringField itemIsSerialMaintained = (StringField)row.getHidden("itemIsSerialMaintained");
-            NumberField orderItemId = (NumberField)row.getHidden("orderItemId");
-            StringField invalidOrderId = (StringField)row.getHidden("invalidOrderId");
-            NumberField id = (NumberField)row.getHidden("id");
-            NumberField transReceiptOrderId = (NumberField)row.getHidden("transReceiptOrderId");
+            DataMap map = (DataMap)row.getData();
+            DropDownField storageLocation = (DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
+            StringField lotNum = (StringField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
+            DateField expDate = (DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
+            CheckField addToExisting = (CheckField)map.get("addToExisting");
+            StringField itemIsBulk = (StringField)map.get("itemIsBulk");
+            StringField itemIsLotMaintained = (StringField)map.get("itemIsLotMaintained");
+            StringField itemIsSerialMaintained = (StringField)map.get("itemIsSerialMaintained");
+            NumberField orderItemId = (NumberField)map.get("orderItemId");
+            StringField invalidOrderId = (StringField)map.get("invalidOrderId");
+            NumberField id = (NumberField)map.get("id");
+            NumberField transReceiptOrderId = (NumberField)map.get("transReceiptOrderId");
             
-            if(deleteFlag == null){
-                receiptDO.setDelete(false);
-            }else{
-                receiptDO.setDelete("Y".equals(deleteFlag.getValue()));
+            receiptDO.setOrderNumber((Integer)((NumberField)row.get(0)).getValue());
+            receiptDO.setReceivedDate(((DatetimeRPC)((DateField)row.get(1)).getValue()).getDate());
+            receiptDO.setUpc((String)((StringField)row.get(2)).getValue());
+            receiptDO.setInventoryItemId((Integer)((DropDownField)row.get(3)).getValue());
+            receiptDO.setOrganizationId((Integer)((DropDownField)row.get(4)).getValue());
+            receiptDO.setQuantityReceived((Integer)((NumberField)row.get(5)).getValue());
+            receiptDO.setItemQtyRequested((Integer)((NumberField)row.get(6)).getValue());
+            receiptDO.setUnitCost((Double)((NumberField)row.get(7)).getValue());
+            receiptDO.setQcReference((String)((StringField)row.get(8)).getValue());
+            receiptDO.setExternalReference((String)((StringField)row.get(9)).getValue());                
+            
+            if(storageLocation != null && storageLocation.getValue() != null)
+                receiptDO.setStorageLocationId((Integer)storageLocation.getValue());
+            if(lotNum != null && !"".equals(lotNum.getValue()))
+                receiptDO.setLotNumber((String)lotNum.getValue());
+            if(expDate != null && expDate.getValue() != null)
+                receiptDO.setExpDate(((DatetimeRPC)expDate.getValue()).getDate());
+            if(itemIsBulk != null)
+                receiptDO.setIsBulk((String)itemIsBulk.getValue());
+            if(itemIsLotMaintained != null)
+                receiptDO.setIsLotMaintained((String)itemIsLotMaintained.getValue());
+            if(itemIsSerialMaintained != null)
+                receiptDO.setIsSerialMaintained((String)itemIsSerialMaintained.getValue());
+            if(orderItemId != null)
+                receiptDO.setOrderItemId((Integer)orderItemId.getValue());
+            if(invalidOrderId != null)
+                receiptDO.setOrderNumber(new Integer(-1));
+            if(id != null)
+                receiptDO.setId((Integer)id.getValue());
+            if(transReceiptOrderId != null)
+                receiptDO.setTransReceiptOrderId((Integer)transReceiptOrderId.getValue());
+            
+            if(addToExisting != null){
+                String addToExistingValue = (String)addToExisting.getValue();
+                if(addToExistingValue != null && "Y".equals(addToExistingValue))
+                    receiptDO.setAddToExisting(true);
+                else
+                    receiptDO.setAddToExisting(false);
             }
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && receiptDO.getId() == null){
-                //do nothing
-            }else{
-                receiptDO.setOrderNumber((Integer)((NumberField)row.getColumn(0)).getValue());
-                receiptDO.setReceivedDate(((DatetimeRPC)((DateField)row.getColumn(1)).getValue()).getDate());
-                receiptDO.setUpc((String)((StringField)row.getColumn(2)).getValue());
-                receiptDO.setInventoryItemId((Integer)((DropDownField)row.getColumn(3)).getValue());
-                receiptDO.setOrganizationId((Integer)((DropDownField)row.getColumn(4)).getValue());
-                receiptDO.setQuantityReceived((Integer)((NumberField)row.getColumn(5)).getValue());
-                receiptDO.setItemQtyRequested((Integer)((NumberField)row.getColumn(6)).getValue());
-                receiptDO.setUnitCost((Double)((NumberField)row.getColumn(7)).getValue());
-                receiptDO.setQcReference((String)((StringField)row.getColumn(8)).getValue());
-                receiptDO.setExternalReference((String)((StringField)row.getColumn(9)).getValue());                
+            
+            inventoryReceipts.add(receiptDO);    
+        }
+        
+        for(int j=0; j<deletedRows.size(); j++){
+            DataSet deletedRow = (DataSet)deletedRows.get(j);
+            if(deletedRow.getKey() != null){
+                InventoryReceiptDO receiptDO = new InventoryReceiptDO();
+                receiptDO.setDelete(true);
+                receiptDO.setId((Integer)((NumberObject)deletedRow.getKey()).getValue());
                 
-                if(storageLocation != null && storageLocation.getValue() != null)
-                    receiptDO.setStorageLocationId((Integer)storageLocation.getValue());
-                if(lotNum != null && !"".equals(lotNum.getValue()))
-                    receiptDO.setLotNumber((String)lotNum.getValue());
-                if(expDate != null && expDate.getValue() != null)
-                    receiptDO.setExpDate(((DatetimeRPC)expDate.getValue()).getDate());
-                if(itemIsBulk != null)
-                    receiptDO.setIsBulk((String)itemIsBulk.getValue());
-                if(itemIsLotMaintained != null)
-                    receiptDO.setIsLotMaintained((String)itemIsLotMaintained.getValue());
-                if(itemIsSerialMaintained != null)
-                    receiptDO.setIsSerialMaintained((String)itemIsSerialMaintained.getValue());
-                if(orderItemId != null)
-                    receiptDO.setOrderItemId((Integer)orderItemId.getValue());
-                if(invalidOrderId != null)
-                    receiptDO.setOrderNumber(new Integer(-1));
-                if(id != null)
-                    receiptDO.setId((Integer)id.getValue());
-                if(transReceiptOrderId != null)
-                    receiptDO.setTransReceiptOrderId((Integer)transReceiptOrderId.getValue());
-                
-                if(addToExisting != null){
-                    String addToExistingValue = (String)addToExisting.getValue();
-                    if(addToExistingValue != null && "Y".equals(addToExistingValue))
-                        receiptDO.setAddToExisting(true);
-                    else
-                        receiptDO.setAddToExisting(false);
-                }
-                
-                inventoryReceipts.add(receiptDO);    
+                inventoryReceipts.add(receiptDO);
             }
         }
         
         return inventoryReceipts;
     }
     
-    private void setRpcErrors(List exceptionList, TableModel receiptsTable, FormRPC rpcSend){
-        //we need to get the keys and look them up in the resource bundle for internationalization
+    private void setRpcErrors(List exceptionList, TableField receiptsTable, FormRPC rpcSend){
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
-                TableRow row = receiptsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                row.getColumn(receiptsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
-                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                int rowindex = ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                receiptsTable.getField(rowindex,((TableFieldErrorException)exceptionList.get(i)).getFieldName())
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-        }   
+            }        
+        
         rpcSend.status = Status.invalid;
     }
     
@@ -833,7 +837,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             itemId.setValue(resultDO.getInventoryItemId());
             itemText.setValue(resultDO.getInventoryItem());            
             inventoryItemSet.setKey(itemId);
-            inventoryItemSet.addObject(itemText);
+            inventoryItemSet.add(itemText);
             inventoryItem.setValue(inventoryItemSet);
             
             //org set
@@ -843,7 +847,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             orgId.setValue(resultDO.getOrganizationId());
             orgText.setValue(resultDO.getOrganization());
             orgSet.setKey(orgId);
-            orgSet.addObject(orgText);
+            orgSet.add(orgText);
             org.setValue(orgSet);
             
             qtyReceived.setValue(resultDO.getQuantityReceived());
@@ -873,7 +877,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             invLocId.setValue(resultDO.getStorageLocationId());
             invLocText.setValue(resultDO.getStorageLocation());            
             inventoryLocSet.setKey(invLocId);
-            inventoryLocSet.addObject(invLocText);
+            inventoryLocSet.add(invLocText);
             inventoryLocation.setValue(inventoryLocSet);
             
             lotNumber.setValue(resultDO.getLotNumber());
@@ -883,34 +887,34 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             receiptId.setValue(resultDO.getId());            
             
            // row.setKey(id);         
-            row.addObject(orderNumber);
-            row.addObject(receivedDate);
-            row.addObject(upc);
-            row.addObject(inventoryItem);
-            row.addObject(org);
-            row.addObject(qtyReceived);
-            row.addObject(qtyRequested);
-            row.addObject(cost);
-            row.addObject(qc);
-            row.addObject(extRef);
-            row.addObject(multUnit);
-            row.addObject(streetAddress);
-            row.addObject(city);
-            row.addObject(state);
-            row.addObject(zipCode);
-            row.addObject(itemDesc);
-            row.addObject(itemStore);
-            row.addObject(itemDisUnit);
-            row.addObject(itemIsBulk);
-            row.addObject(itemIsLotMaintained);
-            row.addObject(itemIsSerialMaintained);
-            row.addObject(orderItemId);
-            row.addObject(addToExisting);
-            row.addObject(inventoryLocation);
-            row.addObject(lotNumber);
-            row.addObject(expDate);
-            row.addObject(receiptId);
-            row.addObject(transReceiptOrder);
+            row.add(orderNumber);
+            row.add(receivedDate);
+            row.add(upc);
+            row.add(inventoryItem);
+            row.add(org);
+            row.add(qtyReceived);
+            row.add(qtyRequested);
+            row.add(cost);
+            row.add(qc);
+            row.add(extRef);
+            row.add(multUnit);
+            row.add(streetAddress);
+            row.add(city);
+            row.add(state);
+            row.add(zipCode);
+            row.add(itemDesc);
+            row.add(itemStore);
+            row.add(itemDisUnit);
+            row.add(itemIsBulk);
+            row.add(itemIsLotMaintained);
+            row.add(itemIsSerialMaintained);
+            row.add(orderItemId);
+            row.add(addToExisting);
+            row.add(inventoryLocation);
+            row.add(lotNumber);
+            row.add(expDate);
+            row.add(receiptId);
+            row.add(transReceiptOrder);
             
             model.add(row);
             i++;

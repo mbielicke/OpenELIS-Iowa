@@ -134,10 +134,10 @@ UIRF Software License are applicable instead of those above.
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 						<widget>
-							<autoDropdown cat="storageUnit" key="{storageUnitMeta:getDescription($storageUnit)}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:getIsAvailable($storageLoc)},{storageLocationMeta:getLocation($storageLoc)}">
+							<autoComplete cat="storageUnit" key="{storageUnitMeta:getDescription($storageUnit)}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:getIsAvailable($storageLoc)},{storageLocationMeta:getLocation($storageLoc)}">
 								<headers>Desc,Category</headers>
 								<widths>267,90</widths>	
-							</autoDropdown>
+							</autoComplete>
 							<query>
 								<textbox case="lower" width="366px" tab="{storageLocationMeta:getIsAvailable($storageLoc)},{storageLocationMeta:getLocation($storageLoc)}"/>
 							</query>
@@ -151,15 +151,15 @@ UIRF Software License are applicable instead of those above.
 				<VerticalPanel height="10px"/>
 					<VerticalPanel spacing="3">
 						<widget>
-							<table width="auto" key="childStorageLocsTable" manager="ChildStorageLocsTable" maxRows="11" title="" showError="false" showScroll="true">
+							<table width="auto" key="childStorageLocsTable" maxRows="11" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
 										<editors>
-											<autoDropdown cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px">
+											<autoComplete cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px">
 												<headers>Desc,Category</headers>
 												<widths>180,70</widths>
-											</autoDropdown>
+											</autoComplete>
 											<textbox case="mixed" max="80"/>
 											<check/>
 										</editors>
@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
 										<colAligns>left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" maxRows="11" title="" showError="false" showScroll="true">
+									<queryTable width="auto" maxRows="11" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>

@@ -29,20 +29,20 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class StorageUnitScreen extends OpenELISScreenForm {
 
-	private AutoCompleteDropdown cat;
+	private Dropdown cat;
     private static boolean loaded = false;
     private static DataModel storageUnitCategoryDropdown;
     private KeyListManager keyList = new KeyListManager();
@@ -81,16 +81,14 @@ public class StorageUnitScreen extends OpenELISScreenForm {
               
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        cat = (AutoCompleteDropdown)getWidget(StorageUnitMeta.getCategory());
+        cat = (Dropdown)getWidget(StorageUnitMeta.getCategory());
         startWidget = (ScreenInputWidget)widgets.get(StorageUnitMeta.getCategory());
 
         //load the dropdowns
         if(storageUnitCategoryDropdown == null)
             storageUnitCategoryDropdown = (DataModel)initData.get("categories");
         
-        ScreenAutoDropdown displayCat = (ScreenAutoDropdown)widgets.get(StorageUnitMeta.getCategory());
-                   
-        ((AutoCompleteDropdown)displayCat.getWidget()).setModel(storageUnitCategoryDropdown);
+        cat.setModel(storageUnitCategoryDropdown);
         
 		super.afterDraw(success);
 	}

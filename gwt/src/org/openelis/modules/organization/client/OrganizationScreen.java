@@ -178,7 +178,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         updateChain.add(afterUpdate);
         
         super.afterDraw(success);
-        ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsTable.model);
+       ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsTable.model.getData());
     }
     
     public void query() {
@@ -305,17 +305,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     private void onRemoveContactRowButtonClick() {
         int selectedRow = contactsTable.model.getSelectedIndex();
         if (selectedRow > -1 && contactsTable.model.numRows() > 0) {
-            //DataSet row = contactsTable.model.getRow(selectedRow);
             contactsTable.model.deleteRow(selectedRow);
-            
-            // reset the model
-            //contactsTable
-            //contactsTable.rescontactsController.reset();
-            // need to set the deleted flag to "Y" also
-            //StringField deleteFlag = new StringField();
-            //deleteFlag.setValue("Y");
 
-            //row.addHidden("deleteFlag", deleteFlag);
         }
     }
     

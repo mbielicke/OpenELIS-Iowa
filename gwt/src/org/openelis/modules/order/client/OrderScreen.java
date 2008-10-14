@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.order.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.gwt.common.FormRPC;
@@ -36,13 +35,11 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
-import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -50,14 +47,14 @@ import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.TableController;
-import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
@@ -73,14 +70,14 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OrderScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, ChangeListener {
+public class OrderScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
     
     private static boolean loaded = false;
     private boolean startedLoadingTable = false;
     
     private static DataModel statusDropdown, costCenterDropdown, shipFromDropdown;
     
-    private AutoCompleteDropdown orgDropdown, billToDropdown, reportToDropdown;
+    private AutoComplete orgDropdown, billToDropdown, reportToDropdown;
     
     private AppButton        removeItemButton, standardNoteCustomerButton, standardNoteShippingButton;
     
@@ -95,9 +92,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     private ScreenTextArea   shippingNoteText, customerNoteText;
     
-    private ScreenAutoDropdown status;
+    private ScreenDropDownWidget status;
     
-    private EditTable itemsController, receiptsController;
+    private TableWidget itemsTable, receiptsTable;
     
     private String orderType;
     
@@ -134,61 +131,61 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         super.onChange(sender);
         
         if(sender == orgDropdown){
-            if(orgDropdown.getSelected().size() > 0){
-                DataSet selectedRow = (DataSet)orgDropdown.getSelected().get(0);
+            if(orgDropdown.getSelections().size() > 0){
+                DataSet selectedRow = (DataSet)orgDropdown.getSelections().get(0);
                 
                 //load address
-                orgAddress.setText((String)((StringObject)selectedRow.getObject(1)).getValue());
+                orgAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
                 //load city
-                orgCity.setText((String)((StringObject)selectedRow.getObject(2)).getValue());
+                orgCity.setText((String)((StringObject)selectedRow.get(2)).getValue());
                 //load state
-                orgState.setText((String)((StringObject)selectedRow.getObject(3)).getValue());               
+                orgState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                orgAptSuite.setText((String)((StringObject)selectedRow.getObject(4)).getValue());
+                orgAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
                 //load zipcode
-                orgZipCode.setText((String)((StringObject)selectedRow.getObject(5)).getValue());
+                orgZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
             }            
         }else if(sender == reportToDropdown){
-            if(reportToDropdown.getSelected().size() > 0){
-                DataSet selectedRow = (DataSet)reportToDropdown.getSelected().get(0);
+            if(reportToDropdown.getSelections().size() > 0){
+                DataSet selectedRow = (DataSet)reportToDropdown.getSelections().get(0);
                 
                 //load address
-                reportToAddress.setText((String)((StringObject)selectedRow.getObject(1)).getValue());
+                reportToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
                 //load city
-                reportToCity.setText((String)((StringObject)selectedRow.getObject(2)).getValue());
+                reportToCity.setText((String)((StringObject)selectedRow.get(2)).getValue());
                 //load state
-                reportToState.setText((String)((StringObject)selectedRow.getObject(3)).getValue());               
+                reportToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                reportToAptSuite.setText((String)((StringObject)selectedRow.getObject(4)).getValue());
+                reportToAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
                 //load zipcode
-                reportToZipCode.setText((String)((StringObject)selectedRow.getObject(5)).getValue());
+                reportToZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
             }
         }else if(sender == billToDropdown){
-            if(billToDropdown.getSelected().size() > 0){
-                DataSet selectedRow = (DataSet)billToDropdown.getSelected().get(0);
+            if(billToDropdown.getSelections().size() > 0){
+                DataSet selectedRow = (DataSet)billToDropdown.getSelections().get(0);
                 
                 //load address
-                billToAddress.setText((String)((StringObject)selectedRow.getObject(1)).getValue());
+                billToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
                 //load city
-                billToCity.setText((String)((StringObject)selectedRow.getObject(2)).getValue());
+                billToCity.setText((String)((StringObject)selectedRow.get(2)).getValue());
                 //load state
-                billToState.setText((String)((StringObject)selectedRow.getObject(3)).getValue());               
+                billToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                billToAptSuite.setText((String)((StringObject)selectedRow.getObject(4)).getValue());
+                billToAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
                 //load zipcode
-                billToZipCode.setText((String)((StringObject)selectedRow.getObject(5)).getValue());
+                billToZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
             }
         }
     }
     
     public void afterDraw(boolean sucess) {
-        AutoCompleteDropdown drop;
+        Dropdown drop;
         
         loaded = true;
 
         orderNum = (ScreenTextBox)widgets.get(OrderMeta.getId());
         neededInDays = (ScreenTextBox)widgets.get(OrderMeta.getNeededInDays());
-        status = (ScreenAutoDropdown)widgets.get(OrderMeta.getStatusId());
+        status = (ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId());
         orderDate = (ScreenTextBox)widgets.get(OrderMeta.getOrderedDate());
         requestedBy = (ScreenTextBox)widgets.get(OrderMeta.getRequestedBy());
         shippingNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_SHIPPING_NOTE_META.getText());
@@ -205,14 +202,12 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         chain.addCommand(atozTable);
         chain.addCommand(atozButtons);
         
-        itemsController = ((TableWidget)getWidget("itemsTable")).controller;
-        //itemsController.setAutoAdd(false);
-        addCommandListener(itemsController);
+        itemsTable = (TableWidget)getWidget("itemsTable");
+        itemsTable.model.enableAutoAdd(false);
         
         if("external".equals(orderType)){
-            receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
-          //  receiptsController.setAutoAdd(false);
-            addCommandListener(receiptsController);
+            receiptsTable = (TableWidget)getWidget("receiptsTable");
+            receiptsTable.model.enableAutoAdd(false);
         }
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
@@ -243,9 +238,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         billToState = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getState());
         billToZipCode = (TextBox)getWidget(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getZipCode());
         
-        orgDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_ORGANIZATION_META.getName()); 
-        billToDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
-        reportToDropdown = (AutoCompleteDropdown)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
+        orgDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_ORGANIZATION_META.getName()); 
+        billToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
+        reportToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
         
         if (statusDropdown == null) {
             statusDropdown = (DataModel)initData.get("status");
@@ -253,18 +248,18 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
             shipFromDropdown = (DataModel)initData.get("shipFrom");
         }
 
-        drop = (AutoCompleteDropdown)getWidget(OrderMeta.getStatusId());
+        drop = (Dropdown)getWidget(OrderMeta.getStatusId());
         drop.setModel(statusDropdown);
         
        // drop = (AutoCompleteDropdown)getWidget("store");
        // if(drop != null)
        //     drop.setModel(storeDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget(OrderMeta.getCostCenterId());
+        drop = (Dropdown)getWidget(OrderMeta.getCostCenterId());
         drop.setModel(costCenterDropdown);
         
         if("kits".equals(orderType)){
-            drop = (AutoCompleteDropdown)getWidget(OrderMeta.getShipFromId());
+            drop = (Dropdown)getWidget(OrderMeta.getShipFromId());
             drop.setModel(shipFromDropdown);
         }
         
@@ -279,6 +274,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         //commitQueryChain.add(afterCommitQuery);
         
         super.afterDraw(sucess);
+        
+        ((FormRPC)rpc.getField("items")).setFieldValue("itemsTable", itemsTable.model.getData());
+        if(receiptsTable != null)
+            ((FormRPC)rpc.getField("receipts")).setFieldValue("receiptsTable", receiptsTable.model.getData());
     }
      
     /*protected AsyncCallback afterCommitAdd = new AsyncCallback() {
@@ -307,7 +306,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     
     public void update() {
         if(rpc.getField("originalStatus") != null)
-            rpc.setFieldValue("originalStatus", (Integer)((AutoCompleteDropdown)status.getWidget()).getSelectedValue());
+            rpc.setFieldValue("originalStatus", (Integer)((NumberObject)((DataSet)((Dropdown)status.getWidget()).getSelections().get(0)).getKey()).getValue());
         super.update();
         
     }
@@ -354,14 +353,14 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                 DataSet set = model.get(0);
 
                 //load the values
-                status.load((DropDownField)set.getObject(0));
-                orderDate.load((StringField)set.getObject(1));
-                requestedBy.load((StringField)set.getObject(2));
+                status.load((DropDownField)set.get(0));
+                orderDate.load((StringField)set.get(1));
+                requestedBy.load((StringField)set.get(2));
                 
                 //set the values in the rpc
-                rpc.setFieldValue(OrderMeta.getStatusId(), (Integer)((DropDownField)set.getObject(0)).getValue());
-                rpc.setFieldValue(OrderMeta.getOrderedDate(), (String)((StringField)set.getObject(1)).getValue());
-                rpc.setFieldValue(OrderMeta.getRequestedBy(), (String)((StringField)set.getObject(2)).getValue());
+                rpc.setFieldValue(OrderMeta.getStatusId(), (Integer)((DropDownField)set.get(0)).getValue());
+                rpc.setFieldValue(OrderMeta.getOrderedDate(), (String)((StringField)set.get(1)).getValue());
+                rpc.setFieldValue(OrderMeta.getRequestedBy(), (String)((StringField)set.get(2)).getValue());
                 
                 window.setStatus("","");
             }
@@ -432,34 +431,36 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     //
     //start table manager methods
     //
-    public boolean action(int row, int col, TableController controller) {
-        return false;
-    }
-
-    public boolean canDelete(int row, TableController controller) {
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
         return true;
     }
 
-    public boolean canEdit(int row, int col, TableController controller) {
-       return true;
+    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+        return !tableRowEmpty(addRow);
     }
 
-    public boolean canInsert(int row, TableController controller) {
-        return false;
+    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+        return true;
     }
 
-    public boolean canSelect(int row, TableController controller) {
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        return true;
+    }
+
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
         if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
             return true;
         return false;
     }
-
-    public boolean doAutoAdd(TableRow row, TableController controller) {
-        return !tableRowEmpty(row);
-    }
+    //
+    //end table manager methods
+    //
     
-    public void finishedEditing(int row, int col, TableController controller) {
-        if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
+    //
+    //start table listener methods
+    //
+    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        /*if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
             startedLoadingTable = true;
             
             TableRow tableRow = ((EditTable)controller).model.getRow(row);
@@ -496,22 +497,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
                     startedLoadingTable = false;
                 }
             }
-        }
+        }*/
     }
 
-    public void getNextPage(TableController controller) {}
-
-    public void getPage(int page) {}
-
-    public void getPreviousPage(TableController controller) {}
-
-    public void rowAdded(int row, TableController controller) {}
-
-    public void setModel(TableController controller, DataModel model) {}
-
-    public void setMultiple(int row, int col, TableController controller) {}
+    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    }
     //
-    //end table manager methods
+    //end table listener methods
     //
     
     public void changeState(FormInt.State state) {
@@ -528,18 +520,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
     }
     
     private void onRemoveItemButtonClick() {
-        int selectedRow = itemsController.selected;
-        if (selectedRow > -1 && itemsController.model.numRows() > 0) {
-            TableRow row = itemsController.model.getRow(selectedRow);
-            itemsController.model.hideRow(row);
+        int selectedRow = itemsTable.model.getSelectedIndex();
+        if (selectedRow > -1 && itemsTable.model.numRows() > 0) {
+            itemsTable.model.deleteRow(selectedRow);
 
-            // reset the model
-            itemsController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
         }
     }
     
@@ -741,11 +725,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Cli
         });
     }
     
-    private boolean tableRowEmpty(TableRow row){
+    private boolean tableRowEmpty(DataSet row){
         boolean empty = true;
         
-        for(int i=0; i<row.numColumns(); i++){
-            if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+        for(int i=0; i<row.size(); i++){
+            if(row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
                 empty = false;
                 break;
             }

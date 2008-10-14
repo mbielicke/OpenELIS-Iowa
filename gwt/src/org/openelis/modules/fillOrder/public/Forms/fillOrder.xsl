@@ -104,7 +104,7 @@ UIRF Software License are applicable instead of those above.
 			<VerticalPanel>
 				<VerticalPanel spacing="0" padding="0">
 			<widget valign="top">
-						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
+						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
@@ -113,10 +113,10 @@ UIRF Software License are applicable instead of those above.
 							<editors>
 								<check onClick="this"/>
 								<textbox case="mixed"/>
-								<autoDropdown case="mixed" width="70px"/>
+								<dropdown case="mixed" width="70px"/>
 								<calendar begin="0" end="2"/>							
-								<autoDropdown case="mixed" width="100px"/>
-								<autoDropdown case="upper" width="130px"/>
+								<dropdown case="mixed" width="100px"/>
+								<dropdown case="upper" width="130px"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>								
@@ -134,10 +134,10 @@ UIRF Software License are applicable instead of those above.
 							</fields>
 							<sorts>false,false,true,false,true,true,true,false,false</sorts>
 							<filters>false,false,false,false,false,false,false,false,false</filters>
-							<colAligns>left,left,left,left,left,left,left,left,left,left,left</colAligns>
+							<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
+							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
@@ -146,16 +146,15 @@ UIRF Software License are applicable instead of those above.
 								<editors>
 									<label/>
 									<textbox case="mixed"/>
-									<autoDropdown case="mixed" width="70px"/>
+									<dropdown case="mixed" width="70px"/>
 									<textbox case="mixed"/>
-									<autoDropdown case="mixed" width="100px"/>
+									<dropdown case="mixed" width="100px"/>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/> 	
 								</editors>
-								<fields>
-								process,<xsl:value-of select='meta:getId($order)'/>,<xsl:value-of select='meta:getStatusId($order)'/>,
+								<fields>process,<xsl:value-of select='meta:getId($order)'/>,<xsl:value-of select='meta:getStatusId($order)'/>,
 								<xsl:value-of select='meta:getOrderedDate($order)'/>,<xsl:value-of select='meta:getShipFromId($order)'/>,
 								<xsl:value-of select='orgMeta:getName($org)'/>,<xsl:value-of select='meta:getDescription($order)'/>,
 								<xsl:value-of select='meta:getNeededInDays($order)'/>,daysLeft
@@ -182,7 +181,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown key="{meta:getCostCenterId($order)}" case="mixed" width="164px" alwaysDisabled="true"/>
+										<dropdown key="{meta:getCostCenterId($order)}" case="mixed" width="164px" alwaysDisabled="true"/>
 									</widget>		
 								</row>
 								<row>
@@ -220,7 +219,7 @@ UIRF Software License are applicable instead of those above.
 					<HorizontalPanel width="15px"/>
 					<VerticalPanel>
 					<VerticalPanel height="5px"/>
-						<table width="auto" key="orderItemsTable" manager="this" maxRows="7" title="" showError="false" showScroll="true">
+						<table width="auto" key="orderItemsTable" manager="this" maxRows="7" title="" showError="false" showScroll="ALWAYS">
 							<headers>Item/Sample,Qty,Location</headers>
 							<widths>150,40,135</widths>										
 							<editors>
@@ -245,7 +244,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">
 		<table key="fillItemsTable"/>
 		<table key="orderItemsTable"/>
-		<string key="{meta:getRequestedBy($order)}" required="true"/>
+		<string key="{meta:getRequestedBy($order)}" required="false"/>
 		<dropdown key="{meta:getCostCenterId($order)}" required="false"/>
   		<string key="{addrMeta:getMultipleUnit($address)}" required="false"/>
 		<string key="{addrMeta:getStreetAddress($address)}" required="false"/>

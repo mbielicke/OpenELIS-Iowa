@@ -117,7 +117,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
-						<autoDropdown key="{storageUnitMeta:getCategory($meta)}" case="mixed" width="110px" tab="{storageUnitMeta:getDescription($meta)},{storageUnitMeta:getId($meta)}"/>
+						<dropdown key="{storageUnitMeta:getCategory($meta)}" case="mixed" width="110px" tab="{storageUnitMeta:getDescription($meta)},{storageUnitMeta:getId($meta)}"/>
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>

@@ -25,7 +25,11 @@
 */
 package org.openelis.modules.shipping.client;
 
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -37,14 +41,12 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ShippingMetaMap;
@@ -67,14 +69,12 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
     private DataModel itemsShippedModel;
     private AppButton removeRowButton;
-    
     private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
-    private AutoCompleteDropdown shippedToDropdown;
-    
-    private AutoCompleteDropdown statusDropdown;
+    private AutoComplete shippedToDropdown;
+    private TableWidget itemsTable, trackingNumbersTable;
+    private Dropdown statusDropdown;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
-    private EditTable itemsController, trackingNumbersController;
     
     private KeyListManager keyList = new KeyListManager();
     
@@ -106,25 +106,27 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         super.onChange(sender);
         
         if(sender == shippedToDropdown){
-            if(shippedToDropdown.getSelected().size() > 0){
-                DataSet selectedRow = (DataSet)shippedToDropdown.getSelected().get(0);
+            if(shippedToDropdown.getSelections().size() > 0){
+                DataSet selectedRow = (DataSet)shippedToDropdown.getSelections().get(0);
                 
                 //load address
-                shippedToAddress.setText((String)((StringObject)selectedRow.getObject(1)).getValue());
+                shippedToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
                 //load city
-                shippedToCity.setText((String)((StringObject)selectedRow.getObject(2)).getValue());
+                shippedToCity.setText((String)((StringObject)selectedRow.get(2)).getValue());
                 //load state
-                shippedToState.setText((String)((StringObject)selectedRow.getObject(3)).getValue());               
+                shippedToState.setText((String)((StringObject)selectedRow.get(3)).getValue());
+                
+                DataMap map = (DataMap)selectedRow.getData();
                 //load apt/suite
-                shippedToAptSuite.setText((String)((StringObject)selectedRow.getObject(4)).getValue());
+                shippedToAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
                 //load zipcode
-                shippedToZipCode.setText((String)((StringObject)selectedRow.getObject(5)).getValue());
+                shippedToZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
             }            
         }   
     }
     
     public void afterDraw(boolean success) {
-        AutoCompleteDropdown drop;
+        Dropdown drop;
         loaded = true;
         
         //shipped to address fields
@@ -134,15 +136,15 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         shippedToState = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getState());
         shippedToZipCode = (TextBox)getWidget(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode());
         
-        shippedToDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.ORGANIZATION_META.getName());
+        shippedToDropdown = (AutoComplete)getWidget(ShippingMeta.ORGANIZATION_META.getName());
 
         removeRowButton = (AppButton)getWidget("removeRowButton");
         
-        itemsController = ((TableWidget)getWidget("itemsTable")).controller;
-        itemsController.setAutoAdd(false);
-
-        trackingNumbersController = ((TableWidget)getWidget("trackingNumbersTable")).controller;
-        addCommandListener(trackingNumbersController);
+        itemsTable = (TableWidget)getWidget("itemsTable");
+        itemsTable.model.enableAutoAdd(false);
+        
+        trackingNumbersTable = (TableWidget)getWidget("trackingNumbersTable");
+        trackingNumbersTable.model.enableAutoAdd(false);
 
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -151,7 +153,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
         
-        statusDropdown = (AutoCompleteDropdown)getWidget(ShippingMeta.getStatusId()); 
+        statusDropdown = (Dropdown)getWidget(ShippingMeta.getStatusId()); 
         
         if (statusDropdownModel == null) {           
             statusDropdownModel = (DataModel)initData.get("status");
@@ -162,22 +164,25 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         //
         // status dropdown
         //
-        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getStatusId());
+        drop = (Dropdown)getWidget(ShippingMeta.getStatusId());
         drop.setModel(statusDropdownModel);
         
         //
         // ship from dropdown
         //
-        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getShippedFromId());
+        drop = (Dropdown)getWidget(ShippingMeta.getShippedFromId());
         drop.setModel(shipFromDropdownModel);
         
         //
         // shipping method dropdown
         //
-        drop = (AutoCompleteDropdown)getWidget(ShippingMeta.getShippedMethodId());
+        drop = (Dropdown)getWidget(ShippingMeta.getShippedMethodId());
         drop.setModel(shippingMethodDropdownModel);
 
         super.afterDraw(success);
+        
+        rpc.setFieldValue("itemsTable", itemsTable.model.getData());
+        rpc.setFieldValue("trackingNumbersTable", trackingNumbersTable.model.getData());
         
         if(loadedFromAnotherScreen)
             putInAddAndLoadData();
@@ -197,12 +202,14 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
                DataSet set = model.get(0);
                
                //set the values in the rpc
-               rpc.setFieldValue(ShippingMeta.getStatusId(), (Integer)((DropDownField)set.getObject(0)).getValue());
-               rpc.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.getObject(1)).getValue());
-               rpc.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.getObject(2)).getValue());
-               rpc.setFieldValue("systemUserId", (Integer)((NumberField)set.getObject(3)).getValue());
+               rpc.setFieldValue(ShippingMeta.getStatusId(), (ArrayList)((DropDownField)set.get(0)).getSelections());
+               rpc.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.get(1)).getValue());
+               rpc.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.get(2)).getValue());
+               rpc.setFieldValue("systemUserId", (Integer)((NumberField)set.get(3)).getValue());
                             
                loadScreen(rpc);
+               
+               trackingNumbersTable.model.enableAutoAdd(true);
                
                window.setStatus("","");
            }
@@ -219,17 +226,13 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         add();
         
         //set the values after the screen is in add mode
-        rpc.setFieldValue(ShippingMeta.getShippedFromId(), shipFromId);
+        rpc.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet(new NumberObject(shipFromId)));
         
         if(shipToId != null){
-            DataSet shipToSet = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject text = new StringObject();
-            id.setValue(shipToId);
-            text.setValue(shipToText);
-            shipToSet.setKey(id);
-            shipToSet.addObject(text);
-            rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), shipToSet);
+            DataModel shipToModel = new DataModel();
+            shipToModel.add(new NumberObject(shipToId),new StringObject(shipToText));
+            ((DropDownField)rpc.getField(ShippingMeta.ORGANIZATION_META.getName())).setModel(shipToModel);
+            rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), shipToModel.get(0));
         }
         
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnitText);
@@ -251,22 +254,17 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     public void update() {
         super.update();
         statusDropdown.setFocus(true);
+        trackingNumbersTable.model.enableAutoAdd(true);
     }
     
     public void abort() {
-        itemsController.setAutoAdd(false);
-        trackingNumbersController.setAutoAdd(true);
+        trackingNumbersTable.model.enableAutoAdd(false);
         super.abort();  
     }
 
     protected AsyncCallback afterCommitAdd = new AsyncCallback() {
         public void onSuccess(Object result){
-            itemsController.setAutoAdd(false);
-            trackingNumbersController.setAutoAdd(true);
-            
-            //we need to do this reset to get rid of the last row
-            itemsController.reset();
-            trackingNumbersController.reset();
+            trackingNumbersTable.model.enableAutoAdd(false);
         }
         
         public void onFailure(Throwable caught){
@@ -276,12 +274,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     
     protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
         public void onSuccess(Object result){
-            itemsController.setAutoAdd(false);
-            trackingNumbersController.setAutoAdd(true);
-            
-            //we need to do this reset to get rid of the last row
-            itemsController.reset();
-            trackingNumbersController.reset();
+            trackingNumbersTable.model.enableAutoAdd(false);            
         }
         
         public void onFailure(Throwable caught){
@@ -292,80 +285,55 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     //
     //start table manager methods
     //
-    public boolean canSelect(int row, TableController controller) {        
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+        return false;
+    }
+
+    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+        return addRow.get(0).getValue() != null && !addRow.get(0).getValue().equals(0);
+    }
+
+    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+        return false;
+    }
+
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        return false;
+    }
+
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
         if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
             return true;
         return false;
     }
-
-    public boolean canEdit(int row, int col, TableController controller) {
-       return true;
-    }
-
-    public boolean canDelete(int row, TableController controller) {
-        return true;
-    }
-
-    public boolean action(int row, int col, TableController controller) {  
-        return false;
-    }
-
-    public boolean canInsert(int row, TableController controller) {
-        return false;     
-    }
-
-    public void finishedEditing(int row, int col, TableController controller) {}
-
-    public boolean doAutoAdd(TableRow autoAddRow, TableController controller) {
-        return autoAddRow.getColumn(0).getValue() != null && !autoAddRow.getColumn(0).getValue().equals(0);
-    }
-
-    public void rowAdded(int row, TableController controller) {}
-
-    public void getNextPage(TableController controller) {}
-
-    public void getPage(int page) {}
-
-    public void getPreviousPage(TableController controller) {}
-
-    public void setModel(TableController controller, DataModel model) {}
-
-    public void validateRow(int row, TableController controller) {}
-
-    public void setMultiple(int row, int col, TableController controller) {}
     //
     //end table manager methods
     //
     
     private void loadItemsShippedTableFromModel(DataModel model){
-        itemsController.model.reset();
+        itemsTable.model.clear();
         for(int i=0; i<model.size(); i++){
             DataSet set = model.get(i);
             
-            TableRow tableRow = new TableRow();     
+            DataSet tableRow = new DataSet();     
             
-            tableRow.addColumn((StringField)set.getObject(0));
-            tableRow.addHidden("referenceTableId", (NumberField)set.getObject(3));
-            tableRow.addHidden("referenceId", (NumberField)set.getKey());
+            tableRow.add((StringField)set.get(0));
             
-            ((EditTable)itemsController).addRow(tableRow);
+            DataMap map = new DataMap();
+            map.put("referenceId", (NumberField)set.getKey());
+            map.put("referenceTableId", (NumberField)set.get(3));
+            
+            tableRow.setData(map);
+            
+            itemsTable.model.addRow(tableRow);
         }
     }
     
     private void onRemoveRowButtonClick() {
-        int selectedRow = trackingNumbersController.selected;
-        if (selectedRow > -1 && trackingNumbersController.model.numRows() > 0) {
-            TableRow row = trackingNumbersController.model.getRow(selectedRow);
-            trackingNumbersController.model.hideRow(row);
-            
-            // reset the model
-            trackingNumbersController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
-        }
-    }
-    
+        int selectedRow = trackingNumbersTable.model.getSelectedIndex();
+        
+        if (selectedRow > -1 && trackingNumbersTable.model.numRows() > 0) 
+            trackingNumbersTable.model.deleteRow(selectedRow);
+        
+    }    
 }

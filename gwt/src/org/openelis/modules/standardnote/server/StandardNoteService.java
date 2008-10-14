@@ -125,7 +125,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
                 id.setValue(idResult);
                 
                 row.setKey(id);         
-                row.addObject(name);
+                row.add(name);
                 model.add(row);
                 i++;
              } 
@@ -335,7 +335,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     		NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
     				
     		blankStringId.setValue("");
-    		blankset.addObject(blankStringId);
+    		blankset.add(blankStringId);
     		
     		blankNumberId.setValue(new Integer(0));
     		
@@ -357,7 +357,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 			NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
 			
 			textObject.setValue(dropdownText);
-			set.addObject(textObject);
+			set.add(textObject);
 			
 			numberId.setValue(dropdownId);
 
@@ -398,6 +398,8 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     	rpcReturn.setFieldValue(StandardNoteMeta.getDescription(), standardNoteDO.getDescription());
     	rpcReturn.setFieldValue(StandardNoteMeta.getName(), standardNoteDO.getName());
     	rpcReturn.setFieldValue(StandardNoteMeta.getText(), standardNoteDO.getText());
-    	rpcReturn.setFieldValue(StandardNoteMeta.getTypeId(), standardNoteDO.getType());
+        
+        if(standardNoteDO.getType() != null)
+            rpcReturn.setFieldValue(StandardNoteMeta.getTypeId(), new DataSet(new NumberObject(standardNoteDO.getType())));
     }
 }
