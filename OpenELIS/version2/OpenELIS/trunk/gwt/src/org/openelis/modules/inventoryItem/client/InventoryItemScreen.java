@@ -25,11 +25,8 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import java.util.HashMap;
-
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
@@ -41,7 +38,6 @@ import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenMenuItem;
@@ -52,16 +48,17 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
@@ -76,7 +73,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, ClickListener, TabListener, AutoCompleteCallInt{
+public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
     private boolean startedLoadingTable = false;
     private AppButton        removeComponentButton, standardNoteButton;
@@ -86,7 +83,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 	private ScreenTextArea noteText;
     private KeyListManager keyList = new KeyListManager();
 	
-	private EditTable componentsController, locsController;
+	private TableWidget componentsTable, locsTable;
     
     private ScreenMenuPanel duplicateMenuPanel;
     
@@ -128,7 +125,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 	}
 	
 	public void afterDraw(boolean success) {
-        AutoCompleteDropdown drop;
+        Dropdown drop;
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
@@ -158,13 +155,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         noteText = (ScreenTextArea) widgets.get(InvItemMeta.ITEM_NOTE.getText());
         subjectBox = (TextBox)getWidget(InvItemMeta.ITEM_NOTE.getSubject()); 
         
-        locsController = ((TableWidget)getWidget("locQuantitiesTable")).controller;
-		locsController.setAutoAdd(false);
-        ((InventoryLocationsTable)locsController.manager).setInventoryForm(this);
-		
-		componentsController = ((TableWidget)getWidget("componentsTable")).controller;
-		componentsController.setAutoAdd(false);
-        addCommandListener(componentsController);
+        locsTable = (TableWidget)getWidget("locQuantitiesTable");
+		locsTable.model.enableAutoAdd(false);
+        
+		componentsTable = (TableWidget)getWidget("componentsTable");
+        componentsTable.addTableWidgetListener(this);
+		componentsTable.model.enableAutoAdd(false);
        
         svp = (ScreenVertical) widgets.get("notesPanel");
         
@@ -174,20 +170,23 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
             dispensedUnitsDropdown = (DataModel)initData.get("units");
         }
         
-        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getStoreId());
+        drop = (Dropdown)getWidget(InvItemMeta.getStoreId());
         drop.setModel(storesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getCategoryId());
+        drop = (Dropdown)getWidget(InvItemMeta.getCategoryId());
         drop.setModel(categoriesDropdown);
         
-        drop = (AutoCompleteDropdown)getWidget(InvItemMeta.getDispensedUnitsId());
+        drop = (Dropdown)getWidget(InvItemMeta.getDispensedUnitsId());
         drop.setModel(dispensedUnitsDropdown);
         
 		super.afterDraw(success);			
+        
+        ((FormRPC)rpc.getField("components")).setFieldValue("componentsTable", componentsTable.model.getData());
+        ((FormRPC)rpc.getField("locations")).setFieldValue("locQuantitiesTable", locsTable.model.getData());
 	}
     
     public void add() {
-		componentsController.setAutoAdd(true);
+		componentsTable.model.enableAutoAdd(true);
 		
 		super.add();
 		
@@ -216,22 +215,19 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 	}
 	
 	public void abort() {
-		componentsController.setAutoAdd(false);
+		componentsTable.model.enableAutoAdd(false);
         
         super.abort();
 	}
 	
 	public void update() {
-		componentsController.setAutoAdd(true);
+		componentsTable.model.enableAutoAdd(true);
 		super.update();
 	}
 	
 	protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
           public void onSuccess(Object result){
-              componentsController.setAutoAdd(false);
-        
-			//we need to do this reset to get rid of the last row
-	        componentsController.reset();
+              componentsTable.model.enableAutoAdd(false);
           }
           
           public void onFailure(Throwable caught){
@@ -244,10 +240,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
             
         }
         public void onSuccess(Object result) {
-            componentsController.setAutoAdd(false);
-        
-			//we need to do this reset to get rid of the last row
-    	    componentsController.reset();
+            componentsTable.model.enableAutoAdd(false);
         }   
     };
     
@@ -367,18 +360,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
      }
 
     private void onRemoveComponentRowButtonClick() {
-        int selectedRow = componentsController.selected;
-        if (selectedRow > -1 && componentsController.model.numRows() > 0) {
-            TableRow row = componentsController.model.getRow(selectedRow);
-            componentsController.model.hideRow(row);
-
-            // reset the model
-            componentsController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
+        int selectedRow = componentsTable.model.getSelectedIndex();
+        if (selectedRow > -1 && componentsTable.model.numRows() > 0) {
+            componentsTable.model.deleteRow(selectedRow);
         }
     }
     
@@ -393,13 +377,20 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
             
             ((FormRPC)displayRPC.getField("locations")).setFieldValue("locQuantitiesTable", null);
             ((FormRPC)displayRPC.getField("components")).setFieldValue("componentsTable", null);
+            //((FormRPC)rpc.getField("components")).setFieldValue("componentsTable", componentsTable.model.getData());
+            //((FormRPC)rpc.getField("locations")).setFieldValue("locQuantitiesTable", locsTable.model.getData());
             ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
             ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
             
             DataSet tempKey = key;
                     
+            DataModel beforeModel = (DataModel)((FormRPC)displayRPC.getField("components")).getFieldValue("componentsTable");
+            beforeModel.size();
+            
             add();
             
+            DataModel afterModel = (DataModel)((FormRPC)displayRPC.getField("components")).getFieldValue("componentsTable");
+            afterModel.size();
             key = tempKey;
             
             rpc = displayRPC;
@@ -430,90 +421,87 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
     //
     //Table Manager methods
     //
-    public boolean action(int row, int col, TableController controller) {
-        return false;
-    }
-
-    public boolean canDelete(int row, TableController controller) {
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
         return true;
     }
 
-    public boolean canEdit(int row, int col, TableController controller) {
-       return true;
+    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+        return !tableRowEmpty(addRow);
     }
 
-    public boolean canInsert(int row, TableController controller) {
-        return false;
+    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+        return true;
     }
 
-    public boolean canSelect(int row, TableController controller) {
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        return true;
+    }
+
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
         if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
             return true;
         return false;
     }
-    
-    public boolean doAutoAdd(TableRow addRow, TableController controller) {
-        return !tableRowEmpty(addRow);
-    }
-    
-    public void finishedEditing(final int row, int col, final TableController controller) {
-        DropDownField componentField;
-        if(col == 0 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
-            startedLoadingTable = true;
-            componentField = (DropDownField)controller.model.getFieldAt(row, col);
-            if(componentField.getValue() != null){
-                window.setStatus("","spinnerIcon");
-                NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
-                  
-                // prepare the argument list for the getObject function
-                DataObject[] args = new DataObject[] {componentIdObj}; 
-                  
-                screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
-                    public void onSuccess(Object result){    
-                      // get the datamodel, load it in the notes panel and set the value in the rpc
-                        StringField descString = new StringField();
-                        descString.setValue((String) ((StringObject)result).getValue());
-                        
-                        TableRow tableRow = controller.model.getRow(row);
-                        tableRow.setColumn(1, descString);
-                        
-                        controller.scrollLoad(-1);
-                        
-                        controller.select(row, 2);
-                        
-                        window.setStatus("","");
-                        startedLoadingTable = false;
-                    }
-                    
-                    public void onFailure(Throwable caught){
-                        Window.alert(caught.getMessage());
-                        startedLoadingTable = false;
-                    }
-                });
-            }
-        }     
-    }
-
-    public void getNextPage(TableController controller) {}
-
-    public void getPage(int page) {}
-
-    public void getPreviousPage(TableController controller) {}
-
-    public void rowAdded(int row, TableController controller) {}
-
-    public void setModel(TableController controller, DataModel model) {}
-
-    public void setMultiple(int row, int col, TableController controller) {}
     //
     //End Table Manager Methods
     //
     
-    private boolean tableRowEmpty(TableRow row){
+    //
+    //start table listener methods
+    //
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
+        DropDownField componentField;
+        if(sender == componentsTable){
+            if(col == 0 && row > -1 && row < componentsTable.model.numRows() && !startedLoadingTable){
+                startedLoadingTable = true;
+                componentField = (DropDownField)componentsTable.model.getObject(row, col);
+                if(componentField.getValue() != null){
+                    window.setStatus("","spinnerIcon");
+                    NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
+                      
+                    // prepare the argument list for the getObject function
+                    DataObject[] args = new DataObject[] {componentIdObj}; 
+                      
+                    screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
+                        public void onSuccess(Object result){    
+                          // get the datamodel, load it in the notes panel and set the value in the rpc
+                            StringField descString = new StringField();
+                            descString.setValue((String) ((StringObject)result).getValue());
+                            
+                            DataSet tableRow = componentsTable.model.getRow(row);
+                            tableRow.set(1, descString);
+                            
+                            //controller.scrollLoad(-1);
+                            
+                            //controller.select(row, 2);
+                            
+                            window.setStatus("","");
+                            startedLoadingTable = false;
+                        }
+                        
+                        public void onFailure(Throwable caught){
+                            Window.alert(caught.getMessage());
+                            startedLoadingTable = false;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        // TODO Auto-generated method stub
+        
+    }
+    //
+    //end table listener methods
+    //
+    
+    private boolean tableRowEmpty(DataSet row){
         boolean empty = true;
         
-        for(int i=0; i<row.numColumns(); i++){
-            if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+        for(int i=0; i<row.size(); i++){
+            if(row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
                 empty = false;
                 break;
             }
@@ -522,16 +510,15 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
         return empty;
     }
 
-    public void callForMatches(final AutoCompleteDropdown widget, DataModel model, String text) {
-        HashMap params = new HashMap();
-        params.put("id", rpc.getField(InvItemMeta.getId()));
-        params.put("store", rpc.getField(InvItemMeta.getStoreId()));
-        params.put("name", rpc.getField(InvItemMeta.getName()));
-        
+    public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         StringObject catObj = new StringObject(widget.cat);
         ModelObject modelObj = new ModelObject(model);
         StringObject matchObj = new StringObject(text);
-        DataMap paramsObj = new DataMap(params);
+        DataMap paramsObj = new DataMap();
+        
+        paramsObj.put("id", rpc.getField(InvItemMeta.getId()));
+        paramsObj.put("store", rpc.getField(InvItemMeta.getStoreId()));
+        paramsObj.put("name", rpc.getField(InvItemMeta.getName()));
         
         // prepare the argument list for the getObject function
         DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 

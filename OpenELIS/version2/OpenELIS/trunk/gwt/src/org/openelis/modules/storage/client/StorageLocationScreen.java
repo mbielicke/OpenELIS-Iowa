@@ -30,9 +30,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
@@ -40,7 +40,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
+import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -48,7 +48,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 public class StorageLocationScreen extends OpenELISScreenForm implements ClickListener {
 	
 	private TextBox nameTextbox;
-	private EditTable childTable;
+	private TableWidget childTable;
     private KeyListManager keyList = new KeyListManager();
 	
     private AppButton removeEntryButton;
@@ -97,12 +97,12 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
         
         nameTextbox = (TextBox)getWidget(StorageLocationMeta.getName());
         startWidget = (ScreenInputWidget)widgets.get(StorageLocationMeta.getName());
-		childTable = ((TableWidget) getWidget("childStorageLocsTable")).controller;
-        addCommandListener(childTable);
-		
-		((ChildStorageLocsTable) childTable.manager).setStorageForm(this);
+		childTable = (TableWidget) getWidget("childStorageLocsTable");
+        childTable.model.enableAutoAdd(false);
 
 		super.afterDraw(success);
+        
+        rpc.setFieldValue("childStorageLocsTable", childTable.model.getData());
 	}
 	
 	public void query() {
@@ -115,20 +115,11 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 	}
 	
 	private void onRemoveRowButtonClick(){
-			int selectedRow = childTable.selected;
-			if (selectedRow > -1 && childTable.model.numRows() > 0) {
-				TableRow row = childTable.model.getRow(selectedRow);
-                childTable.model.hideRow(row);
-				// delete the last row of the table because it is autoadd
-				childTable.model.deleteRow(childTable.model.numRows() - 1);
-				// reset the model
-				childTable.reset();
-				// need to set the deleted flag to "Y" also
-				StringField deleteFlag = new StringField();
-				deleteFlag.setValue("Y");
+        int selectedRow = childTable.model.getSelectedIndex();
+        if (selectedRow > -1 && childTable.model.numRows() > 0) {
+            childTable.model.deleteRow(selectedRow);
 
-				row.addHidden("deleteFlag", deleteFlag);
-			}
+        }
     }
 
     private void getStorageLocs(String query) {

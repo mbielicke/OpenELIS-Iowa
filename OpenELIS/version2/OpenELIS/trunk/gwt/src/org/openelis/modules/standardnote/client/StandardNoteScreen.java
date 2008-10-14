@@ -32,14 +32,14 @@ import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -95,9 +95,9 @@ public class StandardNoteScreen extends OpenELISScreenForm {
             typeDropdown = (DataModel)initData.get("noteTypes");
         
 //      load standard note type dropdowns
-        ScreenAutoDropdown displayType = (ScreenAutoDropdown)widgets.get(StandardNoteMeta.getTypeId());
+        ScreenDropDownWidget displayType = (ScreenDropDownWidget)widgets.get(StandardNoteMeta.getTypeId());
                    
-       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropdown);
+       ((Dropdown)displayType.getWidget()).setModel(typeDropdown);
 		
 		super.afterDraw(success);
 	}

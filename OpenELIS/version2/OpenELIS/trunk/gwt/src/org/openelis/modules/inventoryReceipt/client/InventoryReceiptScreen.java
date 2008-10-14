@@ -44,24 +44,22 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
+import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormCalendarWidget;
-import org.openelis.gwt.widget.table.EditTable;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
-import org.openelis.gwt.widget.table.TableController;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -73,9 +71,9 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, AutoCompleteCallInt {
+public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, TableWidgetListener, AutoCompleteCallInt {
     
-    private EditTable        receiptsController;
+    private TableWidget receiptsTable;
     private boolean doAutoAdd = true;
     private boolean startedLoadingTable = false;
     
@@ -83,7 +81,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     private TextBox orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText,
                     itemDescText, itemStoreText, itemDisUnitsText;
     ScreenTextBox itemLotNum;
-    private ScreenAutoDropdown itemLocation;
+    private ScreenAutoCompleteWidget itemLocation;
     private ScreenCalendar itemExpDate;
     private ScreenCheck addToExisiting;
     private ButtonPanel      atozButtons;
@@ -106,16 +104,16 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public void onClick(Widget sender) {
         if (sender == removeReceiptButton)
             onRemoveReceiptRowButtonClick();
-        else if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsController.selected > -1 && receiptsController.model.numRows() > 0){
+        else if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsTable.model.getSelectedIndex() > -1 && receiptsTable.model.numRows() > 0){
             CheckField existing = new CheckField();
             if(((CheckBox)addToExisiting.getWidget()).getState() == CheckBox.CHECKED)
                 existing.setValue(CheckBox.UNCHECKED);
             else
                 existing.setValue(CheckBox.CHECKED);
         
-            TableRow tableRow = receiptsController.model.getRow(receiptsController.selected);
-            tableRow.addHidden("addToExisting", existing);  
-            ((AutoCompleteDropdown)itemLocation.getWidget()).reset();
+            DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
+            ((DataMap)tableRow.getData()).put("addToExisting", existing);  
+            ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
         }
         
     }
@@ -123,25 +121,24 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public void onChange(Widget sender) {
         super.onChange(sender);
          
-        if(receiptsController.model.numRows() > 0){
+        if(receiptsTable.model.numRows() > 0){
             if(sender == itemLocation.getWidget()){
                 DropDownField loc = new DropDownField();
-                loc.setValue(((AutoCompleteDropdown)itemLocation.getWidget()).getSelected());
-                TableRow tableRow = receiptsController.model.getRow(receiptsController.selected);
-                tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), loc);
+                loc.setValue(((AutoComplete)itemLocation.getWidget()).getSelections());
+                DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
+                ((DataMap)tableRow.getData()).put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), loc);
             }else if(sender == itemLotNum.getWidget()){
                 StringField lotNum = new StringField();
                 lotNum.setValue(((TextBox)itemLotNum.getWidget()).getText());
-                TableRow tableRow = receiptsController.model.getRow(receiptsController.selected);
-                tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNum);
+                DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
+                ((DataMap)tableRow.getData()).put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNum);
             }else if(sender == itemExpDate.getWidget()){
                 DateField expDate = new DateField();
                 expDate.setValue(((FormCalendarWidget)itemExpDate.getWidget()).getValue());
-                TableRow tableRow = receiptsController.model.getRow(receiptsController.selected);
-                tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expDate);
+                DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
+                ((DataMap)tableRow.getData()).put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expDate);
             }
         }
-        
     }
     
     public void afterDraw(boolean sucess) {
@@ -154,7 +151,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         itemDescText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getDescription());
         itemStoreText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getStoreId());
         itemDisUnitsText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getDispensedUnitsId());
-        itemLocation = (ScreenAutoDropdown)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
+        itemLocation = (ScreenAutoCompleteWidget)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
         itemLotNum = (ScreenTextBox)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
         itemExpDate = (ScreenCalendar)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
         addToExisiting = (ScreenCheck)widgets.get("addToExisting");
@@ -163,9 +160,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //
         // disable auto add and make sure there are no rows in the table
         //
-        receiptsController = ((TableWidget)getWidget("receiptsTable")).controller;
-        receiptsController.setAutoAdd(false);
-        addCommandListener(receiptsController);
+        receiptsTable = (TableWidget)getWidget("receiptsTable");
+        receiptsTable.model.enableAutoAdd(false);
+        receiptsTable.addTableWidgetListener(this);
         
         atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -185,7 +182,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //
         // make sure the contact table gets set before the main add
         //
-        receiptsController.setAutoAdd(true);
+        receiptsTable.model.enableAutoAdd(true);
         super.add();
         
         itemLotNum.enable(false);
@@ -193,7 +190,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         itemExpDate.enable(false);
         addToExisiting.enable(false);
         
-        receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 0);
+        //TODO not sure how to replace this  receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 0);
        
     }
     
@@ -204,8 +201,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         DataModel model = keyList.getList();
         
-        receiptsController.model.reset();
-        receiptsController.reset();
+        receiptsTable.model.clear();
         
         loadReceiptsTableFromModel(model);
                
@@ -258,7 +254,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     public void abort() {
-        receiptsController.setAutoAdd(false);
+        receiptsTable.model.enableAutoAdd(false);
         
         if (state == State.UPDATE) {
             window.setStatus("","spinnerIcon");
@@ -301,12 +297,90 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         if (state == State.ADD || state == State.UPDATE) {
             rpc.validate();
             validate();
-            if (rpc.status == Status.valid)
-                receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
+            if (rpc.status == Status.valid){}
+               //TODO not sure how to replace this      receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
         }
     }
 
+    //
     //start table manager methods
+    //
+    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+        return true;
+    }
+
+    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+        if(state != State.UPDATE){
+            return !tableRowEmpty(addRow, true);
+        }
+        
+        return false;
+    }
+
+    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+        return true;
+    }
+
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        int numRows = receiptsTable.model.numRows();
+        if(col == 0 && row > -1 && numRows > 0 && row < numRows){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            DataMap map = (DataMap)tableRow.getData();
+            CheckField disableOrderId = null;
+            
+            if(tableRow != null)
+                disableOrderId = (CheckField)map.get("disableOrderId");
+            
+            //order id is disabled on auto created rows
+            if(disableOrderId != null && CheckBox.CHECKED.equals(disableOrderId.getValue()))
+                return false;
+       
+        }else if(col == 2 && row > -1 && numRows > 0 && row < numRows){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            DataMap map = (DataMap)tableRow.getData();
+            CheckField disableUpc = null;
+            
+            if(tableRow != null)
+                disableUpc = (CheckField)map.get("disableUpc");
+            
+            //upc is disabled on auto created rows
+            if(disableUpc != null && CheckBox.CHECKED.equals(disableUpc.getValue()))
+                return false;
+            
+        }else if(col == 3 && row > -1 && numRows > 0 && row < numRows){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            DataMap map = (DataMap)tableRow.getData();
+            CheckField disableInvItem = null;
+            
+            if(tableRow != null)
+                disableInvItem = (CheckField)map.get("disableInvItem");
+            
+            //inv item is disabled on auto created rows
+            if(disableInvItem != null && CheckBox.CHECKED.equals(disableInvItem.getValue()))
+                return false;
+            
+        }else if(col == 4 && row > -1 && numRows > 0 && row < numRows){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            DataMap map = (DataMap)tableRow.getData();
+            CheckField disableOrg = null;
+            
+            if(tableRow != null)
+                disableOrg = (CheckField)map.get("disableOrg");
+            
+            //upc is disabled on auto created rows
+            if(disableOrg != null && CheckBox.CHECKED.equals(disableOrg.getValue()))
+                return false;
+            
+        }
+
+        return true;
+    }
+
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
+        return true;
+    }
+    
+    /*
     public boolean action(int row, int col, TableController controller) {
         TableRow tableRow=null;
         
@@ -373,85 +447,22 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         return false;
     }
-
-    public boolean canDelete(int row, TableController controller) {
-        return true;
-    }
-
-    public boolean canEdit(int row, int col, TableController controller) {
-        int numRows = controller.model.numRows();
-        if(col == 0 && row > -1 && numRows > 0 && row < numRows){
-            TableRow tableRow = controller.model.getRow(row);
-            CheckField disableOrderId = null;
-            
-            if(tableRow != null)
-                disableOrderId = (CheckField)tableRow.getHidden("disableOrderId");
-            
-            //order id is disabled on auto created rows
-            if(disableOrderId != null && CheckBox.CHECKED.equals(disableOrderId.getValue()))
-                return false;
-       
-        }else if(col == 2 && row > -1 && numRows > 0 && row < numRows){
-            TableRow tableRow = controller.model.getRow(row);
-            CheckField disableUpc = null;
-            
-            if(tableRow != null)
-                disableUpc = (CheckField)tableRow.getHidden("disableUpc");
-            
-            //upc is disabled on auto created rows
-            if(disableUpc != null && CheckBox.CHECKED.equals(disableUpc.getValue()))
-                return false;
-            
-        }else if(col == 3 && row > -1 && numRows > 0 && row < numRows){
-            TableRow tableRow = controller.model.getRow(row);
-            CheckField disableInvItem = null;
-            
-            if(tableRow != null)
-                disableInvItem = (CheckField)tableRow.getHidden("disableInvItem");
-            
-            //inv item is disabled on auto created rows
-            if(disableInvItem != null && CheckBox.CHECKED.equals(disableInvItem.getValue()))
-                return false;
-            
-        }else if(col == 4 && row > -1 && numRows > 0 && row < numRows){
-            TableRow tableRow = controller.model.getRow(row);
-            CheckField disableOrg = null;
-            
-            if(tableRow != null)
-                disableOrg = (CheckField)tableRow.getHidden("disableOrg");
-            
-            //upc is disabled on auto created rows
-            if(disableOrg != null && CheckBox.CHECKED.equals(disableOrg.getValue()))
-                return false;
-            
-        }
-
-        return true;
-    }
-
-    public boolean canInsert(int row, TableController controller) {
-        return false;
-    }
-
-    public boolean canSelect(int row, TableController controller) {          
-        return true;
-    }
-
-    public boolean doAutoAdd(TableRow row, TableController controller) {
-        if(state != State.UPDATE){
-            return !tableRowEmpty(row, true);
-        }
-        
-        return false;
-    }
+    */
     
-    public void finishedEditing(final int row, final int col, final TableController controller) {
-        //we need to try and lookup the order using the order number that they have entered
+    //
+    //end table manager methods
+    //
+    
+    //
+    //start table listener methods
+    //
+    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+//we need to try and lookup the order using the order number that they have entered
         
         /*
          * Try calling setDisplay on the TableCellWidget after cahnge the field value
          */
-        if(col == 0 && !startedLoadingTable && row > -1 && row < controller.model.numRows() && tableRowEmpty(controller.model.getRow(row), false)){
+       /* if(col == 0 && !startedLoadingTable && row > -1 && row < controller.model.numRows() && tableRowEmpty(controller.model.getRow(row), false)){
             startedLoadingTable = true;
             window.setStatus("","spinnerIcon");
             
@@ -751,56 +762,33 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 tableRow.addHidden("zipCode", zipCode);    
             }
         }
+        */
     }
 
-    public void getNextPage(TableController controller) {
-        // TODO Auto-generated method stub
-        
+    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
     }
-
-    public void getPage(int page) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void getPreviousPage(TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void rowAdded(int row, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setModel(TableController controller, DataModel model) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setMultiple(int row, int col, TableController controller) {
-        // TODO Auto-generated method stub
-        
-    }
-    //end table manager methods
+    //
+    //end table listener methods
+    //
     
-    private boolean tableRowEmpty(TableRow row, boolean checkFirstColumn){
+    
+    private boolean tableRowEmpty(DataSet row, boolean checkFirstColumn){
         boolean empty = true;
         
         if(checkFirstColumn){
-            for(int i=0; i<row.numColumns(); i++){
-                if(i != 1 && row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+            for(int i=0; i<row.size(); i++){
+                if(i != 1 && row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
                     empty = false;
                     break;
                 }
             }
         }else{
-            if(row.getColumn(0).getValue() == null || "".equals(row.getColumn(0).getValue()))
+            if(row.get(0).getValue() == null || "".equals(row.get(0).getValue()))
                 return false;
             
             //we dont need to check the first column
-            for(int i=2; i<row.numColumns(); i++){
-                if(row.getColumn(i).getValue() != null && !"".equals(row.getColumn(i).getValue())){
+            for(int i=2; i<row.size(); i++){
+                if(row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
                     empty = false;
                     break;
                 }
@@ -810,18 +798,10 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     private void onRemoveReceiptRowButtonClick() {
-        int selectedRow = receiptsController.selected;
-        if (selectedRow > -1 && receiptsController.model.numRows() > 0) {
-            TableRow row = receiptsController.model.getRow(selectedRow);
-            receiptsController.model.hideRow(row);
+        int selectedRow = receiptsTable.model.getSelectedIndex();
+        if (selectedRow > -1 && receiptsTable.model.numRows() > 0) {
+            receiptsTable.model.deleteRow(selectedRow);
 
-            // reset the model
-            receiptsController.reset();
-            // need to set the deleted flag to "Y" also
-            StringField deleteFlag = new StringField();
-            deleteFlag.setValue("Y");
-
-            row.addHidden("deleteFlag", deleteFlag);
         }
     }
     
@@ -829,38 +809,40 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         for(int i=0; i<model.size(); i++){
             DataSet set = model.get(i);
             
-            TableRow tableRow = new TableRow();     
-            NumberField orderId = (NumberField)set.getObject(0); 
-                            
-            tableRow.addColumn(orderId);
-            tableRow.addColumn((DateField)set.getObject(1));
-            tableRow.addColumn((StringField)set.getObject(2));
-            tableRow.addColumn((DropDownField)set.getObject(3));
-            tableRow.addColumn((DropDownField)set.getObject(4));
-            tableRow.addColumn((NumberField)set.getObject(5));
-            tableRow.addColumn((NumberField)set.getObject(6));
-            tableRow.addColumn((NumberField)set.getObject(7));
-            tableRow.addColumn((StringField)set.getObject(8));
-            tableRow.addColumn((StringField)set.getObject(9));
+            DataSet tableRow = receiptsTable.model.createRow();    
+            NumberField orderId = (NumberField)set.get(0); 
             
-            tableRow.addHidden("multUnit", (StringField)set.getObject(10));
-            tableRow.addHidden("streetAddress", (StringField)set.getObject(11));
-            tableRow.addHidden("city", (StringField)set.getObject(12));
-            tableRow.addHidden("state", (StringField)set.getObject(13));
-            tableRow.addHidden("zipCode", (StringField)set.getObject(14));
-            tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
-            tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
-            tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
-            tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
-            tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));
-            tableRow.addHidden("orderItemId", (NumberField)set.getObject(21));
-            tableRow.addHidden("addToExisting", (CheckField)set.getObject(22));
-            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.getObject(23));
-            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.getObject(24));
-            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.getObject(25));
-            tableRow.addHidden("id", (NumberField)set.getObject(26));
-            tableRow.addHidden("transReceiptOrderId", (NumberField)set.getObject(27));
+            tableRow.get(0).setValue(set.get(0).getValue());
+            tableRow.get(1).setValue(set.get(1).getValue());
+            tableRow.get(2).setValue(set.get(2).getValue());
+            tableRow.get(3).setValue(set.get(3).getValue());
+            tableRow.get(4).setValue(set.get(4).getValue());
+            tableRow.get(5).setValue(set.get(5).getValue());
+            tableRow.get(6).setValue(set.get(6).getValue());
+            tableRow.get(7).setValue(set.get(7).getValue());
+            tableRow.get(8).setValue(set.get(8).getValue());
+            tableRow.get(9).setValue(set.get(9).getValue());
+            
+            DataMap map = new DataMap();
+            
+            map.put("multUnit", (StringField)set.get(10));
+            map.put("streetAddress", (StringField)set.get(11));
+            map.put("city", (StringField)set.get(12));
+            map.put("state", (StringField)set.get(13));
+            map.put("zipCode", (StringField)set.get(14));
+            map.put("itemDesc", (StringField)set.get(15));
+            map.put("itemStore", (StringField)set.get(16));
+            map.put("itemDisUnit", (StringField)set.get(17));
+            map.put("itemIsBulk", (StringField)set.get(18));
+            map.put("itemIsLotMaintained", (StringField)set.get(19));
+            map.put("itemIsSerialMaintained", (StringField)set.get(20));
+            map.put("orderItemId", (NumberField)set.get(21));
+            map.put("addToExisting", (CheckField)set.get(22));
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.get(23));
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.get(24));
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.get(25));
+            map.put("id", (NumberField)set.get(26));
+            map.put("transReceiptOrderId", (NumberField)set.get(27));
             
             //we may need to disable some columns
             CheckField disableOrderId = new CheckField();
@@ -875,30 +857,31 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 disableInvItem.setValue(CheckBox.CHECKED);
                 disableOrg.setValue(CheckBox.CHECKED);
             
-                tableRow.addHidden("disableOrderId", disableOrderId);
-                tableRow.addHidden("disableUpc", disableUpc);
-                tableRow.addHidden("disableInvItem", disableInvItem);
-                tableRow.addHidden("disableOrg", disableOrg);
+                map.put("disableOrderId", disableOrderId);
+                map.put("disableUpc", disableUpc);
+                map.put("disableInvItem", disableInvItem);
+                map.put("disableOrg", disableOrg);
             }
             
-            ((EditTable)receiptsController).addRow(tableRow);
+            tableRow.setData(map);
+            receiptsTable.model.addRow(tableRow);
         }
     }
 
     //
     //auto complete call
     //
-    public void callForMatches(final AutoCompleteDropdown widget, DataModel model, String text) {
-        HashMap params = new HashMap();
-        params.put("addToExisting", rpc.getField("addToExisting"));
+    public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         
+        DataMap params = new DataMap();
+        params.put("addToExisting", rpc.getField("addToExisting"));
         StringObject catObj = new StringObject(widget.cat);
         ModelObject modelObj = new ModelObject(model);
         StringObject matchObj = new StringObject(text);
-        DataMap paramsObj = new DataMap(params);
+        
         
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, params}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback() {

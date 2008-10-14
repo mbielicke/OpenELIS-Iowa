@@ -80,7 +80,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel">
-						<azTable colwidths="175" height="425px" key="azTable" maxRows="20" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+						<azTable colwidths="175" height="425px" key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 
@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
 									<widget>
-									<autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" serviceUrl="TestServlet?service=edu.uiowa.uhl.tw.modules.organization.server.OrganizationService" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="225px">
+									<autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="225px">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 
@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
 									<VerticalPanel valign="top" padding="0" spacing="0">
 										<widget valign="top">
 
-											<table key="contactsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+											<table key="contactsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
 
@@ -289,7 +289,7 @@ UIRF Software License are applicable instead of those above.
 									<VerticalPanel padding="0" spacing="0">
 										<widget valign="top">
 
-											<table key="identifierstsTable" manager="OrganizationContactsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="identifierstsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'identifier')"/>,<xsl:value-of select="resource:getString($constants,'value')"/>												</headers>
 												<widths>267,300</widths>

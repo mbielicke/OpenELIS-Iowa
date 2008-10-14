@@ -114,10 +114,10 @@ UIRF Software License are applicable instead of those above.
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"kit")'/>:</text>
 						<widget colspan="3">
-						<autoDropdown key="{meta:getName($invItem)}" cat="kitDropdown" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" width="190px" tab="numRequested,{storageLocationMeta:getLocation($locStorageLoc)}">
+						<autoComplete key="{meta:getName($invItem)}" cat="kitDropdown" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" width="190px" tab="numRequested,{storageLocationMeta:getLocation($locStorageLoc)}">
 							<headers>Name,Store,Dispensed Units</headers>
 							<widths>135,130,110</widths>
-						</autoDropdown>
+						</autoComplete>
 						</widget>
 						<widget colspan="2">
 						<check key="addToExisting" onClick="this" tab="{storageLocationMeta:getLocation($locStorageLoc)},numToMake"><text style="CheckboxPrompt"><xsl:value-of select='resource:getString($constants,"addToExisting")'/></text></check>
@@ -129,24 +129,24 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"numToMake")'/>:</text>
 						<textbox case="mixed" key="numToMake" width="50px" max="60" alwaysDisabled="true" tab="addToExisting,numRequested"/>
 						<text style="Prompt">Location:</text>
-						<autoDropdown key="{storageLocationMeta:getLocation($locStorageLoc)}" cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="160px" tab="{meta:getName($invItem)},addToExisting">
+						<autoComplete key="{storageLocationMeta:getLocation($locStorageLoc)}" cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="160px" tab="{meta:getName($invItem)},addToExisting">
 							<headers>Desc</headers>
 							<widths>300</widths>
-						</autoDropdown>
+						</autoComplete>
 					</row>
 					</TablePanel>
 					<TablePanel>
 					<row>
 					<widget colspan="4">
-						<table width="auto" key="subItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
+						<table width="auto" key="subItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers>Kit Component Name,Location,Unit,Total,On Hand</headers>
 							<widths>160,177,60,60,60</widths>										
 							<editors>
 								<label/>
-								<autoDropdown cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
+								<autoComplete cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
 									<headers>Desc</headers>
 									<widths>300</widths>
-								</autoDropdown>
+								</autoComplete>
 								<label/>
 								<label/>
 								<label/>

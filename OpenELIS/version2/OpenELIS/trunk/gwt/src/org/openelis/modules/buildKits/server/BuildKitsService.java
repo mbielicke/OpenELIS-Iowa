@@ -144,13 +144,13 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
-            data.addObject(storeObject);
+            data.add(storeObject);
             StringObject disUnitsObj = new StringObject();
             disUnitsObj.setValue(dispensedUnits);
-            data.addObject(disUnitsObj);
+            data.add(disUnitsObj);
                         
             //add the dataset to the datamodel
             dataModel.add(data);                        
@@ -190,7 +190,7 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
             //columns
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
-            set.addObject(descObject);
+            set.add(descObject);
             
             //add the dataset to the datamodel
             dataModel.add(set);                            
@@ -225,9 +225,9 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
             //columns
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
-            set.addObject(descObject);
+            set.add(descObject);
             NumberObject qtyOnHand = new NumberObject(resultDO.getQtyOnHand());
-            set.addObject(qtyOnHand);
+            set.add(qtyOnHand);
             
             //add the dataset to the datamodel
             dataModel.add(set);                            
@@ -250,9 +250,9 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
             NumberObject id = new NumberObject(componentDO.getComponentInventoryItemId());
             set.setKey(id);
             StringObject name = new StringObject(componentDO.getComponentName());
-            set.addObject(name);
+            set.add(name);
             NumberObject qty = new NumberObject(componentDO.getQuantity());
-            set.addObject(qty);
+            set.add(qty);
             
             model.add(set);
         }

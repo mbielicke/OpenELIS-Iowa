@@ -36,6 +36,7 @@ import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryItemAutoDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -56,8 +57,7 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableModel;
-import org.openelis.gwt.common.data.TableRow;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -90,7 +90,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
 
         //load the adjustment child records
         List childList = remote.getChildRecordsAndUnlock((Integer)key.getKey().getValue());
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
         rpcReturn.setFieldValue("adjustmentsTable",rmodel);
         
         return rpcReturn;  
@@ -106,14 +106,15 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpcSend);
         
         //adjustment child info
-        TableModel adjustmentsTable = (TableModel)rpcSend.getField("adjustmentsTable").getValue();
+        TableField adjTableField = (TableField)rpcSend.getField("adjustmentsTable");
+        DataModel adjustmentsTable = (DataModel)adjTableField.getValue();
         adjustmentChildren = getAdjustmentsListFromRPC(adjustmentsTable, invAdjustmentDO.getId());
         
         //validate the fields on the backend
         List exceptionList = remote.validateForAdd(invAdjustmentDO, adjustmentChildren);
             
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, adjustmentsTable, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpcSend);
         } 
         
         //send the changes to the database
@@ -124,7 +125,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, adjustmentsTable, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpcSend);
             
             return rpcSend;
         }
@@ -207,7 +208,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             StringObject name = new StringObject(resultDO.getName());
             
             row.setKey(id);         
-            row.addObject(name);
+            row.add(name);
             model.add(row);
             i++;
         } 
@@ -225,13 +226,14 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpcSend);
         
         //child info
-        TableModel adjustmentsTable = (TableModel)rpcSend.getField("adjustmentsTable").getValue();
+        TableField adjTableField = (TableField)rpcSend.getField("adjustmentsTable");
+        DataModel adjustmentsTable = (DataModel)adjTableField.getValue();
         childRows = getAdjustmentsListFromRPC(adjustmentsTable, invAdjustmentDO.getId());
         
         //validate the fields on the backend
         List exceptionList = remote.validateForUpdate(invAdjustmentDO, childRows);
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, adjustmentsTable, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpcSend);
             
             return rpcSend;
         } 
@@ -246,7 +248,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, adjustmentsTable, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpcSend);
             
             return rpcSend;
         }
@@ -268,7 +270,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
 
         //load the adjustment child records
         List childList = remote.getChildRecords((Integer)key.getKey().getValue());
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
         rpcReturn.setFieldValue("adjustmentsTable",rmodel);
         
         return rpcReturn;  
@@ -292,7 +294,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, invAdjustmentDO);        
         
-        TableModel rmodel = (TableModel)fillChildrenTable((TableModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
         rpcReturn.setFieldValue("adjustmentsTable",rmodel);
         
         return rpcReturn;  
@@ -343,9 +345,9 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         systemUserId.setValue(autoDO.getSystemUserId());
         adjustmentDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getAdjustmentDate().getDate()));
         
-        set.addObject(systemUser);
-        set.addObject(systemUserId);
-        set.addObject(adjustmentDate);
+        set.add(systemUser);
+        set.add(systemUserId);
+        set.add(adjustmentDate);
         
         model.add(set);
         
@@ -383,14 +385,14 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             itemId.setValue(locDO.getInventoryItemId());
             itemText.setValue(locDO.getInventoryItem());            
             inventoryItemSet.setKey(itemId);
-            inventoryItemSet.addObject(itemText);
+            inventoryItemSet.add(itemText);
             inventoryItem.setValue(inventoryItemSet);
             
             
-            set.addObject(locationId);
-            set.addObject(inventoryItem);
-            set.addObject(storageLocation);
-            set.addObject(qtyOnHand);
+            set.add(locationId);
+            set.add(inventoryItem);
+            set.add(storageLocation);
+            set.add(qtyOnHand);
             
             model.add(set);
         }
@@ -449,27 +451,27 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
-            data.addObject(nameObject);
+            data.add(nameObject);
             StringObject storeObject = new StringObject();
             storeObject.setValue(store);
-            data.addObject(storeObject);
+            data.add(storeObject);
 
             StringObject locationObject = new StringObject();
             locationObject.setValue(location);
-            data.addObject(locationObject);
+            data.add(locationObject);
             StringObject lotNumObj = new StringObject();
             lotNumObj.setValue(lotNum);
-            data.addObject(lotNumObj);
+            data.add(lotNumObj);
             StringObject expDateObj = new StringObject();
             expDateObj.setValue(expDate);
-            data.addObject(expDateObj);
+            data.add(expDateObj);
             NumberObject qtyObject = new NumberObject(NumberObject.Type.INTEGER);
             qtyObject.setValue(qty);
-            data.addObject(qtyObject);
+            data.add(qtyObject);
             
             NumberObject locNumObject = new NumberObject(NumberObject.Type.INTEGER);
             locNumObject.setValue(locId);
-            data.addObject(locNumObject);
+            data.add(locNumObject);
                        
             //add the dataset to the datamodel
             dataModel.add(data);                                 
@@ -511,7 +513,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         rpcReturn.setFieldValue(InventoryAdjustmentMeta.getSystemUserId(), adjustmentDO.getSystemUser());
         rpcReturn.setFieldValue("systemUserId", adjustmentDO.getSystemUserId());
         rpcReturn.setFieldValue(InventoryAdjustmentMeta.getAdjustmentDate(), DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, adjustmentDO.getAdjustmentDate().getDate()));
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId(), adjustmentDO.getStoreId());        
+        rpcReturn.setFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId(), new DataSet(new NumberObject(adjustmentDO.getStoreId())));        
     }
     
     private InventoryAdjustmentDO getInventoryAdjustmentDOFromRPC(FormRPC rpcSend){
@@ -527,98 +529,96 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         return inventoryAdjustmentDO;
     }
     
-    private List<InventoryAdjustmentChildDO> getAdjustmentsListFromRPC(TableModel adjustmentsTable, Integer adjustmentId){
+    private List<InventoryAdjustmentChildDO> getAdjustmentsListFromRPC(DataModel adjustmentsModel, Integer adjustmentId){
         List<InventoryAdjustmentChildDO> adjustmentsList = new ArrayList<InventoryAdjustmentChildDO>();
+        List deletedRows = adjustmentsModel.getDeletions();
         
-        for(int i=0; i<adjustmentsTable.numRows(); i++){
+        for(int i=0; i<adjustmentsModel.size(); i++){
             InventoryAdjustmentChildDO childDO = new InventoryAdjustmentChildDO();
-            TableRow row = adjustmentsTable.getRow(i);
+            DataSet row = adjustmentsModel.get(i);
             
             //hidden data
-            NumberField childId = (NumberField)row.getHidden("id");
-            StringField deleteFlag = (StringField)row.getHidden("deleteFlag");
-            if(deleteFlag == null){
-                childDO.setDelete(false);
-            }else{
-                childDO.setDelete("Y".equals(deleteFlag.getValue()));
-            }
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            if(deleteFlag != null && "Y".equals(deleteFlag.getValue()) && childId == null){
-                //do nothing
-            }else{
-                if(childId != null)
-                    childDO.setId((Integer)childId.getValue());
+            NumberObject childId = (NumberObject)row.getKey();
+            
+            if(childId != null)
+                childDO.setId((Integer)childId.getValue());
+            
+            childDO.setAdjustmentId(adjustmentId);
+            childDO.setLocationId((Integer)((NumberField)row.get(0)).getValue());
+            childDO.setAdjustedQuantity((Integer)((NumberField)row.get(5)).getValue());
+            childDO.setPhysicalCount((Integer)((NumberField)row.get(4)).getValue());
+            
+            adjustmentsList.add(childDO);    
+        }
+        
+        for(int j=0; j<deletedRows.size(); j++){
+            DataSet deletedRow = (DataSet)deletedRows.get(j);
+            if(deletedRow.getKey() != null){
+                InventoryAdjustmentChildDO childDO = new InventoryAdjustmentChildDO();
+                childDO.setDelete(true);
+                childDO.setId((Integer)((NumberObject)deletedRow.getKey()).getValue());
                 
-                childDO.setAdjustmentId(adjustmentId);
-                childDO.setLocationId((Integer)((NumberField)row.getColumn(0)).getValue());
-                childDO.setAdjustedQuantity((Integer)((NumberField)row.getColumn(5)).getValue());
-                childDO.setPhysicalCount((Integer)((NumberField)row.getColumn(4)).getValue());
-                
-                adjustmentsList.add(childDO);    
+                adjustmentsList.add(childDO);
             }
         }
         
         return adjustmentsList;
     }
     
-    private void setRpcErrors(List exceptionList, TableModel adjustmentsTable, FormRPC rpcSend){
-        //we need to get the keys and look them up in the resource bundle for internationalization
+    private void setRpcErrors(List exceptionList, TableField adjustmentsTable, FormRPC rpcSend){
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
-                TableRow row = adjustmentsTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                row.getColumn(adjustmentsTable.getColumnIndexByFieldName(((TableFieldErrorException)exceptionList.get(i)).getFieldName()))
-                                                                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                int rowindex = ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                adjustmentsTable.getField(rowindex,((TableFieldErrorException)exceptionList.get(i)).getFieldName())
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
                 rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
                 rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-        }   
+            }        
+        
         rpcSend.status = Status.invalid;
     }
     
-    private TableModel fillChildrenTable(TableModel childModel, List childrenList){
+    private DataModel fillChildrenTable(DataModel childModel, List childrenList){
         try 
         {
-            childModel.reset();
+            childModel.clear();
             
             for(int iter = 0;iter < childrenList.size();iter++) {
                 InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childrenList.get(iter);
 
-               TableRow row = childModel.createRow();
+               DataSet row = childModel.createNewSet();
                
-               NumberField id = new NumberField(NumberObject.Type.INTEGER);
-               id.setValue(childDO.getId());
+               NumberObject id = new NumberObject(childDO.getId());
+               row.setData(id);
                
-               row.addHidden("id", id);
-               row.getColumn(0).setValue(childDO.getLocationId());
+               row.get(0).setValue(childDO.getLocationId());
                
                //we need to create a dataset for the inventory item auto complete
                 if(childDO.getInventoryItemId() == null)
-                    row.getColumn(1).setValue(null);
+                    row.get(1).setValue(null);
                 else{
-                    DataSet inventoryItemSet = new DataSet();
-                    NumberObject inventoryItemId = new NumberObject(NumberObject.Type.INTEGER);
-                    StringObject inventoryItemText = new StringObject();
-                    inventoryItemId.setValue(childDO.getInventoryItemId());
-                    inventoryItemText.setValue(childDO.getInventoryItem());
-                    inventoryItemSet.setKey(inventoryItemId);
-                    inventoryItemSet.addObject(inventoryItemText);
-                    row.getColumn(1).setValue(inventoryItemSet);
+                    DataModel itemModel = new DataModel();
+                    itemModel.add(new NumberObject(childDO.getInventoryItemId()),new StringObject(childDO.getInventoryItem()));
+                    ((DropDownField)row.get(1)).setModel(itemModel);
+                    row.get(1).setValue(itemModel.get(0));
                 }
 
-                row.getColumn(2).setValue(childDO.getStorageLocation());
+                row.get(2).setValue(childDO.getStorageLocation());
                 
                 //we need to calculate the quantity on hand
-                row.getColumn(3).setValue(childDO.getPhysicalCount() + (-1 * childDO.getAdjustedQuantity()));
+                row.get(3).setValue(childDO.getPhysicalCount() + (-1 * childDO.getAdjustedQuantity()));
                 
-                row.getColumn(4).setValue(childDO.getPhysicalCount());
-                row.getColumn(5).setValue(childDO.getAdjustedQuantity());
+                row.get(4).setValue(childDO.getPhysicalCount());
+                row.get(5).setValue(childDO.getAdjustedQuantity());
                 
-                childModel.addRow(row);
+                childModel.add(row);
            } 
             
         } catch (Exception e) {

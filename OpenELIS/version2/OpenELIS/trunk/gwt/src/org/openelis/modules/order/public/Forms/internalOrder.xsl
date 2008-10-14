@@ -158,9 +158,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"status")'/>:</text>
-						<autoDropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:getRequestedBy($order)},{orderMeta:getNeededInDays($order)}">
-							<widths>167</widths>
-						</autoDropdown>
+						<dropdown key="{orderMeta:getStatusId($order)}" case="mixed" width="90px" popWidth="auto" tab="{orderMeta:getRequestedBy($order)},{orderMeta:getNeededInDays($order)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
 						<textbox key="{orderMeta:getRequestedBy($order)}" width="175px" tab="{orderMeta:getOrderedDate($order)},{orderMeta:getStatusId($order)}"/>
 					</row>
@@ -170,9 +168,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-						<autoDropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId($order)},{orderMeta:getRequestedBy($order)}">
-							<widths>167</widths>
-						</autoDropdown>
+						<dropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId($order)},{orderMeta:getRequestedBy($order)}"/>
 					</row>
 				</TablePanel>
 			</HorizontalPanel>
@@ -183,16 +179,16 @@ UIRF Software License are applicable instead of those above.
 		<tab key="itemsTab" text="{resource:getString($constants,'items')}">
 			<VerticalPanel spacing="0" padding="0">
 			<widget>
-				<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
+				<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 					<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 					<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
 					<widths>60,170,164,167</widths>
 					<editors>
 						<textbox case="mixed"/>
-						<autoDropdown cat="inventoryItemWithStoreAndLocSubItems" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
+						<autoComplete cat="inventoryItemWithStoreAndLocSubItems" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
 							<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
 							<widths>135,110,160,70,70,30</widths>
-						</autoDropdown>
+						</autoComplete>
 						<label/>
 						<label/>
 					</editors>
@@ -207,7 +203,7 @@ UIRF Software License are applicable instead of those above.
 					<colAligns>left,left,left,left</colAligns>
 				</table>
 				<query>
-					<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="true">
+					<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 						<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 						<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
 					<widths>60,170,164,167</widths>

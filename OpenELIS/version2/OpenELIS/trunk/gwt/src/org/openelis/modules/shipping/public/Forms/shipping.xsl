@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-						<autoDropdown key="{meta:getStatusId($shipping)}" case="mixed" width="90px" popWidth="auto" tab="{meta:getShippedDate($shipping)},{meta:getShippedMethodId($shipping)}"/>
+						<dropdown key="{meta:getStatusId($shipping)}" case="mixed" width="90px" popWidth="auto" tab="{meta:getShippedDate($shipping)},{meta:getShippedMethodId($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedDate')"/>:</text>
 						<widget colspan="3">
 							<calendar key="{meta:getShippedDate($shipping)}" width="80px" begin="0" end="2" tab="{meta:getNumberOfPackages($shipping)},{meta:getStatusId($shipping)}"/>						
@@ -150,13 +150,13 @@ UIRF Software License are applicable instead of those above.
 					</row>						
 					<row>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedFrom')"/>:</text>
-						<autoDropdown key="{meta:getShippedFromId($shipping)}" case="mixed" width="172px" popWidth="auto" tab="{orgMeta:getName($organization)},{meta:getCost($shipping)}"/>
+						<dropdown key="{meta:getShippedFromId($shipping)}" case="mixed" width="172px" popWidth="auto" tab="{orgMeta:getName($organization)},{meta:getCost($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedTo')"/>:</text>
 						<widget colspan="3">
-							<autoDropdown case="upper" cat="shippedTo" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.shipping.server.ShippingService" width="172px" tab="{meta:getProcessedDate($shipping)},{meta:getShippedFromId($shipping)}">
+							<autoComplete case="upper" cat="shippedTo" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.shipping.server.ShippingService" width="172px" tab="{meta:getProcessedDate($shipping)},{meta:getShippedFromId($shipping)}">
 								<headers>Name,Street,City,St</headers>
 								<widths>180,110,100,20</widths>
-							</autoDropdown>
+							</autoComplete>
 							<query>
 								<textbox case="upper" width="188px"/>
 							</query>
@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedMethod')"/>:</text>
-						<autoDropdown key="{meta:getShippedMethodId($shipping)}" case="mixed" width="140px" popWidth="auto" tab="{meta:getStatusId($shipping)},{meta:getProcessedById($shipping)}"/>
+						<dropdown key="{meta:getShippedMethodId($shipping)}" case="mixed" width="140px" popWidth="auto" tab="{meta:getStatusId($shipping)},{meta:getProcessedById($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
 							<textbox case="upper" key="{addr:getCity($orgAddress)}" width="199px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -204,7 +204,7 @@ UIRF Software License are applicable instead of those above.
 					<HorizontalPanel>
 						<widget>
 <!--						<VerticalPanel>-->
-							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="true" title="" width="auto">
+							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
 								<headers><xsl:value-of select="resource:getString($constants,'itemsShipped')"/></headers>
 								<widths>395</widths>
 								<editors>
@@ -223,7 +223,7 @@ UIRF Software License are applicable instead of those above.
 						<VerticalPanel>
 						<widget>						
 						<!--<VerticalPanel>-->
-						<table key="trackingNumbersTable" manager="this" maxRows="5" showError="false" showScroll="true" title="" width="auto">
+						<table key="trackingNumbersTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="auto">
 							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
 							<editors>
@@ -237,7 +237,7 @@ UIRF Software License are applicable instead of those above.
 							<colAligns>left</colAligns>
 						</table>
 						<query>
-							<queryTable maxRows="5" showError="false" title="" width="auto" showScroll="true">
+							<queryTable maxRows="5" showError="false" title="" width="auto" showScroll="ALWAYS">
 								<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 								<widths>180</widths>
 								<editors>

@@ -137,22 +137,22 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"user")'/>:</text>
 						<textbox case="mixed" key="{meta:getSystemUserId($adj)}" width="125px" tab="{inventoryItemMeta:getStoreId($invItem)},{meta:getAdjustmentDate($adj)}"/>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
-						<autoDropdown key="{inventoryItemMeta:getStoreId($invItem)}" case="mixed" width="205px" tab="{meta:getId($adj)},{meta:getSystemUserId($adj)}"/>
+						<dropdown key="{inventoryItemMeta:getStoreId($invItem)}" case="mixed" width="205px" tab="{meta:getId($adj)},{meta:getSystemUserId($adj)}"/>
 					</row>
 				</TablePanel>
 				<VerticalPanel spacing="0" padding="0">
 					<widget valign="top">
-						<table width="auto" key="adjustmentsTable" manager="this" maxRows="14" title="" showError="false" showScroll="true">
+						<table width="auto" key="adjustmentsTable" manager="this" maxRows="14" title="" showError="false" showScroll="ALWAYS">
 							<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
 							<widths>50,205,225,60,60,60</widths>										
 							<editors>
 								<textbox case="mixed"/>
-								<autoDropdown cat="inventoryItem" autoParams="InventoryAdjustmentAutoParams" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
+								<autoComplete cat="inventoryItem" autoParams="InventoryAdjustmentAutoParams" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
 									<headers>Name,Store,Location,Lot #,Exp Date,Qty</headers>
 							        <widths>135,110,160,70,70,30</widths>
-								</autoDropdown>
+								</autoComplete>
 								<label/>
 								<label/>
 								<textbox case="mixed"/>
@@ -171,7 +171,7 @@ UIRF Software License are applicable instead of those above.
 							<colAligns>left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
-							<queryTable width="auto" title="" maxRows="14" showError="false" showScroll="true">
+							<queryTable width="auto" title="" maxRows="14" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>

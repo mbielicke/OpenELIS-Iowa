@@ -125,7 +125,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
-						<autoDropdown key="{standardNoteMeta:getTypeId($meta)}" case="mixed" width="121px" tab="{standardNoteMeta:getText($meta)},{standardNoteMeta:getDescription($meta)}"/>
+						<dropdown key="{standardNoteMeta:getTypeId($meta)}" case="mixed" width="121px" tab="{standardNoteMeta:getText($meta)},{standardNoteMeta:getDescription($meta)}"/>
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>

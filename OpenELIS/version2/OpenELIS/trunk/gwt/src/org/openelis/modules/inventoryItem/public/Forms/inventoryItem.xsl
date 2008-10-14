@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel">
-				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="24" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
+				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="23" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -164,13 +164,13 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown key="{meta:getStoreId($invItem)}" case="mixed" width="225px" tab="{meta:getCategoryId($invItem)},{meta:getDescription($invItem)}"/>
+										<dropdown key="{meta:getStoreId($invItem)}" case="mixed" width="225px" tab="{meta:getCategoryId($invItem)},{meta:getDescription($invItem)}"/>
 									</widget>	
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"category")'/>:</text>
 									<widget colspan="3">
-										<autoDropdown key="{meta:getCategoryId($invItem)}" case="mixed" width="180px" tab="{meta:getQuantityMinLevel($invItem)},{meta:getStoreId($invItem)}"/>
+										<dropdown key="{meta:getCategoryId($invItem)}" case="mixed" width="180px" tab="{meta:getQuantityMinLevel($invItem)},{meta:getStoreId($invItem)}"/>
 									</widget>	
 								</row>
 								<row>
@@ -200,7 +200,7 @@ UIRF Software License are applicable instead of those above.
 								-->
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
-									<autoDropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getQuantityMaxLevel($invItem)}"/>
+									<dropdown key="{meta:getDispensedUnitsId($invItem)}" case="mixed" width="90px" tab="{meta:getIsActive($invItem)},{meta:getQuantityMaxLevel($invItem)}"/>
 									<!--
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"ratio")'/>:</text>
 									<textbox key="ratio" width="55px" tab="??,??"/>
@@ -258,14 +258,14 @@ UIRF Software License are applicable instead of those above.
 					<tab key="componentsTab" text="{resource:getString($constants,'components')}">
 							<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="componentsTable" manager="this" maxRows="9" title="" showError="false" showScroll="true">
+								<table width="auto" key="componentsTable" manager="this" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
 										<editors>
-											<autoDropdown cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
+											<autoComplete cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
 												<widths>118</widths>
-											</autoDropdown>
+											</autoComplete>
 											<label/>
 											<textbox case="mixed"/>
 										</editors>
@@ -279,7 +279,7 @@ UIRF Software License are applicable instead of those above.
 										<colAligns>left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="true">
+									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
@@ -308,7 +308,7 @@ UIRF Software License are applicable instead of those above.
 					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
 						<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="locQuantitiesTable" manager="InventoryLocationsTable" maxRows="10" title="" showError="false" showScroll="true">
+								<table width="auto" key="locQuantitiesTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
@@ -332,7 +332,7 @@ UIRF Software License are applicable instead of those above.
 										<colAligns>left,left,left,left,left</colAligns>
 									</table>
 									<query>
-									<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
+									<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
@@ -382,10 +382,10 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Parent Item:</text>
 							<widget colspan="3">
-								<autoDropdown key="{invItemMeta:getName($parentInvItem)}" cat="parentItem" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" case="mixed" width="210px" tab="??,??">
+								<autoComplete key="{invItemMeta:getName($parentInvItem)}" cat="parentItem" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" case="mixed" width="210px" tab="??,??">
 									<headers>Name,Store</headers>
 									<widths>135,130</widths>
-								</autoDropdown>
+								</autoComplete>
 							</widget>
 							<text style="Prompt">Parent Ratio:</text>
 							<textbox key="{meta:getParentRatio($invItem)}"  width="55px" max="30" tab="{meta:getProductUri($invItem)},{invItemMeta:getName($parentInvItem)}"/>

@@ -25,8 +25,12 @@
 */
 package org.openelis.modules.main.server;
 
-import com.google.gwt.user.client.rpc.RemoteService;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
+import javax.servlet.http.HttpSession;
+
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
@@ -41,9 +45,7 @@ import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
-import java.util.HashMap;
-
-import javax.servlet.http.HttpSession;
+import com.google.gwt.user.client.rpc.RemoteService;
 
 public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, FavoritesServiceInt {
 
@@ -97,18 +99,27 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         try {
             return (DataObject)service.getClass().getMethod(method,params).invoke(service, (Object[])args);
         }catch(Exception e){
+            if(e instanceof InvocationTargetException){
+                InvocationTargetException er = (InvocationTargetException)e;
+                if(er.getCause() != null)
+                    throw (RPCException)er.getCause();
+            }
+
             e.printStackTrace();
             throw new RPCException(e.getMessage());
         }
-        
     }
     
     private RemoteService getService() throws RPCException {
         try {
             return (RemoteService) Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            if(e instanceof FormErrorException)
+                throw new FormErrorException(e.getMessage());
+            else{
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());
+            }
         }
     }
     

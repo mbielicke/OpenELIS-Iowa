@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
 			<VerticalPanel>
 				<VerticalPanel spacing="0" padding="0">
 					<widget valign="top">
-						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="true">
+						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
 							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extQC")'/>,
@@ -153,14 +153,14 @@ UIRF Software License are applicable instead of those above.
 								<textbox case="mixed"/>
 								<calendar begin="0" end="2"/>							
 								<textbox case="mixed"/>
-								<autoDropdown cat="inventoryItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
+								<autoComplete cat="inventoryItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store</headers>
 									<widths>100,150</widths>
-								</autoDropdown>
-								<autoDropdown cat="organization" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="140px">
+								</autoComplete>
+								<autoComplete cat="organization" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="140px">
 									<headers>Name,Street,City,St</headers>
 									<widths>180,110,100,20</widths>
-								</autoDropdown>
+								</autoComplete>
 								<textbox case="mixed"/>
 								<label/>
 								<textbox case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
@@ -184,7 +184,7 @@ UIRF Software License are applicable instead of those above.
 							<colAligns>left,left,left,left,left,left,left,right,left,left</colAligns>
 						</table>
 						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
+							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
 							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extQC")'/>,
@@ -282,10 +282,10 @@ UIRF Software License are applicable instead of those above.
 									</widget>	
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 									<widget>
-									<autoDropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
+									<autoComplete key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
 										<headers>Desc</headers>
 										<widths>300</widths>
-									</autoDropdown>
+									</autoComplete>
 									<query>
 										<textbox case="mixed" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting" width="176px"/>
 									</query>

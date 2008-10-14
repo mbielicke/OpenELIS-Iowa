@@ -25,13 +25,17 @@
 */
 package org.openelis.modules.analyte.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -51,11 +55,6 @@ import org.openelis.remote.AnalyteRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
 
@@ -305,12 +304,10 @@ public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServ
 		if(analyteDO.getParentAnalyteId() == null)
 			rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), null);
 		else{
-			DataSet parentAnalyteSet = new DataSet();
-			NumberObject id = new NumberObject(analyteDO.getParentAnalyteId());
-			StringObject text = new StringObject(analyteDO.getParentAnalyte());
-			parentAnalyteSet.setKey(id);
-			parentAnalyteSet.add(text);
-			rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), parentAnalyteSet);
+            DataModel parentModel = new DataModel();
+            parentModel.add(new NumberObject(analyteDO.getParentAnalyteId()),new StringObject(analyteDO.getParentAnalyte()));
+            ((DropDownField)rpcReturn.getField(Meta.getParentAnalyte().getName())).setModel(parentModel);
+            rpcReturn.setFieldValue(Meta.getParentAnalyte().getName(), parentModel.get(0));
 		}
 	}
 	

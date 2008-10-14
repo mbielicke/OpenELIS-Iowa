@@ -39,6 +39,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -291,7 +292,7 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
             
             blankStringId.setValue("");
-            blankset.addObject(blankStringId);
+            blankset.add(blankStringId);
             
             blankNumberId.setValue(new Integer(0));
             blankset.setKey(blankNumberId);
@@ -312,7 +313,7 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
         
             textObject.setValue(dropdownText);
-            set.addObject(textObject);
+            set.add(textObject);
             
             numberId.setValue(dropdownId);
             set.setKey(numberId);
@@ -372,14 +373,14 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             DataSet row = new DataSet();
             NumberField id = new NumberField(resultDO.getOrderId());
             DateField orderDate = new DateField(Datetime.YEAR, Datetime.DAY, resultDO.getOrderedDate().getDate());
-            DropDownField status = new DropDownField(resultDO.getStatusId());
-            DropDownField shipFrom = new DropDownField(resultDO.getShipFromId());
+            DropDownField status = new DropDownField(new DataSet(new NumberObject(resultDO.getStatusId())));
+            DropDownField shipFrom = new DropDownField(new DataSet(new NumberObject(resultDO.getShipFromId())));
             DropDownField shipTo = new DropDownField();
             StringField description = new StringField(resultDO.getDescription());
             NumberField numberOfDays = new NumberField(resultDO.getNumberOfDays());
             NumberField daysLeft = new NumberField(NumberObject.Type.INTEGER);
             StringField requestedBy = new StringField(resultDO.getRequestedBy());
-            DropDownField costCenter = new DropDownField(resultDO.getCostCenterId());
+            DropDownField costCenter = new DropDownField(new DataSet(new NumberObject(resultDO.getCostCenterId())));
             StringField multUnit = new StringField(resultDO.addressDO.getMultipleUnit());
             StringField streetAddress = new StringField(resultDO.addressDO.getStreetAddress());
             StringField city = new StringField(resultDO.addressDO.getCity());
@@ -389,14 +390,10 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             if(resultDO.getShipToId() == null)
                 shipTo.setValue(null);
             else{
-                DataSet shipToSet = new DataSet();
-                NumberObject shipToId = new NumberObject(NumberObject.Type.INTEGER);
-                StringObject shipToText = new StringObject();
-                shipToId.setValue(resultDO.getShipToId());
-                shipToText.setValue(resultDO.getShipTo());
-                shipToSet.setKey(shipToId);
-                shipToSet.addObject(shipToText);
-                shipTo.setValue(shipToSet);
+                DataModel shipToModel = new DataModel();
+                shipToModel.add(new NumberObject(resultDO.getShipToId()),new StringObject(resultDO.getShipTo()));
+                shipTo.setModel(shipToModel);
+                shipTo.setValue(shipToModel.get(0));
             }
             
             Calendar earlyDate = Calendar.getInstance();
@@ -411,21 +408,21 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             daysLeft.setValue(resultDO.getNumberOfDays() - days);
             
             row.setKey(id);         
-            row.addObject(status);
-            row.addObject(orderDate);
-            row.addObject(shipFrom);
-            row.addObject(shipTo);
-            row.addObject(description);
-            row.addObject(numberOfDays);
-            row.addObject(daysLeft);
-            row.addObject(requestedBy);
-            row.addObject(costCenter);
-            row.addObject(multUnit);
-            row.addObject(streetAddress);
-            row.addObject(city);
-            row.addObject(state);
-            row.addObject(zipCode);
-            
+            row.add(status);
+            row.add(orderDate);
+            row.add(shipFrom);
+            row.add(shipTo);
+            row.add(description);
+            row.add(numberOfDays);
+            row.add(daysLeft);
+            row.add(requestedBy);
+            row.add(costCenter);
+            row.add(multUnit);
+            row.add(streetAddress);
+            row.add(city);
+            row.add(state);
+            row.add(zipCode);
+
             model.add(row);
             i++;
         } 
@@ -444,13 +441,13 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             NumberField orderItemId = new NumberField(itemDO.getId());
             set.setKey(orderItemId);
             StringField itemName = new StringField(itemDO.getInventoryItem());
-            set.addObject(itemName);
+            set.add(itemName);
             NumberField quan = new NumberField(itemDO.getQuantityRequested());
-            set.addObject(quan);
+            set.add(quan);
             StringField loc = new StringField(itemDO.getLocation());
-            set.addObject(loc);
+            set.add(loc);
             NumberField referenceTableId = new NumberField(orderItemReferenceTableId);
-            set.addObject(referenceTableId);            
+            set.add(referenceTableId);            
             
            model.add(set);
         }
