@@ -40,12 +40,9 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoDropdown;
-import org.openelis.gwt.screen.ScreenQueryTableWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -53,29 +50,29 @@ import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoCompleteDropdown;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.EditTable;
 import org.openelis.gwt.widget.table.QueryTable;
-import org.openelis.gwt.widget.table.TableAutoDropdown;
+import org.openelis.gwt.widget.table.TableDropdown;
+import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-public class ProviderScreen extends OpenELISScreenForm implements ClickListener, TabListener{
-
-      
-    
+public class ProviderScreen extends OpenELISScreenForm implements ClickListener, 
+                                                                  TabListener,
+                                                                  TableManager{
+         
     private ScreenVertical svp = null;
     private AppButton removeContactButton, standardNoteButton;
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private ScreenTextArea noteArea = null;
-    private EditTable provAddController = null;    
-    private ScreenAutoDropdown displayType = null;
+    private TableWidget provAddController = null;    
+    private Dropdown displayType = null;
     private KeyListManager keyList = new KeyListManager();
     
     
@@ -99,6 +96,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
            }else
                super.performCommand(action, obj);
         }else{
+            if(action == State.ADD ||action == State.UPDATE){
+                provAddController.model.enableAutoAdd(true);                
+            }else{
+                provAddController.model.enableAutoAdd(false);
+            }
             super.performCommand(action, obj);
         }
     }
@@ -125,7 +127,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
                    
-//      load other widgets
+       //load other widgets
 
         removeContactButton = (AppButton) getWidget("removeAddressButton");
         
@@ -139,15 +141,10 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         //noteTab = (TabPanel)getWidget("provTabPanel");  
         
-        displayType = (ScreenAutoDropdown)widgets.get(ProvMeta.getTypeId());
+        displayType = (Dropdown)getWidget(ProvMeta.getTypeId());
         
-        provAddController = (EditTable)(((TableWidget)getWidget("providerAddressTable")).controller);
-        provAddController.setAutoAdd(false);
-        addCommandListener(provAddController);
-        
-        ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        proAddManager.setProviderForm(this);
-        
+        provAddController = ((TableWidget)getWidget("providerAddressTable"));
+                
         //load dropdowns
        if(typeDropDown == null){
          typeDropDown = (DataModel) initData.get("providers");
@@ -155,31 +152,26 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
          countryDropDown = (DataModel) initData.get("countries");
         } 
                                 
-       ((AutoCompleteDropdown)displayType.getWidget()).setModel(typeDropDown);                                
+       displayType.setModel(typeDropDown);                                
     
        ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-       ScreenQueryTableWidget queryContactTable = (ScreenQueryTableWidget)displayAddressTable.getQueryWidget();
+       provAddController = (TableWidget)displayAddressTable.getWidget();
+       QueryTable queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
        
-       TableAutoDropdown displayContactState = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                    controller.editors[5];
-       displayContactState.setModel(stateDropDown);
-       
-       TableAutoDropdown queryContactState = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[5];
-        queryContactState.setModel(stateDropDown);
+       ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(stateDropDown);
+       ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(stateDropDown);
        
        
-       TableAutoDropdown displayContactCountry = (TableAutoDropdown)((TableWidget)displayAddressTable.getWidget()).
-                                                                                   controller.editors[6];
-       displayContactCountry.setModel(countryDropDown);
-       
-       TableAutoDropdown queryContactCountry = (TableAutoDropdown)((QueryTable)queryContactTable.getWidget()).editors[6];
-       queryContactCountry.setModel(countryDropDown);              
-        
-
+       ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countryDropDown);
+       ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countryDropDown);                      
   
        updateChain.add(afterUpdate);
        
        super.afterDraw(success);
+       
+       ((FormRPC)rpc.getField("addresses")).setFieldValue("providerAddressTable",
+                                                         provAddController.model.getData());
+
     }
     
        
@@ -192,9 +184,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
             standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
             
             provId.enable(false);
-                           
-            
-            //      set focus to the last name field
+                                       
+            //set focus to the last name field
             lastName.setFocus(true);
         }
            
@@ -222,10 +213,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         svp.clear();
         
-        provAddController.setAutoAdd(true);
+        //provAddController.setAutoAdd(true);
          
-        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        //proAddManager.disableRows = false;
         super.add();     
         
         noteArea.enable(true);
@@ -237,24 +226,8 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     }
 
     public void update() {                        
-        
-        
-        //ProviderAddressesTable proAddManager = (ProviderAddressesTable)provAddController.manager;
-        //proAddManager.disableRows = false;
-        
         noteArea.enable(true);
         super.update();      
-    }
-
-    public void abort(){      
-        
-      provAddController.setAutoAdd(false);      
-      
-      
-      //the super needs to ge before the load tabs method or the table wont load.
-      super.abort();
-      
-                                
     }
     
     public Request commitQuery(FormRPC rpcQuery){
@@ -273,7 +246,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         
         standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
         
-        provAddController.setAutoAdd(false);
         
     }
     
@@ -291,6 +263,40 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
     	// TODO Auto-generated method stub
     	
+    }
+    
+    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+
+    public boolean canAutoAdd(TableWidget widget,DataSet row) {        
+        return row.get(0).getValue() != null && !row.get(0).getValue().equals("");
+    }
+
+
+
+    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+
+    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+
+
+    public boolean canSelect(TableWidget widget,DataSet set, int row) {
+        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE || state == FormInt.State.QUERY){      
+            return true;
+        } 
+        return false;
     }
     
     private void getProviders(String query) {
@@ -360,21 +366,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     }
     
     private void onRemoveRowButtonClick(){
-    	int selectedRow = provAddController.selected;
-         if (selectedRow > -1
-                 && provAddController.model.numRows() > 0) {
-             TableRow row = provAddController.model.getRow(selectedRow);
-             
-             provAddController.model.hideRow(row);
-             // delete the last row of the table because it is autoadd
-             //provAddController.model.deleteRow(provAddController.model.numRows() - 1);
-             // reset the model
-             provAddController.reset();
-             // need to set the deleted flag to "Y" also
-             StringField deleteFlag = new StringField();
-             deleteFlag.setValue("Y");
-
-             row.addHidden("deleteFlag", deleteFlag);
-         }  
+        provAddController.model.deleteRow(provAddController.model.getData().getSelectedIndex());          
     }
 }

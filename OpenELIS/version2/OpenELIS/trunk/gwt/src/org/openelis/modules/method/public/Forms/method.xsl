@@ -29,7 +29,8 @@ UIRF Software License are applicable instead of those above.
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"                
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap"                
+                xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap" 
+                xmlns:methodAnalyte="xalan://org.openelis.metamap.MethodAnalyteMetaMap"               
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -41,11 +42,14 @@ UIRF Software License are applicable instead of those above.
 	</xalan:component>
 	<xalan:component prefix="meta">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.MethodMetaMap"/>
+	</xalan:component>
+	<xalan:component prefix="methodAnalyte">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.MethodAnalyteMetaMap"/>
 	</xalan:component>	
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="method" select="meta:new()"/>
-	   
+	   <xsl:variable name="ma" select="meta:getMethodAnalyte($method)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -152,7 +156,7 @@ UIRF Software License are applicable instead of those above.
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
 								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "70px"/>
 								</row>						
-						     </TablePanel>	
+						     </TablePanel>						    	
 						</VerticalPanel>   			
 					</VerticalPanel>					
 				</HorizontalPanel>
@@ -164,7 +168,7 @@ UIRF Software License are applicable instead of those above.
 			 <date key="{meta:getActiveBegin($method)}" begin="0" end="2" required="true"/>
 			 <date key="{meta:getActiveEnd($method)}" begin="0" end="2" required="true"/>
 			 <string key="{meta:getDescription($method)}" max="60" required="false"/>
-			 <string key="{meta:getReportingDescription($method)}" max="60" required="false"/>			 			 					
+			 <string key="{meta:getReportingDescription($method)}" max="60" required="false"/>			 			 								 
 		  </rpc>
 		  <rpc key="query">
 			 <queryNumber key="{meta:getId($method)}"  type="integer"/>

@@ -340,7 +340,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
                         DataSet relEntrySet = new DataSet();
                         NumberObject idObj = new NumberObject(dictDO.getRelatedEntryId());
                         StringObject text = new StringObject(dictDO.getRelatedEntryText());
-                        relEntrySet.setKey(id);
+                        relEntrySet.setKey(idObj);
                         relEntrySet.add(text);
                         row.get(4).setValue(relEntrySet);
                     }
@@ -500,21 +500,19 @@ public class DictionaryService implements AppScreenFormServiceInt,
          
            dictDO.setSystemName(sysName);           
            dictDO.setEntry(entry);  
-           NumberField id = (NumberField)((DataMap)row.getData()).get("id");                 
-         
-            StringField deleteFlag = (StringField)((DataMap)row.getData()).get("deleteFlag");
-              if(deleteFlag == null){
-                dictDO.setDelete(false);
-              }else{
-              dictDO.setDelete("Y".equals(deleteFlag.getValue()));
-             }
-         
-             if(id!=null){
-              if(id.getValue()!=null){
-                dictDO.setId((Integer)id.getValue());
+           NumberField id = null;
+           if(row.getData()!=null)
+             id = (NumberField)((DataMap)row.getData()).get("id");           
+           
+           if(id!=null){
+               if(id.getValue()!=null){
+                 dictDO.setId((Integer)id.getValue());
+               } 
               } 
-             } 
          
+           
+            dictDO.setDelete(false);
+                                            
             
              DropDownField relEntryId = (DropDownField)row.get(4); 
               if(relEntryId!=null){
@@ -530,6 +528,44 @@ public class DictionaryService implements AppScreenFormServiceInt,
              dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));         
              dictDOList.add(dictDO);             
           }
+        for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){
+            
+            DataSet row = (DataSet)dictEntryTable.getDeletions().get(iter);
+            DictionaryDO dictDO = new DictionaryDO();
+                             
+            String sysName = (String)((StringField)row.get(1)).getValue();
+            String entry = (String)((StringField)row.get(3)).getValue();
+            
+              dictDO.setSystemName(sysName);           
+              dictDO.setEntry(entry);  
+              NumberField id = null;
+              if(row.getData()!=null)
+                id = (NumberField)((DataMap)row.getData()).get("id");           
+              
+              if(id!=null){
+                  if(id.getValue()!=null){
+                    dictDO.setId((Integer)id.getValue());
+                  } 
+                 } 
+            
+              
+               dictDO.setDelete(false);
+                                               
+               
+                DropDownField relEntryId = (DropDownField)row.get(4); 
+                 if(relEntryId!=null){
+                    if(relEntryId.getValue()!=null){
+                      dictDO.setRelatedEntryId((Integer)relEntryId.getValue());
+                    }
+                   }
+                        
+                 CheckField isActive =  (CheckField)row.get(0);              
+                 dictDO.setIsActive((String)isActive.getValue());
+                 
+                dictDO.setCategory(categoryId);         
+                dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));         
+                dictDOList.add(dictDO);             
+             }
         
         return dictDOList;
     }

@@ -74,8 +74,8 @@ xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metada
 xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
- 					<CollapsePanel key="collapsePanel">
-						<azTable height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
+ 					<CollapsePanel key="collapsePanel" height="435px">
+						<azTable maxRows="18" tablewidth="auto" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -129,8 +129,10 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		<!--end button panel-->
    
    <VerticalPanel  height = "5px"/>
+   <HorizontalPanel padding="0" spacing="0">
+   <HorizontalPanel width = "10px"/>
    <VerticalPanel>
-   <TablePanel key= "secMod" width = "450px" style= "Form">
+   <TablePanel width = "450px" style= "Form">
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
       <textbox  width= "50px"  key = "{meta:getId($pro)}"  tab="{meta:getLastName($pro)},{meta:getNpi($pro)}"/>                
@@ -139,7 +141,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/>:</text> 
       <textbox key = "{meta:getLastName($pro)}" max="30" width= "215px" case = "upper" tab="{meta:getFirstName($pro)},{meta:getId($pro)}"/>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
-	  <autoDropdown key="{meta:getTypeId($pro)}" case="mixed" width="80px" tab="{meta:getNpi($pro)},{meta:getMiddleName($pro)}"/>							
+	  <dropdown key="{meta:getTypeId($pro)}" case="mixed" width="80px" tab="{meta:getNpi($pro)},{meta:getMiddleName($pro)}"/>							
     </row>
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/>:</text>
@@ -153,11 +155,11 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
     </row>
    </TablePanel>
    
-    <TabPanel height= "200px" key= "provTabPanel"  halign="center" >
+    <TabPanel height= "200px" key= "provTabPanel"  halign="center">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel spacing= "0" padding="0" overflow="hidden">
+      <VerticalPanel spacing= "0" padding="0">
        <widget valign="top">
-        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false" showScroll="true">
+        <table width= "600px" maxRows = "9" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -166,13 +168,13 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
 		 <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
 		 <editors>
-		  <textbox case= "mixed" max="50" />
+		  <textbox case= "mixed" max="50"/>
 		  <textbox case= "mixed" max="10"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>		  
-			<autoDropdown  case="upper" width="45px"/>
-			<autoDropdown case="mixed" width="110px"/>
+			<dropdown  case="upper" width="45px"/>
+			<dropdown case="mixed" width="110px"/>
 			<textbox case= "mixed" max="10"/>
 			<textbox case= "mixed" max="21"/>
 			<textbox case= "mixed" max="16"/>
@@ -200,7 +202,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "574px" maxRows = "9" title = "" showError="false" showScroll="true">
+	     <queryTable width= "618px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -214,8 +216,8 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>		  
-			<autoDropdown case="upper"  width="45px" multiSelect = "true"/>
-			<autoDropdown case="mixed" width="110px" multiSelect = "true"/>
+			<dropdown case="upper"  width="45px" multiSelect = "true"/>
+			<dropdown case="mixed" width="110px" multiSelect = "true"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -224,13 +226,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 			<textbox case= "mixed"/>		 
 		</editors>
 		<fields>
-		  <xsl:value-of select='location:getLocation($loc)'/>,<xsl:value-of select='location:getExternalId($loc)'/>,
-		  <xsl:value-of select='addr:getMultipleUnit($locAddr)'/>,<xsl:value-of select='addr:getStreetAddress($locAddr)'/>,
-		  <xsl:value-of select='addr:getCity($locAddr)'/>,<xsl:value-of select='addr:getState($locAddr)'/>,
-		  <xsl:value-of select='addr:getCountry($locAddr)'/>,<xsl:value-of select='addr:getZipCode($locAddr)'/>,
-		  <xsl:value-of select='addr:getWorkPhone($locAddr)'/>,<xsl:value-of select='addr:getHomePhone($locAddr)'/>,
-		  <xsl:value-of select='addr:getCellPhone($locAddr)'/>,<xsl:value-of select='addr:getFaxPhone($locAddr)'/>,
-		  <xsl:value-of select='addr:getEmail($locAddr)'/>																				
+		  <xsl:value-of select='location:getLocation($loc)'/>,<xsl:value-of select='location:getExternalId($loc)'/>,<xsl:value-of select='addr:getMultipleUnit($locAddr)'/>,<xsl:value-of select='addr:getStreetAddress($locAddr)'/>,<xsl:value-of select='addr:getCity($locAddr)'/>,<xsl:value-of select='addr:getState($locAddr)'/>,<xsl:value-of select='addr:getCountry($locAddr)'/>,<xsl:value-of select='addr:getZipCode($locAddr)'/>,<xsl:value-of select='addr:getWorkPhone($locAddr)'/>,<xsl:value-of select='addr:getHomePhone($locAddr)'/>,<xsl:value-of select='addr:getCellPhone($locAddr)'/>,<xsl:value-of select='addr:getFaxPhone($locAddr)'/>,<xsl:value-of select='addr:getEmail($locAddr)'/>																				
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
@@ -253,7 +249,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   </tab>
   
   <tab key="notesTab" text="{resource:getString($constants,'note')}">
-						<VerticalPanel key="secMod3" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
+						<VerticalPanel key="secMod3" width= "618px" height="164px" spacing="0" padding="0" xsi:type="Panel">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 										<row>
 										
@@ -283,7 +279,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="545px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="142px" width="545px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>
@@ -293,8 +289,9 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
 						</VerticalPanel>
 					</tab>
    </TabPanel>   
-  
   </VerticalPanel>
+  <HorizontalPanel width = "10px"/>
+  </HorizontalPanel>
  </VerticalPanel>
  </HorizontalPanel>
 </display>
@@ -339,6 +336,7 @@ xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xal
   <queryString key="{addr:getFaxPhone($locAddr)}" required="false"/>
   <queryString key="{addr:getEmail($locAddr)}" required="false"/>
   <dropdown key="{addr:getCountry($locAddr)}" required="false"/>
+  <model key="providerAddressTable"/>
 </rpc>
 
 <rpc key="queryByLetter">

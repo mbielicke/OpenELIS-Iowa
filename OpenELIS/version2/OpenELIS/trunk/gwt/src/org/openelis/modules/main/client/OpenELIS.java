@@ -42,13 +42,13 @@ import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.QueryCheckField;
 import org.openelis.gwt.common.data.QueryDateField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.common.data.TreeField;
 import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
@@ -82,6 +82,7 @@ import org.openelis.gwt.screen.ScreenText;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenTitledPanel;
+import org.openelis.gwt.screen.ScreenTreeWidget;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindowBrowser;
 import org.openelis.gwt.widget.HoverListener;
@@ -95,6 +96,7 @@ import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableTextBox;
+import org.openelis.gwt.widget.tree.TableTree;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -285,6 +287,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClass(new String[] {ScreenTreeWidget.class.getName(),ScreenTreeWidget.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenTreeWidget();
+                                      else if(args[0] instanceof Node)
+                                          return new ScreenTreeWidget((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
       ClassFactory.addClass(new String[] {ScreenText.class.getName(),ScreenText.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
@@ -402,6 +414,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                           return new TableDragLabel();
                                       else if(args[0] instanceof Node)
                                           return new TableDragLabel((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
+      });
+      ClassFactory.addClass(new String[] {TableTree.class.getName(),TableTree.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new TableTree();
+                                      else if(args[0] instanceof Node)
+                                          return new TableTree((Node)args[0]);
                                       return null;
                                   }
       });
@@ -526,13 +548,13 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {PagedTreeField.class.getName(),PagedTreeField.TAG_NAME},
+      ClassFactory.addClass(new String[] {TreeField.class.getName(),TreeField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new PagedTreeField();
+                                          return new TreeField();
                                       else if (args[0] instanceof Node)
-                                          return new PagedTreeField((Node)args[0]);
+                                          return new TreeField((Node)args[0]);
                                       return null;
                                   }
       });

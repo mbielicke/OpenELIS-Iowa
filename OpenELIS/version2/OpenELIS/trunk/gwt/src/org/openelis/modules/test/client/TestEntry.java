@@ -44,37 +44,7 @@ public class TestEntry implements AppModule {
                                       return new TestScreen();
                                   }
            }
-       );
-        
-        ClassFactory.addClass(new String[] {"TestPrepTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new TestPrepTable();
-                                  }
-           }
-       );
-        
-        ClassFactory.addClass(new String[] {"SampleTypeTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new SampleTypeTable();
-                                  }
-           }
-       );
-        ClassFactory.addClass(new String[] {"TestReflexTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new TestReflexTable();
-                                  }
-           }
-       );
-        ClassFactory.addClass(new String[] {"TestWorksheetItemTable"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new TestWorksheetItemTable();
-                                  }
-           }
-       ); 
+       );       
         
 
     }

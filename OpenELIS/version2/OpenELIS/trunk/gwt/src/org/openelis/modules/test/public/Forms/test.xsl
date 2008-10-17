@@ -278,12 +278,42 @@ UIRF Software License are applicable instead of those above.
 							  </VerticalPanel>							  							 
 							</tab>
 							<tab key="analyteTab" text="{resource:getString($constants,'testAnalyte')}">
-							<HorizontalPanel>
-							<VerticalPanel style="Form">
-							 <VerticalPanel key="treeContainer" height="250px" width="375px" overflow="auto">
-							  <pagedtree key="analyteTree" vertical="true" height = "200px" width = "325px" itemsPerPage="1000" title=""/>			                   			
-							 </VerticalPanel>
-							<HorizontalPanel> 			                    
+							 <VerticalPanel overflow = "auto" key="treeContainer">
+							  <widget>
+                                <tree-table key="analyteTree"  width="auto" showScroll="ALWAYS" maxRows="7" enable="true">
+                                 <headers>
+                                  ,
+                                  <xsl:value-of select="resource:getString($constants,'analyte')"/>,													
+								  <xsl:value-of select="resource:getString($constants,'type')"/>,
+								  <xsl:value-of select="resource:getString($constants,'reportable')"/>,
+								  <xsl:value-of select="resource:getString($constants,'scriptlet')"/>,
+								  <xsl:value-of select="resource:getString($constants,'resultGroup')"/>
+                                 </headers>
+                                 <widths>80,150,110,40,200,20</widths>
+                                  <editors>
+                                    <tree/>
+                                    <!--<autoComplete cat="analyte" case="mixed" width="140px">												
+										 <widths>123</widths>
+									</autoComplete>-->
+									<!--<textbox/>-->
+									<dropdown case="mixed" width = "1400px" type = "integer"/>
+                                    <dropdown case="mixed" width = "100px" type = "integer"/> 
+                                    <check/>  
+                                    <dropdown case="mixed" width = "190px" type = "integer"/>
+                                    <textbox/>
+                                  </editors>
+                                  <fields>
+                                   <string key="tree"/>
+                                   <dropdown key="one"/>
+                                   <dropdown key="two"/>
+                                   <!--<string key="one"/>-->
+                                   <check key = "three"/> 
+                                   <dropdown key="four" />
+                                   <number key="five"/>
+                                  </fields>
+                                </tree-table>
+                              </widget>                              						 
+							 <HorizontalPanel> 			                    
 								<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">
 												<HorizontalPanel>
@@ -291,23 +321,30 @@ UIRF Software License are applicable instead of those above.
 													<text><xsl:value-of select="resource:getString($constants,'addAnalyte')"/></text>
 												</HorizontalPanel>
 											</appButton>
-										</widget>	
+								</widget>	
 								<widget halign="center" style="WhiteContentPanel">
-											<appButton action="removeIdentifierRow" key="removeAnalyteButton" onclick="this" style="Button">
+											<appButton action="removeIdentifierRow" key="addGroupButton" onclick="this" style="Button">
 												<HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
-													<text><xsl:value-of select="resource:getString($constants,'removeAnalyte')"/></text>
+													<text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>
 												</HorizontalPanel>
 											</appButton>
-										</widget>							
-							 </HorizontalPanel>
-							</VerticalPanel>							
-						  </HorizontalPanel>	 
-							</tab>
-							<tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
+								</widget>		
+								<widget halign="center" style="WhiteContentPanel">
+											<appButton action="removeIdentifierRow" key="deleteButton" onclick="this" style="Button">
+												<HorizontalPanel>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
+													<text><xsl:value-of select="resource:getString($constants,'delete')"/></text>
+												</HorizontalPanel>
+											</appButton>
+								</widget>																	
+							 </HorizontalPanel>										                   			
+							</VerticalPanel>	 
+						  </tab>
+						  <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
 							 <VerticalPanel>
-							   <VerticalPanel overflow="hidden" padding="0" spacing="0">							    						     	
-							 		<VerticalPanel overflow="hidden" padding="0" spacing="0">
+							   <VerticalPanel padding="0" spacing="0">							    						     	
+							 		<VerticalPanel padding="0" spacing="0">
 										<widget valign="top">
 											<table key="testPrepTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
@@ -357,7 +394,7 @@ UIRF Software License are applicable instead of those above.
 						                 </appButton>
 						                </widget>
 						                
-						              <widget valign="top">
+						      <widget valign="top">
 							   <table key="testReflexTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'reflexiveTest')"/>,
@@ -608,6 +645,9 @@ UIRF Software License are applicable instead of those above.
 			 <number key="{testWrksht:getBatchCapacity($tws)}" required="true" type="integer"/>
 			 <number key="{testWrksht:getTotalCapacity($tws)}" required="true" type="integer"/>
 		 	 <table key="worksheetTable"/>
+			</rpc>
+			<rpc key = "testAnalyte">
+			 <tree key = "analyteTree"/> 
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
