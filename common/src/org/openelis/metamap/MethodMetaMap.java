@@ -35,17 +35,17 @@ public class MethodMetaMap extends MethodMeta implements MetaMap {
     }
             
     public MethodMetaMap(String path){
-        super(path);        
-        
-    }
-
-    public boolean hasColumn(String name){                
-        return super.hasColumn(name);
+        super(path);               
     }
     
-    public String buildFrom(String name) {        
-        String from = "Method m ";        
-        return from;
+    public boolean hasColumn(String name){                             
+        return super.hasColumn(name);
     }
+        
+    
+    public String buildFrom(String name) {        
+        return "Method";                        
+    }
+        
 
 }
