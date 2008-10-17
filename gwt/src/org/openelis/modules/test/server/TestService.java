@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.QaEventTestDropdownDO;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
@@ -62,6 +63,8 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 
@@ -465,6 +468,9 @@ public class TestService implements AppScreenFormServiceInt {
         DataModel testWSItemTypeDropDownField = (DataModel)CachingManager.getElement("InitialData",
                                                                           "testWSItemTypeDropDown");
         
+        DataModel testAnalyteTypeDropDownField = (DataModel)CachingManager.getElement("InitialData",
+                                                   "testAnalyteTypeDropDown");
+        
         if (methodDropDownField == null) {
             methodDropDownField = getInitialModel("method");
             CachingManager.putElement("InitialData",
@@ -564,6 +570,14 @@ public class TestService implements AppScreenFormServiceInt {
                                         testWSItemTypeDropDownField);
           
           }
+        
+        if (testAnalyteTypeDropDownField == null) {           
+            testAnalyteTypeDropDownField = getInitialModel("testAnalyteType");  
+            CachingManager.putElement("InitialData",
+                                        "testAnalyteTypeDropDown",
+                                        testAnalyteTypeDropDownField);
+          
+          }
 
         HashMap<String, DataObject> map = new HashMap<String, DataObject>();
         map.put("xml", xml);
@@ -580,6 +594,7 @@ public class TestService implements AppScreenFormServiceInt {
         map.put("testReflexFlags", testReflexFlagsDropDownField);
         map.put("testWSNumFormats", testWSNumFormatDropDownField);
         map.put("testWSItemTypes", testWSItemTypeDropDownField);
+        map.put("testAnalyteTypes", testAnalyteTypeDropDownField);
         return map;
     }
 
@@ -754,6 +769,8 @@ public class TestService implements AppScreenFormServiceInt {
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
         }else if (cat.equals("testWSItemType")) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
+        }else if (cat.equals("testAnalyteType")) {            
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_analyte_type"));
         }else if (cat.equals("section")) {
             SystemUserUtilRemote utilRemote = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
             List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
@@ -1379,6 +1396,80 @@ public class TestService implements AppScreenFormServiceInt {
         
     }
     
+    private void fillAnalyteTree(List<TestAnalyteDO> analyteDOList, FormRPC rpcReturn){
+        TreeDataModel model =  (TreeDataModel)((FormRPC)rpcReturn.getField("testAnalyte")).getFieldValue("analyteTree");
+        TreeDataItem currGroupItem = null;
+        for(int iter = 0 ; iter < analyteDOList.size(); iter++){            
+            Integer analyteGroup = new Integer(-999);
+            boolean newGroup = true;
+            int numGroups = 0;
+            TestAnalyteDO analyteDO = analyteDOList.get(iter);
+            if(analyteDO.getAnalyteGroup()!=null){
+             //if(analyteGroup.equals(analyteDO.getAnalyteGroup())){ 
+                              
+                  if(analyteGroup.equals(analyteDO.getAnalyteGroup())){                      
+                      currGroupItem.addItem(createAnalyteNode(analyteDO));
+                  }else{
+                      //if(currGroupItem == null){  
+                          currGroupItem = createGroupNode(numGroups,model);
+                          numGroups++;
+                          model.add(currGroupItem);                          
+                      //}
+                      currGroupItem.addItem(createAnalyteNode(analyteDO));
+                  }                  
+                                         
+              analyteGroup = analyteDO.getAnalyteGroup();
+            //}
+            //else{
+              //  analyteGroup = analyteDO.getAnalyteGroup();                
+                //currGroupItem = null;
+            //}
+          }else{
+              model.add(createAnalyteNode(analyteDO));
+          }    
+        }
+    }
+    
+    private TreeDataItem createAnalyteNode(TestAnalyteDO analyteDO){
+      TreeDataItem item = new TreeDataItem();
+        item.setLabel(new StringObject(""));       
+        /*DataSet set = new DataSet();
+        set.setKey(new NumberField(-1));
+        set.add(new StringField(""));
+        DropDownField field = new DropDownField();
+        field.add(set);
+        field.getSelections().add(set);
+        item.add(field);*/
+        item.add(new DropDownField(new DataSet(new NumberField(analyteDO.getAnalyteId()))));
+        item.add(new DropDownField(new DataSet(new NumberField(analyteDO.getTypeId()))));
+        CheckField chfield = new CheckField();
+        chfield.setValue(analyteDO.getIsReportable());
+        item.add(chfield);
+        item.add(new DropDownField(new DataSet(new NumberField(analyteDO.getScriptletId()))));         
+        //item.add(new DataSet(new NumberObject(-1)));
+        item.add(new NumberField(analyteDO.getResultGroup()));       
+        return item;
+    }
+    
+    private TreeDataItem createGroupNode(int id ,TreeDataModel model){
+        TreeDataItem item = model.createTreeItem(new NumberObject(id));
+          item.setLabel(new StringObject("Group"));       
+          /*DataSet set = new DataSet();
+          set.setKey(new NumberField(-1));
+          set.add(new StringField(""));
+          DropDownField field = new DropDownField();
+          field.add(set);
+          field.getSelections().add(set);
+          item.add(field);*/
+          item.add(new DropDownField(new DataSet(new NumberField(-1))));
+          item.add(new DropDownField(new DataSet(new NumberField(-1))));          
+          item.add(new CheckField());
+          item.add(new DropDownField(new DataSet(new NumberField(-1))));         
+          //item.add(new DataSet(new NumberObject(-1)));
+          item.add(new NumberField());       
+          return item;
+      }
+        
 
     private TestIdNameMethodIdDO getTestIdNameMethodIdDOFromRPC(FormRPC rpcSend) {
         NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());

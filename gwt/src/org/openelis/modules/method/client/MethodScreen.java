@@ -57,7 +57,12 @@ public class MethodScreen extends OpenELISScreenForm implements
     private MethodMetaMap MethodMeta = new MethodMetaMap();
 
     //private ScreenTextBox methodId;
-    private TextBox methodName;
+    private TextBox methodName;         
+    
+    //private TreeWidget analyteTreeController = null;
+    
+    //private AppButton deleteButton,addAnalyteButton,addGroupButton; 
+    
     
     public MethodScreen() {
         super("org.openelis.modules.method.server.MethodService",!loaded);
@@ -76,7 +81,13 @@ public class MethodScreen extends OpenELISScreenForm implements
     }
     
     public void onClick(Widget sender) {
-        // TODO Auto-generated method stub
+      /*if(sender == addAnalyteButton){
+          onAddAnalyteButtonClicked();
+      }else if(sender == addGroupButton){
+          addGroupButtonClicked();
+      }else if(sender == deleteButton){
+          
+      } */       
 
     }
 
@@ -116,8 +127,14 @@ public class MethodScreen extends OpenELISScreenForm implements
         bpanel.enableButton("delete", false);
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        updateChain.add(afterUpdate);
+        /*deleteButton = (AppButton)getWidget("deleteButton");
+        addAnalyteButton = (AppButton)getWidget("addAnalyteButton");
+        addGroupButton = (AppButton)getWidget("addGroupButton");
         
+        ScreenTreeWidget analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
+        analyteTreeController = (TreeWidget)analyteTree.getWidget();*/
+         
+        updateChain.add(afterUpdate);               
         super.afterDraw(success);
     }
     
@@ -125,6 +142,9 @@ public class MethodScreen extends OpenELISScreenForm implements
         super.query();
         //methodId.setFocus(true);
         methodName.setFocus(true);
+        //deleteButton.changeState(ButtonState.DISABLED);
+        //addAnalyteButton.changeState(ButtonState.DISABLED);
+        //addGroupButton.changeState(ButtonState.DISABLED);
     }
     
     public void add() {
@@ -134,14 +154,6 @@ public class MethodScreen extends OpenELISScreenForm implements
         
     }
   
-    protected AsyncCallback afterAdd = new AsyncCallback() {
-        public void onFailure(Throwable caught) {   
-        }
-        public void onSuccess(Object result) {
-            //methodId.enable(false);
-            methodName.setFocus(true);                        
-        }
-    };
     
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {   
@@ -159,5 +171,18 @@ public class MethodScreen extends OpenELISScreenForm implements
             commitQuery(rpc);
         }
     }
+    
+
+    
+    /*private void addGroupButtonClicked(){
+        TreeDataItem item = new TreeDataItem();
+        item.setLabel(new StringObject("Group"));
+        item.add(new DataSet(new NumberField(0)));
+        item.add(new DataSet(new StringField("")));
+        item.add(new NumberField(0));          
+        analyteTreeController.model.addRow(item);
+    }*/
+    
+    
 
 }

@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -44,11 +45,13 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.FormInt.State;
+import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm implements ClickListener{
+public class DictionaryScreen extends OpenELISScreenForm implements ClickListener, TableManager{
 
     private TableWidget dictEntryController = null;
     private AppButton removeEntryButton = null;
@@ -59,6 +62,8 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     private static boolean loaded = false;
     
     private static DataModel sectionDropDown = null;
+    
+    private DataSet relEntryRow = null;
 
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
@@ -70,9 +75,14 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
            String baction = ((AppButton)obj).action;           
            if (baction.startsWith("query:")) {
                getCategories(baction.substring(6, baction.length()));
-           }else
+           }else               
                super.performCommand(action, obj);
         } else{
+            if(action == State.ADD ||action == State.UPDATE){
+                dictEntryController.model.enableAutoAdd(true);
+             }else{
+                dictEntryController.model.enableAutoAdd(false); 
+             }
             super.performCommand(action, obj);
         }
     }
@@ -141,10 +151,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());;       
     }
     
-    public void setRelatedEntryId(Integer entryId){
-        NumberField relEntryId = new NumberField(entryId); 
-        
-        //relEntryRow.addHidden("relEntryId", relEntryId);        
+    private void setRelatedEntryId(Integer entryId){
+        NumberField relEntryId = new NumberField(entryId);         
+        ((DataMap)relEntryRow.getData()).put("relEntryId", relEntryId);        
     }    
             
 
@@ -162,7 +171,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
 
     public boolean canAutoAdd(TableWidget widget,DataSet row) {        
-        return row.get(0).getValue() != null && !row.get(0).getValue().equals(0);
+        return row.get(0).getValue() != null;
     }
 
 
@@ -172,15 +181,16 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
 
-    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+        if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
+            return true;       
+           return false;
+       }
 
-
-    public boolean canSelect(TableWidget widget,DataSet set, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+       public boolean canSelect(TableWidget widget, DataSet set, int row) {
+        if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
+            return true;       
+           return false;
+       }
     
 }
