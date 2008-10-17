@@ -37,18 +37,21 @@ public class TestResultMeta implements Meta {
 	private static final String entityName = "TestResult";
 	
 	private static final String
-              ID					="id",
+              ID					    ="id",
               TEST_ID					="testId",
-              RESULT_GROUP_ID					="resultGroupId",
-              FLAG_ID					="flagId",
+              RESULT_GROUP_ID			="resultGroupId",
+              SORT_ORDER                ="sortOrder",       
+              FLAGS_ID					="flagsId",
               TYPE_ID					="typeId",
-              VALUE					="value",
-              SIGNIFICANT_DIGITS					="significantDigits",
-              QUANT_LIMIT					="quantLimit",
-              CONT_LEVEL					="contLevel";
+              VALUE					    ="value",
+              SIGNIFICANT_DIGITS		="significantDigits",
+              ROUNDING_METHOD_ID        ="roundingMethodId", 
+              QUANT_LIMIT				="quantLimit",
+              CONT_LEVEL				="contLevel",
+              HAZARD_LEVEL              ="hazardLevel";
 
   	private static final String[] columnNames = {
-  	  ID,TEST_ID,RESULT_GROUP_ID,FLAG_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,QUANT_LIMIT,CONT_LEVEL};
+  	  ID,TEST_ID,RESULT_GROUP_ID,SORT_ORDER,FLAGS_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,ROUNDING_METHOD_ID,QUANT_LIMIT,CONT_LEVEL,HAZARD_LEVEL};
   	  
 	private HashSet<String> columnHashList;
     
@@ -93,8 +96,8 @@ public class TestResultMeta implements Meta {
         return path + RESULT_GROUP_ID;
     } 
 
-    public String getFlagId() {
-        return path + FLAG_ID;
+    public String getFlagsId() {
+        return path + FLAGS_ID;
     } 
 
     public String getTypeId() {
@@ -108,6 +111,10 @@ public class TestResultMeta implements Meta {
     public String getSignificantDigits() {
         return path + SIGNIFICANT_DIGITS;
     } 
+    
+    public String getRoundingMethodId() {
+        return path + SIGNIFICANT_DIGITS;
+    }
 
     public String getQuantLimit() {
         return path + QUANT_LIMIT;
@@ -116,6 +123,10 @@ public class TestResultMeta implements Meta {
     public String getContLevel() {
         return path + CONT_LEVEL;
     } 
+    
+    public String getHazardLevel() {
+        return path + HAZARD_LEVEL;
+    }
 
   
 }   

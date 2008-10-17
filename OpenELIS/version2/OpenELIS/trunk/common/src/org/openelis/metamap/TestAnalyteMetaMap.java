@@ -23,37 +23,27 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.metamap;
 
-import java.util.HashMap;
-import java.util.List;
+import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.TestAnalyteMeta;
 
-import javax.ejb.Remote;
+public class TestAnalyteMetaMap extends TestAnalyteMeta implements MetaMap {
 
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.PanelItemDO;
+    public String buildFrom(String where) {        
+        return "TestAnalyte ";
+    }
 
-@Remote
-public interface PanelRemote {
-
-    public PanelDO getPanel(Integer panelId);
-    
-    public PanelDO getPanelAndUnlock(Integer panelId,String session);
-    
-    public PanelDO getPanelAndLock(Integer panelId,String session)throws Exception;
+    public TestAnalyteMetaMap() {
+        super();
+    }
    
-    public List<PanelItemDO> getPanelItems(Integer panelId);
+    public TestAnalyteMetaMap(String path){
+        super(path);
+    }
     
-    public Integer updatePanel(PanelDO panelDO, List<PanelItemDO> panelItemDOList)throws Exception;
-    
-    public List query(HashMap fields, int first, int max) throws Exception;
-    
-    public void deletePanel(Integer panelId)throws Exception;
-    
-    public List validateForUpdate(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
-    
-    public List validateForAdd(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
-    
-    public List getTestMethodNames();
-    
+    public boolean hasColumn(String name) {
+        return super.hasColumn(name);
+    }
+
 }
