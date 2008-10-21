@@ -506,6 +506,9 @@ public class OrderBean implements OrderRemote{
     }
     
     private void validateOrderItems(OrderItemDO orderItemDO, int rowIndex, List exceptionList){
+        if(orderItemDO.getDelete())
+            return;
+        
         //quantity is required for all order types
         if(orderItemDO.getQuantityRequested() == null || "".equals(orderItemDO.getQuantityRequested())){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getQuantityRequested()));
