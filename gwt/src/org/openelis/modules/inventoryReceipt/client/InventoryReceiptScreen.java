@@ -26,10 +26,10 @@
 package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataMap;
@@ -58,7 +58,9 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormCalendarWidget;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableModelEvents;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableModelListener;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -67,15 +69,13 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, TableWidgetListener, AutoCompleteCallInt {
+public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
     
     private TableWidget receiptsTable;
     private boolean doAutoAdd = true;
-    private boolean startedLoadingTable = false;
     
     private AppButton        removeReceiptButton;
     private TextBox orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText,
@@ -163,6 +163,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         receiptsTable = (TableWidget)getWidget("receiptsTable");
         receiptsTable.model.enableAutoAdd(false);
         receiptsTable.addTableWidgetListener(this);
+        receiptsTable.model.addTableModelListener(this);
         
         atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -176,6 +177,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         formChain.addCommand(atozButtons);
         
         super.afterDraw(sucess);
+        
+        rpc.setFieldValue("receiptsTable", receiptsTable.model.getData());
     }
     
     public void add() {
@@ -328,7 +331,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             DataMap map = (DataMap)tableRow.getData();
             CheckField disableOrderId = null;
             
-            if(tableRow != null)
+            if(tableRow != null && tableRow.getData() != null)
                 disableOrderId = (CheckField)map.get("disableOrderId");
             
             //order id is disabled on auto created rows
@@ -340,7 +343,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             DataMap map = (DataMap)tableRow.getData();
             CheckField disableUpc = null;
             
-            if(tableRow != null)
+            if(tableRow != null && tableRow.getData() != null)
                 disableUpc = (CheckField)map.get("disableUpc");
             
             //upc is disabled on auto created rows
@@ -352,7 +355,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             DataMap map = (DataMap)tableRow.getData();
             CheckField disableInvItem = null;
             
-            if(tableRow != null)
+            if(tableRow != null && tableRow.getData() != null)
                 disableInvItem = (CheckField)map.get("disableInvItem");
             
             //inv item is disabled on auto created rows
@@ -364,7 +367,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             DataMap map = (DataMap)tableRow.getData();
             CheckField disableOrg = null;
             
-            if(tableRow != null)
+            if(tableRow != null && tableRow.getData() != null)
                 disableOrg = (CheckField)map.get("disableOrg");
             
             //upc is disabled on auto created rows
@@ -379,76 +382,6 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public boolean canSelect(TableWidget widget, DataSet set, int row) {
         return true;
     }
-    
-    /*
-    public boolean action(int row, int col, TableController controller) {
-        TableRow tableRow=null;
-        
-        if(!addToExisiting.isEnabled() && receiptsController.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
-            itemLotNum.enable(true);
-            itemLocation.enable(true);
-            itemExpDate.enable(true);
-            addToExisiting.enable(true);
-        }
-        
-        if(row >=0 && controller.model.numRows() > row)
-            tableRow = controller.model.getRow(row);
-        
-        if(tableRow != null){
-            if(tableRow.getHidden("streetAddress") != null && tableRow.getHidden("city") != null){
-                orgAptSuiteText.setText((String)((StringField)tableRow.getHidden("multUnit")).getValue());
-                orgAddressText.setText((String)((StringField)tableRow.getHidden("streetAddress")).getValue());
-                orgCityText.setText((String)((StringField)tableRow.getHidden("city")).getValue());
-                orgStateText.setText((String)((StringField)tableRow.getHidden("state")).getValue());
-                orgZipCodeText.setText((String)((StringField)tableRow.getHidden("zipCode")).getValue());
-            }
-            
-            if(tableRow.getHidden("itemDesc") != null)
-                itemDescText.setText((String)((StringField)tableRow.getHidden("itemDesc")).getValue());
-            if(tableRow.getHidden("itemStore") != null)
-                itemStoreText.setText((String)((StringField)tableRow.getHidden("itemStore")).getValue());
-            if(tableRow.getHidden("itemDisUnit") != null)
-                itemDisUnitsText.setText((String)((StringField)tableRow.getHidden("itemDisUnit")).getValue());
-            
-            if(tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()) != null)
-                ((AutoCompleteDropdown)itemLocation.getWidget()).setSelected((ArrayList)((DropDownField)tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getSelections());
-            else
-                ((AutoCompleteDropdown)itemLocation.getWidget()).reset();
-            
-            if(tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber()) != null)
-                ((TextBox)itemLotNum.getWidget()).setText((String)((StringField)tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber())).getValue());
-            else
-                ((TextBox)itemLotNum.getWidget()).setText("");
-            
-            if(tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate()) != null && 
-                            ((DateField)tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue() != null)
-                ((FormCalendarWidget)itemExpDate.getWidget()).setText(((DatetimeRPC)((DateField)tableRow.getHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue()).toString());
-            else
-                ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
-            
-            if(tableRow.getHidden("addToExisting") != null)
-                ((CheckBox)addToExisiting.getWidget()).setState((String)((CheckField)tableRow.getHidden("addToExisting")).getValue());
-            else
-                ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
-        }else{
-            orgAptSuiteText.setText("");
-            orgAddressText.setText("");
-            orgCityText.setText("");
-            orgStateText.setText("");
-            orgZipCodeText.setText("");
-            itemDescText.setText("");
-            itemStoreText.setText("");
-            itemDisUnitsText.setText("");
-            ((AutoCompleteDropdown)itemLocation.getWidget()).reset();
-            ((TextBox)itemLotNum.getWidget()).setText("");
-            ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
-            ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
-        }
-        
-        return false;
-    }
-    */
-    
     //
     //end table manager methods
     //
@@ -456,17 +389,12 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     //
     //start table listener methods
     //
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-//we need to try and lookup the order using the order number that they have entered
-        
-        /*
-         * Try calling setDisplay on the TableCellWidget after cahnge the field value
-         */
-       /* if(col == 0 && !startedLoadingTable && row > -1 && row < controller.model.numRows() && tableRowEmpty(controller.model.getRow(row), false)){
-            startedLoadingTable = true;
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
+        //we need to try and lookup the order using the order number that they have entered
+        if(col == 0 && row < receiptsTable.model.numRows() && tableRowEmpty(receiptsTable.model.getRow(row), false)){
             window.setStatus("","spinnerIcon");
             
-            NumberObject orderIdObj = new NumberObject((Integer)((NumberField)controller.model.getRow(row).getColumn(0)).getValue());
+            NumberObject orderIdObj = new NumberObject((Integer)((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
             
             // prepare the argument list for the getObject function
             DataObject[] args = new DataObject[] {orderIdObj}; 
@@ -475,23 +403,29 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 public void onSuccess(Object result){    
                   // get the datamodel, load it in the notes panel and set the value in the rpc
                     DataModel model = (DataModel)((ModelObject)result).getValue();
-                    
+                    DataMap map = new DataMap();
                     doAutoAdd = false;
-                    
-                    if(model.size() == 0)
-                        controller.model.getRow(row).addHidden("invalidOrderId", new StringField(""));
-                    else
-                        controller.model.getRow(row).removeHidden("invalidOrderId");
                         
                     for(int i=0; i<model.size(); i++){
                         DataSet set = model.get(i);
                         
-                        TableRow tableRow;
+                        DataSet tableRow;
                         
-                        if(i == 0)
-                            tableRow = controller.model.getRow(row);
-                         else
-                            tableRow = new TableRow();                        
+                        if(i == 0){
+                            tableRow = receiptsTable.model.getRow(row);
+                            map = (DataMap)tableRow.getData();
+                            
+                            if(map == null)
+                                map = new DataMap();
+                        } else{
+                            tableRow = receiptsTable.model.createRow();
+                            map = new DataMap();
+                        }
+                        
+                        if(model.size() == 0)
+                            map.put("invalidOrderId", new StringField(""));
+                        else
+                            map.remove("invalidOrderId");
                         
                         //disable the order id column on auto generated rows
                         CheckField disableOrderId = new CheckField();
@@ -512,113 +446,117 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                         //((TableCellWidget)controller.view.table.getWidget(row,2)).enable(false);
                         
                         if(i == 0){
-                            NumberField orderId = (NumberField)set.getObject(0); 
+                            receiptsTable.model.setCell(row, 0, ((NumberField)set.get(0)).getValue());
+                            receiptsTable.model.setCell(row, 1, ((DateField)set.get(1)).getValue());
+                            receiptsTable.model.setCell(row, 2, ((StringField)set.get(2)).getValue());
                             
-                            tableRow.setColumn(0,orderId);
-                            tableRow.setColumn(1,(DateField)set.getObject(1));
-                            tableRow.setColumn(2,(StringField)set.getObject(2));
-                            tableRow.setColumn(3,(DropDownField)set.getObject(3));
-                            tableRow.setColumn(4,(DropDownField)set.getObject(4));
-                            tableRow.setColumn(5,(NumberField)set.getObject(5));
-                            tableRow.setColumn(6,(NumberField)set.getObject(6));
-                            tableRow.setColumn(7,(NumberField)set.getObject(7));
-                            tableRow.setColumn(8,(StringField)set.getObject(8));
-                            tableRow.setColumn(9,(StringField)set.getObject(9));
+                            ((DropDownField)receiptsTable.model.getObject(row, 3)).setModel(((DropDownField)set.get(3)).getModel());
+                            receiptsTable.model.setCell(row, 3, ((DropDownField)set.get(3)).getModel().get(0));
                             
-                            tableRow.addHidden("multUnit", (StringField)set.getObject(10));
-                            tableRow.addHidden("streetAddress", (StringField)set.getObject(11));
-                            tableRow.addHidden("city", (StringField)set.getObject(12));
-                            tableRow.addHidden("state", (StringField)set.getObject(13));
-                            tableRow.addHidden("zipCode", (StringField)set.getObject(14));
-                            tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
-                            tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-                            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
-                            tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
-                            tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
-                            tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));
-                            tableRow.addHidden("orderItemId", (NumberField)set.getObject(21));
-                            tableRow.addHidden("addToExisting", (CheckField)set.getObject(22));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.getObject(23));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.getObject(24));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.getObject(25));
-                            tableRow.addHidden("id", (NumberField)set.getObject(26));
+                            ((DropDownField)receiptsTable.model.getObject(row, 4)).setModel(((DropDownField)set.get(4)).getModel());
+                            receiptsTable.model.setCell(row, 4, ((DropDownField)set.get(4)).getModel().get(0));
                             
-                            tableRow.addHidden("disableOrderId", disableOrderId);
-                            tableRow.addHidden("disableUpc", disableUpc);
-                            tableRow.addHidden("disableInvItem", disableInvItem);
-                            tableRow.addHidden("disableOrg", disableOrg);
+                            receiptsTable.model.setCell(row, 5, ((NumberField)set.get(5)).getValue());
+                            receiptsTable.model.setCell(row, 6, ((NumberField)set.get(6)).getValue());
+                            receiptsTable.model.setCell(row, 7, ((NumberField)set.get(7)).getValue());
+                            receiptsTable.model.setCell(row, 8, ((StringField)set.get(8)).getValue());
+                            receiptsTable.model.setCell(row, 9, ((StringField)set.get(9)).getValue());
                             
-                            orgAptSuiteText.setText((String)((StringField)set.getObject(9)).getValue());
-                            orgAddressText.setText((String)((StringField)set.getObject(10)).getValue());
-                            orgCityText.setText((String)((StringField)set.getObject(11)).getValue());
-                            orgStateText.setText((String)((StringField)set.getObject(12)).getValue());
-                            orgZipCodeText.setText((String)((StringField)set.getObject(13)).getValue());
-                            itemDescText.setText((String)((StringField)set.getObject(14)).getValue());
-                            itemStoreText.setText((String)((StringField)set.getObject(15)).getValue());
-                            itemDisUnitsText.setText((String)((StringField)set.getObject(16)).getValue());
+                            map.put("multUnit", (StringField)set.get(10));
+                            map.put("streetAddress", (StringField)set.get(11));
+                            map.put("city", (StringField)set.get(12));
+                            map.put("state", (StringField)set.get(13));
+                            map.put("zipCode", (StringField)set.get(14));
+                            map.put("itemDesc", (StringField)set.get(15));
+                            map.put("itemStore", (StringField)set.get(16));
+                            map.put("itemDisUnit", (StringField)set.get(17));
+                            map.put("itemIsBulk", (StringField)set.get(18));
+                            map.put("itemIsLotMaintained", (StringField)set.get(19));
+                            map.put("itemIsSerialMaintained", (StringField)set.get(20));
+                            map.put("orderItemId", (NumberField)set.get(21));
+                            map.put("addToExisting", (CheckField)set.get(22));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.get(23));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.get(24));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.get(25));
+                            map.put("id", (NumberField)set.get(26));
                             
-                            if(model.size() == 1)
-                                ((EditTable)controller).load(0);
+                            map.put("disableOrderId", disableOrderId);
+                            map.put("disableUpc", disableUpc);
+                            map.put("disableInvItem", disableInvItem);
+                            map.put("disableOrg", disableOrg);
+                            
+                            orgAptSuiteText.setText((String)((StringField)set.get(9)).getValue());
+                            orgAddressText.setText((String)((StringField)set.get(10)).getValue());
+                            orgCityText.setText((String)((StringField)set.get(11)).getValue());
+                            orgStateText.setText((String)((StringField)set.get(12)).getValue());
+                            orgZipCodeText.setText((String)((StringField)set.get(13)).getValue());
+                            itemDescText.setText((String)((StringField)set.get(14)).getValue());
+                            itemStoreText.setText((String)((StringField)set.get(15)).getValue());
+                            itemDisUnitsText.setText((String)((StringField)set.get(17)).getValue());
+                            
+                            ((DataSet)receiptsTable.model.getRow(row)).setData(map);
                             
                         }else{
-                            NumberField orderId = (NumberField)set.getObject(0); 
+                            tableRow.get(0).setValue(((NumberField)set.get(0)).getValue());
+                            tableRow.get(1).setValue(((DateField)set.get(1)).getValue());
+                            tableRow.get(2).setValue(((StringField)set.get(2)).getValue());
                             
-                            tableRow.addColumn(orderId);
-                            tableRow.addColumn((DateField)set.getObject(1));
-                            tableRow.addColumn((StringField)set.getObject(2));
-                            tableRow.addColumn((DropDownField)set.getObject(3));
-                            tableRow.addColumn((DropDownField)set.getObject(4));
-                            tableRow.addColumn((NumberField)set.getObject(5));
-                            tableRow.addColumn((NumberField)set.getObject(6));
-                            tableRow.addColumn((NumberField)set.getObject(7));
-                            tableRow.addColumn((StringField)set.getObject(8));
-                            tableRow.addColumn((StringField)set.getObject(9));
+                            ((DropDownField)tableRow.get(3)).setModel(((DropDownField)set.get(3)).getModel());
+                            tableRow.get(3).setValue(((DropDownField)set.get(3)).getModel().get(0));
                             
-                            tableRow.addHidden("multUnit", (StringField)set.getObject(10));
-                            tableRow.addHidden("streetAddress", (StringField)set.getObject(11));
-                            tableRow.addHidden("city", (StringField)set.getObject(12));
-                            tableRow.addHidden("state", (StringField)set.getObject(13));
-                            tableRow.addHidden("zipCode", (StringField)set.getObject(14));
-                            tableRow.addHidden("itemDesc", (StringField)set.getObject(15));
-                            tableRow.addHidden("itemStore", (StringField)set.getObject(16));
-                            tableRow.addHidden("itemDisUnit", (StringField)set.getObject(17));
-                            tableRow.addHidden("itemIsBulk", (StringField)set.getObject(18));
-                            tableRow.addHidden("itemIsLotMaintained", (StringField)set.getObject(19));
-                            tableRow.addHidden("itemIsSerialMaintained", (StringField)set.getObject(20));
-                            tableRow.addHidden("orderItemId", (NumberField)set.getObject(21));
-                            tableRow.addHidden("addToExisting", (CheckField)set.getObject(22));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.getObject(23));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.getObject(24));
-                            tableRow.addHidden(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.getObject(25));
-                            tableRow.addHidden("id", (NumberField)set.getObject(26));
+                            ((DropDownField)tableRow.get(4)).setModel(((DropDownField)set.get(4)).getModel());
+                            tableRow.get(4).setValue(((DropDownField)set.get(4)).getModel().get(0));
+
+                            tableRow.get(5).setValue(((NumberField)set.get(5)).getValue());
+                            tableRow.get(6).setValue(((NumberField)set.get(6)).getValue());
+                            tableRow.get(7).setValue(((NumberField)set.get(7)).getValue());
+                            tableRow.get(8).setValue(((StringField)set.get(8)).getValue());
+                            tableRow.get(9).setValue(((StringField)set.get(9)).getValue());
                             
-                            tableRow.addHidden("disableOrderId", disableOrderId);
-                            tableRow.addHidden("disableUpc", disableUpc);
-                            tableRow.addHidden("disableInvItem", disableInvItem);
-                            tableRow.addHidden("disableOrg", disableOrg);
+                            map.put("multUnit", (StringField)set.get(10));
+                            map.put("streetAddress", (StringField)set.get(11));
+                            map.put("city", (StringField)set.get(12));
+                            map.put("state", (StringField)set.get(13));
+                            map.put("zipCode", (StringField)set.get(14));
+                            map.put("itemDesc", (StringField)set.get(15));
+                            map.put("itemStore", (StringField)set.get(16));
+                            map.put("itemDisUnit", (StringField)set.get(17));
+                            map.put("itemIsBulk", (StringField)set.get(18));
+                            map.put("itemIsLotMaintained", (StringField)set.get(19));
+                            map.put("itemIsSerialMaintained", (StringField)set.get(20));
+                            map.put("orderItemId", (NumberField)set.get(21));
+                            map.put("addToExisting", (CheckField)set.get(22));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), (DropDownField)set.get(23));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), (StringField)set.get(24));
+                            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), (DateField)set.get(25));
+                            map.put("id", (NumberField)set.get(26));
                             
-                            ((EditTable)controller).addRow(tableRow);
+                            map.put("disableOrderId", disableOrderId);
+                            map.put("disableUpc", disableUpc);
+                            map.put("disableInvItem", disableInvItem);
+                            map.put("disableOrg", disableOrg);
+                            
+                            tableRow.setData(map);
+                            receiptsTable.model.addRow(tableRow);
                         }
                     }
                         
                     doAutoAdd = true;
                     
-                    controller.select(row, 1);
+                    receiptsTable.select(row, 1);
                     
                     window.setStatus("","");
-                    startedLoadingTable = false;
                 }
                 
                 public void onFailure(Throwable caught){
                     Window.alert(caught.getMessage());
                     window.setStatus("","");
-                    startedLoadingTable = false;
                     doAutoAdd = true;
                 }
             });
-        }else if(col == 2 && row > -1 && row < controller.model.numRows()){
-            final TableRow tableRow = controller.model.getRow(row);
-            StringObject upcValue = new StringObject((String)((StringField)tableRow.getColumn(2)).getValue());
+        }else if(col == 2 && row > -1 && row < receiptsTable.model.numRows()){
+            final DataSet tableRow = receiptsTable.model.getRow(row);
+            StringObject upcValue = new StringObject((String)((StringField)tableRow.get(2)).getValue());
             
             window.setStatus("","spinnerIcon");
             
@@ -634,54 +572,55 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                     }else if(model.size() == 1){
                         DataSet set = model.get(0);
                         
-                        DropDownField inventoryItem = new DropDownField();
-                        DataSet inventoryItemSet = new DataSet();
-                        NumberObject itemId = (NumberObject)set.getKey();
-                        StringObject itemText = (StringObject)set.getObject(0);
-                        StringObject store = (StringObject)set.getObject(1);
+                        StringObject store = (StringObject)set.get(1);
                         StringField itemStore = new StringField();
-                        StringObject desc = (StringObject)set.getObject(2);
+                        StringObject desc = (StringObject)set.get(2);
                         StringField itemDesc = new StringField();
-                        StringObject purUnits = (StringObject)set.getObject(3);
-                        StringField itemPurUnit = new StringField();
-                        StringObject itemIsBulk =(StringObject)set.getObject(4);
+                        StringObject disUnits = (StringObject)set.get(3);
+                        StringField itemDisUnit = new StringField();
+                        StringObject itemIsBulk =(StringObject)set.get(4);
                         StringField isBulk =  new StringField();
-                        StringObject itemIsLotMaintained = (StringObject)set.getObject(5);
+                        StringObject itemIsLotMaintained = (StringObject)set.get(5);
                         StringField isLotMaintained = new StringField();
-                        StringObject itemIsSerialMaintained = (StringObject)set.getObject(6);
+                        StringObject itemIsSerialMaintained = (StringObject)set.get(6);
                         StringField isSerialMaintained = new StringField();
                         itemDesc.setValue(desc.getValue());
                         itemStore.setValue(store.getValue());
-                        itemPurUnit.setValue(purUnits.getValue());
+                        itemDisUnit.setValue(disUnits.getValue());
                         isBulk.setValue(itemIsBulk.getValue());
                         isLotMaintained.setValue(itemIsLotMaintained.getValue());
                         isSerialMaintained.setValue(itemIsSerialMaintained.getValue());
                         
-                        inventoryItemSet.setKey(itemId);
-                        inventoryItemSet.addObject(itemText);
-                        inventoryItemSet.addObject(store);
-                        inventoryItemSet.addObject(desc);
-                        inventoryItemSet.addObject(purUnits);
-                        inventoryItem.setRequired(true);
-                        inventoryItem.setValue(inventoryItemSet);
-                       
+                        //name, store
+                        DataModel invItemModel = new DataModel();
+                        DataSet invItemSet = new DataSet();
+                        invItemSet.setKey((NumberObject)set.getKey());
+                        invItemSet.add((StringObject)set.get(0));
+                        invItemSet.add(new StringField((String)((StringObject)set.get(1)).getValue()));
+                        DataMap hiddenItems = new DataMap();
+                        hiddenItems.put("desc",new StringField((String)((StringObject)set.get(2)).getValue()));
+                        hiddenItems.put("itemDisUnit", (StringObject)set.get(3));
+                        invItemSet.setData(hiddenItems);
+                        invItemModel.add(invItemSet);
+                        
+                        ((DropDownField)tableRow.get(3)).setModel(invItemModel);
+                        ((DropDownField)tableRow.get(3)).setValue(invItemModel.get(0));
+                        
                         //set the text boxes
-                        itemDescText.setText((String)((StringObject)desc).getValue());
-                        itemStoreText.setText((String)((StringObject)store).getValue());
-                        itemDisUnitsText.setText((String)((StringObject)purUnits).getValue());
+                        itemDescText.setText((String)desc.getValue());
+                        itemStoreText.setText((String)store.getValue());
+                        itemDisUnitsText.setText((String)disUnits.getValue());
                         
-                        tableRow.addHidden("itemDesc", itemDesc);
-                        tableRow.addHidden("itemStore", itemStore);
-                        tableRow.addHidden("itemDisUnit", itemPurUnit);
-                        tableRow.addHidden("itemIsBulk", isBulk);
-                        tableRow.addHidden("itemIsLotMaintained", isLotMaintained);
-                        tableRow.addHidden("itemIsSerialMaintained", isSerialMaintained);
+                        DataMap map = (DataMap)tableRow.getData();
+                        if(map == null)
+                            map = new DataMap();
                         
-                        tableRow.setColumn(3, inventoryItem);
-                        
-                        ((TableAutoDropdown)((EditTable)controller).view.table.getWidget(row, 3)).setField(inventoryItem);
-                        ((TableAutoDropdown)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
-                      
+                        map.put("itemDesc", itemDesc);
+                        map.put("itemStore", itemStore);
+                        map.put("itemDisUnit", itemDisUnit);
+                        map.put("itemIsBulk", isBulk);
+                        map.put("itemIsLotMaintained", isLotMaintained);
+                        map.put("itemIsSerialMaintained", isSerialMaintained);
                     }
                         
                     window.setStatus("","");
@@ -693,9 +632,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 }
             });
             
-        }else if(col == 3 && row > -1 && row < controller.model.numRows()){
-            TableRow tableRow = controller.model.getRow(row);
-            ArrayList selections = (ArrayList)((DropDownField)tableRow.getColumn(3)).getSelections();
+        }else if(col == 3 && row > -1 && row < receiptsTable.model.numRows()){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
            
             DataSet set = null;
             if(selections.size() > 0)
@@ -703,45 +642,45 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             
            if(set != null && set.size() > 1){
                 //set the text boxes
-                itemDescText.setText((String)((StringObject)set.getObject(2)).getValue());
-                itemStoreText.setText((String)((StringObject)set.getObject(1)).getValue());
-                itemDisUnitsText.setText((String)((StringObject)set.getObject(3)).getValue());
+               DataMap dropdownMap = (DataMap)set.getData();
+               StringField descObj = (StringField)dropdownMap.get("desc");
+               StringField isBulkObj = (StringField)dropdownMap.get("isBulk");
+               StringField isLotMaintainedObj = (StringField)dropdownMap.get("isLotMaintained");            
+               StringField isSerialMaintainedObj = (StringField)dropdownMap.get("isSerialMaintained");
+               StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
+               
+               itemDescText.setText((String)descObj.getValue());
+               itemStoreText.setText((String)((StringField)set.get(1)).getValue());
+               itemDisUnitsText.setText((String)dispensedUnits.getValue());
                 
-                StringField itemDesc = new StringField();
-                StringField itemStore = new StringField();
-                StringField itemPurUnit = new StringField();
-                StringField isBulk =  new StringField();
-                StringField isLotMaintained = new StringField();
-                StringField isSerialMaintained = new StringField();
+                DataMap map = (DataMap)tableRow.getData();
+                if(map == null)
+                    map = new DataMap();
                 
-                itemDesc.setValue((String)((StringObject)set.getObject(2)).getValue());
-                itemStore.setValue((String)((StringObject)set.getObject(1)).getValue());
-                itemPurUnit.setValue((String)((StringObject)set.getObject(3)).getValue());
-                isBulk.setValue((String)((StringObject)set.getObject(4)).getValue());
-                isLotMaintained.setValue((String)((StringObject)set.getObject(5)).getValue());
-                isSerialMaintained.setValue((String)((StringObject)set.getObject(6)).getValue());
+                map.put("itemDesc", descObj);
+                map.put("itemStore", set.get(1));
+                map.put("itemIsBulk", isBulkObj);
+                map.put("itemIsLotMaintained", isLotMaintainedObj);
+                map.put("itemIsSerialMaintained", isSerialMaintainedObj);
+                map.put("itemDisUnit", dispensedUnits);
                 
-                tableRow.addHidden("itemDesc", itemDesc);
-                tableRow.addHidden("itemStore", itemStore);
-                tableRow.addHidden("itemDisUnit", itemPurUnit);
-                tableRow.addHidden("itemIsBulk", isBulk);
-                tableRow.addHidden("itemIsLotMaintained", isLotMaintained);
-                tableRow.addHidden("itemIsSerialMaintained", isSerialMaintained);
+                tableRow.setData(map);
            }
-        }else if(col == 4 && row > -1 && row < controller.model.numRows()){
-            TableRow tableRow = controller.model.getRow(row);
-            ArrayList selections = (ArrayList)((DropDownField)tableRow.getColumn(4)).getSelections();
+        }else if(col == 4 && row > -1 && row < receiptsTable.model.numRows()){
+            DataSet tableRow = receiptsTable.model.getRow(row);
+            ArrayList selections = (ArrayList)((DropDownField)tableRow.get(4)).getSelections();
             DataSet set = null;
             if(selections.size() > 0)
                 set = (DataSet)selections.get(0);
             
             if(set != null && set.size() > 1){
+                DataMap orgDropdownMap = (DataMap)set.getData();
                 //set the text boxes
-                orgAddressText.setText((String)((StringObject)set.getObject(1)).getValue());
-                orgCityText.setText((String)((StringObject)set.getObject(2)).getValue());
-                orgStateText.setText((String)((StringObject)set.getObject(3)).getValue());               
-                orgAptSuiteText.setText((String)((StringObject)set.getObject(4)).getValue());
-                orgZipCodeText.setText((String)((StringObject)set.getObject(5)).getValue());
+                orgAddressText.setText((String)((StringObject)set.get(1)).getValue());
+                orgCityText.setText((String)((StringObject)set.get(2)).getValue());
+                orgStateText.setText((String)((StringObject)set.get(3)).getValue());               
+                orgAptSuiteText.setText((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
+                orgZipCodeText.setText((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
                 
                 StringField multUnit = new StringField();
                 StringField streetAddress = new StringField();
@@ -749,24 +688,30 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 StringField state = new StringField();
                 StringField zipCode = new StringField();
                 
-                multUnit.setValue((String)((StringObject)set.getObject(4)).getValue());
-                streetAddress.setValue((String)((StringObject)set.getObject(1)).getValue());
-                city.setValue((String)((StringObject)set.getObject(2)).getValue());
-                state.setValue((String)((StringObject)set.getObject(3)).getValue());
-                zipCode.setValue((String)((StringObject)set.getObject(5)).getValue());
+                multUnit.setValue((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
+                streetAddress.setValue((String)((StringObject)set.get(1)).getValue());
+                city.setValue((String)((StringObject)set.get(2)).getValue());
+                state.setValue((String)((StringObject)set.get(3)).getValue());
+                zipCode.setValue((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
                 
-                tableRow.addHidden("multUnit", multUnit);
-                tableRow.addHidden("streetAddress", streetAddress);
-                tableRow.addHidden("city", city);
-                tableRow.addHidden("state", state);
-                tableRow.addHidden("zipCode", zipCode);    
+                DataMap map = (DataMap)tableRow.getData();
+                if(map == null)
+                    map = new DataMap();
+                
+                map.put("multUnit", multUnit);
+                map.put("streetAddress", streetAddress);
+                map.put("city", city);
+                map.put("state", state);
+                map.put("zipCode", zipCode);
+                tableRow.setData(map);
+                
             }
         }
-        */
     }
 
-    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-    }
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
+
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
     //end table listener methods
     //
@@ -897,4 +842,95 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             }
         });
     }
+
+    //
+    //start table model listener methods
+    //
+    public void cellUpdated(SourcesTableModelEvents sender, int row, int cell) {}
+
+    public void dataChanged(SourcesTableModelEvents sender) {}
+
+    public void rowAdded(SourcesTableModelEvents sender, int rows) {}
+
+    public void rowDeleted(SourcesTableModelEvents sender, int row) {}
+
+    public void rowSelectd(SourcesTableModelEvents sender, int row) {
+        DataSet tableRow=null;
+        
+        if(!addToExisiting.isEnabled() && receiptsTable.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
+            itemLotNum.enable(true);
+            itemLocation.enable(true);
+            itemExpDate.enable(true);
+            addToExisiting.enable(true);
+        }
+        
+        if(row >=0 && receiptsTable.model.numRows() > row)
+            tableRow = receiptsTable.model.getRow(row);
+        
+        DataMap map = new DataMap();
+        if(tableRow != null && tableRow.getData() != null)
+            map = (DataMap)tableRow.getData();
+        
+        if(tableRow != null){
+            if(map.get("streetAddress") != null && map.get("city") != null){
+                orgAptSuiteText.setText((String)((StringField)map.get("multUnit")).getValue());
+                orgAddressText.setText((String)((StringField)map.get("streetAddress")).getValue());
+                orgCityText.setText((String)((StringField)map.get("city")).getValue());
+                orgStateText.setText((String)((StringField)map.get("state")).getValue());
+                orgZipCodeText.setText((String)((StringField)map.get("zipCode")).getValue());
+            }
+            
+            if(map.get("itemDesc") != null)
+                itemDescText.setText((String)((StringField)map.get("itemDesc")).getValue());
+            if(map.get("itemStore") != null)
+                itemStoreText.setText((String)((StringField)map.get("itemStore")).getValue());
+            if(map.get("itemDisUnit") != null)
+                itemDisUnitsText.setText((String)((StringField)map.get("itemDisUnit")).getValue());
+            
+            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()) != null){
+                ((AutoComplete)itemLocation.getWidget()).model.load(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getModel());
+                ((AutoComplete)itemLocation.getWidget()).setSelections(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getSelections());
+            }
+            else
+                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+            
+            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber()) != null)
+                ((TextBox)itemLotNum.getWidget()).setText((String)((StringField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber())).getValue());
+            else
+                ((TextBox)itemLotNum.getWidget()).setText("");
+            
+            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate()) != null && 
+                            ((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue() != null)
+                ((FormCalendarWidget)itemExpDate.getWidget()).setText(((DatetimeRPC)((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue()).toString());
+            else
+                ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
+            
+            if(map.get("addToExisting") != null)
+                ((CheckBox)addToExisiting.getWidget()).setState((String)((CheckField)map.get("addToExisting")).getValue());
+            else
+                ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
+        }else{
+            orgAptSuiteText.setText("");
+            orgAddressText.setText("");
+            orgCityText.setText("");
+            orgStateText.setText("");
+            orgZipCodeText.setText("");
+            itemDescText.setText("");
+            itemStoreText.setText("");
+            itemDisUnitsText.setText("");
+            ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+            ((TextBox)itemLotNum.getWidget()).setText("");
+            ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
+            ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
+        }
+    }
+
+    public void rowUnselected(SourcesTableModelEvents sender, int row) {}
+
+    public void rowUpdated(SourcesTableModelEvents sender, int row) {}
+
+    public void unload(SourcesTableModelEvents sender) {}
+    //
+    //end table model listener methods
+    //
 }

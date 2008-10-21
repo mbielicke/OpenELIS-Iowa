@@ -36,7 +36,6 @@ import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
@@ -55,7 +54,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
@@ -73,9 +71,8 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryItemScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
+public class InventoryItemScreen extends OpenELISScreenForm implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
-    private boolean startedLoadingTable = false;
     private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
     TextBox subjectBox; 
@@ -215,13 +212,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
 	}
 	
 	public void abort() {
-		componentsTable.model.enableAutoAdd(false);
-        
+        componentsTable.model.enableAutoAdd(false);
         super.abort();
 	}
 	
 	public void update() {
-		componentsTable.model.enableAutoAdd(true);
+        componentsTable.model.enableAutoAdd(true);
 		super.update();
 	}
 	
@@ -419,97 +415,58 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableMana
     }
     
     //
-    //Table Manager methods
-    //
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
-        return true;
-    }
-
-    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
-        return !tableRowEmpty(addRow);
-    }
-
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
-        return true;
-    }
-
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
-        return true;
-    }
-
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
-        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
-            return true;
-        return false;
-    }
-    //
-    //End Table Manager Methods
-    //
-    
-    //
     //start table listener methods
     //
-    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, final int col) {
         DropDownField componentField;
         if(sender == componentsTable){
-            if(col == 0 && row > -1 && row < componentsTable.model.numRows() && !startedLoadingTable){
-                startedLoadingTable = true;
+ 
+            if(col == 0 && row < componentsTable.model.numRows()){
                 componentField = (DropDownField)componentsTable.model.getObject(row, col);
                 if(componentField.getValue() != null){
                     window.setStatus("","spinnerIcon");
-                    NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
+                    final NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
                       
                     // prepare the argument list for the getObject function
                     DataObject[] args = new DataObject[] {componentIdObj}; 
                       
                     screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
-                        public void onSuccess(Object result){    
-                          // get the datamodel, load it in the notes panel and set the value in the rpc
-                            StringField descString = new StringField();
-                            descString.setValue((String) ((StringObject)result).getValue());
-                            
-                            DataSet tableRow = componentsTable.model.getRow(row);
-                            tableRow.set(1, descString);
-                            
-                            //controller.scrollLoad(-1);
-                            
-                            //controller.select(row, 2);
+                        public void onSuccess(Object result){
+                            if(row < componentsTable.model.numRows()){
+                                Integer currentId = (Integer)componentsTable.model.getCell(row, 0);
+                                Integer oldId = (Integer)componentIdObj.getValue();
+                                
+                                //make sure the row hasnt been deleted and it still has the same values
+                                if(currentId.equals(oldId))
+                                    componentsTable.model.setCell(row, 1, ((StringObject)result).getValue());
+                            }
                             
                             window.setStatus("","");
-                            startedLoadingTable = false;
+                            
                         }
                         
                         public void onFailure(Throwable caught){
                             Window.alert(caught.getMessage());
-                            startedLoadingTable = false;
                         }
                     });
                 }
             }
         }
     }
+    
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        // TODO Auto-generated method stub
+        
+    }
 
-    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
         // TODO Auto-generated method stub
         
     }
     //
     //end table listener methods
     //
-    
-    private boolean tableRowEmpty(DataSet row){
-        boolean empty = true;
-        
-        for(int i=0; i<row.size(); i++){
-            if(row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
-                empty = false;
-                break;
-            }
-        }
-        
-        return empty;
-    }
-
+   
     public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         StringObject catObj = new StringObject(widget.cat);
         ModelObject modelObj = new ModelObject(model);

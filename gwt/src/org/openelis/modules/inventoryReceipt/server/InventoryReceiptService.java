@@ -341,24 +341,16 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             upc.setValue(receiptDO.getUpc());
             
             //inventory item set
-            DataSet inventoryItemSet = new DataSet();
-            NumberObject itemId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject itemText = new StringObject();
-            itemId.setValue(receiptDO.getInventoryItemId());
-            itemText.setValue(receiptDO.getInventoryItem());            
-            inventoryItemSet.setKey(itemId);
-            inventoryItemSet.add(itemText);
-            inventoryItem.setValue(inventoryItemSet);
+            DataModel itemModel = new DataModel();
+            itemModel.add(new NumberObject(receiptDO.getInventoryItemId()),new StringObject(receiptDO.getInventoryItem()));
+            inventoryItem.setModel(itemModel);
+            inventoryItem.setValue(itemModel.get(0));
             
             //org set
-            DataSet orgSet = new DataSet();
-            NumberObject orgId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject orgText = new StringObject();
-            orgId.setValue(receiptDO.getOrganizationId());
-            orgText.setValue(receiptDO.getOrganization());
-            orgSet.setKey(orgId);
-            orgSet.add(orgText);
-            org.setValue(orgSet);
+            DataModel orgModel = new DataModel();
+            orgModel.add(new NumberObject(receiptDO.getOrganizationId()),new StringObject(receiptDO.getOrganization()));
+            org.setModel(orgModel);
+            org.setValue(orgModel.get(0));
             
             qtyReceived.setValue(receiptDO.getQuantityReceived());
             qtyRequested.setValue(receiptDO.getItemQtyRequested());
@@ -455,7 +447,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             String name = invItemDO.getName();
             String store = invItemDO.getStore();
             String desc = invItemDO.getDescription();
-            //String purUnits = invItemDO.getPurchasedUnits();
+            String disUnits = invItemDO.getDispensedUnits();
             String itemIsBulk = invItemDO.getIsBulk();
             String itemIsLotMaintained = invItemDO.getIsLotMaintained();
             String itemIsSerialMaintained = invItemDO.getIsSerialMaintained();
@@ -475,9 +467,9 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringObject descObj = new StringObject();
             descObj.setValue(desc);
             data.add(descObj);
-            //StringObject purUnitsObj = new StringObject();
-            //purUnitsObj.setValue(purUnits);
-            //data.addObject(purUnitsObj);
+            StringObject disUnitsObj = new StringObject();
+            disUnitsObj.setValue(disUnits);
+            data.add(disUnitsObj);
             StringObject isBulkObj = new StringObject();
             isBulkObj.setValue(itemIsBulk);
             data.add(isBulkObj);
@@ -570,7 +562,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             String name = resultDO.getName();
             String store = resultDO.getStore();
             String desc = resultDO.getDescription();
-            //String purUnits = resultDO.getPurchasedUnits();
+            String dispensedUnits = resultDO.getDispensedUnits();
             String itemIsBulk = resultDO.getIsBulk();
             String itemIsLotMaintained = resultDO.getIsLotMaintained();
             String itemIsSerialMaintained = resultDO.getIsSerialMaintained();
@@ -584,24 +576,29 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
             data.add(nameObject);
-            StringObject storeObject = new StringObject();
+            StringField storeObject = new StringField();
             storeObject.setValue(store);
             data.add(storeObject);
-            StringObject descObj = new StringObject();
+            
+            DataMap map = new DataMap();
+            
+            StringField descObj = new StringField();
             descObj.setValue(desc);
-            data.add(descObj);
-            //StringObject purUnitsObj = new StringObject();
-            //purUnitsObj.setValue(purUnits);
-            //data.addObject(purUnitsObj);
-            StringObject isBulkObj = new StringObject();
+            map.put("desc", descObj);
+            StringField isBulkObj = new StringField();
             isBulkObj.setValue(itemIsBulk);
-            data.add(isBulkObj);
-            StringObject isLotMaintainedObj = new StringObject();
+            map.put("isBulk", isBulkObj);
+            StringField isLotMaintainedObj = new StringField();
             isLotMaintainedObj.setValue(itemIsLotMaintained);
-            data.add(isLotMaintainedObj);            
-            StringObject isSerialMaintainedObj = new StringObject();
+            map.put("isLotMaintained", isLotMaintainedObj);            
+            StringField isSerialMaintainedObj = new StringField();
             isSerialMaintainedObj.setValue(itemIsSerialMaintained);
-            data.add(isSerialMaintainedObj);
+            map.put("isSerialMaintained", isSerialMaintainedObj);
+            StringField dispensedUnitsObj = new StringField();
+            dispensedUnitsObj.setValue(dispensedUnits);
+            map.put("dispensedUnits", dispensedUnitsObj);
+            
+            data.setData(map);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -663,13 +660,14 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             data.add(stateObject);
             
             //hidden fields
+            DataMap map = new DataMap();
             StringObject aptSuiteObj = new StringObject();
             aptSuiteObj.setValue(aptSuite);
-            data.add(aptSuiteObj);
+            map.put("aptSuite", aptSuiteObj);
             StringObject zipCodeObj = new StringObject();
             zipCodeObj.setValue(zipCode);
-            data.add(zipCodeObj);
-            
+            map.put("zipCode", zipCodeObj);
+            data.setData(map);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            

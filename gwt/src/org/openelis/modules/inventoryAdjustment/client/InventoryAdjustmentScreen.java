@@ -28,7 +28,8 @@ package org.openelis.modules.inventoryAdjustment.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -45,13 +46,13 @@ import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
-import org.openelis.gwt.widget.table.TableTextBox;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
@@ -63,10 +64,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryAdjustmentScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener {
+public class InventoryAdjustmentScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener, AutoCompleteCallInt {
 
     private TableWidget        adjustmentsTable;
-    private boolean startedLoadingTable = false;
     private AppButton        removeRowButton;
     private static boolean loaded = false;
     
@@ -77,6 +77,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     private KeyListManager   keyList = new KeyListManager();
     
     private InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
+    private static String storeIdKey;
     
     public InventoryAdjustmentScreen() {
         super("org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService",!loaded);
@@ -96,10 +97,12 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         adjustmentsTable.addTableWidgetListener(this);
         adjustmentsTable.model.enableAutoAdd(false);
         
+        storeIdKey = InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId();
+        
         idText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getId());
         adjustmentDateText = (ScreenCalendar) widgets.get(InventoryAdjustmentMeta.getAdjustmentDate());
         userText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getSystemUserId());
-        storesDropdown = (ScreenDropDownWidget) widgets.get(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId());
+        storesDropdown = (ScreenDropDownWidget) widgets.get(storeIdKey);
         descText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getDescription());
         
         if (storesDropdownModel == null) 
@@ -175,10 +178,20 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         }
     };
     
+    public void abort() {
+        adjustmentsTable.model.enableAutoAdd(false);
+        super.abort();
+    }
+    
     public void query() {
         super.query();
         userText.enable(false);
         idText.setFocus(true);
+    }
+    
+    public void commit() {
+        adjustmentsTable.model.enableAutoAdd(false);
+        super.commit();
     }
     
     //
@@ -225,127 +238,106 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     //
     //start table listener methods
     //
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        /*if(col == 0 && !startedLoadingTable && row > -1 && row < adjustmentsTable.model.numRows()){
-            if(rpc.getFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId()) == null){
-                window.setStatus(consts.get("inventoryAdjLocAutoException"),"ErrorPanel");
-                return;
-            }
-            
-            NumberObject locIdObj = new NumberObject((Integer)adjustmentsTable.model.getCell(row, 0));
-            NumberObject storeIdObj = new NumberObject((Integer)rpc.getFieldValue(
-                                                        InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId()));
-            final DataSet tableRow = adjustmentsTable.model.getRow(row);
-            
-            //we need to make sure the location id isnt already in the table
-            if(locationIdAlreadyExists((Integer)locIdObj.getValue(), row)){
-                tableRow.get(0).clearErrors();
-                tableRow.get(0).addError(consts.get("fieldUniqueException"));
-                return;
-            }
-            
-            startedLoadingTable = true;
-            window.setStatus("","spinnerIcon");
-            
-            // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {locIdObj, storeIdObj}; 
-            
-            screenService.getObject("getInventoryItemInformation", args, new AsyncCallback(){
-                public void onSuccess(Object result){    
-                  DataModel model  = (DataModel)((ModelObject)result).getValue();
-                  
-                  if(model.size() > 0){
-                      DataSet set = model.get(0);
-                            
-                      tableRow.setColumn(1,(DropDownField)set.getObject(1));
-                      ((TableAutoDropdown)((EditTable)controller).view.table.getWidget(row, 1)).setField((DropDownField)set.getObject(1));
-                      ((TableAutoDropdown)((EditTable)controller).view.table.getWidget(row, 1)).setDisplay();
-                      
-                      tableRow.setColumn(2,(StringField)set.getObject(2));
-                      ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setField((StringField)set.getObject(2));
-                      ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setDisplay();
-                      
-                      tableRow.setColumn(3,(NumberField)set.getObject(3));
-                      ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setField((NumberField)set.getObject(3));
-                      ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
-                  }
-                  startedLoadingTable = false;
-                  window.setStatus("","");
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
+        if(row >= adjustmentsTable.model.numRows())
+            return;
+        final DataSet tableRow = adjustmentsTable.model.getRow(row);
+        final DropDownField invItemField = (DropDownField)tableRow.get(1);
+        switch (col){
+            case 0:
+                if(rpc.getFieldValue(storeIdKey) == null){
+                    window.setStatus(consts.get("inventoryAdjLocAutoException"),"ErrorPanel");
+                    return;
                 }
                 
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                    window.setStatus("","");
-                    startedLoadingTable = false;
+                final NumberObject locIdObj = new NumberObject((Integer)adjustmentsTable.model.getCell(row, 0));
+                NumberObject storeIdObj = new NumberObject((Integer)rpc.getFieldValue(storeIdKey));
+                
+                
+                //we need to make sure the location id isnt already in the table
+                if(locationIdAlreadyExists((Integer)locIdObj.getValue(), row)){
+                    ((NumberField)tableRow.get(0)).clearErrors();
+                    adjustmentsTable.model.setCellError(row, 0, consts.get("fieldUniqueException"));
+                    return;
                 }
-            });
-            
-        }else if(col == 1 && !startedLoadingTable && row > -1 && row < controller.model.numRows()){
-            startedLoadingTable = true;
-            
-            TableRow tableRow = ((EditTable)controller).model.getRow(row);
-            DropDownField invItemField = (DropDownField)tableRow.getColumn(1);
-            ArrayList selections = invItemField.getSelections();
-  
-            if(selections.size() > 0){
-                DataSet selectedRow = (DataSet)selections.get(0);
-  
-                if(selectedRow.size() > 1){
-                    //we need to make sure this inventory item isnt already in the table
-                    if(locationIdAlreadyExists((Integer)((NumberObject)selectedRow.getObject(6)).getValue(), row)){
-                        tableRow.getColumn(1).clearErrors();
-                        tableRow.getColumn(1).addError(consts.get("fieldUniqueException"));
-                     
-                    }else{
-                        NumberField locNumField = new NumberField(NumberObject.Type.INTEGER);
-                        StringField locationField = new StringField();
-                        NumberField qtyOnHandField = new NumberField(NumberObject.Type.INTEGER);
+                
+                window.setStatus("","spinnerIcon");
+                
+                // prepare the argument list for the getObject function
+                DataObject[] args = new DataObject[] {locIdObj, storeIdObj}; 
+                
+                screenService.getObject("getInventoryItemInformation", args, new AsyncCallback(){
+                    public void onSuccess(Object result){    
+                        if(row < adjustmentsTable.model.numRows()){
+                        Integer currentId = (Integer)adjustmentsTable.model.getCell(row, 0);
+                        Integer oldId = (Integer)locIdObj.getValue();
                         
-                        locNumField.setValue((Integer)((NumberObject)selectedRow.getObject(6)).getValue());
-                        locationField.setValue((String)((StringObject)selectedRow.getObject(2)).getValue());
-                        qtyOnHandField.setValue((Integer)((NumberObject)selectedRow.getObject(5)).getValue());
-    
-                        tableRow.setColumn(0, locNumField);                    
-                        ((TableTextBox)((EditTable)controller).view.table.getWidget(row, 0)).setField(locNumField);
-                        ((TableTextBox)((EditTable)controller).view.table.getWidget(row, 0)).setDisplay();
+                        //make sure the row hasnt been deleted and it still has the same values
+                        if(currentId.equals(oldId)){
                         
-                        tableRow.setColumn(2, locationField);                    
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setField(locationField);
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setDisplay();
-                        
-                        tableRow.setColumn(3, qtyOnHandField);                    
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setField(qtyOnHandField);
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
+                          DataModel model  = (DataModel)((ModelObject)result).getValue();
+                          
+                          if(model.size() > 0){
+                              DataSet set = model.get(0);
+                                    
+                              invItemField.setModel(((DropDownField)set.get(1)).getModel());
+                              adjustmentsTable.model.setCell(row, 1, ((DropDownField)set.get(1)).getModel().get(0));
+                              adjustmentsTable.model.setCell(row, 2, ((StringField)set.get(2)).getValue());
+                              adjustmentsTable.model.setCell(row, 3, ((NumberField)set.get(3)).getValue());
+                          }
+                        }
+                        }
+                      window.setStatus("","");
                     }
-                }    
-            }
-            startedLoadingTable = false;
-            
-        }else if(col == 4 && !startedLoadingTable && row > -1 && row < controller.model.numRows()){
-            TableRow tableRow = controller.model.getRow(row);
-            Integer qtyOnHand = null;
-            Integer physicalCount = null;
-            Integer adjQty = null;
-            
-            qtyOnHand = (Integer)((NumberField)tableRow.getColumn(3)).getValue();
-            physicalCount = (Integer)((NumberField)tableRow.getColumn(4)).getValue();
-            
-            if(qtyOnHand != null && physicalCount != null){
-                adjQty = physicalCount - qtyOnHand;
-                NumberField adjQtyField = new NumberField(NumberObject.Type.INTEGER);
-                adjQtyField.setValue(adjQty);
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                        window.setStatus("","");
+                    }
+                });
+                break;
+            case 1:
+                ArrayList selections = invItemField.getSelections();
+      
+                if(selections.size() > 0){
+                    DataSet selectedRow = (DataSet)selections.get(0);
+      
+                    if(selectedRow.size() > 1){
+                        //we need to make sure this inventory item isnt already in the table
+                        if(locationIdAlreadyExists((Integer)((NumberObject)selectedRow.getData()).getValue(), row)){
+                            ((DropDownField)tableRow.get(1)).clearErrors();
+                            adjustmentsTable.model.setCellError(row, 1, consts.get("fieldUniqueException"));
+                         
+                        }else{
+                            adjustmentsTable.model.setCell(row, 0, ((NumberObject)selectedRow.getData()).getValue());
+                            adjustmentsTable.model.setCell(row, 2, ((StringObject)selectedRow.get(2)).getValue());
+                            adjustmentsTable.model.setCell(row, 3, ((NumberObject)selectedRow.get(5)).getValue());
+                            
+                        }
+                    }    
+                }
+
+                break;
+            case 4:
+                Integer qtyOnHand = null;
+                Integer physicalCount = null;
+                Integer adjQty = null;
                 
-                tableRow.setColumn(5, adjQtyField);
-                ((TableLabel)((EditTable)controller).view.table.getWidget(row, 5)).setField(adjQtyField);
-                ((TableLabel)((EditTable)controller).view.table.getWidget(row, 5)).setDisplay();
-            }
-        }*/
+                qtyOnHand = (Integer)((NumberField)tableRow.get(3)).getValue();
+                physicalCount = (Integer)((NumberField)tableRow.get(4)).getValue();
+                
+                if(qtyOnHand != null && physicalCount != null){
+                    adjQty = physicalCount - qtyOnHand;
+                    
+                    adjustmentsTable.model.setCell(row, 5, adjQty);
+                }
+                break;
+        }
     }
 
-    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
+
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
     //end table listener methods
     //
@@ -374,15 +366,43 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
     private boolean locationIdAlreadyExists(Integer locationId, int currentRow){
         boolean exists = false;
         
-        TableModel model = (TableModel)adjustmentsTable.model;
-        
-        for(int i=0; i<model.numRows(); i++){
-            if(i != currentRow && locationId.equals(model.getCell(i, 0))){
-                exists = true;
-                break;
-            }            
+        if(locationId != null){        
+            TableModel model = (TableModel)adjustmentsTable.model;
+            
+            for(int i=0; i<model.numRows(); i++){
+                if(i != currentRow && locationId.equals(model.getCell(i, 0))){
+                    exists = true;
+                    break;
+                }            
+            }
         }
         
         return exists;
+    }
+
+    public void callForMatches(final AutoComplete widget, DataModel model, String text) {
+        StringObject catObj = new StringObject(widget.cat);
+        ModelObject modelObj = new ModelObject(model);
+        StringObject matchObj = new StringObject(text);
+        DataMap paramsObj = new DataMap();
+        
+        paramsObj.put("storeId", rpc.getField(storeIdKey));
+        
+        // prepare the argument list for the getObject function
+        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        
+        
+        screenService.getObject("getMatchesObj", args, new AsyncCallback() {
+            public void onSuccess(Object result) {
+                widget.showAutoMatches((DataModel)((ModelObject)result).getValue());
+            }
+            
+            public void onFailure(Throwable caught) {
+                if(caught instanceof FormErrorException){
+                    window.setStatus(caught.getMessage(), "ErrorPanel");
+                }else
+                    Window.alert(caught.getMessage());
+            }
+        });        
     }
 }

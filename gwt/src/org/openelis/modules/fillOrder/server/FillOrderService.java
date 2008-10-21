@@ -98,8 +98,8 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
             fields.remove("process");
             fields.remove("daysLeft");
             
-            if(isQueryEmpty(rpcSend))
-                throw new QueryException(openElisConstants.getString("emptyQueryException"));
+           //TODO get this back when query table is fixed if(isQueryEmpty(rpcSend))
+                //throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
                 orders = remote.query(fields,0,leftTableRowsPerPage);

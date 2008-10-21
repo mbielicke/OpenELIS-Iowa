@@ -149,7 +149,7 @@ UIRF Software License are applicable instead of those above.
 							<widths>50,205,225,60,60,60</widths>										
 							<editors>
 								<textbox case="mixed"/>
-								<autoComplete cat="inventoryItem" autoParams="InventoryAdjustmentAutoParams" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
+								<autoComplete cat="inventoryItem" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
 									<headers>Name,Store,Location,Lot #,Exp Date,Qty</headers>
 							        <widths>135,110,160,70,70,30</widths>
 								</autoComplete>

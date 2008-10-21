@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-							<dropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getId($order)},{orderMeta:getRequestedBy($order)}"/>
+							<dropdown key="{orderMeta:getCostCenterId($order)}" case="mixed" width="187px" popWidth="auto" tab="{orderMeta:getDescription($order)},{orderMeta:getRequestedBy($order)}"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 							<widget>
 							<textbox case="upper" key="{addr:getState($orgAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -209,7 +209,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 							<widget colspan="3">
-								<autoComplete cat="orderDesc" key="{orderMeta:getDescription($order)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="mixed" width="300px" tab="??,??">
+								<autoComplete cat="orderDesc" key="{orderMeta:getDescription($order)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="mixed" width="300px" tab="{orderMeta:getId($order)},{orderMeta:getCostCenterId($order)}">
 									<headers>Description</headers>
 									<widths>310</widths>
 								</autoComplete>
@@ -297,7 +297,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<HorizontalPanel width="14px"/>
-									<widget colspan="2">
+									<widget>
 										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($custNote)}"/>
 									</widget>
 								</row>
@@ -320,7 +320,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<HorizontalPanel width="14px"/>
-									<widget colspan="2">
+									<widget>
 										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 									</widget>
 								</row>

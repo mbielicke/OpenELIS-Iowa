@@ -54,6 +54,8 @@ import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableModelEvents;
+import org.openelis.gwt.widget.table.event.TableModelListener;
 import org.openelis.metamap.FillOrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -65,7 +67,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, TableManager{
+public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, TableManager, TableModelListener{
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
@@ -132,6 +134,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         costCenterDrop = (Dropdown)getWidget(OrderMeta.getCostCenterId());
         
         fillItemsTable = (TableWidget)getWidget("fillItemsTable");
+        fillItemsTable.model.addTableModelListener(this);
         orderItemsTable = (TableWidget)getWidget("orderItemsTable");
         
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -649,4 +652,140 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
            ranAction = false;
            */
         }
+
+    //
+    //start table model listener methods
+    //
+    public void cellUpdated(SourcesTableModelEvents sender, int row, int cell) {}
+
+    public void dataChanged(SourcesTableModelEvents sender) {}
+
+    public void rowAdded(SourcesTableModelEvents sender, int rows) {}
+
+    public void rowDeleted(SourcesTableModelEvents sender, int row) {}
+
+    public void rowSelectd(SourcesTableModelEvents sender, int row) {
+   /*     //Window.alert("action()");
+        if(sender == fillItemsTable.model){
+            final DataSet tableRow;
+            
+            if(row >=0 && fillItemsTable.model.numRows() > row)
+                tableRow = fillItemsTable.model.getRow(row);
+            else 
+                tableRow = null;
+            
+            if(tableRow != null){
+             //   if(col != 0){
+                    if(CheckBox.CHECKED.equals(((CheckField)tableRow.get(0)).getValue())){
+                        //if the row is already checked we need to show the check items model
+                        loadOrderItemsTableFromModel(selectedOrderItems);
+                    }else{
+                        ModelField modelField = (ModelField)tableRow.getHidden("orderItems");
+                        if(modelField == null){
+                        //we need to look up the order items if they arent there yet
+                        window.setStatus("","spinnerIcon");
+                        
+                        NumberObject orderIdObj = new NumberObject((Integer)((NumberField)tableRow.getColumn(1)).getValue());
+                        
+                        // prepare the argument list for the getObject function
+                        DataObject[] args = new DataObject[] {orderIdObj}; 
+                        
+                        screenService.getObject("getOrderItems", args, new AsyncCallback(){
+                            public void onSuccess(Object result){
+                                if(result != null){
+                                    ModelField modelField = new ModelField();
+                                    modelField.setValue(((ModelObject)result).getValue());
+                                    tableRow.addHidden("orderItems", modelField);
+                                    
+                                    loadOrderItemsTableFromModel((DataModel)modelField.getValue());
+                                }
+                                
+                                window.setStatus("","");
+                            }
+                            
+                            public void onFailure(Throwable caught){
+                                Window.alert(caught.getMessage());
+                            }
+                        });
+                        }else
+                            loadOrderItemsTableFromModel((DataModel)modelField.getValue());
+                        
+                        
+                        if(tableRow.getHidden("streetAddress") != null && tableRow.getHidden("city") != null){
+                            orgAptSuiteText.setText((String)((StringField)tableRow.getHidden("multUnit")).getValue());
+                            orgAddressText.setText((String)((StringField)tableRow.getHidden("streetAddress")).getValue());
+                            orgCityText.setText((String)((StringField)tableRow.getHidden("city")).getValue());
+                            orgStateText.setText((String)((StringField)tableRow.getHidden("state")).getValue());
+                            orgZipCodeText.setText((String)((StringField)tableRow.getHidden("zipCode")).getValue());
+                        }
+                        
+                        if(tableRow.getHidden("requestedBy") != null)
+                            requestedByText.setText((String)((StringField)tableRow.getHidden("requestedBy")).getValue());
+                        
+                        if(tableRow.getHidden("costCenter") != null)
+                            costCenterDrop.setSelected((ArrayList)((DropDownField)tableRow.getHidden("costCenter")).getSelections());
+                    }
+                
+    
+                    else{
+                    if(tableRow.getHidden("orderItems") == null){
+                        //if(!ranAction){
+                        //    ranAction = true;
+                        //    fillOrderCheck(row, ((CheckField)tableRow.getColumn(0)).getValue().equals(CheckBox.CHECKED));
+                      //  }
+                    //}else{
+//                  we need to look up the order items if they arent there yet
+                    window.setStatus("","spinnerIcon");
+                    
+                    NumberObject orderIdObj = new NumberObject((Integer)((NumberField)tableRow.getColumn(1)).getValue());
+                    
+                    // prepare the argument list for the getObject function
+                    DataObject[] args = new DataObject[] {orderIdObj}; 
+                    
+                    screenService.getObject("getOrderItems", args, new AsyncCallback(){
+                        public void onSuccess(Object result){
+                            if(result != null){
+                                ModelField modelField = new ModelField();
+                                modelField.setValue(((ModelObject)result).getValue());
+                                tableRow.addHidden("orderItems", modelField);
+                                
+                             //   if(!ranAction){
+                             //       ranAction = true;
+                             //       fillOrderCheck(row, ((CheckField)tableRow.getColumn(0)).getValue().equals(CheckBox.CHECKED));
+                             //   }
+
+                            }
+                            
+                            window.setStatus("","");
+                        }
+                        
+                        public void onFailure(Throwable caught){
+                            Window.alert(caught.getMessage());
+                        }
+                    });
+                    }
+               // }
+                    }}            
+    
+    /*}else{
+                orgAptSuiteText.setText("");
+                orgAddressText.setText("");
+                orgCityText.setText("");
+                orgStateText.setText("");
+                orgZipCodeText.setText("");
+                requestedByText.setText("");
+                costCenterDrop.reset();
+            }
+        }
+*/
+    }
+
+    public void rowUnselected(SourcesTableModelEvents sender, int row) {}
+
+    public void rowUpdated(SourcesTableModelEvents sender, int row) {}
+
+    public void unload(SourcesTableModelEvents sender) {}
+    //
+    //end table model listener methods
+    //
 }

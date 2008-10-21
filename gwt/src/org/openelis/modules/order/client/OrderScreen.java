@@ -25,16 +25,19 @@
 */
 package org.openelis.modules.order.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.ModelObject;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -73,7 +76,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class OrderScreen extends OpenELISScreenForm implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
     
     private static boolean loaded = false;
-    private boolean startedLoadingTable = false;
     
     private static DataModel statusDropdown, costCenterDropdown, shipFromDropdown;
     
@@ -133,6 +135,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         if(sender == orgDropdown){
             if(orgDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)orgDropdown.getSelections().get(0);
+                DataMap map = (DataMap)selectedRow.getData();
                 
                 //load address
                 orgAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -141,13 +144,14 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                 //load state
                 orgState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                orgAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
+                orgAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
                 //load zipcode
-                orgZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
+                orgZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
             }            
         }else if(sender == reportToDropdown){
             if(reportToDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)reportToDropdown.getSelections().get(0);
+                DataMap map = (DataMap)selectedRow.getData();
                 
                 //load address
                 reportToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -156,13 +160,14 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                 //load state
                 reportToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                reportToAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
+                reportToAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
                 //load zipcode
-                reportToZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
+                reportToZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
             }
         }else if(sender == billToDropdown){
             if(billToDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)billToDropdown.getSelections().get(0);
+                DataMap map = (DataMap)selectedRow.getData();
                 
                 //load address
                 billToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -171,9 +176,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                 //load state
                 billToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                billToAptSuite.setText((String)((StringObject)selectedRow.get(4)).getValue());
+                billToAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
                 //load zipcode
-                billToZipCode.setText((String)((StringObject)selectedRow.get(5)).getValue());
+                billToZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
             }
         }
     }
@@ -203,6 +208,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         chain.addCommand(atozButtons);
         
         itemsTable = (TableWidget)getWidget("itemsTable");
+        itemsTable.addTableWidgetListener(this);
         itemsTable.model.enableAutoAdd(false);
         
         if("external".equals(orderType)){
@@ -336,7 +342,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     }
     
     public void add() {
-        //itemsController.setAutoAdd(true);
+        itemsTable.model.enableAutoAdd(true);
         super.add();
         
         //rpc.setFieldValue("orderType", orderType);
@@ -358,7 +364,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                 requestedBy.load((StringField)set.get(2));
                 
                 //set the values in the rpc
-                rpc.setFieldValue(OrderMeta.getStatusId(), (Integer)((DropDownField)set.get(0)).getValue());
+                rpc.setFieldValue(OrderMeta.getStatusId(), ((DropDownField)set.get(0)).getSelections());
                 rpc.setFieldValue(OrderMeta.getOrderedDate(), (String)((StringField)set.get(1)).getValue());
                 rpc.setFieldValue(OrderMeta.getRequestedBy(), (String)((StringField)set.get(2)).getValue());
                 
@@ -384,12 +390,18 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         public void onSuccess(Object result) {
     //        rpc.setFieldValue("orderType", orderType);
 
+            itemsTable.model.enableAutoAdd(true);
             orderNum.enable(false);
             orderDate.enable(false);
             
             neededInDays.setFocus(true);
         }
     };
+    
+    public void abort() {
+        itemsTable.model.enableAutoAdd(false);
+        super.abort();
+    }
     
     /*protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {   
@@ -400,6 +412,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         }
     };*/
     
+    public void commit() {
+        itemsTable.model.enableAutoAdd(false);
+        super.commit();
+    }
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
@@ -460,11 +476,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     //start table listener methods
     //
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        /*if(col == 1 && row > -1 && row < controller.model.numRows() && !startedLoadingTable){
-            startedLoadingTable = true;
-            
-            TableRow tableRow = ((EditTable)controller).model.getRow(row);
-            DropDownField invItemField = (DropDownField)tableRow.getColumn(1);
+        if(col == 1 && row < itemsTable.model.numRows()){
+            DataSet tableRow = itemsTable.model.getRow(row);
+            DropDownField invItemField = (DropDownField)tableRow.get(1);
             ArrayList selections = invItemField.getSelections();
   
             if(selections.size() > 0){
@@ -475,32 +489,36 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                     StringField locationLabel = new StringField();
                     NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
                     NumberField qtyOnHand = new NumberField(NumberObject.Type.INTEGER);
-                    storeLabel.setValue((String)((StringObject)selectedRow.getObject(1)).getValue());
+                    storeLabel.setValue((String)((StringObject)selectedRow.get(1)).getValue());
 
-                    tableRow.setColumn(2, storeLabel);
+                    tableRow.set(2, storeLabel);
                     
-                    ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setField(storeLabel);
-                    ((TableLabel)((EditTable)controller).view.table.getWidget(row, 2)).setDisplay();
-                    
-                    if(tableRow.numColumns() == 4){
-                        locationLabel.setValue((String)((StringObject)selectedRow.getObject(2)).getValue());
-                        tableRow.setColumn(3, locationLabel);
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setField(locationLabel);
-                        ((TableLabel)((EditTable)controller).view.table.getWidget(row, 3)).setDisplay();
+                    if(tableRow.size() == 4){
+                        locationLabel.setValue((String)((StringObject)selectedRow.get(2)).getValue());
+                        tableRow.set(3, locationLabel);
                         
-                        locationId.setValue((Integer)((NumberObject)selectedRow.getObject(6)).getValue());
-                        qtyOnHand.setValue((Integer)((NumberObject)selectedRow.getObject(5)).getValue());
-                        tableRow.addHidden("locationId", locationId);
-                        tableRow.addHidden("qtyOnHand", qtyOnHand);
+                        DataMap selectedMap = (DataMap)selectedRow.getData();
+                        locationId.setValue((Integer)((NumberObject)selectedMap.get("locId")).getValue());
+                        qtyOnHand.setValue((Integer)((NumberObject)selectedRow.get(5)).getValue());
+                        DataMap map = new DataMap();
+                        map.put("locationId", locationId);
+                        map.put("qtyOnHand", qtyOnHand);
+                        tableRow.setData(map);
                     }
-
-                    startedLoadingTable = false;
+                    itemsTable.model.refresh();
                 }
             }
-        }*/
+        }
     }
 
-    public void startedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        // TODO Auto-generated method stub
+        
     }
     //
     //end table listener methods
@@ -558,13 +576,21 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
             displayRPC.setFieldValue(OrderMeta.getId(), null);
             displayRPC.setFieldValue(OrderMeta.getExternalOrderNumber(), null);
             displayRPC.setFieldValue("orderType", orderType);
-            ((FormRPC)displayRPC.getField("receipts")).setFieldValue("receiptsTable", null);
-            ((FormRPC)displayRPC.getField("shippingNote")).setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(),null);
+            if(displayRPC.getField("receipts") != null){
+                ((FormRPC)displayRPC.getField("receipts")).setFieldValue("receiptsTable", null);
+                ((FormRPC)displayRPC.getField("receipts")).load = true;
+            }
+            if(displayRPC.getField("shippingNote") != null){
+                ((FormRPC)displayRPC.getField("shippingNote")).setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(),null);
+                ((FormRPC)displayRPC.getField("shippingNote")).load = true;
+            }
+            if(displayRPC.getField("custNote") != null){
+                ((FormRPC)displayRPC.getField("custNote")).setFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText(),null);
+                ((FormRPC)displayRPC.getField("custNote")).load = true;
+            }
             
             //set the load flags correctly
             ((FormRPC)displayRPC.getField("items")).load = false;
-            ((FormRPC)displayRPC.getField("shippingNote")).load = true;
-            ((FormRPC)displayRPC.getField("receipts")).load = true;
             
             DataSet tempKey = key;
             

@@ -482,20 +482,16 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                 costCenterDropdownField = getInitialModel("costCenter");
                 CachingManager.putElement("InitialData", "costCenterDropdown", costCenterDropdownField);
             }
-            if(OrderRemote.KITS.equals(action)){
-                //ship from dropdown
-                if(shipFromDropdownField == null){
-                    shipFromDropdownField = getInitialModel("shipFrom");
-                    CachingManager.putElement("InitialData", "shipFromDropdown", shipFromDropdownField);
-                }
+            //ship from dropdown
+            if(shipFromDropdownField == null){
+                shipFromDropdownField = getInitialModel("shipFrom");
+                CachingManager.putElement("InitialData", "shipFromDropdown", shipFromDropdownField);
             }
             
             returnMap.put("status", statusDropdownField);
             returnMap.put("store", storeDropdownField);
             returnMap.put("costCenter", costCenterDropdownField);
-            
-            if(OrderRemote.KITS.equals(action))
-                returnMap.put("shipFrom", shipFromDropdownField);    
+            returnMap.put("shipFrom", shipFromDropdownField);    
         }
         
         return returnMap;
@@ -626,7 +622,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         StringField dateOrdered = new StringField();
         StringField requestedBy = new StringField();
         
-        status.setValue(autoDO.getStatus());
+        status.setValue(new DataSet(new NumberObject(autoDO.getStatus())));
         dateOrdered.setValue(autoDO.getOrderedDate().toString());
         requestedBy.setValue(autoDO.getRequestedBy());
         
@@ -714,13 +710,15 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             data.add(stateObject);
             
             //hidden fields
+            DataMap map = new DataMap();
             StringObject aptSuiteObj = new StringObject();
             aptSuiteObj.setValue(aptSuite);
-            data.add(aptSuiteObj);
+            map.put("aptSuite", aptSuiteObj);
             StringObject zipCodeObj = new StringObject();
             zipCodeObj.setValue(zipCode);
-            data.add(zipCodeObj);
+            map.put("zipCode", zipCodeObj);
             
+            data.setData(map);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -820,9 +818,12 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             NumberObject qtyObject = new NumberObject(NumberObject.Type.INTEGER);
             qtyObject.setValue(qty);
             data.add(qtyObject);
+            
+            DataMap map = new DataMap();
             NumberObject locIdObject = new NumberObject(NumberObject.Type.INTEGER);
             locIdObject.setValue(locationId);
-            data.add(locIdObject);
+            map.put("locId", locIdObject);
+            data.setData(map);
                        
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -974,9 +975,14 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
             //contact data
             NumberObject itemId = (NumberObject)row.getKey();
             DataMap map = (DataMap)row.getData();
-            NumberField locationId = (NumberField)map.get("locationId");
-            NumberField qtyOnHand = (NumberField)map.get("qtyOnHand");
-            NumberField inventoryTransactionId = (NumberField)map.get("transactionId");
+            NumberField locationId = null;
+            NumberField qtyOnHand = null;
+            NumberField inventoryTransactionId = null;
+            if(map != null){
+                locationId = (NumberField)map.get("locationId");
+                qtyOnHand = (NumberField)map.get("qtyOnHand");
+                inventoryTransactionId = (NumberField)map.get("transactionId");
+            }
 
             if(itemId != null)
                 orderItemDO.setId((Integer)itemId.getValue());
@@ -1189,7 +1195,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
                     if(orderItemRow.getQuantityOnHand() != null)
                         map.put("qtyOnHand", qtyOnHand);
                     
-                    if(orderItemRow.getTransactionId() != null)
+                    if(orderItemRow.getTransactionId() != null && !forDuplicate)
                         map.put("transactionId", inventoryTransactionId);
                     
                     row.setData(map);
