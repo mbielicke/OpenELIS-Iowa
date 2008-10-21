@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel">
-				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="23" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
+				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="22" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -258,7 +258,7 @@ UIRF Software License are applicable instead of those above.
 					<tab key="componentsTab" text="{resource:getString($constants,'components')}">
 							<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="componentsTable" manager="this" maxRows="9" title="" showError="false" showScroll="ALWAYS">
+								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>125,335,104</widths>
@@ -308,7 +308,7 @@ UIRF Software License are applicable instead of those above.
 					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
 						<VerticalPanel spacing="0" padding="0">
 							<widget valign="top">
-								<table width="auto" key="locQuantitiesTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+								<table width="auto" key="locQuantitiesTable" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>

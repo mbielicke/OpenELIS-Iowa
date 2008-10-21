@@ -360,7 +360,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<HorizontalPanel layout="horizontal" width="14px" xsi:type="Panel"/>
-									<widget colspan="2">
+									<widget>
 										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 									</widget>
 								</row>

@@ -47,6 +47,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -379,15 +380,10 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             qtyOnHand.setValue(locDO.getQuantityOnHand());
             
             //inventory item set
-            DataSet inventoryItemSet = new DataSet();
-            NumberObject itemId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject itemText = new StringObject();
-            itemId.setValue(locDO.getInventoryItemId());
-            itemText.setValue(locDO.getInventoryItem());            
-            inventoryItemSet.setKey(itemId);
-            inventoryItemSet.add(itemText);
-            inventoryItem.setValue(inventoryItemSet);
-            
+            DataModel itemModel = new DataModel();
+            itemModel.add(new NumberObject(locDO.getInventoryItemId()),new StringObject(locDO.getInventoryItem()));
+            inventoryItem.setModel(itemModel);
+            inventoryItem.setValue(itemModel.get(0));
             
             set.add(locationId);
             set.add(inventoryItem);
@@ -400,6 +396,11 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         modelObj.setValue(model);        
         
         return modelObj;
+    }
+    
+    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
+        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+        
     }
 
     public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, DataObject> params) throws RPCException {
@@ -471,8 +472,8 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             
             NumberObject locNumObject = new NumberObject(NumberObject.Type.INTEGER);
             locNumObject.setValue(locId);
-            data.add(locNumObject);
-                       
+            data.setData(locNumObject);
+           
             //add the dataset to the datamodel
             dataModel.add(data);                                 
 
@@ -596,7 +597,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
                DataSet row = childModel.createNewSet();
                
                NumberObject id = new NumberObject(childDO.getId());
-               row.setData(id);
+               row.setKey(id);
                
                row.get(0).setValue(childDO.getLocationId());
                

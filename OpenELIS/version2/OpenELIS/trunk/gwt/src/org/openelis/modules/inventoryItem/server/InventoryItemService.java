@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.catalina.logger.SystemOutLogger;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameStoreDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -38,7 +37,6 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -83,7 +81,7 @@ import org.w3c.dom.Element;
 public class InventoryItemService implements AppScreenFormServiceInt, 
 									     AutoCompleteServiceInt {
     
-    private static final int leftTableRowsPerPage = 23;
+    private static final int leftTableRowsPerPage = 22;
     
     private static final InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
@@ -539,7 +537,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
                 InventoryComponentDO componentRow = (InventoryComponentDO)componentsList.get(iter);
     
                    DataSet row = componentsModel.createNewSet();
-                   NumberField id = new NumberField(NumberObject.Type.INTEGER);
+                   NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
                    
                    if(componentRow.getId() != null && !forDuplicate){
                        id.setValue(componentRow.getId());
@@ -812,7 +810,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             InventoryComponentDO componentDO = new InventoryComponentDO();
             DataSet row = componentsTable.get(i);
             //hidden data
-            NumberField id = (NumberField)row.getKey();
+            NumberObject id = (NumberObject)row.getKey();
 
             if(id != null)
                 componentDO.setId((Integer)id.getValue());

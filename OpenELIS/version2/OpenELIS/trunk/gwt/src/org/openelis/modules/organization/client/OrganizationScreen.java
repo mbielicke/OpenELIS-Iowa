@@ -192,9 +192,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     public void add() {
-
         super.add();
 
+        contactsTable.model.enableAutoAdd(true);
+        
         //
         // disable / remove anything that is not editable
         //
@@ -208,8 +209,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
+            contactsTable.model.enableAutoAdd(true);
             orgId.enable(false);
             orgName.setFocus(true);
+            
         }
     };
 
