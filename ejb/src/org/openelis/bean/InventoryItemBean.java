@@ -427,6 +427,10 @@ public class InventoryItemBean implements InventoryItemRemote{
     }
     
     private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, List exceptionList){
+        //if the component is flagged for deletion dont validate
+        if(componentDO.getDelete())
+            return;
+        
         //component required
         if(componentDO.getComponentNameId() == null){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, invItemMap.INVENTORY_COMPONENT.getComponentId()));

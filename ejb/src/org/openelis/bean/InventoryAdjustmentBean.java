@@ -250,6 +250,8 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
                 if (transaction.getId() == null) {
                     manager.persist(transaction);
                 }
+           }else{
+               manager.remove(transaction);
            }
         }
         
