@@ -137,7 +137,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         adjustmentDateText.enable(false);
         userText.enable(false);
         
-        DataObject[] args = new DataObject[0]; 
+        Data[] args = new Data[0]; 
         
         screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
             public void onSuccess(Object result){    

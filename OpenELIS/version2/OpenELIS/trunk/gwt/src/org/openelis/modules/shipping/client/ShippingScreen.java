@@ -28,6 +28,7 @@ package org.openelis.modules.shipping.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -191,7 +192,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       DataObject[] args = new DataObject[0]; 
+       Data[] args = new Data[0]; 
          
        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
            public void onSuccess(Object result){    

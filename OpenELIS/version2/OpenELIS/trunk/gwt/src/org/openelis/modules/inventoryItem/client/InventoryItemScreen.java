@@ -428,7 +428,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
                     final NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
                       
                     // prepare the argument list for the getObject function
-                    DataObject[] args = new DataObject[] {componentIdObj}; 
+                    Data[] args = new Data[] {componentIdObj}; 
                       
                     screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
                         public void onSuccess(Object result){
