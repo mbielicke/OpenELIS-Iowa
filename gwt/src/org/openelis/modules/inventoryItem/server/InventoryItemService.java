@@ -48,12 +48,12 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -284,7 +284,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
         
-        InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+        InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
@@ -309,7 +309,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
-        InventoryItemDO inventoryItemDO = remote.getInventoryItem((Integer)key.getKey().getValue());
+        InventoryItemDO inventoryItemDO = remote.getInventoryItem((Integer)((DataObject)key.getKey()).getValue());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
@@ -336,7 +336,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         try{
-            inventoryItemDO = remote.getInventoryItemAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+            inventoryItemDO = remote.getInventoryItemAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
@@ -383,7 +383,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
     }
 
-    public HashMap<String,DataObject> getXMLData() throws RPCException {
+    public HashMap<String,Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl"));
         
@@ -407,7 +407,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
             CachingManager.putElement("InitialData", "inventoryItemUnitsDropdown", unitsDropdownField);
         }
         
-        HashMap<String,DataObject> map = new HashMap<String,DataObject>();
+        HashMap<String,Data> map = new HashMap<String,Data>();
         map.put("xml", xml);
         map.put("categories", categoriesDropdownField);
         map.put("stores", storesDropdownField);
@@ -416,7 +416,7 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return map;
     }
 
-    public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
+    public HashMap<String,Data> getXMLData(HashMap<String,Data> args) throws RPCException {
     	return null;
     }
     
@@ -609,8 +609,8 @@ public class InventoryItemService implements AppScreenFormServiceInt,
         return locationsModel;
     }
     
-    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
-        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
+        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
         
     }
     

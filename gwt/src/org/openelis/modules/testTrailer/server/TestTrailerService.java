@@ -42,6 +42,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -118,7 +119,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
                 id.setValue(idResult);
                 
                 row.setKey(id);         
-                row.addObject(name);
+                row.add(name);
                 model.add(row);
                 i++;
              } 
@@ -203,7 +204,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 
 		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
 		if(exceptionList.size() > 0){
 			setRpcErrors(exceptionList, rpcReturn);
 			
@@ -211,7 +212,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		} 
 		
 		try {
-			remote.deleteTestTrailer((Integer)key.getKey().getValue());
+			remote.deleteTestTrailer((Integer)((DataObject)key.getKey()).getValue());
 			
 		} catch (Exception e) {
 			exceptionList = new ArrayList();
@@ -231,7 +232,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
     		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     		
     		
-    		TestTrailerDO testTrailerDO = remote.getTestTrailerAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+    		TestTrailerDO testTrailerDO = remote.getTestTrailerAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, testTrailerDO);
@@ -243,7 +244,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 //		remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		
-		TestTrailerDO testTrailerDO = remote.getTestTrailer((Integer)key.getKey().getValue());
+		TestTrailerDO testTrailerDO = remote.getTestTrailer((Integer)((DataObject)key.getKey()).getValue());
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpcReturn, testTrailerDO);
@@ -257,7 +258,7 @@ public class TestTrailerService implements AppScreenFormServiceInt {
 		TestTrailerDO testTrailerDO = new TestTrailerDO();
 		
 		try{
-			testTrailerDO = remote.getTestTrailerAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+			testTrailerDO = remote.getTestTrailerAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}

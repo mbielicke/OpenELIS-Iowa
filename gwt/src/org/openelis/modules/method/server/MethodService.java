@@ -40,6 +40,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -125,7 +126,7 @@ public class MethodService implements AppScreenFormServiceInt {
     
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-        Integer methodId = (Integer)key.getKey().getValue();
+        Integer methodId = (Integer)((DataObject)key.getKey()).getValue();
         MethodDO methodDO = new MethodDO();
         try{
             methodDO = remote.getMethodAndUnlock(methodId,SessionManager.getSession().getId());
@@ -198,7 +199,7 @@ public class MethodService implements AppScreenFormServiceInt {
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-        Integer methodId = (Integer)key.getKey().getValue();
+        Integer methodId = (Integer)((DataObject)key.getKey()).getValue();
         MethodDO methodDO = remote.getMethod(methodId);
         setFieldsInRPC(rpcReturn, methodDO);
         return rpcReturn;
@@ -206,7 +207,7 @@ public class MethodService implements AppScreenFormServiceInt {
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-        Integer methodId = (Integer)key.getKey().getValue();
+        Integer methodId = (Integer)((DataObject)key.getKey()).getValue();
         MethodDO methodDO = new MethodDO();
         try{
             methodDO = remote.getMethodAndLock(methodId,SessionManager.getSession().getId());
@@ -221,16 +222,16 @@ public class MethodService implements AppScreenFormServiceInt {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap<String, Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl"));
                         
-        HashMap<String, DataObject> map = new HashMap<String, DataObject>();
+        HashMap<String, Data> map = new HashMap<String, Data>();
         map.put("xml", xml);
         return map;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -46,13 +46,13 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -254,8 +254,7 @@ public class ShippingService implements
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
 
-        ShippingDO shippingDO = remote.getShipmentAndUnlock((Integer)key.getKey()
-                                                                        .getValue());
+        ShippingDO shippingDO = remote.getShipmentAndUnlock((Integer)((DataObject)key.getKey()).getValue());
 
         // set the fields in the RPC
         setFieldsInRPC(rpcReturn, shippingDO);
@@ -274,8 +273,7 @@ public class ShippingService implements
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
 
         // get the shipping record
-        ShippingDO shippingDO = remote.getShipment((Integer)key.getKey()
-                                                               .getValue());
+        ShippingDO shippingDO = remote.getShipment((Integer)((DataObject)key.getKey()).getValue());
 
         // set the fields in the RPC
         setFieldsInRPC(rpcReturn, shippingDO);
@@ -295,8 +293,7 @@ public class ShippingService implements
 
         ShippingDO shippingDO = new ShippingDO();
         try {
-            shippingDO = remote.getShipmentAndLock((Integer)key.getKey()
-                                                               .getValue());
+            shippingDO = remote.getShipmentAndLock((Integer)((DataObject)key.getKey()).getValue());
         } catch (Exception e) {
             throw new RPCException(e.getMessage());
         }
@@ -317,7 +314,7 @@ public class ShippingService implements
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap<String, Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl"));
 
@@ -359,15 +356,14 @@ public class ShippingService implements
         return map;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
     public FormRPC loadTrackingNumbers(DataSet key, FormRPC rpcReturn) throws RPCException {
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
-        List trackingNumbersList = remote.getTrackingNumbers((Integer)key.getKey()
-                                                             .getValue());
+        List trackingNumbersList = remote.getTrackingNumbers((Integer)((DataObject)key.getKey()).getValue());
         DataModel trackingNumbersModel = (DataModel)rpcReturn.getFieldValue("trackingNumbersTable");
 
         try 
@@ -397,7 +393,7 @@ public class ShippingService implements
     
     public FormRPC loadShippingItems(DataSet key, FormRPC rpcReturn) throws RPCException {
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
-        List shippingItemsList = remote.getShippingItems((Integer)key.getKey().getValue());
+        List shippingItemsList = remote.getShippingItems((Integer)((DataObject)key.getKey()).getValue());
         DataModel shippingItemsModel = (DataModel)rpcReturn.getFieldValue("itemsTable");
 
         try 
@@ -491,8 +487,7 @@ public class ShippingService implements
         return returnModel;
     }
 
-    public ModelObject getAddAutoFillValues() throws Exception {
-        ModelObject modelObj = new ModelObject();
+    public DataModel getAddAutoFillValues() throws Exception {
         DataModel model = new DataModel();
         DataSet set = new DataSet();
 
@@ -518,9 +513,7 @@ public class ShippingService implements
 
         model.add(set);
 
-        modelObj.setValue(model);
-
-        return modelObj;
+        return model;
     }
 
     private ShippingDO getShippingDOFromRPC(FormRPC rpcSend) {

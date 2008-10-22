@@ -26,13 +26,12 @@
 package org.openelis.modules.buildKits.client;
 
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -81,12 +80,12 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
         if(sender == kitDropdown && kitDropdown.getSelections().size() > 0){
             NumberObject idObj = (NumberObject)((DataSet)kitDropdown.getSelections().get(0)).getKey();
             // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {idObj}; 
+            Data[] args = new Data[] {idObj}; 
             
             
             screenService.getObject("getComponentsFromId", args, new AsyncCallback() {
                 public void onSuccess(Object result) {
-                   DataModel model = (DataModel)((ModelObject)result).getValue();
+                   DataModel model = (DataModel)result;
                    
                    subItemsTable.model.clear();
 
@@ -225,7 +224,6 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
     //
     public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         StringObject catObj = new StringObject(widget.cat);
-        ModelObject modelObj = new ModelObject(model);
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
         
@@ -236,12 +234,12 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
         }
         
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                widget.showAutoMatches((DataModel)((ModelObject)result).getValue());
+                widget.showAutoMatches((DataModel)result);
             }
             
             public void onFailure(Throwable caught) {

@@ -47,6 +47,7 @@ import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -280,7 +281,7 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)key.getKey().getValue();
+            Integer providerId = (Integer)((DataObject)key.getKey()).getValue();
             
             
             ProviderDO provDO = new ProviderDO();
@@ -307,7 +308,7 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {        
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)key.getKey().getValue();
+            Integer providerId = (Integer)((DataObject)key.getKey()).getValue();
                     
             ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
     //      set the fields in the RPC
@@ -339,7 +340,7 @@ public class ProviderService implements AppScreenFormServiceInt{
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)key.getKey().getValue();
+            Integer providerId = (Integer)((DataObject)key.getKey()).getValue();
             
             
             ProviderDO provDO = new ProviderDO();

@@ -42,6 +42,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -193,14 +194,14 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        List<Exception> exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+        List<Exception> exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
             setRpcErrors(exceptionList, rpcReturn);              
             return rpcReturn;
         }
         try{
-            remote.deleteLabel((Integer)key.getKey().getValue());
+            remote.deleteLabel((Integer)((DataObject)key.getKey()).getValue());
         }catch(Exception e){
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
@@ -215,7 +216,7 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = (Integer)key.getKey().getValue();
+        Integer labelId = (Integer)((DataObject)key.getKey()).getValue();
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndUnlock(labelId, SessionManager.getSession().getId());
@@ -229,7 +230,7 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = (Integer)key.getKey().getValue();
+        Integer labelId = (Integer)((DataObject)key.getKey()).getValue();
 
         LabelDO labelDO = remote.getLabel(labelId);
         
@@ -241,7 +242,7 @@ public class LabelService implements AppScreenFormServiceInt {
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = (Integer)key.getKey().getValue();
+        Integer labelId = (Integer)((DataObject)key.getKey()).getValue();
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndLock(labelId, SessionManager.getSession().getId());

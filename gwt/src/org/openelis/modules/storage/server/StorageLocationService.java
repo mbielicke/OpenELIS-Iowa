@@ -45,6 +45,7 @@ import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
@@ -228,7 +229,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
 		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
 		if(exceptionList.size() > 0){
 			setRpcErrors(exceptionList, null, rpcReturn);
 			
@@ -236,7 +237,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		} 
 		
 		try {
-			remote.deleteStorageLoc((Integer)key.getKey().getValue());
+			remote.deleteStorageLoc((Integer)((DataObject)key.getKey()).getValue());
 			
 		} catch (Exception e) {
 			exceptionList = new ArrayList();
@@ -257,13 +258,13 @@ public class StorageLocationService implements AppScreenFormServiceInt,
     		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     		
     		
-    		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+    		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, storageLocDO);
             
     //		load the children
-            List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
+            List childrenList = remote.getStorageLocChildren((Integer)((DataObject)key.getKey()).getValue());
             //need to build the children table now...
             DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
             rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -275,13 +276,13 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
-		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)key.getKey().getValue());
+		StorageLocationDO storageLocDO = remote.getStorageLoc((Integer)((DataObject)key.getKey()).getValue());
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
+        List childrenList = remote.getStorageLocChildren((Integer)((DataObject)key.getKey()).getValue());
         //need to build the children table now...
         DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);
@@ -295,7 +296,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		StorageLocationDO storageLocDO = new StorageLocationDO();
 		
 		try{
-			storageLocDO = remote.getStorageLocAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+			storageLocDO = remote.getStorageLocAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}
@@ -304,7 +305,7 @@ public class StorageLocationService implements AppScreenFormServiceInt,
 		setFieldsInRPC(rpcReturn, storageLocDO);
 		
 //		load the children
-        List childrenList = remote.getStorageLocChildren((Integer)key.getKey().getValue());
+        List childrenList = remote.getStorageLocChildren((Integer)((DataObject)key.getKey()).getValue());
         //need to build the children table now...
         DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("childStorageLocsTable").getValue(),childrenList);
         rpcReturn.setFieldValue("childStorageLocsTable",rmodel);

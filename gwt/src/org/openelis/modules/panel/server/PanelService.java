@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.PanelItemDO;
@@ -43,6 +42,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -70,9 +70,9 @@ public class PanelService implements AppScreenFormServiceInt {
     
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = remote.getPanel((Integer)key.getKey().getValue());
+        PanelDO panelDO = remote.getPanel((Integer)((DataObject)key.getKey()).getValue());
         setFieldsInRPC(rpcReturn, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)key.getKey().getValue());
+        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)((DataObject)key.getKey()).getValue());
         fillPanelItems(itemDOList, rpcReturn);
         return rpcReturn;
     }
@@ -112,7 +112,7 @@ public class PanelService implements AppScreenFormServiceInt {
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         try{
-            remote.deletePanel((Integer)key.getKey().getValue());
+            remote.deletePanel((Integer)((DataObject)key.getKey()).getValue());
         }catch(Exception e){
             e.printStackTrace();
             throw new RPCException(e.getMessage());
@@ -218,9 +218,9 @@ public class PanelService implements AppScreenFormServiceInt {
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = remote.getPanel((Integer)key.getKey().getValue());
+        PanelDO panelDO = remote.getPanel((Integer)((DataObject)key.getKey()).getValue());
         setFieldsInRPC(rpcReturn, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)key.getKey().getValue());
+        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)((DataObject)key.getKey()).getValue());
         fillPanelItems(itemDOList, rpcReturn);
         return rpcReturn;
     }
@@ -229,7 +229,7 @@ public class PanelService implements AppScreenFormServiceInt {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         PanelDO panelDO = new PanelDO();
         try{ 
-         panelDO = remote.getPanelAndLock((Integer)key.getKey().getValue(),
+         panelDO = remote.getPanelAndLock((Integer)((DataObject)key.getKey()).getValue(),
                                           SessionManager.getSession().getId());
          
         }catch(Exception ex){
@@ -237,7 +237,7 @@ public class PanelService implements AppScreenFormServiceInt {
             throw new RPCException(ex.getMessage());
         } 
         setFieldsInRPC(rpcReturn, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)key.getKey().getValue());
+        List<PanelItemDO> itemDOList = remote.getPanelItems((Integer)((DataObject)key.getKey()).getValue());
         fillPanelItems(itemDOList, rpcReturn);
         return rpcReturn;
     }
@@ -246,11 +246,11 @@ public class PanelService implements AppScreenFormServiceInt {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap<String, Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl"));
                         
-        HashMap<String, DataObject> map = new HashMap<String, DataObject>();
+        HashMap<String, Data> map = new HashMap<String, Data>();
         DataModel testMethodNamesModelField = (DataModel)CachingManager.getElement("InitialData","testMethodNamesModel");
         if (testMethodNamesModelField == null) {
             testMethodNamesModelField = getTestMethodNames();
@@ -264,7 +264,7 @@ public class PanelService implements AppScreenFormServiceInt {
         return map;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

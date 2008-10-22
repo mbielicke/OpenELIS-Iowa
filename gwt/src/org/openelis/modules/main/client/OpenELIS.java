@@ -423,7 +423,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       if(args == null)
                                           return new TableTree();
                                       else if(args[0] instanceof Node)
-                                          return new TableTree((Node)args[0]);
+                                          return new TableTree((Node)args[0], (ScreenBase)args[1]);
                                       return null;
                                   }
       });

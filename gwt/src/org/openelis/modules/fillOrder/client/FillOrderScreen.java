@@ -28,8 +28,8 @@ package org.openelis.modules.fillOrder.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -37,8 +37,6 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -281,15 +279,12 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
             load();
             enable(false);
             
-            ModelObject modelObj = new ModelObject();
-            modelObj.setValue(keyList.getList());
-            
             // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {modelObj}; 
+            Data[] args = new Data[] {keyList.getList()}; 
             
             screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback(){
                 public void onSuccess(Object result){                    
-                    DataModel model = (DataModel)((ModelObject)result).getValue();
+                    DataModel model = (DataModel)result;
                     
                     keyList.setModel(model);
                     keyList.select(0);
@@ -545,9 +540,9 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         if(row != null){
             DataMap map = (DataMap)row.getData();
             pickerWindow.setContent(new ShippingScreen((Integer)((DropDownField)row.get(4)).getValue(), (Integer)((DropDownField)row.get(5)).getValue(), 
-                                                       (String)((DropDownField)row.get(5)).getTextValue(), (String)map.get("multUnit").getValue(), 
-                                                       (String)map.get("streetAddress").getValue(), (String)map.get("city").getValue(), (String)map.get("state").getValue(), 
-                                                       (String)map.get("zipCode").getValue(), selectedOrderItems));
+                                                       (String)((DropDownField)row.get(5)).getTextValue(), (String)((DataObject)map.get("multUnit")).getValue(), 
+                                                       (String)((DataObject)map.get("streetAddress")).getValue(), (String)((DataObject)map.get("city")).getValue(), (String)((DataObject)map.get("state")).getValue(), 
+                                                       (String)((DataObject)map.get("zipCode")).getValue(), selectedOrderItems));
     
             shippingPopupPanel.add(pickerWindow);
             int left = this.getAbsoluteLeft();

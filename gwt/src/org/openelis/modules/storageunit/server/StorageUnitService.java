@@ -41,6 +41,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -218,7 +219,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
 		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
 		if(exceptionList.size() > 0){
 			setRpcErrors(exceptionList, rpcReturn);
 			
@@ -226,7 +227,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		} 
 
 		try {
-			remote.deleteStorageUnit((Integer) key.getKey().getValue());
+			remote.deleteStorageUnit((Integer)((DataObject)key.getKey()).getValue());
 
 		} catch (Exception e) {
 			exceptionList = new ArrayList();
@@ -247,7 +248,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
     			.lookup("openelis/StorageUnitBean/remote");
     
     	StorageUnitDO storageUnitDO = remote
-    			.getStorageUnitAndUnlock((Integer) key.getKey().getValue(), SessionManager.getSession().getId());
+    			.getStorageUnitAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
     
     	// set the fields in the RPC
     	setFieldsInRPC(rpcReturn, storageUnitDO);
@@ -260,8 +261,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
 
-		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer) key
-				.getKey().getValue());
+		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)((DataObject)key.getKey()).getValue());
 
 		// set the fields in the RPC
 		setFieldsInRPC(rpcReturn, storageUnitDO);
@@ -277,8 +277,7 @@ public class StorageUnitService implements AppScreenFormServiceInt,
 
 		StorageUnitDO storageUnitDO = new StorageUnitDO();
 		try {
-			storageUnitDO = remote.getStorageUnitAndLock((Integer) key.getKey()
-					.getValue(), SessionManager.getSession().getId());
+			storageUnitDO = remote.getStorageUnitAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
 		} catch (Exception e) {
 			throw new RPCException(e.getMessage());
 		}

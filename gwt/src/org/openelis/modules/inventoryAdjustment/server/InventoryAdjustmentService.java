@@ -36,7 +36,6 @@ import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryItemAutoDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -47,13 +46,13 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -84,13 +83,13 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");        
         
-        InventoryAdjustmentDO invAdjustmentDO = remote.getInventoryAdjustmentAndUnlock((Integer)key.getKey().getValue());
+        InventoryAdjustmentDO invAdjustmentDO = remote.getInventoryAdjustmentAndUnlock((Integer)((DataObject)key.getKey()).getValue());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, invAdjustmentDO);
 
         //load the adjustment child records
-        List childList = remote.getChildRecordsAndUnlock((Integer)key.getKey().getValue());
+        List childList = remote.getChildRecordsAndUnlock((Integer)((DataObject)key.getKey()).getValue());
         DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
         rpcReturn.setFieldValue("adjustmentsTable",rmodel);
         
@@ -264,13 +263,13 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         //remote interface to call the organization bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
-        InventoryAdjustmentDO inventoryAdjustmentDO = remote.getInventoryAdjustment((Integer)key.getKey().getValue());
+        InventoryAdjustmentDO inventoryAdjustmentDO = remote.getInventoryAdjustment((Integer)((DataObject)key.getKey()).getValue());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryAdjustmentDO);
 
         //load the adjustment child records
-        List childList = remote.getChildRecords((Integer)key.getKey().getValue());
+        List childList = remote.getChildRecords((Integer)((DataObject)key.getKey()).getValue());
         DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
         rpcReturn.setFieldValue("adjustmentsTable",rmodel);
         
@@ -285,8 +284,8 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         List childList;
         
         try{
-            invAdjustmentDO = remote.getInventoryAdjustmentAndLock((Integer)key.getKey().getValue());
-            childList = remote.getChildRecordsAndLock((Integer)key.getKey().getValue());
+            invAdjustmentDO = remote.getInventoryAdjustmentAndLock((Integer)((DataObject)key.getKey()).getValue());
+            childList = remote.getChildRecordsAndLock((Integer)((DataObject)key.getKey()).getValue());
             
         }catch(Exception e){
             throw new RPCException(e.getMessage());
@@ -316,7 +315,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             CachingManager.putElement("InitialData", "inventoryItemStoresDropdown", storesDropdownField);
         }
                 
-        HashMap<String,DataObject> map = new HashMap<String,DataObject>();
+        HashMap<String,Data> map = new HashMap<String,Data>();
         map.put("xml", xml);
         map.put("stores", storesDropdownField);
         
@@ -328,8 +327,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         return null;
     }
     
-    public ModelObject getAddAutoFillValues() throws Exception {
-        ModelObject modelObj = new ModelObject();
+    public DataModel getAddAutoFillValues() throws Exception {
         DataModel model = new DataModel();
         DataSet set = new DataSet();
         
@@ -352,17 +350,14 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
         
         model.add(set);
         
-        modelObj.setValue(model);
-        
-        return modelObj;
+        return model;
     }
     
-    public ModelObject getInventoryItemInformation(NumberObject locId, NumberObject storeId){
+    public DataModel getInventoryItemInformation(NumberObject locId, NumberObject storeId){
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
         List invLocationRecords = remote.getInventoryitemData((Integer)locId.getValue(), (Integer)storeId.getValue());
 
-        ModelObject modelObj = new ModelObject();
         DataModel model = new DataModel(); 
          
         for(int i=0; i<invLocationRecords.size(); i++){
@@ -393,24 +388,22 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt, Auto
             model.add(set);
         }
         
-        modelObj.setValue(model);        
-        
-        return modelObj;
+        return model;
     }
     
-    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
-        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
+        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
         
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, DataObject> params) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, Data> params) throws RPCException {
         if(cat.equals("inventoryItem"))
             return getInventoryItemMatches(match, params);
         
         return null;
     }
     
-    private DataModel getInventoryItemMatches(String match, HashMap<String, DataObject> params) throws RPCException{
+    private DataModel getInventoryItemMatches(String match, HashMap<String, Data> params) throws RPCException{
          Integer storeId = (Integer)((DropDownField)params.get("storeId")).getValue();
          
         if(storeId == null || storeId == 0){
