@@ -350,7 +350,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         
         window.setStatus("","spinnerIcon");
           
-        DataObject[] args = new DataObject[0]; 
+        Data[] args = new Data[0]; 
           
         screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
             public void onSuccess(Object result){    

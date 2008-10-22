@@ -391,7 +391,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             NumberObject orderIdObj = new NumberObject((Integer)((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
             
             // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {orderIdObj}; 
+            Data[] args = new Data[] {orderIdObj}; 
             
             screenService.getObject("getReceipts", args, new AsyncCallback(){
                 public void onSuccess(Object result){    
@@ -558,7 +558,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             window.setStatus("","spinnerIcon");
             
             //prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {upcValue}; 
+            Data[] args = new Data[] {upcValue}; 
             
             screenService.getObject("getInvItemFromUPC", args, new AsyncCallback(){
                 public void onSuccess(Object result){   
