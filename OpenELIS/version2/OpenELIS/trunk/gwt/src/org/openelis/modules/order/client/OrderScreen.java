@@ -30,13 +30,13 @@ import java.util.HashMap;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -355,7 +355,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
             public void onSuccess(Object result){    
               // get the datamodel, load the fields in the form
-                DataModel model = (DataModel) ((ModelObject)result).getValue();
+                DataModel model = (DataModel)result;
                 DataSet set = model.get(0);
 
                 //load the values
@@ -572,7 +572,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     private void onDuplicateRecordClick(){
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
-            FormRPC displayRPC = rpc.clone();
+            FormRPC displayRPC = (FormRPC)rpc.clone();
             displayRPC.setFieldValue(OrderMeta.getId(), null);
             displayRPC.setFieldValue(OrderMeta.getExternalOrderNumber(), null);
             displayRPC.setFieldValue("orderType", orderType);
@@ -614,7 +614,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, new BooleanObject(forDuplicate), new StringObject(orderType), rpc.getField("items")};
+        Data[] args = new Data[] {key, new BooleanObject(forDuplicate), new StringObject(orderType), rpc.getField("items")};
 
         screenService.getObject("loadItems", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -641,7 +641,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, rpc.getField("receipts")};
+        Data[] args = new Data[] {key, rpc.getField("receipts")};
 
         screenService.getObject("loadReceipts", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -664,7 +664,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, rpc.getField("custNote")};
+        Data[] args = new Data[] {key, rpc.getField("custNote")};
 
         screenService.getObject("loadCustomerNotes", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -687,7 +687,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, rpc.getField("shippingNote")};
+        Data[] args = new Data[] {key, rpc.getField("shippingNote")};
 
         screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -710,7 +710,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, rpc.getField("reportToBillTo")};
+        Data[] args = new Data[] {key, rpc.getField("reportToBillTo")};
 
         screenService.getObject("loadReportToBillTo", args, new AsyncCallback() {
             public void onSuccess(Object result) {

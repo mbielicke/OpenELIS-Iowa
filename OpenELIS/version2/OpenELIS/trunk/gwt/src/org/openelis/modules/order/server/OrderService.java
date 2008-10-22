@@ -51,9 +51,9 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -336,7 +336,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         String orderType = (String)rpcReturn.getFieldValue("orderType");
         StringObject orderTypeObj = new StringObject(orderType);
         
-        OrderDO orderDO = remote.getOrderAndUnlock((Integer)key.getKey().getValue(), orderType, SessionManager.getSession().getId());
+        OrderDO orderDO = remote.getOrderAndUnlock((Integer)((DataObject)key.getKey()).getValue(), orderType, SessionManager.getSession().getId());
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, orderDO);
@@ -376,7 +376,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         String orderType = (String)rpcReturn.getFieldValue("orderType");
         StringObject orderTypeObj = new StringObject(orderType);
         
-        OrderDO orderDO = remote.getOrder((Integer)key.getKey().getValue(), orderType);
+        OrderDO orderDO = remote.getOrder((Integer)((DataObject)key.getKey()).getValue(), orderType);
 
         //set the fields in the RPC
         setFieldsInRPC(rpcReturn, orderDO);
@@ -410,7 +410,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         OrderDO orderDO = new OrderDO();
         try{
-            orderDO = remote.getOrderAndLock((Integer)key.getKey().getValue(), orderType, SessionManager.getSession().getId());
+            orderDO = remote.getOrderAndLock((Integer)((DataObject)key.getKey()).getValue(), orderType, SessionManager.getSession().getId());
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
@@ -608,8 +608,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         return returnModel;
     }
     
-    public ModelObject getAddAutoFillValues() throws Exception {
-        ModelObject modelObj = new ModelObject();
+    public DataModel getAddAutoFillValues() throws Exception {
         DataModel model = new DataModel();
         DataSet set = new DataSet();
         
@@ -632,9 +631,7 @@ public class OrderService implements AppScreenFormServiceInt, AutoCompleteServic
         
         model.add(set);
         
-        modelObj.setValue(model);
-        
-        return modelObj;
+        return model;
     }
 
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {

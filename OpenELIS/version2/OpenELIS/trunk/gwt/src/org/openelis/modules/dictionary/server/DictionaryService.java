@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
@@ -235,7 +236,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            Integer categoryId = (Integer)key.getKey().getValue();
+            Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();
     
             CategoryDO catDO = new CategoryDO();
              try{
@@ -255,7 +256,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {               
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer categoryId = (Integer)key.getKey().getValue();        
+        Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();        
         CategoryDO catDO = remote.getCategory(categoryId);
 //      set the fields in the RPC
                     
@@ -269,7 +270,7 @@ public class DictionaryService implements AppScreenFormServiceInt,
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer categoryId = (Integer)key.getKey().getValue();
+        Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();
 
         CategoryDO catDO = new CategoryDO();
          try{

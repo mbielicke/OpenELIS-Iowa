@@ -26,18 +26,8 @@
 package org.openelis.modules.provider.client;
 
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -61,6 +51,17 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ProviderScreen extends OpenELISScreenForm implements ClickListener, 
                                                                   TabListener,
@@ -315,7 +316,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadNotes", new DataObject[] {key,rpc.getField("notes")}, new AsyncCallback(){
+       screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback(){
            public void onSuccess(Object result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
                load((FormRPC)result);
@@ -336,7 +337,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadAddresses", new DataObject[] {key,rpc.getField("addresses")}, new AsyncCallback() {
+       screenService.getObject("loadAddresses", new Data[] {key,rpc.getField("addresses")}, new AsyncCallback() {
            public void onSuccess(Object result) {
               
                load((FormRPC)result);

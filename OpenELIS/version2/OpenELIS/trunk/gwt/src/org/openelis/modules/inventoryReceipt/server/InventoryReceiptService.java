@@ -34,7 +34,6 @@ import java.util.List;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.OrganizationAutoDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FieldErrorException;
@@ -47,13 +46,12 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -107,8 +105,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
             fields.remove("receiptsTable");
             
-            if(isQueryEmpty(rpcSend))
-                throw new QueryException(openElisConstants.getString("emptyQueryException"));
+            //TODO add backif(isQueryEmpty(rpcSend))
+                //throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
                 receipts = remote.query(fields,0,leftTableRowsPerPage);
@@ -133,9 +131,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         return model;
     }
     
-    public ModelObject commitQueryAndLock(ModelObject modelObj) throws RPCException {
+    public DataModel commitQueryAndLock(DataModel model) throws RPCException {
         List receipts;
-        DataModel model = (DataModel)modelObj.getValue();
         FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
 
         if(rpc == null)
@@ -154,14 +151,12 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         
         //fill the model with the query results
         fillModelFromQuery(model, receipts);
-        modelObj.setValue(model);
         
-        return modelObj;
+        return model;
     }
     
-    public ModelObject commitQueryAndUnlock(ModelObject modelObj) throws RPCException {
+    public DataModel commitQueryAndUnlock(DataModel model) throws RPCException {
         List receipts;
-        DataModel model = (DataModel)modelObj.getValue();
         FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
 
         if(rpc == null)
@@ -180,9 +175,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         
         //fill the model with the query results
         fillModelFromQuery(model, receipts);
-        modelObj.setValue(model);
- 
-        return modelObj;
+
+        return model;
     }
 
 
@@ -282,7 +276,6 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
     }
 
     public HashMap getXMLData() throws RPCException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -291,13 +284,14 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
         return null;
     }
     
-    public ModelObject getReceipts(NumberObject orderId){
+    public DataModel getReceipts(NumberObject orderId){
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         
         List receiptRecords = remote.getInventoryReceiptRecords((Integer)orderId.getValue());
         
-        ModelObject modelObj = new ModelObject();
         DataModel model = new DataModel(); 
+        fillModelFromQuery(model, receiptRecords);
+        /*
         DatetimeRPC todaysDate = DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,new Date()); 
         
         for(int i=0; i<receiptRecords.size(); i++){
@@ -426,18 +420,16 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             
             model.add(set);
         }
+        */
         
-        modelObj.setValue(model);        
-        
-        return modelObj;
+        return model;
     }
     
-    public ModelObject getInvItemFromUPC(StringObject upc){
+    public DataModel getInvItemFromUPC(StringObject upc){
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         
         List invItems = remote.getInventoryItemsByUPC((String)upc.getValue());
         
-        ModelObject modelObj = new ModelObject();
         DataModel model = new DataModel(); 
         
         for(int i=0; i<invItems.size(); i++){
@@ -483,17 +475,15 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             model.add(data);
         }
         
-        modelObj.setValue(model);        
-        
-        return modelObj;
+        return model;
     }
 
-    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
-        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
+        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
         
     }
     
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, DataObject> params) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, Data> params) throws RPCException {
         if(cat.equals("location"))
             return getLocationMatches(match, params);
         else if(cat.equals("inventoryItem"))
@@ -790,6 +780,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
     private void fillModelFromQuery(DataModel model, List receipts){
         int i=0;
         model.clear();
+        DatetimeRPC todaysDate = DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,new Date());
         while(i < receipts.size() && i < leftTableRowsPerPage) {
             InventoryReceiptDO resultDO = (InventoryReceiptDO)receipts.get(i);
  
@@ -825,28 +816,23 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             NumberField transReceiptOrder = new NumberField(NumberObject.Type.INTEGER);
             
             orderNumber.setValue(resultDO.getOrderNumber());
-            receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getReceivedDate().getDate()));
+            if(resultDO.getReceivedDate() != null)
+                receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getReceivedDate().getDate()));
+            else
+                receivedDate.setValue(todaysDate);
             upc.setValue(resultDO.getUpc());
             
             //inventory item set
-            DataSet inventoryItemSet = new DataSet();
-            NumberObject itemId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject itemText = new StringObject();
-            itemId.setValue(resultDO.getInventoryItemId());
-            itemText.setValue(resultDO.getInventoryItem());            
-            inventoryItemSet.setKey(itemId);
-            inventoryItemSet.add(itemText);
-            inventoryItem.setValue(inventoryItemSet);
+            DataModel invItemModel = new DataModel();
+            invItemModel.add(new NumberObject(resultDO.getInventoryItemId()),new StringObject(resultDO.getInventoryItem()));
+            inventoryItem.setModel(invItemModel);
+            inventoryItem.setValue(invItemModel.get(0));
             
             //org set
-            DataSet orgSet = new DataSet();
-            NumberObject orgId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject orgText = new StringObject();
-            orgId.setValue(resultDO.getOrganizationId());
-            orgText.setValue(resultDO.getOrganization());
-            orgSet.setKey(orgId);
-            orgSet.add(orgText);
-            org.setValue(orgSet);
+            DataModel orgModel = new DataModel();
+            orgModel.add(new NumberObject(resultDO.getOrganizationId()),new StringObject(resultDO.getOrganization()));
+            org.setModel(orgModel);
+            org.setValue(orgModel.get(0));
             
             qtyReceived.setValue(resultDO.getQuantityReceived());
             qtyRequested.setValue(resultDO.getItemQtyRequested());
@@ -879,40 +865,41 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             inventoryLocation.setValue(inventoryLocSet);
             
             lotNumber.setValue(resultDO.getLotNumber());
-            if(resultDO.getExpDate().getDate() != null)
+            if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null)
                 expDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
             
             receiptId.setValue(resultDO.getId());            
             
-           // row.setKey(id);         
-            row.add(orderNumber);
-            row.add(receivedDate);
-            row.add(upc);
-            row.add(inventoryItem);
-            row.add(org);
-            row.add(qtyReceived);
-            row.add(qtyRequested);
-            row.add(cost);
-            row.add(qc);
-            row.add(extRef);
-            row.add(multUnit);
-            row.add(streetAddress);
-            row.add(city);
-            row.add(state);
-            row.add(zipCode);
-            row.add(itemDesc);
-            row.add(itemStore);
-            row.add(itemDisUnit);
-            row.add(itemIsBulk);
-            row.add(itemIsLotMaintained);
-            row.add(itemIsSerialMaintained);
-            row.add(orderItemId);
-            row.add(addToExisting);
-            row.add(inventoryLocation);
-            row.add(lotNumber);
-            row.add(expDate);
-            row.add(receiptId);
-            row.add(transReceiptOrder);
+            DataMap map = new DataMap();
+            map.put("orderNumber", orderNumber); 
+            map.put("receivedDate", receivedDate);
+            map.put("upc", upc);
+            map.put("inventoryItem", inventoryItem);
+            map.put("org", org);
+            map.put("qtyReceived", qtyReceived);
+            map.put("qtyRequested", qtyRequested);
+            map.put("cost", cost);
+            map.put("qc", qc);
+            map.put("extRef", extRef);
+            map.put("multUnit", multUnit);
+            map.put("streetAddress", streetAddress);
+            map.put("city", city);
+            map.put("state", state);
+            map.put("zipCode", zipCode);
+            map.put("itemDesc", itemDesc);
+            map.put("itemStore", itemStore);
+            map.put("itemDisUnit", itemDisUnit);
+            map.put("itemIsBulk", itemIsBulk);
+            map.put("itemIsLotMaintained", itemIsLotMaintained);
+            map.put("itemIsSerialMaintained", itemIsSerialMaintained);
+            map.put("orderItemId", orderItemId);
+            map.put("addToExisiting", addToExisting);
+            map.put("inventoryLocation", inventoryLocation);
+            map.put("lotNumber", lotNumber);
+            map.put("expDate", expDate);
+            map.put("receiptId", receiptId);
+            map.put("transReceiptOrder", transReceiptOrder);
+            row.setData(map);
             
             model.add(row);
             i++;

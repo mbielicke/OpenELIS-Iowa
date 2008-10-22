@@ -35,13 +35,13 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -194,7 +194,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         try{
-            remote.deleteSystemVariable((Integer)key.getKey().getValue());
+            remote.deleteSystemVariable((Integer)((DataObject)key.getKey()).getValue());
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }
@@ -206,7 +206,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)key.getKey().getValue();
+        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
         
         SystemVariableDO svDO = null;
         try{
@@ -222,7 +222,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)key.getKey().getValue();
+        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
         
         SystemVariableDO svDO = remote.getSystemVariable(svId);
         setFieldsInRPC(rpcReturn, svDO);
@@ -232,7 +232,7 @@ public class SystemVariableService implements AppScreenFormServiceInt {
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)key.getKey().getValue();
+        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
         
         SystemVariableDO svDO = null;
         try{

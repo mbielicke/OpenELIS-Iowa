@@ -26,6 +26,7 @@
 package org.openelis.modules.organization.client;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -254,7 +255,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadNotes", new DataObject[] {key,rpc.getField("notes")}, new AsyncCallback(){
+        screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback(){
             public void onSuccess(Object result){    
                 // get the datamodel, load it in the notes panel and set the value in the rpc
                 load((FormRPC)result);
@@ -275,7 +276,7 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadContacts", new DataObject[] {key,rpc.getField("contacts")}, new AsyncCallback() {
+        screenService.getObject("loadContacts", new Data[] {key,rpc.getField("contacts")}, new AsyncCallback() {
             public void onSuccess(Object result) {
                
                 load((FormRPC)result);

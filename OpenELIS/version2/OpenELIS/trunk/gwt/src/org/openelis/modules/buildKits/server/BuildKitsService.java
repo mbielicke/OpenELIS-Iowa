@@ -32,15 +32,14 @@ import java.util.List;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.entity.InventoryComponent;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -94,18 +93,18 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/buildKits.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap<String, Data> getXMLData() throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public ModelObject getMatchesObj(StringObject cat, ModelObject model, StringObject match, DataMap params) throws RPCException {
-        return new ModelObject(getMatches((String)cat.getValue(), (DataModel)model.getValue(), (String)match.getValue(), (HashMap)params.getValue()));
+    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
+        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
         
     }
     
@@ -236,10 +235,9 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
         return dataModel;       
     }
     
-    public ModelObject getComponentsFromId(NumberObject inventoryItemId){
+    public DataModel getComponentsFromId(NumberObject inventoryItemId){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         Integer invItemId = (Integer)inventoryItemId.getValue();
-        ModelObject modelObj = new ModelObject();
         DataModel model = new DataModel();
         
         List components = remote.getInventoryComponents(invItemId);
@@ -257,8 +255,6 @@ public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteSe
             model.add(set);
         }
         
-        modelObj.setValue(model);
-        
-        return modelObj;
+        return model;
     }
 }

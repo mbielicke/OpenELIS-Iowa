@@ -44,6 +44,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -212,7 +213,7 @@ public class QAEventService implements AppScreenFormServiceInt{
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
             QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-            Integer qaEventId = (Integer)key.getKey().getValue();
+            Integer qaEventId = (Integer)((DataObject)key.getKey()).getValue();
     
             QaEventDO qaeDO = new QaEventDO();
              try{
@@ -228,7 +229,7 @@ public class QAEventService implements AppScreenFormServiceInt{
 
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-        Integer qaeId = (Integer)key.getKey().getValue();
+        Integer qaeId = (Integer)((DataObject)key.getKey()).getValue();
 
         QaEventDO qaeDO = remote.getQaEvent(qaeId);
 //      set the fields in the RPC
@@ -239,7 +240,7 @@ public class QAEventService implements AppScreenFormServiceInt{
 
     public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-        Integer qaEventId = (Integer)key.getKey().getValue();
+        Integer qaEventId = (Integer)((DataObject)key.getKey()).getValue();
 
         QaEventDO qaeDO = new QaEventDO();
          try{

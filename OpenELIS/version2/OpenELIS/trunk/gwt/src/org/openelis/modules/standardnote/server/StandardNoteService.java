@@ -35,20 +35,19 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.meta.StandardNoteMeta;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -210,7 +209,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
     		//validate the fields on the backend
-    		List exceptionList = remote.validateForDelete((Integer)key.getKey().getValue());
+    		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
     		if(exceptionList.size() > 0){
     			setRpcErrors(exceptionList, rpcReturn);
     			
@@ -218,7 +217,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     		} 
     		
     		try {
-    			remote.deleteStandardNote((Integer)key.getKey().getValue());
+    			remote.deleteStandardNote((Integer)((DataObject)key.getKey()).getValue());
     			
     		} catch (Exception e) {
     			exceptionList = new ArrayList();
@@ -239,7 +238,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
     		
-    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpcReturn, standardNoteDO);
@@ -251,7 +250,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)key.getKey().getValue());
+		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)((DataObject)key.getKey()).getValue());
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpcReturn, standardNoteDO);
@@ -265,7 +264,7 @@ public class StandardNoteService implements AppScreenFormServiceInt,
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
 		
 		try{
-			standardNoteDO = remote.getStandardNoteAndLock((Integer)key.getKey().getValue(), SessionManager.getSession().getId());
+			standardNoteDO = remote.getStandardNoteAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}

@@ -28,13 +28,13 @@ package org.openelis.modules.inventoryItem.client;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.BooleanObject;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
@@ -265,7 +265,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, new BooleanObject(forDuplicate), rpc.getField("components")};
+        Data[] args = new Data[] {key, new BooleanObject(forDuplicate), rpc.getField("components")};
 
         screenService.getObject("loadComponents", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -292,7 +292,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), rpc.getField("locations")};
+        Data[] args = new Data[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), rpc.getField("locations")};
 
         screenService.getObject("loadLocations", args, new AsyncCallback() {
             public void onSuccess(Object result) {
@@ -316,7 +316,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
                  
        // prepare the argument list for the getObject function
-       DataObject[] args = new DataObject[] {key, rpc.getField("comments")}; 
+        Data[] args = new Data[] {key, rpc.getField("comments")}; 
          
        screenService.getObject("loadComments", args, new AsyncCallback(){
            public void onSuccess(Object result){    
@@ -365,7 +365,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     private void onDuplicateRecordClick(){
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
-            FormRPC displayRPC = rpc.clone();
+            FormRPC displayRPC = (FormRPC)rpc.clone();
             displayRPC.setFieldValue(InvItemMeta.getId(), null);
             displayRPC.setFieldValue(InvItemMeta.getAverageLeadTime(),null);
             displayRPC.setFieldValue(InvItemMeta.getAverageCost(),null);
@@ -469,7 +469,6 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
    
     public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         StringObject catObj = new StringObject(widget.cat);
-        ModelObject modelObj = new ModelObject(model);
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
         
@@ -478,12 +477,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         paramsObj.put("name", rpc.getField(InvItemMeta.getName()));
         
         // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {catObj, modelObj, matchObj, paramsObj}; 
+        Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback() {
             public void onSuccess(Object result) {
-                widget.showAutoMatches((DataModel)((ModelObject)result).getValue());
+                widget.showAutoMatches((DataModel)result);
             }
             
             public void onFailure(Throwable caught) {

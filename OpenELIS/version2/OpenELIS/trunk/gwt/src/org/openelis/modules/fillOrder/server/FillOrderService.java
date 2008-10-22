@@ -39,13 +39,12 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataMap;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.ModelObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -121,9 +120,8 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         return model;
     }
     
-    public ModelObject commitQueryAndLock(ModelObject modelObj) throws RPCException {
+    public DataModel commitQueryAndLock(DataModel model) throws RPCException {
         List orders;
-        DataModel model = (DataModel)modelObj.getValue();
         FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("FillOrderQuery");
 
         if(rpc == null)
@@ -146,14 +144,11 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         //fill the model with the query results
         fillModelFromQuery(model, orders);
         
-        modelObj.setValue(model);
-        
-        return modelObj;
+        return model;
     }
     
-    public ModelObject commitQueryAndUnlock(ModelObject modelObj) throws RPCException {
+    public DataModel commitQueryAndUnlock(DataModel model) throws RPCException {
         List orders;
-        DataModel model = (DataModel)modelObj.getValue();
         FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("FillOrderQuery");
 
         if(rpc == null)
@@ -175,10 +170,8 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         
         //fill the model with the query results
         fillModelFromQuery(model, orders);
-        
-        modelObj.setValue(model);
  
-        return modelObj;
+        return model;
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
@@ -215,7 +208,7 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap<String, Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl"));
         
@@ -326,12 +319,12 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         return returnModel;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, DataObject> params) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, Data> params) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -428,10 +421,9 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
         } 
     }
     
-    public ModelObject getOrderItems(NumberObject orderId) {
+    public DataModel getOrderItems(NumberObject orderId) {
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         List orderItems = remote.getOrderItems((Integer)orderId.getValue());
-        ModelObject modelObj = new ModelObject();
         DataModel model = new DataModel();
         Integer orderItemReferenceTableId = (Integer)((NumberObject)CachingManager.getElement("InitialData", "orderItemReferenceTableId")).getValue();
         
@@ -452,8 +444,6 @@ public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteSe
            model.add(set);
         }
         
-        modelObj.setValue(model);
-        
-        return modelObj;
+        return model;
     }
 }
