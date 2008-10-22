@@ -402,6 +402,25 @@ public class TestBean implements TestRemote {
         List<TestTypeOfSampleDO> testTypeOfSampleDOList = (List<TestTypeOfSampleDO>)query.getResultList();
         return testTypeOfSampleDOList;
     }
+    
+    public TestWorksheetDO getTestWorksheet(Integer testId) {
+        Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetDOByTestId");
+        query.setParameter("testId", testId);
+        TestWorksheetDO worksheetDO = null;
+        try{
+            worksheetDO = (TestWorksheetDO)query.getSingleResult();
+        }catch(NoResultException ex){
+            ex.printStackTrace();
+        }
+        return worksheetDO;         
+    }
+
+    public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId) {
+        Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetItemsByTestId");
+        query.setParameter("testId", testId);
+        List<TestWorksheetItemDO> list = query.getResultList();
+        return list;
+    }
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -474,6 +493,21 @@ public class TestBean implements TestRemote {
         List testAnalytesList = query.getResultList();
         return testAnalytesList;
     }
+    
+    public List getMatchingEntries(String name, int maxResults){
+        Query query = manager.createNamedQuery("Analyte.AutoCompleteByName");  
+        query.setParameter("name", name);       
+        query.setMaxResults(maxResults);       
+        
+        List entryList = null;
+        try{ 
+            entryList = (List)query.getResultList();
+        }catch(Exception ex){
+            ex.printStackTrace();
+           
+        }     
+        return entryList;
+     }
     
 
     public List validateForAdd(TestIdNameMethodIdDO testIdNameMethodDO,
@@ -680,7 +714,7 @@ public class TestBean implements TestRemote {
         }       
       }
     
-    public void validateTestWorksheet(List<Exception> exceptionList,TestWorksheetDO worksheetDO){
+    private void validateTestWorksheet(List<Exception> exceptionList,TestWorksheetDO worksheetDO){
         boolean checkForMultiple = true;
         if(worksheetDO.getBatchCapacity()==null){
             exceptionList.add(new FieldErrorException("fieldRequiredException",
@@ -720,7 +754,7 @@ public class TestBean implements TestRemote {
         
     }
     
-    public void validateTestWorksheetItems(List<Exception> exceptionList,
+    private void validateTestWorksheetItems(List<Exception> exceptionList,
                                            List<TestWorksheetItemDO> itemDOList) {
         for(int i = 0; i < itemDOList.size(); i++){
             TestWorksheetItemDO itemDO = itemDOList.get(i);
@@ -763,24 +797,6 @@ public class TestBean implements TestRemote {
         }
     }
 
-    public TestWorksheetDO getTestWorksheet(Integer testId) {
-        Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetDOByTestId");
-        query.setParameter("testId", testId);
-        TestWorksheetDO worksheetDO = null;
-        try{
-            worksheetDO = (TestWorksheetDO)query.getSingleResult();
-        }catch(NoResultException ex){
-            ex.printStackTrace();
-        }
-        return worksheetDO;         
-    }
-
-    public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId) {
-        Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetItemsByTestId");
-        query.setParameter("testId", testId);
-        List<TestWorksheetItemDO> list = query.getResultList();
-        return list;
-    }
 
     
 }
