@@ -154,6 +154,10 @@ public class Test implements Auditable, Cloneable {
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Collection<TestWorksheet> testWorksheet;
   
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestAnalyte> testAnalyte;
+  
   @Transient
   private Test original;
 
@@ -446,6 +450,12 @@ public Collection<TestWorksheet> getTestWorksheet() {
 }
 public void setTestWorksheet(Collection<TestWorksheet> testWorksheet) {
     this.testWorksheet = testWorksheet;
+}
+public Collection<TestAnalyte> getTestAnalyte() {
+    return testAnalyte;
+}
+public void setTestAnalyte(Collection<TestAnalyte> testAnalyte) {
+    this.testAnalyte = testAnalyte;
 }
 
   

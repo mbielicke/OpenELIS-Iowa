@@ -38,14 +38,17 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "PanelItem.IdByTestName", query = "select pi.id from PanelItem pi where pi.testName = :testName")
-
+@NamedQueries({@NamedQuery(name = "PanelItem.IdByTestName", query = "select pi.id from PanelItem pi where pi.testName = :testName"),
+@NamedQuery(name = "PanelItem.PanelItemsByPanelId", query =  "select distinct new org.openelis.domain.PanelItemDO(pitem.id,pitem.panelId,pitem.sortOrder,pitem.testName,pitem.methodName) " +
+        "    from PanelItem pitem where pitem.panelId = :id order by pitem.sortOrder")})
+        
 @Entity
 @Table(name="panel_item")
 @EntityListeners({AuditUtil.class})

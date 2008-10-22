@@ -48,7 +48,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestResult.IdByTestId", query = "select tr.id from TestResult tr where tr.testId = :testId"),
                @NamedQuery(name = "TestResult.IdValueByTestAnalyteId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
                         " from TestResult tr, TestAnalyte ta where tr.testId = :testId" +
-                        " and tr.resultGroupId = ta.resultGroupId and ta.id = :analyteId"),
+                        " and tr.resultGroupId = ta.resultGroup and ta.id = :analyteId"),
                @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
                                     " from TestResult tr where tr.testId = :testId")})
 @Entity
@@ -67,8 +67,11 @@ public class TestResult implements Auditable, Cloneable {
   @Column(name="result_group_id")
   private Integer resultGroupId;             
 
-  @Column(name="flag_id")
-  private Integer flagId;             
+  @Column(name="sort_order")
+  private Integer sortOrder;
+  
+  @Column(name="flags_id")
+  private Integer flagsId;             
 
   @Column(name="type_id")
   private Integer typeId;             
@@ -79,11 +82,17 @@ public class TestResult implements Auditable, Cloneable {
   @Column(name="significant_digits")
   private Integer significantDigits;             
 
+  @Column(name="rounding_method_id")
+  private Integer roundingMethodId;
+  
   @Column(name="quant_limit")
   private String quantLimit;             
 
   @Column(name="cont_level")
-  private String contLevel;             
+  private String contLevel;      
+  
+  @Column(name="hazard_level")
+  private String hazardLevel;
 
 
   @Transient
@@ -108,22 +117,31 @@ public class TestResult implements Auditable, Cloneable {
       this.testId = testId;
   }
 
+  public Integer sortOrder() {
+    return sortOrder;
+  }
+  public void setSortOrder(Integer sortOrder) {
+    if((sortOrder == null && this.sortOrder != null) || 
+       (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+      this.sortOrder = sortOrder;
+  }
+  
   public Integer getResultGroupId() {
-    return resultGroupId;
-  }
+      return resultGroupId;
+    }
   public void setResultGroupId(Integer resultGroupId) {
-    if((resultGroupId == null && this.resultGroupId != null) || 
-       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
-      this.resultGroupId = resultGroupId;
-  }
+      if((resultGroupId == null && this.resultGroupId != null) || 
+         (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
+        this.resultGroupId = resultGroupId;
+    }
 
-  public Integer getFlagId() {
-    return flagId;
+  public Integer getFlagsId() {
+    return flagsId;
   }
-  public void setFlagId(Integer flagId) {
-    if((flagId == null && this.flagId != null) || 
-       (flagId != null && !flagId.equals(this.flagId)))
-      this.flagId = flagId;
+  public void setFlagsId(Integer flagsId) {
+    if((flagsId == null && this.flagsId != null) || 
+       (flagsId != null && !flagsId.equals(this.flagsId)))
+      this.flagsId = flagsId;
   }
 
   public Integer getTypeId() {
@@ -144,14 +162,23 @@ public class TestResult implements Auditable, Cloneable {
       this.value = value;
   }
 
+  public Integer getRoundingMethodId() {
+    return roundingMethodId;
+  }
+  public void setRoundingMethodId(Integer roundingMethodId) {
+    if((roundingMethodId == null && this.roundingMethodId != null) || 
+       (roundingMethodId != null && !roundingMethodId.equals(this.roundingMethodId)))
+      this.roundingMethodId = roundingMethodId;
+  }
+  
   public Integer getSignificantDigits() {
-    return significantDigits;
-  }
+      return significantDigits;
+    }  
   public void setSignificantDigits(Integer significantDigits) {
-    if((significantDigits == null && this.significantDigits != null) || 
-       (significantDigits != null && !significantDigits.equals(this.significantDigits)))
-      this.significantDigits = significantDigits;
-  }
+      if((significantDigits == null && this.significantDigits != null) || 
+         (significantDigits != null && !significantDigits.equals(this.significantDigits)))
+        this.significantDigits = significantDigits;
+    }
 
   public String getQuantLimit() {
     return quantLimit;
@@ -171,6 +198,14 @@ public class TestResult implements Auditable, Cloneable {
       this.contLevel = contLevel;
   }
 
+  public String getHazardLevel() {
+      return hazardLevel;
+    }
+  public void setHazardLevel(String hazardLevel) {
+      if((hazardLevel == null && this.hazardLevel != null) || 
+         (hazardLevel != null && !hazardLevel.equals(this.hazardLevel)))
+        this.hazardLevel = hazardLevel;
+    }
   
   public void setClone() {
     try {
@@ -188,18 +223,24 @@ public class TestResult implements Auditable, Cloneable {
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
       AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
+      
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
-      AuditUtil.getChangeXML(flagId,original.flagId,doc,"flag_id");
+      AuditUtil.getChangeXML(flagsId,original.flagsId,doc,"flags_id");
 
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
 
       AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       AuditUtil.getChangeXML(significantDigits,original.significantDigits,doc,"significant_digits");
+      
+      AuditUtil.getChangeXML(roundingMethodId,original.roundingMethodId,doc,"rounding_method_id");
 
       AuditUtil.getChangeXML(quantLimit,original.quantLimit,doc,"quant_limit");
 
       AuditUtil.getChangeXML(contLevel,original.contLevel,doc,"cont_level");
+      
+      AuditUtil.getChangeXML(hazardLevel,original.hazardLevel,doc,"hazard_level");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

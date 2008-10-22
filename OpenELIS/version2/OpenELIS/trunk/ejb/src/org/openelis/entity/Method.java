@@ -34,14 +34,18 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -80,7 +84,10 @@ public class Method implements Auditable, Cloneable {
   @Column(name="active_end")
   private Date activeEnd;             
 
-
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "method_id",insertable = false, updatable = false)
+  private Collection<MethodAnalyte> methodAnalyte;
+  
   @Transient
   private Method original;
 
@@ -189,5 +196,11 @@ public class Method implements Auditable, Cloneable {
   public String getTableName() {
     return "method";
   }
+public Collection<MethodAnalyte> getMethodAnalyte() {
+    return methodAnalyte;
+}
+public void setMethodAnalyte(Collection<MethodAnalyte> methodAnalyte) {
+    this.methodAnalyte = methodAnalyte;
+}
   
 }   

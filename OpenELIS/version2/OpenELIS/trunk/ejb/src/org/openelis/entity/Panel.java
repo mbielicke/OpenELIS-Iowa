@@ -51,9 +51,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Panel.PanelById", query =  "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description) " +
-        "    from Panel p where p.id = :id"),
-        @NamedQuery(name = "Panel.PanelItemsByPanelId", query =  "select distinct new org.openelis.domain.PanelItemDO(pitem.id,p.id,pitem.sortOrder,pitem.testName,pitem.methodName) " +
-        "    from Panel p left join p.panelItem pitem where p.id = :id")})
+        "    from Panel p where p.id = :id"),        
+        @NamedQuery(name = "Panel.PanelByName", query =  "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description) " +
+        "    from Panel p where p.name = :name")})
 
 @Entity
 @Table(name="panel")
@@ -72,7 +72,7 @@ public class Panel implements Auditable, Cloneable {
   private String description;             
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  @JoinColumn(name = "panel_id",insertable = false, updatable = false)
   private Collection<PanelItem> panelItem; 
   
   @Transient
