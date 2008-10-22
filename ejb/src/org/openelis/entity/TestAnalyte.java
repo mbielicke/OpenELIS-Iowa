@@ -62,10 +62,13 @@ public class TestAnalyte implements Auditable, Cloneable {
   private Integer id;             
 
   @Column(name="test_id")
-  private Integer testId;             
+  private Integer testId;   
+  
+  @Column(name="analyte_group")
+  private Integer analyteGroup;
 
-  @Column(name="result_group_id")
-  private Integer resultGroupId;             
+  @Column(name="result_group")
+  private Integer resultGroup;             
 
   @Column(name="sort_order")
   private Integer sortOrder;             
@@ -108,13 +111,22 @@ public class TestAnalyte implements Auditable, Cloneable {
       this.testId = testId;
   }
 
-  public Integer getResultGroupId() {
-    return resultGroupId;
+  public Integer getAnalyteGroup() {
+      return analyteGroup;
+    }
+    public void setAnalyteGroup(Integer analyteGroup) {
+      if((analyteGroup == null && this.analyteGroup != null) || 
+         (analyteGroup != null && !analyteGroup.equals(this.analyteGroup)))
+        this.analyteGroup = analyteGroup;
+    }
+  
+  public Integer getResultGroup() {
+    return resultGroup;
   }
-  public void setResultGroupId(Integer resultGroupId) {
-    if((resultGroupId == null && this.resultGroupId != null) || 
-       (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
-      this.resultGroupId = resultGroupId;
+  public void setResultGroup(Integer resultGroup) {
+    if((resultGroup == null && this.resultGroup != null) || 
+       (resultGroup != null && !resultGroup.equals(this.resultGroup)))
+      this.resultGroup = resultGroup;
   }
 
   public Integer getSortOrder() {
@@ -177,8 +189,10 @@ public class TestAnalyte implements Auditable, Cloneable {
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
+      
+      AuditUtil.getChangeXML(analyteGroup,original.analyteGroup,doc,"analyte_group");
 
-      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
+      AuditUtil.getChangeXML(resultGroup,original.resultGroup,doc,"result_group");
 
       AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 

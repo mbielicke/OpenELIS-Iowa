@@ -45,8 +45,13 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "MethodAnalyte.MethodAnalyteByAnalyteId", query = "select m.id from MethodAnalyte m where m.analyteId = :id")})
-
+@NamedQueries({@NamedQuery(name = "MethodAnalyte.MethodAnalyteByAnalyteId", query = "select m.id from MethodAnalyte m where m.analyteId = :id"),
+               @NamedQuery(name = "MethodAnalyte.MethodAnalyteDOByAnalyteId", query = "select distinct new org.openelis.domain.MethodAnalyteDO(m.id,m.methodId, m.analyteGroup," +
+                                              "m.resultGroup,m.sortOrder,m.type,m.analyteId) " +
+                                              " from MethodAnalyte m where m.methodId = :methodId"),
+               @NamedQuery(name = "MethodAnalyte.GetMaxAnalyteGroup", query = "select max(m.analyteGroup) " +                                                          
+                                                          " from MethodAnalyte m where m.methodId = :id")})
+    
 @Entity
 @Table(name="method_analyte")
 @EntityListeners({AuditUtil.class})
