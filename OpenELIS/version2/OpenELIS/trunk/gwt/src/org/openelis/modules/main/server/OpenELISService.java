@@ -28,8 +28,8 @@ package org.openelis.modules.main.server;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.ConstantMap;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -56,10 +56,10 @@ public class OpenELISService implements OpenELISServiceInt {
         }
 	}
     
-    public HashMap<String,DataObject> getXMLData() throws RPCException {
+    public HashMap<String,Data> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-        HashMap<String,DataObject> map = new HashMap<String,DataObject>();
+        HashMap<String,Data> map = new HashMap<String,Data>();
         map.put("xml",xml);
         map.put("AppConstants", getConstants());
         return map;
@@ -105,7 +105,7 @@ public class OpenELISService implements OpenELISServiceInt {
         return null;
     }
 
-    public DataObject getObject(String method, DataObject[] args) throws RPCException {
+    public Data getObject(String method, Data[] args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -118,22 +118,20 @@ public class OpenELISService implements OpenELISServiceInt {
     public ConstantMap getConstants() {
         UTFResource resource = UTFResource.getBundle("org.openelis.modules.main.server.constants.OpenELISConstants",new Locale(((SessionManager.getSession() == null  || (String)SessionManager.getSession().getAttribute("locale") == null) 
                         ? "en" : (String)SessionManager.getSession().getAttribute("locale"))));
-        HashMap<String,String> map = new HashMap<String,String>();
+        ConstantMap cmap = new ConstantMap();
         Enumeration<String> bundleKeys = resource.getKeys();
         while(bundleKeys.hasMoreElements()){
             String key = bundleKeys.nextElement();
-            map.put(key, resource.getString(key));
+            cmap.put(key, resource.getString(key));
         }
-        ConstantMap cmap = new ConstantMap();
-        cmap.setValue(map);
         return cmap;
     }
 
-	public HashMap<String,DataObject> getXMLData(HashMap<String,DataObject> args) throws RPCException {
+	public HashMap<String,Data> getXMLData(HashMap<String,Data> args) throws RPCException {
 		try {
 			StringObject xml = new StringObject();
 			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-            HashMap<String,DataObject> map = new HashMap<String,DataObject>();
+            HashMap<String,Data> map = new HashMap<String,Data>();
             map.put("xml", xml);
             map.put("AppConstants",getConstants());
 			return map;
