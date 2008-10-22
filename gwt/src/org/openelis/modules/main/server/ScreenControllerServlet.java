@@ -34,6 +34,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -87,7 +88,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
        return ((AppScreenFormServiceInt)getService()).getXMLData();
     }
     
-    public DataObject getObject(String method, DataObject[] args) throws RPCException {
+    public Data getObject(String method, Data[] args) throws RPCException {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
