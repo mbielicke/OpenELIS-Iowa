@@ -42,7 +42,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class OpenELISService implements OpenELISServiceInt {
+public class OpenELISService implements OpenELISServiceInt<FormRPC,DataSet,DataModel> {
    
     private static final long serialVersionUID = 1L;
     
