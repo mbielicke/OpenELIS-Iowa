@@ -25,19 +25,12 @@
 */
 package org.openelis.modules.main.server;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpSession;
-
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -46,7 +39,10 @@ import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
-import com.google.gwt.user.client.rpc.RemoteService;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
+import javax.servlet.http.HttpSession;
 
 public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<Data,Data,Data>, AutoCompleteServiceInt, FavoritesServiceInt {
 
@@ -84,11 +80,11 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return ((AppScreenFormServiceInt)getService()).getXML();
     }
 
-    public HashMap getXMLData() throws RPCException {
-       return ((AppScreenFormServiceInt)getService()).getXMLData();
+    public HashMap<String,Data> getXMLData() throws RPCException {
+       return getService().getXMLData();
     }
     
-    public Data getObject(String method, Data[] args) throws RPCException {
+    public <T extends Data> T getObject(String method, Data[] args) throws RPCException {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
@@ -98,7 +94,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
             }
         }
         try {
-            return (DataObject)service.getClass().getMethod(method,params).invoke(service, (Object[])args);
+            return (T)service.getClass().getMethod(method,params).invoke(service, (Object[])args);
         }catch(Exception e){
             if(e instanceof InvocationTargetException){
                 InvocationTargetException er = (InvocationTargetException)e;
@@ -162,7 +158,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return new FavoritesService().saveFavorites(rpc);
     }
 
-	public HashMap getXMLData(HashMap args) throws RPCException {
-		return ((AppScreenFormServiceInt)getService()).getXMLData(args);
+	public HashMap<String,Data> getXMLData(HashMap<String,Data> args) throws RPCException {
+		return getService().getXMLData(args);
 	}    
 }
