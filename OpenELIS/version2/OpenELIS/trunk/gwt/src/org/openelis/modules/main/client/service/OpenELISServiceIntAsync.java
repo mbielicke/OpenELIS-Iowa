@@ -30,9 +30,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
-public interface OpenELISServiceIntAsync extends AppScreenFormServiceIntAsync {
+public interface OpenELISServiceIntAsync<F extends Data,K extends Data,Q extends Data> extends AppScreenFormServiceIntAsync<F,K,Q> {
     
-    public void getObject(String method, Data[] args, AsyncCallback callback);
+    public void getObject(String method, Data[] args, AsyncCallback<? extends Data> callback);
     
     public void logout(AsyncCallback callback);
     

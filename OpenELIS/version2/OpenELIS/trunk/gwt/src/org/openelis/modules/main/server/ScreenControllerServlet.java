@@ -48,36 +48,36 @@ import org.openelis.util.SessionManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt, AutoCompleteServiceInt, FavoritesServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<Data,Data,Data>, AutoCompleteServiceInt, FavoritesServiceInt {
 
     private static final long serialVersionUID = 1L;
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).abort(key, rpcReturn);
+    public <T extends Data> T abort(Data key, Data rpcReturn) throws RPCException {
+        return getService().abort(key, rpcReturn);
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).commitAdd(rpcSend, rpcReturn);
+    public <T extends Data> T commitAdd(Data rpcSend, Data rpcReturn) throws RPCException {
+        return getService().commitAdd(rpcSend, rpcReturn);
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).commitDelete(key, rpcReturn);
+    public <T extends Data> T commitDelete(Data key, Data rpcReturn) throws RPCException {
+        return getService().commitDelete(key, rpcReturn);
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).commitQuery(rpcSend, model);
+    public <T extends Data> T commitQuery(Data rpcSend, Data model) throws RPCException {
+        return getService().commitQuery(rpcSend, model);
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).commitUpdate(rpcSend, rpcReturn);
+    public <T extends Data> T commitUpdate(Data rpcSend, Data rpcReturn) throws RPCException {
+        return getService().commitUpdate(rpcSend, rpcReturn);
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).fetch(key, rpcReturn);
+    public <T extends Data> T fetch(Data key, Data rpcReturn) throws RPCException {
+        return getService().fetch(key, rpcReturn);
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).fetchForUpdate(key, rpcReturn);
+    public <T extends Data> T fetchForUpdate(Data key, Data rpcReturn) throws RPCException {
+        return getService().fetchForUpdate(key, rpcReturn);
     }
 
     public String getXML() throws RPCException {
@@ -111,9 +111,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         }
     }
     
-    private RemoteService getService() throws RPCException {
+    private AppScreenFormServiceInt<Data,Data,Data> getService() throws RPCException {
         try {
-            return (RemoteService) Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
+            return (AppScreenFormServiceInt<Data,Data,Data>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
             if(e instanceof FormErrorException)
                 throw new FormErrorException(e.getMessage());
