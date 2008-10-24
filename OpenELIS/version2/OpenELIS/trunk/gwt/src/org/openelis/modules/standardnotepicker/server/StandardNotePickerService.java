@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt {
+public class StandardNotePickerService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
 
 	private static final long serialVersionUID = -2489317407834940845L;
 

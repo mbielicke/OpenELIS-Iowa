@@ -206,7 +206,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         receiptsTable.model.clear();
         
-        loadReceiptsTableFromModel(model);
+        for(int i=0; i<model.size(); i++){
+            createRowAndSetRowData(i, (DataMap)model.get(i).getData());    
+        }
+        
+        //loadReceiptsTableFromModel(model);
                
         if(model.size() > 0)
             changeState(State.DISPLAY);
@@ -399,8 +403,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                     DataModel model = (DataModel)result;
                     DataMap map = new DataMap();
                     doAutoAdd = false;
-                        
-                    loadReceiptsTableFromModel(model,row);
+                    for(int i=0; i<model.size(); i++){
+                        createRowAndSetRowData(row+i, (DataMap)model.get(i).getData());
+                    }
+                  //  loadDataMapIntoTableRow(row);
+                    //loadReceiptsTableFromModel(model,row);
                     
                     /*for(int i=0; i<model.size(); i++){
                         DataSet set = model.get(i);
@@ -555,6 +562,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             final DataSet tableRow = receiptsTable.model.getRow(row);
             StringObject upcValue = new StringObject((String)((StringField)tableRow.get(2)).getValue());
             
+            if(upcValue.getValue() != null && !"".equals(upcValue.getValue())){
             window.setStatus("","spinnerIcon");
             
             //prepare the argument list for the getObject function
@@ -567,8 +575,12 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                     if(model.size() > 1){
                         //we need to have the user select which item they want
                     }else if(model.size() == 1){
-                        loadReceiptsTableFromModel(model, row);
-                        /*
+                        //we need to set the values in the datamap
+                        
+                        DataMap map = (DataMap)tableRow.getData();
+                        if(map == null)
+                            map = new DataMap();
+                        
                         DataSet set = model.get(0);
                         
                         StringObject store = (StringObject)set.get(1);
@@ -601,27 +613,21 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                         hiddenItems.put("itemDisUnit", (StringObject)set.get(3));
                         invItemSet.setData(hiddenItems);
                         invItemModel.add(invItemSet);
-                        
-                        ((DropDownField)tableRow.get(3)).setModel(invItemModel);
-                        ((DropDownField)tableRow.get(3)).setValue(invItemModel.get(0));
-                        */
-                        //set the text boxes
-                        //itemDescText.setText((String)desc.getValue());
-                       // itemStoreText.setText((String)store.getValue());
-                       // itemDisUnitsText.setText((String)disUnits.getValue());
-                        
-                        /*
-                        DataMap map = (DataMap)tableRow.getData();
-                        if(map == null)
-                            map = new DataMap();
-                        
+                        DropDownField invItemField = new DropDownField();
+                        invItemField.setModel(invItemModel);
+                        invItemField.setValue(invItemModel.get(0));
                         map.put("itemDesc", itemDesc);
                         map.put("itemStore", itemStore);
                         map.put("itemDisUnit", itemDisUnit);
                         map.put("itemIsBulk", isBulk);
                         map.put("itemIsLotMaintained", isLotMaintained);
                         map.put("itemIsSerialMaintained", isSerialMaintained);
-                        */
+                        map.put("inventoryItem",invItemField);
+                        
+                        //set the text boxes
+                        itemDescText.setText((String)desc.getValue());
+                        itemStoreText.setText((String)store.getValue());
+                        itemDisUnitsText.setText((String)disUnits.getValue());
                     }
                         
                     window.setStatus("","");
@@ -632,6 +638,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                     window.setStatus("","");
                 }
             });
+            }
             
         }else if(col == 3 && row > -1 && row < receiptsTable.model.numRows()){
             DataSet tableRow = receiptsTable.model.getRow(row);
@@ -751,9 +758,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         }
     }
     
-    private void loadReceiptsTableFromModel(DataModel model){
-        loadReceiptsTableFromModel(model, -1);
-    }
+    //private void loadReceiptsTableFromModel(DataModel model){
+    //    loadReceiptsTableFromModel(model, -1);
+    //}
     
     //first method: hand datamap off row
     private void loadDataMapIntoTableRow(DataSet row){
@@ -777,20 +784,43 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         row.get(7).setValue(getValueFromHashWithNulls(map, "cost"));
         row.get(8).setValue(getValueFromHashWithNulls(map, "qc"));
         row.get(9).setValue(getValueFromHashWithNulls(map, "extRef"));
+        
+        //we may need to disable some columns
+        CheckField disableOrderId = new CheckField();
+        CheckField disableUpc = new CheckField();
+        CheckField disableInvItem = new CheckField();
+        CheckField disableOrg = new CheckField();
+        
+        //if we have an order id then it was auto added and we need to disable these columns
+        if(getValueFromHashWithNulls(map, "orderNumber") != null){
+            disableOrderId.setValue(CheckBox.CHECKED);
+            disableUpc.setValue(CheckBox.CHECKED);
+            disableInvItem.setValue(CheckBox.CHECKED);
+            disableOrg.setValue(CheckBox.CHECKED);
+        
+            map.put("disableOrderId", disableOrderId);
+            map.put("disableUpc", disableUpc);
+            map.put("disableInvItem", disableInvItem);
+            map.put("disableOrg", disableOrg);
+        }
     }
+    
     //2nd method: set data from hidden data (param: table row object)
     private void createRowAndSetRowData(int row, DataMap tableData){
         DataSet tableRow;
-        if(row > -1)
+        boolean rowCreated = false;
+        if(row > -1 && receiptsTable.model.getRow(row) != null)
             tableRow = receiptsTable.model.getRow(row);
-        else
-            tableRow = receiptsTable.model.createRow();   
+        else{
+            tableRow = receiptsTable.model.createRow();
+            rowCreated = true;
+        }
         
         tableRow.setData(tableData);
         
         loadDataMapIntoTableRow(tableRow);
         
-        if(row > -1)
+        if(!rowCreated)
             receiptsTable.model.refresh();
         else
             receiptsTable.model.addRow(tableRow);
@@ -805,7 +835,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     //if row > -1 we will start from that row
-    private void loadReceiptsTableFromModel(DataModel model, int row){
+   // private void loadReceiptsTableFromModel(DataModel model, int row){
         /*for(int i=0; i<model.size(); i++){
             DataSet set = model.get(i);
             DataMap fetchMap = (DataMap)set.get(0);
@@ -856,7 +886,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         receiptsTable.model.refresh();
         */
-    }
+   // }
 
     //
     //auto complete call

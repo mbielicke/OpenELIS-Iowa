@@ -67,7 +67,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class DictionaryService implements AppScreenFormServiceInt,
+public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
                                            AutoCompleteServiceInt{
 
     private static final long serialVersionUID = 1L;

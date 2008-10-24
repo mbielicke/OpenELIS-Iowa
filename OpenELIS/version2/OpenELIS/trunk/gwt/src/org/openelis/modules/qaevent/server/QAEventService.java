@@ -61,7 +61,7 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 
-public class QAEventService implements AppScreenFormServiceInt{
+public class QAEventService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;  

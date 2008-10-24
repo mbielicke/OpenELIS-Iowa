@@ -57,7 +57,7 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class MethodService implements AppScreenFormServiceInt {
+public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     

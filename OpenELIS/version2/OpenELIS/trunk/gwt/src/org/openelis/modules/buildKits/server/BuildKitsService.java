@@ -52,7 +52,7 @@ import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.server.constants.Constants;
 
-public class BuildKitsService implements AppScreenFormServiceInt, AutoCompleteServiceInt{
+public class BuildKitsService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt{
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub

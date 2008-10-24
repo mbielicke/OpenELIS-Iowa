@@ -62,7 +62,7 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class FillOrderService implements AppScreenFormServiceInt, AutoCompleteServiceInt{
+public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt{
 
     private static final FillOrderMetaMap FillOrderMeta = new FillOrderMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));

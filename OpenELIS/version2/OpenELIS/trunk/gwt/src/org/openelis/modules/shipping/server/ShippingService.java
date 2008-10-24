@@ -73,7 +73,7 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 public class ShippingService implements
-                            AppScreenFormServiceInt,
+                            AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
                             AutoCompleteServiceInt {
 
     private UTFResource                  openElisConstants    = UTFResource.getBundle((String)SessionManager.getSession()

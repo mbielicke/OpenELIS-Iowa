@@ -64,7 +64,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class StorageLocationService implements AppScreenFormServiceInt,
+public class StorageLocationService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
    											   AutoCompleteServiceInt{
 
 	private static final int leftTableRowsPerPage = 20;

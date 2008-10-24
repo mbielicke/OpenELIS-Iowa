@@ -71,7 +71,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 
-public class ProviderService implements AppScreenFormServiceInt{
+public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
     
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 18;

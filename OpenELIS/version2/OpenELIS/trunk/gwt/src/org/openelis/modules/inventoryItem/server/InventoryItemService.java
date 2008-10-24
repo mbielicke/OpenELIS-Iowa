@@ -78,7 +78,7 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class InventoryItemService implements AppScreenFormServiceInt, 
+public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, 
 									     AutoCompleteServiceInt {
     
     private static final int leftTableRowsPerPage = 22;
