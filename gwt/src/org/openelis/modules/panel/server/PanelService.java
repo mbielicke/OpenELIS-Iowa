@@ -276,8 +276,11 @@ public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
        for(int iter = 0; iter < list.size(); iter++){
            QaEventTestDropdownDO qaeDO = list.get(iter);
            DataSet set = new DataSet();
-           set.add(new StringObject(qaeDO.getTest()+", "+qaeDO.getMethod()));
-           set.setKey(new StringObject(qaeDO.getTest()+":"+qaeDO.getMethod()));
+           set.add(new StringObject(qaeDO.getTest()));
+           set.setKey(new StringObject(qaeDO.getTest()));                    
+           set.add(new StringObject(qaeDO.getMethod()));                     
+           set.add(new StringObject(""));
+           set.setKey(new StringObject(qaeDO.getTest().trim()+","+qaeDO.getMethod().trim()+","+" "));
            model.add(set);
        }
        return model;
@@ -333,9 +336,10 @@ public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                DataMap data = new DataMap();                    
                data.put("id", id);
                row.setData(data);
-               row.get(0).setValue(itemDO.getTestName());
+               row.get(0).setValue(itemDO.getTestName().trim());
                          //+", "+itemDO.getMethodName());
-               row.get(1).setValue(itemDO.getMethodName());
+               row.get(1).setValue(itemDO.getMethodName().trim());
+               row.get(2).setValue("");
                model.add(row);
            }  
           }

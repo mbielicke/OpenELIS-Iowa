@@ -29,11 +29,10 @@ UIRF Software License are applicable instead of those above.
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"                
                 xmlns:locale="xalan://java.util.Locale"
-                xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap" 
-                xmlns:methodAnalyte="xalan://org.openelis.metamap.MethodAnalyteMetaMap"               
+                xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap"             
                 extension-element-prefixes="resource"
                 version="1.0">
-	<xsl:import href="aToZOneColumn.xsl"/>
+	<xsl:import href="aToZTwoColumns.xsl"/>
 	<xalan:component prefix="resource">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
 	</xalan:component>
@@ -43,13 +42,9 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="meta">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.MethodMetaMap"/>
 	</xalan:component>
-	<xalan:component prefix="methodAnalyte">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.MethodAnalyteMetaMap"/>
-	</xalan:component>	
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="method" select="meta:new()"/>
-	   <xsl:variable name="ma" select="meta:getMethodAnalyte($method)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -61,8 +56,8 @@ UIRF Software License are applicable instead of those above.
 			<display>
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths="175"  key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'method')}" width="100%">
+					<CollapsePanel key="collapsePanel" height="225px">
+						<azTable colwidths="175"  key="azTable" maxRows="9" tablewidth="auto" title="{resource:getString($constants,'method')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>

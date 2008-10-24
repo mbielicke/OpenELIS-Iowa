@@ -33,7 +33,8 @@ UIRF Software License are applicable instead of those above.
                 xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
                 xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" 
                 xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap"  
-                xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"              
+                xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"
+                xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap"                        
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -61,6 +62,12 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="testWrkshtItm">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"/>
 	</xalan:component>
+	<xalan:component prefix="testAnalyte">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap"/>
+	</xalan:component>
+	<!--<xalan:component prefix="testSection">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestSectionMetaMap"/>
+	</xalan:component>-->
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="test" select="meta:new()"/>
@@ -69,6 +76,8 @@ UIRF Software License are applicable instead of those above.
 	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
 	   <xsl:variable name="tws" select="meta:getTestWorksheet($test)"/> 
 	   <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)"/>
+	   <xsl:variable name="tana" select="meta:getTestAnalyte($test)"/>
+	   <!--<xsl:variable name="ts" select="meta:getTestSection($test)"/>-->
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -80,8 +89,8 @@ UIRF Software License are applicable instead of those above.
 			<display>
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths="175"  key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'nameMethod')}" width="100%">
+					<CollapsePanel key="collapsePanel" height="500px">
+						<azTable colwidths="175"  key="azTable" maxRows="21" tablewidth="auto" title="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -231,89 +240,127 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"quantity")'/>:</text>
-									<textbox key="{meta:getLabelQty($test)}" tab="{meta:getSectionId($test)},{meta:getLabelId($test)}" width = "50px"/>
-								</row>															
+									<textbox key="{meta:getLabelQty($test)}" tab="{meta:getTestTrailerId($test)},{meta:getLabelId($test)}" width = "50px"/>									
+								</row>																							
 								</TablePanel>
 								</content>
 								</titledPanel>
 								</VerticalPanel>
-								<TablePanel style = "Form">
-								<row>								    
-								</row>
-								
-								<row>
-								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'section')"/>:</text>
-								   <dropdown  key="{meta:getSectionId($test)}" tab="{meta:getTestTrailerId($test)},{meta:getLabelQty($test)}" width="145px"/>
-								</row>								
-								<row>								  
-								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>
-								   <widget>
-								    <dropdown key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getSectionId($test)}" width="145px"/>
-								   </widget>
-								 </row>								 								  																  
-								 <row>	  
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>
-								   <widget> 
-								    <dropdown  key="{meta:getTestFormatId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getTestTrailerId($test)}" width="145px"/>
-								   </widget>
-								 </row>
-                                 </TablePanel>                                                                     																										
+								<VerticalPanel padding="0" spacing="0">
+								  <VerticalPanel height = "9px"/>
+										<widget valign="bottom">
+											<table key="sectionTable" manager="this" maxRows="2" showError="false" showScroll="ALWAYS" title="" width="auto">
+												<headers>
+													<xsl:value-of select="resource:getString($constants,'section')"/>,													
+													<xsl:value-of select="resource:getString($constants,'options')"/>
+												</headers>
+												<widths>107,107</widths>
+												<editors>
+													<dropdown case="mixed" width="97px"/>
+													<dropdown case="mixed" width="97px"/>													
+												</editors>
+												<fields>
+													<dropdown key="section" required="true"/>													
+													<dropdown key="flag" required="true"/>													
+												</fields>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+											</table>											
+							 			 </widget>
+							 			 <widget halign="center" style="WhiteContentPanel">
+											<appButton action="removeIdentifierRow" key="removeSectionButton" onclick="this" style="Button">
+												<HorizontalPanel>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
+													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+												</HorizontalPanel>
+											</appButton>
+								     </widget>
+							 	  </VerticalPanel>	                                                                																										
 								 </HorizontalPanel>	
 								 <TablePanel style = "Form">
-								  <row>
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
-								   <dropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getIsReportable($test)},{meta:getTestFormatId($test)}" width="190px"/>								   								  
-								  								
+								 <row>
 								   <text style="Prompt" halign="left"><xsl:value-of select='resource:getString($constants,"reportable")'/>:</text>
 								   <check key="{meta:getIsReportable($test)}" tab="{meta:getScriptletId($test)},{meta:getRevisionMethodId($test)}"/>
-								  </row>						
-								 </TablePanel>	 
-		                          <TablePanel style = "Form">
+								 </row>
+								 <row>
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
+								   <dropdown  key="{meta:getRevisionMethodId($test)}" tab="{meta:getIsReportable($test)},{meta:getTestFormatId($test)}" width="170px"/>								   								  								  																   
+								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>								   
+								   <dropdown key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getLabelQty($test)}" width="170px"/>								   
+								  </row>	
+								  <row>		
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
+								   <dropdown key="{meta:getScriptletId($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="170px"/>						  
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>								   
+								   <dropdown  key="{meta:getTestFormatId($test)}" tab="{meta:getRevisionMethodId($test)},{meta:getTestTrailerId($test)}" width="170px"/>								   
+								  </row>					
+								 <!--</TablePanel>	 
+		                         <TablePanel style = "Form">-->
 		                          <row>
-		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								   <dropdown key="{meta:getScriptletId($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="235px"/>
-								  </row> 								  								   
-		                         </TablePanel> 
-		                         <VerticalPanel height = "20px"/>		                         
+		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingMethod')"/>:</text>
+								   <dropdown key="{meta:getReportingMethodId($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="170px"/>								  								    		                           								   								   								     
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sortingMethod')"/>:</text>
+								   <dropdown key="{meta:getSortingMethodId($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="170px"/>
+								  </row> 
+								  <row>
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingSequence')"/>:</text>								  
+								   <textbox key="{meta:getReportingSequence($test)}" tab="{meta:getDescription($test)},{meta:getIsReportable($test)}" width="40px"/>								    
+								  </row>								  								   
+		                         </TablePanel>	                         
 							  </VerticalPanel>							  							 
 							</tab>
 							<tab key="analyteTab" text="{resource:getString($constants,'testAnalyte')}">
-							 <VerticalPanel overflow = "auto" key="treeContainer">
+							 <VerticalPanel overflow = "auto" key="treeContainer" >
 							  <widget>
-                                <tree-table key="analyteTree"  width="auto" showScroll="ALWAYS" maxRows="7" enable="true">
-                                 <headers>
-                                  ,
+                                <tree-table key="analyteTree"  width="540px" showScroll="ALWAYS" maxRows="7" enable="true">
+                                 <headers>                                 
                                   <xsl:value-of select="resource:getString($constants,'analyte')"/>,													
 								  <xsl:value-of select="resource:getString($constants,'type')"/>,
 								  <xsl:value-of select="resource:getString($constants,'reportable')"/>,
 								  <xsl:value-of select="resource:getString($constants,'scriptlet')"/>,
 								  <xsl:value-of select="resource:getString($constants,'resultGroup')"/>
                                  </headers>
-                                 <widths>80,150,110,40,200,20</widths>
-                                  <editors>
-                                    <tree/>
-                                    <!--<autoComplete cat="analyte" case="mixed" width="140px">												
-										 <widths>123</widths>
-									</autoComplete>-->
-									<!--<textbox/>-->
-									<dropdown case="mixed" width = "1400px" type = "integer"/>
+                                 <widths>150,120,80,220,80</widths>
+                                 <leaves>
+                                   <leaf type="top">
+                                    <editors>
+                                     <label/>
+                                    </editors>
+                                    <fields>
+                                     <string/>
+                                    </fields>
+                                  </leaf>
+                                  <leaf type="analyte">                                   
+                                   <editors>
+                                    <autoComplete cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="mixed" width="140px">												
+										 <widths>133</widths>
+									</autoComplete>
                                     <dropdown case="mixed" width = "100px" type = "integer"/> 
                                     <check/>  
                                     <dropdown case="mixed" width = "190px" type = "integer"/>
                                     <textbox/>
-                                  </editors>
-                                  <fields>
-                                   <string key="tree"/>
-                                   <dropdown key="one"/>
-                                   <dropdown key="two"/>
-                                   <!--<string key="one"/>-->
-                                   <check key = "three"/> 
-                                   <dropdown key="four" />
-                                   <number key="five"/>
-                                  </fields>
+                                   </editors>
+                                   <fields>
+                                    <dropdown key="{testAnalyte:getAnalyteId($tana)}"/>
+                                    <dropdown key="{testAnalyte:getTypeId($tana)}"/>
+                                    <check key = "{testAnalyte:getIsReportable($tana)}"/> 
+                                    <dropdown key="{testAnalyte:getScriptletId($tana)}" />
+                                    <number key="{testAnalyte:getResultGroup($tana)}"/>
+                                   </fields>
+                                  </leaf> 
+                                 </leaves> 
                                 </tree-table>
                               </widget>                              						 
-							 <HorizontalPanel> 			                    
+							 <HorizontalPanel> 	
+							    <widget halign="center" style="WhiteContentPanel">
+											<appButton action="removeIdentifierRow" key="addGroupButton" onclick="this" style="Button">
+												<HorizontalPanel>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
+													<text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>
+												</HorizontalPanel>
+											</appButton>
+								</widget>		                    
 								<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">
 												<HorizontalPanel>
@@ -321,15 +368,7 @@ UIRF Software License are applicable instead of those above.
 													<text><xsl:value-of select="resource:getString($constants,'addAnalyte')"/></text>
 												</HorizontalPanel>
 											</appButton>
-								</widget>	
-								<widget halign="center" style="WhiteContentPanel">
-											<appButton action="removeIdentifierRow" key="addGroupButton" onclick="this" style="Button">
-												<HorizontalPanel>
-													<AbsolutePanel style="RemoveRowButtonImage"/>
-													<text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>
-												</HorizontalPanel>
-											</appButton>
-								</widget>		
+								</widget>			
 								<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeIdentifierRow" key="deleteButton" onclick="this" style="Button">
 												<HorizontalPanel>
@@ -524,8 +563,6 @@ UIRF Software License are applicable instead of those above.
 								  <widget>
 								   <textbox  key="{testWrksht:getBatchCapacity($tws)}" tab="{testWrksht:getTotalCapacity($tws)},{testWrksht:getNumberFormatId($tws)}" width="40px"/>									
 								  </widget>
-								<!--</row>
-								<row>-->
 								<widget valign="middle">								
 								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'totalCapacity')"/>:</text>									
 								</widget> 
@@ -626,10 +663,12 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{meta:getLabelId($test)}" required="false" type="integer"/>
 				<number key="{meta:getLabelQty($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getTestTrailerId($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getSectionId($test)}" required="false" type="integer"/>
+				<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>				
 				<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
+				<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
+				<number key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
+				<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
 			</rpc>			
 			<rpc key = "prepAndReflex"> 			 
 			 <table key="testPrepTable"/>
@@ -666,11 +705,13 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>				
 				<queryNumber key="{meta:getLabelQty($test)}" type="integer"/>
 				<dropdown key="{meta:getTestTrailerId($test)}" type="integer"/>
-				<dropdown key="{meta:getTestFormatId($test)}"  type="integer"/>
-				<dropdown key="{meta:getSectionId($test)}" type="integer"/>
+				<dropdown key="{meta:getTestFormatId($test)}"  type="integer"/>				
 				<dropdown key="{meta:getRevisionMethodId($test)}" type="integer"/>	
 				<dropdown key="{meta:getScriptletId($test)}" type="integer"/>
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
+				<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
+				<queryNumber key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
+				<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
 				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="false" type="integer"/>					
 				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" required="false" type="integer"/> 
 				<dropdown key="{testPrep:getPrepTestId($tp)}" required="false" type="integer"/>	
@@ -684,7 +725,7 @@ UIRF Software License are applicable instead of those above.
 				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
 				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
 				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
-				<dropdown key="{testWrkshtItm:getTypeId($twsi)}" required="false" type="integer"/>
+				<dropdown key="{testWrkshtItm:getTypeId($twsi)}" required="false" type="integer"/>				
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<model key = "worksheetTable"/>
 				<model key = "sampleTypeTable"/>

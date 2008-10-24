@@ -68,23 +68,27 @@ public class PanelScreen extends OpenELISScreenForm implements
     
     private TableModel addTestModel = null;
     
-    private static DataModel allTestsModel;
+    private static DataModel allTestsDataModel;
     
     private PanelMetaMap PanelMeta = new PanelMetaMap();
     
-    private AppButton removeTestButton,moveUpButton, moveDownButton;
+    private AppButton removeTestButton,moveUpButton, moveDownButton, addTestButton;
     
-    private TableWidget allTestList;
+    private TableWidget allTestTable;
+    
+    private TableModel allTestsTableModel;
     
     private TextBox panelName;
     
     public void onClick(Widget sender) {
         if (sender == removeTestButton)
-            onTestRowButtonClick(); 
-        if (sender == moveUpButton)
+          onTestRowButtonClick(); 
+        else if (sender == moveUpButton)
          onMoveUpButtonClick();
-        if (sender == moveDownButton)
+        else if (sender == moveDownButton)
          onMoveDownButtonClick();
+        else if(sender == addTestButton) 
+         addTestButtonClick();
     }
     
     public PanelScreen() {
@@ -119,8 +123,8 @@ public class PanelScreen extends OpenELISScreenForm implements
                 
         //bpanel.enableButton("delete", false);
         
-        if(allTestsModel==null){
-            allTestsModel = (DataModel)initData.get("allTests");
+        if(allTestsDataModel==null){
+            allTestsDataModel = (DataModel)initData.get("allTests");
             
         }
         
@@ -133,18 +137,20 @@ public class PanelScreen extends OpenELISScreenForm implements
         removeTestButton = (AppButton)getWidget("removeTestButton");
         moveUpButton = (AppButton)getWidget("moveUpButton");
         moveDownButton = (AppButton)getWidget("moveDownButton");
+        addTestButton = (AppButton)getWidget("addTestButton");
         
-        allTestList =  ((TableWidget)getWidget("allTestsTable"));
+        allTestTable =  ((TableWidget)getWidget("allTestsTable"));
         
+        allTestsTableModel = (TableModel)allTestTable.model;
         
         panelName = (TextBox)getWidget(PanelMeta.getName());
         updateChain.add(afterUpdate);  
                 
         super.afterDraw(success);
         
-        allTestList.model.setModel(allTestsModel);
-        allTestList.model.refresh();
-        allTestList.enabled(false);
+        allTestTable.model.setModel(allTestsDataModel);
+        allTestTable.model.refresh();
+        allTestTable.enabled(false);
         rpc.setFieldValue("addedTestTable",addTestModel.getData());
       
   }
@@ -154,12 +160,12 @@ public class PanelScreen extends OpenELISScreenForm implements
         removeTestButton.changeState(ButtonState.DISABLED) ;
         moveUpButton.changeState(ButtonState.DISABLED) ;
         moveDownButton.changeState(ButtonState.DISABLED) ; 
-        allTestList.enabled(false);
+        allTestTable.enabled(false);
     }
     
     public void add(){
         super.add();
-        allTestList.enabled(true);
+        allTestTable.enabled(true);
         panelName.setFocus(true);
     } 
     
@@ -168,7 +174,7 @@ public class PanelScreen extends OpenELISScreenForm implements
         }
         public void onSuccess(Object result) {            
             panelName.setFocus(true);       
-            allTestList.enabled(true);
+            allTestTable.enabled(true);
         }
     };           
 
@@ -176,24 +182,7 @@ public class PanelScreen extends OpenELISScreenForm implements
         if(sender == widgets.get("addedTestTable")){               
             ScreenWidget dragged = (ScreenWidget)((ScreenWidget)source).getUserObject();
             StringObject  key = (StringObject)dragged.getUserObject();
-            String display = (String)key.getValue();//((Label)dragged.getWidget()).getText();               
-            DataSet row = addedTestsController.model.createRow();            
-            String[] namesArray= display.split(", ");            
-            if(testAdded(namesArray[0],namesArray[1])){
-              boolean ok = Window.confirm("This test has already been added to the panel." +
-                    " Add it anyway?");
-              if(ok){    
-                  row.get(0).setValue(namesArray[0]);
-                  row.get(1).setValue(namesArray[1]);                  
-                  addTestModel.addRow(row);
-                  addTestModel.refresh();
-              }
-            }else{                
-                row.get(0).setValue(namesArray[0]);
-                row.get(1).setValue(namesArray[1]);                
-                addTestModel.addRow(row);
-                addTestModel.refresh();
-            }                         
+                                     
         }        
     }
 
@@ -253,7 +242,7 @@ public class PanelScreen extends OpenELISScreenForm implements
          for(int iter = 0; iter <  addTestModel.numRows(); iter++){
              String tname = (String)addTestModel.getRow(iter).get(0).getValue();
              String mname = (String)addTestModel.getRow(iter).get(1).getValue();
-             if(tname.equals(testName)&& mname.equals(methodName)){                 
+             if(tname.equals(testName.trim())&& mname.equals(methodName)){                 
                 return true;
              }
              
@@ -286,8 +275,33 @@ public class PanelScreen extends OpenELISScreenForm implements
            addTestModel.setRow(selIndex, moveUpRow);
            addTestModel.selectRow(selIndex+1);
            addTestModel.refresh();
-        }                
-    }
-    
-    
+        }
+      } 
+      
+       private void addTestButtonClick(){
+              int selIndex = allTestsTableModel.getData().getSelectedIndex();
+              if(selIndex > -1){         
+                  DataSet atRow =  allTestsTableModel.getData().get(selIndex);
+                  String display = (String)((StringObject)atRow.getKey()).getValue();                  
+                  DataSet row = addedTestsController.model.createRow();            
+                  String[] namesArray= display.split(",");                     
+                  if(testAdded(namesArray[0],namesArray[1])){
+                    boolean ok = Window.confirm("This test has already been added to the panel." +
+                          " Add it anyway?");
+                    if(ok){    
+                        row.get(0).setValue(namesArray[0]);
+                        row.get(1).setValue(namesArray[1]);    
+                        row.get(2).setValue(namesArray[2]);
+                        addTestModel.addRow(row);
+                        addTestModel.refresh();
+                    }
+                  }else{                
+                      row.get(0).setValue(namesArray[0]);
+                      row.get(1).setValue(namesArray[1]);   
+                      row.get(2).setValue(namesArray[2]);            
+                      addTestModel.addRow(row);
+                      addTestModel.refresh();
+                  }
+          }            
+       }
 }

@@ -27,15 +27,12 @@ package org.openelis.modules.dictionary.client;
 
 
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
@@ -45,7 +42,6 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.CategoryMetaMap;
@@ -55,16 +51,14 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
     private TableWidget dictEntryController = null;
     private AppButton removeEntryButton = null;
-    private TextBox tname = null;
+    //private TextBox tname = null;
     private KeyListManager keyList = new KeyListManager();
 
     private Dropdown displaySection = null;
     private static boolean loaded = false;
     
     private static DataModel sectionDropDown = null;
-    
-    private DataSet relEntryRow = null;
-
+        
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
         super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
@@ -113,7 +107,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
         
 
-        tname = (TextBox)getWidget(CatMap.getName());
+        //tname = (TextBox)getWidget(CatMap.getName());
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
@@ -149,12 +143,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     private void onRemoveRowButtonClick(){
         ((TableWidget)dictEntryController.getWidget()).model
         .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());;       
-    }
-    
-    private void setRelatedEntryId(Integer entryId){
-        NumberField relEntryId = new NumberField(entryId);         
-        ((DataMap)relEntryRow.getData()).put("relEntryId", relEntryId);        
-    }    
+    }     
             
 
    /* public void showError(int row, int col, TableController controller,String error) {
