@@ -28,7 +28,6 @@ package org.openelis.modules.organization.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -255,10 +254,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback(){
-            public void onSuccess(Object result){    
+        screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback<FormRPC>(){
+            public void onSuccess(FormRPC result){    
                 // get the datamodel, load it in the notes panel and set the value in the rpc
-                load((FormRPC)result);
+                load(result);
                 rpc.setField("notes",(FormRPC)result);
                 window.setStatus("","");
             }
@@ -276,10 +275,10 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadContacts", new Data[] {key,rpc.getField("contacts")}, new AsyncCallback() {
-            public void onSuccess(Object result) {
+        screenService.getObject("loadContacts", new Data[] {key,rpc.getField("contacts")}, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
                
-                load((FormRPC)result);
+                load(result);
                 rpc.setField("contacts", (FormRPC)result);
                 window.setStatus("","");
 
@@ -313,14 +312,4 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
         }
     }
-    
-    /*private void clearNotesFields(){
-        //the note subject and body fields need to be refeshed after every successful commit 
-        TextBox subjectBox = (TextBox)getWidget(OrgMeta.getNote().getSubject());           
-        subjectBox.setText("");
-        TextArea noteArea = (TextArea)getWidget(OrgMeta.getNote().getText());
-        noteArea.setText("");           
-        ((FormRPC)rpc.getField("notes")).setFieldValue(OrgMeta.getNote().getSubject(), null);
-        ((FormRPC)rpc.getField("notes")).setFieldValue(OrgMeta.getNote().getText(), null);  
-    }*/
 }

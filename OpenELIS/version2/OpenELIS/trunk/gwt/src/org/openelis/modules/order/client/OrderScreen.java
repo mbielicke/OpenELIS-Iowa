@@ -352,10 +352,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
           
         Data[] args = new Data[0]; 
           
-        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
-            public void onSuccess(Object result){    
+        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel>(){
+            public void onSuccess(DataModel model){    
               // get the datamodel, load the fields in the form
-                DataModel model = (DataModel)result;
                 DataSet set = model.get(0);
 
                 //load the values
@@ -616,9 +615,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, new BooleanObject(forDuplicate), new StringObject(orderType), rpc.getField("items")};
 
-        screenService.getObject("loadItems", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadItems", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("items", (FormRPC)result);
                 
                 if(forDuplicate)
@@ -643,9 +642,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, rpc.getField("receipts")};
 
-        screenService.getObject("loadReceipts", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadReceipts", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("receipts", (FormRPC)result);
                 window.setStatus("","");
             }
@@ -666,9 +665,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, rpc.getField("custNote")};
 
-        screenService.getObject("loadCustomerNotes", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadCustomerNotes", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("custNote",(FormRPC)result);
                 window.setStatus("","");
             }
@@ -689,9 +688,9 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, rpc.getField("shippingNote")};
 
-        screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("shippingNote",(FormRPC)result);
                 window.setStatus("","");
             }
@@ -712,33 +711,11 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, rpc.getField("reportToBillTo")};
 
-        screenService.getObject("loadReportToBillTo", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
+        screenService.getObject("loadReportToBillTo", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
                 if(result != null){
-                    /*DataModel model = (DataModel)((ModelField)result).getValue();
-                    DataSet set = model.get(0);
-                    
-                    ArrayList billToDataSets = new ArrayList();
-                    billToDataSets.add((DataSet)model.get(2));
-                    
-                    billToDropdown.setSelected(billToDataSets);
-                    billToAptSuite.setText((String)((StringObject)set.getObject(2)).getValue());
-                    billToAddress.setText((String)((StringObject)set.getObject(3)).getValue());
-                    billToCity.setText((String)((StringObject)set.getObject(4)).getValue());
-                    billToState.setText((String)((StringObject)set.getObject(5)).getValue());
-                    billToZipCode.setText((String)((StringObject)set.getObject(6)).getValue());
-                    
-                    ArrayList reportToDataSets = new ArrayList();
-                    reportToDataSets.add((DataSet)model.get(1));
-                    
-                    reportToDropdown.setSelected(reportToDataSets);
-                    reportToAptSuite.setText((String)((StringObject)set.getObject(9)).getValue());
-                    reportToAddress.setText((String)((StringObject)set.getObject(10)).getValue());
-                    reportToCity.setText((String)((StringObject)set.getObject(11)).getValue());
-                    reportToState.setText((String)((StringObject)set.getObject(12)).getValue());
-                    reportToZipCode.setText((String)((StringObject)set.getObject(13)).getValue());*/
-                    load((FormRPC)result);
-                    rpc.setField("reportToBillTo",(FormRPC)result);
+                    load(result);
+                    rpc.setField("reportToBillTo",result);
 
                 }
                 window.setStatus("","");

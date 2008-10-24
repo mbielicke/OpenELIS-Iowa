@@ -282,10 +282,8 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
             // prepare the argument list for the getObject function
             Data[] args = new Data[] {keyList.getList()}; 
             
-            screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback(){
-                public void onSuccess(Object result){                    
-                    DataModel model = (DataModel)result;
-                    
+            screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback<DataModel>(){
+                public void onSuccess(DataModel model){                    
                     keyList.setModel(model);
                     keyList.select(0);
 
