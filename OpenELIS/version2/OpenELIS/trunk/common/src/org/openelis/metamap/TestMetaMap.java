@@ -53,6 +53,8 @@ public class TestMetaMap extends TestMeta implements MetaMap {
            
     private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap("testWorksheetItem.");  
     
+    private TestSectionMetaMap TEST_SECTION = new TestSectionMetaMap("testSection.");
+    
     public TestWorksheetItemMetaMap getTestWorksheetItem(){
         return TEST_WORKSHEET_ITEM;
     }
@@ -85,6 +87,11 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         return TEST_WORKSHEET;
     }
     
+    public TestSectionMetaMap getTestSection(){
+        return TEST_SECTION;
+    }
+    
+    
     public boolean hasColumn(String name){        
         if(name.startsWith("testPrep."))
             return TEST_PREP.hasColumn(name);
@@ -98,6 +105,8 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             return TEST_WORKSHEET_ITEM.hasColumn(name);
         if(name.startsWith("testAnalyte."))
             return TEST_ANALYTE.hasColumn(name);
+        if(name.startsWith("testSection."))
+            return TEST_SECTION.hasColumn(name);
         if(name.startsWith(path+"method."))
             return METHOD.hasColumn(name);
         return super.hasColumn(name);
@@ -113,6 +122,8 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             from += ", IN (t.testReflex) testReflex ";  
         if(name.indexOf("testAnalyte.") > -1)
             from += ", IN (t.testAnalyte) testAnalyte ";
+        if(name.indexOf("testSection.") > -1)
+            from += ", IN (t.testSection) testSection ";
         String wsFrom = ", IN (t.testWorksheet) testWorksheet ";
         String wsiFrom = ", IN (testWorksheet.testWorksheetItem) testWorksheetItem ";
         if(name.indexOf("testWorksheet.") > -1)

@@ -54,13 +54,20 @@ public class TestMeta implements Meta {
               LABEL_ID					="labelId",
               LABEL_QTY					="labelQty",
               TEST_TRAILER_ID					="testTrailerId",
-              SECTION_ID					="sectionId",
               SCRIPTLET_ID					="scriptletId",
               TEST_FORMAT_ID					="testFormatId",
-              REVISION_METHOD_ID					="revisionMethodId";
+              REVISION_METHOD_ID					="revisionMethodId",
+              REPORTING_METHOD_ID                   ="reportingMethodId",
+              SORTING_METHOD_ID                     = "sortingMethodId",
+              REPORTING_SEQUENCE                    = "reportingSequence";
+              
+              
 
   	private static final String[] columnNames = {
-  	  ID,NAME,DESCRIPTION,REPORTING_DESCRIPTION,METHOD_ID,IS_ACTIVE,ACTIVE_BEGIN,ACTIVE_END,IS_REPORTABLE,TIME_TRANSIT,TIME_HOLDING,TIME_TA_AVERAGE,TIME_TA_WARNING,TIME_TA_MAX,LABEL_ID,LABEL_QTY,TEST_TRAILER_ID,SECTION_ID,SCRIPTLET_ID,TEST_FORMAT_ID,REVISION_METHOD_ID};
+  	  ID,NAME,DESCRIPTION,REPORTING_DESCRIPTION,METHOD_ID,IS_ACTIVE,ACTIVE_BEGIN
+      ,ACTIVE_END,IS_REPORTABLE,TIME_TRANSIT,TIME_HOLDING,TIME_TA_AVERAGE,TIME_TA_WARNING,
+      TIME_TA_MAX,LABEL_ID,LABEL_QTY,TEST_TRAILER_ID,SCRIPTLET_ID,TEST_FORMAT_ID,
+      REVISION_METHOD_ID,REPORTING_METHOD_ID,SORTING_METHOD_ID,REPORTING_SEQUENCE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -161,10 +168,6 @@ public class TestMeta implements Meta {
         return path + TEST_TRAILER_ID;
     } 
 
-    public String getSectionId() {
-        return path + SECTION_ID;
-    } 
-
     public String getScriptletId() {
         return path + SCRIPTLET_ID;
     } 
@@ -175,7 +178,20 @@ public class TestMeta implements Meta {
 
     public String getRevisionMethodId() {
         return path + REVISION_METHOD_ID;
-    } 
+    }
+
+    public String getReportingMethodId() {
+        return path + REPORTING_METHOD_ID;
+    }
+
+    public String getReportingSequence() {
+        return path + REPORTING_SEQUENCE;
+    }
+    
+    public String getSortingMethodId(){
+        return path + SORTING_METHOD_ID;
+    }
+ 
 
   
 }   
