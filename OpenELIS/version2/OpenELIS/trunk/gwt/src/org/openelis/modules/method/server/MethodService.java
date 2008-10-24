@@ -61,7 +61,7 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    private static final int leftTableRowsPerPage = 19;
+    private static final int leftTableRowsPerPage = 9;
     
     private static final MethodMetaMap MethodMeta = new MethodMetaMap();
     

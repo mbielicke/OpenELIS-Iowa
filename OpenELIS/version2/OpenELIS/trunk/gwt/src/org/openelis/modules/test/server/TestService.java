@@ -67,6 +67,7 @@ import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.services.AutoCompleteServiceInt;
 
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
@@ -84,9 +85,10 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class TestService implements AppScreenFormServiceInt {
+public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,DataModel>,
+                                    AutoCompleteServiceInt{
 
-    private static final int leftTableRowsPerPage = 19;
+    private static final int leftTableRowsPerPage = 21;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
 
@@ -181,8 +183,8 @@ public class TestService implements AppScreenFormServiceInt {
         
         prepTestDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
                                               null);
-        //testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
-                                                  //,null);
+        testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+                                                  ,null);
         if (((FormRPC)rpcSend.getField("worksheet")).load) {
          itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));               
          worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
@@ -241,8 +243,8 @@ public class TestService implements AppScreenFormServiceInt {
             testPrepDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
                                                       (Integer)testId.getValue());
             
-           // testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
-             //                                         ,(Integer)testId.getValue());
+            testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+                                                    ,(Integer)testId.getValue());
             
             
         }
@@ -297,8 +299,7 @@ public class TestService implements AppScreenFormServiceInt {
     
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)key.getKey()
-                                                                             .getValue());
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod( (Integer)((DataObject)key.getKey()).getValue());
         setFieldsInRPC(rpcReturn, testDO);
 
         if (((FormRPC)rpcReturn.getField("details")).load) {
@@ -327,8 +328,7 @@ public class TestService implements AppScreenFormServiceInt {
     public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)key.getKey()
-                                                                             .getValue());
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)((DataObject)key.getKey()).getValue());
         setFieldsInRPC(rpcReturn, testDO);
 
         String tab = (String)rpcReturn.getFieldValue("testTabPanel");
@@ -374,8 +374,8 @@ public class TestService implements AppScreenFormServiceInt {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
         fillPrepTests(prepList, rpcReturn);
-        //List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
-        //fillTestReflexes(reflexList,rpcReturn);
+        List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
+        fillTestReflexes(reflexList,rpcReturn);
         rpcReturn.load = true;
         return rpcReturn;
     }
@@ -394,8 +394,7 @@ public class TestService implements AppScreenFormServiceInt {
 
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         try {
-            testDO = remote.getTestIdNameMethodAndLock((Integer)key.getKey()
-                                                                   .getValue(),
+            testDO = remote.getTestIdNameMethodAndLock((Integer)((DataObject)key.getKey()).getValue(),
                                                        SessionManager.getSession()
                                                                      .getId());
         } catch (Exception e) {
@@ -432,7 +431,7 @@ public class TestService implements AppScreenFormServiceInt {
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/test.xsl");
     }
 
-    public HashMap<String, DataObject> getXMLData() throws RPCException {
+    public HashMap getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/test.xsl"));
 
@@ -443,9 +442,7 @@ public class TestService implements AppScreenFormServiceInt {
         DataModel testTrailerDropDownField = (DataModel)CachingManager.getElement("InitialData",
                                                                                   "testTrailerDropDown");
         DataModel scriptletDropDownField = (DataModel)CachingManager.getElement("InitialData",
-                                                                                "scriptletDropDown");
-        DataModel sectionDropDownField = (DataModel)CachingManager.getElement("InitialData",
-                                                                              "sectionDropDown");
+                                                                                "scriptletDropDown");       
         DataModel sampleTypeDropDownField = (DataModel)CachingManager.getElement("InitialData",
                                                                                  "sampleTypeDropDown");
         DataModel measureUnitDropDownField = (DataModel)CachingManager.getElement("InitialData",
@@ -490,13 +487,6 @@ public class TestService implements AppScreenFormServiceInt {
             CachingManager.putElement("InitialData",
                                       "testTrailerDropDown",
                                       testTrailerDropDownField);
-        }
-
-        if (sectionDropDownField == null) {
-            sectionDropDownField = getInitialModel("section");
-            CachingManager.putElement("InitialData",
-                                      "sectionDropDown",
-                                      sectionDropDownField);
         }
         
         if (testFormatDropDownField == null) {
@@ -579,13 +569,12 @@ public class TestService implements AppScreenFormServiceInt {
           
           }
 
-        HashMap<String, DataObject> map = new HashMap<String, DataObject>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("xml", xml);
         map.put("methods", methodDropDownField);
         map.put("labels", labelDropDownField);
         map.put("testTrailers", testTrailerDropDownField);
         map.put("scriptlets", scriptletDropDownField);
-        map.put("sections", sectionDropDownField);
         map.put("testFormats", testFormatDropDownField);
         map.put("revisionMethods", revisionMethodDropDownField);
         map.put("sampleTypes", sampleTypeDropDownField);
@@ -598,7 +587,7 @@ public class TestService implements AppScreenFormServiceInt {
         return map;
     }
 
-    public HashMap<String, DataObject> getXMLData(HashMap<String, DataObject> args) throws RPCException {
+    public HashMap getXMLData(HashMap args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -721,19 +710,19 @@ public class TestService implements AppScreenFormServiceInt {
          return model;
     }
     
-    public DataMap getTestResultModelMap(NumberObject testId){
+    public DataMap getTestResultModelMap(NumberObject testId,DataMap dataMap){
       TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
       HashMap<Integer,List<IdNameDO>> listMap = remote.getAnalyteResultsMap((Integer)testId.getValue());
-      HashMap<String, DataModel> modelMap = new HashMap<String, DataModel>();            
-      DataMap dataMap = new DataMap();      
+      //HashMap<String, DataModel> modelMap = new HashMap<String, DataModel>();            
+      //DataMap dataMap = new DataMap();      
        for (Iterator iter = listMap.entrySet().iterator(); iter.hasNext();){ 
               Entry<Integer,List<IdNameDO>> entry = (Entry<Integer,List<IdNameDO>>)iter.next();
               List<IdNameDO> list = (List<IdNameDO>)listMap.get(entry.getKey());              
               DataModel dataModel = new DataModel();
               loadDropDown(list, dataModel);
-              modelMap.put(entry.getKey().toString(), dataModel);             
+              dataMap.put(entry.getKey().toString(), dataModel);             
           }
-        dataMap.setValue(modelMap); 
+        //dataMap.setValue(modelMap); 
         return dataMap;
       }
 
@@ -771,13 +760,6 @@ public class TestService implements AppScreenFormServiceInt {
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
         }else if (cat.equals("testAnalyteType")) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_analyte_type"));
-        }else if (cat.equals("section")) {
-            SystemUserUtilRemote utilRemote = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-            List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
-
-            if (sections != null) {
-                loadSectionDropDown(sections, model);
-            }            
         }
 
         if (values != null) {
@@ -787,6 +769,35 @@ public class TestService implements AppScreenFormServiceInt {
         return model;
     }    
 
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {         
+        
+        if(("analyte").equals(cat)){ 
+         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
+         List entries = remote.getMatchingEntries(match+"%", 10);
+         DataModel dataModel = new DataModel();
+         for (Iterator iter = entries.iterator(); iter.hasNext();) {
+             
+             IdNameDO element = (IdNameDO)iter.next();
+             Integer entryId = element.getId();                   
+             String entryText = element.getName();
+             
+             DataSet data = new DataSet();
+             //hidden id
+             NumberObject idObject = new NumberObject(entryId);
+             data.setKey(idObject);
+             
+             StringObject nameObject = new StringObject(entryText);
+             data.add(nameObject);
+             
+             //add the dataset to the datamodel
+             dataModel.add(data);
+         }       
+         
+         return dataModel;
+        }
+       return null; 
+     }
+    
     private List<TestPrepDO> getPrepTestsFromRPC(FormRPC rpcSend,Integer testId) {
 
         DataModel model = (DataModel)rpcSend.getField("testPrepTable").getValue();
@@ -1226,11 +1237,7 @@ public class TestService implements AppScreenFormServiceInt {
          rpcReturn.setFieldValue(TestMeta.getLabelId(),
                                 new DataSet(new NumberObject(testDetailsDO.getLabelId())));
         rpcReturn.setFieldValue(TestMeta.getLabelQty(),
-                               testDetailsDO.getLabelQty());  
-        
-        if(testDetailsDO.getSectionId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getSectionId(),
-                                new DataSet(new NumberObject(testDetailsDO.getSectionId())));
+                               testDetailsDO.getLabelQty());                 
         
         if(testDetailsDO.getScriptletId()!=null)
         rpcReturn.setFieldValue(TestMeta.getScriptletId(),
@@ -1430,9 +1437,64 @@ public class TestService implements AppScreenFormServiceInt {
         }
     }
     
+    private List<TestAnalyteDO> getAnalyteDOListFromRPC(FormRPC rpcReturn,Integer testId){
+        TreeDataModel model =  (TreeDataModel)((FormRPC)rpcReturn.getField("testAnalyte")).getFieldValue("analyteTree");
+        int  currGroup = 0;
+        List<TestAnalyteDO> analyteDOList = new ArrayList<TestAnalyteDO>();
+        for(int iter = 0; iter < model.size(); iter++){
+         TreeDataItem item = model.get(iter);
+         if("Top".equals(item.leafType)){
+           currGroup++;
+           List<TreeDataItem> itemList = item.getItems();
+            for(int ctr = 0; ctr < itemList.size(); ctr++){
+             TreeDataItem chItem = itemList.get(ctr);                         
+             analyteDOList.add(getTestAnalyteDO(chItem,currGroup, testId,iter));
+          }
+         }
+         else{
+           analyteDOList.add(getTestAnalyteDO(item,null, testId,iter));
+         } 
+        }
+        return analyteDOList;
+    }
+    
+    private TestAnalyteDO getTestAnalyteDO(TreeDataItem chItem,Integer analyteGroup, Integer testId,Integer sortOrder){
+        TestAnalyteDO analyteDO = new TestAnalyteDO(); 
+        if(chItem.getData()!=null){ 
+         NumberField id = (NumberField)((DataMap)chItem.getData()).get("id");
+         analyteDO.setId((Integer)id.getValue());
+        }
+        
+        DropDownField analyteId = (DropDownField)chItem.get(1);
+        if((new Integer(-1)).equals((Integer)analyteId.getValue()))
+         analyteDO.setAnalyteId((Integer)analyteId.getValue());
+        
+        DropDownField typeId = (DropDownField)chItem.get(2);
+        if((new Integer(-1)).equals((Integer)typeId.getValue()))
+         analyteDO.setTypeId((Integer)typeId.getValue());
+        
+        CheckField reportable = (CheckField)chItem.get(3);
+        analyteDO.setIsReportable((String)reportable.getValue());
+            
+        DropDownField scriptletId = (DropDownField)chItem.get(4);
+        if((new Integer(-1)).equals((Integer)scriptletId.getValue()))
+         analyteDO.setScriptletId((Integer)scriptletId.getValue());
+        
+        NumberField resGroup = (NumberField)chItem.get(5);
+        analyteDO.setResultGroup((Integer)resGroup.getValue());
+        
+        analyteDO.setSortOrder(sortOrder);
+        
+        analyteDO.setAnalyteGroup(analyteGroup);   
+        
+        analyteDO.setTestId(testId);  
+        
+        return analyteDO;
+    }
+    
     private TreeDataItem createAnalyteNode(TestAnalyteDO analyteDO){
       TreeDataItem item = new TreeDataItem();
-        item.setLabel(new StringObject(""));       
+        //item.setLabel(new StringObject(""));       
         /*DataSet set = new DataSet();
         set.setKey(new NumberField(-1));
         set.add(new StringField(""));
@@ -1448,25 +1510,27 @@ public class TestService implements AppScreenFormServiceInt {
         item.add(new DropDownField(new DataSet(new NumberField(analyteDO.getScriptletId()))));         
         //item.add(new DataSet(new NumberObject(-1)));
         item.add(new NumberField(analyteDO.getResultGroup()));       
+        DataMap data = new DataMap();
+        data.put("id", new NumberField(analyteDO.getId()));        
         return item;
     }
     
     private TreeDataItem createGroupNode(int id ,TreeDataModel model){
         TreeDataItem item = model.createTreeItem(new NumberObject(id));
-          item.setLabel(new StringObject("Group"));       
+          item.setData(new StringObject("Group"));                
           /*DataSet set = new DataSet();
           set.setKey(new NumberField(-1));
           set.add(new StringField(""));
           DropDownField field = new DropDownField();
           field.add(set);
           field.getSelections().add(set);
-          item.add(field);*/
+          item.add(field);
           item.add(new DropDownField(new DataSet(new NumberField(-1))));
           item.add(new DropDownField(new DataSet(new NumberField(-1))));          
           item.add(new CheckField());
           item.add(new DropDownField(new DataSet(new NumberField(-1))));         
           //item.add(new DataSet(new NumberObject(-1)));
-          item.add(new NumberField());       
+          item.add(new NumberField());   */    
           return item;
       }
         
@@ -1518,10 +1582,6 @@ public class TestService implements AppScreenFormServiceInt {
             testDetailsDO.setScriptletId(scrId);
         }
         // testDetailsDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getScriptletId()));
-        Integer sectionId = (Integer)rpcSend.getFieldValue(TestMeta.getSectionId());
-        if (sectionId != null && !sectionId.equals(new Integer(-1))) {
-            testDetailsDO.setSectionId(sectionId);
-        }
 
         // testDetailsDO.setSectionId((Integer)rpcSend.getFieldValue(TestMeta.getSectionId()));
         Integer tfId = (Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId());
@@ -1664,41 +1724,7 @@ public class TestService implements AppScreenFormServiceInt {
 
             model.add(set);
         }
-    }
-
-    private void loadSectionDropDown(List<SectionIdNameDO> sections,
-                                     DataModel model) {
-        DataSet blankset = new DataSet();
-
-        StringObject blankStringId = new StringObject();
-
-        blankStringId.setValue("");
-        blankset.add(blankStringId);
-
-        NumberObject blankNumberId = new NumberObject(-1);
-        blankset.setKey(blankNumberId);
-
-        model.add(blankset);
-
-        for (Iterator iter = sections.iterator(); iter.hasNext();) {
-            SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
-
-            DataSet set = new DataSet();
-            // id
-            Integer dropdownId = sectionDO.getId();
-            // entry
-            String dropdownText = sectionDO.getName();
-
-            StringObject textObject = new StringObject(dropdownText);
-            NumberObject numberId = new NumberObject(dropdownId);
-
-            set.add(textObject);
-
-            set.setKey(numberId);
-
-            model.add(set);
-        }
-    }
+    }    
 
     private void loadPrepTestDropDown(List<QaEventTestDropdownDO> qaedDOList,
                                       DataModel model) {

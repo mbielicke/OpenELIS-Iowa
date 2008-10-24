@@ -339,11 +339,14 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                        row.get(4).setValue(null);
                     else{
                         DataSet relEntrySet = new DataSet();
-                        NumberObject idObj = new NumberObject(dictDO.getRelatedEntryId());
-                        StringObject text = new StringObject(dictDO.getRelatedEntryText());
-                        relEntrySet.setKey(idObj);
-                        relEntrySet.add(text);
-                        row.get(4).setValue(relEntrySet);
+                        relEntrySet.setKey(new NumberObject(dictDO.getRelatedEntryId()));
+                        relEntrySet.add(new StringObject(dictDO.getRelatedEntryText()));
+                        DropDownField field = new DropDownField();
+                        DataModel dmodel = new DataModel();
+                        dmodel.add(relEntrySet);
+                        field.setModel(dmodel);
+                        field.setValue(relEntrySet);
+                        row.get(4).setValue(field);
                     }
                      dictEntryModel.add(row);
             } 

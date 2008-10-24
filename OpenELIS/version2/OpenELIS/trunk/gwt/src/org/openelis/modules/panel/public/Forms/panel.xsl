@@ -137,140 +137,121 @@ UIRF Software License are applicable instead of those above.
 						     </TablePanel>	
 						  <VerticalPanel height = "10px"/>   
 						  <HorizontalPanel>
-						      <!--<VerticalPanel>
-						       <table key="allTestsTable" manager="this" maxRows="16" showError="false" showScroll="true" title="" width="auto">												
-												<headers> 
-												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>
-												</headers>
-												<widths>80,80</widths>
-												<editors>
-													<label/>
-													<label/>													
-												</editors>
-												<fields>
-													<string key="test"/>
-													<string key="method"/>
-												</fields>
-												<sorts>false</sorts>
-												<filters>false</filters>
-												<colAligns>left</colAligns>
-								</table>
-								
-						      </VerticalPanel>
-						      <VerticalPanel>
-						      			
-						      </VerticalPanel>-->						      						                                    
+						      						                                    
                               <VerticalPanel style="Form">
                                 <!--<text ><xsl:value-of select="resource:getString($constants,'testsThisPanel')"/></text>-->
-                                <!--<scrolllist key="addedTests" drop="this" width="150px" maxRows="16" maxHeight="true">
-                                 <widths>150</widths>
-                                </scrolllist>-->
                                <widget valign="top"> 
                                 <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" drop="this" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>
+												 <xsl:value-of select="resource:getString($constants,'method')"/>,
+												 <xsl:value-of select="resource:getString($constants,'section')"/>
 												</headers>
-												<widths>140,140</widths>
+												<widths>92,92,92</widths>
 												<editors>
 													<label/>
-													<label/>												
+													<label/>	
+													<label/>																							
 												</editors>
 												<fields>
 													<string key="{panelItem:getTestName($pi)}" required="true"/>
-													<string key="{panelItem:getMethodName($pi)}" required="true"/>													
+													<string key="{panelItem:getMethodName($pi)}" required="true"/>	
+													<string key="section" required="false"/>												
 												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
+												<sorts>false,false,false</sorts>
+												<filters>false,false,false</filters>
+												<colAligns>left,left,left</colAligns>
 							    </table>
 							    <query>
 								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>																										
+												 <xsl:value-of select="resource:getString($constants,'method')"/>,		
+												 <xsl:value-of select="resource:getString($constants,'section')"/>																								
 												</headers>
-												<widths>140,140</widths>
+												<widths>78,78,78</widths>
 												<editors>
 													<textbox case="mixed"/>
-													<textbox case="mixed"/>																										
+													<textbox case="mixed"/>		
+													<textbox case="mixed"/>																								
 												</editors>
 												<fields>
-												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>																																																	
+												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>,<xsl:value-of select='section'/>																																																	
 												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
-								</queryTable>
+												<sorts>false,false,false</sorts>
+												<filters>false,false,false</filters>
+												<colAligns>left,left,left</colAligns>
+								 </queryTable>
 								</query>
 							   </widget>
-							 <HorizontalPanel>	
+							 
+                             </VerticalPanel>
+                             <HorizontalPanel width = "10px"/>                             						         
+						         <widget style="WhiteContentPanel" valign="middle">
+									       <appButton action="removeRow" onclick="this" style="Button" key="addTestButton">									        
+						                      <widget>
+                						       <text><xsl:value-of select='resource:getString($constants,"moveTestLeft")'/> </text>
+							                 </widget>							               
+						                 </appButton>
+						        </widget>  
+						       <HorizontalPanel width = "10px"/> 
+						      <VerticalPanel style="Form" >						      
+						      <!--<text ><xsl:value-of select="resource:getString($constants,'allTests')"/></text>-->
+                               <table key="allTestsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
+												<headers> 
+												 <xsl:value-of select="resource:getString($constants,'test')"/>,
+												 <xsl:value-of select="resource:getString($constants,'method')"/>,
+												 <xsl:value-of select="resource:getString($constants,'section')"/>
+												</headers>
+												<widths>78,78,78</widths>
+												<editors>
+													<!--<dragLabel targets="addedTestTable"/>-->
+													<label/>
+													<label/>	
+													<label/>
+												</editors>
+												<fields>
+													<string key="test"/>
+													<string key="method"/>
+													<string key="section"/>													
+												</fields>
+												<sorts>false,false,false</sorts>
+												<filters>false,false,false</filters>
+												<colAligns>left,left,left</colAligns>
+								</table>
+                              </VerticalPanel> 
+						   </HorizontalPanel>	
+						   <HorizontalPanel>	
 						       <HorizontalPanel width = "2px"/>
 						       <widget style="WhiteContentPanel" valign="middle">
-									       <appButton action="moveUp" onclick="this" style="Button" key="moveUpButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+									       <appButton action="moveUp" onclick="this" style="Button" key="moveUpButton">									       
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"moveUp")'/>   </text>
-							                 </widget>
-							               </HorizontalPanel>
+							                 </widget>							              
 						                 </appButton>
 						         </widget>
 						         <HorizontalPanel width = "3px"/>						         
 						         <widget style="WhiteContentPanel" valign="middle">
-									       <appButton action="removeRow" onclick="this" style="Button" key="moveDownButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+									       <appButton action="moveDown" onclick="this" style="Button" key="moveDownButton">									        
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"moveDown")'/> </text>
-							                 </widget>
-							               </HorizontalPanel>
+							                 </widget>							               
 						                 </appButton>
 						        </widget>       
 						        <HorizontalPanel width = "3px"/>
 						         <widget style="WhiteContentPanel" valign="middle">
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeTestButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="RemoveRowButtonImage"/>
-						                      <widget>
+									       <appButton action="removeTest" onclick="this" style="Button" key="removeTestButton">									        
+						                    <HorizontalPanel>
+											 <AbsolutePanel style="RemoveRowButtonImage"/>						                      
                 						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </widget>
-							               </HorizontalPanel>
+							                 </HorizontalPanel> 						               
 						                 </appButton>
 						         </widget>
-						     </HorizontalPanel>
-                             </VerticalPanel>
-                             <HorizontalPanel width = "20px"/>
-						      <VerticalPanel style="Form" >						      
-						       <text ><xsl:value-of select="resource:getString($constants,'allTests')"/></text>
-						       <VerticalPanel height = "8px"/>
-						       <!--<scrolllist style="DragSelector" key="allTests" targets="addedTestTable" drop="this" width="200px" maxRows="9" maxHeight="true">
-                                  <widths>200</widths>
-                               </scrolllist>-->
-                               <table key="allTestsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
-												<!--<headers> 
-												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>
-												</headers>-->
-												<widths>200</widths>
-												<editors>
-													<dragLabel targets="addedTestTable"/>																									
-												</editors>
-												<fields>
-													<string key="test"/>													
-												</fields>
-												<sorts>false</sorts>
-												<filters>false</filters>
-												<colAligns>left</colAligns>
-								</table>
-                              </VerticalPanel> 
-						   </HorizontalPanel>						   
+						     </HorizontalPanel>					   
 						</VerticalPanel>
 					 </HorizontalPanel>  	 						  			
 					</VerticalPanel>					
-				</HorizontalPanel>
-				
+				</HorizontalPanel>				
 			</display>
 			<rpc key="display">		
 			 <number key="{meta:getId($panel)}" type = "integer" required="false" />	 
@@ -284,6 +265,7 @@ UIRF Software License are applicable instead of those above.
 			 <queryString key="{meta:getDescription($panel)}"/>	
 			 <queryString key="{panelItem:getTestName($pi)}"/>		 			 							
 			 <queryString key="{panelItem:getMethodName($pi)}"/>
+			 <queryString key="section"/>
 			 <model key = "addedTestTable"/>
 		    </rpc>
 			<rpc key="queryByLetter">

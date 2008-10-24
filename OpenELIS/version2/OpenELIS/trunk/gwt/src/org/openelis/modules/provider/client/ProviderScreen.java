@@ -29,7 +29,6 @@ package org.openelis.modules.provider.client;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -316,11 +315,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback(){
-           public void onSuccess(Object result){    
+       screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback<FormRPC>(){
+           public void onSuccess(FormRPC result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
-               load((FormRPC)result);
-               rpc.setField("notes",(FormRPC)result);
+               load(result);
+               rpc.setField("notes",result);
                window.setStatus("","");
            }
                   
@@ -337,11 +336,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadAddresses", new Data[] {key,rpc.getField("addresses")}, new AsyncCallback() {
-           public void onSuccess(Object result) {
+       screenService.getObject("loadAddresses", new Data[] {key,rpc.getField("addresses")}, new AsyncCallback<FormRPC>() {
+           public void onSuccess(FormRPC result) {
               
-               load((FormRPC)result);
-               rpc.setField("addresses", (FormRPC)result);
+               load(result);
+               rpc.setField("addresses", result);
                window.setStatus("","");
 
            }
