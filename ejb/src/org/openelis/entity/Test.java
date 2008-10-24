@@ -59,8 +59,8 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.methodId  = m.id order by t.name, m.name"),
     @NamedQuery(name = "Test.TestIdNameMethodId", query = "select distinct new org.openelis.domain.TestIdNameMethodIdDO(t.id, t.name, t.methodId) " + "  from Test t where t.id = :id"),
     @NamedQuery(name = "Test.TestDetails", query = "select distinct new org.openelis.domain.TestDetailsDO(t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
-                                                  "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.sectionId,t.scriptletId," +
-                                                        "t.testFormatId,t.revisionMethodId) " + "  from Test t where t.id = :id"),
+                                                  "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.scriptletId," +
+                                                        "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " + "  from Test t where t.id = :id"),
     @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name"),
     @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name")})
 
@@ -120,10 +120,7 @@ public class Test implements Auditable, Cloneable {
   private Integer labelQty;             
 
   @Column(name="test_trailer_id")
-  private Integer testTrailerId;             
-
-  @Column(name="section_id")
-  private Integer sectionId;             
+  private Integer testTrailerId;                       
 
   @Column(name="scriptlet_id")
   private Integer scriptletId;             
@@ -132,7 +129,16 @@ public class Test implements Auditable, Cloneable {
   private Integer testFormatId;             
 
   @Column(name="revision_method_id")
-  private Integer revisionMethodId;             
+  private Integer revisionMethodId; 
+  
+  @Column(name="reporting_method_id")
+  private Integer reportingMethodId; 
+  
+  @Column(name="sorting_method_id")
+  private Integer sortingMethodId;
+  
+  @Column(name="reporting_sequence")
+  private Integer reportingSequence;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "method_id",insertable = false, updatable = false)
@@ -157,6 +163,10 @@ public class Test implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Collection<TestAnalyte> testAnalyte;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Collection<TestSection> testSection;
   
   @Transient
   private Test original;
@@ -319,15 +329,6 @@ public class Test implements Auditable, Cloneable {
       this.testTrailerId = testTrailerId;
   }
 
-  public Integer getSectionId() {
-    return sectionId;
-  }
-  public void setSectionId(Integer sectionId) {
-    if((sectionId == null && this.sectionId != null) || 
-       (sectionId != null && !sectionId.equals(this.sectionId)))
-      this.sectionId = sectionId;
-  }
-
   public Integer getScriptletId() {
     return scriptletId;
   }
@@ -354,7 +355,33 @@ public class Test implements Auditable, Cloneable {
        (revisionMethodId != null && !revisionMethodId.equals(this.revisionMethodId)))
       this.revisionMethodId = revisionMethodId;
   }
-
+  
+  public Integer getReportingMethodId() {
+      return reportingMethodId;
+    }
+    public void setReportingMethodId(Integer reportingMethodId) {
+      if((reportingMethodId == null && this.reportingMethodId != null) || 
+         (reportingMethodId != null && !reportingMethodId.equals(this.reportingMethodId)))
+        this.reportingMethodId = reportingMethodId;
+    }
+    
+    public Integer getSortingMethodId() {
+        return sortingMethodId;
+      }
+    public void setSortingMethodId(Integer sortingMethodId) {
+        if((sortingMethodId == null && this.sortingMethodId != null) || 
+           (sortingMethodId != null && !sortingMethodId.equals(this.sortingMethodId)))
+          this.sortingMethodId = sortingMethodId;
+      }
+     
+    public Integer getReportingSequence() {
+          return reportingSequence;
+        }
+        public void setReportingSequence(Integer reportingSequence) {
+          if((reportingSequence == null && this.reportingSequence != null) || 
+             (reportingSequence != null && !reportingSequence.equals(this.reportingSequence)))
+            this.reportingSequence = reportingSequence;
+        }
   
   public void setClone() {
     try {
@@ -401,13 +428,17 @@ public class Test implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(testTrailerId,original.testTrailerId,doc,"test_trailer_id");
 
-      AuditUtil.getChangeXML(sectionId,original.sectionId,doc,"section_id");
-
       AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       AuditUtil.getChangeXML(testFormatId,original.testFormatId,doc,"test_format_id");
 
       AuditUtil.getChangeXML(revisionMethodId,original.revisionMethodId,doc,"revision_method_id");
+      
+      AuditUtil.getChangeXML(reportingMethodId,original.reportingMethodId,doc,"reporting_method_id");
+      
+      AuditUtil.getChangeXML(sortingMethodId,original.sortingMethodId,doc,"sorting_method_id");
+      
+      AuditUtil.getChangeXML(reportingSequence,original.reportingSequence,doc,"reporting_sequence");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -456,6 +487,12 @@ public Collection<TestAnalyte> getTestAnalyte() {
 }
 public void setTestAnalyte(Collection<TestAnalyte> testAnalyte) {
     this.testAnalyte = testAnalyte;
+}
+public Collection<TestSection> getTestSection() {
+    return testSection;
+}
+public void setTestSection(Collection<TestSection> testSection) {
+    this.testSection = testSection;
 }
 
   

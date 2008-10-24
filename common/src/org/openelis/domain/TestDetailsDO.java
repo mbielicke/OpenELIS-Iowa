@@ -28,6 +28,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import org.openelis.util.Datetime;
 
 
@@ -65,15 +67,19 @@ public class TestDetailsDO implements Serializable{
 
     protected Integer labelQty;             
     
-    protected Integer testTrailerId;             
-
-    protected Integer sectionId;             
+    protected Integer testTrailerId;                      
 
     protected Integer scriptletId;             
 
     protected Integer testFormatId;             
 
     protected Integer revisionMethodId;
+    
+    protected Integer reportingMethodId; 
+    
+    protected Integer sortingMethodId;
+    
+    protected Integer reportingSequence;
 
     public TestDetailsDO(){
         
@@ -85,8 +91,9 @@ public class TestDetailsDO implements Serializable{
                          Integer timeHolding, Integer timeTaAverage,             
                          Integer timeTaWarning, Integer timeTaMax,             
                          Integer labelId, Integer labelQty,Integer testTrailerId,                         
-                         Integer sectionId, Integer scriptletId,
-                         Integer testFormatId, Integer revisionMethodId){
+                         Integer scriptletId,Integer testFormatId,
+                         Integer revisionMethodId,Integer reportingMethodId,
+                         Integer sortingMethodId,Integer reportingSequence){
          
         this.description = description;
         this.reportingDescription = reportingDescription;
@@ -101,12 +108,13 @@ public class TestDetailsDO implements Serializable{
         this.timeTaMax = timeTaMax;
         this.labelId = labelId;
         this.labelQty = labelQty;
-        this.testTrailerId = testTrailerId;
-        this.sectionId = sectionId;
+        this.testTrailerId = testTrailerId;        
         this.scriptletId = scriptletId;
         this.testFormatId = testFormatId;        
         this.revisionMethodId = revisionMethodId;
-        
+        this.reportingMethodId = reportingMethodId;
+        this.sortingMethodId = sortingMethodId;
+        this.reportingSequence = reportingSequence;       
     }
     
     public Datetime getActiveBegin() {
@@ -190,14 +198,6 @@ public class TestDetailsDO implements Serializable{
         this.scriptletId = scriptletId;
     }
 
-    public Integer getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Integer sectionId) {
-        this.sectionId = sectionId;
-    }
-
     public Integer getTestFormatId() {
         return testFormatId;
     }
@@ -252,6 +252,30 @@ public class TestDetailsDO implements Serializable{
 
     public void setTimeTransit(Integer timeTransit) {
         this.timeTransit = timeTransit;
+    }
+
+    public Integer getReportingMethodId() {
+        return reportingMethodId;
+    }
+
+    public void setReportingMethodId(Integer reportingMethodId) {
+        this.reportingMethodId = reportingMethodId;
+    }
+
+    public Integer getReportingSequence() {
+        return reportingSequence;
+    }
+
+    public void setReportingSequence(Integer reportingSequence) {
+        this.reportingSequence = reportingSequence;
+    }
+
+    public Integer getSortingMethodId() {
+        return sortingMethodId;
+    }
+
+    public void setSortingMethodId(Integer sortingMethodId) {
+        this.sortingMethodId = sortingMethodId;
     }
 
 

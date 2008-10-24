@@ -44,7 +44,7 @@ public class MethodMetaMap extends MethodMeta implements MetaMap {
         
     
     public String buildFrom(String name) {        
-        return "Method";                        
+        return "Method m ";                        
     }
         
 

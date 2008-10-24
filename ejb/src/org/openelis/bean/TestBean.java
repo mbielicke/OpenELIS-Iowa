@@ -174,8 +174,7 @@ public class TestBean implements TestRemote {
             test.setLabelQty(testDetailsDO.getLabelQty());
             test.setReportingDescription(testDetailsDO.getReportingDescription());
             test.setRevisionMethodId(testDetailsDO.getRevisionMethodId());
-            test.setScriptletId(testDetailsDO.getScriptletId());
-            test.setSectionId(testDetailsDO.getSectionId());
+            test.setScriptletId(testDetailsDO.getScriptletId());            
             test.setTestFormatId(testDetailsDO.getTestFormatId());
             test.setTestTrailerId(testDetailsDO.getTestTrailerId());
             test.setTimeHolding(testDetailsDO.getTimeHolding());
