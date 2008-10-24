@@ -291,137 +291,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         
         DataModel model = new DataModel(); 
         fillModelFromQuery(model, receiptRecords);
-        /*
-        DatetimeRPC todaysDate = DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,new Date()); 
-        
-        for(int i=0; i<receiptRecords.size(); i++){
-            InventoryReceiptDO receiptDO = (InventoryReceiptDO)receiptRecords.get(i);
-            DataSet set = new DataSet();
-            
-            NumberField orderNumber = new NumberField(NumberObject.Type.INTEGER);
-            DateField receivedDate = new DateField();
-            StringField upc = new StringField();
-            DropDownField inventoryItem = new DropDownField();
-            DropDownField org = new DropDownField();
-            NumberField qtyReceived = new NumberField(NumberObject.Type.INTEGER);
-            NumberField qtyRequested = new NumberField(NumberObject.Type.INTEGER);
-            NumberField cost = new NumberField(NumberObject.Type.DOUBLE);
-            StringField qc = new StringField();
-            StringField extRef = new StringField();
-            StringField multUnit = new StringField();
-            StringField streetAddress = new StringField();
-            StringField city = new StringField();
-            StringField state = new StringField();
-            StringField zipCode = new StringField();
-            StringField itemDesc = new StringField();
-            StringField itemStore = new StringField();
-            StringField itemDispensedUnit = new StringField();
-            StringField itemIsBulk = new StringField();
-            StringField itemIsLotMaintained = new StringField();
-            StringField itemIsSerialMaintained = new StringField();
-            NumberField orderItemId = new NumberField(NumberObject.Type.INTEGER);
-            CheckField addToExisting = new CheckField();
-            DropDownField inventoryLocation = new DropDownField();
-            StringField lotNumber = new StringField();
-            DateField expDate = new DateField();
-            NumberField receiptId = new NumberField(NumberObject.Type.INTEGER);
-            
-            orderNumber.setValue(receiptDO.getOrderNumber());
-            if(receiptDO.getReceivedDate() != null && receiptDO.getReceivedDate().getDate() != null)
-                receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, receiptDO.getReceivedDate().getDate()));
-            else
-                receivedDate.setValue(todaysDate);
-            
-            upc.setValue(receiptDO.getUpc());
-            
-            //inventory item set
-            DataModel itemModel = new DataModel();
-            itemModel.add(new NumberObject(receiptDO.getInventoryItemId()),new StringObject(receiptDO.getInventoryItem()));
-            inventoryItem.setModel(itemModel);
-            inventoryItem.setValue(itemModel.get(0));
-            
-            //org set
-            DataModel orgModel = new DataModel();
-            orgModel.add(new NumberObject(receiptDO.getOrganizationId()),new StringObject(receiptDO.getOrganization()));
-            org.setModel(orgModel);
-            org.setValue(orgModel.get(0));
-            
-            qtyReceived.setValue(receiptDO.getQuantityReceived());
-            qtyRequested.setValue(receiptDO.getItemQtyRequested());
-            cost.setValue(receiptDO.getUnitCost());
-            qc.setValue(receiptDO.getQcReference());
-            extRef.setValue(receiptDO.getExternalReference());
-            multUnit.setValue(receiptDO.getOrgAddress().getMultipleUnit());
-            streetAddress.setValue(receiptDO.getOrgAddress().getStreetAddress());
-            city.setValue(receiptDO.getOrgAddress().getCity());
-            state.setValue(receiptDO.getOrgAddress().getState());
-            zipCode.setValue(receiptDO.getOrgAddress().getZipCode());
-            itemDesc.setValue(receiptDO.getItemDesc());
-            itemStore.setValue(receiptDO.getItemStore());
-            itemDispensedUnit.setValue(receiptDO.getItemDispensedUnits());
-            itemIsBulk.setValue(receiptDO.getIsBulk());
-            itemIsLotMaintained.setValue(receiptDO.getIsLotMaintained());
-            itemIsSerialMaintained.setValue(receiptDO.getIsSerialMaintained());
-            orderItemId.setValue(receiptDO.getOrderItemId());
-            
-            //FIXME dont want to default for now...
-            //addToExisting.setValue(receiptDO.getIsBulk());
-            addToExisting.setValue("N");
-            
-            //inventory location set
-            if(receiptDO.getStorageLocationId() != null){
-                DataSet inventoryLocSet = new DataSet();
-                NumberObject invLocId = new NumberObject(NumberObject.Type.INTEGER);
-                StringObject invLocText = new StringObject();
-                invLocId.setValue(receiptDO.getStorageLocationId());
-                invLocText.setValue(receiptDO.getStorageLocation());            
-                inventoryLocSet.setKey(invLocId);
-                inventoryLocSet.add(invLocText);
-                inventoryLocation.setValue(inventoryLocSet);
-            }else{
-                inventoryLocation.setValue(null);    
-            }
-            
-            
-            lotNumber.setValue(receiptDO.getLotNumber());
-            if(receiptDO.getExpDate() != null && receiptDO.getExpDate().getDate() != null)
-                expDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, receiptDO.getExpDate().getDate()));
-            
-            receiptId.setValue(receiptDO.getId());            
-            
-           // row.setKey(id);         
-            set.add(orderNumber);
-            set.add(receivedDate);
-            set.add(upc);
-            set.add(inventoryItem);
-            set.add(org);
-            set.add(qtyReceived);
-            set.add(qtyRequested);
-            set.add(cost);
-            set.add(qc);
-            set.add(extRef);
-            set.add(multUnit);
-            set.add(streetAddress);
-            set.add(city);
-            set.add(state);
-            set.add(zipCode);
-            set.add(itemDesc);
-            set.add(itemStore);
-            set.add(itemDispensedUnit);
-            set.add(itemIsBulk);
-            set.add(itemIsLotMaintained);
-            set.add(itemIsSerialMaintained);
-            set.add(orderItemId);
-            set.add(addToExisting);
-            set.add(inventoryLocation);
-            set.add(lotNumber);
-            set.add(expDate);
-            set.add(receiptId);
-            
-            model.add(set);
-        }
-        
-        */
+
         return model;
     }
     
@@ -855,14 +725,12 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             transReceiptOrder.setValue(resultDO.getTransReceiptOrderId());
             
             //inventory location set
-            DataSet inventoryLocSet = new DataSet();
-            NumberObject invLocId = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject invLocText = new StringObject();
-            invLocId.setValue(resultDO.getStorageLocationId());
-            invLocText.setValue(resultDO.getStorageLocation());            
-            inventoryLocSet.setKey(invLocId);
-            inventoryLocSet.add(invLocText);
-            inventoryLocation.setValue(inventoryLocSet);
+            if(resultDO.getStorageLocationId() != null){
+                DataModel locModel = new DataModel();
+                locModel.add(new NumberObject(resultDO.getStorageLocationId()),new StringObject(resultDO.getStorageLocation()));
+                inventoryLocation.setModel(locModel);
+                inventoryLocation.setValue(locModel.get(0));
+            }
             
             lotNumber.setValue(resultDO.getLotNumber());
             if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null)
@@ -894,9 +762,9 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             map.put("itemIsSerialMaintained", itemIsSerialMaintained);
             map.put("orderItemId", orderItemId);
             map.put("addToExisiting", addToExisting);
-            map.put("inventoryLocation", inventoryLocation);
-            map.put("lotNumber", lotNumber);
-            map.put("expDate", expDate);
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), inventoryLocation);
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNumber);
+            map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expDate);
             map.put("receiptId", receiptId);
             map.put("transReceiptOrder", transReceiptOrder);
             row.setData(map);

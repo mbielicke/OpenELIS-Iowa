@@ -27,7 +27,6 @@ package org.openelis.modules.standardnotepicker.client;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.StringObject;
@@ -35,7 +34,6 @@ import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -76,13 +74,12 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	        
 	       // prepare the argument list for the getObject function
             Data[] args = new Data[] {name,desc}; 
-	        screenService.getObject("getTreeModel" , args, new AsyncCallback(){
-	            public void onSuccess(Object result){
+	        screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
+	            public void onSuccess(PagedTreeField treeField){
 	            	ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
 	            	ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
 	            	vp.clear();
 	            	vp.getPanel().add(tree);
-	                PagedTreeField treeField = (PagedTreeField)result;
 	                tree.load(treeField);
 	            }
 	            
@@ -113,11 +110,10 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
         
        // prepare the argument list for the getObject function
         Data[] args = new Data[] {name,desc}; 
-        screenService.getObject("getTreeModel" , args, new AsyncCallback(){
-            public void onSuccess(Object result){
+        screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
+            public void onSuccess(PagedTreeField treeField){
             	vp.clear();
             	vp.getPanel().add(tree);
-                PagedTreeField treeField = (PagedTreeField)result;
                 tree.load(treeField);
                 
                 window.setStatus("","");
@@ -143,7 +139,6 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 
     public void onTreeItemSelected(TreeItem item) {
 		try{
-			int id = Integer.parseInt((String)item.getUserObject());
 			item.setState(!item.getState(), true);
 		
 		}catch(NumberFormatException e){
@@ -175,10 +170,10 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 	       // prepare the argument list for the getObject function
             Data[] args = new Data[] {idObj,name,desc}; 
 	        
-            screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback(){
-	            public void onSuccess(Object result){
+            screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback<StringObject>(){
+	            public void onSuccess(StringObject result){
 	               finalTreeItem.removeItems();
-	               tree.controller.model.addTextChildItems(finalTreeItem, (String)((StringObject)result).getValue());	        
+	               tree.controller.model.addTextChildItems(finalTreeItem, (String)result.getValue());	        
                    
                    window.setStatus("","");
 	            }

@@ -31,7 +31,6 @@ import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
@@ -194,10 +193,9 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
        
        Data[] args = new Data[0]; 
          
-       screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
-           public void onSuccess(Object result){    
+       screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel>(){
+           public void onSuccess(DataModel model){    
              // get the datamodel, load the fields in the form
-               DataModel model = (DataModel)result;
                DataSet set = model.get(0);
                
                //set the values in the rpc

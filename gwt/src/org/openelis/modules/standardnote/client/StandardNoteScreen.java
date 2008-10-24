@@ -25,9 +25,6 @@
 */
 package org.openelis.modules.standardnote.client;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.ui.TextBox;
-
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -43,6 +40,8 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.TextBox;
 
 public class StandardNoteScreen extends OpenELISScreenForm {
 

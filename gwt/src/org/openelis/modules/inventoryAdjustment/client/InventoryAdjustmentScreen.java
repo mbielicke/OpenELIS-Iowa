@@ -32,7 +32,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
@@ -139,10 +138,9 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         
         Data[] args = new Data[0]; 
         
-        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback(){
-            public void onSuccess(Object result){    
+        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel>(){
+            public void onSuccess(DataModel model){    
               // get the datamodel, load the fields in the form
-                DataModel model = (DataModel)result;
                 DataSet set = model.get(0);
 
                 //load the values
@@ -266,17 +264,14 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
                 // prepare the argument list for the getObject function
                 Data[] args = new Data[] {locIdObj, storeIdObj}; 
                 
-                screenService.getObject("getInventoryItemInformation", args, new AsyncCallback(){
-                    public void onSuccess(Object result){    
+                screenService.getObject("getInventoryItemInformation", args, new AsyncCallback<DataModel>(){
+                    public void onSuccess(DataModel model){    
                         if(row < adjustmentsTable.model.numRows()){
                         Integer currentId = (Integer)adjustmentsTable.model.getCell(row, 0);
                         Integer oldId = (Integer)locIdObj.getValue();
                         
                         //make sure the row hasnt been deleted and it still has the same values
                         if(currentId.equals(oldId)){
-                        
-                          DataModel model  = (DataModel)result;
-                          
                           if(model.size() > 0){
                               DataSet set = model.get(0);
                                     
@@ -391,9 +386,9 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
         
         
-        screenService.getObject("getMatchesObj", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                widget.showAutoMatches((DataModel)result);
+        screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {
+            public void onSuccess(DataModel model) {
+                widget.showAutoMatches(model);
             }
             
             public void onFailure(Throwable caught) {

@@ -31,7 +31,6 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -89,7 +88,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     private static boolean loaded = false;
     private static DataModel storesDropdown, categoriesDropdown, dispensedUnitsDropdown;
     
-    private ScreenVertical   svp       = null;
+    private ScreenVertical   svp;
 	
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
@@ -267,9 +266,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, new BooleanObject(forDuplicate), rpc.getField("components")};
 
-        screenService.getObject("loadComponents", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadComponents", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("components", (FormRPC)result);
 
                 if(forDuplicate)
@@ -294,9 +293,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), rpc.getField("locations")};
 
-        screenService.getObject("loadLocations", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                load((FormRPC)result);
+        screenService.getObject("loadLocations", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
                 rpc.setField("locations", (FormRPC)result);
                 
                 window.setStatus("","");
@@ -318,9 +317,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
        // prepare the argument list for the getObject function
         Data[] args = new Data[] {key, rpc.getField("comments")}; 
          
-       screenService.getObject("loadComments", args, new AsyncCallback(){
-           public void onSuccess(Object result){    
-               load((FormRPC)result);
+       screenService.getObject("loadComments", args, new AsyncCallback<FormRPC>(){
+           public void onSuccess(FormRPC result){    
+               load(result);
                rpc.setField("comments",(FormRPC)result);
 
                window.setStatus("","");
@@ -430,15 +429,15 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
                     // prepare the argument list for the getObject function
                     Data[] args = new Data[] {componentIdObj}; 
                       
-                    screenService.getObject("getComponentDescriptionText", args, new AsyncCallback(){
-                        public void onSuccess(Object result){
+                    screenService.getObject("getComponentDescriptionText", args, new AsyncCallback<StringObject>(){
+                        public void onSuccess(StringObject result){
                             if(row < componentsTable.model.numRows()){
                                 Integer currentId = (Integer)componentsTable.model.getCell(row, 0);
                                 Integer oldId = (Integer)componentIdObj.getValue();
                                 
                                 //make sure the row hasnt been deleted and it still has the same values
                                 if(currentId.equals(oldId))
-                                    componentsTable.model.setCell(row, 1, ((StringObject)result).getValue());
+                                    componentsTable.model.setCell(row, 1, result.getValue());
                             }
                             
                             window.setStatus("","");
@@ -480,9 +479,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
         
         
-        screenService.getObject("getMatchesObj", args, new AsyncCallback() {
-            public void onSuccess(Object result) {
-                widget.showAutoMatches((DataModel)result);
+        screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {
+            public void onSuccess(DataModel model) {
+                widget.showAutoMatches(model);
             }
             
             public void onFailure(Throwable caught) {
