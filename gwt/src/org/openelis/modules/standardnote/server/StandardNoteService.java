@@ -57,7 +57,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class StandardNoteService implements AppScreenFormServiceInt, 
+public class StandardNoteService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, 
 																AutoCompleteServiceInt {
 	
 	private static final long serialVersionUID = 734713425110147476L;

@@ -58,7 +58,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class LabelService implements AppScreenFormServiceInt {   
+public class LabelService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {   
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9; 

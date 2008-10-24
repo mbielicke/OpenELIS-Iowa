@@ -61,7 +61,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class PanelService implements AppScreenFormServiceInt {
+public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
 
     private static final int leftTableRowsPerPage = 10;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()

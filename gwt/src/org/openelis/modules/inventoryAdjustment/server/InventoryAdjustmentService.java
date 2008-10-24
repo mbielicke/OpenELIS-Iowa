@@ -72,7 +72,7 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class InventoryAdjustmentService implements AppScreenFormServiceInt, AutoCompleteServiceInt{
+public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt{
     
     private static final InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static final int leftTableRowsPerPage = 20;

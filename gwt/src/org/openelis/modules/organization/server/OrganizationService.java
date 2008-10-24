@@ -70,7 +70,7 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class OrganizationService implements AppScreenFormServiceInt, 
+public class OrganizationService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, 
 															  AutoCompleteServiceInt {
 
 	private static final int leftTableRowsPerPage = 20;

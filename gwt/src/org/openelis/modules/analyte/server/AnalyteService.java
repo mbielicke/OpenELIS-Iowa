@@ -57,7 +57,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class AnalyteService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
+public class AnalyteService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt {
 
 	private static final int leftTableRowsPerPage = 10;
 	

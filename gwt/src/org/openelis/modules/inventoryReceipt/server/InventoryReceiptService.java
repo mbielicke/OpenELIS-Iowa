@@ -71,7 +71,7 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCompleteServiceInt {
+public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt {
 
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
@@ -420,8 +420,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt, AutoCom
             
             model.add(set);
         }
-        */
         
+        */
         return model;
     }
     
