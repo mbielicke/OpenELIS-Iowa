@@ -47,10 +47,6 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityUtil"/>
   </xalan:component>
   
-  <xalan:component prefix="session">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.server.ServiceUtils"/>
-  </xalan:component>
-  
   <xalan:component prefix="so">
     <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityModule"/>
   </xalan:component>
