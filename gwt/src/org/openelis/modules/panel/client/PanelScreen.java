@@ -291,14 +291,12 @@ public class PanelScreen extends OpenELISScreenForm implements
                     if(ok){    
                         row.get(0).setValue(namesArray[0]);
                         row.get(1).setValue(namesArray[1]);    
-                        row.get(2).setValue(namesArray[2]);
                         addTestModel.addRow(row);
                         addTestModel.refresh();
                     }
                   }else{                
                       row.get(0).setValue(namesArray[0]);
-                      row.get(1).setValue(namesArray[1]);   
-                      row.get(2).setValue(namesArray[2]);            
+                      row.get(1).setValue(namesArray[1]);              
                       addTestModel.addRow(row);
                       addTestModel.refresh();
                   }

@@ -33,42 +33,41 @@ UIRF Software License are applicable instead of those above.
                 xmlns:relentry="xalan://org.openelis.meta.DictionaryMeta"                
                 extension-element-prefixes="resource"
                 version="1.0">
-<xsl:import href="aToZOneColumn.xsl"/>
-
+  <xsl:import href="aToZOneColumn.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
-  </xalan:component>
-  
+  </xalan:component>  
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
-  </xalan:component>
-  
+  </xalan:component>  
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.CategoryMetaMap"/>
-  </xalan:component>
-  
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.CategoryMetaMap"/>
+  </xalan:component>  
   <xalan:component prefix="dictionary">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMetaMap"/>
-  </xalan:component>
-  
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.DictionaryMetaMap"/>
+  </xalan:component>  
   <xalan:component prefix="relentry">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
-    <xsl:variable name="cat" select="meta:new()"/>    
+    <xsl:variable name="cat" select="meta:new()"/>
     <xsl:variable name="dictNew" select="meta:getDictionary($cat)"/>
     <!--<xsl:variable name="dictNew" select="dictionary:new()"/>-->
     <xsl:variable name="rel" select="dictionary:getRelatedEntry($dictNew)"/>    
-    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
+    <xsl:variable name="language">
+    <xsl:value-of select="locale"/>
+    </xsl:variable>
+    <xsl:variable name="props">
+     <xsl:value-of select="props"/>
+    </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Dictionary" name="{resource:getString($constants,'dictionary')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
 			 		<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths ="175"  key="azTable" maxRows="20" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
+						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -138,7 +137,7 @@ UIRF Software License are applicable instead of those above.
 								</row>	
 								<row>									
 										<text style="Prompt"><xsl:value-of select='resource:getString($constants,"systemName")'/></text>
-										<textbox case="mixed" max="30" width="215px" key="{meta:getSystemName($cat)}" tab="{meta:getName($cat)},{meta:getSectionId($cat)}"/>									
+										<textbox case="mixed" max="30" width="215px" key="{meta:getSystemName($cat)}" tab="dictEntTable,{meta:getSectionId($cat)}"/>									
 								</row>						  							
 						</TablePanel>
 					</VerticalPanel>
@@ -146,7 +145,7 @@ UIRF Software License are applicable instead of those above.
 					
 					<VerticalPanel  spacing="0" padding = "0" xsi:type="Panel">
 						<widget>
-							<table maxRows = "13" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS">
+							<table maxRows = "13" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>

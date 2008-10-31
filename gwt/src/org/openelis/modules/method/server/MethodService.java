@@ -140,14 +140,14 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpcSend);
-        List<Exception> exceptionList = remote.validateForAdd(methodDO,null);
+        List<Exception> exceptionList = remote.validateForAdd(methodDO);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);    
             return rpcSend;
         }
         Integer testId =null;
         try{
-           testId = remote.updateMethod(methodDO,null);
+           testId = remote.updateMethod(methodDO);
         }catch (Exception e) {
           if(e instanceof EntityLockedException) 
             throw new RPCException(e.getMessage());
@@ -174,13 +174,13 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpcSend);
-        List<Exception> exceptionList = remote.validateForUpdate(methodDO,null);
+        List<Exception> exceptionList = remote.validateForUpdate(methodDO);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);    
             return rpcSend;
         }
         try{
-            remote.updateMethod(methodDO,null);
+            remote.updateMethod(methodDO);
         }catch (Exception e) {
           if(e instanceof EntityLockedException) 
             throw new RPCException(e.getMessage());

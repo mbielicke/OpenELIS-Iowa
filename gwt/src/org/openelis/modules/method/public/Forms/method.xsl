@@ -56,7 +56,7 @@ UIRF Software License are applicable instead of those above.
 			<display>
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="225px">
+					<CollapsePanel key="collapsePanel" height="235px">
 						<azTable colwidths="175"  key="azTable" maxRows="9" tablewidth="auto" title="{resource:getString($constants,'method')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
@@ -142,12 +142,12 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									<check key="{meta:getIsActive($method)}" tab="{meta:getActiveBegin($method)},{meta:getReportingDescription($method)}"/>									
-								<!--</row>		
-								<row>-->
+								</row>		
+								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
 								 <calendar key="{meta:getActiveBegin($method)}" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" onChange="this" begin="0" end="2" width = "70px"/>																	
-								 <!--</row>
-								 <row>-->
+								 </row>
+								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
 								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "70px"/>
 								</row>						
