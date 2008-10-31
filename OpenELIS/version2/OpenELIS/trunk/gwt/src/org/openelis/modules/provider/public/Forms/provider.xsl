@@ -33,45 +33,39 @@ UIRF Software License are applicable instead of those above.
                 xmlns:location="xalan://org.openelis.metamap.ProviderAddressMetaMap"
                 xmlns:addr="xalan://org.openelis.meta.AddressMeta"
                 extension-element-prefixes="resource"
-                version="1.0">
-                
+                version="1.0">                
 <xsl:import href="aToZOneColumn.xsl"/> 
-  
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>
-  
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
-  </xalan:component>
-  
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMetaMap"/>
   </xalan:component>  
-  
+  <xalan:component prefix="meta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderMetaMap"/>
+  </xalan:component>    
   <xalan:component prefix="note">
 	 <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NotetMeta"/>
-  </xalan:component>
-  
+  </xalan:component>  
   <xalan:component prefix="location">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressMetaMap"/>
-  </xalan:component>
-  
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderAddressMetaMap"/>
+  </xalan:component>  
   <xalan:component prefix="addr">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
 	</xalan:component>
-
   <xsl:template match="doc"> 
     <xsl:variable name="pro" select="meta:new()"/>	
 	<xsl:variable name="loc" select="meta:getProviderAddress($pro)"/>	
 	<xsl:variable name="note" select="meta:getNote($pro)"/>
 	<xsl:variable name="locAddr" select="location:getAddress($loc)"/> 
-    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
+    <xsl:variable name="language">
+     <xsl:value-of select="locale"/>
+    </xsl:variable>
+    <xsl:variable name="props">
+     <xsl:value-of select="props"/>
+    </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService"
-xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd"
-xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
+<screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
  					<CollapsePanel key="collapsePanel" height="435px">

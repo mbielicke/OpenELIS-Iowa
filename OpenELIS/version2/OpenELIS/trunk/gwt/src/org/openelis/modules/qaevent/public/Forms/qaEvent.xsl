@@ -43,19 +43,23 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QaEventMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="testMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaEventTestMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QaEventTestMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
     <xsl:variable name="qae" select="meta:new()"/>
     <xsl:variable name="test" select="meta:getTest($qae)"/>
     <xsl:variable name="method" select="testMeta:getMethod($test)"/>
-    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
-    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
+    <xsl:variable name="language">
+     <xsl:value-of select="locale"/>
+    </xsl:variable>
+    <xsl:variable name="props">
+     <xsl:value-of select="props"/>
+    </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "QAEvents" name="{resource:getString($constants,'QAEvent')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>

@@ -144,43 +144,38 @@ UIRF Software License are applicable instead of those above.
                                 <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" drop="this" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>,
-												 <xsl:value-of select="resource:getString($constants,'section')"/>
+												 <xsl:value-of select="resource:getString($constants,'method')"/>												 
 												</headers>
-												<widths>92,92,92</widths>
+												<widths>120,120</widths>
 												<editors>
 													<label/>
-													<label/>	
-													<label/>																							
+													<label/>																								
 												</editors>
 												<fields>
 													<string key="{panelItem:getTestName($pi)}" required="true"/>
-													<string key="{panelItem:getMethodName($pi)}" required="true"/>	
-													<string key="section" required="false"/>												
+													<string key="{panelItem:getMethodName($pi)}" required="true"/>													
 												</fields>
-												<sorts>false,false,false</sorts>
-												<filters>false,false,false</filters>
-												<colAligns>left,left,left</colAligns>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
 							    </table>
 							    <query>
 								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>,		
-												 <xsl:value-of select="resource:getString($constants,'section')"/>																								
+												 <xsl:value-of select="resource:getString($constants,'method')"/>														 																							
 												</headers>
-												<widths>78,78,78</widths>
+												<widths>120,120</widths>
 												<editors>
 													<textbox case="mixed"/>
-													<textbox case="mixed"/>		
-													<textbox case="mixed"/>																								
+													<textbox case="mixed"/>																									
 												</editors>
 												<fields>
-												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>,<xsl:value-of select='section'/>																																																	
+												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>																																																	
 												</fields>
-												<sorts>false,false,false</sorts>
-												<filters>false,false,false</filters>
-												<colAligns>left,left,left</colAligns>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
 								 </queryTable>
 								</query>
 							   </widget>
@@ -265,7 +260,6 @@ UIRF Software License are applicable instead of those above.
 			 <queryString key="{meta:getDescription($panel)}"/>	
 			 <queryString key="{panelItem:getTestName($pi)}"/>		 			 							
 			 <queryString key="{panelItem:getMethodName($pi)}"/>
-			 <queryString key="section"/>
 			 <model key = "addedTestTable"/>
 		    </rpc>
 			<rpc key="queryByLetter">

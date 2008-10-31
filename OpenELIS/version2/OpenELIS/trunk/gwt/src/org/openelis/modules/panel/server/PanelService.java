@@ -280,7 +280,7 @@ public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
            set.setKey(new StringObject(qaeDO.getTest()));                    
            set.add(new StringObject(qaeDO.getMethod()));                     
            set.add(new StringObject(""));
-           set.setKey(new StringObject(qaeDO.getTest().trim()+","+qaeDO.getMethod().trim()+","+" "));
+           set.setKey(new StringObject(qaeDO.getTest().trim()+","+qaeDO.getMethod().trim()));
            model.add(set);
        }
        return model;
@@ -337,9 +337,7 @@ public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                data.put("id", id);
                row.setData(data);
                row.get(0).setValue(itemDO.getTestName().trim());
-                         //+", "+itemDO.getMethodName());
                row.get(1).setValue(itemDO.getMethodName().trim());
-               row.get(2).setValue("");
                model.add(row);
            }  
           }

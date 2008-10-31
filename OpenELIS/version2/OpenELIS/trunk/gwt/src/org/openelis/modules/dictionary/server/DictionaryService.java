@@ -71,7 +71,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                                            AutoCompleteServiceInt{
 
     private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 20;           
+    private static final int leftTableRowsPerPage = 19;           
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
