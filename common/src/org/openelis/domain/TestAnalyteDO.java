@@ -47,7 +47,9 @@ public class TestAnalyteDO implements Serializable {
 
     protected Integer typeId;             
 
-    protected Integer analyteId;             
+    protected Integer analyteId; 
+    
+    protected String analyteName;
 
     protected String isReportable;             
 
@@ -63,7 +65,8 @@ public class TestAnalyteDO implements Serializable {
     
     public TestAnalyteDO(Integer id,Integer testId,Integer analyteGroup,
                          Integer resultGroup,Integer sortOrder,Integer typeId,
-                         Integer analyteId,String isReportable,Integer scriptletId) {
+                         Integer analyteId,String analyteName, String isReportable,
+                         Integer scriptletId) {
               
         this.id = id;
         this.testId = testId;
@@ -74,6 +77,7 @@ public class TestAnalyteDO implements Serializable {
         this.analyteId = analyteId;
         this.isReportable = isReportable;
         this.scriptletId = scriptletId;        
+        this.analyteName = analyteName;
     }
 
     public Integer getAnalyteGroup() {
@@ -162,6 +166,14 @@ public class TestAnalyteDO implements Serializable {
 
     public void setGrouped(Boolean grouped) {
         this.grouped = grouped;
+    }
+
+    public String getAnalyteName() {
+        return analyteName;
+    }
+
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = analyteName;
     }
 
 }

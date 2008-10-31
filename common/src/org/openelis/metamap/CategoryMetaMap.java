@@ -34,6 +34,10 @@ public class CategoryMetaMap extends CategoryMeta implements MetaMap {
         super("cat.");
     }
     
+    public CategoryMetaMap(String path){
+        super(path);               
+    }
+    
     private DictionaryMetaMap DICTIONARY = new DictionaryMetaMap("dict.");  
     
     public String buildFrom(String name) {

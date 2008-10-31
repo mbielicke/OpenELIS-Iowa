@@ -49,7 +49,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
                @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
-               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(ta.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name")})
+               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(ta.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
+               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.analyteGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.analyteId,a.name,ta.isReportable,ta.scriptletId)" +
+                    "                  from TestAnalyte ta, Analyte a where ta.testId = :testId and a.id = ta.analyteId order by ta.sortOrder")})
 
 @Entity
 @Table(name="test_analyte")
@@ -132,7 +134,7 @@ public class TestAnalyte implements Auditable, Cloneable {
   public Integer getSortOrder() {
     return sortOrder;
   }
-  public void setsortOrder(Integer sortOrder) {
+  public void setSortOrder(Integer sortOrder) {
     if((sortOrder == null && this.sortOrder != null) || 
        (sortOrder != null && !sortOrder.equals(this.sortOrder)))
       this.sortOrder = sortOrder;

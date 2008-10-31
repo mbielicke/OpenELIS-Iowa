@@ -44,6 +44,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
@@ -133,7 +134,8 @@ public class TestBean implements TestRemote {
                               List<TestTypeOfSampleDO> typeOfSampleDOList,
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
-                              List<TestWorksheetItemDO> itemDOList) throws Exception {
+                              List<TestWorksheetItemDO> itemDOList,
+                              List<TestAnalyteDO> analyteDOList) throws Exception {
         try {
             Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "test");
@@ -336,6 +338,44 @@ public class TestBean implements TestRemote {
                    }
                     
                 }
+                
+                if(analyteDOList!=null){
+                    exceptionList = new ArrayList<Exception>();
+                    validateTestAnalytes(exceptionList,analyteDOList);
+                    
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                    for(int iter = 0; iter < analyteDOList.size();iter++){
+                        TestAnalyteDO analyteDO = analyteDOList.get(iter);
+                        TestAnalyte analyte = null;
+                        
+                        if(analyteDO.getId()==null){
+                            analyte = new TestAnalyte();                           
+                        }else{
+                            analyte =  manager.find(TestAnalyte.class, analyteDO.getId());
+                        }
+                        
+                        if(analyteDO.getDelete() && analyteDO.getId() != null){                           
+                            manager.remove(analyte);                                                     
+                        }else{
+                            analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
+                            analyte.setAnalyteId(analyteDO.getAnalyteId());
+                            analyte.setIsReportable(analyteDO.getIsReportable());
+                            analyte.setResultGroup(analyteDO.getResultGroup());
+                            analyte.setScriptletId(analyteDO.getScriptletId());
+                            analyte.setSortOrder(analyteDO.getSortOrder());
+                            analyte.setTestId(analyteDO.getTestId());
+                            analyte.setTypeId(analyteDO.getTypeId());
+                            
+                            if(analyte.getId() == null){
+                                manager.persist(analyte);
+                            }
+                        }
+                        
+                    }
+                }
                                                        
             lockBean.giveUpLock(testReferenceId, test.getId());
             return test.getId();
@@ -366,6 +406,8 @@ public class TestBean implements TestRemote {
         List<TestReflexDO> testRefDOList = query.getResultList();         
         return testRefDOList;
     }
+    
+
     
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId){
         Query query = manager.createNamedQuery("TestResult.IdValueByTestAnalyteId");
@@ -419,6 +461,13 @@ public class TestBean implements TestRemote {
         query.setParameter("testId", testId);
         List<TestWorksheetItemDO> list = query.getResultList();
         return list;
+    }
+    
+    public List<TestAnalyteDO> getTestAnalytes(Integer testId){
+        Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteDOListByTestId");
+        query.setParameter("testId", testId);
+        List<TestAnalyteDO> list = query.getResultList();
+        return list;        
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {
@@ -478,6 +527,12 @@ public class TestBean implements TestRemote {
         Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
         List scriptletList = query.getResultList();
         return scriptletList;
+    }
+    
+    public List getSectionDropDownValues() {
+        Query query = manager.createNamedQuery("Section.IdName");        
+        List<IdNameDO> sections = query.getResultList();         
+        return sections;
     }
 
     public List getPrepTestDropDownValues() {        
@@ -794,6 +849,10 @@ public class TestBean implements TestRemote {
              
           } 
         }
+    }
+    
+    private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
+        
     }
 
 

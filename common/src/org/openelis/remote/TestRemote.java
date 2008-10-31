@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
@@ -61,6 +62,8 @@ public interface TestRemote {
     public TestWorksheetDO getTestWorksheet(Integer testId);
     
     public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId);
+    
+    public List<TestAnalyteDO> getTestAnalytes(Integer testId);
 
     public Integer updateTest(TestIdNameMethodIdDO testIdNameMethod,
                               TestDetailsDO testDetails,
@@ -68,7 +71,8 @@ public interface TestRemote {
                               List<TestTypeOfSampleDO> sampleTypeDOList,
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
-                              List<TestWorksheetItemDO> itemDOList) throws Exception;
+                              List<TestWorksheetItemDO> itemDOList,
+                              List<TestAnalyteDO> analyteDOList) throws Exception;
     
     public List query(HashMap fields, int first, int max) throws Exception;
 
@@ -97,6 +101,8 @@ public interface TestRemote {
     public List getScriptletDropDownValues();
 
     public List getPrepTestDropDownValues();
+    
+    public List getSectionDropDownValues();
     
     public List getTestAnalyteDropDownValues(Integer testId);
     
