@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.MethodAnalyteDO;
 import org.openelis.domain.MethodDO;
 
 @Remote
@@ -42,14 +40,12 @@ public interface MethodRemote {
     
     public MethodDO getMethodAndLock(Integer methodId,String session)throws Exception;
     
-    public Integer updateMethod(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList) throws Exception;
+    public Integer updateMethod(MethodDO methodDO) throws Exception;
     
     public List query(HashMap fields, int first, int max) throws Exception;
     
-    public List validateForUpdate(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList);
+    public List validateForUpdate(MethodDO methodDO);
     
-    public List validateForAdd(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList);    
-    
-    public List<MethodAnalyteDO> getMethodAnalytes(Integer methodId);    
+    public List validateForAdd(MethodDO methodDO);        
 
 }

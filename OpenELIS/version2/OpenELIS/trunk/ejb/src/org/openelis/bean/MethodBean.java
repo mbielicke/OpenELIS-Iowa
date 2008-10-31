@@ -41,10 +41,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.MethodAnalyteDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
-import org.openelis.entity.MethodAnalyte;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -143,7 +141,7 @@ public class MethodBean implements MethodRemote {
          return returnList;
     }
 
-    public Integer updateMethod(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList) throws Exception {
+    public Integer updateMethod(MethodDO methodDO) throws Exception {
        try{ 
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "method");
@@ -178,47 +176,7 @@ public class MethodBean implements MethodRemote {
         
         if(method.getId() == null){
             manager.persist(method);
-        }
-        
-        if(maDOList!=null){
-            exceptionList = new ArrayList<Exception>();
-            validateMethodAnalyte(exceptionList,maDOList);
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            }
-            
-            Integer analyteGroup = new Integer(0);
-            
-            for(int iter = 0; iter < maDOList.size(); iter++){
-              List<MethodAnalyteDO> maDOSubList = maDOList.get(iter);   
-              analyteGroup++;
-              for(int subiter = 0; subiter < maDOSubList.size(); subiter++){
-                MethodAnalyteDO maDO = maDOSubList.get(subiter);
-                MethodAnalyte ma = null;
-                
-                if(maDO.getId() == null){
-                    ma = new MethodAnalyte();
-                }else {
-                    ma = manager.find(MethodAnalyte.class, maDO.getId());
-                }
-                if(maDO.getDelete() && maDO.getId() != null){                           
-                    manager.remove(ma);                                                     
-                }else{                                
-                    ma.setAnalyteId(maDO.getAnalyteId());
-                    ma.setMethodId(maDO.getMethodId());
-                    ma.setResultGroup(maDO.getResultGroup());
-                    ma.setSortOrder(maDO.getSortOrder());
-                    ma.setType(maDO.getType());                       
-                    if(maDO.getGrouped()){
-                        ma.setAnalyteGroup(analyteGroup);
-                    }
-                  }
-                if(ma.getId() == null){
-                    manager.persist(ma);
-                }
-              }  
-            }
-        }
+        }        
         
         lockBean.giveUpLock(methodReferenceId, method.getId());
         return method.getId();
@@ -228,13 +186,13 @@ public class MethodBean implements MethodRemote {
        }
     }
 
-    public List validateForAdd(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList) {
+    public List validateForAdd(MethodDO methodDO) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateMethod(exceptionList,methodDO);
         return exceptionList;
     }
 
-    public List validateForUpdate(MethodDO methodDO,List<List<MethodAnalyteDO>> maDOList) {
+    public List validateForUpdate(MethodDO methodDO) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateMethod(exceptionList,methodDO);
         return exceptionList;
@@ -302,16 +260,6 @@ public class MethodBean implements MethodRemote {
          }
         
      }
-   }
-    
-    private void validateMethodAnalyte(List<Exception> exceptionList, List<List<MethodAnalyteDO>> maDOList){
-        
-    }
+   }    
 
-    public List<MethodAnalyteDO> getMethodAnalytes(Integer methodId) {
-        Query query = manager.createNamedQuery("MethodAnalyte.MethodAnalyteDOByAnalyteId");
-        query.setParameter("methodId", methodId);
-        List<MethodAnalyteDO> list = query.getResultList();        
-        return list;
-    }
 }
