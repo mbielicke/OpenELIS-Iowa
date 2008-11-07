@@ -62,7 +62,10 @@ import org.openelis.utils.Auditable;
                                                   "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.scriptletId," +
                                                         "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " + "  from Test t where t.id = :id"),
     @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name"),
-    @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name")})
+    @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
+    @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
+             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s order by t.name,m.name,s.name ")})
+    
 
 @Entity
 @Table(name="test")

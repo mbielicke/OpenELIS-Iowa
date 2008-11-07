@@ -74,7 +74,7 @@ import org.w3c.dom.Element;
 public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
     
     private static final long serialVersionUID = 0L;
-    private static final int leftTableRowsPerPage = 18;
+    private static final int leftTableRowsPerPage = 20;
     
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));

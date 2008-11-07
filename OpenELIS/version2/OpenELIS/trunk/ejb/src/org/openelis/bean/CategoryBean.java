@@ -275,6 +275,21 @@ public class CategoryBean implements CategoryRemote {
         }     
         return entryId;
     } 
+    
+    public String getSystemNameForEntryId(Integer entryId) throws Exception {
+        Query query = manager.createNamedQuery("Dictionary.SystemNameById");  
+        query.setParameter("id", entryId);
+        String systemName = null;
+        try{ 
+            systemName = (String)query.getSingleResult();
+        }catch(NoResultException ex){
+            return null;
+        } catch(Exception ex){
+            ex.printStackTrace();
+            throw ex;
+        }     
+        return systemName;
+    }
         
     public Integer getCategoryId(String systemName){
         Query query = manager.createNamedQuery("Category.IdBySystemName");  
@@ -421,4 +436,5 @@ public class CategoryBean implements CategoryRemote {
         
         return exceptionList;
     }
+    
 }

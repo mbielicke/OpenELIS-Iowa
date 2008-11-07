@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.SystemVariableMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SystemVariableMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
