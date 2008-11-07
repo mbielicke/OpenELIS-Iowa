@@ -68,8 +68,8 @@ UIRF Software License are applicable instead of those above.
 <screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
- 					<CollapsePanel key="collapsePanel" height="435px">
-						<azTable maxRows="18" tablewidth="auto" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
+ 					<CollapsePanel key="collapsePanel" height="455px">
+						<azTable maxRows="20" tablewidth="auto" key="azTable" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "618px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
+	     <queryTable width= "600px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -273,7 +273,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="142px" width="545px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="155px" width="545px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>

@@ -111,7 +111,7 @@ public class SystemVariableBean implements SystemVariableRemote{
         QueryBuilder qb = new QueryBuilder();
         //qb.addMeta(new Meta[]{sysVarMeta});
         qb.setMeta(Meta);
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+" , "+Meta.getName() + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+", "+Meta.getName() + ") ");
         //qb.addTable(sysVarMeta);
         qb.addWhere(fields);
         

@@ -51,7 +51,6 @@ import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -179,9 +178,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         public void onFailure(Throwable caught) {
         }
         public void onSuccess(Object result) {
-            removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
-            
-            standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
             
             provId.enable(false);
                                        
@@ -200,16 +196,10 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         //    set focus to the last name field
         provId.setFocus(true);
         noteArea.enable(false);
-         removeContactButton.changeState(AppButton.ButtonState.DISABLED);
-         
-         standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
     }
 
     public void add(){                                       
     
-        removeContactButton.changeState(AppButton.ButtonState.UNPRESSED);
-        
-        standardNoteButton.changeState(AppButton.ButtonState.UNPRESSED);
         
         svp.clear();
         
@@ -230,24 +220,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
         super.update();      
     }
     
-    public Request commitQuery(FormRPC rpcQuery){
-        provAddController.unselect(-1);
-        
-        return super.commitQuery(rpcQuery);
-    }
 
-    public void commitAdd(){
-                       
-        provAddController.unselect(-1);
-               
-        super.commitAdd();                            
-        
-        removeContactButton.changeState(AppButton.ButtonState.DISABLED);
-        
-        standardNoteButton.changeState(AppButton.ButtonState.DISABLED);
-        
-        
-    }
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
@@ -367,5 +340,25 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     private void onRemoveRowButtonClick(){
         provAddController.model.deleteRow(provAddController.model.getData().getSelectedIndex());          
+    }
+
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget) {
+        // TODO Auto-generated method stub
+        
     }
 }

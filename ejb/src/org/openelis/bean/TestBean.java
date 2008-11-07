@@ -49,6 +49,7 @@ import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -56,6 +57,7 @@ import org.openelis.entity.Test;
 import org.openelis.entity.TestAnalyte;
 import org.openelis.entity.TestPrep;
 import org.openelis.entity.TestReflex;
+import org.openelis.entity.TestSection;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.entity.TestWorksheet;
 import org.openelis.entity.TestWorksheetItem;
@@ -135,7 +137,8 @@ public class TestBean implements TestRemote {
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
-                              List<TestAnalyteDO> analyteDOList) throws Exception {
+                              List<TestAnalyteDO> analyteDOList,
+                              List<TestSectionDO> sectionDOList) throws Exception {
         try {
             Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "test");
@@ -376,6 +379,38 @@ public class TestBean implements TestRemote {
                         
                     }
                 }
+                
+                if(sectionDOList!=null){
+                    exceptionList = new ArrayList<Exception>();
+                    validateTestSections(exceptionList, sectionDOList);
+                    
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                    for(int iter = 0; iter < sectionDOList.size(); iter++){
+                        TestSectionDO tsDO = sectionDOList.get(iter);
+                        TestSection ts = null;
+                        
+                        if(tsDO.getId()==null){
+                            ts = new TestSection();                           
+                        }else{
+                            ts =  manager.find(TestSection.class, tsDO.getId());
+                        }
+                        
+                        if(tsDO.getDelete() && tsDO.getId() != null){                           
+                            manager.remove(ts);                                                     
+                        }else{
+                            ts.setFlagId(tsDO.getFlagId());
+                            ts.setSectionId(tsDO.getSectionId());
+                            ts.setTestId(tsDO.getTestId());
+                            
+                            if(ts.getId() == null){
+                                manager.persist(ts);
+                            }
+                        }
+                    }
+                }
                                                        
             lockBean.giveUpLock(testReferenceId, test.getId());
             return test.getId();
@@ -468,6 +503,13 @@ public class TestBean implements TestRemote {
         query.setParameter("testId", testId);
         List<TestAnalyteDO> list = query.getResultList();
         return list;        
+    }
+    
+    public List<TestSectionDO> getTestSections(Integer testId){
+        Query query = manager.createNamedQuery("TestSection.TestSectionsByTestId");
+        query.setParameter("testId", testId);
+        List<TestSectionDO> list = query.getResultList();
+        return list;
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {
@@ -570,7 +612,9 @@ public class TestBean implements TestRemote {
                                List<TestTypeOfSampleDO> typeOfSampleDOList,
                                List<TestReflexDO> testReflexDOList,
                                TestWorksheetDO worksheetDO,
-                               List<TestWorksheetItemDO> itemDOList) {
+                               List<TestWorksheetItemDO> itemDOList,
+                               List<TestAnalyteDO> analyteDOList,
+                               List<TestSectionDO> sectionDOList) {
      List<Exception> exceptionList = new ArrayList<Exception>();
      validateTest(exceptionList, testIdNameMethodDO, testDetailsDO);
      if(typeOfSampleDOList!=null)
@@ -583,6 +627,10 @@ public class TestBean implements TestRemote {
          validateTestWorksheet(exceptionList,worksheetDO);
      if(itemDOList!=null)
          validateTestWorksheetItems(exceptionList,itemDOList);
+     if(analyteDOList!=null)
+         validateTestAnalytes(exceptionList,analyteDOList);
+     if(sectionDOList!=null)
+         validateTestSections(exceptionList,sectionDOList);
      return exceptionList;
     }
 
@@ -592,7 +640,9 @@ public class TestBean implements TestRemote {
                                   List<TestTypeOfSampleDO> typeOfSampleDOList,
                                   List<TestReflexDO> testReflexDOList,
                                   TestWorksheetDO worksheetDO,
-                                  List<TestWorksheetItemDO> itemDOList) {
+                                  List<TestWorksheetItemDO> itemDOList,
+                                  List<TestAnalyteDO> analyteDOList,
+                                  List<TestSectionDO> sectionDOList) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateTest(exceptionList, testIdNameMethodDO,testDetailsDO);
         if(typeOfSampleDOList!=null)
@@ -605,6 +655,10 @@ public class TestBean implements TestRemote {
             validateTestWorksheet(exceptionList,worksheetDO);
         if(itemDOList!=null)
             validateTestWorksheetItems(exceptionList,itemDOList);
+        if(analyteDOList!=null)
+            validateTestAnalytes(exceptionList,analyteDOList);
+        if(sectionDOList!=null)
+            validateTestSections(exceptionList,sectionDOList);
         return exceptionList;
     }    
     
@@ -852,6 +906,10 @@ public class TestBean implements TestRemote {
     }
     
     private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
+        
+    }
+    
+    private void validateTestSections(List<Exception> exceptionList,List<TestSectionDO> sectionDOList){
         
     }
 

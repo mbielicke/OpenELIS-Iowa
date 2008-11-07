@@ -36,6 +36,7 @@ import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -64,6 +65,8 @@ public interface TestRemote {
     public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId);
     
     public List<TestAnalyteDO> getTestAnalytes(Integer testId);
+    
+    public List<TestSectionDO> getTestSections(Integer testId);
 
     public Integer updateTest(TestIdNameMethodIdDO testIdNameMethod,
                               TestDetailsDO testDetails,
@@ -72,7 +75,8 @@ public interface TestRemote {
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
-                              List<TestAnalyteDO> analyteDOList) throws Exception;
+                              List<TestAnalyteDO> analyteDOList,
+                              List<TestSectionDO> sectionDOList) throws Exception;
     
     public List query(HashMap fields, int first, int max) throws Exception;
 
@@ -82,7 +86,9 @@ public interface TestRemote {
                                   List<TestTypeOfSampleDO> sampleTypeDOList,
                                   List<TestReflexDO> testReflexDOList,
                                   TestWorksheetDO worksheetDO,
-                                  List<TestWorksheetItemDO> itemDOList);
+                                  List<TestWorksheetItemDO> itemDOList,
+                                  List<TestAnalyteDO> analyteDOList,
+                                  List<TestSectionDO> sectionDOList);
 
     public List validateForAdd(TestIdNameMethodIdDO testIdNameMethod,
                                TestDetailsDO testDetails,
@@ -90,7 +96,9 @@ public interface TestRemote {
                                List<TestTypeOfSampleDO> sampleTypeDOList,
                                List<TestReflexDO> testReflexDOList,
                                TestWorksheetDO worksheetDO,
-                               List<TestWorksheetItemDO> itemDOList);
+                               List<TestWorksheetItemDO> itemDOList,
+                               List<TestAnalyteDO> analyteDOList,
+                               List<TestSectionDO> sectionDOList);
     
     public List getMethodDropDownValues();
 

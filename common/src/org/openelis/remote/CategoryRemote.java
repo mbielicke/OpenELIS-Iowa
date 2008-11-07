@@ -56,6 +56,8 @@ public interface CategoryRemote {
     
     public Integer getEntryIdForSystemName(String systemName) throws Exception;
     
+    public String getSystemNameForEntryId(Integer entryId) throws Exception;
+    
     public Integer getEntryIdForEntry(String entry) throws Exception;
     
     public Integer getCategoryId(String systemName); 

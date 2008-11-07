@@ -181,5 +181,25 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
             return true;       
            return false;
        }
+
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

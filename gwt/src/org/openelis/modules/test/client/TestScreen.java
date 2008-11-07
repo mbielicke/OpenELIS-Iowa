@@ -25,8 +25,8 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -42,7 +42,13 @@ import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableWidgetListener;
+import org.openelis.gwt.widget.tree.TreeManager;
+import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.SourcesTreeModelEvents;
+import org.openelis.gwt.widget.tree.event.TreeModelListener;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -59,7 +65,10 @@ public class TestScreen extends OpenELISScreenForm implements
                                                   ClickListener,
                                                   TabListener,
                                                   ChangeListener,
-                                                  TableManager{                                                  
+                                                  TableManager,
+                                                  TableWidgetListener,
+                                                  TreeModelListener,
+                                                  TreeManager{                                                  
     private static boolean loaded = false;
     
     private static DataModel methodDropdown,labelDropdown,
@@ -75,9 +84,9 @@ public class TestScreen extends OpenELISScreenForm implements
     private AppButton removeSampleTypeButton, removePrepTestButton, 
                       addAnalyteButton,addGroupButton,
                       addAnalyteBeforeButton,addGroupBeforeButton,
-                      addAnalyteAfterButton,addGroupAfterButton,
+                      //addAnalyteAfterButton,addGroupAfterButton,
                       removeReflexTestButton,removeWSItemButton,
-                      deleteButton;
+                      deleteButton,removeTestSectionButton;
     
     private TreeWidget analyteTreeController = null;   
     
@@ -122,11 +131,13 @@ public class TestScreen extends OpenELISScreenForm implements
                 wsItemController.model.enableAutoAdd(true);
                 prepTestController.model.enableAutoAdd(true);
                 sampleTypeController.model.enableAutoAdd(true);
+                sectionController.model.enableAutoAdd(true);
             }else{
                 reflexTestContoller.model.enableAutoAdd(false);
                 wsItemController.model.enableAutoAdd(false);
                 prepTestController.model.enableAutoAdd(false);
                 sampleTypeController.model.enableAutoAdd(false);
+                sectionController.model.enableAutoAdd(false);
             }
             if(action == ButtonPanel.Action.ABORT || action == ButtonPanel.Action.COMMIT){                
                 fillTestResultDropDown();                                                          
@@ -148,16 +159,18 @@ public class TestScreen extends OpenELISScreenForm implements
               onAddAnalyteButtonClicked();            
         else if(sender == addGroupButton)            
             onAddGroupButtonClicked();   
-        //else if(sender == addAnalyteBeforeButton)
-          //  onAddAnalyteBeforeButtonClicked();            
+        else if(sender == addAnalyteBeforeButton)
+           onAddAnalyteBeforeButtonClicked();            
        else if(sender == addGroupBeforeButton)            
           onAddGroupBeforeButtonClicked();
        //else if(sender == addAnalyteAfterButton)
           //onAddAnalyteAfterButtonClicked();            
-        else if(sender == addGroupAfterButton)            
-           onAddGroupAfterButtonClicked();
+        //else if(sender == addGroupAfterButton)            
+           //onAddGroupAfterButtonClicked();
         else if(sender == deleteButton)
             onDeleteButtonClicked();
+        else if(sender == removeTestSectionButton)
+            onTestSectionRowButtonClicked();
         
     }
     
@@ -191,13 +204,14 @@ public class TestScreen extends OpenELISScreenForm implements
        deleteButton = (AppButton)getWidget("deleteButton");
        addAnalyteButton = (AppButton)getWidget("addAnalyteButton");
        addGroupButton = (AppButton)getWidget("addGroupButton");
-       addAnalyteAfterButton = (AppButton)getWidget("addAnalyteAfterButton");
-       addGroupAfterButton = (AppButton)getWidget("addGroupAfterButton");
+       //addAnalyteAfterButton = (AppButton)getWidget("addAnalyteAfterButton");
+       //addGroupAfterButton = (AppButton)getWidget("addGroupAfterButton");
        addAnalyteBeforeButton = (AppButton)getWidget("addAnalyteBeforeButton");
        addGroupBeforeButton = (AppButton)getWidget("addGroupBeforeButton");
+       removeTestSectionButton = (AppButton)getWidget("removeTestSectionButton");
        
        ScreenTreeWidget analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
-       analyteTreeController = (TreeWidget)analyteTree.getWidget();       
+       analyteTreeController = (TreeWidget)analyteTree.getWidget();   
        
        if (methodDropdown == null) {
            methodDropdown = (DataModel)initData.get("methods");       
@@ -292,20 +306,28 @@ public class TestScreen extends OpenELISScreenForm implements
        ((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(testWSItemTypeDropDown); 
        
        sectionController = (TableWidget)sectionTable.getWidget();
-       //q = (QueryTable)sectionTable.getQueryWidget().getWidget();
+       sectionController.addTableWidgetListener(this);
+       q = (QueryTable)sectionTable.getQueryWidget().getWidget();
        
        ((TableDropdown)sectionController.columns.get(0).getColumnWidget()).setModel(sectionDropDown);
-       //((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(sectionDropDown); 
+       ((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(sectionDropDown); 
        
        ((TableDropdown)sectionController.columns.get(1).getColumnWidget()).setModel(testSectionFlagDropDown);
-       //((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(testSectionFlagDropDown);
+       ((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(testSectionFlagDropDown);
        
        //addCommandListener(d.controller);
        ((TableDropdown)analyteTreeController.columns.get(3).getColumnWidget("analyte")).setModel(scriptletDropDown); 
-       ((TableDropdown)analyteTreeController.columns.get(1).getColumnWidget("analyte")).setModel(testAnalyteTypeDropDown);       
+       ((TableDropdown)analyteTreeController.columns.get(1).getColumnWidget("analyte")).setModel(testAnalyteTypeDropDown);              
+       analyteTreeController.model.addTreeModelListener(this);
+       
+       analyteTreeController.model.manager = this;
+       
        updateChain.add(afterUpdate);        
-              
+                     
+       
        super.afterDraw(success);
+       
+       analyteTree.enable(true);
        
        
        ((FormRPC)rpc.getField("sampleType")).setFieldValue("sampleTypeTable",
@@ -335,6 +357,13 @@ public class TestScreen extends OpenELISScreenForm implements
         removePrepTestButton.changeState(ButtonState.DISABLED) ;
         removeReflexTestButton.changeState(ButtonState.DISABLED) ; 
         removeWSItemButton.changeState(ButtonState.DISABLED);
+        deleteButton.changeState(ButtonState.DISABLED);
+        addAnalyteButton.changeState(ButtonState.DISABLED); 
+        addGroupButton.changeState(ButtonState.DISABLED); 
+        //addAnalyteAfterButton.changeState(ButtonState.DISABLED);
+        //addGroupAfterButton.changeState(ButtonState.DISABLED); 
+        addAnalyteBeforeButton.changeState(ButtonState.DISABLED); 
+        addGroupBeforeButton.changeState(ButtonState.DISABLED); 
     }
     
     public void add() {
@@ -433,6 +462,69 @@ public class TestScreen extends OpenELISScreenForm implements
        if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
            return true;       
           return false;
+      }
+      
+      public boolean canDrag(TableWidget widget, DataSet item, int row) {
+          // TODO Auto-generated method stub
+          return false;
+      }
+
+      public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+          // TODO Auto-generated method stub
+          return false;
+      }
+
+      public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {          
+          
+      }
+
+      public void drop(TableWidget widget, Widget dragWidget) {
+          // TODO Auto-generated method stub
+          
+      }
+
+      public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {          
+          if(sender == sectionController && col == 1){
+              final int currRow = row;
+              final Integer selValue = (Integer)sectionController.model.getRow(row).get(col).getValue();
+              screenService.getObject("getSystemName", new Data[] {new NumberObject(selValue)}, new AsyncCallback<StringObject>() {
+                  public void onSuccess(StringObject result) {                        
+                     if("test_section_default".equals((String)result.getValue())){
+                        for(int iter = 0; iter < sectionController.model.numRows(); iter++){
+                           if(iter != currRow){
+                            DropDownField field = (DropDownField)sectionController.model.getRow(iter).get(1);
+                            field.setValue(new DataSet(new NumberObject(-1)));
+                           } 
+                        }
+                        sectionController.model.refresh();
+                     }else {
+                        if(selValue.intValue() != -1){
+                            for(int iter = 0; iter < sectionController.model.numRows(); iter++){                                
+                                 DropDownField field = (DropDownField)sectionController.model.getRow(iter).get(1);
+                                 field.setValue(new DataSet(new NumberObject(selValue)));                                
+                             }                            
+                        }                        
+                        sectionController.model.refresh();
+                     }
+                  }
+                  public void onFailure(Throwable caught) {
+                      Window.alert(caught.getMessage());
+                      window.setStatus("","");
+                  }
+              });
+              
+          }
+          
+      }
+
+      public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+          // TODO Auto-generated method stub
+          
+      }
+
+      public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
+          // TODO Auto-generated method stub
+          
       }
       
     private void getTests(String query) {
@@ -575,8 +667,7 @@ public class TestScreen extends OpenELISScreenForm implements
         screenService.getObject("getTestResultModel", new Data[] {testId}, new AsyncCallback<DataModel>() {
             public void onSuccess(DataModel result) {              
                 DataModel model = result;                
-                ((TableDropdown)reflexTestContoller.columns.get(2).getColumnWidget()).setModel(model);
-                
+                ((TableDropdown)reflexTestContoller.columns.get(2).getColumnWidget()).setModel(model);             
             }
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
@@ -623,30 +714,25 @@ public class TestScreen extends OpenELISScreenForm implements
         reflexTestContoller.model.deleteRow(reflexTestContoller.model.getData().getSelectedIndex());
       }
    
+   private void onTestSectionRowButtonClicked(){
+      if(sectionController.model.getData().getSelectedIndex()>-1){
+         sectionController.model.deleteRow(sectionController.model.getData().getSelectedIndex());   
+      }
+   }
+   
    private void onAddGroupButtonClicked(){
        gid++;       
        TreeDataItem item = analyteTreeController.model.getData().createTreeItem("top",new NumberObject(gid)); 
        item.get(0).setValue("Group");
        analyteTreeController.model.addRow(item);
        analyteTreeController.model.refresh();   
-   }   
-   
-   private void onAddGroupAfterButtonClicked(){
-       TreeDataItem selItem = analyteTreeController.model.getData().getSelected();
-       if(selItem!=null){
-        int index = analyteTreeController.model.getData().indexOf(selItem);
-        gid++;       
-        TreeDataItem item = analyteTreeController.model.getData().createTreeItem("top",new NumberObject(gid)); 
-        item.get(0).setValue("Group");
-        analyteTreeController.model.addRow(index+1, item);        
-        analyteTreeController.model.refresh();
-       } 
-   }
+   }      
    
    private void onAddGroupBeforeButtonClicked(){
-       TreeDataItem selItem = analyteTreeController.model.getData().getSelected();
-       if(selItem!=null){
-        int index = analyteTreeController.model.getData().indexOf(selItem);        
+       //TreeDataItem selItem = analyteTreeController.model.getData().getSelected();
+       int index = analyteTreeController.model.getSelectedRowIndex();
+       if(index >-1){
+        //int index = analyteTreeController.model.getData().indexOf(selItem);        
         gid++;       
         TreeDataItem item = analyteTreeController.model.getData().createTreeItem("top",new NumberObject(gid)); 
         item.get(0).setValue("Group");
@@ -659,13 +745,20 @@ public class TestScreen extends OpenELISScreenForm implements
    }
    
    private void onAddAnalyteButtonClicked(){  
-     TreeDataItem item = analyteTreeController.model.getData().getSelected(); 
-     if(item !=null ){                                   
+     //TreeDataItem item = analyteTreeController.model.getData().getSelected(); 
+     int index = analyteTreeController.model.getSelectedRowIndex();
+       if(index >-1){   
+           TreeDataItem item = analyteTreeController.model.getRow(index);
       if("top".equals(item.leafType)){ 
        gid++;
        TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
        item.addItem(newItem);
        analyteTreeController.model.refresh();
+      }else {
+          gid++;
+          TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
+          analyteTreeController.model.addRow(newItem);
+          analyteTreeController.model.refresh();
       }
      }else {
          gid++;
@@ -677,11 +770,11 @@ public class TestScreen extends OpenELISScreenForm implements
 
    
    private void onAddAnalyteBeforeButtonClicked(){             
-     TreeDataItem selItem = analyteTreeController.model.getData().getSelected();
-     int index = analyteTreeController.model.getData().indexOf(selItem); 
-     if(selItem !=null ){                       
+       int index = analyteTreeController.model.getSelectedRowIndex();
+       if(index >-1){   
+           TreeDataItem item = analyteTreeController.model.getRow(index);                      
        
-      if("top".equals(selItem.leafType)){ 
+      if(item.parent==null){ 
        gid++;
        TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
        if(index==0)
@@ -690,33 +783,24 @@ public class TestScreen extends OpenELISScreenForm implements
               analyteTreeController.model.addRow(index-1, newItem);      
        analyteTreeController.model.refresh();
       }
-     }else {
-         gid++;
-         TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
-         TreeDataItem parent = newItem.parent;         
+     }//else {
+        // gid++;
+         //TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
+         //TreeDataItem parent = newItem.parent;         
+         //int chindex = parent.indexOf(selItem);
          
-         analyteTreeController.model.refresh();
-     }
-   }
-   
-   private void onAddAnalyteAfterButtonClicked(){  
-       TreeDataItem item = analyteTreeController.model.getData().getSelected(); 
-       if(item !=null ){                                   
-        if("top".equals(item.leafType)){ 
-         gid++;
-         TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
-         item.addItem(newItem);
-         analyteTreeController.model.refresh();
-        }
-       }else {
-           gid++;
-           TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte",new NumberObject(gid));
-           analyteTreeController.model.addRow(newItem);
-           analyteTreeController.model.refresh();
-       }
-     }
+         //analyteTreeController.model.refresh();
+     //}
+   }   
      
    private void onDeleteButtonClicked(){               
+       /*int index = analyteTreeController.model.getSelectedIndex();     
+       if(index > -1){                                   
+       
+          analyteTreeController.model.deleteRow(index);          
+        //} 
+        analyteTreeController.model.refresh();
+       }*/
        TreeDataItem item = analyteTreeController.model.getData().getSelected(); 
        if(item !=null ){                                   
         int index =  analyteTreeController.model.getData().indexOf(item);
@@ -724,12 +808,124 @@ public class TestScreen extends OpenELISScreenForm implements
         analyteTreeController.model.refresh();
        }
      }
+
+  public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void dataChanged(SourcesTreeModelEvents sender) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void rowAdded(SourcesTreeModelEvents sender, int rows) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void rowClosed(SourcesTreeModelEvents sender, int row, TreeDataItem item) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void rowDeleted(SourcesTreeModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public void rowOpened(SourcesTreeModelEvents sender, int row, TreeDataItem item) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public void rowSelectd(SourcesTreeModelEvents sender, int row) { 
+     /*TreeDataItem selItem = analyteTreeController.model.getRow(row);
+     if(selItem.getData()==null){
+         DataMap data = new DataMap();
+         selItem.setData(data);
+     }
+           
+     if(!new StringObject("Y").equals(((DataMap)selItem.getData()).get("unselect"))){
+         ((DataMap)selItem.getData()).put("unselect", new StringObject("Y")); 
+     }else{
+         ((DataMap)selItem.getData()).put("unselect", new StringObject("N"));
+         analyteTreeController.model.unselectRow(row);
+     }*/
+     
+    
+ }
+
+ public void rowUnselected(SourcesTreeModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public void rowUpdated(SourcesTreeModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+ }
+
+  public void unload(SourcesTreeModelEvents sender) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
+    // TODO Auto-generated method stub
+    return false;
+ }
+
+ public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
+    // TODO Auto-generated method stub
+    return true;
+ }
+
+ public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
+    // TODO Auto-generated method stub
+    return false;
+ }
+
+ public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {          
+    if("top".equals(item.leafType))
+     return false;    
+    return true;
+ }
+
+ public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
+   if("analyte".equals(dropTarget.leafType))     
+    return false;     
+   return true;         
+ } 
+
+ public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {      
+    return true;
+ }
+
+ public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
+    // TODO Auto-generated method stub
+    return true;
+ }
+
+ public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
+    // TODO Auto-generated method stub
+    return true;
+ }
+
+ public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
+  if("top".equals(dropTarget.leafType)){
+      TreeRow row = (TreeRow)dragWidget;      
+      analyteTreeController.model.deleteRow(row.index);
+      dropTarget.addItem(row.item);      
+    analyteTreeController.model.refresh();
+  }
+ }
+
+ public void drop(TreeWidget widget, Widget dragWidget) {
+    // TODO Auto-generated method stub
+    
+ }
    
-   /*public void showError(int row, int col, TableController controller,String error) {
-   AbstractField field =  controller.model.getFieldAt(row, col);      
-   field.addError(error);
-   ((TableCellInputWidget)controller.view.table.getWidget(row,col)).drawErrors();
-}*/
 
 /*public boolean canEdit(int row, int col, TableController controller) {
    if(col == 2){  

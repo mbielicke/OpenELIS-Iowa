@@ -33,6 +33,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.QaEventTestDropdownDO;
+import org.openelis.domain.TestMethodSectionNamesDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -272,15 +273,15 @@ public class PanelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
     public DataModel getTestMethodNames(){
        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
        DataModel model = new DataModel();
-       List<QaEventTestDropdownDO> list = remote.getTestMethodNames();
+       List<TestMethodSectionNamesDO> list = remote.getTestMethodNames();
        for(int iter = 0; iter < list.size(); iter++){
-           QaEventTestDropdownDO qaeDO = list.get(iter);
+           TestMethodSectionNamesDO tmsDO = list.get(iter);
            DataSet set = new DataSet();
-           set.add(new StringObject(qaeDO.getTest()));
-           set.setKey(new StringObject(qaeDO.getTest()));                    
-           set.add(new StringObject(qaeDO.getMethod()));                     
-           set.add(new StringObject(""));
-           set.setKey(new StringObject(qaeDO.getTest().trim()+","+qaeDO.getMethod().trim()));
+           set.add(new StringObject(tmsDO.getTestName()));                              
+           set.add(new StringObject(tmsDO.getMethodName()));                     
+           set.add(new StringObject(tmsDO.getSectionName()));
+           set.setKey(new StringObject(tmsDO.getTestName().trim()+","+tmsDO.getMethodName().trim()
+                                       +","+tmsDO.getSectionName()));
            model.add(set);
        }
        return model;

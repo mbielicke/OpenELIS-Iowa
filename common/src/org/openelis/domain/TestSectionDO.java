@@ -18,6 +18,8 @@ public class TestSectionDO implements Serializable {
     
     protected Integer flagId;
     
+    private Boolean delete = false;   
+    
     public TestSectionDO() {
         
     }
@@ -61,4 +63,12 @@ public class TestSectionDO implements Serializable {
     public void setTestId(Integer testId) {
         this.testId = testId;
     } 
+    
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
 }

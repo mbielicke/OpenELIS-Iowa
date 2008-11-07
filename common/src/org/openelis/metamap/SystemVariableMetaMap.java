@@ -34,12 +34,12 @@ public class SystemVariableMetaMap extends SystemVariableMeta implements
          super("sv.");
      }
      
-     public static SystemVariableMetaMap getInstance(){
-         return new SystemVariableMetaMap();
+     public SystemVariableMetaMap(String path){
+         super(path);               
      }
     
     public String buildFrom(String where) {
-        return "SystemVariable sv";
+        return "SystemVariable sv ";
     }
     
     public boolean hasColumn(String name){        
