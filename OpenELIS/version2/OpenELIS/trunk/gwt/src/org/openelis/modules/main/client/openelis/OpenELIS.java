@@ -42,6 +42,7 @@ import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -83,8 +84,8 @@ public class OpenELIS extends AppScreen implements ClickListener{
                 fv.getEditFavorites();
             return;
     	}
-        if(item instanceof ScreenMenuItem){
-        	if(((String)((ScreenMenuItem)item).objClass).equals("FavoritesMenu")){
+        if(item instanceof MenuItem){
+        	if(((String)((MenuItem)item).objClass).equals("FavoritesMenu")){
                 VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
                 if(fmp.getWidgetCount() == 1){
                 	fv = new FavoritesScreen();
@@ -93,7 +94,7 @@ public class OpenELIS extends AppScreen implements ClickListener{
                 fmp.setVisible(!fmp.isVisible());
                 browser.setBrowserHeight();
                 return;
-        	}else if(((String)((ScreenMenuItem)item).objClass).equals("Logout")){
+        	}else if(((String)((MenuItem)item).objClass).equals("Logout")){
         	    screenService.logout(new AsyncCallback() {
                    public void onSuccess(Object result){
                        Window.open("http://www.uhl.uiowa.edu", "_self", null);
@@ -104,7 +105,7 @@ public class OpenELIS extends AppScreen implements ClickListener{
                 });
         		return;
         	}
-            ScreenMenuItem menuItem = (ScreenMenuItem)item;
+            MenuItem menuItem = (MenuItem)item;
             if(menuItem.args != null){
                 OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName(menuItem.objClass,menuItem.args),menuItem.key);
             }else{    
