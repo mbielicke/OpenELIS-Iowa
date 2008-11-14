@@ -16,6 +16,7 @@
 package org.openelis.modules.test.client;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
@@ -28,9 +29,11 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenTreeWidget;
+import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -42,7 +45,9 @@ import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableModelEvents;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableModelListener;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeRow;
@@ -50,16 +55,23 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.SourcesTreeModelEvents;
 import org.openelis.gwt.widget.tree.event.TreeModelListener;
 import org.openelis.metamap.TestMetaMap;
+import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.XMLParser;
+import com.google.gwt.xml.client.impl.XMLParserImpl;
 
 public class TestScreen extends OpenELISScreenForm implements
                                                   ClickListener,
@@ -67,6 +79,7 @@ public class TestScreen extends OpenELISScreenForm implements
                                                   ChangeListener,
                                                   TableManager,
                                                   TableWidgetListener,
+                                                  TableModelListener,
                                                   TreeModelListener,
                                                   TreeManager{                                                  
     private static boolean loaded = false;
@@ -79,24 +92,29 @@ public class TestScreen extends OpenELISScreenForm implements
                              testWSItemTypeDropDown,testWSNumFormatDropDown,
                              reportingMethodDropDown,sortingMethodDropDown,
                              testSectionFlagDropDown,testAnalyteTypeDropDown,
-                             sectionDropDown;
+                             sectionDropDown, testResultFlagDropDown, 
+                             testResultTypeDropDown,roundingMethodDropDown;
     
     private AppButton removeSampleTypeButton, removePrepTestButton, 
                       addAnalyteButton,addGroupButton,
                       addAnalyteBeforeButton,addGroupBeforeButton,
-                      //addAnalyteAfterButton,addGroupAfterButton,
                       removeReflexTestButton,removeWSItemButton,
-                      deleteButton,removeTestSectionButton;
+                      deleteButton,removeTestSectionButton,
+                      dictionaryLookUpButton,removeTestResultButton,
+                      addResultTabButton;
     
     private TreeWidget analyteTreeController = null;   
     
     private int gid = 0;
     
     private ScreenTableWidget prepTestTable, sampleTypeTable, 
-                              testReflexTable,worksheetItemTable,sectionTable;
+                              testReflexTable,worksheetItemTable,
+                              sectionTable,resultTable;
     
     private TableWidget reflexTestContoller,prepTestController,
-                        wsItemController,sampleTypeController,sectionController;
+                        wsItemController,sampleTypeController,
+                        sectionController,
+                        resultController;
     
     private QueryTable reflexTestQueryTable;    
     
@@ -106,7 +124,49 @@ public class TestScreen extends OpenELISScreenForm implements
     private KeyListManager keyList = new KeyListManager();
     
     private ScreenTextBox testId;
-    private TextBox testName;                            
+    private TextBox testName;        
+    
+    private TabPanel resultPanel;
+    
+    private static String tableString = "<widget valign=  "+"\"top\" "+"/>"+
+    "<table key= "+"\"testResultsTable\"" +" manager= \"this\""+ " maxRows="+ "\"3\"" + " showError=\"false\""+" showScroll=\"ALWAYS\" title=\"\" width=\"555px\" >" +
+                    " <headers> "+                                                  
+                         "Type,"+                                                 
+                         "Value,"+
+                         "S.D.,"+
+                         "Flags,"+
+                         "Rdng. Method,"+                                                   
+                         "Quant Limit,"+
+                         "Ctmt. Lvl.,"+
+                         "Hzrd. Lvl."+                                                                                                                                                                                                           
+                     "</headers>"+
+                     "<widths>80,200,30,120,100,70,70,70</widths>"+
+                     "<editors>"+                                                   
+                         "<dropdown case=\"mixed\" width=\"75px\"/>"+
+                         "<textbox/>"+
+                         "<textbox/>"+
+                         "<dropdown case=\"mixed\" width=\"115px\"/>"+
+                         "<dropdown case=\"mixed\" width=\"95px\"/>"+
+                         "<textbox/>"+
+                         "<textbox/>"+
+                         "<textbox/>"+                                                                                      
+                     "</editors> "+
+                     "<fields>"+                                                    
+                         "<dropdown key=\"typeId\" type=\"integer\" required=\"true\"/>"+                                                                                                        
+                         "<string key=\"value\" +required=\"false\"/>"+     
+                         "<number key=\"significantDigits\" required=\"false\"/>"+ 
+                         "<dropdown key=\"flagsId\" type=\"integer\" required=\"false\"/>"+  
+                         "<dropdown key=\"roundingMethodId\" type=\"integer\" required=\"false\"/>"+ 
+                         "<string key=\"quantLimit\"  required=\"false\"/>"+   
+                         "<string key=\"contLevel\"  required=\"false\"/>"+
+                         "<number key=\"hazardLevel\" type=\"integer\" required=\"false\"/>"+                                                                                
+                     "</fields>"+
+                     "<sorts>false,false,false,false,false,false,false,false</sorts>"+
+                     "<filters>false,false,false,false,false,false,false,false</filters>"+
+                     "<colAligns>left,left,left,left,left,left,left,left</colAligns>"+
+     "</table>"+
+ "</widget>" ;
+    
                             
     public TestScreen() {
         super("org.openelis.modules.test.server.TestService",!loaded);
@@ -132,12 +192,14 @@ public class TestScreen extends OpenELISScreenForm implements
                 prepTestController.model.enableAutoAdd(true);
                 sampleTypeController.model.enableAutoAdd(true);
                 sectionController.model.enableAutoAdd(true);
+                //resultController.model.enableAutoAdd(true);
             }else{
                 reflexTestContoller.model.enableAutoAdd(false);
                 wsItemController.model.enableAutoAdd(false);
                 prepTestController.model.enableAutoAdd(false);
                 sampleTypeController.model.enableAutoAdd(false);
                 sectionController.model.enableAutoAdd(false);
+                //resultController.model.enableAutoAdd(false);
             }
             if(action == ButtonPanel.Action.ABORT || action == ButtonPanel.Action.COMMIT){                
                 fillTestResultDropDown();                                                          
@@ -163,16 +225,18 @@ public class TestScreen extends OpenELISScreenForm implements
            onAddAnalyteBeforeButtonClicked();            
        else if(sender == addGroupBeforeButton)            
           onAddGroupBeforeButtonClicked();
-       //else if(sender == addAnalyteAfterButton)
-          //onAddAnalyteAfterButtonClicked();            
-        //else if(sender == addGroupAfterButton)            
-           //onAddGroupAfterButtonClicked();
         else if(sender == deleteButton)
             onDeleteButtonClicked();
         else if(sender == removeTestSectionButton)
             onTestSectionRowButtonClicked();
+        else if(sender == dictionaryLookUpButton)
+            onDictionaryLookUpButtonClicked();
+        else if(sender == addResultTabButton)
+            onAddResultTabButtonClicked();
         
     }
+    
+
     
 
     public void afterDraw(boolean success) {
@@ -181,7 +245,6 @@ public class TestScreen extends OpenELISScreenForm implements
         AToZTable atozTable = (AToZTable) getWidget("azTable");    
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         Dropdown drop;
-
         
         QueryTable q;
         
@@ -191,6 +254,8 @@ public class TestScreen extends OpenELISScreenForm implements
         chain.addCommand(atozButtons);
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
+        
+        resultPanel = (TabPanel)getWidget("resultTabPanel");
                 
         bpanel.enableButton("delete", false);
        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
@@ -203,12 +268,13 @@ public class TestScreen extends OpenELISScreenForm implements
        
        deleteButton = (AppButton)getWidget("deleteButton");
        addAnalyteButton = (AppButton)getWidget("addAnalyteButton");
-       addGroupButton = (AppButton)getWidget("addGroupButton");
-       //addAnalyteAfterButton = (AppButton)getWidget("addAnalyteAfterButton");
-       //addGroupAfterButton = (AppButton)getWidget("addGroupAfterButton");
+       addGroupButton = (AppButton)getWidget("addGroupButton");       
        addAnalyteBeforeButton = (AppButton)getWidget("addAnalyteBeforeButton");
        addGroupBeforeButton = (AppButton)getWidget("addGroupBeforeButton");
        removeTestSectionButton = (AppButton)getWidget("removeTestSectionButton");
+       dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
+       removeTestResultButton = (AppButton)getWidget("removeTestResultButton");
+       addResultTabButton = (AppButton)getWidget("addResultTabButton");
        
        ScreenTreeWidget analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
        analyteTreeController = (TreeWidget)analyteTree.getWidget();   
@@ -231,6 +297,9 @@ public class TestScreen extends OpenELISScreenForm implements
            sortingMethodDropDown = (DataModel)initData.get("sortingMethods");
            testSectionFlagDropDown = (DataModel)initData.get("testSectionFlags");
            sectionDropDown = (DataModel)initData.get("sections");
+           testResultFlagDropDown = (DataModel)initData.get("testResultFlags"); 
+           testResultTypeDropDown = (DataModel)initData.get("testResultTypes");
+           roundingMethodDropDown = (DataModel)initData.get("roundingMethods");
        }
        
        drop = (Dropdown)getWidget(TestMeta.getMethodId());
@@ -268,6 +337,7 @@ public class TestScreen extends OpenELISScreenForm implements
        testReflexTable = (ScreenTableWidget)widgets.get("testReflexTable"); 
        worksheetItemTable = (ScreenTableWidget)widgets.get("worksheetTable"); 
        sectionTable = (ScreenTableWidget)widgets.get("sectionTable");
+       resultTable = (ScreenTableWidget)widgets.get("testResultsTable");
        
        sampleTypeController = (TableWidget)sampleTypeTable.getWidget();
        q = (QueryTable)sampleTypeTable.getQueryWidget().getWidget();          
@@ -315,12 +385,20 @@ public class TestScreen extends OpenELISScreenForm implements
        ((TableDropdown)sectionController.columns.get(1).getColumnWidget()).setModel(testSectionFlagDropDown);
        ((TableDropdown)q.columns.get(1).getColumnWidget()).setModel(testSectionFlagDropDown);
        
-       //addCommandListener(d.controller);
        ((TableDropdown)analyteTreeController.columns.get(3).getColumnWidget("analyte")).setModel(scriptletDropDown); 
        ((TableDropdown)analyteTreeController.columns.get(1).getColumnWidget("analyte")).setModel(testAnalyteTypeDropDown);              
        analyteTreeController.model.addTreeModelListener(this);
        
+       //resultController = (TableWidget)resultTable.getWidget();
+       //resultController.addTableWidgetListener(this);
+       //resultController.model.addTableModelListener(this);
+       
+       //((TableDropdown)resultController.columns.get(3).getColumnWidget()).setModel(testResultFlagDropDown);
+       //((TableDropdown)resultController.columns.get(0).getColumnWidget()).setModel(testResultTypeDropDown);
+       //((TableDropdown)resultController.columns.get(4).getColumnWidget()).setModel(roundingMethodDropDown);
+              
        analyteTreeController.model.manager = this;
+       analyteTreeController.enabled(false);
        
        updateChain.add(afterUpdate);        
                      
@@ -346,7 +424,9 @@ public class TestScreen extends OpenELISScreenForm implements
                                                 sectionController.model.getData());
        
        FormRPC analyteRPC = (FormRPC)(rpc.getField("testAnalyte"));       
-       analyteTree.submit(analyteRPC.getField("analyteTree"));         
+       analyteTree.submit(analyteRPC.getField("analyteTree")); 
+       
+       //analyteRPC.setFieldValue("testResultsTable",resultController.model.getData());
               
     }
         
@@ -360,17 +440,19 @@ public class TestScreen extends OpenELISScreenForm implements
         deleteButton.changeState(ButtonState.DISABLED);
         addAnalyteButton.changeState(ButtonState.DISABLED); 
         addGroupButton.changeState(ButtonState.DISABLED); 
-        //addAnalyteAfterButton.changeState(ButtonState.DISABLED);
-        //addGroupAfterButton.changeState(ButtonState.DISABLED); 
         addAnalyteBeforeButton.changeState(ButtonState.DISABLED); 
         addGroupBeforeButton.changeState(ButtonState.DISABLED); 
+        removeTestResultButton.changeState(ButtonState.DISABLED);
     }
     
     public void add() {
         super.add();        
         testId.enable(false);
         testName.setFocus(true);
-        removeReflexTestButton.changeState(ButtonState.UNPRESSED) ;                        
+        //removeReflexTestButton.changeState(ButtonState.UNPRESSED);  
+        removeTestResultButton.changeState(ButtonState.DISABLED);
+        dictionaryLookUpButton.changeState(ButtonState.DISABLED);
+        //resultController.enabled(false);
     }    
        
     
@@ -380,7 +462,10 @@ public class TestScreen extends OpenELISScreenForm implements
         public void onSuccess(Object result) {
             testId.enable(false);
             testName.setFocus(true);
-            removeReflexTestButton.changeState(ButtonState.UNPRESSED) ;
+            //removeReflexTestButton.changeState(ButtonState.UNPRESSED);
+            removeTestResultButton.changeState(ButtonState.DISABLED);
+            dictionaryLookUpButton.changeState(ButtonState.DISABLED);
+            //resultController.enabled(false);      
         }
     }; 
     
@@ -487,7 +572,7 @@ public class TestScreen extends OpenELISScreenForm implements
           if(sender == sectionController && col == 1){
               final int currRow = row;
               final Integer selValue = (Integer)sectionController.model.getRow(row).get(col).getValue();
-              screenService.getObject("getSystemName", new Data[] {new NumberObject(selValue)}, new AsyncCallback<StringObject>() {
+              screenService.getObject("getCategorySystemName", new Data[] {new NumberObject(selValue)}, new AsyncCallback<StringObject>() {
                   public void onSuccess(StringObject result) {                        
                      if("test_section_default".equals((String)result.getValue())){
                         for(int iter = 0; iter < sectionController.model.numRows(); iter++){
@@ -513,6 +598,98 @@ public class TestScreen extends OpenELISScreenForm implements
                   }
               });
               
+          }else if(sender == resultController){
+              final String value = (String)resultController.model.getRow(row).get(1).getValue();                  
+              if(col == 1 && !"".equals(value.trim())){                 
+                  final int currRow = row;                  
+                  final Integer selValue = (Integer)resultController.model.getRow(row).get(0).getValue();
+                  screenService.getObject("getCategorySystemName", new Data[] {new NumberObject(selValue)}, new AsyncCallback<StringObject>() {
+                      public void onSuccess(StringObject result) {                          
+                          Double[] darray = new Double[2];
+                          String finalValue = "";
+                          if("test_res_type_dictionary".equals((String)result.getValue())){
+                              
+                              screenService.getObject("getEntryId", new Data[] {new StringObject(value)}, new AsyncCallback<NumberObject>() {
+                                  
+                                  public void onSuccess(NumberObject result1) {                                     
+                                      if(result1.getValue() == null){
+                                          Window.alert("Not valid dict entry");                                          
+                                      }else{
+                                          
+                                      }
+                                  }
+                                  public void onFailure(Throwable caught) {
+                                      Window.alert(caught.getMessage());
+                                      window.setStatus("","");
+                                  }
+                              });
+                             
+                          }else if("test_res_type_numeric".equals((String)result.getValue())){
+                              String[] strList = value.split(",");
+                               boolean convert = false;                             
+                              if(strList.length==2){ 
+                              for(int iter = 0; iter < strList.length; iter++){
+                               String token = strList[iter];
+                               try{
+                                  Double doubleVal = Double.parseDouble(token);
+                                  darray[iter] = doubleVal;  
+                                  convert = true;
+                               }catch(NumberFormatException ex){
+                                   convert = false; 
+                                   //Window.alert(ex.getMessage());
+                               }
+                              } 
+                              
+                              if(convert)
+                               finalValue = darray[0].toString()+","+darray[1].toString();
+                              else
+                                  resultController.model.setCellError(currRow, 1, 
+                                                                      "Invalid format for input string: "+value);
+                                                            
+                             }
+                              resultController.model.getRow(currRow).get(1).setValue(finalValue);                                                     
+                              resultController.model.refresh();
+                              
+                          }else if("test_res_type_titer".equals((String)result.getValue())){
+                              String[] strList = value.split(":");
+                              boolean convert = false; 
+                              if(strList.length==2){ 
+                               for(int iter = 0; iter < strList.length; iter++){
+                                   String token = strList[iter];
+                               try{
+                                  Double doubleVal = Double.parseDouble(token);
+                                  darray[iter] = doubleVal;       
+                                  convert = true;
+                               }catch(NumberFormatException ex){
+                                   convert = false; 
+                                   //Window.alert(ex.getMessage());
+                               }
+                              }
+                               
+                               if(convert)
+                                   finalValue = darray[0].toString()+":"+darray[1].toString();
+                               else
+                                   resultController.model.setCellError(currRow, 1, 
+                                                                       "Invalid format for input string: "+value);
+                                                              
+                             }
+                              
+                              resultController.model.getRow(currRow).get(1).setValue(finalValue);                                                     
+                              resultController.model.refresh();
+                          } 
+                          
+                          
+                              
+                          
+                          
+                      }
+                      public void onFailure(Throwable caught) {
+                          Window.alert(caught.getMessage());
+                          window.setStatus("","");
+                      }
+                  });
+                                                                                                              
+              }
           }
           
       }
@@ -720,6 +897,16 @@ public class TestScreen extends OpenELISScreenForm implements
       }
    }
    
+   private void onAddResultTabButtonClicked() {
+       Document document = XMLParser.parse(tableString);
+       ScreenTableWidget table = new ScreenTableWidget(document, this);
+       
+       TableWidget resultWidget = (TableWidget)table.getWidget(); 
+       resultPanel.clear();
+       resultPanel.add(resultWidget,"group");
+             
+   }
+   
    private void onAddGroupButtonClicked(){
        gid++;       
        TreeDataItem item = analyteTreeController.model.getData().createTreeItem("top",new NumberObject(gid)); 
@@ -808,6 +995,29 @@ public class TestScreen extends OpenELISScreenForm implements
         analyteTreeController.model.refresh();
        }
      }
+   
+   private void onDictionaryLookUpButtonClicked(){
+       PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
+       ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Dictionary Entry", "dictionaryEntryPicker", "Loading...");
+       pickerWindow.setContent(new DictionaryEntryPickerScreen(this));
+            
+       standardNotePopupPanel.add(pickerWindow);
+       int left = this.getAbsoluteLeft();
+       int top = this.getAbsoluteTop();
+       standardNotePopupPanel.setPopupPosition(left,top);
+       standardNotePopupPanel.show();
+   }
+   
+   public void addResultRows(List<String> dictionaryEntries){
+      for(int iter = 0 ;iter < dictionaryEntries.size(); iter++){
+          DataSet row = resultController.model.createRow();
+          String entry = dictionaryEntries.get(iter);
+          row.get(1).setValue(entry);          
+          resultController.model.addRow(row);
+      }
+      
+      resultController.model.refresh();      
+   }
 
   public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {
     // TODO Auto-generated method stub
@@ -839,25 +1049,12 @@ public class TestScreen extends OpenELISScreenForm implements
     
  }
 
- public void rowSelectd(SourcesTreeModelEvents sender, int row) { 
-     /*TreeDataItem selItem = analyteTreeController.model.getRow(row);
-     if(selItem.getData()==null){
-         DataMap data = new DataMap();
-         selItem.setData(data);
-     }
-           
-     if(!new StringObject("Y").equals(((DataMap)selItem.getData()).get("unselect"))){
-         ((DataMap)selItem.getData()).put("unselect", new StringObject("Y")); 
-     }else{
-         ((DataMap)selItem.getData()).put("unselect", new StringObject("N"));
-         analyteTreeController.model.unselectRow(row);
-     }*/
-     
-    
- }
+ public void rowSelectd(SourcesTreeModelEvents sender, int row) {
+
+ }        
 
  public void rowUnselected(SourcesTreeModelEvents sender, int row) {
-    // TODO Auto-generated method stub
+     
     
  }
 
@@ -925,6 +1122,46 @@ public class TestScreen extends OpenELISScreenForm implements
     // TODO Auto-generated method stub
     
  }
+
+ public void cellUpdated(SourcesTableModelEvents sender, int row, int cell) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public void dataChanged(SourcesTableModelEvents sender) {
+    // TODO Auto-generated method stub
+    
+ }
+
+ public void rowAdded(SourcesTableModelEvents sender, int row) {
+  
+    
+ }
+
+public void rowDeleted(SourcesTableModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+}
+
+public void rowSelectd(SourcesTableModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+}
+
+public void rowUnselected(SourcesTableModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+}
+
+public void rowUpdated(SourcesTableModelEvents sender, int row) {
+    // TODO Auto-generated method stub
+    
+}
+
+public void unload(SourcesTableModelEvents sender) {
+    // TODO Auto-generated method stub
+    
+}
    
 
 /*public boolean canEdit(int row, int col, TableController controller) {
