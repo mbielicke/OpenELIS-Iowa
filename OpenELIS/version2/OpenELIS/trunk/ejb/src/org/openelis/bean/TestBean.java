@@ -49,6 +49,7 @@ import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -138,7 +139,8 @@ public class TestBean implements TestRemote {
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
                               List<TestAnalyteDO> analyteDOList,
-                              List<TestSectionDO> sectionDOList) throws Exception {
+                              List<TestSectionDO> sectionDOList,
+                              List<TestResultDO> resultDOList) throws Exception {
         try {
             Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "test");
@@ -511,6 +513,14 @@ public class TestBean implements TestRemote {
         List<TestSectionDO> list = query.getResultList();
         return list;
     }
+    
+    public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup){
+        Query query = manager.createNamedQuery("TestResult.TestResultDOList");
+        query.setParameter("testId", testId);
+        query.setParameter("resultGroup", resultGroup);
+        List<TestResultDO> list = query.getResultList();
+        return list;
+    }
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -614,7 +624,8 @@ public class TestBean implements TestRemote {
                                TestWorksheetDO worksheetDO,
                                List<TestWorksheetItemDO> itemDOList,
                                List<TestAnalyteDO> analyteDOList,
-                               List<TestSectionDO> sectionDOList) {
+                               List<TestSectionDO> sectionDOList,
+                               List<TestResultDO> resultDOList) {
      List<Exception> exceptionList = new ArrayList<Exception>();
      validateTest(exceptionList, testIdNameMethodDO, testDetailsDO);
      if(typeOfSampleDOList!=null)
@@ -642,7 +653,8 @@ public class TestBean implements TestRemote {
                                   TestWorksheetDO worksheetDO,
                                   List<TestWorksheetItemDO> itemDOList,
                                   List<TestAnalyteDO> analyteDOList,
-                                  List<TestSectionDO> sectionDOList) {
+                                  List<TestSectionDO> sectionDOList,
+                                  List<TestResultDO> resultDOList) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateTest(exceptionList, testIdNameMethodDO,testDetailsDO);
         if(typeOfSampleDOList!=null)

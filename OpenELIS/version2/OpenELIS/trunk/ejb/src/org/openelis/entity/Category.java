@@ -33,11 +33,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -55,7 +53,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Category.Category", query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)" +                                                                                                  
 "  from Category c where c.id = :id"),
-@NamedQuery(name = "Category.IdBySystemName", query = "select c.id from Category c where c.systemName = :systemName")})
+@NamedQuery(name = "Category.IdBySystemName", query = "select c.id from Category c where c.systemName = :systemName"),
+@NamedQuery(name = "Category.IdName", query = "select distinct new org.openelis.domain.IdNameDO(c.id, c.name) " + "  from Category c order by c.name")})
 
 @Entity
 @Table(name="category")

@@ -32,10 +32,8 @@ package org.openelis.entity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.entity.Dictionary;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -62,7 +60,11 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Dictionary.IdByEntry", query = "select d.id from Dictionary d where d.entry = :entry"),
 @NamedQuery(name = "Dictionary.CategoryIdBySystemName", query = "select d.categoryId from Dictionary d where d.systemName = :systemName"),
 @NamedQuery(name = "Dictionary.CategoryIdByEntry", query = "select d.categoryId from Dictionary d where d.entry = :entry"),
-@NamedQuery(name = "Dictionary.SystemNameById", query = "select d.systemName from Dictionary d where d.id = :id")})
+@NamedQuery(name = "Dictionary.SystemNameById", query = "select d.systemName from Dictionary d where d.id = :id"),
+@NamedQuery(name = "Dictionary.DictionaryListByPatternAndCategory", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry)" +
+        " from Dictionary d where d.categoryId = :categoryId and d.entry like :pattern order by d.entry"),
+@NamedQuery(name = "Dictionary.DictionaryListByPatternOnly", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry)" +
+        " from Dictionary d where d.entry like :pattern order by d.entry")        })
 
 @Entity
 @Table(name="dictionary")

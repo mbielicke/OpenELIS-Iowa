@@ -34,6 +34,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
@@ -91,6 +92,12 @@ public class CategoryBean implements CategoryRemote {
         CategoryDO category = (CategoryDO) query.getSingleResult();// getting category with address and contacts
 
         return category;
+    }
+    
+    public List getCategoryList(){
+        Query query = manager.createNamedQuery("Category.IdName");
+        List idNameDOList = query.getResultList();
+        return idNameDOList;
     }
 
     public List query(HashMap fields, int first, int max) throws Exception {
@@ -435,6 +442,20 @@ public class CategoryBean implements CategoryRemote {
         }
         
         return exceptionList;
+    }
+
+    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,Integer categoryId) {
+       Query query = null;
+       if(categoryId !=null){ 
+        query = manager.createNamedQuery("Dictionary.DictionaryListByPatternAndCategory");
+        query.setParameter("categoryId", categoryId);
+        query.setParameter("pattern", pattern.getParameter().get(0));
+       }else{
+           query = manager.createNamedQuery("Dictionary.DictionaryListByPatternOnly");
+           query.setParameter("pattern", pattern.getParameter().get(0));
+       } 
+        List idNameDOList = query.getResultList();
+        return idNameDOList;
     }
     
 }
