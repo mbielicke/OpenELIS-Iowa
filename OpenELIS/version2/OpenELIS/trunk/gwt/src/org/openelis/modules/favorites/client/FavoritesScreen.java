@@ -27,6 +27,7 @@ package org.openelis.modules.favorites.client;
 
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.widget.MenuPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -49,7 +50,7 @@ public class FavoritesScreen extends AppScreen {
 	
 	public void afterDraw(boolean success){
         super.afterDraw(success);
-		((ScreenMenuPanel)widgets.get("favoritesMenu")).setSize(getAbsoluteTop());
+		((MenuPanel)getWidget("favoritesMenu")).setSize(getAbsoluteTop());
 	}
     
     public void getFavorites(){
