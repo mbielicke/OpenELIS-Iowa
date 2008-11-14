@@ -39,7 +39,7 @@ public class TestResultMeta implements Meta {
 	private static final String
               ID					    ="id",
               TEST_ID					="testId",
-              RESULT_GROUP_ID			="resultGroupId",
+              RESULT_GROUP			    ="resultGroup",
               SORT_ORDER                ="sortOrder",       
               FLAGS_ID					="flagsId",
               TYPE_ID					="typeId",
@@ -51,7 +51,7 @@ public class TestResultMeta implements Meta {
               HAZARD_LEVEL              ="hazardLevel";
 
   	private static final String[] columnNames = {
-  	  ID,TEST_ID,RESULT_GROUP_ID,SORT_ORDER,FLAGS_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,ROUNDING_METHOD_ID,QUANT_LIMIT,CONT_LEVEL,HAZARD_LEVEL};
+  	  ID,TEST_ID,RESULT_GROUP,SORT_ORDER,FLAGS_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,ROUNDING_METHOD_ID,QUANT_LIMIT,CONT_LEVEL,HAZARD_LEVEL};
   	  
 	private HashSet<String> columnHashList;
     
@@ -92,8 +92,8 @@ public class TestResultMeta implements Meta {
         return path + TEST_ID;
     } 
 
-    public String getResultGroupId() {
-        return path + RESULT_GROUP_ID;
+    public String getResultGroup() {
+        return path + RESULT_GROUP;
     } 
 
     public String getFlagsId() {

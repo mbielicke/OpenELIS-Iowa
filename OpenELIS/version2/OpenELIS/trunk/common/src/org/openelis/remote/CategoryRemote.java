@@ -32,12 +32,15 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.common.data.QueryStringField;
 
 @Remote
 public interface CategoryRemote {
     
     //  method to return category without performing locking
     public CategoryDO getCategory(Integer categoryId);
+    
+    public List getCategoryList();
     
     public CategoryDO getCategoryAndUnlock(Integer categoryId, String session);
     
@@ -51,6 +54,8 @@ public interface CategoryRemote {
     
      //  method to return just dictionary entries
     public List getDictionaryEntries(Integer categoryId);
+    
+    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,Integer categoryId);       
         
     public List getMatchingEntries(String entry,int maxResults);
     

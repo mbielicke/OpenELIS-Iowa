@@ -38,7 +38,7 @@ public class TestResultDO implements Serializable {
 
     protected Integer testId;             
 
-    protected Integer resultGroupId;             
+    protected Integer resultGroup;             
 
     protected Integer sortOrder;
     
@@ -64,14 +64,14 @@ public class TestResultDO implements Serializable {
         
     }
     
-    public TestResultDO(Integer id,Integer testId,Integer resultGroupId,
+    public TestResultDO(Integer id,Integer testId,Integer resultGroup,
                         Integer sortOrder,Integer flagsId,Integer typeId,String value,
                         Integer significantDigits,Integer roundingMethodId,
                         String quantLimit,String contLevel,String hazardLevel) {
         
         this.id = id;
         this.testId = testId;
-        this.resultGroupId = resultGroupId;
+        this.resultGroup = resultGroup;
         this.sortOrder = sortOrder;
         this.flagsId = flagsId;
         this.typeId = typeId;
@@ -123,12 +123,12 @@ public class TestResultDO implements Serializable {
         this.quantLimit = quantLimit;
     }
 
-    public Integer getResultGroupId() {
-        return resultGroupId;
+    public Integer getResultGroup() {
+        return resultGroup;
     }
 
-    public void setResultGroupId(Integer resultGroupId) {
-        this.resultGroupId = resultGroupId;
+    public void setResultGroup(Integer resultGroup) {
+        this.resultGroup = resultGroup;
     }
 
     public Integer getRoundingMethodId() {

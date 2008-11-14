@@ -36,6 +36,7 @@ import org.openelis.domain.TestDetailsDO;
 import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -67,6 +68,8 @@ public interface TestRemote {
     public List<TestAnalyteDO> getTestAnalytes(Integer testId);
     
     public List<TestSectionDO> getTestSections(Integer testId);
+    
+    public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup);
 
     public Integer updateTest(TestIdNameMethodIdDO testIdNameMethod,
                               TestDetailsDO testDetails,
@@ -76,7 +79,8 @@ public interface TestRemote {
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
                               List<TestAnalyteDO> analyteDOList,
-                              List<TestSectionDO> sectionDOList) throws Exception;
+                              List<TestSectionDO> sectionDOList,
+                              List<TestResultDO> resultDOList) throws Exception;
     
     public List query(HashMap fields, int first, int max) throws Exception;
 
@@ -88,7 +92,8 @@ public interface TestRemote {
                                   TestWorksheetDO worksheetDO,
                                   List<TestWorksheetItemDO> itemDOList,
                                   List<TestAnalyteDO> analyteDOList,
-                                  List<TestSectionDO> sectionDOList);
+                                  List<TestSectionDO> sectionDOList,
+                                  List<TestResultDO> resultDOList);
 
     public List validateForAdd(TestIdNameMethodIdDO testIdNameMethod,
                                TestDetailsDO testDetails,
@@ -98,7 +103,8 @@ public interface TestRemote {
                                TestWorksheetDO worksheetDO,
                                List<TestWorksheetItemDO> itemDOList,
                                List<TestAnalyteDO> analyteDOList,
-                               List<TestSectionDO> sectionDOList);
+                               List<TestSectionDO> sectionDOList,
+                               List<TestResultDO> resultDOList);
     
     public List getMethodDropDownValues();
 
