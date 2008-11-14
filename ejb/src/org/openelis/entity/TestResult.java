@@ -48,9 +48,13 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestResult.IdByTestId", query = "select tr.id from TestResult tr where tr.testId = :testId"),
                @NamedQuery(name = "TestResult.IdValueByTestAnalyteId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
                         " from TestResult tr, TestAnalyte ta where tr.testId = :testId" +
-                        " and tr.resultGroupId = ta.resultGroup and ta.id = :analyteId"),
+                        " and tr.resultGroup = ta.resultGroup and ta.id = :analyteId"),
                @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
-                                    " from TestResult tr where tr.testId = :testId")})
+                                    " from TestResult tr where tr.testId = :testId"),
+               @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
+                        " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, "+
+                        " tr.quantLimit,tr.contLevel,tr.hazardLevel)  from TestResult tr " +
+                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder ")})
 @Entity
 @Table(name="test_result")
 @EntityListeners({AuditUtil.class})
@@ -64,8 +68,8 @@ public class TestResult implements Auditable, Cloneable {
   @Column(name="test_id")
   private Integer testId;             
 
-  @Column(name="result_group_id")
-  private Integer resultGroupId;             
+  @Column(name="result_group")
+  private Integer resultGroup;             
 
   @Column(name="sort_order")
   private Integer sortOrder;
@@ -126,13 +130,13 @@ public class TestResult implements Auditable, Cloneable {
       this.sortOrder = sortOrder;
   }
   
-  public Integer getResultGroupId() {
-      return resultGroupId;
+  public Integer getResultGroup() {
+      return resultGroup;
     }
-  public void setResultGroupId(Integer resultGroupId) {
-      if((resultGroupId == null && this.resultGroupId != null) || 
-         (resultGroupId != null && !resultGroupId.equals(this.resultGroupId)))
-        this.resultGroupId = resultGroupId;
+  public void setResultGroup(Integer resultGroup) {
+      if((resultGroup == null && this.resultGroup != null) || 
+         (resultGroup != null && !resultGroup.equals(this.resultGroup)))
+        this.resultGroup = resultGroup;
     }
 
   public Integer getFlagsId() {
@@ -222,7 +226,7 @@ public class TestResult implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      AuditUtil.getChangeXML(resultGroupId,original.resultGroupId,doc,"result_group_id");
+      AuditUtil.getChangeXML(resultGroup,original.resultGroup,doc,"result_group");
       
       AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
