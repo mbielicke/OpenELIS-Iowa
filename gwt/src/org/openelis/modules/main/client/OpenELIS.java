@@ -65,6 +65,7 @@ import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenHTML;
 import org.openelis.gwt.screen.ScreenHorizontal;
 import org.openelis.gwt.screen.ScreenLabel;
+import org.openelis.gwt.screen.ScreenLookUp;
 import org.openelis.gwt.screen.ScreenMaskedBox;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
@@ -719,6 +720,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                     return null;
                                 }
                            
+      });
+      ClassFactory.addClass(new String[] {ScreenLookUp.class.getName(),ScreenLookUp.TAG_NAME},
+                            new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      if(args == null)
+                                          return new ScreenLookUp();
+                                      else if(args[0] instanceof Node) 
+                                          return new ScreenLookUp((Node)args[0],(ScreenBase)args[1]);
+                                      return null;
+                                  }
       });
   }
 
