@@ -380,59 +380,62 @@ UIRF Software License are applicable instead of those above.
                                     <dropdown case="mixed" width = "45px" type = "integer"/> 
                                     <check/>  
                                     <dropdown case="mixed" width = "170px" type = "integer"/>
-                                    <textbox />
+                                    <dropdown case="mixed" width = "45px" type = "integer" />
                                    </editors>
                                    <fields>
                                     <dropdown key="{testAnalyte:getAnalyteId($tana)}"/>
                                     <dropdown key="{testAnalyte:getTypeId($tana)}"/>
                                     <check key = "{testAnalyte:getIsReportable($tana)}"/> 
                                     <dropdown key="{testAnalyte:getScriptletId($tana)}" />
-                                    <number key="{testAnalyte:getResultGroup($tana)}" type = "integer"/>
+                                    <dropdown key="{testAnalyte:getResultGroup($tana)}" type = "integer"/>
                                    </fields>
                                   </leaf> 
                                  </leaves> 
                                 </tree-table>
                               </widget>                              						 
-							 <HorizontalPanel style = "Form"> 							  	
+							 <HorizontalPanel style = "Form"> 
+							    <widget>
+							     <HorizontalPanel width = "7px"/>
+							    </widget>							  	
 							    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'group')"/>:</text> 
 							    <widget halign="center">
 											<appButton action="removeIdentifierRow" key="addGroupButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'add')"/></text>												
 											</appButton>
 								</widget>
-								<widget halign="center">
+								<!--<widget halign="center">
 											<appButton action="removeIdentifierRow" key="addGroupBeforeButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'addBefore')"/></text>												
 											</appButton>
 								</widget>
-								<!--<widget halign="center">
+								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="addGroupAfterButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'addGroupAfter')"/></text>												
 											</appButton>
 								</widget>	-->
 								
-
-							  <widget>
-							   <HorizontalPanel width = "15px"/>
-							  </widget>  
+                                <widget>
+							     <HorizontalPanel width = "20px"/>
+							    </widget>
+							    
 							    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'analyte')"/>:</text>
 								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'add')"/></text>												
 											</appButton>
 								</widget>	                    
-								<widget halign="center">
+								<!--<widget halign="center">
 											<appButton action="removeIdentifierRow" key="addAnalyteBeforeButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'addBefore')"/></text>												
 											</appButton>
 								</widget>										                    
-								<!--<widget halign="center">
+								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="addAnalyteAfterButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'addAnalyteAfter')"/></text>												
 											</appButton>
 								</widget>-->
 
-							 <HorizontalPanel width = "140px"/>			
+							 <HorizontalPanel width = "280px"/>			
 								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="deleteButton" onclick="this" style="Button">
 												<HorizontalPanel>
@@ -443,15 +446,29 @@ UIRF Software License are applicable instead of those above.
 								</widget>																
 							 </HorizontalPanel>	
 							 <VerticalPanel>
+							 <VerticalPanel height = "5px"/>
+							 <!--  -->
+						   <HorizontalPanel>	
+							<VerticalPanel> 
+							 <VerticalPanel height = "6px"/>
+							  <TabPanel width = "490px" halign="center" key="resultTabPanel">
+							   <tab key="tab" text="">
+							    <VerticalPanel/>							    
+							   </tab>
+							  </TabPanel>-
+						    </VerticalPanel> 
+							 <!--<HorizontalPanel/>-->
 							  <widget halign="center">
-											<appButton action="removeIdentifierRow" key="addResultTabButton" onclick="this" style="Button">
-												<HorizontalPanel>													
-													<text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>
-												</HorizontalPanel>
+											<appButton action="removeIdentifierRow" key="addResultTabButton" onclick="this" style="Button">																							
+													<text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>												
 											</appButton>
-								</widget>
-							 <!-- <widget valign="top">
-							   <table key="testResultsTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="555px">
+							  </widget>
+							</HorizontalPanel>	
+							<VerticalPanel> 
+							<HorizontalPanel>
+							 <HorizontalPanel width = "20px"/>
+							  <widget valign="top">
+							    <table key="testResultsTable" manager="this" maxRows="4" showError="false" showScroll="ALWAYS" title="" width="540px">
 												<headers>												    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>,
@@ -486,14 +503,9 @@ UIRF Software License are applicable instead of those above.
 												<sorts>false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false</filters>
 												<colAligns>left,left,left,left,left,left,left,left</colAligns>
-								</table>
-							</widget> -->
-							<TabPanel halign="center" width = "540px" key="resultTabPanel" >
-							 <tab key="tab" text="">
-							 <VerticalPanel>
-							 </VerticalPanel>
-							 </tab>
-							</TabPanel>
+								 </table>
+							  </widget>
+							</HorizontalPanel>
 							<TablePanel width = "577px" spacing="0" padding="0" style="TableFooter">
                                             <row>
                                              <widget  align="center">
@@ -515,10 +527,10 @@ UIRF Software License are applicable instead of those above.
 						                </appButton>
 						               </widget>	
 						              </row>  									 
-						           </TablePanel> 
-								
+						           </TablePanel> 	
+						    </VerticalPanel>       							
 						 </VerticalPanel>									                   			
-							</VerticalPanel>
+						</VerticalPanel>
 			 
 						  </tab>
 						  <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
@@ -686,7 +698,7 @@ UIRF Software License are applicable instead of those above.
 												</queryTable>
 											</query>
 							 			 </widget>	
-							 			 <!--<widget style="WhiteContentPanel" halign="center">
+							 			 <widget style="WhiteContentPanel" halign="center">
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
 									        <HorizontalPanel>
               						         <AbsolutePanel style="RemoveRowButtonImage"/>
@@ -695,7 +707,7 @@ UIRF Software License are applicable instead of those above.
 							                 </widget>
 							               </HorizontalPanel>
 						                 </appButton>
-						                </widget>-->
+						                </widget>
 						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
                                             <row>
                                              <widget  align="center">
@@ -858,6 +870,7 @@ UIRF Software License are applicable instead of those above.
 			<rpc key = "testAnalyte">
 			 <tree key = "analyteTree"/>
 			 <table key = "testResultsTable"/>
+			 <collection key = "resultModelMap"/>
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
@@ -880,26 +893,26 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{meta:getRevisionMethodId($test)}" type="integer"/>	
 				<dropdown key="{meta:getScriptletId($test)}" type="integer"/>
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
-				<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
-				<queryNumber key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
-				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="false" type="integer"/>					
-				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" required="false" type="integer"/> 
-				<dropdown key="{testPrep:getPrepTestId($tp)}" required="false" type="integer"/>	
-				<dropdown key="{testRef:getAddTestId($tref)}" required="false" type="integer"/>
-				<dropdown key="{testRef:getTestAnalyteId($tref)}" required="false" type="integer"/>
-				<dropdown key="{testRef:getTestResultId($tref)}" required="false" type="integer"/>
-				<dropdown key="{testRef:getFlagsId($tref)}" required="false" type="integer"/>			
+				<dropdown key="{meta:getReportingMethodId($test)}" type="integer"/>
+				<queryNumber key="{meta:getReportingSequence($test)}" type="integer"/>
+				<dropdown key="{meta:getSortingMethodId($test)}" type="integer"/>
+				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" type="integer"/>					
+				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" type="integer"/> 
+				<dropdown key="{testPrep:getPrepTestId($tp)}"  type="integer"/>	
+				<dropdown key="{testRef:getAddTestId($tref)}"  type="integer"/>
+				<dropdown key="{testRef:getTestAnalyteId($tref)}" type="integer"/>
+				<dropdown key="{testRef:getTestResultId($tref)}"  type="integer"/>
+				<dropdown key="{testRef:getFlagsId($tref)}"  type="integer"/>			
 				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
-				<dropdown key="{testWrksht:getNumberFormatId($tws)}" required="false" type="integer"/>
-				<dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
+				<dropdown key="{testWrksht:getNumberFormatId($tws)}"  type="integer"/>
+				<dropdown key="{testWrksht:getScriptletId($tws)}"  type="integer"/>
 				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
 				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
 				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
-				<dropdown key="{testWrkshtItm:getTypeId($twsi)}" required="false" type="integer"/>				
+				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"  type="integer"/>				
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
-				<dropdown key="{testSection:getSectionId($ts)}" type="integer" required="true"/>
-				<dropdown key="{testSection:getFlagId($ts)}" type="integer" required="true"/>
+				<dropdown key="{testSection:getSectionId($ts)}" type="integer" />
+				<dropdown key="{testSection:getFlagId($ts)}" type="integer" />
 				<model key = "worksheetTable"/>
 				<model key = "sampleTypeTable"/>
 				<model key = "testReflexTable"/>
