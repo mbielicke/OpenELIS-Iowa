@@ -58,6 +58,7 @@ import org.openelis.entity.Test;
 import org.openelis.entity.TestAnalyte;
 import org.openelis.entity.TestPrep;
 import org.openelis.entity.TestReflex;
+import org.openelis.entity.TestResult;
 import org.openelis.entity.TestSection;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.entity.TestWorksheet;
@@ -189,6 +190,9 @@ public class TestBean implements TestRemote {
             test.setTimeTaMax(testDetailsDO.getTimeTaMax());
             test.setTimeTaWarning(testDetailsDO.getTimeTaWarning());
             test.setTimeTransit(testDetailsDO.getTimeTransit());
+            test.setReportingMethodId(testDetailsDO.getReportingMethodId());
+            test.setSortingMethodId(testDetailsDO.getSortingMethodId());
+            test.setReportingSequence(testDetailsDO.getReportingSequence());
            }
 
             if (test.getId() == null) {
@@ -413,6 +417,45 @@ public class TestBean implements TestRemote {
                         }
                     }
                 }
+                
+                if(resultDOList!=null){
+                    exceptionList = new ArrayList<Exception>();
+                    validateTestResults(exceptionList, resultDOList);
+                    
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                    for(int iter = 0 ; iter < resultDOList.size(); iter++){
+                        TestResultDO resultDO = resultDOList.get(iter);
+                        TestResult result = null;   
+                        
+                        if(resultDO.getId()==null){
+                            result = new TestResult();                            
+                        }else{
+                            result = manager.find(TestResult.class, resultDO.getId());
+                        }
+                        
+                        if(resultDO.getDelete() && resultDO.getId() != null){                           
+                            manager.remove(result);                                                     
+                        }else{
+                            result.setContLevel(resultDO.getContLevel());
+                            result.setFlagsId(resultDO.getFlagsId());
+                            result.setHazardLevel(resultDO.getHazardLevel());
+                            result.setQuantLimit(resultDO.getQuantLimit());
+                            result.setResultGroup(resultDO.getResultGroup());
+                            result.setRoundingMethodId(resultDO.getRoundingMethodId());
+                            result.setSignificantDigits(resultDO.getSignificantDigits());
+                            result.setSortOrder(resultDO.getSortOrder());
+                            result.setTestId(resultDO.getTestId());
+                            result.setTypeId(resultDO.getTypeId());
+                            
+                            if(result.getId() == null){
+                                manager.persist(result);
+                            }
+                        }
+                    }
+                }
                                                        
             lockBean.giveUpLock(testReferenceId, test.getId());
             return test.getId();
@@ -423,6 +466,11 @@ public class TestBean implements TestRemote {
     }
         
     
+    private void validateTestResults(List<Exception> exceptionList, List<TestResultDO> resultDOList) {
+        
+        
+    }
+
     public TestDetailsDO getTestDetails(Integer testId) {
         Query query = manager.createNamedQuery("Test.TestDetails");
         query.setParameter("id", testId);

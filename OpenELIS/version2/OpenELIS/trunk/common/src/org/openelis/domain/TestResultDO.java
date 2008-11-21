@@ -179,7 +179,7 @@ public class TestResultDO implements Serializable {
         this.value = value;
     }
 
-    public boolean isDelete() {
+    public boolean getDelete() {
         return delete;
     }
 
