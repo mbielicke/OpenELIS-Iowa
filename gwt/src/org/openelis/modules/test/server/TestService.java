@@ -55,6 +55,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -173,7 +174,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         TestWorksheetDO worksheetDO = null;
         List<TestWorksheetItemDO> itemsDOList = null;
         List<TestSectionDO> testSectionDOList = null;
-        List<TestResultDO> resultDOList = new ArrayList<TestResultDO>();
+        List<TestResultDO> resultDOList = null;
     
         Integer testId;
     
@@ -200,7 +201,9 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         
         if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
             testAnalyteDOList = getTestAnalyteDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
-                                                        null,resultDOList);
+                                                        null);
+            resultDOList = getTestResultDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
+                                                      null);
         }
         
         List exceptionList = remote.validateForAdd(testDO,testDetailsDO,
@@ -247,7 +250,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         List<TestWorksheetItemDO> itemsDOList = null;
         List<TestAnalyteDO> testAnalyteDOList = null;  
         List<TestSectionDO> testSectionDOList = null;
-        List<TestResultDO> resultDOList = new ArrayList<TestResultDO>();
+        List<TestResultDO> resultDOList = null;
 
         testDO = getTestIdNameMethodIdDOFromRPC(rpcSend);
         NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
@@ -282,7 +285,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         
         if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
             testAnalyteDOList = getTestAnalyteDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
-                                                        (Integer)testId.getValue(),resultDOList);
+                                                        (Integer)testId.getValue());
+            resultDOList = getTestResultDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
+                                       (Integer)testId.getValue());
+            
+            
         }
         
         List exceptionList = remote.validateForUpdate(testDO,testDetailsDO,
@@ -448,6 +455,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             NumberField id = new NumberField(resultDO.getId());
             DataMap data = new DataMap();            
             data.put("id", id);
+            if(resultDO.getResultGroup()!=null)
+             data.put("resultGroup",new NumberField(resultDO.getResultGroup()));
             row.setData(data);             
             row.get(0).setValue(resultDO.getTypeId());
             row.get(1).setValue(resultDO.getValue());            
@@ -784,6 +793,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return model;
     }
     
+    
+    
     public DataModel getTestResultModel(NumberObject testId, NumberObject analyteId){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<IdNameDO> list = remote.getTestResultsForTestAnalyte((Integer)testId.getValue(),(Integer)analyteId.getValue());
@@ -879,7 +890,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         //dataMap.setValue(modelMap); 
         return dataMap;
       }
-
+  
+    public DataModel getInitialModel(StringObject cat){
+        return getInitialModel((String)cat.getValue());
+    }
+    
     public DataModel getInitialModel(String cat) {
         DataModel model = new DataModel();
         List<IdNameDO> values = null;
@@ -1016,12 +1031,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             testPrepDO.setTestId(testId);
 
             DropDownField prepTestId = (DropDownField)row.get(0);
-            if (prepTestId != null) {
-                if (prepTestId.getValue() != null && !prepTestId.getValue()
-                                                                .equals(new Integer(-1))) {
-                    testPrepDO.setPrepTestId((Integer)prepTestId.getValue());
-                }
-            }
+            testPrepDO.setPrepTestId((Integer)prepTestId.getValue());           
 
             CheckField isOptional = (CheckField)row.get(1);
             testPrepDO.setIsOptional((String)isOptional.getValue());
@@ -1048,13 +1058,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             testPrepDO.setTestId(testId);
 
-            DropDownField prepTestId = (DropDownField)row.get(0);
-            if (prepTestId != null) {
-                if (prepTestId.getValue() != null && !prepTestId.getValue()
-                                                                .equals(new Integer(-1))) {
-                    testPrepDO.setPrepTestId((Integer)prepTestId.getValue());
-                }
-            }
+            DropDownField prepTestId = (DropDownField)row.get(0);                            
+            testPrepDO.setPrepTestId((Integer)prepTestId.getValue());
+            
+
 
             CheckField isOptional = (CheckField)row.get(1);
             testPrepDO.setIsOptional((String)isOptional.getValue());
@@ -1091,21 +1098,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             testTypeOfSampleDO.setTestId(testId);
 
-            DropDownField typeOfSampleId = (DropDownField)row.get(0);
-            if (typeOfSampleId != null) {
-                if (typeOfSampleId.getValue() != null && !typeOfSampleId.getValue()
-                                                                        .equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
-                }
-            }
+            DropDownField typeOfSampleId = (DropDownField)row.get(0);                            
+            testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
+                      
 
-            DropDownField unitOfMeasureId = (DropDownField)row.get(1);
-            if (unitOfMeasureId != null) {
-                if (unitOfMeasureId.getValue() != null && !unitOfMeasureId.getValue()
-                                                                          .equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
-                }
-            }
+            DropDownField unitOfMeasureId = (DropDownField)row.get(1);                            
+            testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
+              
 
             typeOfSampleDOList.add(testTypeOfSampleDO);
         }
@@ -1126,21 +1125,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             }  
             testTypeOfSampleDO.setTestId(testId);
 
-            DropDownField typeOfSampleId = (DropDownField)row.get(0);
-            if (typeOfSampleId != null) {
-                if (typeOfSampleId.getValue() != null && !typeOfSampleId.getValue()
-                                                                        .equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
-                }
-            }
+            DropDownField typeOfSampleId = (DropDownField)row.get(0);            
+            testTypeOfSampleDO.setTypeOfSampleId((Integer)typeOfSampleId.getValue());
+            
 
-            DropDownField unitOfMeasureId = (DropDownField)row.get(1);
-            if (unitOfMeasureId != null) {
-                if (unitOfMeasureId.getValue() != null && !unitOfMeasureId.getValue()
-                                                                          .equals(new Integer(-1))) {
-                    testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
-                }
-            }
+            DropDownField unitOfMeasureId = (DropDownField)row.get(1);                            
+            testTypeOfSampleDO.setUnitOfMeasureId((Integer)unitOfMeasureId.getValue());
+            
 
             typeOfSampleDOList.add(testTypeOfSampleDO);
         }
@@ -1167,37 +1158,20 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             refDO.setDelete(false);            
             
-            DropDownField addTestId = (DropDownField)row.get(0);
-            if (addTestId != null) {
-                if (addTestId.getValue() != null && !addTestId.getValue()
-                                                                        .equals(new Integer(-1))) {
-                    refDO.setAddTestId((Integer)addTestId.getValue());                    
-                }
-            }
+            DropDownField addTestId = (DropDownField)row.get(0);                            
+            refDO.setAddTestId((Integer)addTestId.getValue());                    
+             
             
-            DropDownField analyteId = (DropDownField)row.get(1);
-            if (analyteId != null) {
-                if (analyteId.getValue() != null && !analyteId.getValue()
-                                                                        .equals(new Integer(-1))) {
-                    refDO.setTestAnalyteId((Integer)analyteId.getValue());                    
-                }
-            }
+            DropDownField analyteId = (DropDownField)row.get(1);            
+            refDO.setTestAnalyteId((Integer)analyteId.getValue());                                    
             
-            DropDownField resultId = (DropDownField)row.get(2);
-            if (resultId != null) {
-                if (resultId.getValue() != null && !resultId.getValue()
-                                                                        .equals(new Integer(-1))) {
-                    refDO.setTestResultId((Integer)resultId.getValue());                    
-                }
-            }
+            DropDownField resultId = (DropDownField)row.get(2);            
+            refDO.setTestResultId((Integer)resultId.getValue());                    
             
-            DropDownField flagsId = (DropDownField)row.get(3);
-            if (flagsId != null) {
-                if (flagsId.getValue() != null && !flagsId.getValue()
-                                                  .equals(new Integer(-1))) {
-                    refDO.setFlagsId((Integer)flagsId.getValue());                    
-                }
-            }
+                        
+            DropDownField flagsId = (DropDownField)row.get(3);            
+            refDO.setFlagsId((Integer)flagsId.getValue());                                
+                
             list.add(refDO);
          }
          for (int i = 0; i < model.getDeletions().size(); i++) {
@@ -1218,36 +1192,17 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
              refDO.setDelete(true);            
              
              DropDownField addTestId = (DropDownField)row.get(0);
-             if (addTestId != null) {
-                 if (addTestId.getValue() != null && !addTestId.getValue()
-                                                                         .equals(new Integer(-1))) {
-                     refDO.setAddTestId((Integer)addTestId.getValue());                    
-                 }
-             }
+             refDO.setAddTestId((Integer)addTestId.getValue());                                
              
-             DropDownField analyteId = (DropDownField)row.get(1);
-             if (analyteId != null) {
-                 if (analyteId.getValue() != null && !analyteId.getValue()
-                                                                         .equals(new Integer(-1))) {
-                     refDO.setTestAnalyteId((Integer)analyteId.getValue());                    
-                 }
-             }
+             DropDownField analyteId = (DropDownField)row.get(1);            
+             refDO.setTestAnalyteId((Integer)analyteId.getValue());                    
              
              DropDownField resultId = (DropDownField)row.get(2);
-             if (resultId != null) {
-                 if (resultId.getValue() != null && !resultId.getValue()
-                                                                         .equals(new Integer(-1))) {
-                     refDO.setTestResultId((Integer)resultId.getValue());                    
-                 }
-             }
-             
-             DropDownField flagsId = (DropDownField)row.get(3);
-             if (flagsId != null) {
-                 if (flagsId.getValue() != null && !flagsId.getValue()
-                                                   .equals(new Integer(-1))) {
-                     refDO.setFlagsId((Integer)flagsId.getValue());                    
-                 }
-             }
+             refDO.setTestResultId((Integer)resultId.getValue());                    
+                              
+             DropDownField flagsId = (DropDownField)row.get(3);             
+             refDO.setFlagsId((Integer)flagsId.getValue());                    
+               
              list.add(refDO);
           }
          model.getDeletions().clear();
@@ -1262,6 +1217,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
            worksheetDO = new TestWorksheetDO();   
         worksheetDO.setBatchCapacity(bc);
       }  
+      
       Integer id = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getId());
       if(id!=null){
        if(worksheetDO==null)
@@ -1269,14 +1225,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
        worksheetDO.setId(id);
       } 
       
-      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getNumberFormatId());
-       if(numFormId!=null){
+      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getNumberFormatId());       
          if(numFormId.getValue()!=null && !numFormId.getValue().equals(new Integer(-1))){ 
              if(worksheetDO==null)
                  worksheetDO = new TestWorksheetDO();  
              worksheetDO.setNumberFormatId((Integer)numFormId.getValue());
          }  
-       }   
+   
        
       if(testId!=null){
           if(worksheetDO==null)
@@ -1284,14 +1239,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
           worksheetDO.setTestId(testId);
       } 
       
-      DropDownField scrId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getScriptletId());
-      if(scrId!=null){
+      DropDownField scrId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getScriptletId());      
           if(scrId.getValue()!=null && !scrId.getValue().equals(new Integer(-1))){
               if(worksheetDO==null)
                   worksheetDO = new TestWorksheetDO();  
               worksheetDO.setScriptletId((Integer)scrId.getValue());
           }  
-        }
+
       
       Integer tc = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity());      
       if(tc !=null){
@@ -1322,22 +1276,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
              }
             }
             
-            DropDownField sectionId = (DropDownField)row.get(0);
-            if (sectionId != null) {
-                if (sectionId.getValue() != null) {
-                    //&& !sectionId.getValue().equals(new Integer(-1))
-                    tsDO.setSectionId((Integer)sectionId.getValue());
-                }
-            }
+            DropDownField sectionId = (DropDownField)row.get(0);            
+            tsDO.setSectionId((Integer)sectionId.getValue());
             
-            DropDownField flagId = (DropDownField)row.get(1);
-            if (flagId != null) {
-                if (flagId.getValue() != null) {
-                    // && !flagId.getValue().equals(new Integer(-1))
-                    tsDO.setFlagId((Integer)flagId.getValue());
-                }
-            }
             
+            DropDownField flagId = (DropDownField)row.get(1);            
+            tsDO.setFlagId((Integer)flagId.getValue());            
+                        
             tsDO.setTestId(testId);
             tsDOList.add(tsDO);            
         }
@@ -1357,20 +1302,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                  }
                 }
             
-            DropDownField sectionId = (DropDownField)row.get(0);
-            if (sectionId != null) {
-                if (sectionId.getValue() != null && !sectionId.getValue().equals(new Integer(-1))) {
-                    tsDO.setSectionId((Integer)sectionId.getValue());
-                }
-            }
-            
-            DropDownField flagId = (DropDownField)row.get(1);
-            if (flagId != null) {
-                if (flagId.getValue() != null && !flagId.getValue().equals(new Integer(-1))) {
-                    tsDO.setFlagId((Integer)flagId.getValue());
-                }
-            }
-            
+            DropDownField sectionId = (DropDownField)row.get(0);            
+            tsDO.setSectionId((Integer)sectionId.getValue());
+                        
+            DropDownField flagId = (DropDownField)row.get(1);           
+            tsDO.setFlagId((Integer)flagId.getValue());
+           
             tsDO.setTestId(testId);
             tsDOList.add(tsDO);               
         }
@@ -1398,30 +1335,18 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 }
             }
 
-            NumberField worksheetId  = (NumberField)rpcSend.getField(TestMeta.getTestWorksheet().getId());
-            if (worksheetId != null) {
-                if (worksheetId.getValue() != null) {
-                    worksheetItemDO.setTestWorksheetId((Integer)worksheetId.getValue());
-                }
-            }
+            NumberField worksheetId  = (NumberField)rpcSend.getField(TestMeta.getTestWorksheet().getId());           
+            worksheetItemDO.setTestWorksheetId((Integer)worksheetId.getValue());
 
-            NumberField position = (NumberField)row.get(0);
-            if (position != null) {
-                worksheetItemDO.setPosition((Integer)position.getValue());
-             }
-            
+            NumberField position = (NumberField)row.get(0);            
+            worksheetItemDO.setPosition((Integer)position.getValue());
 
-            DropDownField typeId = (DropDownField)row.get(1);
-            if (typeId != null) {
-                if (typeId.getValue() != null && !typeId.getValue().equals(new Integer(-1))) {
-                    worksheetItemDO.setTypeId((Integer)typeId.getValue());
-                }
-            }
-            
+            DropDownField typeId = (DropDownField)row.get(1);                        
+            worksheetItemDO.setTypeId((Integer)typeId.getValue());
+                         
             StringField qcName = (StringField)row.get(2);
-            if(qcName!=null){
-                worksheetItemDO.setQcName((String)qcName.getValue()); 
-            }
+            worksheetItemDO.setQcName((String)qcName.getValue()); 
+            
             
             worksheetItemDOList.add(worksheetItemDO);
         }
@@ -1439,30 +1364,17 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 }
             }
 
-            NumberField worksheetId  = (NumberField)rpcSend.getField(TestMeta.getTestWorksheet().getId());
-            if (worksheetId != null) {
-                if (worksheetId.getValue() != null) {
-                    worksheetItemDO.setTestWorksheetId((Integer)worksheetId.getValue());
-                }
-            }
+            NumberField worksheetId  = (NumberField)rpcSend.getField(TestMeta.getTestWorksheet().getId());            
+            worksheetItemDO.setTestWorksheetId((Integer)worksheetId.getValue());
 
             NumberField position = (NumberField)row.get(0);
-            if (position != null) {
-                worksheetItemDO.setPosition((Integer)position.getValue());
-             }
-            
+            worksheetItemDO.setPosition((Integer)position.getValue());
 
-            DropDownField typeId = (DropDownField)row.get(1);
-            if (typeId != null) {
-                if (typeId.getValue() != null && !typeId.getValue().equals(new Integer(-1))) {
-                    worksheetItemDO.setTypeId((Integer)typeId.getValue());
-                }
-            }
-            
-            StringField qcName = (StringField)row.get(2);
-            if(qcName!=null){
-                worksheetItemDO.setQcName((String)qcName.getValue()); 
-            }
+            DropDownField typeId = (DropDownField)row.get(1);            
+            worksheetItemDO.setTypeId((Integer)typeId.getValue());
+                        
+            StringField qcName = (StringField)row.get(2);            
+            worksheetItemDO.setQcName((String)qcName.getValue()); 
             
             worksheetItemDOList.add(worksheetItemDO);
         }
@@ -1529,8 +1441,19 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
 
         if(testDetailsDO.getRevisionMethodId()!=null)
         rpcReturn.setFieldValue(TestMeta.getRevisionMethodId(),
-                                new DataSet(new NumberObject(testDetailsDO.getRevisionMethodId())));                  
+                                new DataSet(new NumberObject(testDetailsDO.getRevisionMethodId())));
         
+        /*if(testDetailsDO.getSortingMethodId()!=null)
+            rpcReturn.setFieldValue(TestMeta.getSortingMethodId(),
+                                    new DataSet(new NumberObject(testDetailsDO.getSortingMethodId())));
+        
+        if(testDetailsDO.getReportingMethodId()!=null)
+            rpcReturn.setFieldValue(TestMeta.getReportingMethodId(),
+                                    new DataSet(new NumberObject(testDetailsDO.getReportingMethodId())));
+        
+         rpcReturn.setFieldValue(TestMeta.getReportingSequence(),
+                                    testDetailsDO.getReportingSequence());
+        */
         
     }
     
@@ -1669,11 +1592,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getBatchCapacity(),
                                 worksheetDO.getBatchCapacity());
         
+        if(worksheetDO.getNumberFormatId()!=null)
         rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getNumberFormatId(),
-                                worksheetDO.getNumberFormatId());    
+                                new DataSet(new NumberObject(worksheetDO.getNumberFormatId())));    
         
+        if(worksheetDO.getScriptletId()!=null)
         rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getScriptletId(),
-                                worksheetDO.getScriptletId());    
+                                new DataSet(new NumberObject(worksheetDO.getScriptletId())));    
         
         rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getId(),
                                 worksheetDO.getId());  
@@ -1715,6 +1640,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         TreeDataModel model =  (TreeDataModel)(rpcReturn.getFieldValue("analyteTree"));
         model.clear();
         TreeDataItem currGroupItem = null;
+        
         Integer analyteGroup = new Integer(-999);
         int numGroups = 0;
         for(int iter = 0 ; iter < analyteDOList.size(); iter++){                                    
@@ -1763,7 +1689,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
        return model; 
     }
     
-    private List<TestAnalyteDO> getTestAnalyteDOListFromRPC(FormRPC rpcReturn,Integer testId,List<TestResultDO>resultDOList){
+    private List<TestAnalyteDO> getTestAnalyteDOListFromRPC(FormRPC rpcReturn,Integer testId){
         TreeDataModel model =  (TreeDataModel)(rpcReturn.getFieldValue("analyteTree"));
         int  currGroup = 0;
         int sortOrder = 0;
@@ -1777,17 +1703,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
              TreeDataItem chItem = itemList.get(ctr);         
              sortOrder++;
              TestAnalyteDO anaDO = getTestAnalyteDO(chItem,currGroup, testId,sortOrder,false);             
-             analyteDOList.add(anaDO);   
-             /*if(chItem.getData()!=null){
-                 DataModel rmodel = ((DataModel)(((DataMap)chItem.getData()).get("result")));
-                 if(rmodel!=null){
-                     List<TestResultDO> rdoList = (getTestResultDOList(rmodel, anaDO.getResultGroup(),testId,false));
-                      for(int riter = 0; riter < rdoList.size(); riter++){
-                          resultDOList.add(rdoList.get(riter));
-                      }
-                 }
-                 
-             }*/
+             analyteDOList.add(anaDO);                
           }
          }
          else{
@@ -1795,17 +1711,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
            
            TestAnalyteDO anaDO = getTestAnalyteDO(item,null, testId,sortOrder,false);
            analyteDOList.add(anaDO);
-           /*if(item.getData()!=null){
-               DataModel rmodel = ((DataModel)(((DataMap)item.getData()).get("result")));
-               if(rmodel!=null){
-                   List<TestResultDO> rdoList = getTestResultDOList(rmodel, anaDO.getResultGroup(),testId,false);   
-                   
-                   for(int riter = 0; riter < rdoList.size(); riter++){
-                       resultDOList.add(rdoList.get(riter));
-                   }
-               }
-               
-           }*/
+           
          } 
         }
         
@@ -1817,33 +1723,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 TreeDataItem chItem = itemList.get(ctr);   
                 TestAnalyteDO anaDO = getTestAnalyteDO(chItem,null, testId,0,true);
                 analyteDOList.add(anaDO);
-                
-                /*if(chItem.getData()!=null){
-                    DataModel rmodel = ((DataModel)(((DataMap)chItem.getData()).get("result")));
-                    if(rmodel!=null){
-                        List<TestResultDO> rdoList = getTestResultDOList(rmodel, anaDO.getResultGroup(),testId,true);
-                        for(int riter = 0; riter < rdoList.size(); riter++){
-                            resultDOList.add(rdoList.get(riter));
-                        }
-                    }
-                    
-                }*/
+                                
              }
             }
             else{              
                 TestAnalyteDO anaDO = getTestAnalyteDO(item,null, testId,0,true);
                 analyteDOList.add(anaDO);
-                
-                /*if(item.getData()!=null){
-                    DataModel rmodel = ((DataModel)(((DataMap)item.getData()).get("result")));
-                    if(rmodel!=null){
-                        List<TestResultDO> rdoList = getTestResultDOList(rmodel, anaDO.getResultGroup(),testId,true);
-                        for(int riter = 0; riter < rdoList.size(); riter++){
-                            resultDOList.add(rdoList.get(riter));
-                        }
-                    }
-                    
-                }*/
+                                
             } 
            }
         
@@ -1859,21 +1745,18 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         }
         
         DropDownField analyteId = (DropDownField)chItem.get(0);
-        if(!(new Integer(-1)).equals((Integer)analyteId.getValue()))
-         analyteDO.setAnalyteId((Integer)analyteId.getValue());
+        analyteDO.setAnalyteId((Integer)analyteId.getValue());
         
-        DropDownField typeId = (DropDownField)chItem.get(1);
-        if(!(new Integer(-1)).equals((Integer)typeId.getValue()))
-         analyteDO.setTypeId((Integer)typeId.getValue());
+        DropDownField typeId = (DropDownField)chItem.get(1);        
+        analyteDO.setTypeId((Integer)typeId.getValue());
         
         CheckField reportable = (CheckField)chItem.get(2);
         analyteDO.setIsReportable((String)reportable.getValue());                             
             
-        DropDownField scriptletId = (DropDownField)chItem.get(3);
-        if(!(new Integer(-1)).equals((Integer)scriptletId.getValue()))
-         analyteDO.setScriptletId((Integer)scriptletId.getValue());
+        DropDownField scriptletId = (DropDownField)chItem.get(3);        
+         analyteDO.setScriptletId((Integer)scriptletId.getValue());       
         
-        NumberField resGroup = (NumberField)chItem.get(4);
+        DropDownField resGroup = (DropDownField)chItem.get(4);        
         analyteDO.setResultGroup((Integer)resGroup.getValue());
         
         analyteDO.setDelete(delete);
@@ -1887,8 +1770,16 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return analyteDO;
     }
     
-    private List<TestResultDO> getTestResultDOListFromRPC(DataModel model, Integer resultGroup,Integer testId){
-        List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
+    private List<TestResultDO> getTestResultDOListFromRPC(FormRPC rpcReturn,Integer testId){
+        
+      CollectionField field = (CollectionField)rpcReturn.getField("resultModelMap");
+      ArrayList<DataModel> list = (ArrayList<DataModel>)field.getValue(); 
+      
+      List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
+      
+      for(int fiter = 0; fiter < list.size(); fiter++){
+        DataModel model = list.get(fiter);
+        
         
         for(int iter = 0; iter < model.size(); iter++){
             DataSet row = model.get(iter);
@@ -1897,33 +1788,32 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             if(row.getData()!=null){ 
                 NumberObject id = (NumberObject)((DataMap)row.getData()).get("id");
                 resultDO.setId((Integer)id.getValue());
+                
+                NumberObject rg = (NumberObject)((DataMap)row.getData()).get("resultGroup");
+                resultDO.setResultGroup((Integer)rg.getValue());
             }
             
              resultDO.setDelete(false);
                 
             
-            DropDownField typeId = (DropDownField)row.get(0);
-            if(!(new Integer(-1)).equals((Integer)typeId.getValue()))
-                resultDO.setTypeId((Integer)typeId.getValue());
+            DropDownField typeId = (DropDownField)row.get(0);            
+            resultDO.setTypeId((Integer)typeId.getValue());
             
             resultDO.setValue((String)((StringField)row.get(1)).getValue());
             resultDO.setSignificantDigits((Integer)((NumberField)row.get(2)).getValue());
             
-            DropDownField flagsId = (DropDownField)row.get(3);
-            if(!(new Integer(-1)).equals((Integer)flagsId.getValue()))
-                resultDO.setFlagsId((Integer)flagsId.getValue());
+            DropDownField flagsId = (DropDownField)row.get(3);            
+            resultDO.setFlagsId((Integer)flagsId.getValue());
             
-            DropDownField rmId = (DropDownField)row.get(4);
-            if(!(new Integer(-1)).equals((Integer)rmId.getValue()))
-                resultDO.setRoundingMethodId((Integer)rmId.getValue());
+            DropDownField rmId = (DropDownField)row.get(4);            
+            resultDO.setRoundingMethodId((Integer)rmId.getValue());
             
             resultDO.setQuantLimit((String)((StringField)row.get(5)).getValue());
             
             resultDO.setContLevel((String)((StringField)row.get(6)).getValue());
             
             resultDO.setHazardLevel((String)((StringField)row.get(7)).getValue());
-            
-            resultDO.setResultGroup(resultGroup);
+                        
             
             resultDO.setTestId(testId);
             
@@ -1939,32 +1829,30 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             if(row.getData()!=null){ 
                 NumberObject id = (NumberObject)((DataMap)row.getData()).get("id");
                 resultDO.setId((Integer)id.getValue());
+                
+                NumberObject rg = (NumberObject)((DataMap)row.getData()).get("resultGroup");
+                resultDO.setResultGroup((Integer)rg.getValue());
             }
             
             resultDO.setDelete(true);
             
-            DropDownField typeId = (DropDownField)row.get(0);
-            if(!(new Integer(-1)).equals((Integer)typeId.getValue()))
-                resultDO.setTypeId((Integer)typeId.getValue());
+            DropDownField typeId = (DropDownField)row.get(0);          
+            resultDO.setTypeId((Integer)typeId.getValue());
             
             resultDO.setValue((String)((StringField)row.get(1)).getValue());
             resultDO.setSignificantDigits((Integer)((NumberField)row.get(2)).getValue());
             
-            DropDownField flagsId = (DropDownField)row.get(3);
-            if(!(new Integer(-1)).equals((Integer)flagsId.getValue()))
-                resultDO.setFlagsId((Integer)flagsId.getValue());
+            DropDownField flagsId = (DropDownField)row.get(3);           
+            resultDO.setFlagsId((Integer)flagsId.getValue());
             
-            DropDownField rmId = (DropDownField)row.get(4);
-            if(!(new Integer(-1)).equals((Integer)rmId.getValue()))
-                resultDO.setRoundingMethodId((Integer)rmId.getValue());
+            DropDownField rmId = (DropDownField)row.get(4);            
+            resultDO.setRoundingMethodId((Integer)rmId.getValue());
             
             resultDO.setQuantLimit((String)((StringField)row.get(5)).getValue());
             
             resultDO.setContLevel((String)((StringField)row.get(6)).getValue());
             
-            resultDO.setHazardLevel((String)((StringField)row.get(7)).getValue());
-            
-            resultDO.setResultGroup(resultGroup);
+            resultDO.setHazardLevel((String)((StringField)row.get(7)).getValue());                       
             
             resultDO.setTestId(testId);
             
@@ -1975,7 +1863,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         }
         
         model.getDeletions().clear();
-        
+      }  
         return trDOlist;
     }
     
@@ -1999,7 +1887,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         }//else{
            // item.get(3).setValue(new DataSet(new NumberObject(-1)));  
         //}
-        item.get(4).setValue(analyteDO.getResultGroup());       
+        DataModel resultModel = getTestResultModel(new NumberObject(analyteDO.getTestId()));
+        ((DropDownField)item.get(4)).setModel(resultModel);
+        if(analyteDO.getResultGroup()!=null)
+         item.get(4).setValue(new DataSet(new NumberObject(analyteDO.getResultGroup())));       
+        
         DataMap data = new DataMap();
         data.put("id", new NumberObject(analyteDO.getId()));
         item.setData(data);
@@ -2059,9 +1951,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         if (scrId != null && !scrId.equals(new Integer(-1))) {
             testDetailsDO.setScriptletId(scrId);
         }
-        // testDetailsDO.setScriptletId((Integer)rpcSend.getFieldValue(TestMeta.getScriptletId()));
-
-        // testDetailsDO.setSectionId((Integer)rpcSend.getFieldValue(TestMeta.getSectionId()));
+       
         Integer tfId = (Integer)rpcSend.getFieldValue(TestMeta.getTestFormatId());
         if (tfId != null && !tfId.equals(new Integer(-1))) {
             testDetailsDO.setTestFormatId(tfId);
@@ -2079,6 +1969,18 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         testDetailsDO.setTimeTaMax((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaMax()));
         testDetailsDO.setTimeTaWarning((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaWarning()));
         testDetailsDO.setTimeTransit((Integer)rpcSend.getFieldValue(TestMeta.getTimeTransit()));
+        
+        Integer sortmId = (Integer)rpcSend.getFieldValue(TestMeta.getSortingMethodId());
+        if (sortmId != null && !sortmId.equals(new Integer(-1))) {
+            testDetailsDO.setSortingMethodId(sortmId);
+        }
+        
+        Integer repmId = (Integer)rpcSend.getFieldValue(TestMeta.getReportingMethodId());
+        if (repmId != null && !repmId.equals(new Integer(-1))) {
+            testDetailsDO.setTestTrailerId(repmId);
+        }
+        
+        testDetailsDO.setReportingSequence((Integer)rpcSend.getFieldValue(TestMeta.getReportingSequence()));
         return testDetailsDO;
     }
     
