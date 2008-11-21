@@ -25,6 +25,15 @@
 */
 package org.openelis.bean;
 
+import org.apache.log4j.Logger;
+import org.openelis.entity.Lock;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.local.LockLocal;
+import org.openelis.local.LoginLocal;
+import org.openelis.persistence.JBossCachingManager;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.util.Datetime;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -36,15 +45,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
-import org.openelis.entity.Lock;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.local.LockLocal;
-import org.openelis.local.LoginLocal;
-import org.openelis.persistence.CachingManager;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.Datetime;
 
 @Stateless
 //@SecurityDomain("ttSecurity")
@@ -94,7 +94,7 @@ public Integer getLock(Integer table, Integer row, String session) throws Except
         Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
         try {
             Lock lock = (Lock)query.getSingleResult();
-            SystemUserDO user = (SystemUserDO)CachingManager.getElement("security", ctx.getCallerPrincipal().getName()+"userdo");
+            SystemUserDO user = (SystemUserDO)JBossCachingManager.getElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo");
             throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }catch(Exception e){
             e.printStackTrace();
