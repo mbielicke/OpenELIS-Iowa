@@ -304,7 +304,7 @@ UIRF Software License are applicable instead of those above.
 											<appButton  action="removeIdentifierRow" key="removeTestSectionButton" onclick="this" style="Button" tab="{meta:getRevisionMethodId($test)},sectionTable">
 											   <!--tab="{meta:getRevisionMethodId($test)},sectionTable"-->
 												<HorizontalPanel>
-													<AbsolutePanel style="ButtonPanelButton"/>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
 													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
 												</HorizontalPanel>
 											</appButton>
@@ -396,11 +396,13 @@ UIRF Software License are applicable instead of those above.
 							 <HorizontalPanel style = "Form"> 
 							    <widget>
 							     <HorizontalPanel width = "7px"/>
-							    </widget>							  	
-							    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'group')"/>:</text> 
+							    </widget>							  								     
 							    <widget halign="center">
 											<appButton action="removeIdentifierRow" key="addGroupButton" onclick="this" style="Button">												
-													<text><xsl:value-of select="resource:getString($constants,'add')"/></text>												
+												<HorizontalPanel>
+												 <AbsolutePanel style="AddRowButtonImage"/>	
+													 <text><xsl:value-of select="resource:getString($constants,'addGroup')"/></text>												
+												</HorizontalPanel>
 											</appButton>
 								</widget>
 								<!--<widget halign="center">
@@ -412,16 +414,14 @@ UIRF Software License are applicable instead of those above.
 											<appButton action="removeIdentifierRow" key="addGroupAfterButton" onclick="this" style="Button">												
 													<text><xsl:value-of select="resource:getString($constants,'addGroupAfter')"/></text>												
 											</appButton>
-								</widget>	-->
-								
-                                <widget>
-							     <HorizontalPanel width = "20px"/>
-							    </widget>
-							    
-							    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'analyte')"/>:</text>
+								</widget>	-->								                                
+							    							    
 								<widget halign="center">
-											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">												
-													<text><xsl:value-of select="resource:getString($constants,'add')"/></text>												
+											<appButton action="removeIdentifierRow" key="addAnalyteButton" onclick="this" style="Button">	
+											 <HorizontalPanel>
+												 <AbsolutePanel style="AddRowButtonImage"/>											
+													<text><xsl:value-of select="resource:getString($constants,'addAnalyte')"/></text>	
+											  </HorizontalPanel>													
 											</appButton>
 								</widget>	                    
 								<!--<widget halign="center">
@@ -435,12 +435,12 @@ UIRF Software License are applicable instead of those above.
 											</appButton>
 								</widget>-->
 
-							 <HorizontalPanel width = "280px"/>			
+							 <HorizontalPanel width = "250px"/>			
 								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="deleteButton" onclick="this" style="Button">
 												<HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
-													<text><xsl:value-of select="resource:getString($constants,'delete')"/></text>
+													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
 												</HorizontalPanel>
 											</appButton>
 								</widget>																
@@ -479,7 +479,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'contLevel')"/>,
 													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>																																																			
 												</headers>
-												<widths>80,200,30,120,100,70,70,70</widths>
+												<widths>80,200,40,120,100,80,70,70</widths>
 												<editors>													
 													<dropdown case="mixed" width="75px"/>
 													<textbox/>
@@ -493,12 +493,12 @@ UIRF Software License are applicable instead of those above.
 												<fields>												    
 												    <dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
 													<string key="{testResult:getValue($tr)}" required="false"/>		
-													<number key="{testResult:getSignificantDigits($tr)}" required="false"/>	
+													<number key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
 													<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
 													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>	
 													<string key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 													<string key="{testResult:getContLevel($tr)}"  required="false"/>
-													<number key="{testResult:getHazardLevel($tr)}" type="integer" required="false"/>																				
+													<string key="{testResult:getHazardLevel($tr)}" required="false"/>																				
 												</fields>
 												<sorts>false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false</filters>
@@ -511,14 +511,12 @@ UIRF Software License are applicable instead of those above.
                                              <widget  align="center">
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeTestResultButton">
 									        <HorizontalPanel>
-              						         <AbsolutePanel style="ButtonPanelButton"/>
-						                      <widget>
-                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </widget>
-							               </HorizontalPanel>
+													<AbsolutePanel style="RemoveRowButtonImage"/>
+													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+												</HorizontalPanel>
 						                 </appButton>
 						                </widget>
-						                <widget  align="right">
+						                <widget  align="center">
 								       <appButton action="dictionaryLookUp" onclick="this" key="dictionaryLookUpButton" style="Button">
 										<HorizontalPanel>
               							  <AbsolutePanel style="ButtonPanelButton"/>						              
@@ -581,7 +579,7 @@ UIRF Software License are applicable instead of those above.
                                              <widget  align="center">
 									          <appButton action="removeRow" onclick="this" style="Button" key="removePrepTestButton">
 									            <HorizontalPanel>
-              						             <AbsolutePanel style="ButtonPanelButton"/>
+              						             <AbsolutePanel style="RemoveRowButtonImage"/>
 						                          <widget>
                 						           <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
 							                      </widget>
@@ -645,7 +643,7 @@ UIRF Software License are applicable instead of those above.
                                              <widget  align="center">
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeReflexTestButton">
 									        <HorizontalPanel>
-              						         <AbsolutePanel style="ButtonPanelButton"/>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
 							                 </widget>
@@ -698,22 +696,12 @@ UIRF Software License are applicable instead of those above.
 												</queryTable>
 											</query>
 							 			 </widget>	
-							 			 <widget style="WhiteContentPanel" halign="center">
+						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
+                                         <row>
+                                          <widget  align="center">
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
 									        <HorizontalPanel>
               						         <AbsolutePanel style="RemoveRowButtonImage"/>
-						                      <widget>
-                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </widget>
-							               </HorizontalPanel>
-						                 </appButton>
-						                </widget>
-						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
-                                            <row>
-                                             <widget  align="center">
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="ButtonPanelButton"/>
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
 							                 </widget>
@@ -762,10 +750,10 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																						
 												</headers>
-												<widths>45,150,340</widths>
+												<widths>55,140,340</widths>
 												<editors>
 													<textbox/>
-													<dropdown case="mixed" width="150px"/>
+													<dropdown case="mixed" width="130px"/>
 													<textbox/>																						
 												</editors>
 												<fields>
@@ -805,7 +793,7 @@ UIRF Software License are applicable instead of those above.
                                              <widget  align="center" >
 									       <appButton action="removeRow" onclick="this" style="Button" key="removeWSItemButton" tab="removeWSItemButton, worksheetTable">
 									        <HorizontalPanel>
-              						         <AbsolutePanel style="ButtonPanelButton"/>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
 							                 </widget>
@@ -870,7 +858,8 @@ UIRF Software License are applicable instead of those above.
 			<rpc key = "testAnalyte">
 			 <tree key = "analyteTree"/>
 			 <table key = "testResultsTable"/>
-			 <collection key = "resultModelMap"/>
+			 <collection key = "resultModelCollection"/>
+			 <model key = "resultGroupDropDown"/>
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">

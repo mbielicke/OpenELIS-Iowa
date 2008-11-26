@@ -124,6 +124,8 @@ public interface TestRemote {
     
     public List<IdNameDO> getTestResultsforTest(Integer testId);
     
+    public List<IdNameDO> getResultGroupsForTest(Integer testId);
+    
     public List getMatchingEntries(String name, int maxResults);
     
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);  

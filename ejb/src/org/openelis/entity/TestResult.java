@@ -50,11 +50,13 @@ import org.openelis.utils.Auditable;
                         " from TestResult tr, TestAnalyte ta where tr.testId = :testId" +
                         " and tr.resultGroup = ta.resultGroup and ta.id = :analyteId"),
                @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
-                                    " from TestResult tr where tr.testId = :testId"),
+                                    " from TestResult tr where tr.testId = :testId order by tr.value "),
                @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, "+
                         " tr.quantLimit,tr.contLevel,tr.hazardLevel)  from TestResult tr " +
-                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder ")})
+                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),
+               @NamedQuery(name = "TestResult.ResultGroupsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.resultGroup,null) " +
+                        " from TestResult tr where tr.testId = :testId order by tr.resultGroup ")})
 @Entity
 @Table(name="test_result")
 @EntityListeners({AuditUtil.class})

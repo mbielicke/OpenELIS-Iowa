@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.test.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.gwt.common.FormRPC;
@@ -35,6 +36,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -84,19 +86,7 @@ public class TestScreen extends OpenELISScreenForm implements
                                                   ChangeListener,
                                                   TableManager,
                                                   TableWidgetListener,
-                                                  TreeManager {
-    private static boolean loaded = false;
-
-    private DataModel methodDropdown, labelDropdown,
-                    testTrailerDropdown, scriptletDropDown, sampleTypeDropDown,
-                    measureUnitDropDown, prepTestDropDown,
-                    reflexTestFlagsDropDown, revisionMethodDropDown,
-                    testFormatDropDown, testWSItemTypeDropDown,
-                    testWSNumFormatDropDown, reportingMethodDropDown,
-                    sortingMethodDropDown, testSectionFlagDropDown,
-                    testAnalyteTypeDropDown, sectionDropDown,
-                    testResultFlagDropDown, testResultTypeDropDown,
-                    roundingMethodDropDown;
+                                                  TreeManager {   
 
     private DataModel resultGroupDropDown;
 
@@ -118,6 +108,8 @@ public class TestScreen extends OpenELISScreenForm implements
                     sampleTypeWidget, sectionWidget, resultWidget;
     
     private DataMap resultDropDownModelMap;
+    
+    private FormRPC analyteRPC;
 
     private TestMetaMap TestMeta = new TestMetaMap();
     private KeyListManager keyList = new KeyListManager();
@@ -127,14 +119,16 @@ public class TestScreen extends OpenELISScreenForm implements
 
     private TabPanel resultPanel;
 
-    private CollectionField resultModelCollection;
+    private ArrayList<DataModel> resultModelCollection;
     
     private DataModel defaultModel;
+    
+    private DataModel firstGroupModel;
 
     private static String panelString = "<VerticalPanel/>";
 
     public TestScreen() {
-        super("org.openelis.modules.test.server.TestService", !loaded);
+        super("org.openelis.modules.test.server.TestService", true);
 
     }
     
@@ -142,7 +136,7 @@ public class TestScreen extends OpenELISScreenForm implements
 
         ButtonPanel bpanel, atozButtons;                     
         CommandChain chain;                
-        FormRPC analyteRPC;
+        //FormRPC analyteRPC;
         TabPanel testTabPanel;
         AToZTable atozTable;
         QueryTable q;
@@ -157,12 +151,19 @@ public class TestScreen extends OpenELISScreenForm implements
         bpanel.enableButton("delete", false);
 
         testTabPanel = (TabPanel)getWidget("testTabPanel");
+        resultPanel = (TabPanel)getWidget("resultTabPanel");
         //
         // this is done to remove an unwanted tab that gets added to 
         // testTabPanel for some reason, when you put a tab panel inside one
         // of its tabs  
         //
         testTabPanel.remove(2);
+        
+        //
+        // this is done to remove the default tab that's added to 
+        // resultPanel,so that it looks empty when the screen gets drawn  
+        //
+        resultPanel.remove(0);
         
         //
         // we are interested in getting button actions in two places,
@@ -201,52 +202,20 @@ public class TestScreen extends OpenELISScreenForm implements
         analyteTreeController = (TreeWidget)analyteTree.getWidget();
 
         //
-        // we load all the dropdowns the first time so we don't have to incur
-        // the cost
-        // of re-load everytime from server -- see the constructor for loaded
-        // flag.
-        //
-        if (!loaded) {
-            methodDropdown = (DataModel)initData.get("methods");
-            labelDropdown = (DataModel)initData.get("labels");
-            testTrailerDropdown = (DataModel)initData.get("testTrailers");
-            scriptletDropDown = (DataModel)initData.get("scriptlets");
-            sampleTypeDropDown = (DataModel)initData.get("sampleTypes");
-            measureUnitDropDown = (DataModel)initData.get("unitsOfMeasure");
-            prepTestDropDown = (DataModel)initData.get("prepTests");
-            reflexTestFlagsDropDown = (DataModel)initData.get("testReflexFlags");
-            revisionMethodDropDown = (DataModel)initData.get("revisionMethods");
-            testFormatDropDown = (DataModel)initData.get("testFormats");
-            testWSItemTypeDropDown = (DataModel)initData.get("testWSItemTypes");
-            testWSNumFormatDropDown = (DataModel)initData.get("testWSNumFormats");
-            testAnalyteTypeDropDown = (DataModel)initData.get("testAnalyteTypes");
-            reportingMethodDropDown = (DataModel)initData.get("reportingMethods");
-            sortingMethodDropDown = (DataModel)initData.get("sortingMethods");
-            testSectionFlagDropDown = (DataModel)initData.get("testSectionFlags");
-            sectionDropDown = (DataModel)initData.get("sections");
-            testResultFlagDropDown = (DataModel)initData.get("testResultFlags");
-            testResultTypeDropDown = (DataModel)initData.get("testResultTypes");
-            roundingMethodDropDown = (DataModel)initData.get("roundingMethods");
-            
-            loaded = true;
-        }
+        // loading the models of all the dropdowns
+        //        
+        loadDropdownModel(TestMeta.getMethodId());
+        loadDropdownModel(TestMeta.getLabelId());
+        loadDropdownModel(TestMeta.getTestTrailerId());
+        loadDropdownModel(TestMeta.getScriptletId());
+        loadDropdownModel(TestMeta.getRevisionMethodId());
+        loadDropdownModel(TestMeta.getTestFormatId());
+        loadDropdownModel(TestMeta.getSortingMethodId());
+        loadDropdownModel(TestMeta.getReportingMethodId());
+        loadDropdownModel(TestMeta.getTestWorksheet().getScriptletId());
+        loadDropdownModel(TestMeta.getTestWorksheet().getNumberFormatId());                      
         
-        //
-        // see setDropdownModel(String field, DataModel model)  
-        //
-        setDropdownModel(TestMeta.getMethodId(), methodDropdown);
-        setDropdownModel(TestMeta.getLabelId(), labelDropdown);
-        setDropdownModel(TestMeta.getTestTrailerId(), testTrailerDropdown);
-        setDropdownModel(TestMeta.getScriptletId(), scriptletDropDown);
-        setDropdownModel(TestMeta.getRevisionMethodId(), revisionMethodDropDown);
-        setDropdownModel(TestMeta.getTestFormatId(), testFormatDropDown);
-        setDropdownModel(TestMeta.getSortingMethodId(), sortingMethodDropDown);
-        setDropdownModel(TestMeta.getReportingMethodId(),
-                         reportingMethodDropDown);
-        setDropdownModel(TestMeta.getTestWorksheet().getScriptletId(),
-                         scriptletDropDown);
-        setDropdownModel(TestMeta.getTestWorksheet().getNumberFormatId(),
-                         testWSNumFormatDropDown);
+    
         //
         // set the model for each column. Note that we have to do it twice:
         // once for the normal table and once for query table.
@@ -255,55 +224,58 @@ public class TestScreen extends OpenELISScreenForm implements
         s = (ScreenTableWidget)widgets.get("sampleTypeTable");
         sampleTypeWidget = (TableWidget)s.getWidget();
         q = (QueryTable)s.getQueryWidget().getWidget();
-        setTableDropdownModel(sampleTypeWidget,0, sampleTypeDropDown);
-        setTableDropdownModel(q,0, sampleTypeDropDown);        
-        setTableDropdownModel(sampleTypeWidget,1, measureUnitDropDown);
-        setTableDropdownModel(q,1, measureUnitDropDown);        
+        loadTableDropdownModel(sampleTypeWidget, 0, TestMeta.getTestTypeOfSample().getTypeOfSampleId());
+        loadTableDropdownModel(q, 0, TestMeta.getTestTypeOfSample().getTypeOfSampleId());     
+        loadTableDropdownModel(sampleTypeWidget, 1, TestMeta.getTestTypeOfSample().getUnitOfMeasureId());
+        loadTableDropdownModel(q, 1, TestMeta.getTestTypeOfSample().getUnitOfMeasureId());
 
         s = (ScreenTableWidget)widgets.get("testPrepTable");
         prepTestWidget = (TableWidget)s.getWidget();
         q = (QueryTable)s.getQueryWidget().getWidget();
-        setTableDropdownModel(prepTestWidget,0, prepTestDropDown);
-        setTableDropdownModel(q,0, prepTestDropDown);
+        loadTableDropdownModel(prepTestWidget,0,TestMeta.getTestPrep().getPrepTestId());
+        loadTableDropdownModel(q,0,TestMeta.getTestPrep().getPrepTestId());
 
         s = (ScreenTableWidget)widgets.get("testReflexTable");
         reflexTestWidget = (TableWidget)s.getWidget();
-        q = (QueryTable)s.getQueryWidget().getWidget();       
-        setTableDropdownModel(reflexTestWidget,0, prepTestDropDown);
-        setTableDropdownModel(q,0, prepTestDropDown);        
-        setTableDropdownModel(reflexTestWidget,3, reflexTestFlagsDropDown);
-        setTableDropdownModel(q,3, reflexTestFlagsDropDown);
+        q = (QueryTable)s.getQueryWidget().getWidget();         
+        loadTableDropdownModel(reflexTestWidget,0,TestMeta.getTestPrep().getPrepTestId());
+        loadTableDropdownModel(q,0,TestMeta.getTestPrep().getPrepTestId());
+        loadTableDropdownModel(reflexTestWidget,3,TestMeta.getTestReflex().getFlagsId());
+        loadTableDropdownModel(q,3,TestMeta.getTestReflex().getFlagsId());
 
         s = (ScreenTableWidget)widgets.get("worksheetTable");
         wsItemWidget = (TableWidget)s.getWidget();
-        q = (QueryTable)s.getQueryWidget().getWidget();
-        setTableDropdownModel(wsItemWidget,1, testWSItemTypeDropDown);
-        setTableDropdownModel(q,1, testWSItemTypeDropDown);       
+        q = (QueryTable)s.getQueryWidget().getWidget();          
+        loadTableDropdownModel(wsItemWidget,1,TestMeta.getTestWorksheetItem().getTypeId());
+        loadTableDropdownModel(q,1,TestMeta.getTestWorksheetItem().getTypeId());
 
         s = (ScreenTableWidget)widgets.get("sectionTable");
         sectionWidget = (TableWidget)s.getWidget();
         sectionWidget.addTableWidgetListener(this);
-        q = (QueryTable)s.getQueryWidget().getWidget();        
-        setTableDropdownModel(sectionWidget,0, sectionDropDown);
-        setTableDropdownModel(q,0, sectionDropDown);        
-        setTableDropdownModel(sectionWidget,1, testSectionFlagDropDown);
-        setTableDropdownModel(q,1, testSectionFlagDropDown);      
+        q = (QueryTable)s.getQueryWidget().getWidget();            
+        loadTableDropdownModel(sectionWidget,0,TestMeta.getTestSection().getSectionId());  
+        loadTableDropdownModel(q,0,TestMeta.getTestSection().getSectionId());
+        loadTableDropdownModel(sectionWidget,1,TestMeta.getTestSection().getFlagId());
+        loadTableDropdownModel(q,1,TestMeta.getTestSection().getFlagId());
+        
         
         s = (ScreenTableWidget)widgets.get("testResultsTable");
         resultWidget = (TableWidget)s.getWidget();
-        resultWidget.addTableWidgetListener(this);        
-        ((TableDropdown)resultWidget.columns.get(0).getColumnWidget()).setModel(testResultTypeDropDown);
-        ((TableDropdown)resultWidget.columns.get(3).getColumnWidget()).setModel(testResultFlagDropDown);
-        ((TableDropdown)resultWidget.columns.get(4).getColumnWidget()).setModel(roundingMethodDropDown);        
-        setTableDropdownModel(resultWidget,0, testResultTypeDropDown);
-        setTableDropdownModel(resultWidget,3, testResultFlagDropDown);
-        setTableDropdownModel(resultWidget,4, roundingMethodDropDown);   
+        resultWidget.addTableWidgetListener(this);                       
+        loadTableDropdownModel(resultWidget,0,TestMeta.getTestResult().getTypeId());
+        loadTableDropdownModel(resultWidget,3,TestMeta.getTestResult().getFlagsId());
+        loadTableDropdownModel(resultWidget,4,TestMeta.getTestResult().getRoundingMethodId());
                 
         //
         // set dropdown models for column 1 and 3 
-        //
-        setTableDropdownModel(analyteTreeController,1,"analyte",testAnalyteTypeDropDown);
-        setTableDropdownModel(analyteTreeController,3,"analyte",scriptletDropDown);  
+        //       
+        
+        loadTableDropdownModel(analyteTreeController,1,"analyte",TestMeta.getTestAnalyte().getTypeId());
+        loadTableDropdownModel(analyteTreeController,3,"analyte",TestMeta.getTestAnalyte().getScriptletId());
+        
+        resultGroupDropDown = new DataModel();
+        resultGroupDropDown.setDefaultSet(new DataSet());
+        setTableDropdownModel(analyteTreeController,4,"analyte",resultGroupDropDown);
 
         analyteTreeController.model.manager = this;
         analyteTreeController.enabled(false);
@@ -316,13 +288,13 @@ public class TestScreen extends OpenELISScreenForm implements
         analyteTree.enable(true);
         
         //
-        // Each TableField or TreeField from the rpc is set the DataModel of the TableWidget or TreeWidget 
+        // Below, each TableField or TreeField from the rpc is set the DataModel of the TableWidget or TreeWidget 
         // that it represents. This is done in order to make sure that the defaultSet
         // variable in default model of the field is iniliazed and is not null,
         // so that when the first time fetch is done for that field,on the server side 
         // when a new DataSet is to created from the model in the field for creating a 
         // new row in the table on the screen, there isn't a NullPointerException,
-        // as creating a new dataset from the model involves the defaultSet for that model.
+        // as creating a new dataset from the model involves the use of defaultSet for that model.
         //
         ((FormRPC)rpc.getField("sampleType")).setFieldValue("sampleTypeTable",
                                                             sampleTypeWidget.model.getData());
@@ -341,6 +313,11 @@ public class TestScreen extends OpenELISScreenForm implements
 
         analyteRPC = (FormRPC)(rpc.getField("testAnalyte"));
         
+        //resultModelCollection = (CollectionField)analyteRPC.getField("resultModelCollection");
+        resultModelCollection = new ArrayList<DataModel>();
+        //resultModelCollection.setValue(new ArrayList<DataModel>());
+        //((CollectionField)analyteRPC.getField("resultModelCollection")).setValue(resultModelCollection);
+        
         //
         // the submit method puts the TreeDataModel from the TreeWidget in the 
         // tree field from the rpc
@@ -351,6 +328,8 @@ public class TestScreen extends OpenELISScreenForm implements
                                  resultWidget.model.getData());
         
         defaultModel = (DataModel)resultWidget.model.getData().clone();
+        
+         
     }
 
     /**
@@ -365,11 +344,12 @@ public class TestScreen extends OpenELISScreenForm implements
         if (action == KeyListManager.Action.FETCH) {
             key = (DataSet)((Object[])obj)[0];
             //
-            // See fillTestAnalyteDropDown(), fillTestResultDropDown(), fillModelMap();   
+            // See fillTestAnalyteDropDown(), fillTestResultDropDown(), fillModelMap()  
             // 
             fillTestAnalyteDropDown();
             fillTestResultDropDown();
-            fillModelMap();                
+            fillModelMap();     
+            fillResultGroupDropdown();           
         } else if(action == ButtonPanel.Action.QUERY && obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
             if (query.indexOf(":") != -1)
@@ -431,7 +411,8 @@ public class TestScreen extends OpenELISScreenForm implements
     public void add() {
         super.add();      
         
-        //resultGroupDropDown = null;
+        resultGroupDropDown.clear();
+        resultModelCollection = new ArrayList<DataModel>();
         enableTableAutoAdd(true);
         //
         // disable anything that is not editable and set focus to the widget 
@@ -439,11 +420,21 @@ public class TestScreen extends OpenELISScreenForm implements
         //
         testId.enable(false);                
         testName.setFocus(true);
+        
     }      
     
     public void abort() {
         group = 0;     
         enableTableAutoAdd(false);
+        resultPanel.clear();
+        resultWidget.model.getData().clear();
+        resultGroupDropDown.clear();
+        resultModelCollection = new ArrayList<DataModel>();
+                
+        
+        fillResultGroupDropdown();
+        loadTestResults();
+        //resultWidget.model.refresh();
         super.abort();
     }
 
@@ -459,39 +450,45 @@ public class TestScreen extends OpenELISScreenForm implements
             //
             enableTableAutoAdd(true);
             testId.enable(false);
-            testName.setFocus(true);
+            testName.setFocus(true); 
+            
+            fillResultGroupDropdown();
+            loadTestResults();
+            
         }
     };
 
-    /*
-     * public void doSubmit(){ FormRPC analyteRPC =
-     * (FormRPC)(rpc.getField("testAnalyte")); CollectionField collField =
-     * (CollectionField)(analyteRPC.getField("resultModelMap"));
-     * 
-     * //Iterator<DataModel> iter = ((ArrayList<DataModel>)resultMap.getValue()).iterator();
-     * //while (iter.hasNext()){ // DataModel model = iter.next();
-     * collField.setValue(resultMap); //}
-     * 
-     * super.doSubmit(rpc);
-     *  }
-     */
+   
+     protected void doSubmit(){  
+      super.doSubmit();    
+      analyteRPC = (FormRPC)(rpc.getField("testAnalyte")); 
+      CollectionField collField = (CollectionField)(analyteRPC.getField("resultModelCollection"));
+      collField.setValue(resultModelCollection); 
+       
+    }
+     
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
     }
 
-    //
-    // Overriden to allow lazy loading various tabs of the various tab panels on
-    // the screen 
-    //
+    /**
+     *Overriden to allow lazy loading various tabs of the various tab panels on
+     *the screen 
+     */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
         if (sender == resultPanel) {
-            // resultWidget = (TableWidget)resultPanel.getWidget(tabIndex);
+            //ArrayList list = (ArrayList)resultModelCollection.getValue();
+           if(resultModelCollection.size() > tabIndex) { 
+            resultWidget.model.setModel((DataModel)resultModelCollection.get(tabIndex)); 
+            resultWidget.model.refresh();
+           }  
         } else {
             if (state != FormInt.State.QUERY) {
                 if (tabIndex == 0 && !((FormRPC)rpc.getField("details")).load) {
                     fillTestDetails();
-                } else if (tabIndex == 1 && !((FormRPC)rpc.getField("testAnalyte")).load) {
-                    fillTestAnalyte();
+                } else if (tabIndex == 1 && !((FormRPC)rpc.getField("testAnalyte")).load) {                    
+                    fillTestAnalyte();     
+                    loadTestResults();                        
                 } else if (tabIndex == 2 && !((FormRPC)rpc.getField("prepAndReflex")).load) {
                     fillPrepTestsReflexTests();
                 } else if (tabIndex == 3 && !((FormRPC)rpc.getField("sampleType")).load) {
@@ -504,11 +501,11 @@ public class TestScreen extends OpenELISScreenForm implements
         return true;
     }
 
-    //
-    // This method fetches the data model stored in resultDropDownModelMap with
-    // the analyte's id as the key and sets the model as the model for the "Results" column's dropdown
-    // in the Reflexive Tests table 
-    //
+    /**
+     * This method fetches the data model stored in resultDropDownModelMap with
+     * the analyte's id as the key and sets the model as the model for the "Results" column's dropdown
+     * in the Reflexive Tests table 
+     */
     public void setTestResultsForAnalyte(Integer analyteId, DataSet set) {
         if (analyteId != null) {
             DataModel model = (DataModel)resultDropDownModelMap.get(analyteId.toString());
@@ -604,10 +601,10 @@ public class TestScreen extends OpenELISScreenForm implements
 
     }
      
-    //
-    // This function is called whenever a given cell in a table looses focus, 
-    // which signifies that it is no longer being edited 
-    //
+    /**
+     * This function is called whenever a given cell in a table looses focus, 
+     * which signifies that it is no longer being edited 
+     */
     public void finishedEditing(SourcesTableWidgetEvents sender,
                                 int row,
                                 int col) {
@@ -934,7 +931,7 @@ public class TestScreen extends OpenELISScreenForm implements
     // TreeWidget "widget" in the column "column" of the node with leafType "leafType" to the argument "model"  
     //
     private void setTableDropdownModel(TreeWidget widget,int column,String leafType,DataModel model) {
-        ((TableDropdown)widget.columns.get(column).getColumnWidget(leafType)).setModel(model);
+        ((TableDropdown)widget.columns.get(column).getColumnWidget(leafType)).setModel(model);        
     }
 
     //          
@@ -965,11 +962,11 @@ public class TestScreen extends OpenELISScreenForm implements
                                 });
     }
 
-    //  
-    // The function for loading the fields in the "prepAndReflex" sub-rpc section as
-    // defined in the xsl file for the screen. It's mapped to the "Prep Test & Reflexive Test"
-    // tab in the tab-panel on the screen
-    //
+    /** 
+     * The function for loading the fields in the "prepAndReflex" sub-rpc section as
+     * defined in the xsl file for the screen. It's mapped to the "Prep Test & Reflexive Test"
+     * tab in the tab-panel on the screen
+     */
     private void fillPrepTestsReflexTests() {
         if (key == null)
             return;
@@ -1078,10 +1075,10 @@ public class TestScreen extends OpenELISScreenForm implements
                                 });
     }
 
-    //
-    // This function loads the Analyte dropdown in the Reflexive Test table with
-    // the analytes added to the test, the data for which was the most recently fetched
-    // 
+    /**
+     * This function loads the Analyte dropdown in the Reflexive Test table with
+     * the analytes added to the test, the data for which was the most recently fetched
+     */ 
     private void fillTestAnalyteDropDown() {
         if (key == null) {
             return;
@@ -1122,9 +1119,31 @@ public class TestScreen extends OpenELISScreenForm implements
                                         ((TableDropdown)reflexTestWidget.columns.get(2)
                                                                                 .getColumnWidget()).setModel(model);
                                         ((TableDropdown)analyteTreeController.columns.get(4)
-                                                                                     .getColumnWidget("analyte")).setModel(model);
-                                        resultGroupDropDown = model;
+                                                                                     .getColumnWidget("analyte")).setModel(model);                                        
                                         group = model.size() - 1;
+                                    }
+
+                                    public void onFailure(Throwable caught) {
+                                        Window.alert(caught.getMessage());
+                                        window.setStatus("", "");
+                                    }
+                                });
+    }
+    
+    
+    private void fillResultGroupDropdown() {
+        if (key == null) {
+            return;
+        }
+        NumberObject testId = (NumberObject)key.getKey();
+        screenService.getObject("getResultGroupModel",
+                                new Data[] {testId, rpc.getField("testAnalyte")},
+                                new AsyncCallback<ModelField>() {
+                                    public void onSuccess(ModelField result) {
+                                        resultGroupDropDown = (DataModel)result.getValue();                                        
+                                        ((TableDropdown)analyteTreeController.columns.get(4)
+                                                                     .getColumnWidget("analyte")).setModel(resultGroupDropDown);                                        
+                                        group = resultGroupDropDown.size() - 1;
                                     }
 
                                     public void onFailure(Throwable caught) {
@@ -1199,13 +1218,20 @@ public class TestScreen extends OpenELISScreenForm implements
     }
 
     private void onAddResultTabButtonClicked() {
-        group++;
-        Document document = XMLParser.parse(panelString);
-        ScreenVertical vertical = new ScreenVertical(document.getDocumentElement(),
-                                                     this);
-        VerticalPanel dummy = (VerticalPanel)vertical.getWidget();
-         resultPanel.add(dummy,new Integer(group).toString());
-
+        group++;        
+        resultPanel.add(getDummyPanel(),new Integer(group).toString());
+        resultWidget.model.load(defaultModel);        
+        resultModelCollection.add((DataModel)defaultModel.clone());
+        resultPanel.selectTab(group-1);        
+        resultWidget.model.refresh();
+        
+        DataSet set = new DataSet();
+        set.add(new StringObject((new Integer(group)).toString()));
+        set.setKey(new NumberObject(group));        
+        resultGroupDropDown.add(set);
+                
+        setTableDropdownModel(analyteTreeController, 4, "analyte", resultGroupDropDown);
+   
     }
 
     private void onAddGroupButtonClicked() {
@@ -1324,10 +1350,10 @@ public class TestScreen extends OpenELISScreenForm implements
         }
     }
 
-    //
-    // This function opens a modal window which allows the users to select one or
-    // more dictionary entries to be added to the Test Results table   
-    //
+    /**
+     *This function opens a modal window which allows the users to select one or
+     * more dictionary entries to be added to the Test Results table   
+     */
     private void onDictionaryLookUpButtonClicked() {
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel,
@@ -1352,13 +1378,14 @@ public class TestScreen extends OpenELISScreenForm implements
         resultWidget.model.enableAutoAdd(enable);
     }
     
-    private void loadModel(String category,TableDropdown drop){
-        StringObject catObj = new StringObject(category);
+    private void loadDropdownModel(String fieldName){
+        final String name = fieldName;
+        StringObject catObj = new StringObject(name);
         screenService.getObject("getInitialModel",
                                 new Data[] {catObj},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {
-                                        //setDropdownModel(category, result);
+                                        setDropdownModel(name, result);
                                     }
 
                                     public void onFailure(Throwable caught) {
@@ -1368,5 +1395,85 @@ public class TestScreen extends OpenELISScreenForm implements
                                 });
         
     }
+    
+    private void loadTableDropdownModel(TableWidget widget,int column,String fieldName){
+        final String name = fieldName;
+        final int col = column;
+        final TableWidget w = widget;
+        StringObject catObj = new StringObject(name);
+        screenService.getObject("getInitialModel",
+                                new Data[] {catObj},
+                                new AsyncCallback<DataModel>() {
+                                    public void onSuccess(DataModel result) {
+                                        setTableDropdownModel(w, col, result);
+                                    }
 
+                                    public void onFailure(Throwable caught) {
+                                        Window.alert(caught.getMessage());
+                                        window.setStatus("", "");
+                                    }
+                                });
+        
+    }
+    
+    private void loadTableDropdownModel(TreeWidget widget,int column,String leafType,String fieldName){
+        final String name = fieldName;
+        final int col = column;
+        final String leaf = leafType;
+        final TreeWidget w = widget;
+        StringObject catObj = new StringObject(name);
+        screenService.getObject("getInitialModel",
+                                new Data[] {catObj},
+                                new AsyncCallback<DataModel>() {
+                                    public void onSuccess(DataModel result) {
+                                        setTableDropdownModel(w, col,leaf,result);
+                                    }
+
+                                    public void onFailure(Throwable caught) {
+                                        Window.alert(caught.getMessage());
+                                        window.setStatus("", "");
+                                    }
+                                });
+        
+    }      
+    
+    private void loadTestResults(){
+        if (key == null)
+            return;
+                
+        resultPanel.clear();
+        resultModelCollection = new ArrayList<DataModel>();
+        
+        if(group > 0) {            
+         for(int iter = 1; iter < group+1; iter++){            
+            resultPanel.add(getDummyPanel(),new Integer(iter).toString());                     
+         
+         screenService.getObject("loadTestResults",
+                                 new Data[] {(NumberObject)key.getKey(),new NumberObject(iter),(DataModel)defaultModel.clone()},
+                                 new AsyncCallback<DataModel>() {                                        
+                                     public void onSuccess(DataModel result) {                                          
+                                         resultModelCollection.add(result);   
+                                         resultWidget.model.setModel(resultModelCollection.get(0));                                         
+                                         resultWidget.model.refresh();
+                                     }
+
+                                     public void onFailure(Throwable caught) {
+                                         Window.alert(caught.getMessage());
+                                         window.setStatus("", "");
+                                     }
+                                 });     
+         }         
+                  
+         resultPanel.selectTab(0);         
+        }             
+    }
+    
+   private VerticalPanel getDummyPanel(){ 
+    Document document = XMLParser.parse(panelString);
+    ScreenVertical vertical = new ScreenVertical(document.getDocumentElement(),
+                                                 this);
+    VerticalPanel dummy = (VerticalPanel)vertical.getWidget();
+     return dummy;
+   }
+   
 }
