@@ -440,6 +440,7 @@ public class TestBean implements TestRemote {
                             manager.remove(result);                                                     
                         }else{
                             result.setContLevel(resultDO.getContLevel());
+                            result.setValue(resultDO.getValue());
                             result.setFlagsId(resultDO.getFlagsId());
                             result.setHazardLevel(resultDO.getHazardLevel());
                             result.setQuantLimit(resultDO.getQuantLimit());
@@ -646,6 +647,13 @@ public class TestBean implements TestRemote {
         query.setParameter("testId",testId);
         List testAnalytesList = query.getResultList();
         return testAnalytesList;
+    }
+    
+    public List<IdNameDO> getResultGroupsForTest(Integer testId) {
+        Query query = manager.createNamedQuery("TestResult.ResultGroupsByTestId");
+        query.setParameter("testId",testId);
+        List testRGList = query.getResultList();
+        return testRGList;
     }
     
     public List getMatchingEntries(String name, int maxResults){
