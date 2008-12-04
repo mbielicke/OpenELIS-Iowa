@@ -49,11 +49,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries( {
-    @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantityRequested, " +
-                            " d.entry, t.inventoryLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, t.id, il.quantityOnhand) from TransLocationOrder t left join t.orderItem oi " +
-                            " left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
+    @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantity, " +
+                            " d.entry, t.inventoryLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, t.id, il.quantityOnhand, il.lotNumber) from " +
+                            " TransLocationOrder t left join t.orderItem oi left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where oi.inventoryItem.storeId = d.id and oi.orderId = :id"),
-    @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantityRequested, " +
+    @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantity, " +
                             " d.entry, o.catalogNumber, o.unitCost) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id"),
     @NamedQuery(name = "OrderItem.OrderItemName", query = "select ii.name from OrderItem o left join o.inventoryItem ii where o.id = :id")})
                             
@@ -74,8 +74,8 @@ public class OrderItem implements Auditable, Cloneable {
   @Column(name="inventory_item_id")
   private Integer inventoryItemId;             
 
-  @Column(name="quantity_requested")
-  private Integer quantityRequested;
+  @Column(name="quantity")
+  private Integer quantity;
   
   @Column(name="catalog_number")
   private String catalogNumber;   
@@ -122,13 +122,13 @@ public class OrderItem implements Auditable, Cloneable {
       this.inventoryItemId = inventoryItemId;
   }
 
-  public Integer getQuantityRequested() {
-    return quantityRequested;
+  public Integer getQuantity() {
+    return quantity;
   }
-  public void setQuantityRequested(Integer quantityRequested) {
-    if((quantityRequested == null && this.quantityRequested != null) || 
-       (quantityRequested != null && !quantityRequested.equals(this.quantityRequested)))
-      this.quantityRequested = quantityRequested;
+  public void setQuantity(Integer quantity) {
+    if((quantity == null && this.quantity != null) || 
+       (quantity != null && !quantity.equals(this.quantity)))
+      this.quantity = quantity;
   }
   
   public Double getUnitCost() {
@@ -168,7 +168,7 @@ public class OrderItem implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
 
-      AuditUtil.getChangeXML(quantityRequested,original.quantityRequested,doc,"quantity_requested");
+      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
       
       AuditUtil.getChangeXML(catalogNumber,original.catalogNumber,doc,"catalog_number");
       

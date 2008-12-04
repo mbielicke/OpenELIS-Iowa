@@ -57,10 +57,10 @@ import org.openelis.utils.Auditable;
                                " oi.order.id = :id and tr.fromReceiptId is not null "),
     @NamedQuery(name = "InventoryReceipt.OrderItemListByOrderNum", query = "select distinct oi.id from Order o LEFT JOIN o.orderItem oi where " + 
                                " (NOT EXISTS (select tr.id from TransReceiptOrder tr where tr.orderItemId = oi.id and tr.inventoryReceiptId is not null) OR " +
-                               " oi.quantityRequested > (select sum(tr2.quantity) from TransReceiptOrder tr2 where tr2.orderItemId = oi.id and tr2.inventoryReceiptId is not null))" + 
+                               " oi.quantity > (select sum(tr2.quantity) from TransReceiptOrder tr2 where tr2.orderItemId = oi.id and tr2.inventoryReceiptId is not null))" + 
                                " and o.id = :id and o.isExternal='Y'"),
     @NamedQuery(name = "InventoryReceipt.InventoryReceiptNotRecByOrderId", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
-                               " oi.id, oi.unitCost, o.organizationId,orgz.name,oi.quantityRequested,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
+                               " oi.id, oi.unitCost, o.organizationId,orgz.name,oi.quantity,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
                                " orgz.address.zipCode, ii.description, dictStore.entry, dicDisUnits.entry, ii.isBulk, ii.isLotMaintained, ii.isSerialMaintained) from Order o " +
                                " LEFT JOIN o.orderItem oi LEFT JOIN oi.inventoryItem ii LEFT JOIN o.organization orgz, " +
                                " Dictionary dictStore, Dictionary dicDisUnits where " + 
@@ -68,7 +68,7 @@ import org.openelis.utils.Auditable;
                                " and oi.id = :id order by o.id "),
     @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
-                            " oi.quantityRequested > (SELECT sum(tr.quantity) FROM TransReceiptOrder tr where tr.orderItemId = oi.id) " + 
+                            " oi.quantity > (SELECT sum(tr.quantity) FROM TransReceiptOrder tr where tr.orderItemId = oi.id) " + 
                             " and o.id = :id"),
     @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' " +

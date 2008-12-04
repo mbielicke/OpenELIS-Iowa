@@ -25,23 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.entity.Analyte;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.AnalyteMetaMap;
-import org.openelis.persistence.CachingManager;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +39,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.remote.AnalyteRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -99,12 +95,8 @@ public class AnalyteBean implements AnalyteRemote{
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
 		
-//		validate the analyte record
-        List exceptionList = new ArrayList();
-        exceptionList = validateForDelete(analyteId);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
+		//validate the analyte record
+		validateForDelete(analyteId);
         
 		//then we need to delete it
 		try {
@@ -178,6 +170,11 @@ public class AnalyteBean implements AnalyteRemote{
 
     @RolesAllowed("analyte-update")
 	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
+        if(analyteDO.getId() != null)
+            validateForUpdate(analyteDO);
+        else
+            validateForAdd(analyteDO);
+        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
         Integer analyteReferenceId = (Integer)query.getSingleResult();
@@ -188,13 +185,6 @@ public class AnalyteBean implements AnalyteRemote{
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
-        
-        //validate the analyte record
-        List exceptionList = new ArrayList();
-        validateAnalyte(analyteDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
         
         if (analyteDO.getId() == null)
          	analyte = new Analyte();
@@ -216,24 +206,21 @@ public class AnalyteBean implements AnalyteRemote{
 		return analyte.getId();
 	}
     
-	public List validateForAdd(AnalyteDO analyteDO) {
-		List exceptionList = new ArrayList();
-		
-		validateAnalyte(analyteDO, exceptionList);
-		
-		return exceptionList;
+	public void validateForAdd(AnalyteDO analyteDO) throws Exception{
+		validateAnalyte(analyteDO);
 	}
 
-	public List validateForDelete(Integer analyteId) {
-		List exceptionList = new ArrayList();
-		//make sure no analytes are pointing to this record
+	public void validateForDelete(Integer analyteId) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
+
+        //make sure no analytes are pointing to this record
 		Query query = null;
 		query = manager.createNamedQuery("Analyte.AnalyteByParentId");
 		query.setParameter("id", analyteId);
 		List linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteDeleteException"));
+            list.add(new FormErrorException("analyteDeleteException"));
 		}
 		
 		//make sure no results are pointing to this record
@@ -242,7 +229,7 @@ public class AnalyteBean implements AnalyteRemote{
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteResultDeleteException"));
+            list.add(new FormErrorException("analyteResultDeleteException"));
 		}
 		
 		//make sure no tests are pointing to this record
@@ -251,7 +238,7 @@ public class AnalyteBean implements AnalyteRemote{
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteTestDeleteException"));
+            list.add(new FormErrorException("analyteTestDeleteException"));
 		}
 		
 		//make sure no methods are pointing to this record
@@ -260,7 +247,7 @@ public class AnalyteBean implements AnalyteRemote{
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteMethodDeleteException"));
+            list.add(new FormErrorException("analyteMethodDeleteException"));
 		}
 		
 		//make sure no qcs are pointing to this record
@@ -269,7 +256,7 @@ public class AnalyteBean implements AnalyteRemote{
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteQCDeleteException"));
+            list.add(new FormErrorException("analyteQCDeleteException"));
 		}
 		
 		//make sure no worksheets are pointing to this record
@@ -281,24 +268,22 @@ public class AnalyteBean implements AnalyteRemote{
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("analyteAuxFieldDeleteException"));
+            list.add(new FormErrorException("analyteAuxFieldDeleteException"));
 		}
-		
-		return exceptionList;
+        
+        if(list.size() > 0)
+            throw list;
 	}
 
-	public List validateForUpdate(AnalyteDO analyteDO) {
-		List exceptionList = new ArrayList();
-		
-		validateAnalyte(analyteDO, exceptionList);
-		
-		return exceptionList;
+	public void validateForUpdate(AnalyteDO analyteDO) throws Exception{
+		validateAnalyte(analyteDO);
 	}
 	
-	private void validateAnalyte(AnalyteDO analyteDO, List exceptionList){
+	private void validateAnalyte(AnalyteDO analyteDO) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
 		//name required	
 		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
+			list.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
 		}
 		
 		//name not duplicate
@@ -315,6 +300,9 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
+			list.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
+        
+        if(list.size() > 0)
+            throw list;
 	}
 }

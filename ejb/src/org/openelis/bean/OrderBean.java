@@ -197,11 +197,11 @@ public class OrderBean implements OrderRemote{
     public List query(HashMap fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
-        
+        System.out.println("1");
         qb.setMeta(OrderMetaMap);
-
+System.out.println("2");
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrderMetaMap.getId()+") ");
-       
+       System.out.println("3");
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
@@ -348,7 +348,7 @@ public class OrderBean implements OrderRemote{
             }else{   
                 orderItem.setInventoryItemId(orderItemDO.getInventoryItemId());
                 orderItem.setOrderId(order.getId());
-                orderItem.setQuantityRequested(orderItemDO.getQuantityRequested());
+                orderItem.setQuantity(orderItemDO.getQuantity());
                 orderItem.setCatalogNumber(orderItemDO.getCatalogNumber());
                 orderItem.setUnitCost(orderItemDO.getUnitCost());
                     
@@ -368,7 +368,7 @@ public class OrderBean implements OrderRemote{
                
                transLocOrder.setInventoryLocationId(orderItemDO.getLocationId());
                transLocOrder.setOrderItemId(orderItem.getId());
-               transLocOrder.setQuantity(orderItem.getQuantityRequested());
+               transLocOrder.setQuantity(orderItem.getQuantity());
                
                if (transLocOrder.getId() == null) {
                    manager.persist(transLocOrder);
@@ -377,7 +377,7 @@ public class OrderBean implements OrderRemote{
                //we need to update the quantity on the location if it is set to complete
                if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && orderDO.getStatusId().equals(orderCompletedStatusId)){
                    InventoryLocation loc = manager.find(InventoryLocation.class, orderItemDO.getLocationId());                   
-                   loc.setQuantityOnhand(orderItemDO.getQuantityOnHand() - orderItemDO.getQuantityRequested());
+                   loc.setQuantityOnhand(orderItemDO.getQuantityOnHand() - orderItemDO.getQuantity());
                }
            }
         }
@@ -510,8 +510,8 @@ public class OrderBean implements OrderRemote{
             return;
         
         //quantity is required for all order types
-        if(orderItemDO.getQuantityRequested() == null || "".equals(orderItemDO.getQuantityRequested())){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getQuantityRequested()));
+        if(orderItemDO.getQuantity() == null || "".equals(orderItemDO.getQuantity())){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getQuantity()));
         }
         
         //inventory item is required for all order types
@@ -527,9 +527,9 @@ public class OrderBean implements OrderRemote{
             OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
             
             //quantity on hand needs to be >= quantity requested
-            if(orderItemDO.getQuantityRequested() != null && orderItemDO.getQuantityOnHand() != null && 
-                            orderItemDO.getQuantityOnHand() < orderItemDO.getQuantityRequested()){
-                exceptionList.add(new TableFieldErrorException("notEnoughQuantityOnHand", i, OrderMetaMap.ORDER_ITEM_META.getQuantityRequested()));
+            if(orderItemDO.getQuantity() != null && orderItemDO.getQuantityOnHand() != null && 
+                            orderItemDO.getQuantityOnHand() < orderItemDO.getQuantity()){
+                exceptionList.add(new TableFieldErrorException("notEnoughQuantityOnHand", i, OrderMetaMap.ORDER_ITEM_META.getQuantity()));
             }
         }
         

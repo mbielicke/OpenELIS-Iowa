@@ -32,10 +32,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -46,8 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
     @NamedQueries( {
-        @NamedQuery(name = "ShippingItem.ShippingItem", query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId) "+
-                               " from ShippingItem s where s.shippingId = :id")})
+        @NamedQuery(name = "ShippingItem.ShippingItem", query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, oi.quantity) "+
+                               " from ShippingItem s LEFT JOIN s.orderItem oi where s.shippingId = :id")})
                                
 @Entity
 @Table(name="shipping_item")
@@ -66,8 +69,11 @@ public class ShippingItem implements Auditable, Cloneable {
   private Integer referenceTableId;             
 
   @Column(name="reference_id")
-  private Integer referenceId;             
-
+  private Integer referenceId;           
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+  private OrderItem orderItem;
 
   @Transient
   private ShippingItem original;
@@ -140,5 +146,11 @@ public class ShippingItem implements Auditable, Cloneable {
   public String getTableName() {
     return "shipping_item";
   }
+public OrderItem getOrderItem() {
+    return orderItem;
+}
+public void setOrderItem(OrderItem orderItem) {
+    this.orderItem = orderItem;
+}
   
 }   

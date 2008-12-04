@@ -141,30 +141,28 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
-        
+
         qb.setMeta(invItemMap);
 
         qb.setSelect("distinct new org.openelis.domain.IdNameStoreDO("+
                          invItemMap.getId()+", "+
                          invItemMap.getName()+", "+
                          invItemMap.DICTIONARY_STORE_META.getEntry()+") ");
-        
+
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
+
         qb.addWhere(invItemMap.getStoreId()+" = "+invItemMap.DICTIONARY_STORE_META.getId());
-        
+
         qb.setOrderBy(invItemMap.getName());
-        
+
         sb.append(qb.getEJBQL());
-        
+
         Query query = manager.createQuery(sb.toString());
-        
         if(first > -1 && max > -1)
          query.setMaxResults(first+max);
-        
-//      ***set the parameters in the query
         qb.setQueryParams(query);
-        
+
         List returnList = GetPage.getPage(query.getResultList(), first, max);
         
         if(returnList == null)

@@ -56,7 +56,6 @@ import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -159,7 +158,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                          InventoryReceiptMap.INVENTORY_ITEM_META.getDescription()+", "+
                          InventoryReceiptMap.DICTIONARY_STORE_META.getEntry()+", "+
                          InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getEntry()+", "+
-                         InventoryReceiptMap.ORDER_ITEM_META.getQuantityRequested()+", "+
+                         InventoryReceiptMap.ORDER_ITEM_META.getQuantity()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getIsBulk()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getIsLotMaintained()+", "+
                          InventoryReceiptMap.INVENTORY_ITEM_META.getIsSerialMaintained()+", "+
