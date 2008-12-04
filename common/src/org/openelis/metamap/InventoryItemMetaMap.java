@@ -41,10 +41,10 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
         PARENT_INVENTORY_ITEM = new InventoryItemMeta("inventory_item.parentInventoryItem.");
     }
     
+    //we can assume this is for components so we dont set the component variable
     public InventoryItemMetaMap(String path) {
         super(path);
         ITEM_NOTE = new NoteMeta(path+"note.");
-        INVENTORY_COMPONENT = new InventoryComponentMetaMap(path+"inventory_component.");
         INVENTORY_LOCATION = new InventoryLocationMetaMap(path+"inventory_location.");  
         DICTIONARY_STORE_META = new DictionaryMeta(path+"dictStore.");
         PARENT_INVENTORY_ITEM = new InventoryItemMeta(path+"parentInventoryItem.");
@@ -81,7 +81,7 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith("inventory_component."))
+        if(name.startsWith("inventory_component.") && INVENTORY_COMPONENT != null)
             return INVENTORY_COMPONENT.hasColumn(name);
         if(name.startsWith("inventory_location."))
             return INVENTORY_LOCATION.hasColumn(name);

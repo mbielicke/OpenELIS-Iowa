@@ -38,17 +38,19 @@ public class ShippingItemDO implements Serializable{
     protected Integer referenceTableId;
     protected Integer referenceId;
     protected String itemDescription;
+    protected Integer quantity;
     
     public ShippingItemDO(){
         
     }
     
     public ShippingItemDO(Integer id, Integer shippingId, Integer referenceTableId,
-                          Integer referenceId){
+                          Integer referenceId, Integer quantity){
         setId(id);
         setShippingId(shippingId);
         setReferenceTableId(referenceTableId);
         setReferenceId(referenceId);
+        setQuantity(quantity);
     }
 
     public Integer getId() {
@@ -89,5 +91,13 @@ public class ShippingItemDO implements Serializable{
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = DataBaseUtil.trim(itemDescription);
+    }
+    
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }
