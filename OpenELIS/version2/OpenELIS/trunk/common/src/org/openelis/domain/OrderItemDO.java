@@ -36,7 +36,7 @@ public class OrderItemDO implements Serializable{
     protected Integer id;
     protected Integer order;
     protected Integer inventoryItemId;
-    protected Integer quantityRequested;
+    protected Integer quantity;
     protected String inventoryItem;
     protected String store;
     protected Integer locationId;
@@ -45,6 +45,7 @@ public class OrderItemDO implements Serializable{
     protected String catalogNumber;
     protected Double unitCost;
     protected Integer quantityOnHand;
+    protected String lotNumber;
     
     protected Boolean delete = false;
     
@@ -52,42 +53,43 @@ public class OrderItemDO implements Serializable{
         
     }
 
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, Integer quantityRequested){
+    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, Integer quantity){
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
-        setQuantityRequested(quantityRequested);
+        setQuantity(quantity);
      }
     
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantityRequested, String store, Integer locationId,
+    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantity, String store, Integer locationId,
                        String childStorageLocName, String childStorageLocLocation, String parentStorageLocName, String childStorageUnit, Integer transactionId, 
-                       Integer quantityOnHand){
+                       Integer quantityOnHand, String lotNumber){
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
-        setQuantityRequested(quantityRequested);
+        setQuantity(quantity);
         setStore(store);
         setLocationId(locationId);
         setTransactionId(transactionId);
         setQuantityOnHand(quantityOnHand);
+        setLotNumber(lotNumber);
         
         //build the storage location string
         String storageLocation = "";
         if(parentStorageLocName != null)
             storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
         else
-            storageLocation += childStorageLocName.trim(); 
+            storageLocation += childStorageLocName.trim()+" "+childStorageLocLocation.trim(); 
         
         setLocation(storageLocation);
      }
     
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantityRequested, String store, String catalogNumber, Double unitCost){
+    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantity, String store, String catalogNumber, Double unitCost){
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
-        setQuantityRequested(quantityRequested);
+        setQuantity(quantity);
         setStore(store);
         setCatalogNumber(catalogNumber);
         setUnitCost(unitCost);
@@ -117,12 +119,12 @@ public class OrderItemDO implements Serializable{
         this.order = order;
     }
 
-    public Integer getQuantityRequested() {
-        return quantityRequested;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setQuantityRequested(Integer quantityRequested) {
-        this.quantityRequested = quantityRequested;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public Boolean getDelete() {
@@ -195,5 +197,13 @@ public class OrderItemDO implements Serializable{
 
     public void setQuantityOnHand(Integer quantityOnHand) {
         this.quantityOnHand = quantityOnHand;
+    }
+
+    public String getLotNumber() {
+        return lotNumber;
+    }
+
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 }

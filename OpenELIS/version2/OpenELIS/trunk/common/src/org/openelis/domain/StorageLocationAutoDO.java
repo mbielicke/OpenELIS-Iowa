@@ -36,32 +36,56 @@ public class StorageLocationAutoDO implements Serializable{
     protected String name;
     protected String location;
     protected Integer qtyOnHand;
+    protected String lotNum;
     
-    public Integer getQtyOnHand() {
-        return qtyOnHand;
-    }
-
-    public void setQtyOnHand(Integer qtyOnHand) {
-        this.qtyOnHand = qtyOnHand;
-    }
-
     public StorageLocationAutoDO(){
-        
     }
     
-    public StorageLocationAutoDO(Integer id, String name, String location, String storageUnitDescription){
+    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription){
         setId(id);
         setName(name);
         
-        setLocation(name.trim()+", "+storageUnitDescription.trim()+" "+location.trim());
+        //build the storage location string
+        String storageLocation = "";
+        if(parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        else
+            storageLocation += storageUnitDescription.trim()+" "+location.trim();
+        
+        setLocation(storageLocation);
     }
     
-    public StorageLocationAutoDO(Integer id, String name, String location, String storageUnitDescription, Integer qtyOnHand){
+    //with qty on hand
+    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription, Integer qtyOnHand){
         setId(id);
         setName(name);
         
-        setLocation(name.trim()+", "+storageUnitDescription.trim()+" "+location.trim());
+        //build the storage location string
+        String storageLocation = "";
+        if(parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        else
+            storageLocation += storageUnitDescription.trim()+" "+location.trim();
+        
+        setLocation(storageLocation);
         setQtyOnHand(qtyOnHand);
+    }
+    
+    //with qty on hand and lot number
+    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription, Integer qtyOnHand, String lotNum){
+        setId(id);
+        setName(name);
+        
+        //build the storage location string
+        String storageLocation = "";
+        if(parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        else
+            storageLocation += storageUnitDescription.trim()+" "+location.trim(); 
+        
+        setLocation(storageLocation);
+        setQtyOnHand(qtyOnHand);
+        setLotNum(lotNum);
     }
 
     public String getLocation() {
@@ -86,6 +110,22 @@ public class StorageLocationAutoDO implements Serializable{
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
+    }
+    
+    public String getLotNum() {
+        return lotNum;
+    }
+
+    public void setLotNum(String lotNum) {
+        this.lotNum = DataBaseUtil.trim(lotNum);
+    }
+
+    public Integer getQtyOnHand() {
+        return qtyOnHand;
+    }
+
+    public void setQtyOnHand(Integer qtyOnHand) {
+        this.qtyOnHand = qtyOnHand;
     }
 
 }

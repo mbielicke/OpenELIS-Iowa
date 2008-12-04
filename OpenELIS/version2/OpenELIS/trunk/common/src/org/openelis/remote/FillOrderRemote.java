@@ -30,6 +30,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.gwt.common.data.DataModel;
+
 @Remote
 public interface FillOrderRemote {
     //commit a change to inventory receipt, or insert a new inventory receipt
@@ -38,11 +40,12 @@ public interface FillOrderRemote {
     //method to query for orders
      public List query(HashMap fields, int first, int max) throws Exception;
      
-     //method to query for orders..and also lock the necessary records
-     public List queryAndLock(HashMap fields, int first, int max) throws Exception;
-     
      //method to query for orders..and also unlock the necessary records
-     public List queryAndUnlock(HashMap fields, int first, int max) throws Exception;
+     public List queryAndUnlock(HashMap fields, DataModel model, int first, int max) throws Exception;
+     
+     public List getOrderAndLock(Integer orderId) throws Exception;
+     
+     public List getOrderAndUnlock(Integer orderId) throws Exception;
      
      //method to query order items
      public List getOrderItems(Integer orderId);

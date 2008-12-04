@@ -40,7 +40,7 @@ public class DictionaryDO implements Serializable {
     protected String isActive;         
     protected String localAbbrev;      
     protected String entry;
-    protected Boolean delete;
+    protected Boolean delete = false;
     protected String relatedEntryText;
     
     public Boolean getDelete() {

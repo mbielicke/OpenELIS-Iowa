@@ -25,32 +25,18 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.BuildKitComponentDO;
+import org.openelis.domain.BuildKitDO;
 
 @Remote
-public interface AnalyteRemote {
-	//commit a change to analyte, or insert a new analyte
-	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception;
-	
-	//method to return a whole analyte
-	public AnalyteDO getAnalyte(Integer analyteId);
-	
-	//method to return a whole analyte and lock it
-	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception;
-	
-	//method to return a whole analyte and unlock it
-	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session);
-	
-	 //method to query for analytes
-	 public List query(HashMap fields, int first, int max) throws Exception;
-	 
-	 //auto complete lookup
-	 public List autoCompleteLookupByName(String name, int maxResults);
-	 
-	 public void deleteAnalyte(Integer analyteId) throws Exception;
+public interface BuildKitsRemote {
+    //add a build kit record
+    public Integer updateBuildKits(BuildKitDO buildKitDO, List<BuildKitComponentDO> components) throws Exception;
+
+    //method to validate the fields before the backend adds it in the database
+     //public void validateForAdd(BuildKitDO buildKitDO, List<BuildKitComponentDO> components);
 }

@@ -27,7 +27,6 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.InventoryComponentMeta;
-import org.openelis.meta.InventoryItemMeta;
 
 public class InventoryComponentMetaMap extends InventoryComponentMeta implements MetaMap{
 
@@ -38,12 +37,12 @@ public class InventoryComponentMetaMap extends InventoryComponentMeta implements
     public InventoryComponentMetaMap(String path){
         super(path);
        
-        INVENTORY_COMPONENT_ITEM = new InventoryItemMeta(path + "componentInventoryItem.");
+        INVENTORY_COMPONENT_ITEM = new InventoryItemMetaMap(path + "componentInventoryItem.");
     }
     
-    public InventoryItemMeta INVENTORY_COMPONENT_ITEM;
+    public InventoryItemMetaMap INVENTORY_COMPONENT_ITEM;
     
-    public InventoryItemMeta getInventoryItem(){
+    public InventoryItemMetaMap getInventoryItem(){
         return INVENTORY_COMPONENT_ITEM;
     }
     

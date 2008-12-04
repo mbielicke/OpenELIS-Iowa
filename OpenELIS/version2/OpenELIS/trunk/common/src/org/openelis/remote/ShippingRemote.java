@@ -34,6 +34,7 @@ import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
+import org.openelis.gwt.common.data.DataModel;
 
 @Remote
 public interface ShippingRemote {
@@ -42,7 +43,7 @@ public interface ShippingRemote {
     public ShippingDO getShipment(Integer shippingId);
     
     //method to unlock entity and return shipping record
-    public ShippingDO getShipmentAndUnlock(Integer shippingId);
+    public ShippingDO getShipmentAndUnlock(Integer shippingId, DataModel model);
     
     //method to lock entity and return shipping record
     public ShippingDO getShipmentAndLock(Integer shippingId) throws Exception;
@@ -52,7 +53,7 @@ public interface ShippingRemote {
     public List getShippingItems(Integer shippingId);
     
     //commit a change to shipping record, or insert a new shipping record
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers) throws Exception;
+    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList) throws Exception;
     
     //method to query for shipments
     public List query(HashMap fields, int first, int max) throws Exception;
@@ -64,4 +65,6 @@ public interface ShippingRemote {
      
      //method to validate the fields before the backend updates it in the database
      public List validateForAdd(ShippingDO shippingDO, List shippingItems, List trackngNumbers);
+     
+     public void unlockOrders(DataModel unlockList);
 }
