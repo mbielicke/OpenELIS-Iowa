@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,11 +41,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.FillOrderRemote;
@@ -59,7 +58,7 @@ import org.openelis.utils.GetPage;
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
-//@RolesAllowed("fillOrder-select")
+@RolesAllowed("fillorder-select")
 public class FillOrderBean implements FillOrderRemote {
 
     @PersistenceContext(name = "openelis")
@@ -92,7 +91,7 @@ public class FillOrderBean implements FillOrderRemote {
         QueryBuilder qb = new QueryBuilder();
 
         qb.setMeta(OrderMap);
-System.out.println("1");
+
         qb.setSelect("distinct new org.openelis.domain.FillOrderDO(" +
                      OrderMap.getId()+", " +
                      OrderMap.getStatusId()+", " +
@@ -111,49 +110,40 @@ System.out.println("1");
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getState()+", "+
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()+") ");
-        System.out.println("2");
+
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields); 
-System.out.println("3");
+
         qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
         qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
         qb.addWhere(OrderMap.getOrganizationId()+" is not null");
         qb.addWhere(OrderMap.getIsExternal()+"='N'");
         
         qb.setOrderBy(OrderMap.getId());
-        System.out.println("4");
+
         sb.append(qb.getEJBQL());
-System.out.println("5");
+
         Query query = manager.createQuery(sb.toString());
-    System.out.println("6");
+    
         if(first > -1 && max > -1)
          query.setMaxResults(first+max);
         
         //set the parameters in the query
         qb.setQueryParams(query);
-        System.out.println("7");
+        
         List returnList = GetPage.getPage(query.getResultList(), first, max);
-        System.out.println("8");
+        
         if(returnList == null)
          throw new LastPageException();
         else
          return returnList;
     }
 
-    public List queryAndLock(HashMap fields, int first, int max) throws Exception {
-        List queryResultList = query(fields, first, max);
-        
-        //try and lock the necessary records
-        lockRecords(queryResultList);
-                
-        return queryResultList;
-    }
-
-    public List queryAndUnlock(HashMap fields, int first, int max) throws Exception {
-        List queryResultList = query(fields, first, max);
-        
+    public List queryAndUnlock(HashMap fields, DataModel model, int first, int max) throws Exception {
         //try and unlock the necessary records
-        unlockRecords(queryResultList);
+        unlockRecords(model);
+        
+        List queryResultList = query(fields, first, max);
                 
         return queryResultList;
     }
@@ -172,95 +162,54 @@ System.out.println("5");
         //all ship tos need to match
         return null;
     }
-
-    private void lockRecords(List orders) throws Exception{
-        /*if(receipts.size() == 0)
-            return;
-        
-        Integer inventoryReceiptId = null;
-        Integer inventoryLocationId = null;
-        Integer orderId = null;
-        List orderIds = new ArrayList();
-        
+    
+    @RolesAllowed("fillorder-update")
+    public List getOrderAndLock(Integer orderId) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_receipt");
-        inventoryReceiptId = (Integer)query.getSingleResult();
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
         query.setParameter("name", "order");
-        orderId = (Integer)query.getSingleResult();
+        lockBean.getLock((Integer)query.getSingleResult(), orderId);
+
+        HashMap map = new HashMap();
+        QueryNumberField orderField = new QueryNumberField();
+        orderField.setType("integer");
+        orderField.setValue(orderId.toString());
+        orderField.setKey(OrderMap.getId());
+        map.put(OrderMap.getId(), orderField);
         
-        for(int i=0; i<receipts.size(); i++){
-        
-            InventoryReceiptDO receiptDO = (InventoryReceiptDO)receipts.get(i);
-        
-            if(receiptDO.getId() != null){
-                lockBean.getLock(inventoryReceiptId,receiptDO.getId());
-            
-                //put the order id in the list if it is there
-                if(receiptDO.getOrderNumber() != null && !orderIds.contains(receiptDO.getOrderNumber()))
-                    orderIds.add(receiptDO.getOrderNumber());
-                
-                //get a list of all the locations
-                query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
-                query.setParameter("id", receiptDO.getId());
-                List locationIds = query.getResultList();
-                
-                //lock all the location records
-                for(int j=0; j < locationIds.size(); j++)
-                    lockBean.getLock(inventoryLocationId, (Integer)locationIds.get(j));
-            }
-        }
-        
-        //we need to lock the orders
-        for(int j=0; j<orderIds.size(); j++)
-            lockBean.getLock(orderId, (Integer)orderIds.get(j));
-            */
+       return query(map,0,1);
     }
     
-    private void unlockRecords(List orders) throws Exception{
-        /*if(receipts.size() == 0)
+    public List getOrderAndUnlock(Integer orderId) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order");
+        lockBean.giveUpLock((Integer)query.getSingleResult(), orderId);
+
+        HashMap map = new HashMap();
+        QueryNumberField orderField = new QueryNumberField();
+        orderField.setType("integer");
+        orderField.setValue(orderId.toString());
+        orderField.setKey(OrderMap.getId());
+        map.put(OrderMap.getId(), orderField);
+        
+       return query(map,0,1);
+    }
+
+    private void unlockRecords(DataModel orders) throws Exception{
+        if(orders.size() == 0)
             return;
         
-        Integer inventoryReceiptId = null;
-        Integer inventoryLocationId = null;
-        Integer orderId = null;
-        List orderIds = new ArrayList();
+        Integer orderTableId = null;
         
         Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_receipt");
-        inventoryReceiptId = (Integer)query.getSingleResult();
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
         query.setParameter("name", "order");
-        orderId = (Integer)query.getSingleResult();
+        orderTableId = (Integer)query.getSingleResult();
         
-        for(int i=0; i<receipts.size(); i++){
+        for(int i=0; i<orders.size(); i++){
+            Integer orderId = (Integer)((NumberField)orders.get(i).getKey()).getValue();
         
-            InventoryReceiptDO receiptDO = (InventoryReceiptDO)receipts.get(i);
-        
-            if(receiptDO.getId() != null){
-                lockBean.giveUpLock(inventoryReceiptId,receiptDO.getId());
-            
-                //put the order id in the list if it is there
-                if(receiptDO.getOrderNumber() != null && !orderIds.contains(receiptDO.getOrderNumber()))
-                    orderIds.add(receiptDO.getOrderNumber());
-                
-                //get a list of all the locations
-                query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
-                query.setParameter("id", receiptDO.getId());
-                List locationIds = query.getResultList();
-                
-                //lock all the location records
-                for(int j=0; j < locationIds.size(); j++)
-                    lockBean.giveUpLock(inventoryLocationId, (Integer)locationIds.get(j));
-            }
+            if(orderId != null)
+                lockBean.giveUpLock(orderTableId, orderId);
         }
-        
-        //we need to unlock the orders
-        for(int j=0; j<orderIds.size(); j++)
-            lockBean.giveUpLock(orderId, (Integer)orderIds.get(j));
-            */
     }
 
     public Integer getOrderItemReferenceTableId() {

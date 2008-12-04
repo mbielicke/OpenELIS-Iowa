@@ -71,7 +71,7 @@ public boolean isLocked(Integer table, Integer row, String session){
     boolean locked = false;
     try {
         Lock lock = (Lock)query.getSingleResult();
-        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && !lock.getSessionId().equals(session)){
+        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId().equals(session))){
             locked = true;
         }
         if((locked && (lock.getSystemUserId().equals(getSystemUserId()) && lock.getSessionId().equals(session))) || !locked){

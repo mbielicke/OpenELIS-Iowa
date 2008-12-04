@@ -251,6 +251,7 @@ System.out.println(sb.toString());
 		    	//delete the child record from the database
 			    manager.remove(childStorageLoc);        	
 		    }else{
+                childStorageLoc.setName(storageDO.getName());
 		    	childStorageLoc.setSortOrder(sortOrder);
 				childStorageLoc.setLocation(childDO.getLocation());
 				childStorageLoc.setParentStorageLocationId(storageLocation.getId());

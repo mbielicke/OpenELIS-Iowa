@@ -66,7 +66,7 @@ public class LoginBean implements LoginRemote, LoginLocal {
         SystemUserDO sysUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
         securityUtil.setSystemUserId(sysUserDO.getId());
         JBossCachingManager.putElement("openelis","security", ctx.getCallerPrincipal().getName()+"util",securityUtil);
-        JBossCachingManager.putElement("openelis","securtiy", ctx.getCallerPrincipal().getName()+"userdo", sysUserDO);
+        JBossCachingManager.putElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo", sysUserDO);
         return securityUtil;
     }
 

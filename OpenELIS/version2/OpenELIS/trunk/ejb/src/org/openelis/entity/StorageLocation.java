@@ -58,12 +58,12 @@ import org.w3c.dom.Element;
 @NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
 @NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +
-                             " childLoc.storageUnit.description) " +
-                             " from StorageLocation childLoc where " +
+                             " parentLoc.name, childLoc.storageUnit.description) " +
+                             " from StorageLocation childLoc left join childLoc.parentStorageLocation parentLoc where " +
                              " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
                              " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) and childLoc.isAvailable = 'Y'" +
                              " order by childLoc.name"),
-@NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.name = :name and s.id != :id"),
+@NamedQuery(name = "StorageLocation.UpdateNameCompare", query = "select s.id from StorageLocation s where s.parentStorageLocationId is null and s.name = :name and s.id != :id"),
 @NamedQuery(name = "StorageLocation.AddNameCompare", query = "select s.id from StorageLocation s where s.name = :name")})
                              
 

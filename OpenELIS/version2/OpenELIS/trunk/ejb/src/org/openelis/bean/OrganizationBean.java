@@ -25,6 +25,22 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -42,27 +58,10 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.security.domain.SystemUserDO;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.SecurityInterceptor;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 @Stateless
 @EJBs({
@@ -107,7 +106,7 @@ public class OrganizationBean implements OrganizationRemote {
         return getOrganizationAddress(organizationId);
 	}
 	
-	//@RolesAllowed("organization-update")
+	@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception{
         System.out.println("local cache alive "+CachingManager.isAlive("security"));
@@ -253,6 +252,7 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 
 	public List query(HashMap fields, int first, int max) throws Exception{
+        System.out.println("INSIDE QUERY!!!!");
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 

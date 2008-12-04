@@ -60,14 +60,14 @@ import org.openelis.utils.Auditable;
                                         " left join childLoc.parentStorageLocation parentLoc " +
                                         " where i.inventoryItemId = :id and i.quantityOnhand > 0"),
 @NamedQuery(name = "InventoryLocation.AutoCompleteByName", query = "select distinct new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +
-                                        " childLoc.storageUnit.description) " +
-                                        " from InventoryLocation i left join i.storageLocation childLoc where " +
+                                        " parentLoc.name, childLoc.storageUnit.description) " +
+                                        " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where " +
                                         " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
                                         " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) " +
                                         " order by childLoc.name"),
 @NamedQuery(name = "InventoryLocation.AutoCompleteByNameInvId", query = "select distinct new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +
-                                        " childLoc.storageUnit.description, i.quantityOnhand) " +
-                                        " from InventoryLocation i left join i.storageLocation childLoc where " +
+                                        " parentLoc.name, childLoc.storageUnit.description, i.quantityOnhand, i.lotNumber) " +
+                                        " from InventoryLocation i left join i.storageLocation childLoc left join childLoc.parentStorageLocation parentLoc where " +
                                         " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
                                         " and (childLoc.name like :name OR childLoc.location like :loc OR childLoc.storageUnit.description like :desc) " +
                                         " and i.inventoryItemId = :id order by childLoc.name"),
