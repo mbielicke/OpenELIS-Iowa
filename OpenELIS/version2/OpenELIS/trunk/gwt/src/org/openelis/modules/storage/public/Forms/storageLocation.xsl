@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
   <xalan:component prefix="storageLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StorageLocationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="storageUnitMeta">
@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"storageUnit")'/>:</text>
 						<widget>
-							<autoComplete cat="storageUnit" key="{storageUnitMeta:getDescription($storageUnit)}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="350px" tab="{storageLocationMeta:getIsAvailable($storageLoc)},{storageLocationMeta:getLocation($storageLoc)}">
+							<autoComplete cat="storageUnit" key="{storageUnitMeta:getDescription($storageUnit)}" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService"  width="366px" tab="{storageLocationMeta:getIsAvailable($storageLoc)},{storageLocationMeta:getLocation($storageLoc)}">
 								<headers>Desc,Category</headers>
 								<widths>267,90</widths>	
 							</autoComplete>

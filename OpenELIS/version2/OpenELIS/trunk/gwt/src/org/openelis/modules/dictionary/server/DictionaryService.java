@@ -338,15 +338,10 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                     if(dictDO.getRelatedEntryId() == null)
                        row.get(4).setValue(null);
                     else{
-                        DataSet relEntrySet = new DataSet();
-                        relEntrySet.setKey(new NumberObject(dictDO.getRelatedEntryId()));
-                        relEntrySet.add(new StringObject(dictDO.getRelatedEntryText()));
-                        DropDownField field = new DropDownField();
-                        DataModel dmodel = new DataModel();
-                        dmodel.add(relEntrySet);
-                        field.setModel(dmodel);
-                        field.setValue(relEntrySet);
-                        row.get(4).setValue(field);
+                        DataModel model = new DataModel();
+                        model.add(new NumberObject(dictDO.getRelatedEntryId()),new StringObject(dictDO.getRelatedEntryText()));
+                        ((DropDownField)row.get(4)).setModel(model);
+                        row.get(4).setValue(model.get(0));
                     }
                      dictEntryModel.add(row);
             } 
@@ -470,12 +465,10 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         rpcReturn.setFieldValue(CatMeta.getId(), catDO.getId());
         rpcReturn.setFieldValue(CatMeta.getSystemName(),catDO.getSystemName());
         rpcReturn.setFieldValue(CatMeta.getName(),catDO.getName());
-        rpcReturn.setFieldValue(CatMeta.getDescription(),catDO.getDescription());    
-        //if(catDO.getSection()!=null){
-         rpcReturn.setFieldValue(CatMeta.getSectionId(),catDO.getSection());
-         //}else{
-         //   rpcReturn.setFieldValue(CatMeta.getSectionId(),new Integer(-1));  
-         //}
+        rpcReturn.setFieldValue(CatMeta.getDescription(),catDO.getDescription());  
+        
+        if(catDO.getSection() != null)
+            rpcReturn.setFieldValue(CatMeta.getSectionId(), new DataSet(new NumberObject(catDO.getSection())));
     }
     
     private CategoryDO getCategoryDOFromRPC(FormRPC rpcSend){        
@@ -485,7 +478,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         categoryDO.setDescription(((String)rpcSend.getFieldValue(CatMeta.getDescription())));
         categoryDO.setName(((String)rpcSend.getFieldValue(CatMeta.getName())));
         categoryDO.setSystemName(((String)rpcSend.getFieldValue(CatMeta.getSystemName())));
-        categoryDO.setSection((Integer)rpcSend.getFieldValue(CatMeta.getSectionId()));
+        categoryDO.setSection((Integer)((DropDownField)rpcSend.getField(CatMeta.getSectionId())).getSelectedKey());
         
         return categoryDO; 
     }
@@ -521,7 +514,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
              DropDownField relEntryId = (DropDownField)row.get(4); 
               if(relEntryId!=null){
                  if(relEntryId.getValue()!=null){
-                   dictDO.setRelatedEntryId((Integer)relEntryId.getValue());
+                   dictDO.setRelatedEntryId((Integer)relEntryId.getSelectedKey());
                  }
                 }
                      
@@ -551,17 +544,8 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                     dictDO.setId((Integer)id.getValue());
                   } 
                  } 
-            
-              
-               dictDO.setDelete(false);
                                                
-               
-                DropDownField relEntryId = (DropDownField)row.get(4); 
-                 if(relEntryId!=null){
-                    if(relEntryId.getValue()!=null){
-                      dictDO.setRelatedEntryId((Integer)relEntryId.getValue());
-                    }
-                   }
+               dictDO.setRelatedEntryId((Integer)((DropDownField)row.get(4)).getSelectedKey());
                         
                  CheckField isActive =  (CheckField)row.get(0);              
                  dictDO.setIsActive((String)isActive.getValue());

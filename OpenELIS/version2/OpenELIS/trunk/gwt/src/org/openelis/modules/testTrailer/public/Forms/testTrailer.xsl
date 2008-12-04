@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
  <xalan:component prefix="testTrailerMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestTrailerMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestTrailerMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 

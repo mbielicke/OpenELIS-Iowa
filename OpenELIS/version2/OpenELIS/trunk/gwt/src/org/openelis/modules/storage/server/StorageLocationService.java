@@ -407,7 +407,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<FormRPC, 
 		newStorageLocDO.setLocation(((String)rpcSend.getFieldValue(StorageLocationMeta.getLocation())));
 		newStorageLocDO.setName(((String)rpcSend.getFieldValue(StorageLocationMeta.getName())));
 		newStorageLocDO.setParentStorageLocationId((Integer)rpcSend.getFieldValue(StorageLocationMeta.CHILD_STORAGE_LOCATION_META.getId()));
-		newStorageLocDO.setStorageUnitId((Integer)rpcSend.getFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription()));
+		newStorageLocDO.setStorageUnitId((Integer)((DropDownField)rpcSend.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).getSelectedKey());
         newStorageLocDO.setStorageUnit((String)((DropDownField)rpcSend.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).getTextValue());
 		
 		return newStorageLocDO;
@@ -427,7 +427,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<FormRPC, 
 			if(id != null)
 				childDO.setId((Integer)id.getValue());
 			
-			childDO.setStorageUnitId((Integer)((DropDownField)row.get(0)).getValue());
+			childDO.setStorageUnitId((Integer)((DropDownField)row.get(0)).getSelectedKey());
 			childDO.setLocation(((String)((StringField)row.get(1)).getValue()));
 			childDO.setIsAvailable(((String)((CheckField)row.get(2)).getValue()));
 				

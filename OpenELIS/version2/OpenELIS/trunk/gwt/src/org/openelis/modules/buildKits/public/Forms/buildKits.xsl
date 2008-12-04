@@ -31,6 +31,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:meta="xalan://org.openelis.metamap.InventoryItemMetaMap"
                 xmlns:locationMeta="xalan://org.openelis.metamap.InventoryLocationMetaMap"
                 xmlns:storageLocationMeta="xalan://org.openelis.metamap.StorageLocationMetaMap"                
+                xmlns:inventoryComponentMeta="xalan://org.openelis.metamap.InventoryComponentMetaMap" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -51,14 +52,22 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMetaMap"/>
   </xalan:component>
   
-    <xalan:component prefix="storageLocationMeta">
+  <xalan:component prefix="storageLocationMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StorageLocationMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="inventoryComponentMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryComponentMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
      <xsl:variable name="invItem" select="meta:new()"/>
      <xsl:variable name="location" select="meta:getInventoryLocation($invItem)"/>
      <xsl:variable name="locStorageLoc" select="locationMeta:getStorageLocation($location)"/>
+     <xsl:variable name="component" select="meta:getInventoryComponent($invItem)"/>
+     <xsl:variable name="componentItem" select="inventoryComponentMeta:getInventoryItem($component)"/>
+     <xsl:variable name="componentLocation" select="meta:getInventoryLocation($componentItem)"/>
+     <xsl:variable name="componentLocStorageLoc" select="locationMeta:getStorageLocation($componentLocation)"/>
      <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
      <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -69,32 +78,11 @@ UIRF Software License are applicable instead of those above.
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
-    		<!--	<xsl:call-template name="queryButton">
-    				<xsl:with-param name="language">
-    					<xsl:value-of select="language"/>
-    				</xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="previousButton">
-					<xsl:with-param name="language">
-						<xsl:value-of select="language"/>
-					</xsl:with-param>
-				</xsl:call-template>
-				<xsl:call-template name="nextButton">
-					<xsl:with-param name="language">
-						<xsl:value-of select="language"/>
-					</xsl:with-param>
-				</xsl:call-template>
-    			<xsl:call-template name="buttonPanelDivider"/>-->
     			<xsl:call-template name="addButton">
     				<xsl:with-param name="language">
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
     			</xsl:call-template>
-    			<!--<xsl:call-template name="updateButton">
-	    			<xsl:with-param name="language">
-	    				<xsl:value-of select="language"/>
-	    			</xsl:with-param>
-    			</xsl:call-template>-->
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="commitButton">
     				<xsl:with-param name="language">
@@ -113,34 +101,44 @@ UIRF Software License are applicable instead of those above.
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"kit")'/>:</text>
-						<widget colspan="3">
-						<autoComplete key="{meta:getName($invItem)}" cat="kitDropdown" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" width="190px" tab="numRequested,{storageLocationMeta:getLocation($locStorageLoc)}">
+						<autoComplete key="{meta:getName($invItem)}" cat="kitDropdown" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" width="190px" tab="numRequested,{locationMeta:getExpirationDate($location)}">
 							<headers>Name,Store,Dispensed Units</headers>
 							<widths>135,130,110</widths>
 						</autoComplete>
-						</widget>
 						<widget colspan="2">
-						<check key="addToExisting" onClick="this" tab="{storageLocationMeta:getLocation($locStorageLoc)},numToMake"><text style="CheckboxPrompt"><xsl:value-of select='resource:getString($constants,"addToExisting")'/></text></check>
+						<check key="addToExisting" onClick="this" tab="{storageLocationMeta:getLocation($locStorageLoc)},numRequested"><text style="CheckboxPrompt"><xsl:value-of select='resource:getString($constants,"addToExisting")'/></text></check>
 						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"numRequested")'/>:</text>
-						<textbox case="mixed" key="numRequested" width="50px" max="20" onchange="this" tab="numToMake,{meta:getName($invItem)}"/>
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"numToMake")'/>:</text>
-						<textbox case="mixed" key="numToMake" width="50px" max="60" alwaysDisabled="true" tab="addToExisting,numRequested"/>
+						<textbox case="mixed" key="numRequested" width="50px" max="20" onchange="this" tab="addToExisting,{meta:getName($invItem)}"/>
 						<text style="Prompt">Location:</text>
-						<autoComplete key="{storageLocationMeta:getLocation($locStorageLoc)}" cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="160px" tab="{meta:getName($invItem)},addToExisting">
+						<autoComplete key="{storageLocationMeta:getLocation($locStorageLoc)}" cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="160px" tab="{locationMeta:getLotNumber($location)},addToExisting">
 							<headers>Desc</headers>
 							<widths>300</widths>
 						</autoComplete>
+					</row>
+					<row>
+						<widget colspan="2">
+							<HorizontalPanel/>
+						</widget>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"lotNum")'/>:</text>
+						<textbox case="mixed" key="{locationMeta:getLotNumber($location)}" width="100px" max="30" tab="{locationMeta:getExpirationDate($location)},{storageLocationMeta:getLocation($locStorageLoc)}"/>
+					</row>
+					<row>
+						<widget colspan="2">
+							<HorizontalPanel/>
+						</widget>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"expDate")'/>:</text>
+						<calendar key="{locationMeta:getExpirationDate($location)}" begin="0" end="2" tab="{meta:getName($invItem)},{locationMeta:getLotNumber($location)}"/>		
 					</row>
 					</TablePanel>
 					<TablePanel>
 					<row>
 					<widget colspan="4">
 						<table width="auto" key="subItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
-							<headers>Kit Component Name,Location,Unit,Total,On Hand</headers>
-							<widths>160,177,60,60,60</widths>										
+							<headers>Kit Component Name,Location,Lot #,Unit,Total,On Hand</headers>
+							<widths>160,177,80,60,60,60</widths>										
 							<editors>
 								<label/>
 								<autoComplete cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
@@ -149,33 +147,31 @@ UIRF Software License are applicable instead of those above.
 								</autoComplete>
 								<label/>
 								<label/>
+								<textbox/>
 								<label/>
 							</editors>
 							<fields>
-      							<string required="true"/>
-      							<dropdown required="true"/>
-      							<number type="double" required="true"/>
-      							<number type="integer" required="true"/>
-      							<number type="integer" required="true"/>
+								<string key="{inventoryComponentMeta:getComponentId($component)}" required="true"/>
+      							<dropdown key="{storageLocationMeta:getLocation($componentLocStorageLoc)}" required="true"/>
+      							<string key="{locationMeta:getLotNumber($componentLocation)}" required="false"/>
+      							<number key="{inventoryComponentMeta:getQuantity($component)}" type="double" required="true"/>
+      							<number key="total" type="integer" required="true"/>
+      							<number key="{locationMeta:getQuantityOnhand($componentLocation)}" type="integer" required="true"/>
 							</fields>
-							<sorts>false,false,false,false,false</sorts>
-							<filters>false,false,false,false,false</filters>
-							<colAligns>left,left,left,left,left</colAligns>
+							<sorts>false,false,false,false,false,false</sorts>
+							<filters>false,false,false,false,false,false</filters>
+							<colAligns>left,left,left,left,left,left</colAligns>
 						</table>
-			<!--			<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="true">
-								<headers>Item,Loc,Unit,Total,On Hand</headers>
-								<widths>170,167,60,60,60</widths>
-								<editors>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>		 	
-								</editors>
-								<fields>1,2,3,4,5</fields>
-							</queryTable>
-							</query>-->
+					</widget>
+					</row>
+					<row>
+					<widget colspan="4" align="right">
+						<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
+							<HorizontalPanel>
+								<AbsolutePanel style="RemoveRowButtonImage"/>
+								<text>Transfer</text>
+							</HorizontalPanel>
+						</appButton>
 					</widget>
 					</row>
 				</TablePanel>			
@@ -187,18 +183,12 @@ UIRF Software License are applicable instead of those above.
   	  <check key="addToExisting" required="false"/>
   	  <dropdown key="{meta:getName($invItem)}" required="true"/>
   	  <number key="numRequested" type="integer" required="true"/>
-  	  <number key="numToMake" type="integer" required="true"/>
   	  <dropdown key="{storageLocationMeta:getLocation($locStorageLoc)}" required="true"/>
+  	  <string key="{locationMeta:getLotNumber($location)}" required="false"/>
+	  <date key="{locationMeta:getExpirationDate($location)}" begin="0" end="2" required="false"/>
+  	  
   	  <table key="subItemsTable"/>
 	</rpc>
-	<!--<rpc key="query">
-	<queryString key="1"/>
-	<queryString key="2"/>
-	<queryString key="3"/>
-	<queryString key="4"/>
-	<queryString key="5"/>
-  	  
-	</rpc>-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

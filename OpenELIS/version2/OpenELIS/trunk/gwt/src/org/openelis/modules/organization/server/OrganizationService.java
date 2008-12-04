@@ -73,7 +73,7 @@ import org.w3c.dom.Element;
 public class OrganizationService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, 
 															  AutoCompleteServiceInt {
 
-	private static final int leftTableRowsPerPage = 20;
+	private static final int leftTableRowsPerPage = 18;
     
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
@@ -652,7 +652,7 @@ public class OrganizationService implements AppScreenFormServiceInt<FormRPC, Dat
 		newOrganizationDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrgMeta.getId()));
 		newOrganizationDO.setName((String) rpcSend.getFieldValue(OrgMeta.getName()));
 		newOrganizationDO.setIsActive((String)rpcSend.getFieldValue(OrgMeta.getIsActive()));
-		newOrganizationDO.setParentOrganizationId((Integer) rpcSend.getFieldValue(OrgMeta.PARENT_ORGANIZATION.getName()));		
+		newOrganizationDO.setParentOrganizationId((Integer)((DropDownField)rpcSend.getField(OrgMeta.PARENT_ORGANIZATION.getName())).getSelectedKey());		
 		newOrganizationDO.setParentOrganization((String)((DropDownField)rpcSend.getField(OrgMeta.PARENT_ORGANIZATION.getName())).getTextValue());
 		
 		//organization address value
@@ -660,9 +660,9 @@ public class OrganizationService implements AppScreenFormServiceInt<FormRPC, Dat
 		newOrganizationDO.getAddressDO().setMultipleUnit((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getMultipleUnit()));
 		newOrganizationDO.getAddressDO().setStreetAddress((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getStreetAddress()));
 		newOrganizationDO.getAddressDO().setCity((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getCity()));
-		newOrganizationDO.getAddressDO().setState((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getState()));
+		newOrganizationDO.getAddressDO().setState((String)((DropDownField)rpcSend.getField(OrgMeta.ADDRESS.getState())).getSelectedKey());
 		newOrganizationDO.getAddressDO().setZipCode((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getZipCode()));
-		newOrganizationDO.getAddressDO().setCountry((String)rpcSend.getFieldValue(OrgMeta.ADDRESS.getCountry()));
+		newOrganizationDO.getAddressDO().setCountry((String)((DropDownField)rpcSend.getField(OrgMeta.ADDRESS.getCountry())).getSelectedKey());
 		
 		return newOrganizationDO;
 	}
@@ -697,13 +697,13 @@ public class OrganizationService implements AppScreenFormServiceInt<FormRPC, Dat
 			//contact address data
 			if(addId != null)
 			contactDO.getAddressDO().setId((Integer)addId.getValue());
-		    contactDO.setContactType((Integer)row.get(0).getValue());
+		    contactDO.setContactType((Integer)((DropDownField)row.get(0)).getSelectedKey());
 			contactDO.getAddressDO().setMultipleUnit((String)((StringField)row.get(2)).getValue());
 			contactDO.getAddressDO().setStreetAddress((String)((StringField)row.get(3)).getValue());
 			contactDO.getAddressDO().setCity((String)((StringField)row.get(4)).getValue());
-			contactDO.getAddressDO().setState((String)row.get(5).getValue());
+			contactDO.getAddressDO().setState((String)((DropDownField)row.get(5)).getSelectedKey());
 			contactDO.getAddressDO().setZipCode((String)((StringField)row.get(6)).getValue());
-			contactDO.getAddressDO().setCountry((String)row.get(7).getValue());
+			contactDO.getAddressDO().setCountry((String)((DropDownField)row.get(7)).getSelectedKey());
 			contactDO.getAddressDO().setWorkPhone((String)((StringField)row.get(8)).getValue());
 			contactDO.getAddressDO().setHomePhone((String)((StringField)row.get(9)).getValue());
 			contactDO.getAddressDO().setCellPhone((String)((StringField)row.get(10)).getValue());

@@ -44,6 +44,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -347,8 +348,8 @@ public class LabelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         rpcReturn.setFieldValue(Meta.getId(), qaeDO.getId());
         rpcReturn.setFieldValue(Meta.getName(),qaeDO.getName());
         rpcReturn.setFieldValue(Meta.getDescription(),qaeDO.getDescription());
-        rpcReturn.setFieldValue(Meta.getPrinterTypeId(),qaeDO.getPrinterType());     
-        rpcReturn.setFieldValue(Meta.getScriptletId(),qaeDO.getScriptlet());        
+        rpcReturn.setFieldValue(Meta.getPrinterTypeId(), new DataSet(new NumberObject(qaeDO.getPrinterType())));     
+        rpcReturn.setFieldValue(Meta.getScriptletId(), new DataSet(new NumberObject(qaeDO.getScriptlet())));        
     }
     
     private LabelDO getLabelDOFromRPC(FormRPC rpcSend){
@@ -359,10 +360,8 @@ public class LabelService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         labelDO.setName(((String)rpcSend.getFieldValue(Meta.getName())));
         labelDO.setDescription(((String)rpcSend.getFieldValue(Meta.getDescription())));
               
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(Meta.getPrinterTypeId())))
-            labelDO.setPrinterType((Integer)rpcSend.getFieldValue(Meta.getPrinterTypeId()));   
-        if(!(new Integer(-1)).equals(rpcSend.getFieldValue(Meta.getScriptletId())))
-            labelDO.setScriptlet((Integer)rpcSend.getFieldValue(Meta.getScriptletId()));        
+        labelDO.setPrinterType((Integer)((DropDownField)rpcSend.getField(Meta.getPrinterTypeId())).getSelectedKey());   
+        labelDO.setScriptlet((Integer)((DropDownField)rpcSend.getField(Meta.getScriptletId())).getSelectedKey());        
      
        return labelDO;
     }

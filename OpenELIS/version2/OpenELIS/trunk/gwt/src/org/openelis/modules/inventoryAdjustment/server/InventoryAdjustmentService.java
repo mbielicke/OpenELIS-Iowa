@@ -170,15 +170,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
             fields.remove("adjustmentsTable");
             fields.remove("label1");
-            //fields.remove(InventoryAdjustmentMeta.getAdjustmentDate());
             fields.remove(InventoryAdjustmentMeta.getSystemUserId());
-            /*fields.remove(InventoryAdjustmentMeta.getId());
-            fields.remove(InventoryAdjustmentMeta.getDescription());
-            fields.remove(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId());
-            fields.remove(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.getId());
-            fields.remove(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.getQuantityOnhand());
-            fields.remove(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.getPhysicalCount());
-            fields.remove(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.getQuantity());*/
             
             try{    
                 inventoryAdjustmentNames = remote.query(fields,0,leftTableRowsPerPage);
@@ -518,7 +510,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         inventoryAdjustmentDO.setDescription((String) rpcSend.getFieldValue(InventoryAdjustmentMeta.getDescription()));
         inventoryAdjustmentDO.setSystemUser((String) rpcSend.getFieldValue(InventoryAdjustmentMeta.getSystemUserId()));
         inventoryAdjustmentDO.setSystemUserId((Integer) rpcSend.getFieldValue("systemUserId"));
-        inventoryAdjustmentDO.setStoreId((Integer) rpcSend.getFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId()));
+        inventoryAdjustmentDO.setStoreId((Integer)((DropDownField)rpcSend.getField(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId())).getSelectedKey());
         
         return inventoryAdjustmentDO;
     }

@@ -33,6 +33,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:addr="xalan://org.openelis.meta.AddressMeta"
                 xmlns:trackingMeta="xalan://org.openelis.meta.ShippingTrackingMeta" 
                 xmlns:shippingItemMeta="xalan://org.openelis.meta.ShippingItemMeta" 
+                xmlns:noteMeta="xalan://org.openelis.meta.NoteMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZTwoColumns.xsl"/> 
@@ -48,12 +49,11 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="meta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ShippingMetaMap"/>
   </xalan:component>
-  <!--
-  xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap" 
-  <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
+  
+  <xalan:component prefix="noteMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta"/>
   </xalan:component>
-  -->
+
   <xalan:component prefix="orgMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMetaMap"/>
   </xalan:component>
@@ -72,11 +72,11 @@ UIRF Software License are applicable instead of those above.
   
   <xsl:template match="doc"> 
     <xsl:variable name="shipping" select="meta:new()"/>
-<!--    <xsl:variable name="order" select="meta:getOrderMeta($shipping)"/>-->
     <xsl:variable name="organization" select="meta:getOrganizationMeta($shipping)"/>
     <xsl:variable name="orgAddress" select="orgMeta:getAddress($organization)"/>
     <xsl:variable name="tracking" select="meta:getTrackingMeta($shipping)"/>
     <xsl:variable name="items" select="meta:getShippingItemMeta($shipping)"/>
+    <xsl:variable name="note" select="meta:getNoteMeta($shipping)"/>
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -153,7 +153,7 @@ UIRF Software License are applicable instead of those above.
 						<dropdown key="{meta:getShippedFromId($shipping)}" case="mixed" width="172px" popWidth="auto" tab="{orgMeta:getName($organization)},{meta:getCost($shipping)}"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'shippedTo')"/>:</text>
 						<widget colspan="3">
-							<autoComplete case="upper" cat="shippedTo" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.shipping.server.ShippingService" width="172px" tab="{meta:getProcessedDate($shipping)},{meta:getShippedFromId($shipping)}">
+							<autoComplete case="upper" cat="shippedTo" key="{orgMeta:getName($organization)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.shipping.server.ShippingService" width="188px" tab="{meta:getProcessedDate($shipping)},{meta:getShippedFromId($shipping)}">
 								<headers>Name,Street,City,St</headers>
 								<widths>180,110,100,20</widths>
 							</autoComplete>
@@ -201,28 +201,28 @@ UIRF Software License are applicable instead of those above.
 						</widget>						
 					</row>
 					</TablePanel>
-					<HorizontalPanel>
+					<TabPanel height="200px" key="shippingTabPanel" halign="center">
+						<tab key="itemsTab" text="{resource:getString($constants,'items')}">
+					<HorizontalPanel height="200px">
 						<widget>
-<!--						<VerticalPanel>-->
 							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
-								<headers><xsl:value-of select="resource:getString($constants,'itemsShipped')"/></headers>
-								<widths>395</widths>
+								<headers><xsl:value-of select="resource:getString($constants,'qty')"/>,<xsl:value-of select="resource:getString($constants,'item')"/></headers>
+								<widths>50,300</widths>
 								<editors>
+									<label/>
 									<label/>
 								</editors>
 								<fields>
-									<string key="test" required="true"/>
+									<number type="integer" required="true"/>
+									<string required="true"/>
 								</fields>
-								<sorts>false</sorts>
-								<filters>false</filters>
-								<colAligns>left</colAligns>
+								<sorts>false,false</sorts>
+								<filters>false,false</filters>
+								<colAligns>left,left</colAligns>
 							</table>
-<!--							<VerticalPanel height="5px"/>
-							</VerticalPanel>-->
 						</widget>	
 						<VerticalPanel>
 						<widget>						
-						<!--<VerticalPanel>-->
 						<table key="trackingNumbersTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="auto">
 							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
@@ -259,6 +259,23 @@ UIRF Software License are applicable instead of those above.
 						</widget>
 						</VerticalPanel>
 					</HorizontalPanel>
+					</tab>
+					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
+						<VerticalPanel width="100%" height="200px" spacing="0" padding="0">
+							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+							<row>
+							<HorizontalPanel height="15px"/>
+							</row>
+								<row>
+									<HorizontalPanel width="14px"/>
+									<widget>
+										<textarea width="576px" height="155px" case="mixed" key="{noteMeta:getText($note)}" alwaysDisabled="true"/>
+									</widget>
+								</row>
+							</TablePanel>
+						</VerticalPanel>
+					</tab>
+					</TabPanel>
 				</VerticalPanel>
 			</VerticalPanel>
 		</HorizontalPanel>
@@ -280,9 +297,18 @@ UIRF Software License are applicable instead of those above.
 	    <string key="{addr:getState($orgAddress)}" required="false"/>
 	    <string key="{addr:getZipCode($orgAddress)}" required="false"/>
         <number key="systemUserId" type="integer" required="false"/>
-
-    	<table key="itemsTable"/>
-	   	<table key="trackingNumbersTable"/>
+		
+		<rpc key="shippingItems">
+    		<table key="itemsTable"/>
+	   		<table key="trackingNumbersTable"/>
+	   	</rpc>
+	   	
+	   	<rpc key="orderShippingNotes">
+			<string key="{noteMeta:getText($note)}" required="false"/>	   	
+	   	</rpc>
+	   	
+ 		<string key="shippingTabPanel" reset="false">itemsTab</string>  
+ 		<model key="unlockModel"/>
 	</rpc>
 	<rpc key="query">
 		<dropdown key="{meta:getStatusId($shipping)}"/>

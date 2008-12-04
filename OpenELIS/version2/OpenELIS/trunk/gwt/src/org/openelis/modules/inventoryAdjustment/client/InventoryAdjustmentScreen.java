@@ -168,7 +168,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
             userText.enable(false);
             storesDropdown.enable(false);
             descText.setFocus(true);
-            adjustmentsTable.model.enableAutoAdd(true);
+            removeRowButton.changeState(AppButton.ButtonState.DISABLED);
         }
         
         public void onFailure(Throwable caught){
@@ -211,15 +211,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
         int numRows = adjustmentsTable.model.numRows();
         if(state == FormInt.State.UPDATE && (col == 0 || col == 1) && row > -1 && numRows > 0 && row < numRows)
             return false;
-         
-        /*if(col == 5 && row > -1 && numRows > 0 && row < numRows){
-            TableRow tableRow = controller.model.getRow(row);
-            
-            //if we dont have a location we dont want to allow the user to edit physical count yet
-            if(((NumberField)tableRow.getColumn(0)).getValue() == null)
-                return false;
-               
-        }*/
         
        return true;
     }
@@ -229,6 +220,18 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm implements Tab
             return true;
         return false;
     }
+    
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {}
+    
+    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //

@@ -110,6 +110,21 @@ public class StorageLocationScreen extends OpenELISScreenForm implements ClickLi
 		
 		removeEntryButton.changeState(AppButton.ButtonState.DISABLED);
 	}
+    
+    public void add() {
+        childTable.model.enableAutoAdd(true);
+        super.add();
+    }
+    
+    public void update() {
+        childTable.model.enableAutoAdd(true);
+        super.update();
+    }
+    
+    public void abort() {
+        childTable.model.enableAutoAdd(false);
+        super.abort();
+    }
 	
 	private void onRemoveRowButtonClick(){
         int selectedRow = childTable.model.getSelectedIndex();

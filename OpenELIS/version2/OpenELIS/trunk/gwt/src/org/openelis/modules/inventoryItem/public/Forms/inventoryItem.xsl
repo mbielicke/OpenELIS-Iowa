@@ -252,6 +252,7 @@ UIRF Software License are applicable instead of those above.
 								</titledPanel>
 								</VerticalPanel>
 								</HorizontalPanel>
+			 	<VerticalPanel halign="center">
 				<!--TAB PANEL-->
 				<TabPanel height="200px" key="itemTabPanel">
 					<!-- TAB 1 (Components) -->
@@ -261,7 +262,7 @@ UIRF Software License are applicable instead of those above.
 								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
-										<widths>125,335,104</widths>
+										<widths>129,335,104</widths>
 										<editors>
 											<autoComplete cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
 												<widths>118</widths>
@@ -282,7 +283,7 @@ UIRF Software License are applicable instead of those above.
 									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
-										<widths>125,335,104</widths>
+										<widths>129,335,104</widths>
 										<editors>
 											<textbox case="lower"/>
 											<textbox case="mixed"/>
@@ -312,7 +313,7 @@ UIRF Software License are applicable instead of those above.
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>162,70,70,133,123</widths>
+										<widths>166,70,70,133,123</widths>
 										<editors>
 											<label/>
 											<label/>
@@ -336,7 +337,7 @@ UIRF Software License are applicable instead of those above.
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
-										<widths>162,70,70,133,123</widths>
+										<widths>166,70,70,133,123</widths>
 										<editors>
 											<textbox case="mixed"/>
 											<textbox case="mixed"/>
@@ -407,7 +408,7 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
-									<textbox case="mixed" key="{noteMeta:getSubject($note)}" width="429px" max="60" showError="false"/>
+									<textbox case="mixed" key="{noteMeta:getSubject($note)}" width="435px" max="60" showError="false"/>
 									<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
 										<HorizontalPanel>
               							<AbsolutePanel style="StandardNoteButtonImage"/>
@@ -420,14 +421,14 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 									<widget colspan="2">
-										<textarea width="545px" height="50px" case="mixed" key="{noteMeta:getText($note)}" showError="false"/>
+										<textarea width="551px" height="50px" case="mixed" key="{noteMeta:getText($note)}" showError="false"/>
 									</widget>
 								</row> 
 								<row>
 									<html key="spacer" xml:space="preserve"> </html>
 									<widget colspan="2">
 										<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="notesPanel" valign="top" onclick="this" height="154px" width="545px" overflowX="auto" overflowY="scroll">				
+								<VerticalPanel key="notesPanel" style="notesPanel" valign="top" onclick="this" height="158px" width="551px" overflowX="auto" overflowY="scroll">				
 								</VerticalPanel>
 								</HorizontalPanel>
 								</widget>
@@ -436,6 +437,7 @@ UIRF Software License are applicable instead of those above.
 						</VerticalPanel>
 					</tab>					
 				</TabPanel>
+				</VerticalPanel>
 				</VerticalPanel>
 			</VerticalPanel>
 		</HorizontalPanel>

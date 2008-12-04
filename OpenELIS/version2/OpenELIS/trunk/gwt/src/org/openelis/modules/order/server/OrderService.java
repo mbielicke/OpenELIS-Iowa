@@ -879,13 +879,13 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         
         orderDO.setId((Integer) rpcSend.getFieldValue(OrderMeta.getId()));
         orderDO.setNeededInDays((Integer) rpcSend.getFieldValue(OrderMeta.getNeededInDays()));
-        orderDO.setStatusId((Integer) rpcSend.getFieldValue(OrderMeta.getStatusId()));
+        orderDO.setStatusId((Integer)((DropDownField)rpcSend.getField(OrderMeta.getStatusId())).getSelectedKey());
         orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, (String)rpcSend.getFieldValue(OrderMeta.getOrderedDate())).getDate());
         orderDO.setRequestedBy((String)rpcSend.getFieldValue(OrderMeta.getRequestedBy()));
-        orderDO.setCostCenter((Integer) rpcSend.getFieldValue(OrderMeta.getCostCenterId()));
+        orderDO.setCostCenter((Integer)((DropDownField)rpcSend.getField(OrderMeta.getCostCenterId())).getSelectedKey());
         
         if(rpcSend.getField(OrderMeta.getShipFromId()) != null)
-            orderDO.setShipFromId((Integer) rpcSend.getFieldValue(OrderMeta.getShipFromId()));
+            orderDO.setShipFromId((Integer)((DropDownField)rpcSend.getField(OrderMeta.getShipFromId())).getSelectedKey());
         
         if(rpcSend.getField(OrderMeta.getExternalOrderNumber()) != null)
             orderDO.setExternalOrderNumber((String)rpcSend.getFieldValue(OrderMeta.getExternalOrderNumber()));
@@ -893,7 +893,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         //set org values
         if(rpcSend.getField(OrderMeta.ORDER_ORGANIZATION_META.getName()) != null){
             orderDO.setOrganization((String)((DropDownField)rpcSend.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).getTextValue());
-            orderDO.setOrganizationId((Integer) rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName()));
+            orderDO.setOrganizationId((Integer)((DropDownField)rpcSend.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).getSelectedKey());
             orderDO.organizationAddressDO.setMultipleUnit((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()));
             orderDO.organizationAddressDO.setStreetAddress((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()));
             orderDO.organizationAddressDO.setCity((String)rpcSend.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getCity()));
@@ -904,14 +904,14 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         if(rpcSend.getField("reportToBillTo") != null){
             FormRPC reportToBillToRPC = (FormRPC)rpcSend.getField("reportToBillTo");
             orderDO.setReportTo((String)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_REPORT_TO_META.getName())).getTextValue());
-            orderDO.setReportToId((Integer) reportToBillToRPC.getFieldValue(OrderMeta.ORDER_REPORT_TO_META.getName()));
+            orderDO.setReportToId((Integer)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_REPORT_TO_META.getName())).getSelectedKey());
             orderDO.setBillTo((String)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_BILL_TO_META.getName())).getTextValue());
-            orderDO.setBillToId((Integer) reportToBillToRPC.getFieldValue(OrderMeta.ORDER_BILL_TO_META.getName()));
+            orderDO.setBillToId((Integer)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_BILL_TO_META.getName())).getSelectedKey());
         }
         
         //set description
         if(rpcSend.getField(OrderMeta.getDescription()) != null)
-            orderDO.setDescription((String) rpcSend.getFieldValue(OrderMeta.getDescription()));
+            orderDO.setDescription((String)((DropDownField)rpcSend.getField(OrderMeta.getDescription())).getSelectedKey());
         
         return orderDO;
     }
@@ -938,7 +938,23 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                 rpcReturn.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName(), null);
             else{
                 DataModel orgModel = new DataModel();
-                orgModel.add(new NumberObject(orderDO.getOrganizationId()),new StringObject(orderDO.getOrganization()));
+                DataSet orgSet = new DataSet();
+                
+                orgSet.setKey(new NumberObject(orderDO.getOrganizationId()));
+                //columns
+                orgSet.add(new StringObject(orderDO.getOrganization()));
+                orgSet.add(new StringObject(orderDO.organizationAddressDO.getStreetAddress()));
+                orgSet.add(new StringObject(orderDO.organizationAddressDO.getCity()));
+                orgSet.add(new StringObject(orderDO.organizationAddressDO.getState()));
+                                
+                //hidden fields
+                DataMap map = new DataMap();
+                map.put("aptSuite", new StringObject(orderDO.organizationAddressDO.getMultipleUnit()));
+                map.put("zipCode", new StringObject(orderDO.organizationAddressDO.getZipCode()));
+                orgSet.setData(map);
+                
+                orgModel.add(orgSet);
+
                 ((DropDownField)rpcReturn.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).setModel(orgModel);
                 rpcReturn.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName(), orgModel.get(0));
             }
@@ -984,8 +1000,8 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
             if(itemId != null)
                 orderItemDO.setId((Integer)itemId.getValue());
             orderItemDO.setOrder(orderId);
-            orderItemDO.setInventoryItemId((Integer)row.get(1).getValue());
-            orderItemDO.setQuantityRequested((Integer)row.get(0).getValue());
+            orderItemDO.setInventoryItemId((Integer)((DropDownField)row.get(1)).getSelectedKey());
+            orderItemDO.setQuantity((Integer)row.get(0).getValue());
             
             if(row.size() == 5){
                 orderItemDO.setUnitCost((Double)row.get(3).getValue());
@@ -1136,6 +1152,9 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
     }
     
     public void fillReportToBillToValues(FormRPC rpcSend, DataModel model){
+        if(model == null)
+            return;
+        
         DataSet set = model.get(0);
         
         //bill to values
@@ -1196,7 +1215,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                         map.put("transactionId", inventoryTransactionId);
                     
                     row.setData(map);
-                    row.get(0).setValue(orderItemRow.getQuantityRequested());
+                    row.get(0).setValue(orderItemRow.getQuantity());
                     
                     if(orderItemRow.getInventoryItemId() == null)
                         row.get(1).setValue(null);

@@ -53,6 +53,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
@@ -109,8 +110,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     }
     
 	public void onClick(Widget sender) {
-		if(sender instanceof ScreenMenuItem){
-        	if("duplicateRecord".equals(((String)((ScreenMenuItem)sender).objClass))){
+		if(sender instanceof MenuItem){
+        	if("duplicateRecord".equals(((String)((MenuItem)sender).objClass))){
                 onDuplicateRecordClick();
         	}
         }else if(sender == removeComponentButton){
@@ -174,6 +175,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         
         drop = (Dropdown)getWidget(InvItemMeta.getDispensedUnitsId());
         drop.setModel(dispensedUnitsDropdown);
+        
+        commitAddChain.add(afterCommitAdd);
+        commitUpdateChain.add(afterCommitUpdate);
         
 		super.afterDraw(success);			
         
@@ -239,9 +243,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         }   
     };
     
-    /*
-     * Overriden to allow lazy loading Contact and Note tabs
-     */
+    //
+    //Overriden to allow lazy loading Contact and Note tabs
+    //
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
             if (index == 0 && !((FormRPC)rpc.getField("components")).load) 
@@ -372,8 +376,6 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
             
             ((FormRPC)displayRPC.getField("locations")).setFieldValue("locQuantitiesTable", null);
             ((FormRPC)displayRPC.getField("components")).setFieldValue("componentsTable", null);
-            //((FormRPC)rpc.getField("components")).setFieldValue("componentsTable", componentsTable.model.getData());
-            //((FormRPC)rpc.getField("locations")).setFieldValue("locQuantitiesTable", locsTable.model.getData());
             ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
             ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
             
@@ -404,10 +406,10 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     
     public void changeState(FormInt.State state) {
         if(state == FormInt.State.DISPLAY){
-            ((ScreenMenuItem)((ScreenMenuItem) duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
 
         }else{
-            ((ScreenMenuItem)((ScreenMenuItem)duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
         } 
         
         super.changeState(state);
@@ -453,15 +455,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         }
     }
     
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
 
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
     //end table listener methods
     //

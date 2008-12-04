@@ -174,7 +174,7 @@ UIRF Software License are applicable instead of those above.
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
 								<dropdown key="{organizationMeta:getName($org)}" required="true"/>
 								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
-								<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+								<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 								<number key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
 								<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 								<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
@@ -205,7 +205,7 @@ UIRF Software License are applicable instead of those above.
 								<fields>
 									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
 									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>,
-									<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
+									<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
 									<xsl:value-of select='inventoryReceiptMeta:getUnitCost($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getQcReference($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getExternalReference($receipt)'/>										
 								</fields>
 							</queryTable>
@@ -287,7 +287,7 @@ UIRF Software License are applicable instead of those above.
 										<widths>300</widths>
 									</autoComplete>
 									<query>
-										<textbox case="mixed" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting" width="176px"/>
+										<textbox case="mixed" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting" width="160px"/>
 									</query>
 									</widget>
 								</row>
@@ -332,7 +332,7 @@ UIRF Software License are applicable instead of those above.
     	<string key="{addressMeta:getCity($address)}" required="false"/>
     	<string key="{addressMeta:getState($address)}" required="false"/>
     	<string key="{addressMeta:getZipCode($address)}" required="false"/>
-    	<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+    	<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 	</rpc>
 	<rpc key="query">
     	<table key="receiptsTable"/>
@@ -342,7 +342,7 @@ UIRF Software License are applicable instead of those above.
 		<queryString key="{inventoryItemMeta:getName($invItem)}" required="false"/>
 		<queryString key="{organizationMeta:getName($org)}" required="false"/>
 		<queryNumber key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
-		<queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+		<queryNumber key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 		<queryNumber key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>

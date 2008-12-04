@@ -194,8 +194,10 @@ UIRF Software License are applicable instead of those above.
 							</queryTable>
 						  </query>						  
 						</widget>								                
-		                <widget halign = "center">
-                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton" style="Button">
+		                <TablePanel spacing="0" padding="0" style="TableFooter">
+							<row>
+								<widget align="center">
+                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton" style="ButtonPanelButton">
                             <HorizontalPanel>
               						<AbsolutePanel style="RemoveRowButtonImage"/>
                               <widget>
@@ -203,7 +205,9 @@ UIRF Software License are applicable instead of those above.
                                </widget> 
                                </HorizontalPanel>
                              </appButton>
-                           </widget>	                
+                           </widget>
+                           </row>	                
+                           </TablePanel>
 					</VerticalPanel>					
 				</VerticalPanel>
 		</HorizontalPanel>

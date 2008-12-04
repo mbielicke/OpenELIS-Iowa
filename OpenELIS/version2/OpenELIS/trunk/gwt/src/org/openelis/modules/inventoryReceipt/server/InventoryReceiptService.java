@@ -105,8 +105,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
             fields.remove("receiptsTable");
             
-            //TODO add backif(isQueryEmpty(rpcSend))
-                //throw new QueryException(openElisConstants.getString("emptyQueryException"));
+            if(isQueryEmpty(rpcSend))
+                throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
                 receipts = remote.query(fields,0,leftTableRowsPerPage);
@@ -553,23 +553,23 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             StringField itemIsLotMaintained = (StringField)map.get("itemIsLotMaintained");
             StringField itemIsSerialMaintained = (StringField)map.get("itemIsSerialMaintained");
             NumberField orderItemId = (NumberField)map.get("orderItemId");
-            StringField invalidOrderId = (StringField)map.get("invalidOrderId");
+            //StringField invalidOrderId = (StringField)map.get("invalidOrderId");
             NumberField id = (NumberField)map.get("id");
             NumberField transReceiptOrderId = (NumberField)map.get("transReceiptOrderId");
             
             receiptDO.setOrderNumber((Integer)((NumberField)row.get(0)).getValue());
             receiptDO.setReceivedDate(((DatetimeRPC)((DateField)row.get(1)).getValue()).getDate());
             receiptDO.setUpc((String)((StringField)row.get(2)).getValue());
-            receiptDO.setInventoryItemId((Integer)((DropDownField)row.get(3)).getValue());
-            receiptDO.setOrganizationId((Integer)((DropDownField)row.get(4)).getValue());
+            receiptDO.setInventoryItemId((Integer)((DropDownField)row.get(3)).getSelectedKey());
+            receiptDO.setOrganizationId((Integer)((DropDownField)row.get(4)).getSelectedKey());
             receiptDO.setQuantityReceived((Integer)((NumberField)row.get(5)).getValue());
             receiptDO.setItemQtyRequested((Integer)((NumberField)row.get(6)).getValue());
             receiptDO.setUnitCost((Double)((NumberField)row.get(7)).getValue());
             receiptDO.setQcReference((String)((StringField)row.get(8)).getValue());
             receiptDO.setExternalReference((String)((StringField)row.get(9)).getValue());                
             
-            if(storageLocation != null && storageLocation.getValue() != null)
-                receiptDO.setStorageLocationId((Integer)storageLocation.getValue());
+            if(storageLocation != null && storageLocation.getSelectedKey() != null)
+                receiptDO.setStorageLocationId((Integer)storageLocation.getSelectedKey());
             if(lotNum != null && !"".equals(lotNum.getValue()))
                 receiptDO.setLotNumber((String)lotNum.getValue());
             if(expDate != null && expDate.getValue() != null)
@@ -582,8 +582,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
                 receiptDO.setIsSerialMaintained((String)itemIsSerialMaintained.getValue());
             if(orderItemId != null)
                 receiptDO.setOrderItemId((Integer)orderItemId.getValue());
-            if(invalidOrderId != null)
-                receiptDO.setOrderNumber(new Integer(-1));
+            //if(invalidOrderId != null)
+            //    receiptDO.setOrderNumber(new Integer(-1));
             if(id != null)
                 receiptDO.setId((Integer)id.getValue());
             if(transReceiptOrderId != null)
@@ -761,12 +761,12 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             map.put("itemIsLotMaintained", itemIsLotMaintained);
             map.put("itemIsSerialMaintained", itemIsSerialMaintained);
             map.put("orderItemId", orderItemId);
-            map.put("addToExisiting", addToExisting);
+            map.put("addToExisting", addToExisting);
             map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), inventoryLocation);
             map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNumber);
             map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expDate);
-            map.put("receiptId", receiptId);
-            map.put("transReceiptOrder", transReceiptOrder);
+            map.put("id", receiptId);
+            map.put("transReceiptOrderId", transReceiptOrder);
             row.setData(map);
             
             model.add(row);

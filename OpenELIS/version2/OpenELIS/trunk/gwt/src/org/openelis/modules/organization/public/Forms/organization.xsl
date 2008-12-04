@@ -79,8 +79,8 @@ UIRF Software License are applicable instead of those above.
 			<display>
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel">
-						<azTable colwidths="175" height="425px" key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+					<CollapsePanel key="collapsePanel" height="440px">
+						<azTable colwidths="175" height="425px" key="azTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 
@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
 									<widget>
-									<autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="225px">
+									<autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px">
 										<headers>Name,Street,City,St</headers>
 										<widths>180,110,100,20</widths>
 
@@ -193,10 +193,9 @@ UIRF Software License are applicable instead of those above.
 							<TabPanel halign="center" key="orgTabPanel">
 								<!-- TAB 1 -->
 								<tab key="contactsTab" text="{resource:getString($constants,'contact')}">
-									<VerticalPanel valign="top" padding="0" spacing="0">
+									<VerticalPanel  width="610px" padding="0" spacing="0">
 										<widget valign="top">
-
-											<table key="contactsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+											<table key="contactsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
 
@@ -241,7 +240,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 											</table>
 											<query>
-												<queryTable maxRows="8" showError="false" title="" width="592px">
+												<queryTable maxRows="9" showError="false" title="" width="574px">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
 
@@ -287,12 +286,11 @@ UIRF Software License are applicable instead of those above.
 								<!-- START TAB 2 -->
 								<tab text="{resource:getString($constants,'identifier')}">
 									<VerticalPanel padding="0" spacing="0">
-										<widget valign="top">
-
-											<table key="identifierstsTable" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
+									<widget valign="top">
+										<table key="identifierstsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'identifier')"/>,<xsl:value-of select="resource:getString($constants,'value')"/>												</headers>
-												<widths>267,300</widths>
+												<widths>267,298</widths>
 												<editors>
 													<textbox case="mixed"/>
 													<textbox case="mixed"/>
@@ -308,7 +306,7 @@ UIRF Software License are applicable instead of those above.
 
 											</table>
 											<query>
-												<queryTable maxRows="8" showError="false" title="" width="592px">
+												<queryTable maxRows="9" showError="false" title="" width="592px">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
 
@@ -385,7 +383,7 @@ UIRF Software License are applicable instead of those above.
 											    </widget>
 												<widget colspan="2">
 													<HorizontalPanel style="notesPanelContainer">
-														<VerticalPanel height="137px" key="notesPanel" layout="vertical" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="545px" xsi:type="Panel"></VerticalPanel>
+														<VerticalPanel height="178px" key="notesPanel" layout="vertical" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="545px" xsi:type="Panel"></VerticalPanel>
 													</HorizontalPanel>
 												</widget>
 

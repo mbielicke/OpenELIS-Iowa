@@ -43,6 +43,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -376,7 +377,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<FormRPC, Dat
     	newStandardNoteDO.setDescription((String)rpcSend.getFieldValue(StandardNoteMeta.getDescription()));
     	newStandardNoteDO.setName((String)rpcSend.getFieldValue(StandardNoteMeta.getName()));
     	newStandardNoteDO.setText((String)rpcSend.getFieldValue(StandardNoteMeta.getText()));
-    	newStandardNoteDO.setType((Integer)rpcSend.getFieldValue(StandardNoteMeta.getTypeId()));
+    	newStandardNoteDO.setType((Integer)((DropDownField)rpcSend.getField(StandardNoteMeta.getTypeId())).getSelectedKey());
     	
     	return newStandardNoteDO;
     }
