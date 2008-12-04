@@ -150,7 +150,59 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
+
+
 					<html>&lt;hr/&gt;</html>
+					<!--
+					enviromentalSampleLogin = Enviromental Sample Login
+enviromentalSampleLoginDescription = Description...
+clinicalSampleLogin = Clinical Sample Login
+clinicalSampleLoginDescription = Description...
+animalSampleLogin = Animal Sample Login
+newbornScreeningSampleLogin = Newborn Screening Sample Login
+newbornScreeningSampleDescription = Description...
+sampleManagement = Sample Management
+sampleManagementDescription = Description...
+-->
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">EnviromentalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">enviromentalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">EnviromentalSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">ClinicalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">clinicalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">ClinicalSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">AnimalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">animalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">AnimalSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">NewbornScreeningSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">newbornScreeningSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">NewbornScreeningSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">SampleManagement</xsl:with-param>
+				      <xsl:with-param name="label">sampleManagement</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">SampleManagementScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+
+					<html>&lt;hr/&gt;</html>
+
+
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">project</xsl:with-param>
@@ -310,7 +362,8 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="key">InventoryItem</xsl:with-param>
 				      <xsl:with-param name="label">inventoryItem</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="class">InventoryItemScreen</xsl:with-param>
+<!--				      <xsl:with-param name="class">InventoryItemScreen</xsl:with-param>-->
+				      <xsl:with-param name="class">TransferInventoryScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    </xsl:if>

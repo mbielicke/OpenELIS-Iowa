@@ -49,6 +49,7 @@ import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -74,7 +75,7 @@ import org.w3c.dom.Element;
 public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
     
     private static final long serialVersionUID = 0L;
-    private static final int leftTableRowsPerPage = 20;
+    private static final int leftTableRowsPerPage = 18;
     
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
@@ -667,7 +668,7 @@ public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet
      providerDO.setNpi(((String)rpcSend.getFieldValue(ProvMeta.getNpi())));
      
      if(!new Integer(-1).equals(rpcSend.getFieldValue(ProvMeta.getTypeId())))
-      providerDO.setTypeId((Integer)rpcSend.getFieldValue(ProvMeta.getTypeId()));
+      providerDO.setTypeId((Integer)((DropDownField)rpcSend.getField(ProvMeta.getTypeId())).getSelectedKey());
      
      return providerDO;
     }
@@ -705,14 +706,8 @@ public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet
             provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.get(2)).getValue()));
             provAddDO.getAddressDO().setStreetAddress(((String)((StringField)row.get(3)).getValue()));
             provAddDO.getAddressDO().setCity(((String)((StringField)row.get(4)).getValue()));
-            
-            if(!("").equals(row.get(5).getValue())){
-             provAddDO.getAddressDO().setState((String)row.get(5).getValue());
-            }
-            if(!("").equals(row.get(6).getValue())){
-             provAddDO.getAddressDO().setCountry((String)row.get(6).getValue());
-            }
-                        
+            provAddDO.getAddressDO().setState((String)((DropDownField)row.get(5)).getSelectedKey());
+            provAddDO.getAddressDO().setCountry((String)((DropDownField)row.get(6)).getSelectedKey());
             provAddDO.getAddressDO().setZipCode(((String)((StringField)row.get(7)).getValue()));
             provAddDO.getAddressDO().setWorkPhone(((String)((StringField)row.get(8)).getValue()));
             provAddDO.getAddressDO().setHomePhone(((String)((StringField)row.get(9)).getValue()));

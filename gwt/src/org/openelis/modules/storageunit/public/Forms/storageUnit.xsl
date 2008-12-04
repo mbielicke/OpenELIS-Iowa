@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
  <xalan:component prefix="storageUnitMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageUnitMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StorageUnitMetaMap"/>
   </xalan:component>
 
   <xsl:template match="doc"> 

@@ -68,8 +68,8 @@ UIRF Software License are applicable instead of those above.
 <screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
- 					<CollapsePanel key="collapsePanel" height="455px">
-						<azTable maxRows="20" tablewidth="auto" key="azTable" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
+ 					<CollapsePanel key="collapsePanel" height="440px">
+						<azTable maxRows="18" tablewidth="auto" key="azTable" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -151,9 +151,9 @@ UIRF Software License are applicable instead of those above.
    
     <TabPanel height= "200px" key= "provTabPanel"  halign="center">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel spacing= "0" padding="0">
+      <VerticalPanel width="610px" spacing= "0" padding="0">
        <widget valign="top">
-        <table width= "600px" maxRows = "9" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
+        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "600px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
+	     <queryTable width= "574px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -243,7 +243,7 @@ UIRF Software License are applicable instead of those above.
   </tab>
   
   <tab key="notesTab" text="{resource:getString($constants,'note')}">
-						<VerticalPanel key="secMod3" width= "618px" height="164px" spacing="0" padding="0" xsi:type="Panel">
+						<VerticalPanel key="secMod3" height="164px" spacing="0" padding="0" xsi:type="Panel">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 										<row>
 										
@@ -265,7 +265,7 @@ UIRF Software License are applicable instead of those above.
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="545px" height="61px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="545px" height="48px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -273,7 +273,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="155px" width="545px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="178px" width="545px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>

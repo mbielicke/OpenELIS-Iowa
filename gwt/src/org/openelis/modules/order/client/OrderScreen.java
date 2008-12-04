@@ -33,7 +33,6 @@ import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -43,7 +42,6 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
-import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -54,6 +52,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
@@ -102,13 +101,13 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
     
-    public OrderScreen(DataObject[] args) {                
+    public OrderScreen(Object[] args) {                
         super("org.openelis.modules.order.server.OrderService");
         
         orderType = (String)((StringObject)args[0]).getValue();
         
         HashMap hash = new HashMap();
-        hash.put("type", args[0]);
+        hash.put("type", (StringObject)args[0]);
         
         BooleanObject loadedObj = new BooleanObject((loaded ? "Y" : "N"));
         hash.put("loaded", loadedObj);
@@ -117,8 +116,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     }
 
     public void onClick(Widget sender) {
-        if(sender instanceof ScreenMenuItem){
-            if("duplicateRecord".equals(((String)((ScreenMenuItem)sender).objClass))){
+        if(sender instanceof MenuItem){
+            if("duplicateRecord".equals(((String)((MenuItem)sender).objClass))){
                 onDuplicateRecordClick();
             }
         }else if (sender == standardNoteCustomerButton)
@@ -384,8 +383,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {   
-            Window.alert("failure");
         }
+        
         public void onSuccess(Object result) {
     //        rpc.setFieldValue("orderType", orderType);
 
@@ -467,6 +466,26 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
             return true;
         return false;
     }
+    
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public void drop(TableWidget widget, Widget dragWidget) {
+        // TODO Auto-generated method stub
+        
+    }
     //
     //end table manager methods
     //
@@ -526,10 +545,10 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
     public void changeState(FormInt.State state) {
         if(duplicateMenuPanel != null){ 
             if(state == FormInt.State.DISPLAY){
-                ((ScreenMenuItem)((ScreenMenuItem) duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
 
             }else{  
-                ((ScreenMenuItem)((ScreenMenuItem)duplicateMenuPanel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
             }
         }
         

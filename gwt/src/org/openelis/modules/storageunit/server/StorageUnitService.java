@@ -43,6 +43,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -415,14 +416,10 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
     private StorageUnitDO getStorageUnitDOFromRPC(FormRPC rpcSend) {
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
-    	newStorageUnitDO.setId((Integer) rpcSend
-    			.getFieldValue(StorageUnitMeta.getId()));
-    	newStorageUnitDO.setCategory(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.getCategory())));
-    	newStorageUnitDO.setDescription(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.getDescription())));
-    	newStorageUnitDO.setIsSingular(((String) rpcSend
-    			.getFieldValue(StorageUnitMeta.getIsSingular())));
+    	newStorageUnitDO.setId((Integer) rpcSend.getFieldValue(StorageUnitMeta.getId()));
+    	newStorageUnitDO.setCategory((String)((DropDownField)rpcSend.getField(StorageUnitMeta.getCategory())).getSelectedKey());
+    	newStorageUnitDO.setDescription((String) rpcSend.getFieldValue(StorageUnitMeta.getDescription()));
+    	newStorageUnitDO.setIsSingular((String) rpcSend.getFieldValue(StorageUnitMeta.getIsSingular()));
     
     	return newStorageUnitDO;
     }

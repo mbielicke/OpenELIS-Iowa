@@ -48,15 +48,15 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
   <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="orderItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderItemMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="orgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderOrganizationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addr">
@@ -242,7 +242,7 @@ UIRF Software License are applicable instead of those above.
 									<label/>
 								</editors>
 								<fields>
-									<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="true"/>
+									<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="true"/>
 									<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
 									<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
 									<string key="location" required="false"/>
@@ -263,7 +263,7 @@ UIRF Software License are applicable instead of those above.
 										<label/>
 									</editors>
 									<fields>
-										<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
+										<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
 										<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
 										<xsl:value-of select='dictionaryMeta:getEntry($store)'/>,
 										label1
@@ -298,7 +298,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<HorizontalPanel width="14px"/>
 									<widget>
-										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($custNote)}"/>
+										<textarea width="580px" height="197px" case="mixed" key="{noteMeta:getText($custNote)}"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -321,7 +321,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<HorizontalPanel width="14px"/>
 									<widget>
-										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+										<textarea width="580px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -392,7 +392,7 @@ UIRF Software License are applicable instead of those above.
 							<widget>
 								<textbox case="upper" key="{addr:getZipCode($reportToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 							</widget>
-							<HorizontalPanel width="15px"/>
+							<HorizontalPanel width="13px"/>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 							<widget>
 								<textbox case="upper" key="{addr:getState($billToAddress)}" width="35px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
@@ -486,7 +486,7 @@ UIRF Software License are applicable instead of those above.
       <string key="orderType" reset="false"/>
             
       <table key="itemsTable"/>
-      <queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+      <queryNumber key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 	  <queryString key="{invItemMeta:getName($orderItemInvItem)}" required="false"/>
 	  <queryString key="{dictionaryMeta:getEntry($store)}" required="false"/>
       <queryString key="label1" required="false"/>

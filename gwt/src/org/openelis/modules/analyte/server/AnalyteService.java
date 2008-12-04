@@ -32,13 +32,13 @@ import java.util.List;
 
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -134,25 +134,17 @@ public class AnalyteService implements AppScreenFormServiceInt<FormRPC, DataSet,
 
 		// build the analyte DO from the form
 		newAnalyteDO = getAnalyteDOFromRPC(rpcSend);
-
-		//validate the fields on the backend
-		List exceptionList = remote.validateForAdd(newAnalyteDO);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpcSend);
-			
-			return rpcSend;
-		} 
 		
 		// send the changes to the database
 		Integer analyteId;
 		try{
 			analyteId = (Integer) remote.updateAnalyte(newAnalyteDO);
 		}catch(Exception e){
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpcSend);
-			return rpcSend;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpcSend);
+                return rpcSend;
+            }else
+                throw new RPCException(e.getMessage());
 		}
 
 		newAnalyteDO.setId(analyteId);
@@ -171,26 +163,15 @@ public class AnalyteService implements AppScreenFormServiceInt<FormRPC, DataSet,
     		//build the AnalyteDO from the form
     		newAnalyteDO = getAnalyteDOFromRPC(rpcSend);
     		
-    		//validate the fields on the backend
-    		List exceptionList = remote.validateForUpdate(newAnalyteDO);
-    		if(exceptionList.size() > 0){
-    			setRpcErrors(exceptionList, rpcSend);
-    			
-    			return rpcSend;
-    		} 
-    		
     		//send the changes to the database
     		try{
     			remote.updateAnalyte(newAnalyteDO);
     		}catch(Exception e){
-                if(e instanceof EntityLockedException)
+                if(e instanceof ValidationErrorsList){
+                    setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpcSend);
+                    return rpcSend;
+                }else
                     throw new RPCException(e.getMessage());
-                
-    			exceptionList = new ArrayList();
-    			exceptionList.add(e);
-    			
-    			setRpcErrors(exceptionList, rpcSend);
-    			return rpcSend;
     		}
     
     //		set the fields in the RPC
@@ -203,23 +184,15 @@ public class AnalyteService implements AppScreenFormServiceInt<FormRPC, DataSet,
 //		remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
-		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpcReturn);
-			
-			return rpcReturn;
-		} 
-		
 		try {
 			remote.deleteAnalyte((Integer)((DataObject)key.getKey()).getValue());
 			
 		} catch (Exception e) {
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpcReturn);
-			return rpcReturn;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpcReturn);
+                return rpcReturn;
+            }else
+                throw new RPCException(e.getMessage());
 		}	
 		
 		setFieldsInRPC(rpcReturn, new AnalyteDO());

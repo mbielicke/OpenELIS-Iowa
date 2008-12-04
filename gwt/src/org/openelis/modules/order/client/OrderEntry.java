@@ -39,7 +39,7 @@ public class OrderEntry implements AppModule {
         ClassFactory.addClass(new String[] {"OrderScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new OrderScreen((DataObject[])args);
+                                       return new OrderScreen((Object[])args);
                                    }
                                 }
         );

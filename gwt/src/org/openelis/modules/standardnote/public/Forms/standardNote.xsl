@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
 
   <xalan:component prefix="standardNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StandardNoteMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StandardNoteMetaMap"/>
   </xalan:component>
   
   <xsl:template match="doc"> 

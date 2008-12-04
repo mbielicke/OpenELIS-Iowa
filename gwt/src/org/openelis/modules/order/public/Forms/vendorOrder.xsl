@@ -50,15 +50,15 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
     <xalan:component prefix="orderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderMetaMap"/>
   </xalan:component>
 
   <xalan:component prefix="orderItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderItemMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderItemMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="orgMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrderOrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrderOrganizationMetaMap"/>
   </xalan:component>
   
   <xalan:component prefix="addr">
@@ -243,7 +243,7 @@ UIRF Software License are applicable instead of those above.
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<number key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="true"/>
+											<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="true"/>
 											<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
 											<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
 											<number type="double" required="false"/>
@@ -267,7 +267,7 @@ UIRF Software License are applicable instead of those above.
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<xsl:value-of select='orderItemMeta:getQuantityRequested($orderItem)'/>,
+											<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
 											<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
 											<xsl:value-of select='dictionaryMeta:getEntry($store)'/>,
 											<xsl:value-of select='orderItemMeta:getUnitCost($orderItem)'/>,
@@ -294,7 +294,7 @@ UIRF Software License are applicable instead of those above.
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
 										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-										<widths>80,155,95,40,55,130</widths>
+										<widths>80,155,95,40,55,128</widths>
 										<editors>
 											<label/>
 											<label/>
@@ -321,7 +321,7 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
 										<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extReference")'/>
 										</headers>
-										<widths>80,155,95,40,55,130</widths>
+										<widths>80,155,95,40,55,128</widths>
 										<editors>
 											<label/>
 											<label/>
@@ -361,7 +361,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<HorizontalPanel layout="horizontal" width="14px" xsi:type="Panel"/>
 									<widget>
-										<textarea width="576px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
+										<textarea width="580px" height="197px" case="mixed" key="{noteMeta:getText($shippingNote)}"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -418,7 +418,7 @@ UIRF Software License are applicable instead of those above.
       
       <!-- order items table -->
       <table key="itemsTable"/>
-      <queryNumber key="{orderItemMeta:getQuantityRequested($orderItem)}" type="integer" required="false"/>
+      <queryNumber key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 	  <queryString key="{invItemMeta:getName($orderItemInvItem)}" required="false"/>
 	  <queryString key="{dictionaryMeta:getEntry($store)}" required="false"/>
 	  <queryString key="{orderItemMeta:getCatalogNumber($orderItem)}" required="false"/>

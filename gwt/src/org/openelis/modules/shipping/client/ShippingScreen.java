@@ -28,6 +28,7 @@ package org.openelis.modules.shipping.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
@@ -39,6 +40,8 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -54,10 +57,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager, ChangeListener{
+public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager, ChangeListener, TabListener{
 
     private static boolean loaded = false;
     
@@ -65,12 +70,13 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     private boolean loadedFromAnotherScreen = false;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
-    private DataModel itemsShippedModel;
+    private TreeDataModel itemsShippedModel;
     private AppButton removeRowButton;
     private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
     private AutoComplete shippedToDropdown;
     private TableWidget itemsTable, trackingNumbersTable;
     private Dropdown statusDropdown;
+    private DataModel checkedOrderIds;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
     
@@ -80,7 +86,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         super("org.openelis.modules.shipping.server.ShippingService", !loaded);
     }
     
-    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText, DataModel itemsShippedModel) {
+    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText, TreeDataModel itemsShippedModel, 
+                          DataModel checkedOrderIds) {
         super("org.openelis.modules.shipping.server.ShippingService", !loaded);
         loadedFromAnotherScreen = true;
         
@@ -93,6 +100,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         this.stateText = stateText;
         this.zipCodeText = zipCodeText;
         this.itemsShippedModel = itemsShippedModel;
+        this.checkedOrderIds = checkedOrderIds;
     }
     
     public void onClick(Widget sender) {
@@ -179,8 +187,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
 
         super.afterDraw(success);
         
-        rpc.setFieldValue("itemsTable", itemsTable.model.getData());
-        rpc.setFieldValue("trackingNumbersTable", trackingNumbersTable.model.getData());
+        ((FormRPC)rpc.getField("shippingItems")).setFieldValue("itemsTable", itemsTable.model.getData());
+        ((FormRPC)rpc.getField("shippingItems")).setFieldValue("trackingNumbersTable", trackingNumbersTable.model.getData());
         
         if(loadedFromAnotherScreen)
             putInAddAndLoadData();
@@ -237,7 +245,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity(), cityText);
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState(), stateText);
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode(), zipCodeText);
-        loadItemsShippedTableFromModel(itemsShippedModel);
+        //loadItemsShippedTableFromModel(itemsShippedModel);
+        loadItemsShippedTableFromTreeModel(itemsShippedModel);
 
         loadScreen(rpc);
     }
@@ -254,30 +263,79 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         trackingNumbersTable.model.enableAutoAdd(true);
     }
     
-    public void abort() {
-        trackingNumbersTable.model.enableAutoAdd(false);
-        super.abort();  
-    }
+    public void commit() {
+        if(state == FormInt.State.ADD){
+            /*if(checkedOrderIds != null && checkedOrderIds.size() > 0){
+                DataModel model = new DataModel();
+                for(int i=0; i<checkedOrderIds.size(); i++){
+                    DataSet set = new DataSet();
+                    set.setKey(new NumberField((Integer)checkedOrderIds.get(i)));
+                    model.add(set);
+                }
+              */      
+                //rpc.setFieldValue("unlockModel", checkedOrderIds);    
+                
+                Data[] args = new Data[] {checkedOrderIds}; 
+                
+                screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
+                    public void onSuccess(StringObject obj){
+                        trackingNumbersTable.model.enableAutoAdd(false);
+                        checkedOrderIds.clear();
+                        superCommit();
+                        
+                    }
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                    }
+                });
+           // }
+        }
 
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
-        public void onSuccess(Object result){
-            trackingNumbersTable.model.enableAutoAdd(false);
-        }
-        
-        public void onFailure(Throwable caught){
-            
-        }
-    };
+        trackingNumbersTable.model.enableAutoAdd(false);
+        super.commit();
+    }
     
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
-        public void onSuccess(Object result){
-            trackingNumbersTable.model.enableAutoAdd(false);            
-        }
-        
-        public void onFailure(Throwable caught){
+    protected void superCommit(){
+        super.commit();
+    }
+    
+    public void abort() {
+        if(state == FormInt.State.ADD && checkedOrderIds != null){
+            //we need to unlock the order records
             
+          /*  DataModel model = new DataModel();
+            if(checkedOrderIds != null && checkedOrderIds.size() > 0){
+                for(int i=0; i<checkedOrderIds.size(); i++){
+                    DataSet set = new DataSet();
+                    set.setKey(new NumberField((Integer)checkedOrderIds.get(i).ge));
+                    model.add(set);
+               }
+            }
+            */
+             // prepare the argument list for the getObject function
+            Data[] args = new Data[] {checkedOrderIds}; 
+            
+            screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
+                public void onSuccess(StringObject obj){
+                    trackingNumbersTable.model.enableAutoAdd(false);
+                    superAbort();    
+                    
+                }
+                
+                public void onFailure(Throwable caught){
+                    Window.alert(caught.getMessage());
+                }
+            });
+        }else{
+            trackingNumbersTable.model.enableAutoAdd(false);
+            super.abort();
         }
-    };
+    }
+    
+    protected void superAbort(){
+        super.abort();
+    }
     
     //
     //start table manager methods
@@ -295,13 +353,33 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     }
 
     public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
-        return false;
+        return true;
     }
 
     public boolean canSelect(TableWidget widget, DataSet set, int row) {
         if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
             return true;
         return false;
+    }
+    
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        // TODO Auto-generated method stub
+        
+    } 
+    
+    public void drop(TableWidget widget, Widget dragWidget) {
+        // TODO Auto-generated method stub
+        
     }
     //
     //end table manager methods
@@ -326,11 +404,102 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         }
     }
     
+    private void loadItemsShippedTableFromTreeModel(TreeDataModel model){
+        for(int i=0; i<model.size(); i++){
+            DataSet tableRow;
+            TreeDataItem row = model.get(i);
+            
+            if(row.getItems().size() > 0){
+                for(int j=0; j<row.getItems().size(); j++){
+                    tableRow = itemsTable.model.createRow();
+                    TreeDataItem childRow = row.getItems().get(j);
+                    
+                    tableRow.get(0).setValue(childRow.get(0).getValue());
+                    tableRow.get(1).setValue(childRow.get(1).getValue());
+                    
+                    tableRow.setData((DataMap)childRow.getData().clone());
+                    
+                    itemsTable.model.addRow(tableRow);
+                }
+            }else{
+                tableRow = itemsTable.model.createRow();
+                tableRow.get(0).setValue(row.get(0).getValue());
+                tableRow.get(1).setValue(row.get(1).getValue());
+                
+                tableRow.setData((DataMap)row.getData().clone());
+                
+                itemsTable.model.addRow(tableRow);
+            }
+        }
+        if(model.size() > 0)
+            itemsTable.model.refresh();
+    }
+    
     private void onRemoveRowButtonClick() {
         int selectedRow = trackingNumbersTable.model.getSelectedIndex();
         
         if (selectedRow > -1 && trackingNumbersTable.model.numRows() > 0) 
             trackingNumbersTable.model.deleteRow(selectedRow);
         
-    }    
+    }
+
+    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
+        if(state != FormInt.State.QUERY){
+            if (tabIndex == 0 && !((FormRPC)rpc.getField("shippingItems")).load)
+                fillShippingItems();
+                
+            else if (tabIndex == 1 && !((FormRPC)rpc.getField("orderShippingNotes")).load) 
+                fillOrderShippingNotes();
+              
+        }
+        return true;
+    }
+
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { }
+    
+    private void fillShippingItems() {
+        if(key == null)
+            return;
+        
+        window.setStatus("","spinnerIcon");
+
+        // prepare the argument list for the getObject function
+        Data[] args = new Data[] {key, rpc.getField("shippingItems")};
+
+        screenService.getObject("loadShippingItems", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
+                rpc.setField("shippingItems", (FormRPC)result);
+                window.setStatus("","");
+            }
+
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+                window.setStatus("","");
+            }
+        });
+    }
+    
+    private void fillOrderShippingNotes() {
+        if(key == null)
+            return;
+        
+        window.setStatus("","spinnerIcon");
+
+        // prepare the argument list for the getObject function
+        Data[] args = new Data[] {key, rpc.getField("orderShippingNotes")};
+
+        screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<FormRPC>() {
+            public void onSuccess(FormRPC result) {
+                load(result);
+                rpc.setField("orderShippingNotes", (FormRPC)result);
+                window.setStatus("","");
+            }
+
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+                window.setStatus("","");
+            }
+        });
+    }
 }

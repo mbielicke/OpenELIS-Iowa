@@ -48,14 +48,17 @@ import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
+import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormCalendarWidget;
+import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableModelEvents;
@@ -75,6 +78,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
     
     private TableWidget receiptsTable;
+    private QueryTable receiptsQueryTable;
     
     private AppButton        removeReceiptButton;
     private TextBox orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText,
@@ -159,7 +163,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //
         // disable auto add and make sure there are no rows in the table
         //
-        receiptsTable = (TableWidget)getWidget("receiptsTable");
+        ScreenTableWidget sw = (ScreenTableWidget)widgets.get("receiptsTable");
+        receiptsTable = (TableWidget)sw.getWidget();
+        receiptsQueryTable = (QueryTable)sw.getQueryWidget().getWidget();
         receiptsTable.model.enableAutoAdd(false);
         receiptsTable.addTableWidgetListener(this);
         receiptsTable.model.addTableModelListener(this);
@@ -191,6 +197,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         itemLocation.enable(false);
         itemExpDate.enable(false);
         addToExisiting.enable(false);
+        receiptsTable.select(0, 0);
         
         //TODO not sure how to replace this  receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 0);
        
@@ -224,6 +231,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         itemLotNum.enable(false);
         itemLocation.enable(false);
         removeReceiptButton.changeState(AppButton.ButtonState.DISABLED);
+        receiptsQueryTable.select(0,0);
     }
     
     public void update() {
@@ -245,6 +253,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 enable(true);
                 window.setStatus(consts.get("updateFields"),"");
                 changeState(State.UPDATE);
+                receiptsTable.select(0, 0);
             }
             
             public void onFailure(Throwable caught){
@@ -377,6 +386,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public boolean canSelect(TableWidget widget, DataSet set, int row) {
         return true;
     }
+    
+    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {}
+
+    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //
@@ -784,7 +805,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                             ((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue() != null)
                 ((FormCalendarWidget)itemExpDate.getWidget()).setText(((DatetimeRPC)((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue()).toString());
             else
-                ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
+                ((CalendarLookUp)itemExpDate.getWidget()).setText("");
             
             if(map.get("addToExisting") != null)
                 ((CheckBox)addToExisiting.getWidget()).setState((String)((CheckField)map.get("addToExisting")).getValue());
@@ -801,7 +822,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             itemDisUnitsText.setText("");
             ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
             ((TextBox)itemLotNum.getWidget()).setText("");
-            ((FormCalendarWidget)itemExpDate.getWidget()).setText("");
+            ((CalendarLookUp)itemExpDate.getWidget()).setText("");
             ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
         }
     }

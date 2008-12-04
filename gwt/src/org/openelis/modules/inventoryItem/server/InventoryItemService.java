@@ -186,7 +186,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
         
         inventoryItemDO.setId(inventoryItemId);
 
-//      set the fields in the RPC
+        //set the fields in the RPC
         setFieldsInRPC(rpcReturn, inventoryItemDO);
 
         //we need to refresh the comments tab if it is showing
@@ -202,6 +202,9 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
         //we need to clear out the note subject and the note text fields after a commit
         ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getSubject(), null);
         ((FormRPC)rpcReturn.getField("comments")).setFieldValue(InvItemMeta.getNote().getText(), null);  
+        
+        //we need to set the component rpc value to the orig component value since it is an add
+        ((FormRPC)rpcReturn.getField("components")).setFieldValue("componentsTable", componentsTable);
         
         return rpcReturn;
     }
@@ -773,11 +776,12 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
         
         if(rpcSend.getFieldValue(InvItemMeta.getAverageCost()) != null)
             inventoryItemDO.setAveCost((Double)rpcSend.getFieldValue(InvItemMeta.getAverageCost()));
+        
         inventoryItemDO.setAveDailyUse((Integer)rpcSend.getFieldValue(InvItemMeta.getAverageDailyUse()));
         inventoryItemDO.setAveLeadTime((Integer)rpcSend.getFieldValue(InvItemMeta.getAverageLeadTime()));
-        inventoryItemDO.setCategory((Integer)rpcSend.getFieldValue(InvItemMeta.getCategoryId()));
+        inventoryItemDO.setCategory((Integer)((DropDownField)rpcSend.getField(InvItemMeta.getCategoryId())).getSelectedKey());
         inventoryItemDO.setDescription((String)rpcSend.getFieldValue(InvItemMeta.getDescription()));
-        inventoryItemDO.setDispensedUnits((Integer)rpcSend.getFieldValue(InvItemMeta.getDispensedUnitsId()));
+        inventoryItemDO.setDispensedUnits((Integer)((DropDownField)rpcSend.getField(InvItemMeta.getDispensedUnitsId())).getSelectedKey());
         inventoryItemDO.setId((Integer)rpcSend.getFieldValue(InvItemMeta.getId()));
         inventoryItemDO.setIsActive((String)rpcSend.getFieldValue(InvItemMeta.getIsActive()));
         inventoryItemDO.setIsBulk((String)rpcSend.getFieldValue(InvItemMeta.getIsBulk()));
@@ -793,8 +797,8 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
         inventoryItemDO.setQuantityMaxLevel((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityMaxLevel()));
         inventoryItemDO.setQuantityMinLevel((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityMinLevel()));
         inventoryItemDO.setQuantityToReorder((Integer)rpcSend.getFieldValue(InvItemMeta.getQuantityToReorder()));
-        inventoryItemDO.setStore((Integer)rpcSend.getFieldValue(InvItemMeta.getStoreId()));
-        inventoryItemDO.setParentInventoryItemId((Integer)rpcSend.getFieldValue(InvItemMeta.PARENT_INVENTORY_ITEM.getName()));
+        inventoryItemDO.setStore((Integer)((DropDownField)rpcSend.getField(InvItemMeta.getStoreId())).getSelectedKey());
+        inventoryItemDO.setParentInventoryItemId((Integer)((DropDownField)rpcSend.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).getSelectedKey());
         inventoryItemDO.setParentInventoryItem((String)((DropDownField)rpcSend.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).getTextValue());
         inventoryItemDO.setParentRatio((Integer)rpcSend.getFieldValue(InvItemMeta.getParentRatio()));
         
@@ -815,7 +819,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
             if(id != null)
                 componentDO.setId((Integer)id.getValue());
 
-            componentDO.setComponentNameId((Integer)((DropDownField)row.get(0)).getValue());
+            componentDO.setComponentNameId((Integer)((DropDownField)row.get(0)).getSelectedKey());
             componentDO.setComponentName((String)((DropDownField)row.get(0)).getTextValue());
             componentDO.setComponentDesc((String)((StringField)row.get(1)).getValue());
             componentDO.setQuantity((Double)((NumberField)row.get(2)).getValue());
