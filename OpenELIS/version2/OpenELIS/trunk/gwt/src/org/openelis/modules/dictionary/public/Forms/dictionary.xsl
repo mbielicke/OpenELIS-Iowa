@@ -67,7 +67,7 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" xsi:type="Panel" >
 			<!--left table goes here -->
 			 		<CollapsePanel key="collapsePanel" height="450px">
-						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" title="{resource:getString($constants,'catName')}" width="100%">
+						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'catName')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -166,7 +166,7 @@ UIRF Software License are applicable instead of those above.
 									<string key="{dictionary:getEntry($dictNew)}" required = "true"/>																		
 									<dropdown key="{relentry:getEntry($rel)}"/>
 								</fields>
-								<sorts>true,true,true,true,true</sorts>
+								<sorts>false,false,false,true,false</sorts>
 								<filters>false,false,false,false,false</filters>
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
@@ -193,16 +193,15 @@ UIRF Software License are applicable instead of those above.
 								<colAligns>left,left,left,left,left</colAligns>
 							</queryTable>
 						  </query>						  
-						</widget>								                
-		                <TablePanel spacing="0" padding="0" style="TableFooter">
-							<row>
-								<widget align="center">
-                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton" style="ButtonPanelButton">
-                            <HorizontalPanel>
-              						<AbsolutePanel style="RemoveRowButtonImage"/>
-                              <widget>
-                                  <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-                               </widget> 
+						</widget>			
+											                
+		                <TablePanel width = "500px" spacing="0" padding="0" style="TableFooter">
+						 <row>
+						  <widget align="center">
+                            <appButton  action="removeEntry" onclick="this" key = "removeEntryButton" style="Button">
+                             <HorizontalPanel>
+              				     <AbsolutePanel style="RemoveRowButtonImage"/>                              
+                                  <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>                               
                                </HorizontalPanel>
                              </appButton>
                            </widget>

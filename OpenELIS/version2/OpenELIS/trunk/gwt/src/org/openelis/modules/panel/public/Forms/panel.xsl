@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="225px">
 					  <VerticalPanel>	
-						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" title="{resource:getString($constants,'panel')}" width="100%">
+						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'panel')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -141,7 +141,7 @@ UIRF Software License are applicable instead of those above.
                               <VerticalPanel style="Form">
                                 <!--<text ><xsl:value-of select="resource:getString($constants,'testsThisPanel')"/></text>-->
                                <widget valign="top"> 
-                                <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" drop="this" width="auto">												
+                                <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
 												 <xsl:value-of select="resource:getString($constants,'method')"/>												 
@@ -210,13 +210,21 @@ UIRF Software License are applicable instead of those above.
 													<string key="method"/>
 													<string key="section"/>													
 												</fields>
-												<sorts>false,false,false</sorts>
+												<sorts>true,true,true</sorts>
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
 								</table>
                               </VerticalPanel> 
 						   </HorizontalPanel>	
 						   <HorizontalPanel>	
+						   <widget style="WhiteContentPanel" valign="middle">
+									       <appButton action="removeTest" onclick="this" style="Button" key="removeTestButton">									        
+						                    <HorizontalPanel>
+											 <AbsolutePanel style="RemoveRowButtonImage"/>						                      
+                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							                 </HorizontalPanel> 						               
+						                 </appButton>
+						         </widget>
 						       <HorizontalPanel width = "2px"/>
 						       <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="moveUp" onclick="this" style="Button" key="moveUpButton">									       
@@ -232,16 +240,7 @@ UIRF Software License are applicable instead of those above.
                 						       <text><xsl:value-of select='resource:getString($constants,"moveDown")'/> </text>
 							                 </widget>							               
 						                 </appButton>
-						        </widget>       
-						        <HorizontalPanel width = "3px"/>
-						         <widget style="WhiteContentPanel" valign="middle">
-									       <appButton action="removeTest" onclick="this" style="Button" key="removeTestButton">									        
-						                    <HorizontalPanel>
-											 <AbsolutePanel style="RemoveRowButtonImage"/>						                      
-                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </HorizontalPanel> 						               
-						                 </appButton>
-						         </widget>
+						        </widget>       						        						         
 						     </HorizontalPanel>					   
 						</VerticalPanel>
 					 </HorizontalPanel>  	 						  			

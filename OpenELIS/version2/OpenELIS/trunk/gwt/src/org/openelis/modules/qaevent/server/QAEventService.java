@@ -37,7 +37,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormRPC;
-import org.openelis.gwt.common.IForm;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
@@ -368,8 +367,8 @@ public class QAEventService implements AppScreenFormServiceInt<FormRPC, DataSet,
         rpcReturn.setFieldValue(QAEMeta.getIsBillable(),qaeDO.getIsBillable());     
         rpcReturn.setFieldValue(QAEMeta.getDescription(),qaeDO.getDescription());
         rpcReturn.setFieldValue(QAEMeta.getReportingText(),qaeDO.getReportingText());   
-        rpcReturn.setFieldValue(QAEMeta.getTestId(),qaeDO.getTest());        
-        rpcReturn.setFieldValue(QAEMeta.getTypeId(),qaeDO.getType());
+        rpcReturn.setFieldValue(QAEMeta.getTestId(),new DataSet(new NumberObject(qaeDO.getTest())));        
+        rpcReturn.setFieldValue(QAEMeta.getTypeId(),new DataSet(new NumberObject(qaeDO.getType())));
     }
     
     private QaEventDO getQaEventDOFromRPC(FormRPC rpcSend){

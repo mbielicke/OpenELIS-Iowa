@@ -26,6 +26,8 @@
 package org.openelis.modules.dictionary.client;
 
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -63,33 +65,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     public DictionaryScreen() {
         super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
     }
-
-    public void performCommand(Enum action, Object obj) {
-        if(obj instanceof AppButton){           
-           String baction = ((AppButton)obj).action;           
-           if (baction.startsWith("query:")) {
-               getCategories(baction.substring(6, baction.length()));
-           }else               
-               super.performCommand(action, obj);
-        } else{
-            if(action == State.ADD ||action == State.UPDATE){
-                dictEntryController.model.enableAutoAdd(true);
-             }else{
-                dictEntryController.model.enableAutoAdd(false); 
-             }
-            super.performCommand(action, obj);
-        }
-    }
-
-    public void onClick(Widget sender) {
-        
-        String action = ((AppButton)sender).action;        
-         if (action.equals("removeEntry")) {
-             onRemoveRowButtonClick();            
-        }
-    }
-
+    
     public void afterDraw(boolean success) {       
+        loaded = true;
         AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -112,22 +90,68 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
         displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
-        
+                
         if (sectionDropDown == null) {
             sectionDropDown = (DataModel)initData.get("sections");
         }
 
         displaySection.setModel(sectionDropDown);
         
-        super.afterDraw(success);
+        // override the callbacks
+        updateChain.add(afterUpdate);
+        super.afterDraw(success);        
         
-        loaded = true;
         rpc.setFieldValue("dictEntTable",dictEntryController.model.getData());
     }
+    
+    public void performCommand(Enum action, Object obj) {
+        
+        if(action == ButtonPanel.Action.QUERY && obj instanceof AppButton) {
+            String query = ((AppButton)obj).action;
+            if (query.indexOf(":") != -1)
+                getCategories(query.substring(6));
+        }           
+                  
+        super.performCommand(action, obj);
+    }
+
+    public void onClick(Widget sender) {
+        if(sender == removeEntryButton)  
+           onRemoveRowButtonClick();            
+     }
+
+    
 
     public void query() {
         super.query();
         removeEntryButton.changeState(ButtonState.DISABLED);
+        dictEntryController.model.enableAutoAdd(false); 
+        
+    }
+    
+    public void add() {
+        super.add();
+        dictEntryController.model.enableAutoAdd(true); 
+    }
+    
+    public void abort() {
+        dictEntryController.model.enableAutoAdd(false); 
+        super.abort();
+    }
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+            Window.alert(caught.getMessage());
+        }
+
+        public void onSuccess(Object result) {
+            dictEntryController.model.enableAutoAdd(true);             
+        }
+    };
+    
+    protected void doSubmit(){  
+        super.doSubmit();
+        dictEntryController.model.enableAutoAdd(false);
     }
 
     private void getCategories(String query) {
@@ -142,16 +166,9 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     
     private void onRemoveRowButtonClick(){
         ((TableWidget)dictEntryController.getWidget()).model
-        .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());;       
+        .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());       
     }     
             
-
-   /* public void showError(int row, int col, TableController controller,String error) {
-         AbstractField field =  controller.model.getFieldAt(row, col);      
-         field.addError(error);
-         ((TableCellInputWidget)controller.view.table.getWidget(row,col)).drawErrors();
-    }*/
-
 
     public boolean canAdd(TableWidget widget,DataSet set, int row) {
         // TODO Auto-generated method stub
