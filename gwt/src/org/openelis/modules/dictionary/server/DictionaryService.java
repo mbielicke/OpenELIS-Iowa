@@ -61,8 +61,7 @@ import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.security.domain.SectionIdNameDO;
-import org.openelis.security.remote.SystemUserUtilRemote;
+import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -122,20 +121,13 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
             model.clear();
         while(i < systemNames.size() && i < leftTableRowsPerPage) {
     
-            IdNameDO resultDO = (IdNameDO)systemNames.get(i);
-            //category id
-            Integer idResult = resultDO.getId();
-            //category name
-            String sysNameResult = resultDO.getName();
-                        
+            IdNameDO resultDO = (IdNameDO)systemNames.get(i);                        
     
             DataSet row = new DataSet();
             
-            NumberObject id = new NumberObject(idResult);
+            NumberObject id = new NumberObject(resultDO.getId());
             
-            StringObject sysName = new StringObject();
-                        
-            sysName.setValue(sysNameResult);    
+            StringObject sysName = new StringObject(resultDO.getName());                        
             
             row.setKey(id);                      
             row.add(sysName);
@@ -161,7 +153,6 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
             setRpcErrors(exceptionList,rpcSend);   
-            //rpcSend.status = IForm.INVALID_FORM;
             return rpcSend;
         } 
         
@@ -179,9 +170,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
        
          categoryDO.setId(categoryId);
            
-         setFieldsInRPC(rpcReturn, categoryDO);                                   
-
-         rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpcReturn.getField("dictEntTable").getValue(),dictDOList));
+         setFieldsInRPC(rpcReturn, categoryDO);                                            
                   
         return rpcReturn;
     }
@@ -219,10 +208,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
            return rpcSend;
        }
          
-         setFieldsInRPC(rpcReturn,categoryDO);
-         
-        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpcReturn.getField("dictEntTable").getValue(),dictDOList));
-         
+         setFieldsInRPC(rpcReturn,categoryDO);                       
          
         return rpcReturn;
     }
@@ -230,7 +216,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
    
 
     public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
+        // Delete functionality is not needed on the screen 
         return null;
     }
 
@@ -334,12 +320,13 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                     row.get(3).setValue(dictDO.getEntry());
                                                                                                         
                      
-//                   we need to create a dataset for the parent organization auto complete
+                    //we need to create a dataset for the parent organization auto complete
                     if(dictDO.getRelatedEntryId() == null)
                        row.get(4).setValue(null);
                     else{
                         DataModel model = new DataModel();
                         model.add(new NumberObject(dictDO.getRelatedEntryId()),new StringObject(dictDO.getRelatedEntryText()));
+                        model.add(new NumberObject(-1),new StringObject(""));                        
                         ((DropDownField)row.get(4)).setModel(model);
                         row.get(4).setValue(model.get(0));
                     }
@@ -382,42 +369,33 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
       }
 
     // the method called to load the dropdowns on the screen
-    public DataModel getInitialModel(String cat) { 
-        DataModel model = new DataModel();
-                
-        if(cat.equals("section")){
+    protected DataModel getInitialModel(String cat) { 
+        DataModel model = new DataModel();             
         
-         SystemUserUtilRemote utilRemote  = (SystemUserUtilRemote)EJBFactory.lookup("SystemUserUtilBean/remote");
-         List<SectionIdNameDO> sections = utilRemote.getSections("openelis");
-                      
-                                 
-         if(sections!=null){
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
+        List<IdNameDO> values = remote.getSectionDropDownValues();
+                                                      
+         if(values!=null){
 
              DataSet blankset = new DataSet();
              
-             StringObject blankStringId = new StringObject();
-                                         
-             blankStringId.setValue("");
+             StringObject blankStringId = new StringObject("");
+
              blankset.add(blankStringId);
              
-             if(cat.equals("section")){
+            
               NumberObject blankNumberId = new NumberObject(-1);
-              blankset.setKey(blankNumberId);
-             }                        
+              blankset.setKey(blankNumberId);                                    
              
              model.add(blankset);
              
-          for (Iterator iter = sections.iterator(); iter.hasNext();) {
-              SectionIdNameDO sectionDO = (SectionIdNameDO)iter.next();
+          for (Iterator iter = values.iterator(); iter.hasNext();) {
+              IdNameDO sectionDO = (IdNameDO)iter.next();
                            
                 DataSet set = new DataSet();
-                //id
-                Integer dropdownId = sectionDO.getId();
-                //entry
-                String dropdownText = sectionDO.getName();
                 
-                StringObject textObject = new StringObject(dropdownText);
-                NumberObject numberId = new NumberObject(dropdownId);
+                StringObject textObject = new StringObject(sectionDO.getName());
+                NumberObject numberId = new NumberObject(sectionDO.getId());
                 
                 set.add(textObject);
              
@@ -425,7 +403,6 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                 
                 model.add(set);                          
            }                           
-          }
         }        
         return model;
         
@@ -433,32 +410,28 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
 
    //  the method called to load the matching entries in the autocomplete box(es) on the screen
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {         
-        
-       if(("relatedEntry").equals(cat)){ 
+      if("relatedEntry".equals(cat)) {        
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
         List entries = remote.getMatchingEntries(match+"%", 10);
         DataModel dataModel = new DataModel();
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             
             IdNameDO element = (IdNameDO)iter.next();
-            Integer entryId = element.getId();                   
-            String entryText = element.getName();
             
             DataSet data = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject(entryId);
+            NumberObject idObject = new NumberObject(element.getId());
             data.setKey(idObject);
             
-            StringObject nameObject = new StringObject(entryText);
+            StringObject nameObject = new StringObject(element.getName());
             data.add(nameObject);
             
             //add the dataset to the datamodel
             dataModel.add(data);
-        }       
-        
+        }                
         return dataModel;
-       }
-      return null; 
+      }
+      return null;
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, CategoryDO catDO){
@@ -491,39 +464,27 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
             
          DataSet row = dictEntryTable.get(iter);
          DictionaryDO dictDO = new DictionaryDO();
-                          
-         String sysName = (String)((StringField)row.get(1)).getValue();
-         String entry = (String)((StringField)row.get(3)).getValue();
-         
-           dictDO.setSystemName(sysName);           
-           dictDO.setEntry(entry);  
+
            NumberField id = null;
            if(row.getData()!=null)
              id = (NumberField)((DataMap)row.getData()).get("id");           
            
-           if(id!=null){
-               if(id.getValue()!=null){
-                 dictDO.setId((Integer)id.getValue());
-               } 
+           if(id!=null){              
+                 dictDO.setId((Integer)id.getValue());                
               } 
          
            
             dictDO.setDelete(false);
-                                            
-            
-             DropDownField relEntryId = (DropDownField)row.get(4); 
-              if(relEntryId!=null){
-                 if(relEntryId.getValue()!=null){
-                   dictDO.setRelatedEntryId((Integer)relEntryId.getSelectedKey());
-                 }
-                }
-                     
-              CheckField isActive =  (CheckField)row.get(0);              
-              dictDO.setIsActive((String)isActive.getValue());
+                           
+            dictDO.setIsActive((String)((CheckField)row.get(0)).getValue());
+            dictDO.setSystemName((String)((StringField)row.get(1)).getValue()); 
+            dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));
+            dictDO.setEntry((String)((StringField)row.get(3)).getValue());                                    
+            dictDO.setRelatedEntryId((Integer)((DropDownField)row.get(4)).getSelectedKey());                                       
               
-             dictDO.setCategory(categoryId);         
-             dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));         
-             dictDOList.add(dictDO);             
+            dictDO.setCategory(categoryId);         
+                      
+            dictDOList.add(dictDO);             
           }
         for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){
             
@@ -539,22 +500,23 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
               if(row.getData()!=null)
                 id = (NumberField)((DataMap)row.getData()).get("id");           
               
-              if(id!=null){
-                  if(id.getValue()!=null){
-                    dictDO.setId((Integer)id.getValue());
-                  } 
+              if(id!=null){                  
+                    dictDO.setId((Integer)id.getValue());                   
                  } 
+              
+              dictDO.setDelete(true);
                                                
-               dictDO.setRelatedEntryId((Integer)((DropDownField)row.get(4)).getSelectedKey());
+              dictDO.setIsActive((String)((CheckField)row.get(0)).getValue());
+              dictDO.setSystemName((String)((StringField)row.get(1)).getValue()); 
+              dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));
+              dictDO.setEntry((String)((StringField)row.get(3)).getValue());                                    
+              dictDO.setRelatedEntryId((Integer)((DropDownField)row.get(4)).getSelectedKey());                                       
+                
+              dictDO.setCategory(categoryId);         
                         
-                 CheckField isActive =  (CheckField)row.get(0);              
-                 dictDO.setIsActive((String)isActive.getValue());
-                 
-                dictDO.setCategory(categoryId);         
-                dictDO.setLocalAbbrev(((String)((StringField)row.get(2)).getValue()));         
-                dictDOList.add(dictDO);             
+              dictDOList.add(dictDO);             
              }
-        
+        dictEntryTable.getDeletions().clear();
         return dictDOList;
     }
 

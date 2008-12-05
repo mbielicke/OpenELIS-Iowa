@@ -37,17 +37,9 @@ import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
-public class MethodScreen extends OpenELISScreenForm implements
-                                                    ClickListener,
-                                                    TabListener,
-                                                    ChangeListener {
+public class MethodScreen extends OpenELISScreenForm {
     private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
@@ -55,14 +47,8 @@ public class MethodScreen extends OpenELISScreenForm implements
     private KeyListManager keyList = new KeyListManager();
     
     private MethodMetaMap MethodMeta = new MethodMetaMap();
-
-    //private ScreenTextBox methodId;
-    private TextBox methodName;         
     
-    //private TreeWidget analyteTreeController = null;
-    
-    //private AppButton deleteButton,addAnalyteButton,addGroupButton; 
-    
+    private TextBox methodName;            
     
     public MethodScreen() {
         super("org.openelis.modules.method.server.MethodService",!loaded);
@@ -78,27 +64,6 @@ public class MethodScreen extends OpenELISScreenForm implements
         } else{
             super.performCommand(action, obj);
         }
-    }
-    
-    public void onClick(Widget sender) {
-      /*if(sender == addAnalyteButton){
-          onAddAnalyteButtonClicked();
-      }else if(sender == addGroupButton){
-          addGroupButtonClicked();
-      }else if(sender == deleteButton){
-          
-      } */       
-
-    }
-
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        // TODO Auto-generated method stub
-
     }
     
     public void afterDraw(boolean success) {
@@ -125,14 +90,7 @@ public class MethodScreen extends OpenELISScreenForm implements
         formChain.addCommand(atozButtons);
 
         bpanel.enableButton("delete", false);
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-        
-        /*deleteButton = (AppButton)getWidget("deleteButton");
-        addAnalyteButton = (AppButton)getWidget("addAnalyteButton");
-        addGroupButton = (AppButton)getWidget("addGroupButton");
-        
-        ScreenTreeWidget analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
-        analyteTreeController = (TreeWidget)analyteTree.getWidget();*/
+        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);           
          
         updateChain.add(afterUpdate);               
         super.afterDraw(success);
@@ -142,9 +100,6 @@ public class MethodScreen extends OpenELISScreenForm implements
         super.query();
         //methodId.setFocus(true);
         methodName.setFocus(true);
-        //deleteButton.changeState(ButtonState.DISABLED);
-        //addAnalyteButton.changeState(ButtonState.DISABLED);
-        //addGroupButton.changeState(ButtonState.DISABLED);
     }
     
     public void add() {
@@ -170,19 +125,6 @@ public class MethodScreen extends OpenELISScreenForm implements
             rpc.setFieldValue(MethodMeta.getName(), query);
             commitQuery(rpc);
         }
-    }
-    
-
-    
-    /*private void addGroupButtonClicked(){
-        TreeDataItem item = new TreeDataItem();
-        item.setLabel(new StringObject("Group"));
-        item.add(new DataSet(new NumberField(0)));
-        item.add(new DataSet(new StringField("")));
-        item.add(new NumberField(0));          
-        analyteTreeController.model.addRow(item);
-    }*/
-    
-    
+    }   
 
 }

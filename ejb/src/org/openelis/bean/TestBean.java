@@ -368,7 +368,7 @@ public class TestBean implements TestRemote {
                         
                         if(analyteDO.getDelete() && analyteDO.getId() != null){                           
                             manager.remove(analyte);                                                     
-                        }else{
+                        }else if(!analyteDO.getDelete()){
                             analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
                             analyte.setAnalyteId(analyteDO.getAnalyteId());
                             analyte.setIsReportable(analyteDO.getIsReportable());

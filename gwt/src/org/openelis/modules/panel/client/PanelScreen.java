@@ -32,7 +32,6 @@ import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -46,7 +45,6 @@ import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.dnd.DropListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -56,8 +54,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class PanelScreen extends OpenELISScreenForm implements
                                                    ClickListener,
                                                    ChangeListener,
-                                                   TableManager,
-                                                   DropListener{
+                                                   TableManager {
         
     private static boolean loaded = false;
 
@@ -142,6 +139,7 @@ public class PanelScreen extends OpenELISScreenForm implements
         allTestTable =  ((TableWidget)getWidget("allTestsTable"));
         
         allTestsTableModel = (TableModel)allTestTable.model;
+        allTestsTableModel.enableMultiSelect(true);
         
         panelName = (TextBox)getWidget(PanelMeta.getName());
         updateChain.add(afterUpdate);  
@@ -177,29 +175,7 @@ public class PanelScreen extends OpenELISScreenForm implements
             allTestTable.enabled(true);
         }
     };           
-
-    public void onDrop(Widget sender, Widget source) {
-        if(sender == widgets.get("addedTestTable")){               
-            ScreenWidget dragged = (ScreenWidget)((ScreenWidget)source).getUserObject();
-            StringObject  key = (StringObject)dragged.getUserObject();
-                                     
-        }        
-    }
-
-    public void onDropEnter(Widget sender, Widget source) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void onDropExit(Widget sender, Widget source) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void onDropOver(Widget sender, Widget source) {
-        // TODO Auto-generated method stub
-        
-    }
+    
                       
     public boolean canAdd(TableWidget widget,DataSet set, int row) {
         // TODO Auto-generated method stub
