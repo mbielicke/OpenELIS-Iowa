@@ -37,9 +37,10 @@ import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
 
-public class MethodScreen extends OpenELISScreenForm {
+public class MethodScreen extends OpenELISScreenForm implements ChangeListener{
     private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
