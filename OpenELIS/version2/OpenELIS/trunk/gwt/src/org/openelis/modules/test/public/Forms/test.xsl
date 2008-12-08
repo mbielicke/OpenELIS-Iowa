@@ -942,7 +942,7 @@ UIRF Software License are applicable instead of those above.
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" type="integer" />
 				<dropdown key="{testSection:getFlagId($ts)}" type="integer" />
-				<dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
+				<dropdown key="{testResult:getTypeId($tr)}" type="integer"/>																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
 				<queryNumber key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
 				<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
