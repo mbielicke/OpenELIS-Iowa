@@ -64,6 +64,9 @@ import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.ContactTypeCacheHandler;
+import org.openelis.server.handlers.CountryCacheHandler;
+import org.openelis.server.handlers.StatesCacheHandler;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
@@ -370,25 +373,9 @@ public class OrganizationService implements AppScreenFormServiceInt<FormRPC, Dat
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl"));
         
-        DataModel stateDropdownField = (DataModel)CachingManager.getElement("InitialData", "stateDropdown");
-        DataModel countryDropdownField = (DataModel)CachingManager.getElement("InitialData", "countryDropdown");
-        DataModel contactTypeDropdownField = (DataModel)CachingManager.getElement("InitialData", "contactTypeDropdown");
-        
-        //state dropdown
-        if(stateDropdownField == null){
-            stateDropdownField = getInitialModel("state");
-            CachingManager.putElement("InitialData", "stateDropdown", stateDropdownField);
-        }
-        //country dropdown
-        if(countryDropdownField == null){
-            countryDropdownField = getInitialModel("country");
-            CachingManager.putElement("InitialData", "countryDropdown", countryDropdownField);
-            }
-        //contact type dropdown
-        if(contactTypeDropdownField == null){
-            contactTypeDropdownField = getInitialModel("contactType");
-            CachingManager.putElement("InitialData", "contactTypeDropdown", contactTypeDropdownField);
-        }
+        DataModel stateDropdownField = StatesCacheHandler.getStates();
+        DataModel countryDropdownField = CountryCacheHandler.getCountries();
+        DataModel contactTypeDropdownField = ContactTypeCacheHandler.getContactTypes();
         
         HashMap map = new HashMap();
         map.put("xml", xml);
@@ -544,74 +531,6 @@ public class OrganizationService implements AppScreenFormServiceInt<FormRPC, Dat
         List contactsList = remote.getOrganizationContacts((Integer)orgId.getValue());
         fillContactsTable((DataModel)model.getValue(),contactsList);
 
-    }
-
-    public DataModel getInitialModel(String cat){
-    	Integer id = null;
-    	CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-    	
-    	if(cat.equals("state"))
-    		id = remote.getCategoryId("state");
-    	else if(cat.equals("country"))
-    		id = remote.getCategoryId("country");
-    	else if(cat.equals("contactType"))
-    		id = remote.getCategoryId("contact_type");
-    	
-    	List entries = new ArrayList();
-    	if(id != null)
-    		entries = remote.getDropdownValues(id);
-    	
-    	//we need to build the model to return
-    	DataModel returnModel = new DataModel();
-    	
-        if(entries.size() > 0){	
-        	//create a blank entry to begin the list
-        	DataSet blankset = new DataSet();
-        	
-        	StringObject blankStringId = new StringObject("");
-        	NumberObject blankNumberId = new NumberObject(0);
-        	BooleanObject blankSelected = new BooleanObject();
-            
-        	blankset.add(blankStringId);
-        	
-        	
-        	if(cat.equals("contactType"))
-        		blankset.setKey(blankNumberId);
-        	else
-        		blankset.setKey(blankStringId);			
-        	
-        	returnModel.add(blankset);
-        }
-    	int i=0;
-    	while(i < entries.size()){
-    		DataSet set = new DataSet();
-    		IdNameDO resultDO = (IdNameDO) entries.get(i);
-    		//id
-    		Integer dropdownId = resultDO.getId();
-    		//entry
-    		String dropdownText = resultDO.getName();
-    		
-    		StringObject textObject = new StringObject();
-    		StringObject stringId = new StringObject();
-    		NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
-     	
-    		textObject.setValue(dropdownText);
-    		set.add(textObject);
-    		
-    		if(cat.equals("contactType")){
-    			numberId.setValue(dropdownId);
-    			set.setKey(numberId);
-    		}else{
-    			stringId.setValue(dropdownText);
-    			set.setKey(stringId);			
-    		}
-    		
-    		returnModel.add(set);
-    		
-    		i++;
-    	}		
-    	
-    	return returnModel;
     }
 
     //autocomplete textbox method

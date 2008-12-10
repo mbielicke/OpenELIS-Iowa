@@ -40,6 +40,7 @@ Builds the a servlet warfile.
 	  	       <include name="org/openelis/util/*.class"/>
 	  	       <include name="org/openelis/meta/*.class"/>
 	  	       <include name="org/openelis/metamap/*.class"/>
+	  	       <include name="org/openelis/messages/*.class"/>	
 	  	    </fileset>
 	    </jar>
 	   	  <delete file="${build.dir}/openelis.war" />
@@ -55,7 +56,7 @@ Builds the a servlet warfile.
 	          <classes dir="${bin.dir}"
 	      	           includes="org/openelis/**/*" />
 	          <lib dir="lib"/>
-	      	  <lib dir="../OpenELIS-Lib-tools/gwt-linux-UHL.1.5"
+	      	  <lib dir="../OpenELIS-Lib-Tools/gwt-linux-UHL.1.5"
 	      	  	       includes="gwt-servlet.jar"/>
 	      	  <lib dir="../OpenELIS-Lib"
 	      	           includes="openelis-lib.jar"/>

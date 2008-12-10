@@ -30,6 +30,7 @@ import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.CachingManager;
+import org.openelis.persistence.JMSMessageConsumer;
 import org.openelis.remote.LoginRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
@@ -87,6 +88,7 @@ public class StaticFilter implements Filter {
         SessionManager.init("OpenELIS"); 
         ServiceUtils.props = "org.openelis.modules.main.server.constants.OpenELISConstants";
         CachingManager.init(Constants.APP_ROOT);
+        JMSMessageConsumer.startListener("topic/openelisTopic");
         servletCtx = config.getServletContext();
         log.debug("getting out");
     }
@@ -213,5 +215,6 @@ public class StaticFilter implements Filter {
     
     public void destroy(){
         CachingManager.destroy();
+        JMSMessageConsumer.stopListener();
     }
 }
