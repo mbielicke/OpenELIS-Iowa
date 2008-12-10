@@ -35,7 +35,11 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.messages.ContactTypeCacheMessage;
+import org.openelis.messages.CountryCacheMessage;
+import org.openelis.messages.StateCacheMessage;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
@@ -61,7 +65,8 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
+    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
+    @EJB(name="ejb/JMSMessageProducer",beanInterface=JMSMessageProducerLocal.class)
 })
 @SecurityDomain("openelis")
 @RolesAllowed("dictionary-select")
@@ -74,6 +79,7 @@ public class CategoryBean implements CategoryRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private JMSMessageProducerLocal jmsProducer;
     
     
     private static CategoryMetaMap CatMeta = new CategoryMetaMap();
@@ -82,6 +88,7 @@ public class CategoryBean implements CategoryRemote {
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+        jmsProducer = (JMSMessageProducerLocal)ctx.lookup("ejb/JMSMessageProducer");
         
     }
    
@@ -218,6 +225,20 @@ public class CategoryBean implements CategoryRemote {
         }
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
+        
+        if(categoryDO.getName().equals("state")){
+            StateCacheMessage msg = new StateCacheMessage();
+            msg.action = StateCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(categoryDO.getName().equals("country")){
+            CountryCacheMessage msg = new CountryCacheMessage();
+            msg.action = CountryCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(categoryDO.getName().equals("contactType")){
+            ContactTypeCacheMessage msg = new ContactTypeCacheMessage();
+            msg.action = ContactTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }
         
         return  category.getId();
     }
