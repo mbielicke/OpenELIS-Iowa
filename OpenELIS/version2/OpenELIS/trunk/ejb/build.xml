@@ -33,6 +33,7 @@
   	       <include name="org/openelis/util/*.class"/>
   	       <include name="org/openelis/meta/*.class"/>
    	       <include name="org/openelis/metamap/*.class"/>
+  	       <include name="org/openelis/messages/*.class"/>	
   	    </fileset>
     </jar>
     <jar jarfile="build/openelis.ear"> 
