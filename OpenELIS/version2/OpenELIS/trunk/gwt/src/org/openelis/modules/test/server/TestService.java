@@ -1380,7 +1380,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                       currGroupItem.addItem(createAnalyteNode(model,analyteDO));
                   }else{                        
                           currGroupItem = createGroupNode(numGroups,model);
-                          //currGroupItem.open = true;
+                          currGroupItem.open = true;
                           numGroups++;
                           model.add(currGroupItem);                                                
                       currGroupItem.addItem(createAnalyteNode(model,analyteDO));
@@ -1412,8 +1412,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             row.get(1).setValue(resultDO.getValue());            
             row.get(2).setValue(resultDO.getSignificantDigits());
-            row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
-            row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+            
+            if(resultDO.getFlagsId()!=null)
+             row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
+            
+            if(resultDO.getRoundingMethodId()!=null)
+             row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+            
             row.get(5).setValue(resultDO.getQuantLimit());
             row.get(6).setValue(resultDO.getContLevel());
             row.get(7).setValue(resultDO.getHazardLevel());  
@@ -1438,8 +1443,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             row.get(1).setValue(resultDO.getValue());            
             row.get(2).setValue(resultDO.getSignificantDigits());
-            row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
-            row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+            
+            if(resultDO.getFlagsId()!=null)
+                row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
+               
+            if(resultDO.getRoundingMethodId()!=null)
+                row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+            
             row.get(5).setValue(resultDO.getQuantLimit());
             row.get(6).setValue(resultDO.getContLevel());
             row.get(7).setValue(resultDO.getHazardLevel());  
