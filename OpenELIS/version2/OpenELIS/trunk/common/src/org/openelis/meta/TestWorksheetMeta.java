@@ -41,11 +41,11 @@ public class TestWorksheetMeta implements Meta {
               TEST_ID					="testId",
               BATCH_CAPACITY					="batchCapacity",
               TOTAL_CAPACITY					="totalCapacity",
-              NUMBER_FORMAT_ID					="numberFormatId",
+              FORMAT_ID					="formatId",
               SCRIPTLET_ID					="scriptletId";
 
   	private static final String[] columnNames = {
-  	  ID,TEST_ID,BATCH_CAPACITY,TOTAL_CAPACITY,NUMBER_FORMAT_ID,SCRIPTLET_ID};
+  	  ID,TEST_ID,BATCH_CAPACITY,TOTAL_CAPACITY,FORMAT_ID,SCRIPTLET_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -94,8 +94,8 @@ public class TestWorksheetMeta implements Meta {
         return path + TOTAL_CAPACITY;
     } 
 
-    public String getNumberFormatId() {
-        return path + NUMBER_FORMAT_ID;
+    public String getFormatId() {
+        return path + FORMAT_ID;
     } 
 
     public String getScriptletId() {

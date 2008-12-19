@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -43,6 +44,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDetailsDO;
@@ -72,6 +74,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
+import org.openelis.metamap.TestResultMetaMap;
+import org.openelis.metamap.TestSectionMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
@@ -319,7 +323,7 @@ public class TestBean implements TestRemote {
                 
                 if(itemDOList!=null){
                     exceptionList = new ArrayList<Exception>();
-                    validateTestWorksheetItems(exceptionList,itemDOList);
+                    validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
                     if(exceptionList.size() > 0){
                         throw (RPCException)exceptionList.get(0);
                     }
@@ -348,7 +352,7 @@ public class TestBean implements TestRemote {
                     
                 }
                 
-                if(analyteDOList!=null){
+                if(analyteDOList!=null) {
                     exceptionList = new ArrayList<Exception>();
                     validateTestAnalytes(exceptionList,analyteDOList);
                     
@@ -386,7 +390,7 @@ public class TestBean implements TestRemote {
                     }
                 }
                 
-                if(sectionDOList!=null){
+                if(sectionDOList!=null) {
                     exceptionList = new ArrayList<Exception>();
                     validateTestSections(exceptionList, sectionDOList);
                     
@@ -418,7 +422,7 @@ public class TestBean implements TestRemote {
                     }
                 }
                 
-                if(resultDOList!=null){
+                if(resultDOList!=null) {
                     exceptionList = new ArrayList<Exception>();
                     validateTestResults(exceptionList, resultDOList);
                     
@@ -465,12 +469,7 @@ public class TestBean implements TestRemote {
             throw ex;
         }
     }
-        
-    
-    private void validateTestResults(List<Exception> exceptionList, List<TestResultDO> resultDOList) {
-        
-        
-    }
+           
 
     public TestDetailsDO getTestDetails(Integer testId) {
         Query query = manager.createNamedQuery("Test.TestDetails");
@@ -649,6 +648,47 @@ public class TestBean implements TestRemote {
         return testAnalytesList;
     }
     
+    public List getTestWSItemTypeDropDownValues() {
+      Query query = null;        
+      List<IdLastNameFirstNameDO> qlist = null;
+      List<IdNameDO> rlist = null; 
+      IdLastNameFirstNameDO qDO = null;
+      IdNameDO retDO = null;
+        
+      try{                 
+        query = manager.createNamedQuery("Dictionary.SystemNamesByCatSysName");
+        query.setParameter("systemName", "test_worksheet_item_type");
+        qlist = query.getResultList();
+        rlist = new ArrayList<IdNameDO>(qlist.size());                
+        
+        for(int iter = 0; iter < qlist.size(); iter++) {
+            qDO = qlist.get(iter);                   
+           if("pos_fixed".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(0, retDO);  
+           }else if("pos_duplicate".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(1, retDO);  
+           }else if("pos_random".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(2, retDO);  
+           }else if("pos_last_of_well".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(3, retDO);  
+           }else if("pos_last_of_run".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(4, retDO);  
+           }else if("pos_last_of_well_&_run".equals(qDO.getFirstName())) {
+               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
+               rlist.add(5, retDO);  
+           }
+        }
+       }catch(Exception ex) {
+           ex.printStackTrace();
+       } 
+        return rlist;
+    }
+    
     public List<IdNameDO> getResultGroupsForTest(Integer testId) {
         Query query = manager.createNamedQuery("TestResult.ResultGroupsByTestId");
         query.setParameter("testId",testId);
@@ -693,11 +733,13 @@ public class TestBean implements TestRemote {
      if(worksheetDO!=null)
          validateTestWorksheet(exceptionList,worksheetDO);
      if(itemDOList!=null)
-         validateTestWorksheetItems(exceptionList,itemDOList);
+         validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
      if(analyteDOList!=null)
          validateTestAnalytes(exceptionList,analyteDOList);
      if(sectionDOList!=null)
          validateTestSections(exceptionList,sectionDOList);
+     if(resultDOList!=null) 
+      validateTestResults(exceptionList, resultDOList);
      return exceptionList;
     }
 
@@ -722,11 +764,13 @@ public class TestBean implements TestRemote {
         if(worksheetDO!=null)
             validateTestWorksheet(exceptionList,worksheetDO);
         if(itemDOList!=null)
-            validateTestWorksheetItems(exceptionList,itemDOList);
+            validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
         if(analyteDOList!=null)
             validateTestAnalytes(exceptionList,analyteDOList);
         if(sectionDOList!=null)
             validateTestSections(exceptionList,sectionDOList);
+        if(resultDOList!=null) 
+            validateTestResults(exceptionList, resultDOList);
         return exceptionList;
     }    
     
@@ -917,7 +961,7 @@ public class TestBean implements TestRemote {
         
         if(worksheetDO.getNumberFormatId()==null){
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-               "worksheet:" + TestMeta.getTestWorksheet().getNumberFormatId()));
+               "worksheet:" + TestMeta.getTestWorksheet().getFormatId()));
         }
         
         if(checkForMultiple){
@@ -931,56 +975,315 @@ public class TestBean implements TestRemote {
     }
     
     private void validateTestWorksheetItems(List<Exception> exceptionList,
-                                           List<TestWorksheetItemDO> itemDOList) {
-        for(int i = 0; i < itemDOList.size(); i++){
-            TestWorksheetItemDO itemDO = itemDOList.get(i);
-            boolean checkPosition = true; 
-            if(itemDO.getQcName()==null || ("").equals(itemDO.getQcName())){
+                                           List<TestWorksheetItemDO> itemDOList,
+                                           TestWorksheetDO worksheetDO) {
+        Integer blankId = new Integer(-1);
+        Integer bc = worksheetDO.getBatchCapacity();
+        Integer position = null; 
+        ArrayList<Integer> posList = new ArrayList<Integer>();
+        
+        TestWorksheetItemDO itemDO = null;
+        boolean checkPosition = false;
+        
+        Query query = null;
+        
+        String sysName = null;      
+            
+        for(int i = 0; i < itemDOList.size(); i++) {
+            itemDO = itemDOList.get(i);
+            position = itemDO.getPosition();
+            checkPosition = true;
+             
+            if(itemDO.getQcName()==null || ("").equals(itemDO.getQcName())) {
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getQcName()));
             }
-            if(itemDO.getTypeId()==null){
+            if(idIsBlank(itemDO.getTypeId(), blankId)){
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                  TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
                 checkPosition = false;    
-            }
+            }            
             
-            
-            if(itemDO.getPosition()!=null && itemDO.getPosition()<= 0){
+            if(position!=null) {
+               if(position <= 0) {  
                 exceptionList.add(new TableFieldErrorException("posMoreThanZeroException", i,
                  TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
                 checkPosition = false;
+             } else if(bc!=null && position > bc) {
+                 exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException", i,
+                  TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
+                 checkPosition = false;
+             } else { 
+                 if(!posList.contains(position)) {
+                   posList.add(position);
+               } else {
+                   exceptionList.add(new TableFieldErrorException("duplicatePosForQCsException", i,
+                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
+                   checkPosition = false;
+               } 
+             }
             }
+               
             
             if(checkPosition){
-                Query query = manager.createNamedQuery("Dictionary.SystemNameById");
+                query = manager.createNamedQuery("Dictionary.SystemNameById");
                 query.setParameter("id", itemDO.getTypeId());
-                String sysName = (String)query.getSingleResult();
-             if(itemDO.getPosition()==null){
-                    if("pos_duplicate".equals(sysName)||"pos_fixed".equals(sysName)){
+                sysName = (String)query.getSingleResult();
+                
+                if(position == null){
+                 if("pos_duplicate".equals(sysName)||"pos_fixed".equals(sysName)){
                         exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException", i,
                          TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));
                     }
-                }   
-             if(itemDO.getPosition()!=null && itemDO.getPosition() == 1){               
-               if("pos_duplicate".equals(sysName)){
-                   exceptionList.add(new TableFieldErrorException("posOneDuplicateException", i,
-                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
-               }                              
-            }
-             
-          } 
-        }
+                } else {  
+                   if(position == 1 && "pos_duplicate".equals(sysName)) { 
+                     exceptionList.add(new TableFieldErrorException("posOneDuplicateException", i,
+                      TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
+                  } else if(!"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)){
+                      exceptionList.add(new TableFieldErrorException("posSpecifiedException", i,
+                       TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));
+                 }
+              }  
+            } 
+         }
     }
     
     private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
         
     }
     
-    private void validateTestSections(List<Exception> exceptionList,List<TestSectionDO> sectionDOList){
+   private void validateTestResults(List<Exception> exceptionList, List<TestResultDO> resultDOList) {
+     TestResultDO resDO = null;
+     Integer numId = null;
+     Integer dictId = null;
+     Integer titerId = null; 
+     Integer blankId = new Integer(-1);
+     Integer typeId = null;
+     Integer resultGroup = null;
+      
+     String[] st = null;
+      
+     Double pnMin = null;
+     Double pnMax = null;
+     Double cnMin = null;
+     Double cnMax = null;
+            
+      
+     Double ptMin = null;
+     Double ptMax = null;
+     Double ctMin = null;
+     Double ctMax = null;
+      
+     String value = null;
+      
+     Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+      
+     query.setParameter("systemName", "test_res_type_dictionary");
+     dictId = (Integer)query.getSingleResult();
+      
+     query.setParameter("systemName", "test_res_type_numeric");
+     numId = (Integer)query.getSingleResult();
+      
+     query.setParameter("systemName", "test_res_type_titer");
+     titerId = (Integer)query.getSingleResult();
+      
+     for(int i = 0; i < resultDOList.size(); i++){
+       resDO = resultDOList.get(i);
+       typeId = resDO.getTypeId();
+       
+       if(resultGroup == null){
+           resultGroup = resDO.getResultGroup();
+       }
+       
+      System.out.println("Result Group@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+ resultGroup);      
+      value = resDO.getValue();
+      System.out.println("Value@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+ value);
+      
+        if(idIsBlank(typeId, blankId)) {
+         exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getTypeId()));  
+        }else {
+         if(numId.equals(typeId)) {           
+            if(value != null && !"".equals(value.trim())) {
+               st = value.split(",");                 
+               if(st.length != 2) {
+                  exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
+                   TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+               } else {
+                  try {                   
+                   
+                   cnMin = Double.valueOf(st[0]); 
+                   cnMax = Double.valueOf(st[1]);
+                   
+                   if(!(cnMin < cnMax)) {
+                      exceptionList.add(new TableFieldErrorException("illegalNumericRangeException", i,
+                       TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
+                   }else if(pnMax != null && !(cnMin > pnMax) && resultGroup.equals(resDO.getResultGroup())){
+                       exceptionList.add(new TableFieldErrorException("numRangeOverlapException", i,
+                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                   }
+                   
+                   pnMin = cnMin;
+                   pnMax = cnMax;                   
+                   
+                 } catch (NumberFormatException ex) {
+                     exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
+                      TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                 }                   
+               }
+            }else {
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                 TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+            }
+         } else if(titerId.equals(typeId)) {           
+             if(value != null && !"".equals(value.trim())) {
+                 st = value.split(":");                 
+                 if(st.length != 2) {
+                    exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
+                     TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                 } else {
+                    try {                   
+                     
+                     ctMin = Double.valueOf(st[0]); 
+                     ctMax = Double.valueOf(st[1]);
+                     
+                     if(ptMax != null && !(ctMin > ptMax) && resultGroup.equals(resDO.getResultGroup())){
+                         exceptionList.add(new TableFieldErrorException("titerRangeOverlapException", i,
+                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                     }
+                     
+                     ptMin = ctMin;
+                     ptMax = ctMax;                   
+                     
+                   } catch (NumberFormatException ex) {
+                       exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
+                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                   }                   
+                 }
+              }else {
+                  exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                   TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+              }
+           }
+        }
+
+        resultGroup = resDO.getResultGroup();
+      }
         
     }
-
-
     
+    private void validateTestSections(List<Exception> exceptionList,List<TestSectionDO> sectionDOList){
+        Integer defId = null;
+        Integer askId = null;
+        Integer matchId = null;
+        Integer blankId = new Integer(-1);
+        Integer flagId = null;
+        Integer sectId = null;
+        
+        List<Integer> idList = null; 
+                 
+        int size = sectionDOList.size();
+        int numDef = 0;
+        int numAsk = 0;
+        int numMatch = 0;
+        int numBlank = 0;
+        
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");  
+        TestSectionDO secDO = null;
+                
+        query.setParameter("systemName", "test_section_default");   
+        defId = (Integer)query.getSingleResult();
+        
+        query.setParameter("systemName", "test_section_ask");   
+        askId = (Integer)query.getSingleResult();
+        
+        query.setParameter("systemName", "test_section_match");   
+        matchId = (Integer)query.getSingleResult();
+                        
+        
+       if(size > 0) {
+         idList = new ArrayList<Integer>();            
+         for(int iter = 0; iter < size; iter++) {
+          secDO = sectionDOList.get(iter); 
+          flagId = secDO.getFlagId();          
+          sectId = secDO.getSectionId();
+          
+          if(idIsBlank(sectId, blankId)) {
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", iter,
+             TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId()));  
+          }else if(idList.contains(sectId)){
+              exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", iter,
+               TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId())); 
+          }else {
+              idList.add(sectId);
+          }
+          
+          if(idIsBlank(flagId, blankId)) {
+              numBlank++;
+          }else if(defId.equals(flagId)) {
+              numDef++;
+          }else if(askId.equals(flagId)) {
+              numAsk++;
+          }else if(matchId.equals(flagId)) {
+              numMatch++;              
+          }
+          
+        }
+                
+        if(numBlank == size) {
+            for(int iter = 0; iter < size; iter++) {
+                exceptionList.add(new TableFieldErrorException("allSectCantBeBlankException", iter,
+                 TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));                  
+            }           
+         } else if(numDef > 1) {
+             for(int iter = 0; iter < size; iter++) {
+                 secDO = sectionDOList.get(iter);  
+                 flagId = secDO.getFlagId();
+                 if(!idIsBlank(flagId,blankId)) {
+                  exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
+                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
+                 } 
+             }
+         } else if(numDef == 1 && numBlank != (size-1)) {
+             for(int iter = 0; iter < size; iter++) {
+                 secDO = sectionDOList.get(iter);  
+                 flagId = secDO.getFlagId();
+                 if(!idIsBlank(flagId,blankId) && !defId.equals(flagId)) {
+                  exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
+                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
+                 } 
+             }
+         } else if(numMatch > 0 && numMatch != size) {
+             for(int iter = 0; iter < size; iter++) {
+                 secDO = sectionDOList.get(iter);  
+                 flagId = secDO.getFlagId();
+                 if(!idIsBlank(flagId, blankId) && !matchId.equals(flagId)) {
+                  exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
+                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
+                 }else if(idIsBlank(flagId, blankId)) {
+                    exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
+                     TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
+                 }                
+             }
+         } else if(numAsk > 0 && numAsk != size) {
+             for(int iter = 0; iter < size; iter++) {
+                 secDO = sectionDOList.get(iter);  
+                 flagId = secDO.getFlagId();
+                 if(!idIsBlank(flagId, blankId) && !askId.equals(flagId)) {
+                  exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
+                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
+                 }else if(idIsBlank(flagId, blankId)) {
+                    exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
+                     TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
+                 }                
+             }
+         } 
+       }                                     
+                                                                           
+    }
+    
+    private boolean idIsBlank(Integer id,Integer blankId){        
+        return (id == null || blankId.equals(id)) ;            
+    }  
+     
 }

@@ -120,6 +120,8 @@ public interface TestRemote {
     
     public List getTestAnalyteDropDownValues(Integer testId);
     
+    public List getTestWSItemTypeDropDownValues();
+    
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId);
     
     public List<IdNameDO> getTestResultsforTest(Integer testId);

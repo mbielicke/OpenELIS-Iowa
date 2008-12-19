@@ -76,6 +76,8 @@ import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
+import org.openelis.metamap.TestResultMetaMap;
+import org.openelis.metamap.TestSectionMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.persistence.EJBFactory;
@@ -89,7 +91,7 @@ import org.openelis.util.UTFResource;
 public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,DataModel>,
                                     AutoCompleteServiceInt{
 
-    private static final int leftTableRowsPerPage = 23;
+    private static final int leftTableRowsPerPage = 24;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
 
@@ -421,7 +423,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
         fillPrepTests(prepList, rpcReturn);
         List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
-        fillTestReflexes(reflexList,rpcReturn);
+        fillTestReflexes(reflexList,rpcReturn,(Integer)((NumberObject)key.getKey()).getValue());
         rpcReturn.load = true;
         return rpcReturn;
     }
@@ -676,8 +678,6 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     public DataModel getTestResultModel(NumberObject testId){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<IdNameDO> list = remote.getTestResultsforTest((Integer)testId.getValue());
-        //List<DataModel> modelList = new ArrayList<DataModel>();
-         //for(int iter = 0;iter < list.size(); iter++){
              DataModel model = new DataModel();
              DataSet blankset = new DataSet();
 
@@ -709,17 +709,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
 
                  model.add(set);
              }
-             //modelList.add(model);
-         //}
-         //return modelList;
          return model;
     }
     
     public DataMap getTestResultModelMap(NumberObject testId,DataMap dataMap){
       TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-      HashMap<Integer,List<IdNameDO>> listMap = remote.getAnalyteResultsMap((Integer)testId.getValue());
-      //HashMap<String, DataModel> modelMap = new HashMap<String, DataModel>();            
-      //DataMap dataMap = new DataMap();      
+      HashMap<Integer,List<IdNameDO>> listMap = remote.getAnalyteResultsMap((Integer)testId.getValue()); 
        for (Iterator iter = listMap.entrySet().iterator(); iter.hasNext();){ 
               Entry<Integer,List<IdNameDO>> entry = (Entry<Integer,List<IdNameDO>>)iter.next();
               List<IdNameDO> list = (List<IdNameDO>)listMap.get(entry.getKey());              
@@ -727,7 +722,6 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
               loadDropDown(list, dataModel);
               dataMap.put(entry.getKey().toString(), dataModel);             
           }
-        //dataMap.setValue(modelMap); 
         return dataMap;
       }
   
@@ -778,10 +772,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             loadPrepTestDropDown(qaedDOList, model);
         }else if (cat.equals(TestMeta.getTestReflex().getFlagsId())) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
-        }else if (cat.equals(TestMeta.getTestWorksheet().getNumberFormatId())) {            
+        }else if (cat.equals(TestMeta.getTestWorksheet().getFormatId())) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
         }else if (cat.equals(TestMeta.getTestWorksheetItem().getTypeId())) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_item_type"));
+            values = remote.getTestWSItemTypeDropDownValues();
         }else if (cat.equals(TestMeta.getTestAnalyte().getTypeId())) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_analyte_type"));
         }
@@ -995,7 +989,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
        worksheetDO.setId(id);
       } 
       
-      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getNumberFormatId());       
+      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getFormatId());       
          if(numFormId.getSelectedKey()!=null ){ 
              if(worksheetDO==null)
                  worksheetDO = new TestWorksheetDO();  
@@ -1247,12 +1241,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     }
     
     private void fillTestReflexes(List<TestReflexDO> testReflexDOList,
-                                  FormRPC rpcReturn){
+                                  FormRPC rpcReturn, Integer testId){
         DataModel model = (DataModel)rpcReturn.getField("testReflexTable")
                                                 .getValue();
         model.clear();        
         if(testReflexDOList.size() > 0){
-           //modelList = new ArrayList<DataModel>();
+            Integer unselVal = new Integer(-1);
             for(int iter = 0; iter < testReflexDOList.size(); iter++){
               TestReflexDO refDO = testReflexDOList.get(iter);
               DataSet row = model.createNewSet();
@@ -1266,8 +1260,14 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
               if(refDO.getAddTestId()!=null)
                row.get(0).setValue(new DataSet(new NumberObject(refDO.getAddTestId())));
 
-              if(refDO.getTestAnalyteId()!=null)
+              if(refDO.getTestAnalyteId()!=null) {
                row.get(1).setValue(new DataSet(new NumberObject(refDO.getTestAnalyteId())));
+               if(! (unselVal).equals(refDO.getTestAnalyteId())) {
+                DataModel dmodel = getTestResultModel(new NumberObject(testId),
+                                                      new NumberObject(refDO.getTestAnalyteId()));
+                ((DropDownField)row.get(2)).setModel(dmodel);
+               } 
+              } 
               
               if(refDO.getTestResultId()!=null)
                row.get(2).setValue(new DataSet(new NumberObject(refDO.getTestResultId())));
@@ -1323,7 +1323,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                 worksheetDO.getBatchCapacity());
         
         if(worksheetDO.getNumberFormatId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getNumberFormatId(),
+        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getFormatId(),
                                 new DataSet(new NumberObject(worksheetDO.getNumberFormatId())));    
         
         if(worksheetDO.getScriptletId()!=null)
@@ -1709,6 +1709,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         TableField testReflexTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable");
         
         TableField worksheetTable = (TableField)((FormRPC)rpcSend.getField("worksheet")).getField("worksheetTable");
+        
+        TableField testSectionTable = (TableField)((FormRPC)rpcSend.getField("details")).getField("sectionTable"); 
+        
+        TableField testResultsTable = (TableField)((FormRPC)rpcSend.getField("testAnalyte")).getField("testResultsTable");
 
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
@@ -1721,50 +1725,50 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                     String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
                                                                                        .substring(TestPrepMetaMap.getTableName()
                                                                                                                  .length() + 1);
-                    //DataSet row = prepTestTable.get(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                    //row.getField(prepTestTable.getColumnIndexByFieldName(fieldName))
-                      // .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
                    prepTestTable.getField(index, fieldName)
-                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                    
-                    
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));                                        
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestTypeOfSampleMetaMap.getTableName() + ":")) {
                     String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
                                                                                        .substring(TestTypeOfSampleMetaMap.getTableName()
                                                                                                                          .length() + 1);
-                    //TableRow row = sampleTypeTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                   // row.getColumn(sampleTypeTable.getColumnIndexByFieldName(fieldName))
-                   //    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                     int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
                     sampleTypeTable.getField(index, fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                }
-                else if (ferrex.getFieldName()
+                } else if (ferrex.getFieldName()
                                 .startsWith(TestReflexMetaMap.getTableName() + ":")) {
                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
                                                                                       .substring(TestReflexMetaMap.getTableName()
                                                                                                                         .length() + 1);
-                   //TableRow row = testReflexTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                   //row.getColumn(testReflexTable.getColumnIndexByFieldName(fieldName))
-                     // .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
                    testReflexTable.getField(index, fieldName)
                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-               }
-                else if (ferrex.getFieldName()
+               } else if (ferrex.getFieldName()
                                 .startsWith(TestWorksheetItemMetaMap.getTableName() + ":")) {
                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
                                         .substring(TestWorksheetItemMetaMap.getTableName().length() + 1);
                    
-                   //TableRow row = worksheetTable.getRow(((TableFieldErrorException)exceptionList.get(i)).getRowIndex());
-                   //row.getColumn(worksheetTable.getColumnIndexByFieldName(fieldName))
-                     // .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
                    worksheetTable.getField(index, fieldName)
                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage())); 
-               } 
+               } else if (ferrex.getFieldName()
+                                .startsWith(TestSectionMetaMap.getTableName() + ":")) {
+                   String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                        .substring(TestSectionMetaMap.getTableName().length() + 1);
+                   
+                   int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                   testSectionTable.getField(index, fieldName)
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage())); 
+               } else if (ferrex.getFieldName()
+                                .startsWith(TestResultMetaMap.getTableName() + ":")) {
+                   String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
+                                        .substring(TestResultMetaMap.getTableName().length() + 1);
+                   
+                   int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                   testResultsTable.getField(index, fieldName)
+                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage())); 
+               }                                 
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
                 String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
                 if(nameWithRPC.startsWith("worksheet:")){
@@ -1774,7 +1778,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                     workSheetRPC.getField(fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                     
-                }else if(nameWithRPC.startsWith("details:")){
+               } else if(nameWithRPC.startsWith("details:")) {
                     String fieldName = nameWithRPC.substring(8);
                     FormRPC detailsRPC = (FormRPC)rpcSend.getField("details");
                     
