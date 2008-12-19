@@ -86,6 +86,37 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         }
     }
     
+    public void afterDraw(boolean sucess) {
+        loaded = true;
+        window.setStatus("","spinnerIcon");
+        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        addCommandListener(bpanel);
+        bpanel.addCommandListener(this);
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        
+        CommandChain chain = new CommandChain();
+        chain.addCommand(this);
+        chain.addCommand(atozButtons);               
+        
+        findTextBox = (TextBox)getWidget("findTextBox");
+        
+        if (categoryDropdown == null) {
+            categoryDropdown = (DataModel)initData.get("categories");
+        }
+        
+        categoryDrop = (Dropdown)getWidget("category");
+        categoryDrop.setModel(categoryDropdown);              
+        
+        ScreenTableWidget dictTable = (ScreenTableWidget)widgets.get("dictEntTable");        
+        dictionaryController  = (TableWidget)dictTable.getWidget();
+        
+        dictionaryController.model.enableMultiSelect(true);
+        
+        findButton = (AppButton)getWidget("findButton"); 
+        
+        super.afterDraw(sucess);              
+    }
+    
     public void commit() {
         List<String> entries = getSelectedEntries();        
         testScreen.addResultRows(entries);
@@ -163,45 +194,10 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
            NumberObject numObj = (NumberObject)categoryDrop.getSelections().get(0).getKey();
            categoryId = (Integer)numObj.getValue();
         }
-    }
-    
-    public void afterDraw(boolean sucess) {
-        loaded = true;
-        window.setStatus("","spinnerIcon");
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
-        addCommandListener(bpanel);
-        bpanel.addCommandListener(this);
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(atozButtons);
-        //chain.addCommand(bpanel);               
-        
-        findTextBox = (TextBox)getWidget("findTextBox");
-        
-        if (categoryDropdown == null) {
-            categoryDropdown = (DataModel)initData.get("categories");
-        }
-        
-        categoryDrop = (Dropdown)getWidget("category");
-        categoryDrop.setModel(categoryDropdown);              
-        
-        ScreenTableWidget dictTable = (ScreenTableWidget)widgets.get("dictEntTable");        
-        dictionaryController  = (TableWidget)dictTable.getWidget();
-        
-        dictionaryController.model.enableMultiSelect(true);
-        
-        findButton = (AppButton)getWidget("findButton"); 
-        
-        super.afterDraw(sucess);
-        
-        
-    }
+    }  
     
     private void loadDictionaryModel(StringObject pattern){ 
-       
-        //final String fpattern = pattern;        
+               
         if(categoryId == null)
             categoryId = new Integer(-1);               
         

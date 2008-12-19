@@ -52,7 +52,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestWorksheet.TestWorksheetByTestId",query = "from TestWorksheet tw where tw.testId = :testId"),
                @NamedQuery(name = "TestWorksheet.TestWorksheetDOByTestId",query = "select distinct new org.openelis.domain.TestWorksheetDO(tw.id,tw.testId,tw.batchCapacity," +
-                "tw.totalCapacity, tw.numberFormatId, tw.scriptletId) from TestWorksheet tw where tw.testId = :testId"),
+                "tw.totalCapacity, tw.formatId, tw.scriptletId) from TestWorksheet tw where tw.testId = :testId"),
                @NamedQuery(name = "TestWorksheet.TestWorksheetItemsByTestId",query = "select distinct new org.openelis.domain.TestWorksheetItemDO(twi.id,twi.testWorksheetId," +
                 "twi.position, twi.typeId,twi.qcName) from TestWorksheet tw left join tw.testWorksheetItem twi where tw.testId = :testId order by twi.position")})
 
@@ -76,8 +76,8 @@ public class TestWorksheet implements Auditable, Cloneable {
   @Column(name="total_capacity")
   private Integer totalCapacity;             
 
-  @Column(name="number_format_id")
-  private Integer numberFormatId;             
+  @Column(name="format_id")
+  private Integer formatId;             
 
   @Column(name="scriptlet_id")
   private Integer scriptletId; 
@@ -127,13 +127,13 @@ public class TestWorksheet implements Auditable, Cloneable {
       this.totalCapacity = totalCapacity;
   }
 
-  public Integer getNumberFormatId() {
-    return numberFormatId;
+  public Integer getFormatId() {
+    return formatId;
   }
-  public void setNumberFormatId(Integer numberFormatId) {
-    if((numberFormatId == null && this.numberFormatId != null) || 
-       (numberFormatId != null && !numberFormatId.equals(this.numberFormatId)))
-      this.numberFormatId = numberFormatId;
+  public void setNumberFormatId(Integer formatId) {
+    if((formatId == null && this.formatId != null) || 
+       (formatId != null && !formatId.equals(this.formatId)))
+      this.formatId = formatId;
   }
 
   public Integer getScriptletId() {
@@ -165,7 +165,7 @@ public class TestWorksheet implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(totalCapacity,original.totalCapacity,doc,"total_capacity");
 
-      AuditUtil.getChangeXML(numberFormatId,original.numberFormatId,doc,"number_format_id");
+      AuditUtil.getChangeXML(formatId,original.formatId,doc,"format_id");
 
       AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
