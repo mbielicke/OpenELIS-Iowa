@@ -1596,6 +1596,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 resultDO.setId((Integer)id.getValue());                              
             }
             
+            resultDO.setResultGroup(fiter+1);
             resultDO.setDelete(true);                        
             
             trDOlist.add(resultDO);                       
@@ -1704,15 +1705,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
 
     private void setRpcErrors(List exceptionList, FormRPC rpcSend) {
         TableField sampleTypeTable = (TableField)((FormRPC)rpcSend.getField("sampleType")).getField("sampleTypeTable");
-        TableField prepTestTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testPrepTable");
-        
-        TableField testReflexTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable");
-        
-        TableField worksheetTable = (TableField)((FormRPC)rpcSend.getField("worksheet")).getField("worksheetTable");
-        
-        TableField testSectionTable = (TableField)((FormRPC)rpcSend.getField("details")).getField("sectionTable"); 
-        
-        TableField testResultsTable = (TableField)((FormRPC)rpcSend.getField("testAnalyte")).getField("testResultsTable");
+        TableField prepTestTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testPrepTable");        
+        TableField testReflexTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable");        
+        TableField worksheetTable = (TableField)((FormRPC)rpcSend.getField("worksheet")).getField("worksheetTable");        
+        TableField testSectionTable = (TableField)((FormRPC)rpcSend.getField("details")).getField("sectionTable");         
+        TableField testResultsTable = (TableField)((FormRPC)rpcSend.getField("testAnalyte")).getField("testResultsTable");        
+        CollectionField cfield = (CollectionField)((FormRPC)rpcSend.getField("testAnalyte")).getField("resultModelCollection");
 
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
@@ -1764,10 +1762,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                 .startsWith(TestResultMetaMap.getTableName() + ":")) {
                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
                                         .substring(TestResultMetaMap.getTableName().length() + 1);
-                   
-                   int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
-                   testResultsTable.getField(index, fieldName)
-                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage())); 
+                   List<String> findexes = testResultsTable.getFieldIndex();
+                   int row =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                   addErrorToResultField(row, fieldName,findexes,
+                      openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage())
+                                                         ,cfield);                                         
                }                                 
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
                 String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
@@ -1875,5 +1874,41 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             model.add(set);
             i++;
         }
+    }
+     
+    
+    private void addErrorToResultField(int row, String fieldName,List<String> findexes,
+                                       String exc, CollectionField cfield) {
+        int findex = findexes.indexOf(fieldName);                
+        int llim = 0;
+        int ulim = 0;
+        
+        ArrayList<DataModel> mlist = (ArrayList<DataModel>)cfield.getValue();
+        DataModel m = null;
+        
+        DataSet errRow = null;       
+        
+        for(int i = 0; i < mlist.size(); i++) {
+             ulim = getUpperLimit(i,mlist);             
+             if(llim <= row && row < ulim) {
+               m = mlist.get(i);
+               errRow = m.get(row - llim);               
+               break;    
+             }   
+             llim = ulim;
+        }
+        
+        System.out.println("error: "+exc);
+        System.out.println("row: "+row);
+        System.out.println("findex: "+findex);        
+        ((AbstractField)errRow.get(findex)).addError(exc);               
+    }
+    
+    private int getUpperLimit(int i, ArrayList<DataModel> mlist) {
+      int ulim = 0; 
+        for(int j = -1; j < i; j++) {
+         ulim += mlist.get(j+1).size();    
+       } 
+      return ulim;  
     }
 }
