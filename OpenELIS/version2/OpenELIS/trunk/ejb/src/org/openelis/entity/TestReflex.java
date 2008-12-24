@@ -51,7 +51,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestReflex.TestReflexDOList", 
                  query = "select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
                          " tr.testResultId, tr.flagsId, tr.addTestId, r.value) " +
-                         " from TestReflex tr left join tr.testResult r where tr.testId = :testId")})
+                         " from TestReflex tr left join tr.testResult r where tr.testId = :testId"),
+               @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestResult", 
+                 query = " from TestReflex tr where tr.testId = :testId and tr.testResultId = :testResultId  "), 
+               @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestAnalyte", 
+                 query = " from TestReflex tr where tr.testId = :testId and tr.testAnalyteId = :testAnalyteId  ")  })
 
 @Entity
 @Table(name="test_reflex")

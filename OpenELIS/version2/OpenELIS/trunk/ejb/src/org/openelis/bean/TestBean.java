@@ -370,8 +370,17 @@ public class TestBean implements TestRemote {
                             analyte =  manager.find(TestAnalyte.class, analyteDO.getId());
                         }
                         
-                        if(analyteDO.getDelete() && analyteDO.getId() != null){                           
-                            manager.remove(analyte);                                                     
+                        if(analyteDO.getDelete() && analyteDO.getId() != null){
+                            query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestAnalyte") ;
+                            query.setParameter("testId", test.getId());
+                            query.setParameter("testAnalyteId", analyte.getId());
+                            List<TestAnalyte> anaList = (List<TestAnalyte>)query.getResultList();
+                            
+                            for(int i = 0; i < anaList.size(); i++) {
+                                 manager.remove(anaList.get(i));
+                            }
+                            
+                            manager.remove(analyte);                                 
                         }else if(!analyteDO.getDelete()){
                             analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
                             analyte.setAnalyteId(analyteDO.getAnalyteId());
@@ -440,8 +449,17 @@ public class TestBean implements TestRemote {
                             result = manager.find(TestResult.class, resultDO.getId());
                         }
                         
-                        if(resultDO.getDelete() && resultDO.getId() != null){                           
-                            manager.remove(result);                                                     
+                        if(resultDO.getDelete() && resultDO.getId() != null){
+                           query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestResult") ;
+                           query.setParameter("testId", test.getId());
+                           query.setParameter("testResultId", result.getId());
+                           List<TestReflex> reflexList = (List<TestReflex>)query.getResultList();
+                           
+                           for(int i = 0; i < reflexList.size(); i++) {
+                                manager.remove(reflexList.get(i));
+                           }
+                           
+                           manager.remove(result);                             
                         }else{
                             result.setContLevel(resultDO.getContLevel());
                             result.setValue(resultDO.getValue());
@@ -855,9 +873,7 @@ public class TestBean implements TestRemote {
                } 
              }
           }
-        }
-        
-        
+        }                
     }
 
     
@@ -1062,14 +1078,14 @@ public class TestBean implements TestRemote {
      Integer resultGroup = null;
       
      String[] st = null;
+     
+     ArrayList<String> dvl = new ArrayList<String>();  
+     ArrayList<Integer> rlist = null;
       
-     Double pnMin = null;
      Double pnMax = null;
      Double cnMin = null;
      Double cnMax = null;
-            
-      
-     Double ptMin = null;
+                  
      Double ptMax = null;
      Double ctMin = null;
      Double ctMax = null;
@@ -1095,9 +1111,13 @@ public class TestBean implements TestRemote {
            resultGroup = resDO.getResultGroup();
        }
        
-      System.out.println("Result Group@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+ resultGroup);      
-      value = resDO.getValue();
-      System.out.println("Value@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+ value);
+      if(!resDO.getDelete()) {                   
+       value = resDO.getValue();
+       
+      if(idIsBlank(resDO.getFlagsId(), blankId)) {
+          exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getFlagsId()));  
+       }  
       
         if(idIsBlank(typeId, blankId)) {
          exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
@@ -1110,8 +1130,7 @@ public class TestBean implements TestRemote {
                   exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
                } else {
-                  try {                   
-                   
+                  try {                                      
                    cnMin = Double.valueOf(st[0]); 
                    cnMax = Double.valueOf(st[1]);
                    
@@ -1123,7 +1142,6 @@ public class TestBean implements TestRemote {
                         TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
                    }
                    
-                   pnMin = cnMin;
                    pnMax = cnMax;                   
                    
                  } catch (NumberFormatException ex) {
@@ -1142,17 +1160,18 @@ public class TestBean implements TestRemote {
                     exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
                      TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
                  } else {
-                    try {                   
-                     
+                    try {                                        
                      ctMin = Double.valueOf(st[0]); 
                      ctMax = Double.valueOf(st[1]);
                      
-                     if(ptMax != null && !(ctMin > ptMax) && resultGroup.equals(resDO.getResultGroup())){
+                     if(ctMin > ctMax) {
+                         exceptionList.add(new TableFieldErrorException("illegalTiterRangeException", i,
+                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
+                     }else if(ptMax != null && !(ctMin > ptMax) && resultGroup.equals(resDO.getResultGroup())){
                          exceptionList.add(new TableFieldErrorException("titerRangeOverlapException", i,
                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
                      }
                      
-                     ptMin = ctMin;
                      ptMax = ctMax;                   
                      
                    } catch (NumberFormatException ex) {
@@ -1160,13 +1179,34 @@ public class TestBean implements TestRemote {
                         TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
                    }                   
                  }
-              }else {
+              } else {
                   exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
               }
-           }
-        }
+           } else if(dictId.equals(typeId)) {
+               if(value != null && !"".equals(value.trim())) {
+                   if(!dvl.contains(value)) {
+                      dvl.add(value); 
+                   } else {
+                       exceptionList.add(new TableFieldErrorException("dictEntryNotUniqueException", i,
+                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                   }
+                   
+                  query = manager.createNamedQuery("Dictionary.IdByEntry");
+                  query.setParameter("entry", value);
+                  rlist = (ArrayList<Integer>)query.getResultList();
+                  
+                  if(rlist.size() == 0)
+                   exceptionList.add(new TableFieldErrorException("illegalDictEntryException", i,
+                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
 
+               } else {
+                   exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+               }
+           }
+         }            
+        } 
         resultGroup = resDO.getResultGroup();
       }
         
