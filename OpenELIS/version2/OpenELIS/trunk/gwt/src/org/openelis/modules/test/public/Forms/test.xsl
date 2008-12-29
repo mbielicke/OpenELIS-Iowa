@@ -226,8 +226,7 @@ UIRF Software License are applicable instead of those above.
 								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
 								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" onChange="this" begin="0" end="2" width = "70px"/>
-								</row>
-																						
+								</row>																						
 								</TablePanel>
 								</content>
 								</titledPanel>
@@ -434,7 +433,7 @@ UIRF Software License are applicable instead of those above.
 							 <VerticalPanel>
 						   <HorizontalPanel>	
 							<VerticalPanel> 
-							  <TabPanel width = "489px" halign="center" key="resultTabPanel">
+							  <TabPanel width = "470px" halign="center" key="resultTabPanel">
 							   <tab key="tab" text="">
 							    <VerticalPanel/>							    
 							   </tab>
