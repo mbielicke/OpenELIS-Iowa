@@ -57,7 +57,6 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
@@ -520,7 +519,7 @@ public class TestScreen extends OpenELISScreenForm implements
       
       if(!(state == State.QUERY)) { 
           
-       if(prevSelTabIndex == -1 && resultModelCollection.size() > 0) 
+       if(prevSelTabIndex == -1 && resultModelCollection.size() > 0) {
            //         
            // if a user doesn't select any tab from resultPanel then any new
            // rows added to the model for the first tab won't get added to the 
@@ -531,10 +530,15 @@ public class TestScreen extends OpenELISScreenForm implements
            // first tab makes its way in resultModelCollection
            //            
         resultModelCollection.set(0, resultWidget.model.getData());
-          
+       }
+       
        analyteRPC = (FormRPC)(rpc.getField("testAnalyte")); 
        CollectionField collField = (CollectionField)(analyteRPC.getField("resultModelCollection"));      
        collField.setValue(resultModelCollection);
+       
+       resultWidget.finishEditing();
+       sectionWidget.finishEditing();
+       
        enableTableAutoAdd(false);               
       }             
     }
@@ -671,6 +675,10 @@ public class TestScreen extends OpenELISScreenForm implements
                DropDownField ddfield = (DropDownField)set.get(1);
                 Integer analyteId = (Integer)ddfield.getSelectedKey();
                 setTestResultsForAnalyte(analyteId, set);
+            } else if(widget == resultWidget && resultPanel.getTabBar().getTabCount() == 0 
+                            && state != State.QUERY) {
+                Window.alert(consts.get("atleastOneResGrp"));
+                return false;
             }
             return true;
         }
@@ -772,15 +780,15 @@ public class TestScreen extends OpenELISScreenForm implements
         } else if (sender == resultWidget) {
             final String value = (String)resultWidget.model.getRow(row)
                                                            .get(1)
-                                                           .getValue();
-            if (col == 1 && !"".equals(value.trim())) {
+                                                           .getValue();            
+            if (col == 1 && !"".equals(value.trim())) {                
                 final int currRow = row;
                 final Integer selValue = (Integer)((DropDownField)resultWidget.model.getRow(row)
                                                                     .get(0))
                                                                     .getSelectedKey();
                 
                 //              
-                // This code is to find out which option was chosen in the "Type"
+                // This code is for finding out which option was chosen in the "Type"
                 // column of the Test Results table in the "Analyte" tab, so that error checking 
                 // or formatting can be done for the value set in the "Value" column    
                 //
@@ -831,32 +839,40 @@ public class TestScreen extends OpenELISScreenForm implements
                                                                 // Convert each number obtained from the string and store 
                                                                 // its value converted to double if its a valid number, into an array
                                                                 //
-                                                                Double doubleVal = Double.valueOf(token);
+                                                                Double doubleVal = Double.valueOf(token);                                                                
                                                                 darray[iter] = doubleVal.doubleValue();
-                                                                convert = true;                                                                
+                                                                convert = true;                                                                          
                                                             } catch (NumberFormatException ex) {
                                                                 convert = false;
                                                             }
                                                         }
 
-                                                        if (convert)
+                                                        if (convert) {
                                                             //
                                                             // If its a valid string store the converted string back into the column
                                                             // otherwise add an error to the cell and store empty string into the cell
-                                                            // 
-                                                            finalValue = darray[0].toString() + ","
-                                                                         + darray[1].toString();
-                                                        else {
+                                                            //  
+                                                          if(darray[0].toString().indexOf(".") == -1){
+                                                              finalValue = darray[0].toString()+".0" + ",";  
+                                                          }else {
+                                                              finalValue = darray[0].toString() + ",";
+                                                          }  
+                                                          
+                                                          if(darray[1].toString().indexOf(".") == -1) {
+                                                              finalValue+= darray[1].toString()+".0";
+                                                          }else {
+                                                              finalValue+= darray[1].toString();
+                                                          }
+                                                      
+                                                        } else {
                                                             resultWidget.model.setCellError(currRow,
                                                                                             1,
                                                                                             consts.get("illegalNumericFormatException"));                                                            
                                                         }
 
                                                     }
-                                                    resultWidget.model.getRow(currRow)
-                                                                      .get(1)
-                                                                      .setValue(finalValue);
-                                                    resultWidget.model.refresh();
+
+                                                    resultWidget.model.setCell(currRow, 1, finalValue);
 
                                                 } else if ("test_res_type_titer".equals((String)result.getValue())) {
                                                     //
@@ -871,7 +887,7 @@ public class TestScreen extends OpenELISScreenForm implements
                                                             try {
                                                                 //
                                                                 // Convert each number obtained from the string and store 
-                                                                // its value converted to double if its a valid number, into an array
+                                                                // its value converted to double if it's a valid number, into an array
                                                                 //
                                                                 Double doubleVal = Double.valueOf(token);
                                                                 darray[iter] = doubleVal.doubleValue();
@@ -881,25 +897,31 @@ public class TestScreen extends OpenELISScreenForm implements
                                                             }
                                                         }
 
-                                                        if (convert)
+                                                        if (convert) {
                                                             //
-                                                            // If its a valid string store the converted string back into the column
+                                                            // If it's a valid string store the converted string back into the column
                                                             // otherwise add an error to the cell and store empty string into the cell
                                                             //
-                                                            finalValue = darray[0].toString() + ":"
-                                                                         + darray[1].toString();
-                                                        else {
+                                                            if(darray[0].toString().indexOf(".") == -1){
+                                                                finalValue = darray[0].toString()+".0" + ":";  
+                                                            }else {
+                                                                finalValue = darray[0].toString() + ":";
+                                                            }  
+                                                            
+                                                            if(darray[1].toString().indexOf(".") == -1) {
+                                                                finalValue+= darray[1].toString()+".0";
+                                                            }else {
+                                                                finalValue+= darray[1].toString();
+                                                            }                                                            
+                                                    } else {
                                                             resultWidget.model.setCellError(currRow,
                                                                                             1,
                                                                                             consts.get("illegalTiterFormatException"));                                                            
                                                         }
 
                                                     }
+                                                    resultWidget.model.setCell(currRow, 1, finalValue);
 
-                                                    resultWidget.model.getRow(currRow)
-                                                                      .get(1)
-                                                                      .setValue(finalValue);
-                                                    resultWidget.model.refresh();
                                                 }
 
                                             }
@@ -1417,20 +1439,25 @@ public class TestScreen extends OpenELISScreenForm implements
     }
     
     private void onTestResultRowButtonClicked(){
-        int index = resultPanel.getTabBar().getSelectedTab();
+        //int index = resultPanel.getTabBar().getSelectedTab();
         int selIndex = resultWidget.model.getData().getSelectedIndex(); 
-        ArrayList<Data> list;
-        DataModel model;
+        //ArrayList<Data> list;
+        //DataModel model;
                      
         if (selIndex > -1) { 
-            resultWidget.model.getData().delete(selIndex);
-            model = (DataModel)resultWidget.model.getData().clone();            
+            //resultWidget.model.getData().delete(selIndex);
+            if(resultWidget.model.getData().size() > 1) {
+             resultWidget.model.deleteRow(selIndex);
+            } else {
+                Window.alert(consts.get("atleastOneResInResGrp"));
+            }
+            /*model = (DataModel)resultWidget.model.getData().clone();            
             list = resultWidget.model.getData().getDeletions();            
             for(int i = 0; i < list.size(); i++){
               model.getDeletions().add((Data)list.get(i).clone());
             }
             resultModelCollection.set(index, model);            
-            resultWidget.model.load(model);
+            resultWidget.model.load(model);*/
         }
         
     }
