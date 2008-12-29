@@ -110,152 +110,126 @@ UIRF Software License are applicable instead of those above.
 								</widget>
 							</row>
 						</TablePanel>
-						<HorizontalPanel>
-							<titledPanel key="borderedPanel">
-								<legend>
-									<text style="LegendTitle">Baby Info</text>
-								</legend>
-								<content>
-									<TablePanel style="Form">
-										<!--						<TablePanel style="Form">
+						<TablePanel style="Form">
 							<row>
-								<widget align="center" colspan="12">
-									<text style="FormTitle">Patient Info</text>
+								<widget align="center" colspan="2">
+									<text style="FormTitle">Baby Info</text>
 								</widget>
-							</row>-->
-										<row>
-											<text style="Prompt">Id:</text>
-											<HorizontalPanel>
-												<textbox key="aa" showError="false" width="75px"/>
-												<appButton action="idButton1" key="idButton1" onclick="this" style="Button">
-													<HorizontalPanel>
-														<AbsolutePanel style="LookupButtonImage"/>
-													</HorizontalPanel>
-												</appButton>
-												<appButton action="idButton2" key="idButton2" onclick="this" style="Button">
-													<HorizontalPanel>
-														<AbsolutePanel style="LookupButtonImage"/>
-													</HorizontalPanel>
-												</appButton>
-												<appButton action="idButton3" key="idButton3" onclick="this" style="Button">
-													<HorizontalPanel>
-														<AbsolutePanel style="LookupButtonImage"/>
-													</HorizontalPanel>
-												</appButton>
-											</HorizontalPanel>
-										</row>
-										<row>
-											<text style="Prompt">Last:</text>
-											<textbox key="domain" tab="??,??" width="175px"/>
-										</row>
-										<row>
-											<text style="Prompt">First:</text>
-											<textbox key="domain" tab="??,??" width="150px"/>
-										</row>
-										<row>
-											<text style="Prompt">Gender:</text>
-											<HorizontalPanel style="Form">
-												<dropdown key="aa" width="50px"/>
-												<text style="Prompt">Race:</text>
-												<dropdown key="domain" tab="??,??" width="70px"/>
-											</HorizontalPanel>
-										</row>
-										<row>
-											<text style="Prompt">Birth:</text>
-											<HorizontalPanel style="Form">
-												<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
-												<text style="Prompt">Time:</text>
-												<textbox key="time" width="40px"/>
-											</HorizontalPanel>
-										</row>
-										<row>
-											<text style="Prompt">Gest Age:</text>
-											<textbox key="aa" width="25px"/>
-										</row>
-									</TablePanel>
-								</content>
-							</titledPanel>
-							<titledPanel key="borderedPanel">
-								<legend>
-									<text style="LegendTitle">Mother</text>
-								</legend>
-								<content>
-									<TablePanel style="Form">
-										<row>
-											<text style="Prompt">Last:</text>
-											<widget colspan="3">
-											<textbox key="domain" tab="??,??" width="175px"/>
-											</widget>
-											<text style="Prompt">Unique Id:</text>
-											<textbox key="aa" width="75px"/>
-										</row>
-										<row>
-											<text style="Prompt">First:</text>
-											<widget colspan="3">
-											<textbox key="domain" tab="??,??" width="175px"/>
-											</widget>
-											<text style="Prompt">Birth:</text>
-											<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
-										</row>
-										<row>
-											<text style="Prompt">Address:</text>
-											<widget colspan="3">
-												<textbox key="aa" width="186px"/>
-											</widget>
-											<text style="Prompt">Phone:</text>
-											<textbox key="motherPhone" width="80px"/>
-										</row>
-										<row>
-											<text style="Prompt">Mult Unit:</text>
-											<widget colspan="3">
-												<textbox key="aa" width="186px"/>
-											</widget>
-										</row>
-										<row>
-											<text style="Prompt">City:</text>
-											<widget colspan="3">
-												<textbox key="aa" width="186px"/>
-											</widget>
-										</row>
-										<row>
-											<text style="Prompt">State:</text>
-											<textbox key="aa" width="33px"/>
-											<text style="Prompt">Zip Code:</text>
-											<textbox key="domain" tab="??,??" width="63px"/>
-										</row>
-									</TablePanel>
-								</content>
-							</titledPanel>
-						</HorizontalPanel>
-						<titledPanel key="borderedPanel">
-							<legend>
-								<text style="LegendTitle">Sample</text>
-							</legend>
-							<content>
-								<TablePanel style="Form">
-									<row>
-										<text style="Prompt">Feeding:</text>
-										<dropdown key="aa" width="75px"/>
-										<text style="Prompt">TPN:</text>
-										<check key="tpn"/>
-										<text style="Prompt">Weight:</text>
-										<textbox key="weight" width="75px"/>
-										<text style="Prompt">Age:</text>
-										<textbox key="age" width="75px"/>
-									</row>
-									<row>
-									<text style="Prompt">Transfused:</text>
-										<dropdown key="domain" tab="??,??" width="40px"/>
-										<text style="Prompt">Date:</text>
-										<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
-										<text style="Prompt">Repeat:</text>
-										<check key="repeat"/>
-										<text style="Prompt">Barcode #:</text>
-										<textbox key="domain" tab="??,??" width="60px"/>
-									</row>
-								</TablePanel>
-							</content>
-						</titledPanel>
+								<widget align="center" colspan="6">
+									<text style="FormTitle">Mother</text>
+								</widget>
+							</row>
+							<row>
+								<text style="Prompt">Id:</text>
+								<HorizontalPanel>
+									<textbox key="aa" showError="false" width="75px"/>
+									<appButton action="idButton1" key="idButton1" onclick="this" style="Button">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton2" key="idButton2" onclick="this" style="Button">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton3" key="idButton3" onclick="this" style="Button">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+								</HorizontalPanel>
+								<text style="Prompt">Last:</text>
+								<widget colspan="3">
+									<textbox key="domain" tab="??,??" width="175px"/>
+								</widget>
+								<text style="Prompt">Unique Id:</text>
+								<textbox key="aa" width="75px"/>
+							</row>
+							<row>
+								<text style="Prompt">Last:</text>
+								<textbox key="domain" tab="??,??" width="175px"/>
+								<text style="Prompt">First:</text>
+								<widget colspan="3">
+									<textbox key="domain" tab="??,??" width="175px"/>
+								</widget>
+								<text style="Prompt">Birth:</text>
+								<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+							</row>
+							<row>
+								<text style="Prompt">First:</text>
+								<textbox key="domain" tab="??,??" width="150px"/>
+								<text style="Prompt">Address:</text>
+								<widget colspan="3">
+									<textbox key="aa" width="186px"/>
+								</widget>
+								<text style="Prompt">Phone:</text>
+								<textbox key="motherPhone" width="80px"/>
+							</row>
+							<row>
+								<text style="Prompt">Gender:</text>
+								<HorizontalPanel style="Form" width="100%">
+									<dropdown key="aa" width="50px"/>
+									<HorizontalPanel halign="right" style="Form">
+										<text style="Prompt">Race:</text>
+										<dropdown key="race" tab="??,??" width="70px"/>
+									</HorizontalPanel>
+								</HorizontalPanel>
+								<text style="Prompt">Mult Unit:</text>
+								<widget colspan="3">
+									<textbox key="aa" width="186px"/>
+								</widget>
+							</row>
+							<row>
+								<text style="Prompt">Birth:</text>
+								<HorizontalPanel style="Form" width="100%">
+									<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+									<HorizontalPanel halign="right" style="Form">
+										<text style="Prompt">Time:</text>
+										<textbox key="time" width="40px"/>
+									</HorizontalPanel>
+								</HorizontalPanel>
+								<text style="Prompt">City:</text>
+								<widget colspan="3">
+									<textbox key="aa" width="186px"/>
+								</widget>
+							</row>
+							<row>
+								<text style="Prompt">Gest Age:</text>
+								<textbox key="aa" width="25px"/>
+								<text style="Prompt">State:</text>
+								<textbox key="aa" width="33px"/>
+								<text style="Prompt">Zip Code:</text>
+								<textbox key="domain" tab="??,??" width="63px"/>
+							</row>
+							<row>
+								<widget align="center" colspan="8">
+									<text style="FormTitle">Sample</text>
+								</widget>
+							</row>
+						</TablePanel>
+						<TablePanel style="Form" width="100%">
+							<row>
+								<text style="Prompt">Feeding:</text>
+								<dropdown key="aa" width="75px"/>
+								<text style="Prompt">TPN:</text>
+								<check key="tpn"/>
+								<text style="Prompt">Transfused:</text>
+								<dropdown key="domain" tab="??,??" width="60px"/>
+								<text style="Prompt">Date:</text>
+								<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+							</row>
+							<row>
+								<text style="Prompt">Weight:</text>
+								<textbox key="weight" width="75px"/>
+								<text style="Prompt">Age:</text>
+								<textbox key="age" width="53px"/>
+								<text style="Prompt">Barcode #:</text>
+								<textbox key="domain" tab="??,??" width="60px"/>
+								<text style="Prompt">Repeat:</text>
+								<check key="repeat"/>
+							</row>
+						</TablePanel>
 						<HorizontalPanel>
 							<VerticalPanel>
 								<tree-table enable="true" key="itemsTestsTree" manager="this" maxRows="4" showError="false" showScroll="ALWAYS" width="auto">
