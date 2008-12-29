@@ -96,12 +96,17 @@ public class CategoryBean implements CategoryRemote {
         
         Query query = manager.createNamedQuery("Category.Category");
         query.setParameter("id", categoryId);
-        CategoryDO category = (CategoryDO) query.getSingleResult();// getting category with address and contacts
+        CategoryDO category = (CategoryDO)query.getSingleResult();// getting
+                                                                    // category
+                                                                    // with
+                                                                    // address
+                                                                    // and
+                                                                    // contacts
 
         return category;
     }
-    
-    public List getCategoryList(){
+
+    public List getCategoryList() {
         Query query = manager.createNamedQuery("Category.IdName");
         List idNameDOList = query.getResultList();
         return idNameDOList;
@@ -109,26 +114,31 @@ public class CategoryBean implements CategoryRemote {
 
     public List query(HashMap fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();        
-        
-        //CategoryMeta categoryMeta = CategoryMeta.getInstance();
-        //DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
-        //DictionaryRelatedEntryMeta dicRelatedEntryMeta = DictionaryRelatedEntryMeta.getInstance();
-        
-        //qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
+        QueryBuilder qb = new QueryBuilder();
+
+        // CategoryMeta categoryMeta = CategoryMeta.getInstance();
+        // DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
+        // DictionaryRelatedEntryMeta dicRelatedEntryMeta =
+        // DictionaryRelatedEntryMeta.getInstance();
+
+        // qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta,
+        // dicRelatedEntryMeta});
         qb.setMeta(CatMeta);
-        
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+CatMeta.getId()+", "+CatMeta.getName() + ") ");
-        
-        //qb.addTable(categoryMeta);
-        
-        qb.addWhere(fields);      
+
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + CatMeta.getId()
+                     + ", "
+                     + CatMeta.getName()
+                     + ") ");
+
+        // qb.addTable(categoryMeta);
+
+        qb.addWhere(fields);
 
         qb.setOrderBy(CatMeta.getName());
-        
-        //if(qb.hasTable(dicRelatedEntryMeta.getTable()))
-        //	qb.addTable(dictionaryMeta);
-        
+
+        // if(qb.hasTable(dicRelatedEntryMeta.getTable()))
+        // qb.addTable(dictionaryMeta);
+
         sb.append(qb.getEJBQL());
         
         Query query = manager.createQuery(sb.toString());
@@ -147,81 +157,86 @@ public class CategoryBean implements CategoryRemote {
     }
 
     @RolesAllowed("dictionary-update")
-    public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception {
+    public Integer updateCategory(CategoryDO categoryDO, List dictEntries) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
-        Integer categoryReferenceId = (Integer)query.getSingleResult();          
-        
-        if(categoryDO.getId() != null){
-//          we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+        Integer categoryReferenceId = (Integer)query.getSingleResult();
+
+        if (categoryDO.getId() != null) {
+            // we need to call lock one more time to make sure their lock didnt
+            // expire and someone else grabbed the record
             lockBean.getLock(categoryReferenceId, categoryDO.getId());
         }
-        
-        manager.setFlushMode(FlushModeType.COMMIT);      
-        
-        Category category  = null;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        Category category = null;
         Dictionary dictionary = null;
-        
+
         List<Exception> exceptionList = new ArrayList<Exception>();
-        validateCategory(categoryDO,exceptionList);  
-        if(exceptionList.size() > 0){
+        validateCategory(categoryDO, exceptionList);
+        if (exceptionList.size() > 0) {
             throw (RPCException)exceptionList.get(0);
-        }                             
-        
-        //update the category
-        if (categoryDO.getId() == null){
+        }
+
+        // update the category
+        if (categoryDO.getId() == null) {
             category = new Category();
-        } 
-        else{
+        } else {
             category = manager.find(Category.class, categoryDO.getId());
         }
-        
-        category.setDescription(categoryDO.getDescription());                       
+
+        category.setDescription(categoryDO.getDescription());
         category.setSystemName(categoryDO.getSystemName());
         category.setName(categoryDO.getName());
         category.setSectionId(categoryDO.getSection());
-        
-        if(category.getId()==null){
+
+        if (category.getId() == null) {
             manager.persist(category);
         }
-        
-        int index =0;
-         ArrayList<String> systemNames = new ArrayList<String>();
-        
+
+        int index = 0;
+        ArrayList<String> systemNames = new ArrayList<String>();
+
         ArrayList<String> entries = new ArrayList<String>();
         for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
             DictionaryDO dictDO = (DictionaryDO)iter.next();
-            
+
             exceptionList = new ArrayList<Exception>();
-                         
-             validateDictionary(dictDO, categoryDO.getId(),index,systemNames,entries,exceptionList);
-             if(exceptionList.size() > 0){
-                 throw (RPCException)exceptionList.get(0);
-             }                            
-                          
-             if (dictDO.getId() == null)
-                 dictionary = new Dictionary();
-             else
-                 dictionary = manager.find(Dictionary.class, dictDO.getId());
-             
-             if(dictDO.getDelete() && dictDO.getId() != null){
-                //delete the dictionary record
+
+            validateDictionary(dictDO,
+                               categoryDO.getId(),
+                               index,
+                               systemNames,
+                               entries,
+                               exceptionList);
+            if (exceptionList.size() > 0) {
+                throw (RPCException)exceptionList.get(0);
+            }
+
+            if (dictDO.getId() == null)
+                dictionary = new Dictionary();
+            else
+                dictionary = manager.find(Dictionary.class, dictDO.getId());
+
+            if (dictDO.getDelete() && dictDO.getId() != null) {
+                // delete the dictionary record
                 manager.remove(dictionary);
-                
-             }else{                       
-                 dictionary.setCategoryId(category.getId());
-                 dictionary.setEntry(dictDO.getEntry());
-                 dictionary.setIsActive(dictDO.getIsActive());
-                 dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                 dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());                 
-                 dictionary.setSystemName(dictDO.getSystemName());    
-                    
+
+            } else {
+                dictionary.setCategoryId(category.getId());
+                dictionary.setEntry(dictDO.getEntry());
+                dictionary.setIsActive(dictDO.getIsActive());
+                dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());
+                dictionary.setSystemName(dictDO.getSystemName());
+
                 if (dictionary.getId() == null) {
                     manager.persist(dictionary);
                 }
             }
-        
-            index++; 
+
+            index++;
         }
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
@@ -246,237 +261,272 @@ public class CategoryBean implements CategoryRemote {
     public List getDictionaryEntries(Integer categoryId) {
         Query query = manager.createNamedQuery("Dictionary.Dictionary");
         query.setParameter("id", categoryId);
-        
-        List dictionaryEntries = query.getResultList();// getting list of dictionary entries  
-    
+
+        List dictionaryEntries = query.getResultList();// getting list of
+                                                        // dictionary entries
+
         return dictionaryEntries;
     }
-    
+
     public List getDropdownValues(Integer categoryId) {
-    	Query query = manager.createNamedQuery("Dictionary.DropdownValues");
-    	query.setParameter("id", categoryId);
-    	
-    	return query.getResultList();
+        Query query = manager.createNamedQuery("Dictionary.DropdownValues");
+        query.setParameter("id", categoryId);
+
+        return query.getResultList();
     }
-    
-    public List getMatchingEntries(String entry, int maxResults){
-       Query query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");  
-       query.setParameter("entry", entry);       
-       query.setMaxResults(maxResults);       
-       
-       List entryList = null;
-       try{ 
-           entryList = (List)query.getResultList();
-       }catch(Exception ex){
-           ex.printStackTrace();
-          
-       }     
-       return entryList;
+
+    public List getMatchingEntries(String entry, int maxResults) {
+        Query query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");
+        query.setParameter("entry", entry);
+        query.setMaxResults(maxResults);
+
+        List entryList = null;
+        try {
+            entryList = (List)query.getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+        }
+        return entryList;
     }
-    
-    public Integer getEntryIdForSystemName(String systemName)throws Exception{ 
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");  
+
+    public Integer getEntryIdForSystemName(String systemName) throws Exception {
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName", systemName);
         Integer entryId = null;
-        try{     
-          entryId = (Integer)query.getSingleResult();
-        }catch(NoResultException ex){
+        try {
+            entryId = (Integer)query.getSingleResult();
+        } catch (NoResultException ex) {
             return null;
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
-        }    
+        }
         return entryId;
-    } 
-     
-    public Integer getEntryIdForEntry(String entry)throws Exception{
-        Query query = manager.createNamedQuery("Dictionary.IdByEntry");  
+    }
+
+    public Integer getEntryIdForEntry(String entry) throws Exception {
+        Query query = manager.createNamedQuery("Dictionary.IdByEntry");
         query.setParameter("entry", entry);
         Integer entryId = null;
-        try{ 
-          entryId = (Integer)query.getSingleResult();
-        }catch(NoResultException ex){
+        try {
+            entryId = (Integer)query.getSingleResult();
+        } catch (NoResultException ex) {
             return null;
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
-        }     
+        }
         return entryId;
-    } 
-    
+    }
+
     public String getSystemNameForEntryId(Integer entryId) throws Exception {
-        Query query = manager.createNamedQuery("Dictionary.SystemNameById");  
+        Query query = manager.createNamedQuery("Dictionary.SystemNameById");
         query.setParameter("id", entryId);
         String systemName = null;
-        try{ 
+        try {
             systemName = (String)query.getSingleResult();
-        }catch(NoResultException ex){
+        } catch (NoResultException ex) {
             return null;
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
-        }     
+        }
         return systemName;
     }
-        
-    public Integer getCategoryId(String systemName){
-        Query query = manager.createNamedQuery("Category.IdBySystemName");  
+
+    public Integer getCategoryId(String systemName) {
+        Query query = manager.createNamedQuery("Category.IdBySystemName");
         query.setParameter("systemName", systemName);
         Integer categoryId = null;
-        try{ 
-            categoryId = (Integer)query.getSingleResult();        
-        } catch(Exception ex){          
+        try {
+            categoryId = (Integer)query.getSingleResult();
+        } catch (Exception ex) {
             ex.printStackTrace();
-            
-        }   
+
+        }
         return categoryId;
     }
-    
-    //@RolesAllowed("dictionary-update")
-    public CategoryDO getCategoryAndLock(Integer categoryId, String session)throws Exception {
+
+    // @RolesAllowed("dictionary-update")
+    public CategoryDO getCategoryAndLock(Integer categoryId, String session) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
 
-        lockBean.getLock((Integer)query.getSingleResult(),categoryId);
-        
+        lockBean.getLock((Integer)query.getSingleResult(), categoryId);
+
         return getCategory(categoryId);
     }
 
     public CategoryDO getCategoryAndUnlock(Integer categoryId, String session) {
-        
+
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "category");
 
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),categoryId);
-        
+        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), categoryId);
+
         return getCategory(categoryId);
-    } 
-    
-    
-    private void validateCategory(CategoryDO categoryDO,List<Exception> exceptionList){
+    }
 
-            if(!("").equals(categoryDO.getSystemName())){
-                Query catIdQuery  = manager.createNamedQuery("Category.IdBySystemName");
-                catIdQuery.setParameter("systemName", categoryDO.getSystemName());
+    private void validateCategory(CategoryDO categoryDO,
+                                  List<Exception> exceptionList) {
+
+        if (!("").equals(categoryDO.getSystemName())) {
+            Query catIdQuery = manager.createNamedQuery("Category.IdBySystemName");
+            catIdQuery.setParameter("systemName", categoryDO.getSystemName());
+            Integer catId = null;
+            try {
+
+                catId = (Integer)catIdQuery.getSingleResult();
+            } catch (NoResultException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                exceptionList.add(ex);
+            }
+
+            if (catId != null) {
+                if (!catId.equals(categoryDO.getId())) {
+                    exceptionList.add(new FieldErrorException("fieldUniqueException",
+                                                              CatMeta.getSystemName()));
+                }
+            }
+
+        } else {
+
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      CatMeta.getSystemName()));
+        }
+
+        if (("").equals(categoryDO.getName())) {
+
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      CatMeta.getName()));
+        }
+
+    }
+
+    private void validateDictionary(DictionaryDO dictDO,
+                                    Integer categoryId,
+                                    int index,
+                                    List<String> systemNames,
+                                    List<String> entries,
+                                    List<Exception> exceptionList) {
+
+        if (!("").equals(dictDO.getEntry())) {
+            if (!entries.contains(dictDO.getEntry())) {
+                entries.add(dictDO.getEntry());
+            } else {
+
+                exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
+                                                               index,
+                                                               CatMeta.getDictionary()
+                                                                      .getEntry()));
+            }
+        } else {
+
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                                                           index,
+                                                           CatMeta.getDictionary()
+                                                                  .getEntry()));
+        }
+
+        if (!("").equals(dictDO.getSystemName())) {
+            if (!systemNames.contains(dictDO.getSystemName())) {
+                Query catIdQuery = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
+                catIdQuery.setParameter("systemName", dictDO.getSystemName());
                 Integer catId = null;
-                try{
-
+                try {
                     catId = (Integer)catIdQuery.getSingleResult();
-                }catch(NoResultException ex){                     
+                } catch (NoResultException ex) {
                     ex.printStackTrace();
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     exceptionList.add(ex);
                 }
-                
-              if(catId!=null){  
-                if(!catId.equals(categoryDO.getId())){
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",CatMeta.getSystemName()));
-                }  
-              }                                 
 
-       }else {
- 
-           exceptionList.add(new FieldErrorException("fieldRequiredException",CatMeta.getSystemName())); 
-       } 
-            
-         if(("").equals(categoryDO.getName())){      
-
-                exceptionList.add(new FieldErrorException("fieldRequiredException",CatMeta.getName())); 
-            }
-            
-    }
-    
-    
-    private void validateDictionary(DictionaryDO dictDO, Integer categoryId, int index,List<String>systemNames,List<String>entries,List<Exception> exceptionList){             
-             
-            if(!("").equals(dictDO.getEntry())){   
-             if(!entries.contains(dictDO.getEntry())){
-               entries.add(dictDO.getEntry());
-              }else{        
-
-                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,CatMeta.getDictionary().getEntry()));
-              } 
-            }else{              
-
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", index,CatMeta.getDictionary().getEntry()));
-            }              
-           
-            
-             if(!("").equals(dictDO.getSystemName())){ 
-               if(!systemNames.contains(dictDO.getSystemName())){     
-                 Query catIdQuery  = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
-                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
-                 Integer catId = null;
-                 try{
-                     catId = (Integer)catIdQuery.getSingleResult();
-                 }catch(NoResultException ex){                     
-                     ex.printStackTrace();
-                 }catch(Exception ex){                    
-                     exceptionList.add(ex);
-                 }
-                 
-                  if(catId != null){
-                      if(!catId.equals(categoryId)){                                                        
-                          exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,CatMeta.getDictionary().getSystemName()));
-                      }
-                  }                           
-                systemNames.add(dictDO.getSystemName());                            
-            }else{
-                if(dictDO.getId() ==null){
-                  exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", index,CatMeta.getDictionary().getSystemName()));
-                }else {
-                    exceptionList.add(new TableFieldErrorException("fieldUniqueException", index,CatMeta.getDictionary().getSystemName()));
+                if (catId != null) {
+                    if (!catId.equals(categoryId)) {
+                        exceptionList.add(new TableFieldErrorException("fieldUniqueException",
+                                                                       index,
+                                                                       CatMeta.getDictionary()
+                                                                              .getSystemName()));
+                    }
+                }
+                systemNames.add(dictDO.getSystemName());
+            } else {
+                if (dictDO.getId() == null) {
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
+                                                                   index,
+                                                                   CatMeta.getDictionary()
+                                                                          .getSystemName()));
+                } else {
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueException",
+                                                                   index,
+                                                                   CatMeta.getDictionary()
+                                                                          .getSystemName()));
                 }
             }
-            
-       }                 
+
+        }
     }
-    
-    public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
-        
+
+    public List validateForAdd(CategoryDO categoryDO,
+                               List<DictionaryDO> dictDOList) {
+
         List<Exception> exceptionList = new ArrayList<Exception>();
-        
-        validateCategory(categoryDO,exceptionList);        
+
+        validateCategory(categoryDO, exceptionList);
         ArrayList<String> systemNames = new ArrayList<String>();
-        
+
         ArrayList<String> entries = new ArrayList<String>();
 
-        for (int iter =0; iter< dictDOList.size(); iter++) {
+        for (int iter = 0; iter < dictDOList.size(); iter++) {
             DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
-            validateDictionary(dictDO,categoryDO.getId(),iter,systemNames,entries,exceptionList);            
+            validateDictionary(dictDO,
+                               categoryDO.getId(),
+                               iter,
+                               systemNames,
+                               entries,
+                               exceptionList);
         }
-        
-        return exceptionList;
-    }
-    
-    public List validateForUpdate(CategoryDO categoryDO, List<DictionaryDO> dictDOList){
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        
-        validateCategory(categoryDO,exceptionList);        
-        ArrayList<String> systemNames = new ArrayList<String>();
-        
-        ArrayList<String> entries = new ArrayList<String>();
 
-        for (int iter =0; iter< dictDOList.size(); iter++) {
-            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
-            validateDictionary(dictDO,categoryDO.getId(),iter,systemNames,entries,exceptionList);            
-        }
-        
         return exceptionList;
     }
 
-    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,Integer categoryId) {
-       Query query = null;
-       if(categoryId !=null){ 
-        query = manager.createNamedQuery("Dictionary.DictionaryListByPatternAndCategory");
-        query.setParameter("categoryId", categoryId);
-        query.setParameter("pattern", pattern.getParameter().get(0));
-       }else{
-           query = manager.createNamedQuery("Dictionary.DictionaryListByPatternOnly");
-           query.setParameter("pattern", pattern.getParameter().get(0));
-       } 
+    public List validateForUpdate(CategoryDO categoryDO,
+                                  List<DictionaryDO> dictDOList) {
+        List<Exception> exceptionList = new ArrayList<Exception>();
+
+        validateCategory(categoryDO, exceptionList);
+        ArrayList<String> systemNames = new ArrayList<String>();
+
+        ArrayList<String> entries = new ArrayList<String>();
+
+        for (int iter = 0; iter < dictDOList.size(); iter++) {
+            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
+            validateDictionary(dictDO,
+                               categoryDO.getId(),
+                               iter,
+                               systemNames,
+                               entries,
+                               exceptionList);
+        }
+
+        return exceptionList;
+    }
+
+    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,
+                                                      Integer categoryId) {
+        Query query = null;
+        if (categoryId != null) {
+            query = manager.createNamedQuery("Dictionary.DictionaryListByPatternAndCategory");
+            query.setParameter("categoryId", categoryId);
+            query.setParameter("pattern", pattern.getParameter().get(0));
+        } else {
+            query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");
+            query.setParameter("entry", pattern.getParameter().get(0));
+        }
         List idNameDOList = query.getResultList();
-        return idNameDOList;
+        return   idNameDOList;
     }
-    
+
 }
