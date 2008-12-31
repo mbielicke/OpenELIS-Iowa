@@ -39,6 +39,8 @@ import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.messages.ContactTypeCacheMessage;
 import org.openelis.messages.CountryCacheMessage;
+import org.openelis.messages.ProviderTypeCacheMessage;
+import org.openelis.messages.QaEventTypeCacheMessage;
 import org.openelis.messages.StateCacheMessage;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
@@ -241,17 +243,25 @@ public class CategoryBean implements CategoryRemote {
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
         
-        if(categoryDO.getName().equals("state")){
+        if(("state").equals(categoryDO.getSystemName())){
             StateCacheMessage msg = new StateCacheMessage();
             msg.action = StateCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
-        }else if(categoryDO.getName().equals("country")){
+        }else if(("country").equals(categoryDO.getSystemName())){
             CountryCacheMessage msg = new CountryCacheMessage();
             msg.action = CountryCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
-        }else if(categoryDO.getName().equals("contactType")){
+        }else if(("contact_type").equals(categoryDO.getSystemName())){
             ContactTypeCacheMessage msg = new ContactTypeCacheMessage();
             msg.action = ContactTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("provider_type").equals(categoryDO.getSystemName())){
+            ProviderTypeCacheMessage msg = new ProviderTypeCacheMessage();
+            msg.action = ProviderTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("qaevent_type").equals(categoryDO.getSystemName())){
+            QaEventTypeCacheMessage msg = new QaEventTypeCacheMessage();
+            msg.action = QaEventTypeCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
         }
         
