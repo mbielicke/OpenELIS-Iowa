@@ -276,8 +276,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											<query>
-							 			  <queryTable manager="this" maxRows="2" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
-											
+							 			  <queryTable manager="this" maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">											
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'section')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
