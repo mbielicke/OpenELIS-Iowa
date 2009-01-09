@@ -712,7 +712,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
          return model;
     }
     
-    public DataMap getTestResultModelMap(NumberObject testId,DataMap dataMap){
+    public DataMap getTestResultModelMap(NumberObject testId,DataMap dataMap) {
       TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
       HashMap<Integer,List<IdNameDO>> listMap = remote.getAnalyteResultsMap((Integer)testId.getValue()); 
        for (Iterator iter = listMap.entrySet().iterator(); iter.hasNext();){ 
@@ -724,8 +724,25 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
           }
         return dataMap;
       }
-  
     
+    public DataMap getResultGroupAnalyteMap(NumberObject testId,DataMap dataMap) {       
+        TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        HashMap<Integer,List<Integer>> listMap = remote.getResultGroupAnalytesMap((Integer)testId.getValue()); 
+         for (Iterator iter = listMap.entrySet().iterator(); iter.hasNext();){ 
+                Entry<Integer,List<IdNameDO>> entry = (Entry<Integer,List<IdNameDO>>)iter.next();
+                List<Integer> list = (List<Integer>)listMap.get(entry.getKey());              
+                DataSet set = new DataSet();                
+                for(int i = 0; i < list.size(); i++) {
+                  set.add(new NumberObject(list.get(i)));  
+                }
+                dataMap.put(entry.getKey().toString(), set);             
+            }
+          return dataMap;       
+    }
+  
+    public DataMap getResultGroupAnalytesMap(NumberObject testId, DataMap dataMap) {
+        return dataMap;
+    }
     
     public DataModel getInitialModel(StringObject catObj) {
         String cat = (String)catObj.getValue();
@@ -800,14 +817,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
              String entryText = element.getName();
              
              DataSet data = new DataSet();
-             //hidden id
+             
              NumberObject idObject = new NumberObject(entryId);
              data.setKey(idObject);
              
              StringObject nameObject = new StringObject(entryText);
              data.add(nameObject);
-             
-             //add the dataset to the datamodel
+                          
              dataModel.add(data);
          }       
          
@@ -1410,7 +1426,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             data.put("id", id);
             row.setData(data);             
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
-            row.get(1).setValue(resultDO.getValue());            
+            if(resultDO.getDictEntry()==null)
+             row.get(1).setValue(resultDO.getValue());
+            else
+             row.get(1).setValue(resultDO.getDictEntry());
+            
             row.get(2).setValue(resultDO.getSignificantDigits());
             
             if(resultDO.getFlagsId()!=null)
@@ -1441,7 +1461,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             data.put("id", id);
             row.setData(data);             
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
-            row.get(1).setValue(resultDO.getValue());            
+            
+            if(resultDO.getDictEntry()==null)
+             row.get(1).setValue(resultDO.getValue());
+            else
+             row.get(1).setValue(resultDO.getDictEntry());
+            
             row.get(2).setValue(resultDO.getSignificantDigits());
             
             if(resultDO.getFlagsId()!=null)
@@ -1545,28 +1570,38 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         
       CollectionField field = (CollectionField)rpcSend.getField("resultModelCollection");
       ArrayList<DataModel> list = (ArrayList<DataModel>)field.getValue(); 
+      NumberField id = null;
+      NumberObject valueObj = null;
+      
       
       List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
       
       for(int fiter = 0; fiter < list.size(); fiter++){
         DataModel model = list.get(fiter);
-        
-        
+                
         for(int iter = 0; iter < model.size(); iter++){
             DataSet row = model.get(iter);
             TestResultDO resultDO = new TestResultDO();
             
             if(row.getData()!=null){ 
-                NumberField id = (NumberField)((DataMap)row.getData()).get("id");
-                resultDO.setId((Integer)id.getValue());                             
+                id = (NumberField)((DataMap)row.getData()).get("id");
+                resultDO.setId((Integer)id.getValue()); 
+                valueObj = (NumberObject)((DataMap)row.getData()).get("value");
             }
             
-             resultDO.setDelete(false);
-                
-                   
+            resultDO.setDelete(false);
+                                   
             resultDO.setTypeId((Integer)((DropDownField)row.get(0)).getSelectedKey());
             
-            resultDO.setValue((String)((StringField)row.get(1)).getValue());
+            if(valueObj == null) {
+             resultDO.setValue((String)((StringField)row.get(1)).getValue());
+             resultDO.setDictEntry(null);
+            } 
+            else {
+             resultDO.setValue(((Integer)valueObj.getValue()).toString());
+             resultDO.setDictEntry((String)((StringField)row.get(1)).getValue());
+            } 
+            
             resultDO.setSignificantDigits((Integer)((NumberField)row.get(2)).getValue());                       
             resultDO.setFlagsId((Integer)((DropDownField)row.get(3)).getSelectedKey());
            
@@ -1592,7 +1627,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             TestResultDO resultDO = new TestResultDO();
             
             if(row.getData()!=null){ 
-                NumberField id = (NumberField)((DataMap)row.getData()).get("id");
+                id = (NumberField)((DataMap)row.getData()).get("id");
                 resultDO.setId((Integer)id.getValue());                              
             }
             

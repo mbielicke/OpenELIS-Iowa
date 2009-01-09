@@ -243,12 +243,12 @@ UIRF Software License are applicable instead of those above.
   </tab>
   
   <tab key="notesTab" text="{resource:getString($constants,'note')}">
-						<VerticalPanel key="secMod3" height="164px" spacing="0" padding="0" xsi:type="Panel">
-							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+						<VerticalPanel key="secMod3" height="164px" xsi:type="Panel">
+							<TablePanel key="noteFormPanel" style="Form" >
 										<row>
 										
-												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
-										<textbox case="mixed" key="{note:getSubject($note)}" width="429px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
+												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/>:</text>
+										<textbox case="mixed" key="{note:getSubject($note)}" width="420px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
 					
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
 										<HorizontalPanel>
@@ -262,10 +262,10 @@ UIRF Software License are applicable instead of those above.
 										</row>
 										<row>
 										<widget>
-											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/></text>
+											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/>:</text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="545px" height="48px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="536px" height="48px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -273,7 +273,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="178px" width="545px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="174px" width="536px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>

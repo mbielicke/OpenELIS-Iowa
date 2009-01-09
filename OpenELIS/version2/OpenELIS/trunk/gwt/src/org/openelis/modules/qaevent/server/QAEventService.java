@@ -56,6 +56,7 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.QAEventTypeCacheHandler;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -261,11 +262,13 @@ public class QAEventService implements AppScreenFormServiceInt<FormRPC, DataSet,
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));    
         
-        DataModel qaTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "qaTypeDropDown");
+        //DataModel qaTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "qaTypeDropDown");
         DataModel testDropDownField = (DataModel)CachingManager.getElement("InitialData", "testDropDown");
         
-        if(qaTypeDropDownField ==null)
-            qaTypeDropDownField = getInitialModel("qaEventType");
+        DataModel qaTypeDropDownField = QAEventTypeCacheHandler.getQAEventTypes();
+        
+        //if(qaTypeDropDownField ==null)
+          //  qaTypeDropDownField = getInitialModel("qaEventType");
         
         if(testDropDownField ==null)
             testDropDownField = getInitialModel("test");

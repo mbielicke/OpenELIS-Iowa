@@ -259,7 +259,6 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
 
 
     public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {
-        // TODO Auto-generated method stub
         return true;
     }
 
