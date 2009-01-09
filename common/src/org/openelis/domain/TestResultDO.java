@@ -58,6 +58,8 @@ public class TestResultDO implements Serializable {
    
     protected String hazardLevel;
     
+    protected String dictEntry;
+    
     private boolean delete = false;
     
     public TestResultDO() {
@@ -185,6 +187,14 @@ public class TestResultDO implements Serializable {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    public String getDictEntry() {
+        return dictEntry;
+    }
+
+    public void setDictEntry(String dictEntry) {
+        this.dictEntry = dictEntry;
     }
 
 }

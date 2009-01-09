@@ -56,7 +56,9 @@ import org.openelis.utils.Auditable;
                         " tr.quantLimit,tr.contLevel,tr.hazardLevel)  from TestResult tr " +
                         " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),
                @NamedQuery(name = "TestResult.ResultGroupsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.resultGroup,null) " +
-                        " from TestResult tr where tr.testId = :testId order by tr.resultGroup ")})
+                        " from TestResult tr where tr.testId = :testId order by tr.resultGroup "),
+               @NamedQuery(name = "TestResult.ResultCountByValue", query = "select count(tr.id) " +
+                        " from TestResult tr where tr.value = :value")         })
 @Entity
 @Table(name="test_result")
 @EntityListeners({AuditUtil.class})

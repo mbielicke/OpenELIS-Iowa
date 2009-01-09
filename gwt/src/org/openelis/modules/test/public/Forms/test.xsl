@@ -257,7 +257,7 @@ UIRF Software License are applicable instead of those above.
 								<VerticalPanel padding="0" spacing="0">
 								  <VerticalPanel height = "6px"/>
 										<widget valign="bottom">
-											<table key="sectionTable" maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
+											<table key="sectionTable" maxRows="3" manager = "this" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'section')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
@@ -276,15 +276,15 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											<query>
-							 			  <queryTable manager="this" maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">											
+							 			  <queryTable maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">											
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'section')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
 												</headers>
 												<widths>100,100</widths>
 												<editors>
-													<dropdown case="mixed" width="85px"/>
-													<dropdown case="mixed" width="107px"/>													
+													<dropdown case="mixed" width="85px" multiSelect = "true"/>
+													<dropdown case="mixed" width="107px" multiSelect = "true"/>													
 												</editors>
 												<fields>
 													<xsl:value-of select='testSection:getSectionId($ts)'/>,<xsl:value-of select='testSection:getFlagId($ts)'/>													
@@ -347,7 +347,7 @@ UIRF Software License are applicable instead of those above.
 		                         <VerticalPanel height = "6px"/>                    
 							  </VerticalPanel>							  							 
 							</tab>
-							<tab key="analyteTab" text="{resource:getString($constants,'testAnalyte')}">
+							<tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
 							 <VerticalPanel padding="0" spacing="0" key="treeContainer">
 							  <widget>
                                 <tree-table key="analyteTree" multiSelect = "true" targets = "analyteTree" manager = "this" drop = "default" drag = "default" width="auto" showError="false" showScroll="ALWAYS" maxRows="7" enable="true">                                
@@ -640,9 +640,9 @@ UIRF Software License are applicable instead of those above.
 												<widths>150,150,140,104</widths>
 												<editors>
 													<dropdown case="mixed" multiSelect="true" width="300px"/>
-													<dropdown case="mixed" multiSelect="true" width="120px"/>
-													<dropdown case="mixed" multiSelect="true" width="120px"/>
-													<dropdown case="mixed" multiSelect="true" width="95px"/>													
+													<dropdown case="mixed" multiSelect="true" width="150px"/>
+													<dropdown case="mixed" multiSelect="true" width="140px"/>
+													<dropdown case="mixed" multiSelect="true" width="99px"/>													
 												</editors>
 												<fields>
 												    <xsl:value-of select='testRef:getAddTestId($tref)'/>,<xsl:value-of select='testRef:getTestAnalyteId($tref)'/>,<xsl:value-of select='testRef:getTestResultId($tref)'/>,<xsl:value-of select='testRef:getFlagsId($tref)'/>																									

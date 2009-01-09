@@ -65,6 +65,9 @@ import org.openelis.remote.ProviderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.CountryCacheHandler;
+import org.openelis.server.handlers.ProviderTypeCacheHandler;
+import org.openelis.server.handlers.StatesCacheHandler;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
@@ -373,11 +376,15 @@ public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
         
-        DataModel providerTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "providerTypeDropDown");
-        DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
-        DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
+        //DataModel providerTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "providerTypeDropDown");
+        //DataModel stateDropDownField = (DataModel)CachingManager.getElement("InitialData", "stateDropDown");
+        //DataModel countryDropDownField = (DataModel)CachingManager.getElement("InitialData", "countryDropDown");
         
-        if(providerTypeDropDownField ==null){
+        DataModel providerTypeDropDownField = ProviderTypeCacheHandler.getProviderTypes();
+        DataModel stateDropdownField = StatesCacheHandler.getStates();
+        DataModel countryDropdownField = CountryCacheHandler.getCountries();
+        
+        /*if(providerTypeDropDownField ==null){
             providerTypeDropDownField = getInitialModel("providerType");
             CachingManager.putElement("InitialData", "providerTypeDropDown", providerTypeDropDownField);
         }   
@@ -390,13 +397,13 @@ public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet
          if(countryDropDownField == null){
              countryDropDownField = getInitialModel("country");
              CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
-         }   
+         } */  
          
          HashMap map = new HashMap();
          map.put("xml", xml);
          map.put("providers", providerTypeDropDownField);
-         map.put("states", stateDropDownField);
-         map.put("countries", countryDropDownField);
+         map.put("states", stateDropdownField);
+         map.put("countries", countryDropdownField);
          
          return map;
     }
@@ -428,14 +435,16 @@ public class ProviderService implements AppScreenFormServiceInt<FormRPC, DataSet
                     row.get(3).setValue(addressRow.getAddressDO().getStreetAddress());
                     row.get(4).setValue(addressRow.getAddressDO().getCity());     
                     if(addressRow.getAddressDO().getState()!=null){
-                     row.get(5).setValue(addressRow.getAddressDO().getState());
+                     row.get(5).setValue(new DataSet(new StringObject(addressRow
+                                                                      .getAddressDO().getState())));
                     }else{
-                        row.get(5).setValue("");  
+                        row.get(5).setValue(new DataSet(new StringObject("")));  
                     } 
                     if(addressRow.getAddressDO().getCountry()!=null){                    
-                     row.get(6).setValue(addressRow.getAddressDO().getCountry());
+                     row.get(6).setValue(new DataSet(new StringObject(addressRow
+                                                                      .getAddressDO().getCountry())));
                     }else{
-                        row.get(6).setValue("");  
+                        row.get(6).setValue(new DataSet(new StringObject("")));  
                     }                    
                                         
                     row.get(7).setValue(addressRow.getAddressDO().getZipCode());

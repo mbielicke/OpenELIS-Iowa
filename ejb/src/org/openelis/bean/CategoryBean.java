@@ -538,5 +538,22 @@ public class CategoryBean implements CategoryRemote {
         List idNameDOList = query.getResultList();
         return   idNameDOList;
     }
+    
+    public Integer getNumResultsAffected(String entry, Integer id) {
+        Integer count = null;
+        String oldVal = null;        
+        Query query = manager.createNamedQuery("TestResult.ResultCountByValue");
+        query.setParameter("value", id.toString());
+        count = (Integer)query.getSingleResult();        
+        
+        if(count > 0) {
+           query = manager.createNamedQuery("Dictionary.EntryById");
+           query.setParameter("id", id);          
+           oldVal = (String)query.getSingleResult();
+           if(oldVal.trim().equals(entry.trim())) 
+            count = 0;           
+        }
+        return count;        
+    }
 
 }

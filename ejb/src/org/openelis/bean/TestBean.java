@@ -27,8 +27,8 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -146,6 +146,14 @@ public class TestBean implements TestRemote {
                               List<TestAnalyteDO> analyteDOList,
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception {
+        TestWorksheet testWorksheet = null;
+        List<TestAnalyteDO> laterProcAnaList = new ArrayList<TestAnalyteDO>(); 
+        List<TestResultDO> laterProcResList = new ArrayList<TestResultDO>();
+        HashMap<Integer, Integer> tempRealResIdMap = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> tempRealAnaIdMap = new HashMap<Integer, Integer>();
+        
+        boolean found = false;
+        
         try {
             Query query = manager.createNamedQuery("getTableId");
             query.setParameter("name", "test");
@@ -176,7 +184,7 @@ public class TestBean implements TestRemote {
             test.setName(testIdNameMethodDO.getName());
             test.setMethodId(testIdNameMethodDO.getMethodId());
             
-            if(testDetailsDO!=null){                                      
+           if(testDetailsDO!=null){                                      
             test.setActiveBegin(testDetailsDO.getActiveBegin());
             test.setActiveEnd(testDetailsDO.getActiveEnd());
             test.setDescription(testDetailsDO.getDescription());
@@ -263,40 +271,9 @@ public class TestBean implements TestRemote {
                          }
  
                      }
-                  }
-                  
-                if(testReflexDOList!=null){
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestReflex(exceptionList,testReflexDOList);
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(int iter = 0; iter < testReflexDOList.size(); iter++){
-                       TestReflexDO refDO = testReflexDOList.get(iter);
-                       TestReflex testReflex = null;
-                       if(refDO.getId() == null){
-                           testReflex = new TestReflex();
-                       } else {
-                           testReflex = manager.find(TestReflex.class, refDO.getId());
-                       }
-                       if(refDO.getDelete() && refDO.getId() != null){                           
-                           manager.remove(testReflex);                                                     
-                       }else{                                
-                           testReflex.setTestId(test.getId());
-                           testReflex.setAddTestId(refDO.getAddTestId());
-                           testReflex.setTestAnalyteId(refDO.getTestAnalyteId());
-                           testReflex.setFlagsId(refDO.getFlagsId());
-                           testReflex.setTestResultId(refDO.getTestResultId());                           
-                       
-                       if(testReflex.getId() == null){
-                           manager.persist(testReflex);
-                       }
-                    }
-                  }
-                }   
+                  }                                     
                 
-                TestWorksheet testWorksheet = null;
+                
                 if(worksheetDO!=null){
                     exceptionList = new ArrayList<Exception>();
                     validateTestWorksheet(exceptionList,worksheetDO);
@@ -366,30 +343,25 @@ public class TestBean implements TestRemote {
                         
                         if(analyteDO.getId()==null){
                             analyte = new TestAnalyte();                           
-                        }else{
+                        }else if(analyteDO.getId() > 0){
                             analyte =  manager.find(TestAnalyte.class, analyteDO.getId());
+                        }else {
+                            laterProcAnaList.add(analyteDO);
                         }
                         
-                        if(analyteDO.getDelete() && analyteDO.getId() != null){
+                        if(analyteDO.getDelete() && analyteDO.getId() != null && !laterProcAnaList.contains(analyteDO)){
                             query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestAnalyte") ;
                             query.setParameter("testId", test.getId());
                             query.setParameter("testAnalyteId", analyte.getId());
-                            List<TestAnalyte> anaList = (List<TestAnalyte>)query.getResultList();
+                            List<TestReflex> refList = (List<TestReflex>)query.getResultList();
                             
-                            for(int i = 0; i < anaList.size(); i++) {
-                                 manager.remove(anaList.get(i));
+                            for(int i = 0; i < refList.size(); i++) {
+                                 manager.remove(refList.get(i));
                             }
                             
                             manager.remove(analyte);                                 
-                        }else if(!analyteDO.getDelete()){
-                            analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
-                            analyte.setAnalyteId(analyteDO.getAnalyteId());
-                            analyte.setIsReportable(analyteDO.getIsReportable());
-                            analyte.setResultGroup(analyteDO.getResultGroup());
-                            analyte.setScriptletId(analyteDO.getScriptletId());
-                            analyte.setSortOrder(analyteDO.getSortOrder());
-                            analyte.setTestId(analyteDO.getTestId());
-                            analyte.setTypeId(analyteDO.getTypeId());
+                        }else if(!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)){
+                            updateTestAnalyte(analyteDO, analyte); 
                             
                             if(analyte.getId() == null){
                                 manager.persist(analyte);
@@ -411,9 +383,9 @@ public class TestBean implements TestRemote {
                         TestSectionDO tsDO = sectionDOList.get(iter);
                         TestSection ts = null;
                         
-                        if(tsDO.getId()==null){
+                        if(tsDO.getId()==null) {
                             ts = new TestSection();                           
-                        }else{
+                        } else {
                             ts =  manager.find(TestSection.class, tsDO.getId());
                         }
                         
@@ -443,13 +415,15 @@ public class TestBean implements TestRemote {
                         TestResultDO resultDO = resultDOList.get(iter);
                         TestResult result = null;   
                         
-                        if(resultDO.getId()==null){
+                        if(resultDO.getId()==null) {
                             result = new TestResult();                            
-                        }else{
+                        } else if(resultDO.getId() > 0) {
                             result = manager.find(TestResult.class, resultDO.getId());
+                        } else {
+                            laterProcResList.add(resultDO);
                         }
                         
-                        if(resultDO.getDelete() && resultDO.getId() != null){
+                        if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){
                            query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestResult") ;
                            query.setParameter("testId", test.getId());
                            query.setParameter("testResultId", result.getId());
@@ -457,27 +431,114 @@ public class TestBean implements TestRemote {
                            
                            for(int i = 0; i < reflexList.size(); i++) {
                                 manager.remove(reflexList.get(i));
-                           }
+                           }                           
+                           manager.remove(result);   
                            
-                           manager.remove(result);                             
-                        }else{
-                            result.setContLevel(resultDO.getContLevel());
-                            result.setValue(resultDO.getValue());
-                            result.setFlagsId(resultDO.getFlagsId());
-                            result.setHazardLevel(resultDO.getHazardLevel());
-                            result.setQuantLimit(resultDO.getQuantLimit());
-                            result.setResultGroup(resultDO.getResultGroup());
-                            result.setRoundingMethodId(resultDO.getRoundingMethodId());
-                            result.setSignificantDigits(resultDO.getSignificantDigits());
-                            result.setSortOrder(resultDO.getSortOrder());
-                            result.setTestId(resultDO.getTestId());
-                            result.setTypeId(resultDO.getTypeId());
+                        } else { 
+                            if(!laterProcResList.contains(resultDO)){                        
+                                updateTestResult(resultDO, result);
                             
                             if(result.getId() == null){
                                 manager.persist(result);
                             }
-                        }
+                         }
+                       }      
                     }
+                }
+                
+                if(testReflexDOList!=null) {
+                    exceptionList = new ArrayList<Exception>();
+                    validateTestReflex(exceptionList,testReflexDOList);
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                    for(int iter = 0; iter < testReflexDOList.size(); iter++){
+                       TestReflexDO refDO = testReflexDOList.get(iter);
+                       TestReflex testReflex = null;
+                       if(refDO.getId() == null){
+                           testReflex = new TestReflex();
+                       } else {
+                           testReflex = manager.find(TestReflex.class, refDO.getId());
+                       }
+                       if(refDO.getDelete() && refDO.getId() != null){                           
+                           manager.remove(testReflex);                                                     
+                       }else{                                
+                           testReflex.setTestId(test.getId());
+                           testReflex.setAddTestId(refDO.getAddTestId());
+                           
+                           if(refDO.getTestAnalyteId() != null && refDO.getTestAnalyteId() < 0) {
+                               found = false; 
+                              for(int i = 0; i < laterProcAnaList.size(); i++) {
+                                 if(refDO.getTestAnalyteId().equals(laterProcAnaList.get(i).getId())) {                                     
+                                     TestAnalyteDO analyteDO = laterProcAnaList.get(i);
+                                     TestAnalyte analyte = new TestAnalyte();                                    
+                                     
+                                     if(!analyteDO.getDelete()) {
+                                         found = true;
+                                         updateTestAnalyte(analyteDO, analyte);                                          
+                                         manager.persist(analyte);                                                           
+                                         refDO.setTestAnalyteId(analyte.getId());
+                                         tempRealAnaIdMap.put(analyteDO.getId(),analyte.getId());
+                                         laterProcAnaList.remove(analyteDO);
+                                    }  
+                                 } 
+                              }  
+                              if(!found)
+                                refDO.setTestAnalyteId(tempRealAnaIdMap.get(refDO.getTestAnalyteId()));
+                           }  
+                                                                                
+                          testReflex.setTestAnalyteId(refDO.getTestAnalyteId());
+                           
+                           if(refDO.getTestResultId() != null && refDO.getTestResultId() < 0) {
+                               found = false;
+                               for(int i = 0; i < laterProcResList.size(); i++) {                                  
+                                  if(refDO.getTestResultId().equals(laterProcResList.get(i).getId())) {
+                                      TestResultDO resultDO = laterProcResList.get(i);
+                                      TestResult result = new TestResult();                                    
+                                      
+                                      if(!resultDO.getDelete()) {
+                                         found = true; 
+                                         updateTestResult(resultDO, result);                                                                                 
+                                         manager.persist(result);                                         
+                                         refDO.setTestResultId(result.getId());
+                                         tempRealResIdMap.put(resultDO.getId(),result.getId());
+                                         laterProcResList.remove(resultDO);
+                                     }  
+                                  } 
+                               } 
+                               if(!found)
+                                   refDO.setTestResultId(tempRealResIdMap.get(refDO.getTestResultId()));
+                            }
+                                                                             
+                       testReflex.setTestResultId(refDO.getTestResultId());                                                 
+                       testReflex.setFlagsId(refDO.getFlagsId());
+                                                                                                     
+                       if(testReflex.getId() == null) {
+                           manager.persist(testReflex);
+                       }
+                    }
+                  }
+                }
+                
+                for(int i =0; i < laterProcAnaList.size(); i++) {
+                    TestAnalyteDO analyteDO = laterProcAnaList.get(i);
+                    TestAnalyte analyte = new TestAnalyte();
+                    
+                    if(!analyteDO.getDelete()){
+                        updateTestAnalyte(analyteDO, analyte);                        
+                        manager.persist(analyte); 
+                    }       
+                }
+                
+                for(int i =0; i < laterProcResList.size(); i++) {
+                    TestResultDO resultDO = laterProcResList.get(i);
+                    TestResult result = new TestResult();
+                    
+                    if(!resultDO.getDelete()) {
+                        updateTestResult(resultDO, result);                                                                
+                        manager.persist(result);
+                    }     
                 }
                                                        
             lockBean.giveUpLock(testReferenceId, test.getId());
@@ -513,10 +574,31 @@ public class TestBean implements TestRemote {
 
     
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId){
+        List<IdNameDO> idValues = null;
+        Integer resId = null;
+        Integer intVal = null;
+        String val = null;
+        IdNameDO idnDO = null;
+        TestResultDO resDO = null;
+        
         Query query = manager.createNamedQuery("TestResult.IdValueByTestAnalyteId");
         query.setParameter("testId", testId);
         query.setParameter("analyteId", analyteId);
-        List<IdNameDO> idValues = query.getResultList();
+        idValues = query.getResultList();
+        
+        for(int i = 0; i < idValues.size(); i++) {
+          idnDO = idValues.get(i);
+          val = idnDO.getName();          
+          try{
+              intVal = Integer.parseInt(val);
+              query = manager.createNamedQuery("Dictionary.EntryById");
+              query.setParameter("id",intVal);
+              val = (String)query.getSingleResult();
+              idnDO.setName(val);
+          }catch(NumberFormatException ex) {
+              ex.printStackTrace();
+          }
+        }
         return idValues;
     }
     
@@ -529,6 +611,31 @@ public class TestBean implements TestRemote {
               TestAnalyte ta = analyteList.get(iter);
               Integer id  = ta.getId();
               listMap.put(id,getTestResultsForTestAnalyte(testId,id));
+          }
+         return listMap;
+    }
+    
+    public HashMap<Integer,List<Integer>> getResultGroupAnalytesMap(Integer testId){
+        Query query = manager.createNamedQuery("TestAnalyte.TestAnalytesByResultGroupAndTestId");
+        query.setParameter("testId", testId);
+        List<Integer[]> analyteList = query.getResultList();
+        HashMap<Integer,List<Integer>> listMap = new HashMap<Integer,List<Integer>>();
+        List<Integer> anaList = null;
+          for(int iter = 0; iter < analyteList.size();iter++){
+              Object[] ta = analyteList.get(iter);
+              Integer rg  = (Integer)ta[0];
+              Integer anaId =  (Integer)ta[1];
+              
+              if(rg!=null && rg > 0) {
+                 if(listMap.get(rg)!=null) {
+                     listMap.get(rg).add(anaId);
+                 } else {
+                     anaList = new ArrayList<Integer>();
+                     anaList.add(anaId);
+                     listMap.put(rg,anaList);
+                 }
+              }
+                
           }
          return listMap;
     }
@@ -581,10 +688,36 @@ public class TestBean implements TestRemote {
     }
     
     public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup){
-        Query query = manager.createNamedQuery("TestResult.TestResultDOList");
+        List<TestResultDO> list = null;
+        TestResultDO resDO = null;
+        Integer typeId = null;
+        Integer val =null;
+        String sysName = null;
+        String entry = null;
+        
+        Query query = manager.createNamedQuery("TestResult.TestResultDOList");        
         query.setParameter("testId", testId);
         query.setParameter("resultGroup", resultGroup);
-        List<TestResultDO> list = query.getResultList();
+        
+        list = query.getResultList();
+        
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            resDO = (TestResultDO)iter.next();
+            typeId = resDO.getTypeId();
+            query = manager.createNamedQuery("Dictionary.SystemNameById");
+            query.setParameter("id", typeId);
+            sysName = (String)query.getSingleResult();
+            if("test_res_type_dictionary".equals(sysName)) {
+              val = Integer.parseInt(resDO.getValue());
+              query = manager.createNamedQuery("Dictionary.EntryById");
+              query.setParameter("id", val);
+              entry = (String)query.getSingleResult();
+              resDO.setDictEntry(entry);  
+            } else {
+              resDO.setDictEntry(null);  
+            }
+            
+        }
         return list;
     }
 
@@ -593,10 +726,6 @@ public class TestBean implements TestRemote {
         QueryBuilder qb = new QueryBuilder();
         qb.setMeta(TestMeta);
 
-        /*qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + TestMeta.getId()
-                     + ", "
-                     + TestMeta.getName()                     
-                     + ") ");*/
         qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("
                      +TestMeta.getId()+", "+TestMeta.getName()+", "
                      +TestMeta.getMethod().getName() + ") ");               
@@ -1184,6 +1313,7 @@ public class TestBean implements TestRemote {
                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
               }
            } else if(dictId.equals(typeId)) {
+               value = resDO.getDictEntry();
                if(value != null && !"".equals(value.trim())) {
                    if(!dvl.contains(value)) {
                       dvl.add(value); 
@@ -1207,6 +1337,11 @@ public class TestBean implements TestRemote {
            }
          }            
         } 
+      
+       if(!resultGroup.equals(resDO.getResultGroup())) {
+           ptMax = null;
+           pnMax = null;
+       }
         resultGroup = resDO.getResultGroup();
       }
         
@@ -1325,5 +1460,30 @@ public class TestBean implements TestRemote {
     private boolean idIsBlank(Integer id,Integer blankId){        
         return (id == null || blankId.equals(id)) ;            
     }  
+    
+    private void updateTestAnalyte(TestAnalyteDO analyteDO, TestAnalyte analyte) {
+        analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
+        analyte.setAnalyteId(analyteDO.getAnalyteId());
+        analyte.setIsReportable(analyteDO.getIsReportable());
+        analyte.setResultGroup(analyteDO.getResultGroup());
+        analyte.setScriptletId(analyteDO.getScriptletId());
+        analyte.setSortOrder(analyteDO.getSortOrder());
+        analyte.setTestId(analyteDO.getTestId());
+        analyte.setTypeId(analyteDO.getTypeId());
+    }
+    
+    private void updateTestResult(TestResultDO resultDO, TestResult result) {
+        result.setContLevel(resultDO.getContLevel());
+        result.setValue(resultDO.getValue());
+        result.setFlagsId(resultDO.getFlagsId());
+        result.setHazardLevel(resultDO.getHazardLevel());
+        result.setQuantLimit(resultDO.getQuantLimit());
+        result.setResultGroup(resultDO.getResultGroup());
+        result.setRoundingMethodId(resultDO.getRoundingMethodId());
+        result.setSignificantDigits(resultDO.getSignificantDigits());
+        result.setSortOrder(resultDO.getSortOrder());
+        result.setTestId(resultDO.getTestId());
+        result.setTypeId(resultDO.getTypeId());    
+    }
      
 }
