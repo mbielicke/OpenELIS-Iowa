@@ -422,7 +422,7 @@ public class CategoryBean implements CategoryRemote {
                                     List<String> entries,
                                     List<Exception> exceptionList) {
 
-        if (!("").equals(dictDO.getEntry())) {
+        if (dictDO.getEntry()!=null && !("").equals(dictDO.getEntry().trim())) {
             if (!entries.contains(dictDO.getEntry())) {
                 entries.add(dictDO.getEntry());
             } else {
@@ -440,7 +440,7 @@ public class CategoryBean implements CategoryRemote {
                                                                   .getEntry()));
         }
 
-        if (!("").equals(dictDO.getSystemName())) {
+        if (dictDO.getSystemName() !=null && !("").equals(dictDO.getSystemName().trim())) {
             if (!systemNames.contains(dictDO.getSystemName())) {
                 Query catIdQuery = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
@@ -541,10 +541,10 @@ public class CategoryBean implements CategoryRemote {
     
     public Integer getNumResultsAffected(String entry, Integer id) {
         Integer count = null;
-        String oldVal = null;        
+        String oldVal = null;    
         Query query = manager.createNamedQuery("TestResult.ResultCountByValue");
         query.setParameter("value", id.toString());
-        count = (Integer)query.getSingleResult();        
+        count = query.getResultList().size();        
         
         if(count > 0) {
            query = manager.createNamedQuery("Dictionary.EntryById");
@@ -554,6 +554,14 @@ public class CategoryBean implements CategoryRemote {
             count = 0;           
         }
         return count;        
+    }
+    
+    public String getEntryById(Integer id) {
+        String entry = null;
+        Query query = manager.createNamedQuery("Dictionary.EntryById");
+        query.setParameter("id", id);          
+        entry = (String)query.getSingleResult();
+        return entry;
     }
 
 }
