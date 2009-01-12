@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>
 					<!--<VerticalPanel height="3px"/>-->
 					
-					<VerticalPanel  spacing="0" padding = "0" xsi:type="Panel">
+					<VerticalPanel  spacing="0" padding = "0">
 						<widget>
 							<table maxRows = "13" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,

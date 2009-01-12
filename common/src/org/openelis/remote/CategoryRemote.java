@@ -74,4 +74,6 @@ public interface CategoryRemote {
     public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList);
     
     public Integer getNumResultsAffected(String entry, Integer id);
+    
+    public String getEntryById(Integer id);
 }

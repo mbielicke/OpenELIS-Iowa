@@ -32,9 +32,15 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
@@ -44,12 +50,17 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
+import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm implements ClickListener, TableManager{
+public class DictionaryScreen extends OpenELISScreenForm implements ClickListener,
+                                                                    TableManager,
+                                                                    TableWidgetListener{
 
     private TableWidget dictEntryController = null;
     private AppButton removeEntryButton = null;
@@ -83,7 +94,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
                
         dictEntryController = ((TableWidget)getWidget("dictEntTable"));
 
-        
+        dictEntryController.addTableWidgetListener(this);
 
         //tname = (TextBox)getWidget(CatMap.getName());
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
@@ -104,15 +115,16 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         rpc.setFieldValue("dictEntTable",dictEntryController.model.getData());
     }
     
-    public void performCommand(Enum action, Object obj) {
-        
-        if(action == ButtonPanel.Action.QUERY && obj instanceof AppButton) {
+    public void performCommand(Enum action, Object obj) {        
+        if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf(":") != -1)
+            if (query.indexOf("query:") != -1)
                 getCategories(query.substring(6));
-        }           
-                  
-        super.performCommand(action, obj);
+            else                         
+                super.performCommand(action, obj);            
+         }  else {                         
+            super.performCommand(action, obj);
+        }        
     }
 
     public void onClick(Widget sender) {
@@ -165,8 +177,10 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
     
     private void onRemoveRowButtonClick(){
-        ((TableWidget)dictEntryController.getWidget()).model
-        .deleteRow(((TableWidget)dictEntryController.getWidget()).model.getData().getSelectedIndex());       
+      if(dictEntryController.model.getData().getSelectedIndex() > -1)  {
+        dictEntryController.model
+        .deleteRow(dictEntryController.model.getData().getSelectedIndex());
+      } 
     }     
             
 
@@ -187,13 +201,13 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {        
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
            return false;
        }
 
-       public boolean canSelect(TableWidget widget, DataSet set, int row) {
+    public boolean canSelect(TableWidget widget, DataSet set, int row) {
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
            return false;
@@ -215,6 +229,55 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
     }
 
     public void drop(TableWidget widget, Widget dragWidget) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+      if(col == 3)  {
+        final DataSet set = dictEntryController.model.getData().get(row) ;
+        final int currRow = row;
+        DataMap data =  (DataMap)set.getData();
+        NumberField field = null;        
+        if(data != null) {
+            field = (NumberField)data.get("id");
+            if(field != null) {
+                screenService.getObject("getNumResultsAffected",
+                                        new Data[] {(StringField)set.get(col),field},
+                                        new AsyncCallback<DataSet>() {
+                                          public void onSuccess(DataSet result) {
+                                            NumberObject nobj = null;
+                                            StringObject sobj = null;
+                                            if(result != null) {
+                                             nobj = (NumberObject)result.get(0);
+                                             sobj = (StringObject)result.get(1);
+                                             if((Integer)nobj.getValue() > 0) {
+                                              boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
+                                               if(!ok) {                                                 
+                                                 dictEntryController.model.setCell(currRow, 3, (String)sobj.getValue());
+                                                 dictEntryController.model.refresh();  
+                                               } 
+                                             } 
+                                            }    
+                                                                                              
+                                           }
+
+                                            public void onFailure(Throwable caught) {
+                                                Window.alert(caught.getMessage());
+                                                window.setStatus("", "");
+                                            }
+                                        });
+            }
+        }
+      } 
+    }
+
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
         // TODO Auto-generated method stub
         
     }

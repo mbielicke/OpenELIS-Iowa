@@ -110,7 +110,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                 throw new RPCException(e.getMessage());                
             }
     
-//          need to save the rpc used to the encache
+//          need to save the rpc used to the ehcache
             SessionManager.getSession().setAttribute("DictionaryQuery", rpcSend);
        }
         
@@ -432,6 +432,29 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         return dataModel;
       }
       return null;
+    }
+    
+    public DataSet getNumResultsAffected(StringField text, NumberField id) {
+       NumberObject nobj = null;
+       DataSet set = null;
+       StringObject sobj = null;
+       CategoryRemote remote = null;
+       Integer count = null;
+       String entry = null;
+       
+       try { 
+        remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        count = remote.getNumResultsAffected((String)text.getValue(),(Integer)id.getValue());
+        nobj = new NumberObject(count);
+        entry = remote.getEntryById((Integer)id.getValue());
+        set = new DataSet();
+        sobj = new StringObject(entry);
+        set.add(nobj);
+        set.add(sobj);
+       }catch(Exception ex) {
+           ex.printStackTrace();
+       }
+        return set;
     }
 
     private void setFieldsInRPC(FormRPC rpcReturn, CategoryDO catDO){
