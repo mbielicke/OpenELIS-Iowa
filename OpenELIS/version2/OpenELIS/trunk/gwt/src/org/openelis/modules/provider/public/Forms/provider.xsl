@@ -153,7 +153,7 @@ UIRF Software License are applicable instead of those above.
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
       <VerticalPanel width="610px" spacing= "0" padding="0">
        <widget valign="top">
-        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
+        <table width= "590px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -196,7 +196,7 @@ UIRF Software License are applicable instead of those above.
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "574px" maxRows = "9" title = "" showError="false" showScroll="ALWAYS">
+	     <queryTable width= "590px" maxRows = "10" title = "" showError="false" showScroll="ALWAYS">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -273,7 +273,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="174px" width="536px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="170px" width="536px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>

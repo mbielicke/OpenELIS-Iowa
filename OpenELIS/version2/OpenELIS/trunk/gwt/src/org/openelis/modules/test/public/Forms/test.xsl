@@ -167,8 +167,8 @@ UIRF Software License are applicable instead of those above.
 								</row>	
 						     </TablePanel>	
 						   <VerticalPanel height = "10px"/>						   							    
-							<TabPanel halign="center" width = "595px" key="testTabPanel">
-							 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}"  >							  
+							<TabPanel halign="center" width = "615px" key="testTabPanel">
+							 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">							  
 							   <VerticalPanel padding="0" spacing="0"> 
 							    <TablePanel style="Form">								
 								 <row>
@@ -248,7 +248,7 @@ UIRF Software License are applicable instead of those above.
 									<textbox key="{meta:getLabelQty($test)}" width = "50px" tab="{meta:getIsReportable($test)},{meta:getLabelId($test)}"/>		
 								</row>				
 								<row>
-									<widget><VerticalPanel height="13px"/></widget>
+									<widget><VerticalPanel/></widget>
 								</row>							
 								</TablePanel>
 								</content>
@@ -317,25 +317,21 @@ UIRF Software License are applicable instead of those above.
 		                           <text style="Prompt" halign="right"><xsl:value-of select='resource:getString($constants,"testReportable")'/>:</text>								    
 								   <check key="{meta:getIsReportable($test)}" tab="sectionTable,{meta:getLabelQty($test)}"/>
 		                          </row>
-								 <row>
+								  <row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
-								   <dropdown  key="{meta:getRevisionMethodId($test)}" width="183px" tab="{meta:getSortingMethodId($test)},removeTestSectionButton"/>	
-								   <!--<widget><HorizontalPanel width="6px"/></widget>-->
+								   <dropdown  key="{meta:getRevisionMethodId($test)}" width="183px" tab="{meta:getSortingMethodId($test)},removeTestSectionButton"/>									   
 								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>								   
 								   <dropdown key="{meta:getTestTrailerId($test)}" width="168px" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}"/>								   
 								  </row>	
 								  <row>	
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sortingMethod')"/>:</text>
-								   <dropdown key="{meta:getSortingMethodId($test)}" tab="{meta:getReportingMethodId($test)},{meta:getRevisionMethodId($test)}" width="183px"/>									   						  
-								   <!--<widget><HorizontalPanel width="6px"/></widget>-->							   								  								  																   
+								   <dropdown key="{meta:getSortingMethodId($test)}" tab="{meta:getReportingMethodId($test)},{meta:getRevisionMethodId($test)}" width="183px"/>									   						  								   							   								  								  																   
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>								   
 								   <dropdown  key="{meta:getTestFormatId($test)}"  width="168px" tab="{meta:getScriptletId($test)},{meta:getTestTrailerId($test)}"/>								   
-								  </row>					
-								 
+								  </row>													 
 		                          <row>
 		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingMethod')"/>:</text>
-								   <dropdown key="{meta:getReportingMethodId($test)}" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" width="183px"/>								  								    		                           								   								   								     
-								   <!--<widget><HorizontalPanel width="6px"/></widget>-->							   								  								  																   
+								   <dropdown key="{meta:getReportingMethodId($test)}" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" width="183px"/>								  								    		                           								   								   								     								   							   								  								  																   
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
 								   <dropdown key="{meta:getScriptletId($test)}"  width="168px" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}"/>								   
 								  </row> 
@@ -348,9 +344,10 @@ UIRF Software License are applicable instead of those above.
 							  </VerticalPanel>							  							 
 							</tab>
 							<tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
-							 <VerticalPanel padding="0" spacing="0" key="treeContainer">
+							 <VerticalPanel key="treeContainer">
+							 <HorizontalPanel> 							 
 							  <widget>
-                                <tree-table key="analyteTree" multiSelect = "true" targets = "analyteTree" manager = "this" drop = "default" drag = "default" width="auto" showError="false" showScroll="ALWAYS" maxRows="7" enable="true">                                
+                                <tree-table key="analyteTree" multiSelect = "true" targets = "analyteTree" manager = "this" drop = "default" drag = "default" width="auto" showError="false" showScroll="ALWAYS" maxRows="8" enable="true">                                
                                  <headers>                                 
                                   <xsl:value-of select="resource:getString($constants,'analyte')"/>,													
 								  <xsl:value-of select="resource:getString($constants,'type')"/>,
@@ -358,7 +355,7 @@ UIRF Software License are applicable instead of those above.
 								  <xsl:value-of select="resource:getString($constants,'scriptlet')"/>,
 								  <xsl:value-of select="resource:getString($constants,'groupNum')"/>
                                  </headers>
-                                 <widths>230,46,45,170,50</widths>
+                                 <widths>257,50,45,170,50</widths>
                                  <leaves>
                                    <leaf type="top">
                                     <editors>
@@ -389,11 +386,10 @@ UIRF Software License are applicable instead of those above.
                                   </leaf> 
                                  </leaves> 
                                 </tree-table>
-                              </widget>                              						 
-							 <HorizontalPanel style = "Form"> 
-							    <widget>
-							     <HorizontalPanel width = "7px"/>
-							    </widget>							  								     
+                              </widget> 
+                              <HorizontalPanel width = "10px"/>
+                             </HorizontalPanel>                              						 
+							<HorizontalPanel style = "Form"> 
 							    <widget halign="center">
 											<appButton action="removeIdentifierRow" key="addRowButton" onclick="this" style="Button">												
 												<HorizontalPanel>
@@ -410,7 +406,7 @@ UIRF Software License are applicable instead of those above.
 												</HorizontalPanel>
 											</appButton>
 								</widget> 
-								<HorizontalPanel width = "120px"/>
+								<HorizontalPanel width = "117px"/>
 								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="groupAnalytesButton" onclick="this" style="Button">
 											 <HorizontalPanel>
@@ -428,11 +424,12 @@ UIRF Software License are applicable instead of those above.
 											</appButton>
 								</widget>							 			
 																								
-							 </HorizontalPanel>	
-							 <VerticalPanel>
+						  </HorizontalPanel>
+						  <VerticalPanel height = "7px"/> 
+						  <VerticalPanel>
 						   <HorizontalPanel>	
 							<VerticalPanel> 
-							  <TabPanel width = "470px" halign="center" key="resultTabPanel">
+							  <TabPanel width = "491px" halign="center" key="resultTabPanel">
 							   <tab key="tab" text="">
 							    <VerticalPanel/>							    
 							   </tab>
@@ -446,11 +443,11 @@ UIRF Software License are applicable instead of those above.
 											 </HorizontalPanel>													
 											</appButton>
 							  </widget>
-							</HorizontalPanel>	
-							<VerticalPanel> 
+						  </HorizontalPanel>	
+						  <VerticalPanel> 
 							<HorizontalPanel>
 							  <widget valign="top">
-							    <table key="testResultsTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="557px">
+							    <table key="testResultsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>												    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>,
@@ -487,7 +484,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left</colAligns>
 								 </table>
 								 <query>
-								  <queryTable maxRows="5" showError="false" showScroll="ALWAYS" title="" width="557px">
+								  <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>												    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>,
@@ -510,7 +507,7 @@ UIRF Software License are applicable instead of those above.
 													<textbox/>																						
 												</editors>
 												<fields>												    
-												    <xsl:value-of select="testResult:getTypeId($tr)" />,<xsl:value-of select="testResult:getValue($tr)"/>,<xsl:value-of select="testResult:getSignificantDigits($tr)"  />,<xsl:value-of select="testResult:getFlagsId($tr)"/>,<xsl:value-of select="testResult:getRoundingMethodId($tr)"/>,<xsl:value-of select="testResult:getQuantLimit($tr)" />,<xsl:value-of select="testResult:getContLevel($tr)" />,<xsl:value-of select="testResult:getHazardLevel($tr)"/>
+												    <xsl:value-of select="testResult:getTypeId($tr)"/>,<xsl:value-of select="testResult:getValue($tr)"/>,<xsl:value-of select="testResult:getSignificantDigits($tr)"  />,<xsl:value-of select="testResult:getFlagsId($tr)"/>,<xsl:value-of select="testResult:getRoundingMethodId($tr)"/>,<xsl:value-of select="testResult:getQuantLimit($tr)" />,<xsl:value-of select="testResult:getContLevel($tr)" />,<xsl:value-of select="testResult:getHazardLevel($tr)"/>
 												</fields>
 												<sorts>false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false</filters>
@@ -518,6 +515,7 @@ UIRF Software License are applicable instead of those above.
 								 </queryTable>
 								</query> 
 							  </widget>
+							 <HorizontalPanel width = "10px"/>                             
 							</HorizontalPanel>     
                                      <HorizontalPanel>    
                                        <widget>
@@ -531,7 +529,7 @@ UIRF Software License are applicable instead of those above.
 												</HorizontalPanel>
 						                 </appButton>
 						              </widget>
-						              <HorizontalPanel width = "390px"/>
+						              <HorizontalPanel width = "401px"/>
 						              <widget  align="center">
 								       <appButton action="dictionaryLookUp" onclick="this" key="dictionaryLookUpButton" style="Button">
 										<HorizontalPanel>
@@ -550,13 +548,14 @@ UIRF Software License are applicable instead of those above.
 							 <VerticalPanel>
 							   <VerticalPanel padding="0" spacing="0">							    						     	
 							 		<VerticalPanel padding="0" spacing="0">
+							 		 <HorizontalPanel>
 										<widget valign="top">
-											<table key="testPrepTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="testPrepTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,													
 													<xsl:value-of select="resource:getString($constants,'optional')"/>
 												</headers>
-												<widths>480,70</widths>
+												<widths>489,92</widths>
 												<editors>
 													<dropdown case="mixed" width="470px"/>
 													<check/>													
@@ -570,12 +569,12 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											 <query>
-												<queryTable maxRows="6" showError="false" title="" showScroll="ALWAYS" width="auto">
+												<queryTable maxRows="8" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,
 														<xsl:value-of select="resource:getString($constants,'optional')"/>													
 													</headers>
-													<widths>480,70</widths>
+													<widths>489,92</widths>
 													<editors>													
 														<dropdown case="mixed" multiSelect="true" width="470px"/>														
 														<check threeState = "true"/>														
@@ -589,6 +588,8 @@ UIRF Software License are applicable instead of those above.
 												</queryTable>
 											</query>
 							 			 </widget>
+							 			<HorizontalPanel width = "10px"/>
+                                       </HorizontalPanel> 
 							 			  <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
                                             <row>
                                              <widget  align="center">
@@ -603,7 +604,8 @@ UIRF Software License are applicable instead of those above.
 						                     </widget>
 						                    </row> 
 						                  </TablePanel> 
-						                <VerticalPanel height = "5px"/>
+						                 <VerticalPanel height = "11px"/>
+						     <HorizontalPanel>           
 						      <widget valign="top">
 							   <table key="testReflexTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
@@ -612,7 +614,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'result')"/>,
 													<xsl:value-of select="resource:getString($constants,'flags')"/>																										
 												</headers>
-												<widths>150,150,140,104</widths>
+												<widths>150,181,140,104</widths>
 												<editors>
 													<dropdown case="mixed" width="300px"/>
 													<dropdown case="mixed" width="120px" onchange = "this"/>
@@ -637,7 +639,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'result')"/>,
 													<xsl:value-of select="resource:getString($constants,'flags')"/>																										
 												</headers>
-												<widths>150,150,140,104</widths>
+												<widths>150,181,140,104</widths>
 												<editors>
 													<dropdown case="mixed" multiSelect="true" width="300px"/>
 													<dropdown case="mixed" multiSelect="true" width="150px"/>
@@ -650,9 +652,11 @@ UIRF Software License are applicable instead of those above.
 												<sorts>false,false,false,false</sorts>
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
-								</queryTable>
+								 </queryTable>
 								</query>
 						      </widget>
+						     <HorizontalPanel width = "10px"/>
+                            </HorizontalPanel> 
 						        <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
                                       <row>
                                         <widget  align="center">
@@ -673,13 +677,14 @@ UIRF Software License are applicable instead of those above.
 						  </tab>
 						  <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
 							 <VerticalPanel>
+							 <HorizontalPanel>                           
 							  	<widget valign="top">
-											<table key="sampleTypeTable" manager="this" maxRows="17" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="sampleTypeTable" manager="this" maxRows="18" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
 													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
 												</headers>
-												<widths>275,275</widths>
+												<widths>290,291</widths>
 												<editors>
 													<dropdown case = "mixed" width="270px" />
 													<dropdown case = "mixed" width="270px"/>
@@ -693,11 +698,11 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											<query>
-												<queryTable maxRows="17" showError="false" title="" showScroll="ALWAYS" width="auto">
+												<queryTable maxRows="18" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
 													</headers>													
-													<widths>275,275</widths>
+													<widths>290,291</widths>
 													<editors>													
 														<dropdown case="mixed" multiSelect="true" width="270px"/>
 														<dropdown case="mixed" multiSelect="true" width="270px"/>
@@ -711,6 +716,9 @@ UIRF Software License are applicable instead of those above.
 												</queryTable>
 											</query>
 							 			 </widget>	
+							 			<HorizontalPanel width = "10px"/>
+                                       </HorizontalPanel> 
+							 										 		 	 
 						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
                                          <row>
                                           <widget  align="center">
@@ -725,7 +733,7 @@ UIRF Software License are applicable instead of those above.
 						                </widget>	
 						              </row>  									 
 						           </TablePanel>
-						           <VerticalPanel height = "8px"/>
+						           <VerticalPanel height = "16px"/>
 							 </VerticalPanel>
 							</tab>
 							<tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">							
@@ -759,14 +767,15 @@ UIRF Software License are applicable instead of those above.
 							  </TablePanel>
 							 </VerticalPanel>
 							<VerticalPanel>
-							 <widget valign="top">
-							   <table key="worksheetTable" manager="this" maxRows="13" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
+							 <HorizontalPanel>
+							  <widget valign="top">
+							   <table key="worksheetTable" manager="this" maxRows="14" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																						
 												</headers>
-												<widths>60,140,347</widths>
+												<widths>74,157,347</widths>
 												<editors>
 													<textbox/>
 													<dropdown case="mixed" width="150px"/>
@@ -782,13 +791,13 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left</colAligns>
 								</table>
 								<query>
-								 <queryTable maxRows="13" showError="false" showScroll="ALWAYS" title="" width="auto">
+								 <queryTable maxRows="14" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																							
 												</headers>
-												<widths>60,140,347</widths>
+												<widths>74,157,347</widths>
 												<editors>
 													<textbox/>
 													<dropdown multiSelect="true" case="mixed" width="150px"/>
@@ -801,8 +810,10 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
 								</queryTable>
-								</query>
+								</query>								
 						      </widget>	
+						     <HorizontalPanel width = "10px"/>
+                            </HorizontalPanel> 
 
 						                <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
                                          <row>
@@ -818,7 +829,7 @@ UIRF Software License are applicable instead of those above.
 						                </widget>	
 						              </row>  									 
 						           </TablePanel>
-						           <VerticalPanel height = "15px"/>
+						        <VerticalPanel height = "15px"/>
 							  </VerticalPanel>
 						     </VerticalPanel>
 							</tab>
