@@ -287,7 +287,7 @@ public class TestBean implements TestRemote {
                         testWorksheet = new TestWorksheet();
                     }
                     
-                    testWorksheet.setTestId(worksheetDO.getTestId());
+                    testWorksheet.setTestId(test.getId());
                     testWorksheet.setBatchCapacity(worksheetDO.getBatchCapacity());
                     testWorksheet.setNumberFormatId(worksheetDO.getNumberFormatId());
                     testWorksheet.setTotalCapacity(worksheetDO.getTotalCapacity());       
@@ -298,7 +298,7 @@ public class TestBean implements TestRemote {
                     }                                                          
                 }
                 
-                if(itemDOList!=null){
+                if(itemDOList!=null && itemDOList.size() > 0 ){
                     exceptionList = new ArrayList<Exception>();
                     validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
                     if(exceptionList.size() > 0){
@@ -361,7 +361,7 @@ public class TestBean implements TestRemote {
                             
                             manager.remove(analyte);                                 
                         }else if(!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)){
-                            updateTestAnalyte(analyteDO, analyte); 
+                            updateTestAnalyte(analyteDO, analyte, test.getId()); 
                             
                             if(analyte.getId() == null){
                                 manager.persist(analyte);
@@ -394,7 +394,7 @@ public class TestBean implements TestRemote {
                         }else{
                             ts.setFlagId(tsDO.getFlagId());
                             ts.setSectionId(tsDO.getSectionId());
-                            ts.setTestId(tsDO.getTestId());
+                            ts.setTestId(test.getId());
                             
                             if(ts.getId() == null){
                                 manager.persist(ts);
@@ -436,7 +436,7 @@ public class TestBean implements TestRemote {
                            
                         } else { 
                             if(!laterProcResList.contains(resultDO)){                        
-                                updateTestResult(resultDO, result);
+                                updateTestResult(resultDO, result,test.getId());
                             
                             if(result.getId() == null){
                                 manager.persist(result);
@@ -476,7 +476,7 @@ public class TestBean implements TestRemote {
                                      
                                      if(!analyteDO.getDelete()) {
                                          found = true;
-                                         updateTestAnalyte(analyteDO, analyte);                                          
+                                         updateTestAnalyte(analyteDO, analyte,test.getId());                                          
                                          manager.persist(analyte);                                                           
                                          refDO.setTestAnalyteId(analyte.getId());
                                          tempRealAnaIdMap.put(analyteDO.getId(),analyte.getId());
@@ -499,7 +499,7 @@ public class TestBean implements TestRemote {
                                       
                                       if(!resultDO.getDelete()) {
                                          found = true; 
-                                         updateTestResult(resultDO, result);                                                                                 
+                                         updateTestResult(resultDO, result,test.getId());                                                                                 
                                          manager.persist(result);                                         
                                          refDO.setTestResultId(result.getId());
                                          tempRealResIdMap.put(resultDO.getId(),result.getId());
@@ -526,7 +526,7 @@ public class TestBean implements TestRemote {
                     TestAnalyte analyte = new TestAnalyte();
                     
                     if(!analyteDO.getDelete()){
-                        updateTestAnalyte(analyteDO, analyte);                        
+                        updateTestAnalyte(analyteDO, analyte,test.getId());                        
                         manager.persist(analyte); 
                     }       
                 }
@@ -536,7 +536,7 @@ public class TestBean implements TestRemote {
                     TestResult result = new TestResult();
                     
                     if(!resultDO.getDelete()) {
-                        updateTestResult(resultDO, result);                                                                
+                        updateTestResult(resultDO, result,test.getId());                                                                
                         manager.persist(result);
                     }     
                 }
@@ -879,7 +879,7 @@ public class TestBean implements TestRemote {
       validateTestReflex(exceptionList,testReflexDOList);  
      if(worksheetDO!=null)
          validateTestWorksheet(exceptionList,worksheetDO);
-     if(itemDOList!=null)
+     if(itemDOList!=null && itemDOList.size() >0 )
          validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
      if(analyteDOList!=null)
          validateTestAnalytes(exceptionList,analyteDOList);
@@ -910,7 +910,7 @@ public class TestBean implements TestRemote {
             validateTestReflex(exceptionList,testReflexDOList); 
         if(worksheetDO!=null)
             validateTestWorksheet(exceptionList,worksheetDO);
-        if(itemDOList!=null)
+        if(itemDOList!=null && itemDOList.size() >0)
             validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
         if(analyteDOList!=null)
             validateTestAnalytes(exceptionList,analyteDOList);
@@ -1123,7 +1123,9 @@ public class TestBean implements TestRemote {
                                            List<TestWorksheetItemDO> itemDOList,
                                            TestWorksheetDO worksheetDO) {
         Integer blankId = new Integer(-1);
-        Integer bc = worksheetDO.getBatchCapacity();
+        Integer bc = null;
+        if(worksheetDO!=null)
+         bc = worksheetDO.getBatchCapacity();
         Integer position = null; 
         ArrayList<Integer> posList = new ArrayList<Integer>();
         
@@ -1461,18 +1463,18 @@ public class TestBean implements TestRemote {
         return (id == null || blankId.equals(id)) ;            
     }  
     
-    private void updateTestAnalyte(TestAnalyteDO analyteDO, TestAnalyte analyte) {
+    private void updateTestAnalyte(TestAnalyteDO analyteDO, TestAnalyte analyte, Integer testId) {
         analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
         analyte.setAnalyteId(analyteDO.getAnalyteId());
         analyte.setIsReportable(analyteDO.getIsReportable());
         analyte.setResultGroup(analyteDO.getResultGroup());
         analyte.setScriptletId(analyteDO.getScriptletId());
         analyte.setSortOrder(analyteDO.getSortOrder());
-        analyte.setTestId(analyteDO.getTestId());
+        analyte.setTestId(testId);
         analyte.setTypeId(analyteDO.getTypeId());
     }
     
-    private void updateTestResult(TestResultDO resultDO, TestResult result) {
+    private void updateTestResult(TestResultDO resultDO, TestResult result,Integer testId) {
         result.setContLevel(resultDO.getContLevel());
         result.setValue(resultDO.getValue());
         result.setFlagsId(resultDO.getFlagsId());
@@ -1482,7 +1484,7 @@ public class TestBean implements TestRemote {
         result.setRoundingMethodId(resultDO.getRoundingMethodId());
         result.setSignificantDigits(resultDO.getSignificantDigits());
         result.setSortOrder(resultDO.getSortOrder());
-        result.setTestId(resultDO.getTestId());
+        result.setTestId(testId);
         result.setTypeId(resultDO.getTypeId());    
     }
      
