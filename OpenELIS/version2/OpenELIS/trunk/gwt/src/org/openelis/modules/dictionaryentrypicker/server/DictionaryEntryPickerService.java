@@ -46,8 +46,12 @@ import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 
 public class DictionaryEntryPickerService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
+    private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
+                                                                  .getAttribute("locale"));
 
     public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
@@ -142,43 +146,56 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<For
         return model;
     }
     
+    public NumberObject getEntryId(StringObject entry){
+        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer entryId = null;
+        NumberObject numObj = null;
+        try{
+            entryId = remote.getEntryIdForSystemName((String)entry.getValue());
+            numObj = new NumberObject(entryId);
+          }catch(Exception ex) {
+              ex.printStackTrace();              
+          }
+           
+          return numObj;
+    }
+    
     private DataModel getInitialModel(String category){
-        DataModel model = new DataModel();
-        if("category".equals(category)){
-            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            List<IdNameDO> list = remote.getCategoryList();
-            DataSet blankset = new DataSet();
+       DataModel model = new DataModel();
+       CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+       List<IdNameDO> list = remote.getCategoryList();
+       DataSet blankset = new DataSet();
 
-            StringObject blankStringId = new StringObject();
+       StringObject blankStringId = new StringObject();
 
-            blankStringId.setValue("All Categories");
-            blankset.add(blankStringId);
+       blankStringId.setValue(openElisConstants.getString("allCategories"));
+       blankset.add(blankStringId);
 
-            NumberObject blankNumberId = new NumberObject(-1);
-            blankset.setKey(blankNumberId);
+       NumberObject blankNumberId = new NumberObject(-1);
+       blankset.setKey(blankNumberId);
             
-            model.add(blankset);
+       model.add(blankset);
 
-            for (Iterator iter = list.iterator(); iter.hasNext();) {
-                IdNameDO methodDO = (IdNameDO)iter.next();
+       for (Iterator iter = list.iterator(); iter.hasNext();) {
+           IdNameDO methodDO = (IdNameDO)iter.next();
 
-                DataSet set = new DataSet();
-                // id
-                Integer dropdownId = methodDO.getId();
-                // entry
-                String dropdownText = methodDO.getName();
+           DataSet set = new DataSet();
+           // id
+           Integer dropdownId = methodDO.getId();
+           // entry
+           String dropdownText = methodDO.getName();
 
-                StringObject textObject = new StringObject(dropdownText);
-                NumberObject numberId = new NumberObject(dropdownId);
+           StringObject textObject = new StringObject(dropdownText);
+           NumberObject numberId = new NumberObject(dropdownId);
 
-                set.add(textObject);
+           set.add(textObject);
 
-                set.setKey(numberId);
+           set.setKey(numberId);
 
-                model.add(set);
-            }
-        }
-        return model;
+           model.add(set);
+       }
+
+       return model;
     } 
 
 }

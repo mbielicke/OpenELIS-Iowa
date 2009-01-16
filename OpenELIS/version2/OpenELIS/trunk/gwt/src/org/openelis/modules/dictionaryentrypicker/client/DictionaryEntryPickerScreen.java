@@ -26,12 +26,15 @@
 package org.openelis.modules.dictionaryentrypicker.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
@@ -67,19 +70,26 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     
     private AppButton findButton;
     
-    private Integer categoryId;
+    private ButtonPanel atozButtons = null;
+    
+    private Integer categoryId, dictId;
+    
+    private AppButton prevPressed = null;
     
     public DictionaryEntryPickerScreen(TestScreen testScreen) {        
         super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService",!loaded);
         this.testScreen = testScreen;
     }
     
-    public void performCommand(Enum action, Object obj) {
+    public void performCommand(Enum action, Object obj) {        
         if (obj instanceof AppButton) {
             String baction = ((AppButton)obj).action;
             if (baction.startsWith("query:")) {
-                String query = baction.substring(6, baction.length());
-                findTextBox.setText(query);
+                if(prevPressed!=null) 
+                    atozButtons.setButtonState(prevPressed, AppButton.ButtonState.UNPRESSED);
+                String query = baction.substring(6);
+                findTextBox.setText(query); 
+                prevPressed = (AppButton)obj;
             }else{
                 super.performCommand(action, obj);
             }
@@ -92,12 +102,13 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         addCommandListener(bpanel);
         bpanel.addCommandListener(this);
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+       
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(atozButtons);               
         
+        prevPressed = null;
         findTextBox = (TextBox)getWidget("findTextBox");
         
         if (categoryDropdown == null) {
@@ -115,12 +126,26 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         findButton = (AppButton)getWidget("findButton"); 
         
         super.afterDraw(sucess);              
+        
+        screenService.getObject("getEntryId",
+               new Data[] {new StringObject("test_res_type_dictionary")},
+                new AsyncCallback<NumberObject>() {
+                   public void onSuccess(NumberObject result) {                                                                                                                           
+                      dictId = (Integer)result.getValue();
+                    }
+                   public void onFailure(Throwable caught) {
+                     Window.alert(caught.getMessage());
+                     window.setStatus("","");
+                    }
+       });
     }
     
     public void commit() {
-        List<String> entries = getSelectedEntries();        
-        testScreen.addResultRows(entries);
+        List<Integer> idList = new ArrayList<Integer>();
+        HashMap<Integer,String> map = getSelectedEntries(idList);
+        DataSet set = new DataSet(new NumberObject(dictId));
         window.close();
+        testScreen.addResultRows(map,set,idList);        
     }
 
     public void abort() {
@@ -178,13 +203,14 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     }
 
     public void onClick(Widget sender) {
+        StringObject pattern = null;
+        String queryString = null;
+        FormRPC queryRPC = null;
         if(sender == findButton){                     
-            String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-            FormRPC queryRPC = (FormRPC) this.forms.get("queryByName");
-            queryRPC.setFieldValue("findTextBox", queryString);            
-            
-            StringObject pattern = new StringObject();
-            pattern.setValue(queryString);  
+          queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
+          queryRPC = (FormRPC) this.forms.get("queryByName");
+          queryRPC.setFieldValue("findTextBox", queryString);      
+          pattern = new StringObject(queryString);
           loadDictionaryModel(pattern);
         }
     }
@@ -196,35 +222,44 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         }
     }  
     
-    private void loadDictionaryModel(StringObject pattern){ 
-               
+    private void loadDictionaryModel(StringObject pattern){                
         if(categoryId == null)
             categoryId = new Integer(-1);               
         
         final DataModel model = dictionaryController.model.getData();
+        window.setStatus("", "spinnerIcon");        
         screenService.getObject("getDictionaryEntries", new Data[] {model,new NumberObject(categoryId),pattern}, new AsyncCallback<DataModel>() {
             public void onFailure(Throwable caught) {                
                 Window.alert(caught.getMessage());
                 window.setStatus("","");
             }
 
-            public void onSuccess(DataModel result) {               
+            public void onSuccess(DataModel result) {                  
                 dictionaryController.model.setModel(result);
                 dictionaryController.model.refresh();
+                window.setStatus("","");
             }
             
         });
         
     }
     
-    private List<String> getSelectedEntries(){
-        List<String> entries = new ArrayList<String>();
+    private HashMap<Integer,String> getSelectedEntries(List<Integer> idList){
+        HashMap<Integer,String> entries = new HashMap<Integer,String>();
+        DataSet set = null;
+        String entry = null;
+        Integer id = null;
+        DataMap data = null;
         for(int iter = 0; iter < dictionaryController.model.getSelections().size();iter++){
-            DataSet set = dictionaryController.model.getSelections().get(iter);
-            String entry = (String)set.get(0).getValue();
-            entries.add(entry);
+            set = dictionaryController.model.getSelections().get(iter);
+            data = (DataMap)set.getData();
+            id = (Integer)((NumberField)data.get("id")).getValue();
+            entry = (String)set.get(0).getValue();
+            entries.put(id,entry);
+            idList.add(id);
         }
        return entries; 
     }
+        
 
 }
