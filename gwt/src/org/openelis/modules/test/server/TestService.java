@@ -195,18 +195,18 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                                   ,null);
         
         
-        if (((FormRPC)rpcSend.getField("worksheet")).load) {
+        //if (((FormRPC)rpcSend.getField("worksheet")).load) {
          itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));               
          worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
                                              null);
-        }
+        //}
         
-        if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
+       // if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
             testAnalyteDOList = getTestAnalyteDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
                                                         null);
             resultDOList = getTestResultDOListFromRPC((FormRPC)rpcSend.getField("testAnalyte"),
                                                       null);
-        }
+        //}
         
         List exceptionList = remote.validateForAdd(testDO,testDetailsDO,
                                                    prepTestDOList,sampleTypeDOList,
@@ -636,8 +636,6 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     public DataModel getTestResultModel(NumberObject testId,FormRPC rpcReturn){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<IdNameDO> list = remote.getTestResultsforTest((Integer)testId.getValue());
-        //List<DataModel> modelList = new ArrayList<DataModel>();
-         //for(int iter = 0;iter < list.size(); iter++){
              DataModel dmodel = new DataModel();
              DataSet blankset = new DataSet();             
                
@@ -669,9 +667,6 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
 
                  dmodel.add(set);
              }
-             //modelList.add(model);
-         //}
-         //return modelList;
          return dmodel;
     }
     
@@ -1424,12 +1419,17 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             NumberField id = new NumberField(resultDO.getId());
             DataMap data = new DataMap();            
             data.put("id", id);
-            row.setData(data);             
+                         
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
-            if(resultDO.getDictEntry()==null)
-             row.get(1).setValue(resultDO.getValue());
-            else
+            if(resultDO.getDictEntry() == null) {
+             row.get(1).setValue(resultDO.getValue());     
+             data.put("value", new NumberObject(-999));
+            } else {
+             data.put("value", new NumberObject(new Integer(resultDO.getValue())));   
              row.get(1).setValue(resultDO.getDictEntry());
+            } 
+            
+            row.setData(data);
             
             row.get(2).setValue(resultDO.getSignificantDigits());
             
@@ -1458,14 +1458,18 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             TestResultDO resultDO = resultDOList.get(iter);  
             NumberField id = new NumberField(resultDO.getId());
             DataMap data = new DataMap();            
-            data.put("id", id);
-            row.setData(data);             
+            data.put("id", id);       
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             
-            if(resultDO.getDictEntry()==null)
-             row.get(1).setValue(resultDO.getValue());
-            else
-             row.get(1).setValue(resultDO.getDictEntry());
+            if(resultDO.getDictEntry() == null) {
+               row.get(1).setValue(resultDO.getValue()); 
+               data.put("value", new NumberObject(-999));
+            } else {
+               data.put("value", new NumberObject(new Integer(resultDO.getValue())));   
+               row.get(1).setValue(resultDO.getDictEntry());
+            } 
+               
+            row.setData(data);
             
             row.get(2).setValue(resultDO.getSignificantDigits());
             
@@ -1572,7 +1576,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
       ArrayList<DataModel> list = (ArrayList<DataModel>)field.getValue(); 
       NumberField id = null;
       NumberObject valueObj = null;
-      
+      NumberObject valObj = new NumberObject(-999);
       
       List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
       
@@ -1593,7 +1597,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                    
             resultDO.setTypeId((Integer)((DropDownField)row.get(0)).getSelectedKey());
             
-            if(valueObj == null) {
+            if(valueObj.equals(valObj)) {
              resultDO.setValue((String)((StringField)row.get(1)).getValue());
              resultDO.setDictEntry(null);
             } 
@@ -1673,7 +1677,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     
     private TreeDataItem createGroupNode(int id ,TreeDataModel model){
         TreeDataItem item = model.createTreeItem("top",new NumberObject(id));
-        item.get(0).setValue("Group");           
+        item.get(0).setValue(openElisConstants.getString("group"));           
         return item;
       }
         
@@ -1818,9 +1822,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                     
                     detailsRPC.getField(fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                }
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
+               } else {
+                    rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+               }   
             }
             // if the error is on the entire form
             else if (exceptionList.get(i) instanceof FormErrorException)
@@ -1866,46 +1871,22 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                       DataModel model) {
 
         DataSet blankset = new DataSet();
-        StringObject blankStringId = new StringObject();
-
-        blankStringId.setValue("");
+        StringObject blankStringId = new StringObject("");
         blankset.add(blankStringId);
 
-        NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-        blankNumberId.setValue(new Integer(-1));
-
+        NumberObject blankNumberId = new NumberObject(-1);
         blankset.setKey(blankNumberId);
 
         model.add(blankset);
 
         int i = 0;
         while (i < qaedDOList.size()) {
-            DataSet set = new DataSet();
-
-            // id
-            Integer dropdownId = null;
-            // entry
-            String dropDownText = null;
-            // method
-            String methodName = null;
-
+            DataSet set = new DataSet();                      
             QaEventTestDropdownDO resultDO = (QaEventTestDropdownDO)qaedDOList.get(i);
-            dropdownId = resultDO.getId();
-            dropDownText = resultDO.getTest();
-            methodName = resultDO.getMethod();
-
-            StringObject textObject = new StringObject();
-
-            textObject.setValue(dropDownText + " , " + methodName);
-
+            StringObject textObject = new StringObject(resultDO.getTest() + " , " + resultDO.getMethod());
             set.add(textObject);
-
-            NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
-
-            numberId.setValue(dropdownId);
-
+            NumberObject numberId = new NumberObject(resultDO.getId());
             set.setKey(numberId);
-
             model.add(set);
             i++;
         }

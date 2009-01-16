@@ -27,6 +27,7 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.gwt.common.FormRPC;
@@ -47,10 +48,12 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenTreeWidget;
 import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
@@ -377,22 +380,24 @@ public class TestScreen extends OpenELISScreenForm implements
                 return;
             }                            
         }  else if(action == ButtonPanel.Action.COMMIT && obj instanceof AppButton && !(state == State.QUERY)){
-            if (((FormRPC)rpc.getField("testAnalyte")).load) { 
-             if(analyteTreeController.model.getData().size() > 0 && (resultModelCollection.size() == 0)) {
-                boolean ok = Window.confirm(consts.get("analyteNoResults"));
-                if(!ok)
+            analyteRPC = ((FormRPC)rpc.getField("testAnalyte"));
+            if (analyteRPC.load || state == State.ADD) {                            
+              if(analyteTreeController.model.getData().size() > 0 && (resultModelCollection.size() == 0)) {
+                 boolean ok = Window.confirm(consts.get("analyteNoResults"));
+                 if(!ok)
                     return;
                 
-             } else if(resultModelCollection.size() > 0 && analyteTreeController.model.getData().size() == 0) {
+               } else if(resultModelCollection.size() > 0 && analyteTreeController.model.getData().size() == 0) {
                  boolean ok = Window.confirm(consts.get("resultNoAnalytes"));                 
                  if(!ok) 
                      return;           
                  
-             } else if(!resultGroupSelForAll()) {
+               } else if(!checkResGrpSel()) {
                  boolean ok = Window.confirm(consts.get("resultGrpNotSelForAll"));                 
                  if(!ok) 
                      return;
-             }  
+             }
+            
           }  
         }                           
         super.performCommand(action, obj);
@@ -451,7 +456,8 @@ public class TestScreen extends OpenELISScreenForm implements
         super.add();      
         group = 0;
         resultGroupDropdownModel.clear();
-        testAnalyteDropdownModel.clear();
+        if(testAnalyteDropdownModel != null)
+         testAnalyteDropdownModel.clear();
         resultPanel.clear();
         resultModelCollection = new ArrayList<DataModel>();
         prevSelTabIndex = -1;
@@ -564,10 +570,10 @@ public class TestScreen extends OpenELISScreenForm implements
        
        resultWidget.finishEditing();
        sectionWidget.finishEditing();
-       reflexTestWidget.finishEditing();                           
+       reflexTestWidget.finishEditing();              
       }             
     }
-     
+         
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
         
@@ -634,9 +640,7 @@ public class TestScreen extends OpenELISScreenForm implements
                     fillTestDetails();
                 } else if (tabIndex == 1 && !((FormRPC)rpc.getField("testAnalyte")).load) {                                        
                     fillTestAnalyte();       
-                    fillResultModelCollection();                      
-                    if(!((FormRPC)rpc.getField("prepAndReflex")).load) 
-                     fillPrepTestsReflexTests();
+                    fillResultModelCollection();                                          
                 } else if (tabIndex == 2) {
                    if(!((FormRPC)rpc.getField("prepAndReflex")).load) 
                     fillPrepTestsReflexTests();
@@ -651,45 +655,22 @@ public class TestScreen extends OpenELISScreenForm implements
         }
         return true;
     }
-
-    /**
-     * This method fetches the data model stored in resultDropDownModelMap with
-     * the analyte's id as the key and sets the model as the model for the "Results" column's dropdown
-     * in the Reflexive Tests table 
-     */
-    private void setTestResultsForAnalyte(Integer analyteId, DataSet set) {
-        if (analyteId != null) {
-            DataModel model = (DataModel)resultDropdownModelMap.get(analyteId.toString());
-            DropDownField field = (DropDownField)set.get(2);
-            DataSet prevSet = new DataSet(new NumberObject((Integer)field.getSelectedKey()));
-            DataSet blankSet = new DataSet(new NumberObject(-1));
-
-            if (model != null) {
-                field.setModel(model);
-                // if the new model doesn't contain the dataset that was selected 
-                // from the previous one, then it may cause an ArrayIndexOutOfBoundsException
-                // when you try to edit the Results column, this code makes sure
-                // that in that situation the blank set is set as the value so that it becomes the
-                // one that's selected and one that still belongs to the current data model.
-                // Otherwise the previously selected set is set as the value
-                if (field.getSelectedKey() !=null &&  model.contains(prevSet))
-                    field.setValue(prevSet);
-                else
-                    field.setValue(blankSet);
-            }                        
-        }
-    }
     
+    public boolean validate() {
+        return !treeItemsHaveErrors();
+    }        
     
-
     public boolean canAdd(TableWidget widget, DataSet set, int row) {        
         return false;
     }
 
     public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
-        if (widget == wsItemWidget) {                
+        if (widget == wsItemWidget)                 
             return addRow.get(0).getValue() != null;
-        } 
+         else if (widget == reflexTestWidget) 
+            if((addRow.get(0).getValue() != null && !addRow.get(0).getValue().equals(-1))
+               || (addRow.get(1).getValue() != null && !addRow.get(1).getValue().equals(-1)))  
+            return true;
         return addRow.get(0).getValue() != null && !addRow.get(0).getValue()
                                                           .equals(-1);
     }
@@ -700,11 +681,17 @@ public class TestScreen extends OpenELISScreenForm implements
 
     public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {             
         if (state == State.UPDATE || state == State.ADD || state == State.QUERY) {
-           // column 2 is for the Results dropdown 
+            // column 2 is for the Results dropdown 
             if (widget == reflexTestWidget && col == 2) {
                DropDownField ddfield = (DropDownField)set.get(1);
-                Integer analyteId = (Integer)ddfield.getSelectedKey();
-                setTestResultsForAnalyte(analyteId, set);
+               DataSet vset = (DataSet)ddfield.getValue();               
+               Integer analyteId = (Integer)ddfield.getSelectedKey();
+               if(vset != null && vset.enabled == true && ddfield.getErrors().size() == 0) {
+                 setTestResultsForAnalyte(analyteId, set);
+               } else {
+                 Window.alert(consts.get("selectAnaBeforeRes"));
+                 return false;
+               }  
             } else if(widget == resultWidget && resultPanel.getTabBar().getTabCount() == 0 
                             && state != State.QUERY) {
                 Window.alert(consts.get("atleastOneResGrp"));
@@ -862,8 +849,7 @@ public class TestScreen extends OpenELISScreenForm implements
 
                                                                                 public void onFailure(Throwable caught) {
                                                                                     Window.alert(caught.getMessage());
-                                                                                    window.setStatus("",
-                                                                                                     "");
+                                                                                    window.setStatus("","");
                                                                                 }
                                                                             });
                                                    
@@ -889,8 +875,9 @@ public class TestScreen extends OpenELISScreenForm implements
                                                                 convert = false;
                                                             }
                                                         }
-
-                                                        if (convert) {
+                                                      }
+                                                      
+                                                      if (convert) {                                                            
                                                             //
                                                             // If its a valid string store the converted string back into the column
                                                             // otherwise add an error to the cell and store empty string into the cell
@@ -919,19 +906,15 @@ public class TestScreen extends OpenELISScreenForm implements
                                                            data.put("id", new NumberField(tempResId));
                                                           }
                                                           
-                                                          data.put("value", null);                                                            
+                                                          data.put("value", new NumberObject(-999));                                                            
                                                           
                                                           checkAndAddNewResultValue(finalValue,set);
                                                           
-                                                        } else {
+                                                        } else {                                                            
                                                             resultWidget.model.setCellError(currRow,
                                                                                             1,
                                                                                             consts.get("illegalNumericFormatException"));                                                            
-                                                        }
-
-                                                    }
-
-                                                    //resultWidget.model.setCell(currRow, 1, finalValue);
+                                                        }                                                                                                       
 
                                                 } else if ("test_res_type_titer".equals((String)result.getValue())) {
                                                     //
@@ -955,8 +938,8 @@ public class TestScreen extends OpenELISScreenForm implements
                                                                 convert = false;
                                                             }
                                                         }
-
-                                                        if (convert) {
+                                                     }
+                                                     if (convert) {                                                            
                                                             //
                                                             // If it's a valid string store the converted string back into the column
                                                             // otherwise add an error to the cell and store empty string into the cell
@@ -985,18 +968,15 @@ public class TestScreen extends OpenELISScreenForm implements
                                                              data.put("id", new NumberField(tempResId));
                                                             }
                                                             
-                                                            data.put("value", null);
+                                                            data.put("value", new NumberObject(-999));
                                                             
                                                             checkAndAddNewResultValue(finalValue,set);
                                                             
-                                                    } else {
+                                                    } else {                                                            
                                                             resultWidget.model.setCellError(currRow,
                                                                                             1,
                                                                                             consts.get("illegalTiterFormatException"));                                                            
-                                                        }
-
-                                                    }
-                                                    //resultWidget.model.setCell(currRow, 1, finalValue);
+                                                        }                                                                                                       
 
                                                 }
 
@@ -1041,11 +1021,24 @@ public class TestScreen extends OpenELISScreenForm implements
                                             }
                                         });
             }
-        } else if(sender == reflexTestWidget && col == 1) {            
-            DataSet set = reflexTestWidget.model.getRow(row);
-            DropDownField ddfield = (DropDownField)set.get(1);
-            Integer analyteId = (Integer)ddfield.getSelectedKey();
-            setTestResultsForAnalyte(analyteId, set);              
+        } else if(sender == reflexTestWidget) {          
+           DataSet rset = reflexTestWidget.model.getRow(row);
+           DataSet vset = null;
+           DropDownField ddfield = (DropDownField)rset.get(col);
+           Integer analyteId = null;           
+           if(col == 1) { 
+            vset = (DataSet)ddfield.getValue();   
+            if(vset != null && vset.enabled == false) {
+              reflexTestWidget.model.setCellError(row,1,consts.get("analyteDeleted"));
+            }    
+             analyteId = (Integer)ddfield.getSelectedKey();
+             setTestResultsForAnalyte(analyteId, rset);                                                  
+           } else if(col == 2) {
+              vset = (DataSet)ddfield.getValue();
+              if(vset != null && vset.enabled == false) {
+                 reflexTestWidget.model.setCellError(row,2,consts.get("resultDeleted"));
+              }
+           }   
         }
 
     }
@@ -1082,6 +1075,13 @@ public class TestScreen extends OpenELISScreenForm implements
        if(col == 0) { 
         field = (DropDownField)item.get(col);
         selText = (String)field.getTextValue();
+        if(field.getSelectedKey() == null || (Integer)field.getSelectedKey()==-1) {
+           if(!field.getErrors().contains(consts.get("fieldRequiredException"))) {           
+             field.addError(consts.get("fieldRequiredException"));
+             reflexTestWidget.model.refresh();
+             return;
+           } 
+        }
         if(item.getData() != null) {
           data = (DataMap)item.getData();
           if(data.get("id") == null) { 
@@ -1091,9 +1091,7 @@ public class TestScreen extends OpenELISScreenForm implements
              ddset = testAnalyteDropdownModel.getByKey(obj);
              prevVal = (String)ddset.get(0).getValue();
              if(!prevVal.trim().equals(selText.trim())) {
-              setErrorToResultFields(consts.get("analyteNameChanged"),(Integer)obj.getValue(),1);   
-              //testAnalyteDropdownModel.delete(ddset);
-              //testAnalyteDropdownModel.add(obj, new StringObject(selText));
+                 setErrorToReflexFields(consts.get("analyteNameChanged"),(Integer)obj.getValue(),1);                 
               ddset.get(0).setValue(selText); 
               ((TableDropdown)reflexTestWidget.columns.get(1).getColumnWidget())
                                              .setModel(testAnalyteDropdownModel);
@@ -1115,15 +1113,21 @@ public class TestScreen extends OpenELISScreenForm implements
             
            testAnalyteDropdownModel.add(ddset);
            ((TableDropdown)reflexTestWidget.columns.get(1).getColumnWidget())
-                                            .setModel(testAnalyteDropdownModel);           
+                                            .setModel(testAnalyteDropdownModel);             
         }
                 
-     } else if(col == 4) {
+     } else if (col == 1) {
          field = (DropDownField)item.get(col);
+         if(field.getSelectedKey() == null || (Integer)field.getSelectedKey()==-1) {
+             field.addError(consts.get("fieldRequiredException"));
+             analyteTreeController.model.refresh();             
+         }
+     }else if(col == 4) {
+         field = (DropDownField)item.get(col);           
          selText = (String)field.getTextValue();
          resultWidget.finishEditing();
          
-         if(item.getData() != null) {
+         if(item.getData() != null && !("").equals(selText.trim())) {
              data = (DataMap)item.getData();
              if(data.get("id") != null) {
                 anaId = (Integer)((NumberObject)data.get("id")).getValue();                
@@ -1142,8 +1146,11 @@ public class TestScreen extends OpenELISScreenForm implements
                 resultDropdownModelMap.put(anaId.toString(), 
                                            getDropdownModelForRsltGrp(Integer.parseInt(selText)));                               
              }
-         }    
-     }   
+         }
+                  
+     } 
+       
+       
    }
 
     public void startedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
@@ -1159,12 +1166,26 @@ public class TestScreen extends OpenELISScreenForm implements
      * The function adds new rows to the Results table with the values for the "Value" column
      * being set to the entries that were chosen through the lookup screen 
      */    
-    public void addResultRows(List<String> dictionaryEntries) {
-        for (int iter = 0; iter < dictionaryEntries.size(); iter++) {
-            DataSet row = resultWidget.model.createRow();
-            String entry = dictionaryEntries.get(iter);
-            row.get(1).setValue(entry);
-            resultWidget.model.addRow(row);           
+    public void addResultRows(HashMap<Integer,String> dictionaryEntries,DataSet set,List<Integer>idList) {
+        DataMap data = null;
+        DataSet row = null;
+        String entry = null;
+        Integer id = null; 
+        if (resultPanel.getTabBar().getTabCount() == 0 ) { 
+          Window.alert(consts.get("atleastOneResGrp"));
+          return;
+        }           
+        for (int iter = 0; iter < idList.size(); iter++) {
+          row = resultWidget.model.createRow();
+          id = idList.get(iter); 
+          entry  = dictionaryEntries.get(id);
+          row.get(0).setValue(set);
+          row.get(1).setValue(entry);
+          data = new DataMap();
+          row.setData(data);                                                                                           
+          data.put("id", new NumberField(getNextTempResId()));           
+          data.put("value", new NumberObject(id));
+          resultWidget.model.addRow(row);           
         }
         resultWidget.model.refresh();
     }
@@ -1194,7 +1215,7 @@ public class TestScreen extends OpenELISScreenForm implements
     }
 
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
-       if( (state == State.ADD) ||(state == State.UPDATE)) 
+       if((state == State.ADD) ||(state == State.UPDATE)) 
         return true;
        
        return false;
@@ -1265,8 +1286,35 @@ public class TestScreen extends OpenELISScreenForm implements
 
     public void drop(TreeWidget widget, Widget dragWidget) {
 
-    }
+    }       
+    
+    /**
+     * This method fetches the data model stored in resultDropDownModelMap with
+     * the analyte's id as the key and sets the model as the model for the "Results" column's dropdown
+     * in the Reflexive Tests table 
+     */
+    private void setTestResultsForAnalyte(Integer analyteId, DataSet set) {
+        if (analyteId != null) {
+            DataModel model = (DataModel)resultDropdownModelMap.get(analyteId.toString());
+            DropDownField field = (DropDownField)set.get(2);
+            DataSet prevSet = new DataSet(new NumberObject((Integer)field.getSelectedKey()));
+            DataSet blankSet = new DataSet(new NumberObject(-1));
 
+            if (model != null) {
+                field.setModel(model);
+                // if the new model doesn't contain the dataset that was selected 
+                // from the previous one, then it may cause an ArrayIndexOutOfBoundsException
+                // when you try to edit the Results column, this code makes sure
+                // that in that situation the blank set is set as the value so that it becomes the
+                // one that's selected and one that still belongs to the current data model.
+                // Otherwise the previously selected set is set as the value
+                if (field.getSelectedKey() !=null &&  model.contains(prevSet))
+                    field.setValue(prevSet);
+                else
+                    field.setValue(blankSet);
+            }                        
+        }
+    }
 
     private void getTests(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
@@ -1628,7 +1676,7 @@ public class TestScreen extends OpenELISScreenForm implements
              if(set.getData() != null) {
                field = (NumberField)((DataMap)set.getData()).get("id");
                disableResultOptions(set);
-               setErrorToResultFields(consts.get("resultDeleted"),(Integer)field.getValue(),2);               
+               setErrorToReflexFields(consts.get("resultDeleted"),(Integer)field.getValue(),2);               
              }
              resultWidget.model.deleteRow(selIndex);             
              
@@ -1636,8 +1684,7 @@ public class TestScreen extends OpenELISScreenForm implements
                 Window.alert(consts.get("atleastOneResInResGrp"));
             }
 
-        }
-        
+        }        
     }
 
     private void onAddResultTabButtonClicked() {
@@ -1658,6 +1705,9 @@ public class TestScreen extends OpenELISScreenForm implements
         resultGroupDropdownModel.add(ddset);
         
         lset = new DataSet();
+        if(resGroupAnalyteIdMap == null) {
+            resGroupAnalyteIdMap = new DataMap();
+        }
         resGroupAnalyteIdMap.put(Integer.toString(group), lset);
         
         setTableDropdownModel(analyteTreeController, 4, "analyte", resultGroupDropdownModel);
@@ -1673,15 +1723,12 @@ public class TestScreen extends OpenELISScreenForm implements
         analyteTreeController.model.refresh();                    
     }
     
-    private void onGroupAnalytesButtonClicked() {                
-         //ArrayList<TreeDataItem> selections =  analyteTreeController.model.getData().getSelections();
-        int[] selectedRowIndexes =  analyteTreeController.model.getSelectedRowIndexes();
-         //int[] selectedRowIndexes = new int[selections.size()];
+    private void onGroupAnalytesButtonClicked() {                         
+        int[] selectedRowIndexes =  analyteTreeController.model.getSelectedRowIndexes();         
          TreeDataItem item = null;
          TreeDataItem newItem = null;
          TreeDataItem delItem = null;
-                
-         //if(selections.size() < 2) {
+                         
          if(selectedRowIndexes.length < 2) {
             Window.alert(consts.get("atleastTwoAnalytes"));
             return;
@@ -1689,20 +1736,12 @@ public class TestScreen extends OpenELISScreenForm implements
             gid++;
             item = analyteTreeController.model.getData().createTreeItem("top",
                                                               new NumberObject(gid));  
-            item.get(0).setValue("Group");
-            
-            /*for(int iter = 0; iter < selections.size(); iter++){
-                selectedRowIndexes[iter] = analyteTreeController.model.getData()
-                                                        .indexOf(selections.get(iter));
-            }*/
-            
-            
+            item.get(0).setValue(consts.get("group"));
+                        
             Arrays.sort(selectedRowIndexes);
                                                             
             for(int iter = 0; iter < selectedRowIndexes.length; iter++) { 
-                 int index = selectedRowIndexes[iter];
-                 //Window.alert("add index "+ new Integer(index).toString());                               
-                 //delItem = selections.get(iter);  
+                 int index = selectedRowIndexes[iter];                  
                  delItem = analyteTreeController.model.getRow(index);
                 if("top".equals(delItem.leafType)) {
                      Window.alert(consts.get("cantGroupGroups"));
@@ -1722,22 +1761,9 @@ public class TestScreen extends OpenELISScreenForm implements
                 item.addItem(newItem);
                 item.open = true;                                                             
             }
-                          
-            //Window.alert("firstIndex "+ new Integer(selectedRowIndexes[0]).toString());
-            
-            //for(int iter = 0 ; iter < selections.size(); iter++) {            
-            /*for(int iter = 0 ; iter < selectedRowIndexes.length; iter++) {
-                int index = selectedRowIndexes[iter];
-                Window.alert("delete index "+ new Integer(index).toString());
-                
-                //delItem = selections.get(iter);
-                delItem = analyteTreeController.model.getRow(index);
-                //analyteTreeController.model.getData().delete(delItem.hashCode());
-                analyteTreeController.model.deleteRow(index);
-            }*/
+                                     
             for(int iter = selectedRowIndexes.length; iter > 0 ; iter--) {                
-                int index = selectedRowIndexes[iter-1];
-                //Window.alert("delete index "+ new Integer(index).toString());
+                int index = selectedRowIndexes[iter-1];               
                 analyteTreeController.model.deleteRow(index);
             }
              
@@ -1750,29 +1776,24 @@ public class TestScreen extends OpenELISScreenForm implements
             }else {
                 analyteTreeController.model.addRow(item);  
             }
-            // analyteTreeController.model.addRow(selectedRowIndexes[0],item);
+            
             analyteTreeController.model.refresh();
     }
     
-    private void onUngroupAnalytesButtonClicked() {        
-        //ArrayList<TreeDataItem> selections =  analyteTreeController.model.getData().getSelections();
+    private void onUngroupAnalytesButtonClicked() {                
         TreeDataItem item;
         TreeDataItem newItem;
 
         List<TreeDataItem> chItems;
         int index;
         ArrayList<Integer> selRows = analyteTreeController.model.selectedRows; 
-        
-        //if(selections.size() > 0) {
+                
         if(selRows.size() > 0) {
          for(int iter = 0 ; iter < selRows.size(); iter++) { 
-          index = selRows.get(iter);
-          //  TreeDataItem item =  analyteTreeController.model.getRow(index);
-            //item = selections.get(iter);  
+          index = selRows.get(iter);          
             item = analyteTreeController.model.getRow(index);
             if("top".equals(item.leafType)){
-                chItems = item.getItems();
-                //index = analyteTreeController.model.getData().indexOf(item); 
+                chItems = item.getItems();                
                 
                 for(int i = 0; i < chItems.size(); i++) {                                                          
                     newItem = (TreeDataItem)chItems.get(i).clone();
@@ -1780,8 +1801,7 @@ public class TestScreen extends OpenELISScreenForm implements
                     newItem.setData(null);
                     analyteTreeController.model.addRow(index, newItem);                   
                 }
-            
-             //analyteTreeController.model.deleteRow(index);
+                         
                 analyteTreeController.model.getData().delete(item);
             }
           } 
@@ -1817,7 +1837,7 @@ public class TestScreen extends OpenELISScreenForm implements
        if(item.getData() != null) {
         field = (NumberObject)((DataMap)item.getData()).get("id");
         if(field != null) 
-         setErrorToResultFields(consts.get("analyteDeleted"),(Integer)field.getValue(),1);   
+            setErrorToReflexFields(consts.get("analyteDeleted"),(Integer)field.getValue(),1);   
          testAnalyteDropdownModel.getByKey(field).enabled = false;
          ((TableDropdown)reflexTestWidget.columns.get(1).getColumnWidget())
                          .setModel(testAnalyteDropdownModel);        
@@ -1831,16 +1851,15 @@ public class TestScreen extends OpenELISScreenForm implements
      * more dictionary entries to be added to the Test Results table   
      */
     private void onDictionaryLookUpButtonClicked() {
+        int left = getAbsoluteLeft();
+        int top = getAbsoluteTop();
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel,
                                                      "Choose Dictionary Entry",
                                                      "dictionaryEntryPicker",
                                                      "Loading...");
         pickerWindow.setContent(new DictionaryEntryPickerScreen(this));
-
-        standardNotePopupPanel.add(pickerWindow);
-        int left = this.getAbsoluteLeft();
-        int top = this.getAbsoluteTop();
+        standardNotePopupPanel.add(pickerWindow);        
         standardNotePopupPanel.setPopupPosition(left, top);
         standardNotePopupPanel.show();
     }
@@ -1883,7 +1902,6 @@ public class TestScreen extends OpenELISScreenForm implements
                                     public void onSuccess(DataModel result) {
                                         setTableDropdownModel(w, col, result);
                                     }
-
                                     public void onFailure(Throwable caught) {
                                         Window.alert(caught.getMessage());
                                         window.setStatus("", "");
@@ -1911,9 +1929,7 @@ public class TestScreen extends OpenELISScreenForm implements
                                     }
                                 });
         
-    }      
-    
-   
+    }             
     
    private VerticalPanel getDummyPanel(){ 
     Document document = XMLParser.parse(panelString);
@@ -1923,31 +1939,59 @@ public class TestScreen extends OpenELISScreenForm implements
     return dummy;
    }
    
-   private boolean resultGroupSelForAll() {       
+   private boolean checkResGrpSel() {       
        TreeDataItem item = null;
        TreeDataItem chItem = null;
        TreeModel model = analyteTreeController.model;
        Integer selVal = null;
-       Integer unselVal = new Integer(-1);       
-       
-       for(int i = 0; i  < model.getData().size(); i++){
+       Integer unselVal = new Integer(-1);         
+              
+       for(int i = 0; i  < model.getData().size(); i++) {
           item = model.getData().get(i);
           if("top".equals(item.leafType)) {
             for(int j = 0; j < item.getItems().size(); j++) {
-              chItem = item.getItems().get(j);
+              chItem = item.getItems().get(j);             
               selVal = (Integer)((DropDownField)chItem.get(4)).getSelectedKey();
                if(selVal == null || unselVal.equals(selVal)) {
                    return false;
-               }
+               }                                                  
              }            
-         } else {
+         } else {             
              selVal = (Integer)((DropDownField)item.get(4)).getSelectedKey();
              if(selVal == null || unselVal.equals(selVal)) {
                  return false;
-          }      
+                 
+          }             
+        }
+     }      
+     
+     return true;  
+   }
+   
+   private boolean treeItemsHaveErrors() {       
+       TreeDataItem item = null;
+       TreeModel model = analyteTreeController.model;       
+       int itemsInError = 0;
+              
+       for(int i = 0; i  < model.getData().size(); i++) {
+          item = model.getData().get(i);
+          if("top".equals(item.leafType)) {
+            for(int j = 0; j < item.getItems().size(); j++) {
+             if(setErrorToItem(item.getItems().get(j))) 
+                 itemsInError++;
+           }            
+         } else {
+            if(setErrorToItem(item))
+              itemsInError++;  
         }
      }
-     return true;  
+       
+     if(itemsInError > 0) { 
+        model.refresh();    
+        return true;
+     }
+     
+     return false;  
    }
    
    private int getNextTempAnaId(){
@@ -2000,7 +2044,7 @@ public class TestScreen extends OpenELISScreenForm implements
       return ddmodel;
    }  
    
-   private void setErrorToResultFields(String error, Integer id, int col) {
+   private void setErrorToReflexFields(String error, Integer id, int col) {
        DataSet rset = null;
        DataSet vset = null;
        DropDownField field = null;
@@ -2035,11 +2079,8 @@ public class TestScreen extends OpenELISScreenForm implements
               if(addset != null) {             
                   prevVal = (String)addset.get(0).getValue();
                   if(!prevVal.trim().equals(value.trim())) {
-                    setErrorToResultFields(consts.get("resultValueChanged"), addKey, 2);                   
-                    //ddModel.delete(addset);                       
-                    //addset = new DataSet(akobj,new StringObject(value));   
-                    addset.get(0).setValue(value);
-                    //ddModel.add(addset);
+                    setErrorToReflexFields(consts.get("resultValueChanged"), addKey, 2);                   
+                    addset.get(0).setValue(value);                    
                   }  
                } else {
                   addset = new DataSet(akobj,new StringObject(value));   
@@ -2068,6 +2109,31 @@ public class TestScreen extends OpenELISScreenForm implements
                  addset.enabled = false;                        
         }                 
       }   
+   }
+   
+   private boolean setErrorToItem(TreeDataItem item) {
+       boolean someError = false;
+       DropDownField field = (DropDownField)item.get(0); 
+       if(fieldInError(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
+            field.addError(consts.get("fieldRequiredException")); 
+            field.valid = false;
+            someError = true;
+       } 
+       
+       field = (DropDownField)item.get(1);               
+       if(fieldInError(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
+           field.addError(consts.get("fieldRequiredException"));   
+           field.valid = false;
+           someError = true;
+       } 
+      return someError; 
+   }
+   
+   private boolean fieldInError(DropDownField field) {                    
+       if(field.getSelectedKey() == null || (Integer)field.getSelectedKey()==-1) {
+          return true; 
+       }
+     return false;  
    }
 
 }
