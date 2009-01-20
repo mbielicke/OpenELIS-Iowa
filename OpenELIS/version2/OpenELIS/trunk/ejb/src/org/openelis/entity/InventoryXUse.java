@@ -27,7 +27,7 @@
 package org.openelis.entity;
 
 /**
-  * TransReceiptOrder Entity POJO for database 
+  * TransLocationOrder Entity POJO for database 
   */
 
 import org.w3c.dom.Document;
@@ -50,38 +50,41 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @Entity
-@Table(name="trans_receipt_order")
+@Table(name="inventory_x_use")
 @EntityListeners({AuditUtil.class})
-public class TransReceiptOrder implements Auditable, Cloneable {
+public class InventoryXUse implements Auditable, Cloneable {
   
   @Id
   @GeneratedValue
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="inventory_receipt_id")
-  private Integer inventoryReceiptId;             
+  @Column(name="inventory_location_id")
+  private Integer inventoryLocationId;             
 
   @Column(name="order_item_id")
   private Integer orderItemId;             
 
   @Column(name="quantity")
-  private Integer quantity;  
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
-  private InventoryReceipt inventoryReceipt;
+  private Integer quantity; 
   
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
   private OrderItem orderItem;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
+  private InventoryLocation inventoryLocation;
 
 
   @Transient
-  private TransReceiptOrder original;
+  private InventoryXUse original;
 
   
-  public Integer getId() {
+  public OrderItem getOrderItem() {
+    return orderItem;
+}
+public Integer getId() {
     return id;
   }
   protected void setId(Integer id) {
@@ -90,13 +93,13 @@ public class TransReceiptOrder implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getInventoryReceiptId() {
-    return inventoryReceiptId;
+  public Integer getInventoryLocationId() {
+    return inventoryLocationId;
   }
-  public void setInventoryReceiptId(Integer inventoryReceiptId) {
-    if((inventoryReceiptId == null && this.inventoryReceiptId != null) || 
-       (inventoryReceiptId != null && !inventoryReceiptId.equals(this.inventoryReceiptId)))
-      this.inventoryReceiptId = inventoryReceiptId;
+  public void setInventoryLocationId(Integer inventoryLocationId) {
+    if((inventoryLocationId == null && this.inventoryLocationId != null) || 
+       (inventoryLocationId != null && !inventoryLocationId.equals(this.inventoryLocationId)))
+      this.inventoryLocationId = inventoryLocationId;
   }
 
   public Integer getOrderItemId() {
@@ -120,7 +123,7 @@ public class TransReceiptOrder implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (TransReceiptOrder)this.clone();
+      original = (InventoryXUse)this.clone();
     }catch(Exception e){}
   }
   
@@ -131,7 +134,7 @@ public class TransReceiptOrder implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(inventoryReceiptId,original.inventoryReceiptId,doc,"inventory_receipt_id");
+      AuditUtil.getChangeXML(inventoryLocationId,original.inventoryLocationId,doc,"inventory_location_id");
 
       AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
 
@@ -146,13 +149,10 @@ public class TransReceiptOrder implements Auditable, Cloneable {
   }
    
   public String getTableName() {
-    return "trans_receipt_order";
+    return "trans_location_order";
   }
-public InventoryReceipt getInventoryReceipt() {
-    return inventoryReceipt;
-}
-public OrderItem getOrderItem() {
-    return orderItem;
+public InventoryLocation getInventoryLocation() {
+    return inventoryLocation;
 }
   
 }   
