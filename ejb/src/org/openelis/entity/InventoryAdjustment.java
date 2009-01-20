@@ -77,7 +77,7 @@ public class InventoryAdjustment implements Auditable, Cloneable {
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_adjustment_id", insertable = false, updatable = false)
-  private Collection<TransAdjustmentLocation> transAdjustmentLocation;
+  private Collection<InventoryXAdjust> transAdjustmentLocation;
   
 
   @Transient
@@ -154,7 +154,7 @@ public class InventoryAdjustment implements Auditable, Cloneable {
   public String getTableName() {
     return "inventory_adjustment";
   }
-public Collection<TransAdjustmentLocation> getTransAdjustmentLocation() {
+public Collection<InventoryXAdjust> getTransAdjustmentLocation() {
     return transAdjustmentLocation;
 }
   

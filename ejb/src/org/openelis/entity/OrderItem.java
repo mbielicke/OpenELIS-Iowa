@@ -29,6 +29,8 @@ package org.openelis.entity;
   * OrderItem Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -38,6 +40,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -51,7 +54,7 @@ import org.w3c.dom.Element;
 @NamedQueries( {
     @NamedQuery(name = "OrderItem.OrderItemsWithLocByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(oi.id, oi.orderId, oi.inventoryItemId, ii.name,oi.quantity, " +
                             " d.entry, t.inventoryLocationId, childLoc.name, childLoc.location, parentLoc.name, childLoc.storageUnit.description, t.id, il.quantityOnhand, il.lotNumber) from " +
-                            " TransLocationOrder t left join t.orderItem oi left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
+                            " InventoryXUse t left join t.orderItem oi left join oi.inventoryItem ii left join t.inventoryLocation il left join il.storageLocation childLoc " +
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where oi.inventoryItem.storeId = d.id and oi.orderId = :id"),
     @NamedQuery(name = "OrderItem.OrderItemsByOrderId", query = "select distinct new org.openelis.domain.OrderItemDO(o.id, o.orderId, o.inventoryItemId, ii.name,o.quantity, " +
                             " d.entry, o.catalogNumber, o.unitCost) from OrderItem o left join o.inventoryItem ii , Dictionary d where o.inventoryItem.storeId = d.id and o.orderId = :id"),
@@ -90,6 +93,10 @@ public class OrderItem implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id", insertable = false, updatable = false)
   private Order order;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_item_id")
+  private Collection<InventoryReceipt> inventoryReceipts;
   
   @Transient
   private OrderItem original;
@@ -194,6 +201,12 @@ public class OrderItem implements Auditable, Cloneable {
   }
 public Order getOrder() {
     return order;
+}
+public Collection<InventoryReceipt> getInventoryReceipts() {
+    return inventoryReceipts;
+}
+public void setInventoryReceipts(Collection<InventoryReceipt> inventoryReceipts) {
+    this.inventoryReceipts = inventoryReceipts;
 }
   
 }   

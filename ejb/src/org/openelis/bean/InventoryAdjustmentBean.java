@@ -48,7 +48,7 @@ import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.entity.InventoryAdjustment;
 import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.TransAdjustmentLocation;
+import org.openelis.entity.InventoryXAdjust;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
@@ -99,7 +99,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     }
 
     public List getChildRecords(Integer inventoryAdjustmentId) {
-        Query query = manager.createNamedQuery("TransAdjustmentLocation.TransAdjustmentLocation");
+        Query query = manager.createNamedQuery("InventoryXAdjust.InventoryXAdjust");
         query.setParameter("id", inventoryAdjustmentId);
         
         return query.getResultList();
@@ -223,7 +223,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         //update child records
         for (int i=0; i<children.size();i++) {
             InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO) children.get(i);
-            TransAdjustmentLocation transaction = null;
+            InventoryXAdjust transaction = null;
             
             //validate the child record
             //exceptionList = new ArrayList();
@@ -233,9 +233,9 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
             //}
             
             if (childDO.getId() == null)
-                transaction = new TransAdjustmentLocation();
+                transaction = new InventoryXAdjust();
             else
-                transaction = manager.find(TransAdjustmentLocation.class, childDO.getId());
+                transaction = manager.find(InventoryXAdjust.class, childDO.getId());
 
             if(!childDO.getDelete()){
                 transaction.setInventoryAdjustmentId(inventoryAdjustment.getId());

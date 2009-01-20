@@ -27,15 +27,9 @@
 package org.openelis.entity;
 
 /**
-  * TransLocationOrder Entity POJO for database 
+  * TransAdjustmentLocation Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,34 +37,46 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "InventoryXAdjust.InventoryXAdjust", query = "select distinct new org.openelis.domain.InventoryAdjustmentChildDO(trans.id, il.id, " +
+                                " il.inventoryItemId, ii.name, storLoc.name, storLoc.storageUnit.description, storLoc.location, " +
+                                " trans.physicalCount, trans.quantity)  from InventoryXAdjust trans LEFT JOIN trans.inventoryLocation il " +
+                                " LEFT JOIN il.inventoryItem ii LEFT JOIN il.storageLocation storLoc " +
+                                " where trans.inventoryAdjustmentId = :id ORDER BY il.id ")})
+                                
 @Entity
-@Table(name="trans_location_order")
+@Table(name="inventory_x_adjust")
 @EntityListeners({AuditUtil.class})
-public class TransLocationOrder implements Auditable, Cloneable {
+public class InventoryXAdjust implements Auditable, Cloneable {
   
   @Id
   @GeneratedValue
   @Column(name="id")
   private Integer id;             
 
+  @Column(name="inventory_adjustment_id")
+  private Integer inventoryAdjustmentId;             
+
   @Column(name="inventory_location_id")
   private Integer inventoryLocationId;             
 
-  @Column(name="order_item_id")
-  private Integer orderItemId;             
-
   @Column(name="quantity")
-  private Integer quantity; 
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-  private OrderItem orderItem;
+  private Integer quantity;             
+
+  @Column(name="physical_count")
+  private Integer physicalCount;    
   
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
@@ -78,19 +84,25 @@ public class TransLocationOrder implements Auditable, Cloneable {
 
 
   @Transient
-  private TransLocationOrder original;
+  private InventoryXAdjust original;
 
   
-  public OrderItem getOrderItem() {
-    return orderItem;
-}
-public Integer getId() {
+  public Integer getId() {
     return id;
   }
   protected void setId(Integer id) {
     if((id == null && this.id != null) || 
        (id != null && !id.equals(this.id)))
       this.id = id;
+  }
+
+  public Integer getInventoryAdjustmentId() {
+    return inventoryAdjustmentId;
+  }
+  public void setInventoryAdjustmentId(Integer inventoryAdjustmentId) {
+    if((inventoryAdjustmentId == null && this.inventoryAdjustmentId != null) || 
+       (inventoryAdjustmentId != null && !inventoryAdjustmentId.equals(this.inventoryAdjustmentId)))
+      this.inventoryAdjustmentId = inventoryAdjustmentId;
   }
 
   public Integer getInventoryLocationId() {
@@ -102,15 +114,6 @@ public Integer getId() {
       this.inventoryLocationId = inventoryLocationId;
   }
 
-  public Integer getOrderItemId() {
-    return orderItemId;
-  }
-  public void setOrderItemId(Integer orderItemId) {
-    if((orderItemId == null && this.orderItemId != null) || 
-       (orderItemId != null && !orderItemId.equals(this.orderItemId)))
-      this.orderItemId = orderItemId;
-  }
-
   public Integer getQuantity() {
     return quantity;
   }
@@ -120,10 +123,19 @@ public Integer getId() {
       this.quantity = quantity;
   }
 
+  public Integer getPhysicalCount() {
+    return physicalCount;
+  }
+  public void setPhysicalCount(Integer physicalCount) {
+    if((physicalCount == null && this.physicalCount != null) || 
+       (physicalCount != null && !physicalCount.equals(this.physicalCount)))
+      this.physicalCount = physicalCount;
+  }
+
   
   public void setClone() {
     try {
-      original = (TransLocationOrder)this.clone();
+      original = (InventoryXAdjust)this.clone();
     }catch(Exception e){}
   }
   
@@ -134,11 +146,13 @@ public Integer getId() {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
+      AuditUtil.getChangeXML(inventoryAdjustmentId,original.inventoryAdjustmentId,doc,"inventory_adjustment_id");
+
       AuditUtil.getChangeXML(inventoryLocationId,original.inventoryLocationId,doc,"inventory_location_id");
 
-      AuditUtil.getChangeXML(orderItemId,original.orderItemId,doc,"order_item_id");
-
       AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
+
+      AuditUtil.getChangeXML(physicalCount,original.physicalCount,doc,"physical_count");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -149,7 +163,7 @@ public Integer getId() {
   }
    
   public String getTableName() {
-    return "trans_location_order";
+    return "trans_adjustment_location";
   }
 public InventoryLocation getInventoryLocation() {
     return inventoryLocation;

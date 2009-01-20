@@ -62,26 +62,39 @@ import org.w3c.dom.Element;
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
                             " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
                             "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
+                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where "+
+                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
+                            " and i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByNameSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
-                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByNameSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, i.description, d.entry, il.id, childLoc.name, " +
+                            " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand, disUnit.entry, " +
+                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
                             "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
+                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d, Dictionary disUnit where "+
+                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
+                            " and i.storeId = d.id and i.dispensedUnitsId = disUnit.id " +
+                            " and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' order by i.name"),
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreLocByNameMainStore", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
                             " childLoc.location, parentLoc.name, childLoc.storageUnit.description, il.lotNumber, il.expirationDate, il.quantityOnhand) " +
                             "  from InventoryItem i left join i.inventoryLocation il left join il.storageLocation childLoc " +
-                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
+                            " left join childLoc.parentStorageLocation parentLoc, Dictionary d where " + 
+                            " (childLoc.id not in (select c.parentStorageLocationId from StorageLocation c where c.parentStorageLocationId=childLoc.id))" +
+                            " and i.storeId = d.id  and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and d.systemName = 'inv_main_store' " +
                             " order by i.name"), 
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),         
+                            " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),    
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
                             " i.isBulk, i.isLotMaintained, i.isSerialMaintained) " +
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and store.systemName = 'inv_main_store'  order by i.name"),
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio) " +
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.parentInventoryItemId = :parentId and " +
+                            " i.name like :name and i.isActive = 'Y' " +
+                            " and i.isNotForSale = 'N' order by i.name"),
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' order by i.name"),

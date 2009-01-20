@@ -63,9 +63,14 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Order.ReportToBillTo", query = "select new org.openelis.domain.BillToReportToDO(o.billToId, o.billTo.name, o.billTo.address.multipleUnit, o.billTo.address.streetAddress," +
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
-    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, o.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from TransReceiptOrder i left join i.inventoryReceipt r left join i.orderItem o where o.orderId = :id " +
+    @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, r.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryReceipt r left join r.orderItem o where o.orderId = :id " +
                             " order by r.receivedDate desc "),
+    @NamedQuery(name = "Order.LocsForOrder", query = "select new org.openelis.domain.InventoryLocationDO(loc.id, loc.inventoryItemId, loc.inventoryItem.name, loc.lotNumber, childLoc.name,childLoc.location, "+
+                            " parentLoc.name, childLoc.storageUnit.description, trans.quantity, loc.expirationDate) " +
+                            " from InventoryXUse trans left join trans.orderItem oi left join trans.inventoryLocation loc left join loc.storageLocation childLoc " +
+                            " left join childLoc.parentStorageLocation parentLoc where oi.orderId = :id " +
+                            " order by trans.id "),
     @NamedQuery(name = "Order.descriptionAutoLookup", query = "select distinct new org.openelis.domain.IdNameDO(o.description) from Order o where o.description like :desc")})
             
 @Entity

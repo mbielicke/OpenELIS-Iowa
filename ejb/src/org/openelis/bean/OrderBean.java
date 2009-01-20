@@ -49,10 +49,10 @@ import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
-import org.openelis.entity.TransLocationOrder;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -60,10 +60,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrderMetaMap;
-import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrderRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -124,11 +121,11 @@ public class OrderBean implements OrderRemote{
         return getOrder(orderId, orderType);
     }
 
-    public List getOrderItems(Integer orderId, boolean withLocation) {
+    public List getOrderItems(Integer orderId) {
         Query query;
-        if(withLocation)
-            query = manager.createNamedQuery("OrderItem.OrderItemsWithLocByOrderId");
-        else
+        //if(withLocation)
+        //    query = manager.createNamedQuery("OrderItem.OrderItemsWithLocByOrderId");
+        //else
             query = manager.createNamedQuery("OrderItem.OrderItemsByOrderId");
         
         query.setParameter("id", orderId);
@@ -144,6 +141,16 @@ public class OrderBean implements OrderRemote{
         query.setParameter("id", orderId);
         
         List receipts = query.getResultList();// getting list of receipts
+    
+        return receipts;
+    }
+    
+    public List getOrderLocTransactions(Integer orderId) {
+        Query query = manager.createNamedQuery("Order.LocsForOrder");
+        
+        query.setParameter("id", orderId);
+        
+        List receipts = query.getResultList();// getting list of locs
     
         return receipts;
     }
@@ -225,8 +232,9 @@ System.out.println("2");
         if(whereClause.indexOf("store.") > -1){
             whereClause+=" and("+OrderMetaMap.getOrderItem().getInventoryItem().getStoreId()+" = "+OrderMetaMap.getStore().getId()+") ";
             
-            if(whereClause.indexOf("inventoryTrans.") > -1)
-                whereClause += " and ("+OrderMetaMap.ORDER_INV_TRANS_META.getOrderItemId()+" = "+OrderMetaMap.ORDER_ITEM_META.getId()+") ";
+            //TODO taking this out for now...need to look into this
+            //if(whereClause.indexOf("inventoryTrans.") > -1)
+            //    whereClause += " and ("+OrderMetaMap.ORDER_INV_TRANS_META.getOrderItemId()+" = "+OrderMetaMap.ORDER_ITEM_META.getId()+") ";
             
             sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
         }else{
@@ -277,9 +285,9 @@ System.out.println("2");
         query.setParameter("name", "order_shipping_note");
         Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
         
-        query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "order_status_processed");
-        Integer orderCompletedStatusId = (Integer)query.getSingleResult();
+        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        //query.setParameter("systemName", "order_status_processed");
+        //Integer orderCompletedStatusId = (Integer)query.getSingleResult();
         
         if(orderDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
@@ -358,13 +366,13 @@ System.out.println("2");
            }
             
            //insert transaction record if necessary
-           if(orderItemDO.getLocationId() != null){
-               TransLocationOrder transLocOrder = null;
+           /*if(orderItemDO.getLocationId() != null){
+               InventoryXUse transLocOrder = null;
                
                if (orderItemDO.getTransactionId() == null)
-                   transLocOrder = new TransLocationOrder();
+                   transLocOrder = new InventoryXUse();
                else
-                   transLocOrder = manager.find(TransLocationOrder.class, orderItemDO.getTransactionId());
+                   transLocOrder = manager.find(InventoryXUse.class, orderItemDO.getTransactionId());
                
                transLocOrder.setInventoryLocationId(orderItemDO.getLocationId());
                transLocOrder.setOrderItemId(orderItem.getId());
@@ -379,7 +387,7 @@ System.out.println("2");
                    InventoryLocation loc = manager.find(InventoryLocation.class, orderItemDO.getLocationId());                   
                    loc.setQuantityOnhand(orderItemDO.getQuantityOnHand() - orderItemDO.getQuantity());
                }
-           }
+           }*/
         }
         
         Integer systemUserId = null;
