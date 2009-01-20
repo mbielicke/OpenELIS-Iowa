@@ -79,7 +79,7 @@ public class OrderItemDO implements Serializable{
         if(parentStorageLocName != null)
             storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
         else
-            storageLocation += childStorageLocName.trim()+" "+childStorageLocLocation.trim(); 
+            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
         
         setLocation(storageLocation);
      }

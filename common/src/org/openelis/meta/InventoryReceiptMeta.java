@@ -40,6 +40,7 @@ public class InventoryReceiptMeta implements Meta {
 	public static final String
               ID					="id",
               INVENTORY_ITEM_ID		="inventoryItemId",
+              ORDER_ITEM_ID         ="orderItemId",
               ORGANIZATION_ID		="organizationId",
               RECEIVED_DATE			="receivedDate",
               QUANTITY_RECEIVED		="quantityReceived",
@@ -50,7 +51,7 @@ public class InventoryReceiptMeta implements Meta {
 
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_ITEM_ID,ORGANIZATION_ID,RECEIVED_DATE,QUANTITY_RECEIVED,UNIT_COST,QC_REFERENCE,EXTERNAL_REFERENCE,UPC};
+  	  ID,INVENTORY_ITEM_ID,ORDER_ITEM_ID,ORGANIZATION_ID,RECEIVED_DATE,QUANTITY_RECEIVED,UNIT_COST,QC_REFERENCE,EXTERNAL_REFERENCE,UPC};
   	  
     private HashSet<String> columnHashList;
 
@@ -89,6 +90,10 @@ public class InventoryReceiptMeta implements Meta {
   public String getInventoryItemId() {
     return path + INVENTORY_ITEM_ID;
   } 
+  
+  public String getOrderItemId() {
+      return path + ORDER_ITEM_ID;
+    } 
 
   public String getOrganizationId() {
     return path + ORGANIZATION_ID;

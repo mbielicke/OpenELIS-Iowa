@@ -27,24 +27,25 @@
 package org.openelis.meta;
 
 /**
-  * TransReceiptOrder META Data
+  * TransAdjustmentLocation META Data
   */
 
 import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
-public class TransReceiptOrderMeta implements Meta {
+public class InventoryXAdjustMeta implements Meta {
   	protected String path = "";
-	private static final String entityName = "TransReceiptOrder";
+	private static final String entityName = "InventoryXAdjust";
 	
 	private static final String
-              ID					                ="id",
-              INVENTORY_RECEIPT_ID					="inventoryReceiptId",
-              ORDER_ITEM_ID					        ="orderItemId",
-              QUANTITY					            ="quantity";
+              ID					="id",
+              INVENTORY_ADJUSTMENT_ID					="inventoryAdjustmentId",
+              INVENTORY_LOCATION_ID					="inventoryLocationId",
+              QUANTITY					="quantity",
+              PHYSICAL_COUNT					="physicalCount";
 
   	private static final String[] columnNames = {
-  	  ID,INVENTORY_RECEIPT_ID,ORDER_ITEM_ID,QUANTITY};
+  	  ID,INVENTORY_ADJUSTMENT_ID,INVENTORY_LOCATION_ID,QUANTITY,PHYSICAL_COUNT};
   	  
 	private HashSet<String> columnHashList;
     
@@ -55,11 +56,11 @@ public class TransReceiptOrderMeta implements Meta {
         }
     }
     
-    public TransReceiptOrderMeta() {
+    public InventoryXAdjustMeta() {
 		init();        
     }
     
-    public TransReceiptOrderMeta(String path) {
+    public InventoryXAdjustMeta(String path) {
         this.path = path;
 		init();        
     }
@@ -81,16 +82,20 @@ public class TransReceiptOrderMeta implements Meta {
         return path + ID;
     } 
 
-    public String getInventoryReceiptId() {
-        return path + INVENTORY_RECEIPT_ID;
+    public String getInventoryAdjustmentId() {
+        return path + INVENTORY_ADJUSTMENT_ID;
     } 
 
-    public String getOrderItemId() {
-        return path + ORDER_ITEM_ID;
+    public String getInventoryLocationId() {
+        return path + INVENTORY_LOCATION_ID;
     } 
 
     public String getQuantity() {
         return path + QUANTITY;
+    } 
+
+    public String getPhysicalCount() {
+        return path + PHYSICAL_COUNT;
     } 
 
   

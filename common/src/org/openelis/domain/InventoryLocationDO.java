@@ -36,7 +36,8 @@ public class InventoryLocationDO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	protected Integer id;
-	protected Integer inventoryItem;
+	protected Integer inventoryItemId;
+    protected String inventoryItem;
 	protected String lotNumber;
 	//protected Integer storageLocationId;
 	protected String storageLocation;
@@ -47,19 +48,21 @@ public class InventoryLocationDO implements Serializable{
         
     }
     
-	public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, String storageLocation,
+	public InventoryLocationDO(Integer id, Integer inventoryItemId, String inventoryItem, String lotNumber, String storageLocation,
 									Integer quantityOnHand, Date expirationDate){
 		setId(id);
-		setInventoryItem(inventoryItem);
+		setInventoryItemId(inventoryItemId);
+        setInventoryItem(inventoryItem);
 		setLotNumber(lotNumber);
 		setStorageLocation(storageLocation);
 		setQuantityOnHand(quantityOnHand);
 		setExpirationDate(new Datetime(Datetime.YEAR,Datetime.DAY,expirationDate));		
 	}
 
-    public InventoryLocationDO(Integer id, Integer inventoryItem, String lotNumber, String childStorageLocName, String childStorageLocLocation,  
+    public InventoryLocationDO(Integer id, Integer inventoryItemId, String inventoryItem, String lotNumber, String childStorageLocName, String childStorageLocLocation,  
                                String parentStorageLocName, String childStorageUnit, Integer quantityOnHand, Date expirationDate){
     setId(id);
+    setInventoryItemId(inventoryItemId);
     setInventoryItem(inventoryItem);
     setLotNumber(lotNumber);
     setQuantityOnHand(quantityOnHand);
@@ -70,7 +73,7 @@ public class InventoryLocationDO implements Serializable{
     if(parentStorageLocName != null)
         storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
     else
-        storageLocation += childStorageLocName.trim();    
+        storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
     
     setStorageLocation(storageLocation);
 }
@@ -91,12 +94,12 @@ public class InventoryLocationDO implements Serializable{
 		this.id = id;
 	}
 
-	public Integer getInventoryItem() {
-		return inventoryItem;
+	public Integer getInventoryItemId() {
+		return inventoryItemId;
 	}
 
-	public void setInventoryItem(Integer inventoryItem) {
-		this.inventoryItem = inventoryItem;
+	public void setInventoryItemId(Integer inventoryItemId) {
+		this.inventoryItemId = inventoryItemId;
 	}
 
 	public String getLotNumber() {
@@ -122,6 +125,14 @@ public class InventoryLocationDO implements Serializable{
 	public void setStorageLocation(String storageLocation) {
 		this.storageLocation = DataBaseUtil.trim(storageLocation);
 	}
+
+    public String getInventoryItem() {
+        return inventoryItem;
+    }
+
+    public void setInventoryItem(String inventoryItem) {
+        this.inventoryItem = DataBaseUtil.trim(inventoryItem);
+    }
 
 	/*public Integer getChildStorageLocationId() {
 		return childStorageLocationId;

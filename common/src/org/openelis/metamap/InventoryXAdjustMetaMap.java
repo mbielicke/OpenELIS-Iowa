@@ -27,15 +27,15 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.InventoryLocationMeta;
-import org.openelis.meta.TransAdjustmentLocationMeta;
+import org.openelis.meta.InventoryXAdjustMeta;
 
-public class TransAdjustmentLocationMetaMap extends TransAdjustmentLocationMeta implements MetaMap{
+public class InventoryXAdjustMetaMap extends InventoryXAdjustMeta implements MetaMap{
     
-    public TransAdjustmentLocationMetaMap(String path) {
+    public InventoryXAdjustMetaMap(String path) {
         super(path);
     }
     
-    public TransAdjustmentLocationMetaMap() {
+    public InventoryXAdjustMetaMap() {
         super();
     }
     
@@ -45,8 +45,8 @@ public class TransAdjustmentLocationMetaMap extends TransAdjustmentLocationMeta 
         return INVENTORY_LOCATION_META;
     }
     
-    public static TransAdjustmentLocationMetaMap getInstance() {
-        return new TransAdjustmentLocationMetaMap();
+    public static InventoryXAdjustMetaMap getInstance() {
+        return new InventoryXAdjustMetaMap();
     }
     
     public boolean hasColumn(String name){

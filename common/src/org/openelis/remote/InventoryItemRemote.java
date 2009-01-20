@@ -76,6 +76,9 @@ public interface InventoryItemRemote {
      
      //auto complete inv item lookup for inventory items that have components
      public List inventoryItemWithComponentsAutoCompleteLookupByName(String itemName, int maxResults);	  
+     
+     //auto complete inv item lookup for inventory items that are children of the invId param
+     public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, int maxResults);    
 	 
 	 //method to validate the fields before the backend updates it in the database
 	 public List validateForUpdate(InventoryItemDO inventoryItemDO, List components);
