@@ -35,10 +35,10 @@ public class InventoryAdjustmentMetaMap extends InventoryAdjustmentMeta implemen
         super("adj.");
     }
 
-    public TransAdjustmentLocationMetaMap TRANS_ADJUSTMENT_LOCATION_META = new TransAdjustmentLocationMetaMap("transAdj.");
+    public InventoryXAdjustMetaMap TRANS_ADJUSTMENT_LOCATION_META = new InventoryXAdjustMetaMap("transAdj.");
     public  DictionaryMeta DICTIONARY_META = new DictionaryMeta("store."); 
     
-    public TransAdjustmentLocationMetaMap getTransAdjustmentLocation(){
+    public InventoryXAdjustMetaMap getTransAdjustmentLocation(){
         return TRANS_ADJUSTMENT_LOCATION_META;
     }
     

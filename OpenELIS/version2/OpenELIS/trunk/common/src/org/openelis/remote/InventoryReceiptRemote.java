@@ -30,24 +30,28 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.OrderDO;
-
 @Remote
 public interface InventoryReceiptRemote {
+    public static final String  RECEIPT          = "receipt",
+                                TRANSFER          = "transfer";
+    
     //method to return inventory records by order number
     public List getInventoryReceiptRecords(Integer orderId);
     
     //commit a change to inventory receipt, or insert a new inventory receipt
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception;
     
+    //commit a change to inventory transfer, or insert a new inventory transfer
+    public void updateInventoryTransfer(List inventorytransfers) throws Exception;
+    
     //method to query for inventory receipts
-     public List query(HashMap fields, int first, int max) throws Exception;
+     public List query(HashMap fields, int first, int max, boolean receipt) throws Exception;
      
      //method to query for inventory receipts..and also lock the necessary records
-     public List queryAndLock(HashMap fields, int first, int max) throws Exception;
+     public List queryAndLock(HashMap fields, int first, int max, boolean receipt) throws Exception;
      
      //method to query for inventory receipts..and also unlock the necessary records
-     public List queryAndUnlock(HashMap fields, int first, int max) throws Exception;
+     public List queryAndUnlock(HashMap fields, int first, int max, boolean receipt) throws Exception;
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);

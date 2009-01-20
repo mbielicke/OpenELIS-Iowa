@@ -27,6 +27,7 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.DictionaryMeta;
+import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.meta.NoteMeta;
 import org.openelis.meta.OrderMeta;
 
@@ -41,7 +42,8 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         ORDER_SHIPPING_NOTE_META = new NoteMeta("shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta("customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta("store."); 
-        ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap("inventoryTrans.");
+       // ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap("inventoryTrans.");
+        INVENTORY_RECEIPT_META = new InventoryReceiptMeta("invReceipt.");
     }
     
     public OrderMetaMap(String path) {
@@ -56,7 +58,8 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         ORDER_SHIPPING_NOTE_META = new NoteMeta(path+"shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta(path+"customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta(path+"store."); 
-        ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap(path+"inventoryTrans.");
+        //ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap(path+"inventoryTrans.");
+        INVENTORY_RECEIPT_META = new InventoryReceiptMeta("invReceipt.");
     }
     
     public OrderMetaMap(String path, boolean initializeOrderItem) {
@@ -72,7 +75,8 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         ORDER_SHIPPING_NOTE_META = new NoteMeta(path+"shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta(path+"customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta(path+"store."); 
-        ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap(path+"inventoryTrans.");
+        //ORDER_INV_TRANS_META = new TransReceiptOrderMetaMap(path+"inventoryTrans.");
+        INVENTORY_RECEIPT_META = new InventoryReceiptMeta("invReceipt.");
     }
     
     public OrderItemMetaMap ORDER_ITEM_META;
@@ -89,10 +93,16 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         
     public  DictionaryMeta ORDER_ITEM_STORE_META; 
     
-    public TransReceiptOrderMetaMap ORDER_INV_TRANS_META;
+    public InventoryReceiptMeta INVENTORY_RECEIPT_META;
+    
+    //public TransReceiptOrderMetaMap ORDER_INV_TRANS_META;
     
     public OrderItemMetaMap getOrderItem(){
         return ORDER_ITEM_META;
+    }
+    
+    public InventoryReceiptMeta getInventoryReceipt(){
+        return INVENTORY_RECEIPT_META;
     }
     
     public OrderOrganizationMetaMap getOrderOrganization(){
@@ -119,9 +129,9 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         return ORDER_ITEM_STORE_META;
     }
     
-    public TransReceiptOrderMetaMap getInventoryTransaction(){
-        return ORDER_INV_TRANS_META;
-    }
+    //public TransReceiptOrderMetaMap getInventoryTransaction(){
+    //    return ORDER_INV_TRANS_META;
+    //}
     
     public boolean hasColumn(String name){
         if(name.startsWith(parentPath+"order_item."))
@@ -138,15 +148,23 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
             return ORDER_CUSTOMER_NOTE_META.hasColumn(name);
         if(name.startsWith(parentPath+"store."))
             return ORDER_ITEM_STORE_META.hasColumn(name);
-        if(name.startsWith(parentPath+"inventoryTrans."))
-            return ORDER_INV_TRANS_META.hasColumn(name);
+        if(name.startsWith(parentPath+"invReceipt."))
+            return INVENTORY_RECEIPT_META.hasColumn(name);
+        //if(name.startsWith(parentPath+"inventoryTrans."))
+         //   return ORDER_INV_TRANS_META.hasColumn(name);
         return super.hasColumn(name);
     }
     
     public String buildFrom(String name){
         String from = "Order ordr ";
-        if(name.indexOf("order_item") > -1 || name.indexOf("store.") > -1 || name.indexOf("inventoryTrans.") > -1)
+        if(name.indexOf("order_item") > -1 || name.indexOf("store.") > -1 || name.indexOf("invReceipt.") > -1)
             from += ", IN (ordr.orderItem) order_item";
+        
+        
+        if(name.indexOf("invReceipt.") > -1)
+            from += ", IN (ordr.orderItem) order_item";
+        
+        
         if(name.indexOf("organization.") > -1)
             from += ", IN (ordr.organization) organization";
         if(name.indexOf("reportTo.") > -1)
@@ -159,8 +177,8 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
             from += ", IN(ordr.note) customerNote";
         if(name.indexOf("store.") > -1)
             from += ", Dictionary store";
-        if(name.indexOf("inventoryTrans.") > -1)
-            from += ", TransLocationOrder inventoryTrans";
+        //if(name.indexOf("inventoryTrans.") > -1)
+        //    from += ", TransLocationOrder inventoryTrans";
         
         return from;
     }

@@ -33,9 +33,9 @@ package org.openelis.meta;
 import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
-public class TransReceiptLocationMeta implements Meta {
+public class InventoryXPutMeta implements Meta {
   	protected String path = "";
-	private static final String entityName = "TransReceiptLocation";
+	private static final String entityName = "InventoryXPut";
 	
 	private static final String
               ID					                ="id",
@@ -55,11 +55,11 @@ public class TransReceiptLocationMeta implements Meta {
         }
     }
     
-    public TransReceiptLocationMeta() {
+    public InventoryXPutMeta() {
 		init();        
     }
     
-    public TransReceiptLocationMeta(String path) {
+    public InventoryXPutMeta(String path) {
         this.path = path;
 		init();        
     }

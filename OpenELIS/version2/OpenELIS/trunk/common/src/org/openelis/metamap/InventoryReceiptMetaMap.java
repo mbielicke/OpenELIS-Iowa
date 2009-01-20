@@ -36,17 +36,18 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         super("receipt.");
     }
     
-    public TransReceiptOrderMetaMap TRANS_RECEIPT_ORDER_META = new TransReceiptOrderMetaMap("orderTrans.");
-    public TransReceiptLocationMetaMap TRANS_RECEIPT_LOCATION_META = new TransReceiptLocationMetaMap("locTrans.");
+    //public TransReceiptOrderMetaMap TRANS_RECEIPT_ORDER_META = new TransReceiptOrderMetaMap("orderTrans.");
+    public InventoryXUseMetaMap TRANS_LOC_ORDER_META = new InventoryXUseMetaMap("locOrderTrans.");
+    public InventoryXPutMetaMap TRANS_RECEIPT_LOCATION_META = new InventoryXPutMetaMap("locTrans.");
     public InventoryItemMeta INVENTORY_ITEM_META = new InventoryItemMeta("ii.");
     public OrderItemMetaMap ORDER_ITEM_META = new OrderItemMetaMap("oi.");
     public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
     public DictionaryMeta DICTIONARY_DISPENSED_UNITS_META = new DictionaryMeta("dictDis.");
     public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.");
 
-    public TransReceiptOrderMetaMap getTransReceiptOrder(){
-        return TRANS_RECEIPT_ORDER_META;
-    }
+    //public TransReceiptOrderMetaMap getTransReceiptOrder(){
+    //    return TRANS_RECEIPT_ORDER_META;
+    //}
     
     public OrderItemMetaMap getOrderItem(){
         return ORDER_ITEM_META;
@@ -60,7 +61,7 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         return DICTIONARY_STORE_META;
     }
     
-    public TransReceiptLocationMetaMap getTransReceiptLocation(){
+    public InventoryXPutMetaMap getTransReceiptLocation(){
         return TRANS_RECEIPT_LOCATION_META;
     }
     
@@ -72,13 +73,17 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         return INVENTORY_ITEM_META;
     }
     
+    public InventoryXUseMetaMap getTransLocationOrder(){
+        return TRANS_LOC_ORDER_META;
+    }
+    
     public static InventoryReceiptMetaMap getInstance() {
         return new InventoryReceiptMetaMap();
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith("orderTrans."))
-            return TRANS_RECEIPT_ORDER_META.hasColumn(name);
+        //if(name.startsWith("orderTrans."))
+        //    return TRANS_RECEIPT_ORDER_META.hasColumn(name);
         if(name.startsWith("oi."))
             return ORDER_ITEM_META.hasColumn(name);
         if(name.startsWith("dictStore."))
@@ -91,6 +96,9 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
             return ORGANIZATION_META.hasColumn(name);
         if(name.startsWith("ii."))
             return INVENTORY_ITEM_META.hasColumn(name);
+        if(name.startsWith("locOrderTrans."))
+            return TRANS_LOC_ORDER_META.hasColumn(name);
+        
         return super.hasColumn(name);
     }
     
@@ -104,20 +112,19 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
     public String buildFrom(String name){
         //we always want to bring back the whole DO so the from wont change
         String from = "InventoryReceipt receipt ";
+        from += " LEFT JOIN receipt.orderItem oi ";
+        
         //if(name.indexOf("oi.") > -1)
-        from += " LEFT JOIN receipt.transReceiptOrders orderTrans ";
+        //from += " LEFT JOIN receipt.transReceiptOrders orderTrans ";
         from += " LEFT JOIN receipt.transReceiptLocations locTrans ";
-        from += " LEFT JOIN orderTrans.orderItem oi ";
         //from += ", IN (trans.fromReceipt) receipt ";
         //if(name.indexOf("ii.") > -1)
         
-        //if(name.indexOf("orgz.") > -1)
-        //from += ", IN (receipt.organization) orgz ";
+        
         //from += ", IN (trans.toOrder) oi ";
         //from += ", IN (locTrans.toLocation) loc ";
-        from += ", InventoryItem ii, Organization orgz ";
+        from += ", InventoryItem ii , Organization orgz ";
         from += ", Dictionary dictStore, Dictionary dictDis ";
-        
         
         return from;
     }

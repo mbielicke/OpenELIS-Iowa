@@ -60,10 +60,12 @@ public interface OrderRemote {
     public NoteDO getOrderShippingNote(Integer orderId);
     
     //method to return order items
-    public List getOrderItems(Integer orderId, boolean withLocation);
+    public List getOrderItems(Integer orderId);
     
     //method to return receipts
     public List getOrderReceipts(Integer orderId);
+    
+    public List getOrderLocTransactions(Integer orderId);
     
     //method to return report to bill to addresses
     public BillToReportToDO getBillToReportTo(Integer orderId);

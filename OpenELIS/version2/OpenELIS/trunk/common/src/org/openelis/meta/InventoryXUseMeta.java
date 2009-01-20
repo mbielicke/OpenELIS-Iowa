@@ -34,9 +34,9 @@ import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
 
-public class TransLocationOrderMeta implements Meta {
+public class InventoryXUseMeta implements Meta {
   	protected String path = "";
-	private static final String entityName = "TransLocationOrder";
+	private static final String entityName = "InventoryXUse";
 	
 	private static final String
               ID					                ="id",
@@ -56,11 +56,11 @@ public class TransLocationOrderMeta implements Meta {
         }
     }
     
-    public TransLocationOrderMeta() {
+    public InventoryXUseMeta() {
 		init();        
     }
     
-    public TransLocationOrderMeta(String path) {
+    public InventoryXUseMeta(String path) {
         this.path = path;
 		init();        
     }

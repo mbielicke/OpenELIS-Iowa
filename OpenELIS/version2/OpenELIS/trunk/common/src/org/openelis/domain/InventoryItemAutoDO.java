@@ -48,7 +48,16 @@ public class InventoryItemAutoDO implements Serializable{
     protected String isBulk;
     protected String isLotMaintained;
     protected String isSerialMaintained;
+    protected Integer parentRatio;
     
+    public Integer getParentRatio() {
+        return parentRatio;
+    }
+
+    public void setParentRatio(Integer parentRatio) {
+        this.parentRatio = parentRatio;
+    }
+
     public InventoryItemAutoDO(){
         
     }
@@ -84,12 +93,52 @@ public class InventoryItemAutoDO implements Serializable{
         if(parentStorageLocName != null)
             storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
         else
-            storageLocation += childStorageLocName.trim();    
+            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
         
         setLocation(storageLocation);
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
+    }
+    
+    public InventoryItemAutoDO(Integer id, String name, String description, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
+                               String parentStorageLocName, String childStorageUnit, String lotNum, Date expDate, Integer quantityOnHand, String dispensedUnits,
+                               String isBulk, String isLotMaintained, String isSerialMaintained){
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setStore(store);
+        setLocationId(locationId);
+        
+        //build the storage location string
+        String storageLocation = "";
+        if(parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+        else
+            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+        
+        setLocation(storageLocation);
+        setLotNum(lotNum);
+        setExpDate(expDate);
+        setQuantityOnHand(quantityOnHand);
+        setDispensedUnits(dispensedUnits);
+        setIsBulk(isBulk);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
+    }
+     
+    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, 
+                               String isSerialMaintained, Integer parentRatio){
+        setId(id);
+        setName(name);
+        setStore(store);
+        setDescription(description);
+        setDispensedUnits(dispensedUnits);
+        
+        setIsBulk(isBulk);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
+        setParentRatio(parentRatio);
     }
     
     public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, String isSerialMaintained){

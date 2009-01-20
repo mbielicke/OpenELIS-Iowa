@@ -48,24 +48,26 @@ public class InventoryReceiptDO implements Serializable{
     protected String qcReference;
     protected String externalReference;
     protected String upc;
-    
+    protected Integer fromInventoryItemId;
+    protected String fromInventoryItem;
+    protected Integer fromStorageLocationId;
+    protected String fromStorageLocation;
+    protected String fromItemDesc;
+    protected Integer toParentRatio;
     protected AddressDO orgAddress = new AddressDO();
-    
     protected String itemDesc;
     protected String itemStore;
     protected String itemDispensedUnits;
     protected Integer itemQtyRequested;
-
     protected Integer storageLocationId;
     protected String storageLocation;
     protected String lotNumber;
     protected Datetime expDate;
     protected boolean addToExisting;
-    
     protected String isLotMaintained;
     protected String isSerialMaintained;
     protected String isBulk;
-    protected Integer transReceiptOrderId;
+    protected Integer transLocationOrderId;
     
     protected Boolean delete = false;
 
@@ -112,13 +114,12 @@ public class InventoryReceiptDO implements Serializable{
         setExternalReference(externalReference);   
         setUpc(upc);
     }
-    
+
     /*used for query*/
     public InventoryReceiptDO(Integer id, Integer orderNumber, Date dateReceived, String upc, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
                               String organization, Integer qty, Double cost, String qc, String extReference, String streetAddress, String multUnit, String city, String state, String zipCode,
                               String itemDesc, String itemStore, String itemDispensedUnits, Integer quantityRequested, String isBulk, String isLotMaintained, String isSerialMaintained, 
-                              Integer storageLocationId, String storageLocName, String storageLocLocation, String storageUnitDescription, String lotNumber, Date expDate, 
-                              Integer transReceiptOrderId) {
+                              Integer storageLocationId, String storageLocName, String storageLocLocation, String storageUnitDescription, String lotNumber, Date expDate) {
         setId(id);
         setOrderNumber(orderNumber);
         setReceivedDate(dateReceived);
@@ -153,7 +154,45 @@ public class InventoryReceiptDO implements Serializable{
         setStorageLocation(storageLocName.trim()+", "+storageUnitDescription.trim()+" "+storageLocLocation.trim());
         setExpDate(expDate);
         setLotNumber(lotNumber);
-        setTransReceiptOrderId(transReceiptOrderId);
+    }
+    
+    /*used for transfer query*/
+    public InventoryReceiptDO(Integer id, Integer orderNumber, Date dateReceived, String upc, Integer inventoryItemId, String inventoryItem, Integer orderItemId, Integer organizationId,
+                              Integer qty, Double cost, String qc, String extReference, String itemDesc, String itemStore, String itemDispensedUnits, Integer quantityRequested, 
+                              String isBulk, String isLotMaintained, String isSerialMaintained, Integer storageLocationId, String storageLocName, String storageLocLocation, 
+                              String storageUnitDescription, String lotNumber, Date expDate, Integer fromItemId, String fromItem, String fromItemDesc, 
+                              Integer fromStorageLocationId, String fromStorageLocName, String fromStorageUnitDescription, String fromStorageLocLocation) {
+        setId(id);
+        setOrderNumber(orderNumber);
+        setReceivedDate(dateReceived);
+        setUpc(upc);
+        setInventoryItemId(inventoryItemId);
+        setInventoryItem(inventoryItem);
+        setOrderItemId(orderItemId);
+        setOrganizationId(organizationId);
+        setQuantityReceived(qty);
+        setUnitCost(cost);
+        setQcReference(qc);
+        setExternalReference(extReference);
+        
+        //inv item values
+        setItemDesc(itemDesc);
+        setItemStore(itemStore);
+        setItemDispensedUnits(itemDispensedUnits);
+        setItemQtyRequested(quantityRequested);
+        setIsBulk(isBulk);
+        setIsLotMaintained(isLotMaintained);
+        setIsSerialMaintained(isSerialMaintained);
+        
+        setStorageLocationId(storageLocationId);
+        setStorageLocation(storageLocName.trim()+", "+storageUnitDescription.trim()+" "+storageLocLocation.trim());
+        setExpDate(expDate);
+        setLotNumber(lotNumber);
+        setFromInventoryItemId(fromItemId);
+        setFromInventoryItem(fromItem);
+        setFromItemDesc(fromItemDesc);
+        setFromStorageLocationId(fromStorageLocationId);
+        setFromStorageLocation(fromStorageLocName.trim()+", "+fromStorageUnitDescription.trim()+" "+fromStorageLocLocation.trim());
     }
     
     /*used for order number entry*/
@@ -368,19 +407,67 @@ public class InventoryReceiptDO implements Serializable{
         this.itemQtyRequested = itemQtyRequested;
     }
 
-    public Integer getTransReceiptOrderId() {
-        return transReceiptOrderId;
-    }
-
-    public void setTransReceiptOrderId(Integer transReceiptOrderId) {
-        this.transReceiptOrderId = transReceiptOrderId;
-    }
-
     public String getItemDispensedUnits() {
         return itemDispensedUnits;
     }
 
     public void setItemDispensedUnits(String itemDispensedUnits) {
         this.itemDispensedUnits = DataBaseUtil.trim(itemDispensedUnits);
+    }
+
+    public Integer getToParentRatio() {
+        return toParentRatio;
+    }
+
+    public void setToParentRatio(Integer toParentRatio) {
+        this.toParentRatio = toParentRatio;
+    }
+
+    public Integer getTransLocationOrderId() {
+        return transLocationOrderId;
+    }
+
+    public void setTransLocationOrderId(Integer transLocationOrderId) {
+        this.transLocationOrderId = transLocationOrderId;
+    }
+
+    public String getFromInventoryItem() {
+        return fromInventoryItem;
+    }
+
+    public void setFromInventoryItem(String fromInventoryItem) {
+        this.fromInventoryItem = DataBaseUtil.trim(fromInventoryItem);
+    }
+
+    public Integer getFromInventoryItemId() {
+        return fromInventoryItemId;
+    }
+
+    public void setFromInventoryItemId(Integer fromInventoryItemId) {
+        this.fromInventoryItemId = fromInventoryItemId;
+    }
+
+    public String getFromItemDesc() {
+        return fromItemDesc;
+    }
+
+    public void setFromItemDesc(String fromItemDesc) {
+        this.fromItemDesc = DataBaseUtil.trim(fromItemDesc);
+    }
+
+    public String getFromStorageLocation() {
+        return fromStorageLocation;
+    }
+
+    public void setFromStorageLocation(String fromStorageLocation) {
+        this.fromStorageLocation = fromStorageLocation;
+    }
+
+    public Integer getFromStorageLocationId() {
+        return fromStorageLocationId;
+    }
+
+    public void setFromStorageLocationId(Integer fromStorageLocationId) {
+        this.fromStorageLocationId = fromStorageLocationId;
     }
 }
