@@ -98,7 +98,9 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Order #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<text style="Prompt">Time:</text>
+						<textbox key="time" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
@@ -106,10 +108,12 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Status:</text>
 						<dropdown key="organization" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
-						<textbox key="domain" tab="??,??" width="175px"/>					
+						<widget colspan="3">
+							<textbox key="domain" tab="??,??" width="175px"/>					
+						</widget>
 					</row>
 					</TablePanel>
-					<TablePanel style="Form">
+					<TablePanel style="Form" width="100%">
 						<row>
 							<widget align="center" colspan="4">
 								<text style="FormTitle">Enviromental Info</text>
@@ -230,7 +234,7 @@ UIRF Software License are applicable instead of those above.
 				</HorizontalPanel>
 				<VerticalPanel height="5px"/>
 				<TabPanel height="170px" key="orderTabPanel" halign="center">
-					<tab key="tab1" text="Test Result">
+					<tab key="tab1" text="Test Info/Result">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
 					<tab key="tab2" text="Analysis">

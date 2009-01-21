@@ -130,4 +130,9 @@ public class EnviromentalSampleLoginScreen extends OpenELISScreenForm implements
     public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
 
     public void drop(TreeWidget widget, Widget dragWidget) {}
+
+    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

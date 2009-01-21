@@ -46,51 +46,51 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="ClinicalSampleLogin" name="{resource:getString($constants,'clinicalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
-				<!--button panel code-->
-				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
-					<buttonPanel key="buttons">
-						<xsl:call-template name="queryButton">
+		<VerticalPanel spacing="0" padding="0">
+			<!--button panel code-->
+			<AbsolutePanel spacing="0" style="ButtonPanelContainer">
+				<buttonPanel key="buttons">
+					<xsl:call-template name="queryButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="previousButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="nextButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="buttonPanelDivider"/>
+						<xsl:call-template name="addButton">
 							<xsl:with-param name="language">
 								<xsl:value-of select="language"/>
 							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="previousButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="nextButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="buttonPanelDivider"/>
-							<xsl:call-template name="addButton">
-								<xsl:with-param name="language">
-									<xsl:value-of select="language"/>
-								</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="updateButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="buttonPanelDivider"/>
-						<xsl:call-template name="commitButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="abortButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-					</buttonPanel>
-				</AbsolutePanel>
-				<!--end button panel code-->
+					</xsl:call-template>
+					<xsl:call-template name="updateButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="buttonPanelDivider"/>
+					<xsl:call-template name="commitButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:call-template name="abortButton">
+						<xsl:with-param name="language">
+							<xsl:value-of select="language"/>
+						</xsl:with-param>
+					</xsl:call-template>
+				</buttonPanel>
+			</AbsolutePanel>
+			<!--end button panel code-->
+			<VerticalPanel style="WhiteContentPanel" padding="0" spacing="0">
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt">Accession #:</text>
@@ -98,7 +98,9 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Order #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<text style="Prompt">Time:</text>
+						<textbox key="time" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
@@ -106,35 +108,25 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Status:</text>
 						<dropdown key="organization" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
-						<textbox key="domain" tab="??,??" width="175px"/>					
-					</row>
-					</TablePanel>
-					<TablePanel style="Form">
-										<row>
-						<widget align="center" colspan="8">
-							<text style="FormTitle">Provider/Organization Info</text>
+						<widget colspan="3">
+							<textbox key="domain" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
+					</TablePanel>
+					<VerticalPanel style="subform">
+					<text style="FormTitle">Patient Info</text>
+					<TablePanel style="Form">
+<!--										<row>
+						<widget align="center" colspan="8">
+							<text style="FormTitle">Patient Info</text>
+						</widget>
+					</row>-->
 							<row>
 								<text style="Prompt">Id:</text>
-								<HorizontalPanel>
+								<!--<HorizontalPanel>-->
 								<textbox key="aa" width="75px" showError="false"/>	
-									<appButton action="idButton1" key="idButton1" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-									<appButton action="idButton2" key="idButton2" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-									<appButton action="idButton3" key="idButton3" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-								</HorizontalPanel>
+									
+<!--								</HorizontalPanel>-->
 								<text style="Prompt">Npi:</text>
 								<widget colspan="3">
 								<textbox key="aa" width="75px"/>	
@@ -183,8 +175,28 @@ UIRF Software License are applicable instead of those above.
 								<textbox key="domain" tab="??,??" width="125px"/>	
 							</row>
 							</TablePanel>
+							<HorizontalPanel style="subformButtons">
+							<appButton action="idButton1" key="idButton1" onclick="this" style="FormButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton2" key="idButton2" onclick="this" style="FormButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton3" key="idButton3" onclick="this" style="FormButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									</HorizontalPanel>
+									
+							</VerticalPanel>
 				<HorizontalPanel>
-					<VerticalPanel>
+					<VerticalPanel style="subform">
+						<text style="FormTitle">Analytes</text>
 						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="4" enable="true" showError="false">
 	    	                <headers>Item/Tests,Source</headers>
 	                        <widths>280,130</widths>					
@@ -237,12 +249,15 @@ UIRF Software License are applicable instead of those above.
 							</appButton>
 	                  	</HorizontalPanel>
 	                  	</VerticalPanel>
+	                  	<VerticalPanel style="subform">
+	                  	<text style="FormTitle">Provider/Organization Info</text>
                   <TablePanel style="Form">
-                  		<row>
+<!--                  		<row>
                   			<widget colspan="4" align="center">
 		                  		<text style="FormTitle">Provider/Organization Info</text>
 							</widget>
                   		</row>
+                  		-->
                   		<row>
 							<text style="Prompt">Provider:</text>
 							<textbox key="domain" tab="??,??" width="100px"/>		
@@ -257,10 +272,10 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt">Project:</text>
-														<widget colspan="3">
+							<widget colspan="3">
 							<HorizontalPanel>
 								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="projectButton" onclick="this" style="Button">
+								<appButton action="reportTo" key="projectButton" onclick="this" style="FieldButton">
 									<HorizontalPanel>
 										<AbsolutePanel style="LookupButtonImage"/>
 									</HorizontalPanel>
@@ -273,7 +288,7 @@ UIRF Software License are applicable instead of those above.
 							<widget colspan="3">
 								<HorizontalPanel>
 								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="reportToButton" onclick="this" style="Button">
+								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
 									<HorizontalPanel>
 										<AbsolutePanel style="LookupButtonImage"/>
 									</HorizontalPanel>
@@ -282,10 +297,10 @@ UIRF Software License are applicable instead of those above.
 							</widget>
 						</row>
 					</TablePanel>
+					</VerticalPanel>
 				</HorizontalPanel>
-				<VerticalPanel height="5px"/>
-				<TabPanel height="170px" key="orderTabPanel" halign="center">
-					<tab key="tab1" text="Test Result">
+				<TabPanel height="170px" key="orderTabPanel">
+					<tab key="tab1" text="Test Info/Result">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
 					<tab key="tab2" text="Analysis">
@@ -299,7 +314,7 @@ UIRF Software License are applicable instead of those above.
 					</tab>
 				</TabPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
+		</VerticalPanel>
 	</display>
 	<rpc key="display">
 

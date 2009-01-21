@@ -28,7 +28,6 @@ package org.openelis.modules.animalSampleLogin.client;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class AnimalSampleLoginEntry implements AppModule{

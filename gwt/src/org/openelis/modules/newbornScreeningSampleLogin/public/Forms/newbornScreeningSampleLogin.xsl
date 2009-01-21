@@ -110,7 +110,7 @@ UIRF Software License are applicable instead of those above.
 								</widget>
 							</row>
 						</TablePanel>
-						<TablePanel style="Form">
+						<TablePanel style="Form" width="100%">
 							<row>
 								<widget align="center" colspan="2">
 									<text style="FormTitle">Baby Info</text>
