@@ -35,7 +35,6 @@ UIRF Software License are applicable instead of those above.
                 xmlns:noteMeta="xalan://org.openelis.meta.NoteMeta"
                 xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta"
                 xmlns:invItemMeta="xalan://org.openelis.meta.InventoryItemMeta"
-                xmlns:invTransMeta="xalan://org.openelis.metamap.TransReceiptOrderMetaMap"
                 xmlns:invReceiptMeta="xalan://org.openelis.meta.InventoryReceiptMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
@@ -81,10 +80,6 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryReceiptMeta"/>
   </xalan:component>
   
-    <xalan:component prefix="invTransMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TransReceiptOrderMetaMap"/>
-  </xalan:component>
-  
   <xsl:template match="doc"> 
     <xsl:variable name="order" select="orderMeta:new()"/>
     <xsl:variable name="orderItem" select="orderMeta:getOrderItem($order)"/>
@@ -94,8 +89,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="custNote" select="orderMeta:getCustomerNote($order)"/>
     <xsl:variable name="shippingNote" select="orderMeta:getShippingNote($order)"/>
     <xsl:variable name="store" select="orderMeta:getStore($order)"/>   
-    <xsl:variable name="transaction" select="orderMeta:getInventoryTransaction($order)"/>
-    <xsl:variable name="receipt" select="invTransMeta:getInventoryReceipt($transaction)"/>
+    <xsl:variable name="receipt" select="orderMeta:getInventoryReceipt($order)"/>
     <xsl:variable name="orderItemInvItem" select="orderItemMeta:getInventoryItem($orderItem)"/>
     <xsl:variable name="orgAddress" select="orgMeta:getAddress($organization)"/>
     <xsl:variable name="reportToAddress" select="orgMeta:getAddress($reportTo)"/>
@@ -105,8 +99,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="VendorOrder" name="{resource:getString($constants,'vendorOrder')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-		<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 			<!--button panel code-->
 			<AbsolutePanel spacing="0" style="ButtonPanelContainer">
    				<buttonPanel key="buttons">
@@ -156,9 +149,7 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 			</AbsolutePanel>
 			<!--end button panel-->
-			<VerticalPanel>
-				<VerticalPanel>
-					<HorizontalPanel>
+				<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
@@ -219,14 +210,13 @@ UIRF Software License are applicable instead of those above.
 									</widget>
 								</row>
 							</TablePanel>
-						</HorizontalPanel>
-					</VerticalPanel>
 				<!-- TAB PANEL -->
 				<TabPanel height="200px" key="orderTabPanel" halign="center">
 					<!-- TAB 1 (items) -->
 					<tab key="itemsTab" text="{resource:getString($constants,'items')}">
-							<VerticalPanel spacing="0" padding="0">
-							<widget valign="top">
+						<TablePanel spacing="0" padding="0" height="247px" width="626px">
+						<row>
+							<widget align="center">
 								<table width="auto" key="itemsTable" manager="this" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
@@ -234,7 +224,7 @@ UIRF Software License are applicable instead of those above.
 										<widths>60,178,163,70,87</widths>
 										<editors>
 											<textbox case="mixed"/>
-											<autoComplete cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
+											<autoComplete cat="inventoryItemWithStoreMain" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
 												<headers>Name,Store, Dispensed Units</headers>
 												<widths>135,110,110</widths>
 											</autoComplete>
@@ -276,20 +266,24 @@ UIRF Software License are applicable instead of those above.
 									</queryTable>
 									</query>
 								</widget>
-								<widget style="WhiteContentPanel" halign="center">
+								</row>
+								<row>
+								<widget align="center">
 									<appButton action="removeItemRow" onclick="this" style="Button" key="removeItemButton">
 									<HorizontalPanel>
               						<AbsolutePanel style="RemoveRowButtonImage"/>
                 						<text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
  					                </HorizontalPanel>
 						            </appButton>
-						            </widget>
-							</VerticalPanel>
+						        </widget>
+						   		</row>
+							</TablePanel>
 					</tab>		
 					<!-- TAB 2 (receipts) -->	
 					<tab key="receiptsTab" text="{resource:getString($constants,'receipt')}">
-						<VerticalPanel spacing="0" padding="0">
-							<widget valign="top">
+						<TablePanel spacing="0" padding="0" height="247px" width="626px">
+						<row>
+							<widget align="center">
 								<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"item")'/>,
 										<xsl:value-of select='resource:getString($constants,"upc")'/>,<xsl:value-of select='resource:getString($constants,"qty")'/>,
@@ -341,8 +335,8 @@ UIRF Software License are applicable instead of those above.
 									</queryTable>
 									</query>
 								</widget>
-								<HorizontalPanel height="8px"/>
-							</VerticalPanel>
+								</row>
+							</TablePanel>
 					</tab>
 					<!-- TAB 3 (order notes) -->
 					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
@@ -370,7 +364,6 @@ UIRF Software License are applicable instead of those above.
 				</TabPanel>
 				</VerticalPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
 	</display>
 	<rpc key="display">
   	  <!-- values on the screen -->

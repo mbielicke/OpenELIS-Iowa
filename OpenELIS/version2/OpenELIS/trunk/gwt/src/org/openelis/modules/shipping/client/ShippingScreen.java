@@ -40,8 +40,8 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.event.CommandListener;
+import org.openelis.gwt.event.SourcesCommandEvents;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -65,42 +65,58 @@ import com.google.gwt.user.client.ui.Widget;
 public class ShippingScreen extends OpenELISScreenForm implements ClickListener, TableManager, ChangeListener, TabListener{
 
     private static boolean loaded = false;
-    
+    public enum Action {Drawn}
     private static DataModel statusDropdownModel, shipFromDropdownModel, shippingMethodDropdownModel;
-    private boolean loadedFromAnotherScreen = false;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
-    private TreeDataModel itemsShippedModel;
     private AppButton removeRowButton;
     private TextBox shippedToAptSuite, shippedToAddress, shippedToCity, shippedToState, shippedToZipCode;
     private AutoComplete shippedToDropdown;
     private TableWidget itemsTable, trackingNumbersTable;
     private Dropdown statusDropdown;
-    private DataModel checkedOrderIds;
+    private DataModel itemsShippedModel, checkedOrderIds;
+    private ShippingDataService data;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
-    
+    private CommandListener listener;
     private KeyListManager keyList = new KeyListManager();
     
     public ShippingScreen() {
         super("org.openelis.modules.shipping.server.ShippingService", !loaded);
     }
     
-    public ShippingScreen(Integer shipFromId, Integer shipToId, String shipToText, String multUnitText, String streetAddressText, String cityText, String stateText, String zipCodeText, TreeDataModel itemsShippedModel, 
-                          DataModel checkedOrderIds) {
-        super("org.openelis.modules.shipping.server.ShippingService", !loaded);
-        loadedFromAnotherScreen = true;
+    public void setShippingData(ShippingDataService data){
+        this.data = data;
+    }
+    
+    public void loadShippingScreenFromData(){
+        this.shipFromId = data.getShipFromId();
+        this.shipToId = data.getShipToId();
+        this.shipToText = data.getShipToText();   
+        this.multUnitText = data.getMultUnitText();
+        this.streetAddressText = data.getStreetAddressText();
+        this.cityText = data.getCityText();
+        this.stateText = data.getStateText();
+        this.zipCodeText = data.getZipCodeText();
+        this.itemsShippedModel = data.getItemsShippedModel();
         
-        this.shipFromId = shipFromId;
-        this.shipToId = shipToId;
-        this.shipToText = shipToText;   
-        this.multUnitText = multUnitText;
-        this.streetAddressText = streetAddressText;
-        this.cityText = cityText;
-        this.stateText = stateText;
-        this.zipCodeText = zipCodeText;
-        this.itemsShippedModel = itemsShippedModel;
-        this.checkedOrderIds = checkedOrderIds;
+        //this is used to lock and unlock the records
+        this.checkedOrderIds = data.getCheckedOrderIds();
+    }
+    
+    public void clearShippingData(){
+        this.shipFromId = null;
+        this.shipToId = null;
+        this.shipToText = null;   
+        this.multUnitText = null;
+        this.streetAddressText = null;
+        this.cityText = null;
+        this.stateText = null;
+        this.zipCodeText = null;
+        this.itemsShippedModel = null;
+        
+        //this is used to lock and unlock the records
+        this.checkedOrderIds = null;
     }
     
     public void onClick(Widget sender) {
@@ -190,8 +206,8 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         ((FormRPC)rpc.getField("shippingItems")).setFieldValue("itemsTable", itemsTable.model.getData());
         ((FormRPC)rpc.getField("shippingItems")).setFieldValue("trackingNumbersTable", trackingNumbersTable.model.getData());
         
-        if(loadedFromAnotherScreen)
-            putInAddAndLoadData();
+        if(data != null)
+            add();
     }
     
     public void add() {
@@ -211,7 +227,10 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
                rpc.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.get(1)).getValue());
                rpc.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.get(2)).getValue());
                rpc.setFieldValue("systemUserId", (Integer)((NumberField)set.get(3)).getValue());
-                            
+                      
+               if(data != null)
+                   initScreen();
+               
                loadScreen(rpc);
                
                trackingNumbersTable.model.enableAutoAdd(true);
@@ -227,8 +246,10 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
        statusDropdown.setFocus(true);
     }
     
-    private void putInAddAndLoadData(){
-        add();
+    public void initScreen(){
+        //add();
+        
+        loadShippingScreenFromData();
         
         //set the values after the screen is in add mode
         rpc.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet(new NumberObject(shipFromId)));
@@ -245,10 +266,11 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity(), cityText);
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState(), stateText);
         rpc.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode(), zipCodeText);
-        //loadItemsShippedTableFromModel(itemsShippedModel);
-        loadItemsShippedTableFromTreeModel(itemsShippedModel);
+        loadItemsShippedTableFromModel(itemsShippedModel);
+        //loadItemsShippedTableFromTreeModel(itemsShippedModel);
 
-        loadScreen(rpc);
+      //  loadScreen(rpc);
+        data = null;
     }
     
     public void query() {
@@ -298,6 +320,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     
     protected void superCommit(){
         super.commit();
+        clearShippingData();
     }
     
     public void abort() {
@@ -335,6 +358,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
     
     protected void superAbort(){
         super.abort();
+        clearShippingData();
     }
     
     //
@@ -390,21 +414,21 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         for(int i=0; i<model.size(); i++){
             DataSet set = model.get(i);
             
-            DataSet tableRow = new DataSet();     
+            DataSet tableRow = itemsTable.model.createRow();
             
-            tableRow.add((StringField)set.get(0));
+            tableRow.get(0).setValue(set.get(0).getValue());
+            tableRow.get(1).setValue(set.get(1).getValue());
             
-            DataMap map = new DataMap();
-            map.put("referenceId", (NumberField)set.getKey());
-            map.put("referenceTableId", (NumberField)set.get(3));
-            
-            tableRow.setData(map);
+            tableRow.setData((DataMap)set.getData().clone());
             
             itemsTable.model.addRow(tableRow);
         }
+        
+        if(model.size() > 0)
+            itemsTable.model.refresh();
     }
     
-    private void loadItemsShippedTableFromTreeModel(TreeDataModel model){
+    /*private void loadItemsShippedTableFromTreeModel(TreeDataModel model){
         for(int i=0; i<model.size(); i++){
             DataSet tableRow;
             TreeDataItem row = model.get(i);
@@ -433,7 +457,7 @@ public class ShippingScreen extends OpenELISScreenForm implements ClickListener,
         }
         if(model.size() > 0)
             itemsTable.model.refresh();
-    }
+    }*/
     
     private void onRemoveRowButtonClick() {
         int selectedRow = trackingNumbersTable.model.getSelectedIndex();

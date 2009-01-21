@@ -33,43 +33,49 @@ UIRF Software License are applicable instead of those above.
                 xmlns:location="xalan://org.openelis.metamap.ProviderAddressMetaMap"
                 xmlns:addr="xalan://org.openelis.meta.AddressMeta"
                 extension-element-prefixes="resource"
-                version="1.0">                
+                version="1.0">
+                
 <xsl:import href="aToZOneColumn.xsl"/> 
+  
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>
+  
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
-  </xalan:component>  
+  </xalan:component>
+  
   <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderMetaMap"/>
-  </xalan:component>    
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMetaMap"/>
+  </xalan:component>  
+  
   <xalan:component prefix="note">
 	 <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NotetMeta"/>
-  </xalan:component>  
+  </xalan:component>
+  
   <xalan:component prefix="location">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderAddressMetaMap"/>
-  </xalan:component>  
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderAddressMetaMap"/>
+  </xalan:component>
+  
   <xalan:component prefix="addr">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
 	</xalan:component>
+
   <xsl:template match="doc"> 
     <xsl:variable name="pro" select="meta:new()"/>	
 	<xsl:variable name="loc" select="meta:getProviderAddress($pro)"/>	
 	<xsl:variable name="note" select="meta:getNote($pro)"/>
 	<xsl:variable name="locAddr" select="location:getAddress($loc)"/> 
-    <xsl:variable name="language">
-     <xsl:value-of select="locale"/>
-    </xsl:variable>
-    <xsl:variable name="props">
-     <xsl:value-of select="props"/>
-    </xsl:variable>
+    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
+    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
+<screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService"
+xsi:noNamespaceSchemaLocation= "file:///home/tschmidt/workspace/libraries/metadata/FormSchema.xsd"
+xmlns:locale = "xalan:/java.util.Locale" xmlns:xalan= "http://xml.apache.org/xalan" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
  <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
- 					<CollapsePanel key="collapsePanel" height="440px">
-						<azTable maxRows="18" tablewidth="auto" key="azTable" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
+ 					<CollapsePanel key="collapsePanel">
+						<azTable height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -123,10 +129,8 @@ UIRF Software License are applicable instead of those above.
 		<!--end button panel-->
    
    <VerticalPanel  height = "5px"/>
-   <HorizontalPanel padding="0" spacing="0">
-   <HorizontalPanel width = "10px"/>
    <VerticalPanel>
-   <TablePanel width = "450px" style= "Form">
+   <TablePanel key= "secMod" width = "450px" style= "Form">
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
       <textbox  width= "50px"  key = "{meta:getId($pro)}"  tab="{meta:getLastName($pro)},{meta:getNpi($pro)}"/>                
@@ -135,7 +139,7 @@ UIRF Software License are applicable instead of those above.
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"lastName")'/>:</text> 
       <textbox key = "{meta:getLastName($pro)}" max="30" width= "215px" case = "upper" tab="{meta:getFirstName($pro)},{meta:getId($pro)}"/>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
-	  <dropdown key="{meta:getTypeId($pro)}" case="mixed" width="80px" tab="{meta:getNpi($pro)},{meta:getMiddleName($pro)}"/>							
+	  <autoDropdown key="{meta:getTypeId($pro)}" case="mixed" width="80px" tab="{meta:getNpi($pro)},{meta:getMiddleName($pro)}"/>							
     </row>
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"firstName")'/>:</text>
@@ -149,11 +153,11 @@ UIRF Software License are applicable instead of those above.
     </row>
    </TablePanel>
    
-    <TabPanel height= "200px" key= "provTabPanel"  halign="center">
+    <TabPanel height= "200px" key= "provTabPanel"  halign="center" >
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel width="610px" spacing= "0" padding="0">
+      <VerticalPanel spacing= "0" padding="0" overflow="hidden">
        <widget valign="top">
-        <table width= "590px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
+        <table width= "574px" maxRows = "9" key= "providerAddressTable" manager = "ProviderAddressesTable" title= "" showError="false" showScroll="true">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -162,13 +166,13 @@ UIRF Software License are applicable instead of those above.
 				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
 		 <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
 		 <editors>
-		  <textbox case= "mixed" max="50"/>
+		  <textbox case= "mixed" max="50" />
 		  <textbox case= "mixed" max="10"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>
 		  <textbox case= "mixed" max="30"/>		  
-			<dropdown  case="upper" width="45px"/>
-			<dropdown case="mixed" width="110px"/>
+			<autoDropdown  case="upper" width="45px"/>
+			<autoDropdown case="mixed" width="110px"/>
 			<textbox case= "mixed" max="10"/>
 			<textbox case= "mixed" max="21"/>
 			<textbox case= "mixed" max="16"/>
@@ -196,7 +200,7 @@ UIRF Software License are applicable instead of those above.
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	    <query>
-	     <queryTable width= "590px" maxRows = "10" title = "" showError="false" showScroll="ALWAYS">
+	     <queryTable width= "574px" maxRows = "9" title = "" showError="false" showScroll="true">
           <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -210,8 +214,8 @@ UIRF Software License are applicable instead of those above.
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>
 		  <textbox case= "mixed"/>		  
-			<dropdown case="upper"  width="45px" multiSelect = "true"/>
-			<dropdown case="mixed" width="110px" multiSelect = "true"/>
+			<autoDropdown case="upper"  width="45px" multiSelect = "true"/>
+			<autoDropdown case="mixed" width="110px" multiSelect = "true"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
 			<textbox case= "mixed"/>
@@ -220,7 +224,13 @@ UIRF Software License are applicable instead of those above.
 			<textbox case= "mixed"/>		 
 		</editors>
 		<fields>
-		  <xsl:value-of select='location:getLocation($loc)'/>,<xsl:value-of select='location:getExternalId($loc)'/>,<xsl:value-of select='addr:getMultipleUnit($locAddr)'/>,<xsl:value-of select='addr:getStreetAddress($locAddr)'/>,<xsl:value-of select='addr:getCity($locAddr)'/>,<xsl:value-of select='addr:getState($locAddr)'/>,<xsl:value-of select='addr:getCountry($locAddr)'/>,<xsl:value-of select='addr:getZipCode($locAddr)'/>,<xsl:value-of select='addr:getWorkPhone($locAddr)'/>,<xsl:value-of select='addr:getHomePhone($locAddr)'/>,<xsl:value-of select='addr:getCellPhone($locAddr)'/>,<xsl:value-of select='addr:getFaxPhone($locAddr)'/>,<xsl:value-of select='addr:getEmail($locAddr)'/>																				
+		  <xsl:value-of select='location:getLocation($loc)'/>,<xsl:value-of select='location:getExternalId($loc)'/>,
+		  <xsl:value-of select='addr:getMultipleUnit($locAddr)'/>,<xsl:value-of select='addr:getStreetAddress($locAddr)'/>,
+		  <xsl:value-of select='addr:getCity($locAddr)'/>,<xsl:value-of select='addr:getState($locAddr)'/>,
+		  <xsl:value-of select='addr:getCountry($locAddr)'/>,<xsl:value-of select='addr:getZipCode($locAddr)'/>,
+		  <xsl:value-of select='addr:getWorkPhone($locAddr)'/>,<xsl:value-of select='addr:getHomePhone($locAddr)'/>,
+		  <xsl:value-of select='addr:getCellPhone($locAddr)'/>,<xsl:value-of select='addr:getFaxPhone($locAddr)'/>,
+		  <xsl:value-of select='addr:getEmail($locAddr)'/>																				
 		  </fields>
 		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
@@ -243,12 +253,12 @@ UIRF Software License are applicable instead of those above.
   </tab>
   
   <tab key="notesTab" text="{resource:getString($constants,'note')}">
-						<VerticalPanel key="secMod3" height="164px" xsi:type="Panel">
-							<TablePanel key="noteFormPanel" style="Form" >
+						<VerticalPanel key="secMod3" width="100%" height="164px" spacing="0" padding="0" xsi:type="Panel">
+							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 										<row>
 										
 												<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/>:</text>
-										<textbox case="mixed" key="{note:getSubject($note)}" width="420px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
+										<textbox case="mixed" key="{note:getSubject($note)}" width="429px" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}"/>
 					
 										<appButton action="standardNote" onclick="this" key="standardNoteButton" style="Button">
 										<HorizontalPanel>
@@ -265,7 +275,7 @@ UIRF Software License are applicable instead of those above.
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/>:</text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="536px" height="48px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="545px" height="61px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -273,7 +283,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="170px" width="536px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="137px" width="545px" overflowX="auto" overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>
@@ -283,9 +293,8 @@ UIRF Software License are applicable instead of those above.
 						</VerticalPanel>
 					</tab>
    </TabPanel>   
+  
   </VerticalPanel>
-  <HorizontalPanel width = "10px"/>
-  </HorizontalPanel>
  </VerticalPanel>
  </HorizontalPanel>
 </display>
@@ -330,7 +339,6 @@ UIRF Software License are applicable instead of those above.
   <queryString key="{addr:getFaxPhone($locAddr)}" required="false"/>
   <queryString key="{addr:getEmail($locAddr)}" required="false"/>
   <dropdown key="{addr:getCountry($locAddr)}" required="false"/>
-  <model key="providerAddressTable"/>
 </rpc>
 
 <rpc key="queryByLetter">

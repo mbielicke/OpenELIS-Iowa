@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
+import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderAddAutoFillDO;
@@ -348,7 +349,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         
         if(rpcReturn.getField("receipts") != null && ((FormRPC)rpcReturn.getField("receipts")).load){
             FormRPC receiptsRpc = (FormRPC)rpcReturn.getField("receipts");
-            loadReceipts(key, receiptsRpc);
+            loadReceipts(key, orderTypeObj, receiptsRpc);
         }
         
         if(rpcReturn.getField("shippingNote") != null && ((FormRPC)rpcReturn.getField("shippingNote")).load){
@@ -386,7 +387,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
             loadItems(key, new BooleanObject(false), orderTypeObj, (FormRPC)rpcReturn.getField("items"));
         }
         if(tab.equals("receiptsTab")){
-            loadReceipts(key, (FormRPC)rpcReturn.getField("receipts"));
+            loadReceipts(key, orderTypeObj, (FormRPC)rpcReturn.getField("receipts"));
         }
         if(tab.equals("orderNotesTab")){
             loadOrderShippingNotes(key, (FormRPC)rpcReturn.getField("shippingNote"));
@@ -423,7 +424,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
             loadItems(key, new BooleanObject(false), orderTypeObj, (FormRPC)rpcReturn.getField("items"));
         }
         if(tab.equals("receiptsTab")){
-            loadReceipts(key, (FormRPC)rpcReturn.getField("receipts"));
+            loadReceipts(key, orderTypeObj, (FormRPC)rpcReturn.getField("receipts"));
         }
         if(tab.equals("orderNotesTab")){
             loadOrderShippingNotes(key, (FormRPC)rpcReturn.getField("shippingNote"));
@@ -503,8 +504,8 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         return rpcReturn;
     }
 
-    public FormRPC loadReceipts(DataSet key, FormRPC rpcReturn) throws RPCException {
-        getReceiptsModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("receiptsTable"));
+    public FormRPC loadReceipts(DataSet key, StringObject orderTypeObj, FormRPC rpcReturn) throws RPCException {
+        getReceiptsModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("receiptsTable"), orderTypeObj);
         rpcReturn.load = true;
         return rpcReturn;
     }
@@ -641,14 +642,14 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
             return getOrganizationMatches(match);
         else if("billTo".equals(cat))
             return getOrganizationMatches(match);
-        else if("inventoryItemWithStoreAndLocSubItems".equals(cat))
-            return getInventoryItemMatches(match, false, true);
-        else if("inventoryItemWithStore".equals(cat))
+        else if("inventoryItemWithStoreAndSubItems".equals(cat))        //internal order
+            return getInventoryItemMatchesNoLoc(match, false, true);
+        else if("inventoryItemWithStoreMain".equals(cat))               //vendor order
             return getInventoryItemMatchesNoLoc(match, true, true);
         else if("inventoryItemWithStoreAndLocMainStore".equals(cat))
             return getInventoryItemMatches(match, true, false);
-        else if("inventoryItemWithStoreAndLoc".equals(cat))
-            return getInventoryItemMatches(match, false, false);
+        else if("inventoryItemWithStore".equals(cat))                   //kit order
+            return getInventoryItemMatchesNoLoc(match, false, false);
         else if("orderDesc".equals(cat))
             return getOrderDescMatches(match);
         return null;
@@ -1036,23 +1037,29 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
     
     public void getItemsModel(NumberObject orderId, BooleanObject forDuplicate, TableField model, StringObject orderTypeObj){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
-        boolean withLocation = false;
+        //boolean withLocation = false;
         String orderType = (String)orderTypeObj.getValue();
         
-        if(orderType.equals(OrderRemote.INTERNAL) || orderType.equals(OrderRemote.KITS))
-            withLocation = true;
+        //if(orderType.equals(OrderRemote.INTERNAL) || orderType.equals(OrderRemote.KITS))
+        //    withLocation = true;
         
-        List itemsList = remote.getOrderItems((Integer)orderId.getValue(), withLocation);
+        List itemsList = remote.getOrderItems((Integer)orderId.getValue());
         
         model.setValue(fillOrderItemsTable((DataModel)model.getValue(),itemsList, ((Boolean)forDuplicate.getValue()).booleanValue()));
     }
     
-    public void getReceiptsModel(NumberObject orderId, TableField model){
+    public void getReceiptsModel(NumberObject orderId, TableField model, StringObject orderTypeObj){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        List receiptsList = remote.getOrderReceipts((Integer)orderId.getValue());
+        String orderType = (String)orderTypeObj.getValue();
         
-        model.setValue(fillReceiptsTable((DataModel)model.getValue(),receiptsList));
+        List receiptsList = new ArrayList();
+        if(orderType.equals(OrderRemote.EXTERNAL))
+            receiptsList = remote.getOrderReceipts((Integer)orderId.getValue());
+        else
+            receiptsList = remote.getOrderLocTransactions((Integer)orderId.getValue());
+        
+        model.setValue(fillReceiptsTable((DataModel)model.getValue(),receiptsList, orderType));
     }
     
     public String getCustomerNotes(NumberObject orderId){
@@ -1205,14 +1212,14 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                     if(orderItemRow.getId() != null && !forDuplicate)
                         row.setKey(id);
                     
-                    if(orderItemRow.getLocationId() != null)
-                        map.put("locationId", locationId);
+                    //if(orderItemRow.getLocationId() != null)
+                    //    map.put("locationId", locationId);
                     
                     if(orderItemRow.getQuantityOnHand() != null)
                         map.put("qtyOnHand", qtyOnHand);
                     
-                    if(orderItemRow.getTransactionId() != null && !forDuplicate)
-                        map.put("transactionId", inventoryTransactionId);
+                    //if(orderItemRow.getTransactionId() != null && !forDuplicate)
+                    //    map.put("transactionId", inventoryTransactionId);
                     
                     row.setData(map);
                     row.get(0).setValue(orderItemRow.getQuantity());
@@ -1228,9 +1235,7 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                     
                     row.get(2).setValue(orderItemRow.getStore());
                     
-                    if(row.size() == 4)
-                        row.get(3).setValue(orderItemRow.getLocation());
-                    else if(row.size() == 5){
+                    if(row.size() == 5){
                         row.get(3).setValue(orderItemRow.getUnitCost());
                         row.get(4).setValue(orderItemRow.getCatalogNumber());
                     }
@@ -1247,15 +1252,16 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
         return orderItemsModel;
     }
     
-    public DataModel fillReceiptsTable(DataModel receiptsModel, List receiptsList){
+    public DataModel fillReceiptsTable(DataModel receiptsModel, List receiptsList, String orderType){
         try 
         {
             receiptsModel.clear();
             
             for(int iter = 0;iter < receiptsList.size();iter++) {
-                InventoryReceiptDO receiptRow = (InventoryReceiptDO)receiptsList.get(iter);
+                if(orderType.equals(OrderRemote.EXTERNAL)){
+                    InventoryReceiptDO receiptRow = (InventoryReceiptDO)receiptsList.get(iter);
     
-                   DataSet row = receiptsModel.createNewSet();
+                    DataSet row = receiptsModel.createNewSet();
                     
                     row.get(0).setValue(receiptRow.getReceivedDate().toString());
                     row.get(1).setValue(receiptRow.getInventoryItem());
@@ -1265,6 +1271,19 @@ public class OrderService implements AppScreenFormServiceInt<FormRPC, DataSet, D
                     row.get(5).setValue(receiptRow.getExternalReference());
                     
                     receiptsModel.add(row);
+                }else{
+                    InventoryLocationDO locRow = (InventoryLocationDO)receiptsList.get(iter);
+                    
+                    DataSet row = receiptsModel.createNewSet();
+                    
+                    row.get(0).setValue(locRow.getInventoryItem());                    
+                    row.get(1).setValue(locRow.getStorageLocation());
+                    row.get(2).setValue(locRow.getQuantityOnHand());
+                    row.get(3).setValue(locRow.getLotNumber());
+                    row.get(4).setValue(locRow.getExpirationDate().toString());
+                    
+                    receiptsModel.add(row);
+                }
            } 
             
         } catch (Exception e) {

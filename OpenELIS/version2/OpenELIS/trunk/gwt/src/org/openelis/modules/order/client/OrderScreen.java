@@ -210,10 +210,8 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         itemsTable.addTableWidgetListener(this);
         itemsTable.model.enableAutoAdd(false);
         
-        if("external".equals(orderType)){
-            receiptsTable = (TableWidget)getWidget("receiptsTable");
-            receiptsTable.model.enableAutoAdd(false);
-        }
+        receiptsTable = (TableWidget)getWidget("receiptsTable");
+        receiptsTable.model.enableAutoAdd(false);
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
@@ -281,8 +279,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         super.afterDraw(sucess);
         
         ((FormRPC)rpc.getField("items")).setFieldValue("itemsTable", itemsTable.model.getData());
-        if(receiptsTable != null)
-            ((FormRPC)rpc.getField("receipts")).setFieldValue("receiptsTable", receiptsTable.model.getData());
+        ((FormRPC)rpc.getField("receipts")).setFieldValue("receiptsTable", receiptsTable.model.getData());
     }
      
     /*protected AsyncCallback afterCommitAdd = new AsyncCallback() {
@@ -420,19 +417,19 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
             if (index == 0 && !((FormRPC)rpc.getField("items")).load) {
                 fillItemsModel(false);
                 
-            } else if (index == 1 && "kits".equals(orderType) && !((FormRPC)rpc.getField("custNote")).load) {
-                fillCustomerNotes();
-                
-            } else if ((index == 1 && "external".equals(orderType) && !((FormRPC)rpc.getField("receipts")).load)) {
+            }else if( index == 1 && !((FormRPC)rpc.getField("receipts")).load) {
                 fillReceipts();
                 
-            } else if (index == 1 && "internal".equals(orderType) && !((FormRPC)rpc.getField("shippingNote")).load) {
+            } else if (index == 2 && "kits".equals(orderType) && !((FormRPC)rpc.getField("custNote")).load) {
+                fillCustomerNotes();
+                
+            } else if ((index == 2 && !"kits".equals(orderType) && !((FormRPC)rpc.getField("shippingNote")).load)) {
                 fillShippingNotes();
-
-            } else if (index == 2 && !((FormRPC)rpc.getField("shippingNote")).load) {
+            
+            } else if ((index == 3 && !((FormRPC)rpc.getField("shippingNote")).load)) {
                 fillShippingNotes();
                 
-            } else if (index == 3 && !((FormRPC)rpc.getField("reportToBillTo")).load) {
+            } else if (index == 4 && !((FormRPC)rpc.getField("reportToBillTo")).load) {
                 fillReportToBillTo();
                 
             }
@@ -504,14 +501,14 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
   
                 if(selectedRow.size() > 1){
                     StringField storeLabel = new StringField();
-                    StringField locationLabel = new StringField();
-                    NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
-                    NumberField qtyOnHand = new NumberField(NumberObject.Type.INTEGER);
+                    //StringField locationLabel = new StringField();
+                    //NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
+                    //NumberField qtyOnHand = new NumberField(NumberObject.Type.INTEGER);
                     storeLabel.setValue((String)((StringObject)selectedRow.get(1)).getValue());
 
                     tableRow.set(2, storeLabel);
                     
-                    if(tableRow.size() == 4){
+                    /*if(tableRow.size() == 4){
                         locationLabel.setValue((String)((StringObject)selectedRow.get(2)).getValue());
                         tableRow.set(3, locationLabel);
                         
@@ -522,7 +519,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
                         map.put("locationId", locationId);
                         map.put("qtyOnHand", qtyOnHand);
                         tableRow.setData(map);
-                    }
+                    }*/
                     itemsTable.model.refresh();
                 }
             }
@@ -659,7 +656,7 @@ public class OrderScreen extends OpenELISScreenForm implements TableManager, Tab
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, rpc.getField("receipts")};
+        Data[] args = new Data[] {key, new StringObject(orderType), rpc.getField("receipts")};
 
         screenService.getObject("loadReceipts", args, new AsyncCallback<FormRPC>() {
             public void onSuccess(FormRPC result) {

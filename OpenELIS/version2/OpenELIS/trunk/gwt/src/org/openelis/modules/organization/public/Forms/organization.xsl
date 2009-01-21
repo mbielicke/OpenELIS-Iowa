@@ -240,7 +240,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 											</table>
 											<query>
-												<queryTable maxRows="9" showError="false" title="" width="574px">
+												<queryTable maxRows="9" showError="false" title="" width="574px" showScroll="ALWAYS">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
 
@@ -360,7 +360,7 @@ UIRF Software License are applicable instead of those above.
 
 										<TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
 											<row>
-												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/></text>
+												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/>:</text>
 												<textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}" width="429px"/>
 												<appButton action="standardNote" key="standardNoteButton" onclick="this" style="Button">
 													<HorizontalPanel>
@@ -371,7 +371,7 @@ UIRF Software License are applicable instead of those above.
 												</appButton>
 											</row>
 											<row>
-												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'note')"/></text>
+												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'note')"/>:</text>
 												<widget colspan="2">
 													<textarea case="mixed" height="48px" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}" width="545px"/>
 												</widget>
