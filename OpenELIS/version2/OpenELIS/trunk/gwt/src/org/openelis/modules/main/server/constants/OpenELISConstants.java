@@ -28,8 +28,8 @@ package org.openelis.modules.main.server.constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 
 public interface OpenELISConstants extends ConstantsWithLookup {
-	//common
-	String greeting();
+    //common
+    String greeting();
     String  favorites();
     String queryExpiredException();
     String lastPageException();
