@@ -84,16 +84,16 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Inventory" name="{resource:getString($constants,'inventoryItem')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
+		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
-			<CollapsePanel key="collapsePanel">
+			<CollapsePanel key="collapsePanel" style="LeftSidePanel">
 				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="22" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 				</azTable>
 			</CollapsePanel>
-			<VerticalPanel spacing="0">
+			<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<widget>
@@ -145,8 +145,7 @@ UIRF Software License are applicable instead of those above.
  			</widget>
 		</AbsolutePanel>
 		<!--end button panel-->
-		
-					<VerticalPanel>
+				<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
 						<HorizontalPanel>
 							<TablePanel style="Form">
 								<row>
@@ -257,8 +256,9 @@ UIRF Software License are applicable instead of those above.
 				<TabPanel height="200px" key="itemTabPanel">
 					<!-- TAB 1 (Components) -->
 					<tab key="componentsTab" text="{resource:getString($constants,'components')}">
-							<VerticalPanel spacing="0" padding="0">
-							<widget valign="top">
+						<TablePanel spacing="0" padding="0" height="247px" width="645px">
+							<row>
+							<widget align="center">
 								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
@@ -295,7 +295,9 @@ UIRF Software License are applicable instead of those above.
 									</queryTable>
 									</query>
 								</widget>
-									<widget style="WhiteContentPanel" halign="center">
+								</row>
+								<row>
+									<widget align="center">
 									<appButton action="removeComponentRow" onclick="this" style="Button" key="removeComponentButton">
 									<HorizontalPanel>
               						<AbsolutePanel style="RemoveRowButtonImage"/>
@@ -303,12 +305,14 @@ UIRF Software License are applicable instead of those above.
   					                </HorizontalPanel>
 						            </appButton>
 						            </widget>
-							</VerticalPanel>
+						            </row>
+							</TablePanel>
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
 					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
-						<VerticalPanel spacing="0" padding="0">
-							<widget valign="top">
+						<TablePanel spacing="0" padding="0" height="247px" width="645px">
+						<row>
+							<widget align="center">
 								<table width="auto" key="locQuantitiesTable" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
 										<xsl:value-of select='resource:getString($constants,"locationNum")'/>,
@@ -353,13 +357,13 @@ UIRF Software License are applicable instead of those above.
 									</queryTable>
 									</query>
 								</widget>
-								<HorizontalPanel height="8px"/>
-							</VerticalPanel>
+								</row>
+							</TablePanel>
 					</tab>
 					<!-- start TAB 3 (Additional Info) -->
 					<tab key="additionalInfoTab" text="{resource:getString($constants,'additionalInfo')}">
-						<VerticalPanel height="247px" width="610px">
-						<TablePanel style="Form">
+					<VerticalPanel height="247px" width="645px" padding="0" spacing="0">
+						<TablePanel style="Form" spacing="0" padding="0">
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
 							<widget colspan="5">
@@ -398,13 +402,13 @@ UIRF Software License are applicable instead of those above.
 					
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
-						<VerticalPanel height="247px" width="610px">
+						<VerticalPanel height="247px" width="645px">
 						<!--<richtext key="manufacturingText" tools="false"/>-->
 						</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
 					<tab key="commentsTab" text="{resource:getString($constants,'comments')}">
-						<VerticalPanel width="100%" height="182px" spacing="0" padding="0">
+						<VerticalPanel width="645px" height="247px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
@@ -428,7 +432,7 @@ UIRF Software License are applicable instead of those above.
 									<html key="spacer" xml:space="preserve"> </html>
 									<widget colspan="2">
 										<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="notesPanel" valign="top" onclick="this" height="158px" width="551px" overflowX="auto" overflowY="scroll">				
+								<VerticalPanel key="notesPanel" style="notesPanel" valign="top" onclick="this" height="150px" width="551px" overflowX="auto" overflowY="scroll">				
 								</VerticalPanel>
 								</HorizontalPanel>
 								</widget>

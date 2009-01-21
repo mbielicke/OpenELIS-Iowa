@@ -71,8 +71,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="FillOrder" name="{resource:getString($constants,'fillOrder')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
@@ -101,8 +100,7 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
-				<VerticalPanel spacing="0" padding="0">
+		<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<widget valign="top">
 						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
@@ -162,10 +160,6 @@ UIRF Software License are applicable instead of those above.
 							</queryTable>
 							</query>
 						</widget>
-							</VerticalPanel>
-						
-				</VerticalPanel>
-			
 			<HorizontalPanel>
 				<VerticalPanel style="Form">
 					<titledPanel key="borderedPanel">
@@ -274,16 +268,8 @@ UIRF Software License are applicable instead of those above.
 						</table>-->
 						</VerticalPanel>
 					</HorizontalPanel>
-					<TablePanel style="Form">
-						<row>
-							<widget valign="middle">
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderShippingNotes")'/>:</text>
-							</widget>
-							<textarea width="670px" height="50px" case="mixed" key="orderShippingNotes" alwaysDisabled="true" showError="false"/>
-						</row>
-					</TablePanel>
-					</VerticalPanel>				
-		</HorizontalPanel>
+					</VerticalPanel>		
+					</VerticalPanel>		
 	</display>
 	<rpc key="display">
 		<table key="fillItemsTable"/>

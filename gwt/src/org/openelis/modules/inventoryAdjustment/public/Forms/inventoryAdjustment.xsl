@@ -76,8 +76,7 @@ UIRF Software License are applicable instead of those above.
    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Organization" name="{resource:getString($constants,'inventoryAdjustment')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
@@ -121,7 +120,7 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
+			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"adjustmentNum")'/>:</text>
@@ -146,12 +145,12 @@ UIRF Software License are applicable instead of those above.
 							<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-							<widths>50,205,225,60,60,60</widths>										
+							<widths>55,205,225,65,65,65</widths>										
 							<editors>
 								<textbox case="mixed"/>
 								<autoComplete cat="inventoryItem" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
 									<headers>Name,Store,Location,Lot #,Exp Date,Qty</headers>
-							        <widths>135,110,160,70,70,30</widths>
+							        <widths>130,110,160,70,70,30</widths>
 								</autoComplete>
 								<label/>
 								<label/>
@@ -175,7 +174,7 @@ UIRF Software License are applicable instead of those above.
 								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
 							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-								<widths>50,205,225,60,60,60</widths>
+								<widths>55,205,225,65,65,65</widths>										
 								<editors>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
@@ -200,8 +199,7 @@ UIRF Software License are applicable instead of those above.
 					            </widget>
 							</VerticalPanel>
 				</VerticalPanel>								
-				</VerticalPanel>				
-		</HorizontalPanel>
+			</VerticalPanel>				
 	</display>
 	<rpc key="display">
   	  <number key="{meta:getId($adj)}" type="integer" required="false"/>
