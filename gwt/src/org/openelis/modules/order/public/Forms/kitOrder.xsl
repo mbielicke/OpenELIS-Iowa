@@ -93,8 +93,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="KitOrder" name="{resource:getString($constants,'kitOrder')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<buttonPanel key="buttons">
@@ -144,10 +143,8 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-		<VerticalPanel>
-			<VerticalPanel>
-				<HorizontalPanel>
-					<TablePanel style="Form">
+		<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
+				<TablePanel style="Form">
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderNum")'/>:</text>
 							<textbox case="lower" key="{orderMeta:getId($order)}" width="75px" max="20" tab="{orderMeta:getNeededInDays($order)},{orderMeta:getCostCenterId($order)}"/>
@@ -220,58 +217,58 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						
 					</TablePanel>
-				</HorizontalPanel>
-			</VerticalPanel>
 			<!-- TAB PANEL -->
 			<TabPanel height="200px" key="orderTabPanel" halign="center">
 				<!-- TAB 1 (items) -->
 				<tab key="itemsTab" text="{resource:getString($constants,'items')}">
-					<VerticalPanel spacing="0" padding="0">
-						<widget valign="top">
+				<TablePanel spacing="0" padding="0" height="247px" width="626px">
+					<row>
+						<widget align="center">
 							<table width="auto" key="itemsTable" maxRows="9" title="" manager="this" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-								<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-								<widths>60,170,164,167</widths>
+								<xsl:value-of select='resource:getString($constants,"store")'/></headers>
+								<widths>65,275,235</widths>
 								<editors>
 									<textbox case="mixed"/>
-									<autoComplete cat="inventoryItemWithStoreAndLoc" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
-										<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
+									<autoComplete cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">			
+										<headers>Name,Store, Dispensed Units</headers>
+										<widths>135,110,110</widths>									
+		<!--								<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
 										<widths>135,110,160,70,70,30</widths>
+										-->
 									</autoComplete>
-									<label/>
 									<label/>
 								</editors>
 								<fields>
 									<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="true"/>
 									<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
 									<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
-									<string key="location" required="false"/>
 								</fields>
-								<sorts>false,true,true,true</sorts>
-								<filters>false,false,false,false</filters>
-								<colAligns>left,left,left,left</colAligns>
+								<sorts>false,true,true</sorts>
+								<filters>false,false,false</filters>
+								<colAligns>left,left,left</colAligns>
 							</table>
 							<query>
 								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-									<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"location")'/></headers>
-									<widths>60,170,164,167</widths>
+									<xsl:value-of select='resource:getString($constants,"store")'/></headers>
+									<widths>65,275,235</widths>
 									<editors>
 										<textbox case="mixed"/>
 										<textbox case="lower"/>
 										<textbox case="mixed"/>
-										<label/>
 									</editors>
 									<fields>
 										<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
 										<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
-										<xsl:value-of select='dictionaryMeta:getEntry($store)'/>,
-										label1
+										<xsl:value-of select='dictionaryMeta:getEntry($store)'/>
 									</fields>							
 								</queryTable>
 							</query>
 						</widget>
-						<widget style="WhiteContentPanel" halign="center">
+						</row>
+						<row>
+						<widget align="center">
 							<appButton action="removeItemRow" onclick="this" style="Button" key="removeItemButton">
 								<HorizontalPanel>
            							<AbsolutePanel style="RemoveRowButtonImage"/>
@@ -279,11 +276,44 @@ UIRF Software License are applicable instead of those above.
 				                </HorizontalPanel>
 				            </appButton>
 			            </widget>
-					</VerticalPanel>
+			            </row>
+					</TablePanel>
 				</tab>	
-					<!-- TAB 2 (customer notes)-->		
+					<!-- TAB 2 (receipts) -->
+					<tab key="receiptTab" text="{resource:getString($constants,'receipt')}">
+					<TablePanel spacing="0" padding="0" height="247px" width="626px">
+						<row>
+						<widget align="center">
+							<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+								<headers><xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+								<xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
+								<xsl:value-of select='resource:getString($constants,"expDate")'/></headers>
+								<widths>150,180,65,85,90</widths>
+								<editors>
+									<label/>
+									<label/>
+									<label/>
+									<label/>
+									<label/>									
+								</editors>
+								<fields>
+									<string/>
+									<string/>									
+									<number type="integer"/>
+									<string/>
+									<string/>
+								</fields>
+								<sorts>false,false,false,false,false</sorts>
+								<filters>false,false,false,false,false</filters>
+								<colAligns>left,left,left,left,left</colAligns>
+							</table>
+						</widget>
+						</row>
+					</TablePanel>
+					</tab>
+					<!-- TAB 3 (customer notes)-->		
 					<tab key="customerNotesTab" text="{resource:getString($constants,'customerNotes')}">
-						<VerticalPanel width="100%" height="247px" spacing="0" padding="0">
+						<VerticalPanel width="626px" height="247px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<widget colspan="2" align="center">
@@ -304,9 +334,9 @@ UIRF Software License are applicable instead of those above.
 							</TablePanel>
 						</VerticalPanel>
 					</tab>
-					<!-- TAB 3 (order notes) -->
+					<!-- TAB 4 (order notes) -->
 					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
-						<VerticalPanel width="100%" height="247px" spacing="0" padding="0">
+						<VerticalPanel width="626px" height="247px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<widget colspan="2" align="center">
@@ -327,10 +357,10 @@ UIRF Software License are applicable instead of those above.
 							</TablePanel>
 						</VerticalPanel>
 					</tab>
-					<!-- TAB 4 (report to/bill to)-->
+					<!-- TAB 5 (report to/bill to)-->
 					<tab key="reportToBillToTab" text="{resource:getString($constants,'reportToBillTo')}">
-						<VerticalPanel height="247px" width="610px">
-						<TablePanel style="Form">
+						<VerticalPanel height="247px" width="626px" padding="0" spacing="0">
+						<TablePanel style="Form" spacing="0" padding="0">
 							<row>
 								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"reportTo")'/>:</text>
 								<widget colspan="4">
@@ -342,7 +372,7 @@ UIRF Software License are applicable instead of those above.
 										<textbox case="upper" width="188px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}"/>
 									</query>
 								</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"billTo")'/>:</text>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"billTo")'/>:</text>
 								<widget colspan="3">
 									<autoComplete cat="billTo" key="{orgMeta:getName($billTo)}" onchange="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" case="upper" width="172px" tab="{orgMeta:getName($reportTo)},{orgMeta:getName($reportTo)}">
 										<headers>Name,Street,City,St</headers>
@@ -402,19 +432,23 @@ UIRF Software License are applicable instead of those above.
 								<textbox case="upper" key="{addr:getZipCode($billToAddress)}" width="65px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 							</widget>
 						</row>
+						<row>
+						<widget colspan="9" height="100%">
+						<HorizontalPanel/>
+						</widget>
+						</row>
 					</TablePanel>
-				</VerticalPanel>
+					</VerticalPanel>
 			</tab>
-					<tab key="tab4" text="Tab 5">
+					<tab key="tab6" text="Tab 6">
 						<VerticalPanel height="247px" width="610px"/>
 					</tab>
-					<tab key="tab4" text="Tab 6">
+					<tab key="tab7" text="Tab 7">
 						<VerticalPanel height="247px" width="610px"/>
 					</tab>
 				</TabPanel>
-				</VerticalPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
+			</VerticalPanel>
 	</display>
 	<rpc key="display">
   	  <!-- values on the screen -->
@@ -438,6 +472,9 @@ UIRF Software License are applicable instead of those above.
       <rpc key="items">
 	      <table key="itemsTable"/>
       </rpc>
+      <rpc key="receipts">
+	  	  <table key="receiptsTable"/>
+	  </rpc>
       <rpc key="reportToBillTo">
 		  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
 	      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>

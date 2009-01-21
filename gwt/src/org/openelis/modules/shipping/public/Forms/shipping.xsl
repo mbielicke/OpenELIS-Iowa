@@ -82,8 +82,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Storage" name="{resource:getString($constants,'shipping')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
-			<VerticalPanel spacing="0">
+			<VerticalPanel spacing="0" padding="0">
 			<!--button panel code-->
 			<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
@@ -127,11 +126,8 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
+			<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
 				<TablePanel style="Form">
-					<row>
-						<HorizontalPanel style="FormVerticalSpacing"/>
-					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
 						<dropdown key="{meta:getStatusId($shipping)}" case="mixed" width="90px" popWidth="auto" tab="{meta:getShippedDate($shipping)},{meta:getShippedMethodId($shipping)}"/>
@@ -203,9 +199,9 @@ UIRF Software License are applicable instead of those above.
 					</TablePanel>
 					<TabPanel height="200px" key="shippingTabPanel" halign="center">
 						<tab key="itemsTab" text="{resource:getString($constants,'items')}">
-					<HorizontalPanel height="200px">
+					<HorizontalPanel height="200px" width="625px">
 						<widget>
-							<table key="itemsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
+							<table key="itemsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 								<headers><xsl:value-of select="resource:getString($constants,'qty')"/>,<xsl:value-of select="resource:getString($constants,'item')"/></headers>
 								<widths>50,300</widths>
 								<editors>
@@ -221,9 +217,10 @@ UIRF Software License are applicable instead of those above.
 								<colAligns>left,left</colAligns>
 							</table>
 						</widget>	
+						<HorizontalPanel width="5px"/>
 						<VerticalPanel>
 						<widget>						
-						<table key="trackingNumbersTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="auto">
+						<table key="trackingNumbersTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
 							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
 							<editors>
@@ -261,7 +258,7 @@ UIRF Software License are applicable instead of those above.
 					</HorizontalPanel>
 					</tab>
 					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
-						<VerticalPanel width="100%" height="200px" spacing="0" padding="0">
+						<VerticalPanel width="625px" height="200px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 							<row>
 							<HorizontalPanel height="15px"/>
@@ -278,7 +275,6 @@ UIRF Software License are applicable instead of those above.
 					</TabPanel>
 				</VerticalPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
 	</display>
 	<rpc key="display">
 		<number key="{meta:getId($shipping)}" type="integer" required="false"/>
