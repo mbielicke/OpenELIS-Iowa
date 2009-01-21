@@ -73,8 +73,7 @@ UIRF Software License are applicable instead of those above.
    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="BuildKits" name="{resource:getString($constants,'buildKits')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
@@ -97,7 +96,7 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
+			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"kit")'/>:</text>
@@ -166,7 +165,7 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>
 					<widget colspan="4" align="right">
-						<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
+						<appButton action="transfer" key="transferButton" onclick="this" style="Button">
 							<HorizontalPanel>
 								<AbsolutePanel style="RemoveRowButtonImage"/>
 								<text>Transfer</text>
@@ -177,7 +176,6 @@ UIRF Software License are applicable instead of those above.
 				</TablePanel>			
 			</VerticalPanel>
 		</VerticalPanel>
-		</HorizontalPanel>
 	</display>
 	<rpc key="display">
   	  <check key="addToExisting" required="false"/>

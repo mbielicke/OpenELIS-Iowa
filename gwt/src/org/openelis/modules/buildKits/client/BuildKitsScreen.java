@@ -25,13 +25,12 @@
 */
 package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -41,10 +40,11 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenInputWidget;
+import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
@@ -52,12 +52,14 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -71,6 +73,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
     private int currentTableRow = -1;
     private ScreenCheck addToExisiting;
     private Integer currentKitDropdownValue;
+    private AppButton transferButton;
     
     private InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     
@@ -79,17 +82,8 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
     }
     
     public void onClick(Widget sender) {
-        /*if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsTable.model.getSelectedIndex() > -1 && receiptsTable.model.numRows() > 0){
-            CheckField existing = new CheckField();
-            if(((CheckBox)addToExisiting.getWidget()).getState() == CheckBox.CHECKED)
-                existing.setValue(CheckBox.UNCHECKED);
-            else
-                existing.setValue(CheckBox.CHECKED);
-        
-            //DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
-            //((DataMap)tableRow.getData()).put("addToExisting", existing);  
-            //((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
-        }*/
+        if (sender == transferButton)
+            onTransferRowButtonClick();
     }
     
     public void onChange(Widget sender) {
@@ -98,7 +92,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
             currentKitDropdownValue = (Integer)((NumberObject)kitDropdown.getSelections().get(0).getKey()).getValue();
             NumberObject idObj = (NumberObject)((DataSet)kitDropdown.getSelections().get(0)).getKey();
             // prepare the argument list for the getObject function
-            Data[] args = new Data[] {idObj}; 
+            DataObject[] args = new DataObject[] {idObj}; 
             
             screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel>() {
                 public void onSuccess(DataModel model) {
@@ -180,6 +174,8 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
         
         startWidget = (ScreenInputWidget)widgets.get(InventoryItemMeta.getName());
         addToExisiting = (ScreenCheck)widgets.get("addToExisting");
+        
+        transferButton = (AppButton)getWidget("transferButton");
         
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
@@ -334,5 +330,24 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
             }
         }
     }
-   
+    
+    private void onTransferRowButtonClick() {
+        Object[] args = new Object[1];
+        args[0] = new StringObject("transfer");
+        
+        PopupPanel inventoryTransferPopupPanel = new PopupPanel(false, true);
+        ScreenWindow pickerWindow = new ScreenWindow(inventoryTransferPopupPanel,
+                                                     "Inventory Transfer",
+                                                     "inventoryTransferScreen",
+                                                     "Loading...");
+        
+        pickerWindow.setContent(new InventoryReceiptScreen(args));
+
+        inventoryTransferPopupPanel.add(pickerWindow);
+        int left = this.getAbsoluteLeft();
+        int top = this.getAbsoluteTop();
+        inventoryTransferPopupPanel.setPopupPosition(left, top);
+        inventoryTransferPopupPanel.show();
+        
+    }
 }
