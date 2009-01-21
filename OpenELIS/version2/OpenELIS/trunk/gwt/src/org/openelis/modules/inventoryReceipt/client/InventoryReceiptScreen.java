@@ -57,7 +57,7 @@ import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.FormCalendarWidget;
+import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -89,11 +89,25 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     private ScreenCheck addToExisiting;
     private ButtonPanel      atozButtons;
     private KeyListManager   keyList = new KeyListManager();
-    
+    private String screenType;
+    private Integer currentEditingRow = -1;
+    private String tableCheckedValue;
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
     public InventoryReceiptScreen() {
         super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false);
+        screenType = "receipt";
+    }
+    
+    public InventoryReceiptScreen(Object[] args) {                
+        super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");
+        
+        screenType = (String)((StringObject)args[0]).getValue();
+        
+        HashMap hash = new HashMap();
+        hash.put("type", (StringObject)args[0]);
+        
+        getXMLData(hash);
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -134,12 +148,12 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 StringField lotNum = new StringField();
                 lotNum.setValue(((TextBox)itemLotNum.getWidget()).getText());
                 DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
-                ((DataMap)tableRow.getData()).put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNum);
+                ((DataMap)tableRow.getData()).put("lotNum", lotNum);
             }else if(sender == itemExpDate.getWidget()){
                 DateField expDate = new DateField();
-                expDate.setValue(((FormCalendarWidget)itemExpDate.getWidget()).getValue());
+                expDate.setValue(((CalendarLookUp)itemExpDate.getWidget()).getValue());
                 DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
-                ((DataMap)tableRow.getData()).put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expDate);
+                ((DataMap)tableRow.getData()).put("expDate", expDate);
             }
         }
     }
@@ -194,9 +208,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         super.add();
         
         itemLotNum.enable(false);
-        itemLocation.enable(false);
+        if(itemLocation != null)
+            itemLocation.enable(false);
         itemExpDate.enable(false);
-        addToExisiting.enable(false);
+        if(addToExisiting != null)
+            addToExisiting.enable(false);
         receiptsTable.select(0, 0);
         
         //TODO not sure how to replace this  receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 0);
@@ -226,12 +242,15 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public void query() {
         super.query();
         
+        if("receipt".equals(screenType)){
         addToExisiting.enable(false);
         itemExpDate.enable(false);
         itemLotNum.enable(false);
         itemLocation.enable(false);
+        }
         removeReceiptButton.changeState(AppButton.ButtonState.DISABLED);
         receiptsQueryTable.select(0,0);
+        
     }
     
     public void update() {
@@ -318,7 +337,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
 
     public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
         if(state != State.UPDATE){
-            return !tableRowEmpty(addRow, true);
+            if("receipt".equals(screenType))
+                return !receiptTableRowEmpty(addRow, true);
+            else
+                return !transferTableRowEmpty(addRow);
+                
         }
         
         return false;
@@ -330,57 +353,68 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
 
     public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
         int numRows = receiptsTable.model.numRows();
-        if(col == 0 && row > -1 && numRows > 0 && row < numRows){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            DataMap map = (DataMap)tableRow.getData();
-            CheckField disableOrderId = null;
+        if("receipt".equals(screenType)){
+            if(col == 0 && row > -1){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                DataMap map = (DataMap)tableRow.getData();
+                CheckField disableOrderId = null;
+                
+                if(tableRow != null && tableRow.getData() != null)
+                    disableOrderId = (CheckField)map.get("disableOrderId");
+                
+                //order id is disabled on auto created rows
+                if(disableOrderId != null && CheckBox.CHECKED.equals(disableOrderId.getValue()))
+                    return false;
+           
+            }else if(col == 2 && row > -1){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                DataMap map = (DataMap)tableRow.getData();
+                CheckField disableUpc = null;
+                
+                if(tableRow != null && tableRow.getData() != null)
+                    disableUpc = (CheckField)map.get("disableUpc");
+                
+                //upc is disabled on auto created rows
+                if(disableUpc != null && CheckBox.CHECKED.equals(disableUpc.getValue()))
+                    return false;
+                
+            }else if(col == 3 && row > -1){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                DataMap map = (DataMap)tableRow.getData();
+                CheckField disableInvItem = null;
+                
+                if(tableRow != null && tableRow.getData() != null)
+                    disableInvItem = (CheckField)map.get("disableInvItem");
+                
+                //inv item is disabled on auto created rows
+                if(disableInvItem != null && CheckBox.CHECKED.equals(disableInvItem.getValue()))
+                    return false;
+                
+            }else if(col == 4 && row > -1){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                DataMap map = (DataMap)tableRow.getData();
+                CheckField disableOrg = null;
+                
+                if(tableRow != null && tableRow.getData() != null)
+                    disableOrg = (CheckField)map.get("disableOrg");
+                
+                //upc is disabled on auto created rows
+                if(disableOrg != null && CheckBox.CHECKED.equals(disableOrg.getValue()))
+                    return false;
+            }
             
-            if(tableRow != null && tableRow.getData() != null)
-                disableOrderId = (CheckField)map.get("disableOrderId");
+            return true;
+        }else{
+            if(state == FormInt.State.UPDATE || state == FormInt.State.ADD){
+            currentEditingRow = row;
             
-            //order id is disabled on auto created rows
-            if(disableOrderId != null && CheckBox.CHECKED.equals(disableOrderId.getValue()))
-                return false;
-       
-        }else if(col == 2 && row > -1 && numRows > 0 && row < numRows){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            DataMap map = (DataMap)tableRow.getData();
-            CheckField disableUpc = null;
+            if(col == 3 && receiptsTable.model.numRows() > 0)
+                tableCheckedValue = (String)receiptsTable.model.getCell(row, 3);
             
-            if(tableRow != null && tableRow.getData() != null)
-                disableUpc = (CheckField)map.get("disableUpc");
-            
-            //upc is disabled on auto created rows
-            if(disableUpc != null && CheckBox.CHECKED.equals(disableUpc.getValue()))
-                return false;
-            
-        }else if(col == 3 && row > -1 && numRows > 0 && row < numRows){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            DataMap map = (DataMap)tableRow.getData();
-            CheckField disableInvItem = null;
-            
-            if(tableRow != null && tableRow.getData() != null)
-                disableInvItem = (CheckField)map.get("disableInvItem");
-            
-            //inv item is disabled on auto created rows
-            if(disableInvItem != null && CheckBox.CHECKED.equals(disableInvItem.getValue()))
-                return false;
-            
-        }else if(col == 4 && row > -1 && numRows > 0 && row < numRows){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            DataMap map = (DataMap)tableRow.getData();
-            CheckField disableOrg = null;
-            
-            if(tableRow != null && tableRow.getData() != null)
-                disableOrg = (CheckField)map.get("disableOrg");
-            
-            //upc is disabled on auto created rows
-            if(disableOrg != null && CheckBox.CHECKED.equals(disableOrg.getValue()))
-                return false;
-            
+            return true;
+            }
         }
-
-        return true;
+        return false;
     }
 
     public boolean canSelect(TableWidget widget, DataSet set, int row) {
@@ -406,200 +440,289 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     //start table listener methods
     //
     public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
-        //we need to try and lookup the order using the order number that they have entered
-        if(col == 0 && row < receiptsTable.model.numRows() && tableRowEmpty(receiptsTable.model.getRow(row), false)){
-            window.setStatus("","spinnerIcon");
-            
-            NumberObject orderIdObj = new NumberObject((Integer)((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
-            
-            // prepare the argument list for the getObject function
-            Data[] args = new Data[] {orderIdObj}; 
-            
-            screenService.getObject("getReceipts", args, new AsyncCallback<DataModel>(){
-                public void onSuccess(DataModel model){    
-                    for(int i=0; i<model.size(); i++){
-                        createRowAndSetRowData(row+i, (DataMap)model.get(i).getData());
-                    }
-                                          
-                    receiptsTable.select(row, 1);
-                    
-                    window.setStatus("","");
-                }
+        if("receipt".equals(screenType)){
+            //we need to try and lookup the order using the order number that they have entered
+            if(col == 0 && row < receiptsTable.model.numRows() && receiptTableRowEmpty(receiptsTable.model.getRow(row), false)){
+                window.setStatus("","spinnerIcon");
                 
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                    window.setStatus("","");
-                }
-            });
-        }else if(col == 2 && row > -1 && row < receiptsTable.model.numRows()){
-            final DataSet tableRow = receiptsTable.model.getRow(row);
-            final StringObject upcValue = new StringObject((String)((StringField)tableRow.get(2)).getValue());
-            
-            if(upcValue.getValue() != null && !"".equals(upcValue.getValue())){
-            window.setStatus("","spinnerIcon");
-            
-            //prepare the argument list for the getObject function
-            Data[] args = new Data[] {upcValue}; 
-            
-            screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel>(){
-                public void onSuccess(DataModel model){   
-                    if(model.size() > 1){
-                        //we need to have the user select which item they want
-                    }else if(model.size() == 1){
-                        //we need to set the values in the datamap
-                        
-                        DataMap map = (DataMap)tableRow.getData();
-                        if(map == null){
-                            map = new DataMap();
-                            tableRow.setData(map);
+                NumberObject orderIdObj = new NumberObject((Integer)((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
+                
+                // prepare the argument list for the getObject function
+                Data[] args = new Data[] {orderIdObj}; 
+                
+                screenService.getObject("getReceipts", args, new AsyncCallback<DataModel>(){
+                    public void onSuccess(DataModel model){    
+                        for(int i=0; i<model.size(); i++){
+                            createRowAndSetRowData(row+i, (DataMap)model.get(i).getData());
                         }
+                                              
+                        receiptsTable.select(row, 1);
                         
-                        DataSet set = model.get(0);
-                        
-                        StringObject store = (StringObject)set.get(1);
-                        StringField itemStore = new StringField();
-                        StringObject desc = (StringObject)set.get(2);
-                        StringField itemDesc = new StringField();
-                        StringObject disUnits = (StringObject)set.get(3);
-                        StringField itemDisUnit = new StringField();
-                        StringObject itemIsBulk =(StringObject)set.get(4);
-                        StringField isBulk =  new StringField();
-                        StringObject itemIsLotMaintained = (StringObject)set.get(5);
-                        StringField isLotMaintained = new StringField();
-                        StringObject itemIsSerialMaintained = (StringObject)set.get(6);
-                        StringField isSerialMaintained = new StringField();
-                        StringField upc = new StringField((String)upcValue.getValue());
-                        itemDesc.setValue(desc.getValue());
-                        itemStore.setValue(store.getValue());
-                        itemDisUnit.setValue(disUnits.getValue());
-                        isBulk.setValue(itemIsBulk.getValue());
-                        isLotMaintained.setValue(itemIsLotMaintained.getValue());
-                        isSerialMaintained.setValue(itemIsSerialMaintained.getValue());
-                        
-                        //name, store
-                        DataModel invItemModel = new DataModel();
-                        DataSet invItemSet = new DataSet();
-                        invItemSet.setKey((NumberObject)set.getKey());
-                        invItemSet.add((StringObject)set.get(0));
-                        invItemSet.add(new StringField((String)((StringObject)set.get(1)).getValue()));
-                        DataMap hiddenItems = new DataMap();
-                        hiddenItems.put("desc",new StringField((String)((StringObject)set.get(2)).getValue()));
-                        hiddenItems.put("itemDisUnit", (StringObject)set.get(3));
-                        invItemSet.setData(hiddenItems);
-                        invItemModel.add(invItemSet);
-                        DropDownField invItemField = new DropDownField();
-                        invItemField.setModel(invItemModel);
-                        invItemField.setValue(invItemModel.get(0));
-                        map.put("itemDesc", itemDesc);
-                        map.put("itemStore", itemStore);
-                        map.put("itemDisUnit", itemDisUnit);
-                        map.put("itemIsBulk", isBulk);
-                        map.put("itemIsLotMaintained", isLotMaintained);
-                        map.put("itemIsSerialMaintained", isSerialMaintained);
-                        map.put("inventoryItem",invItemField);
-                        map.put("upc", upc);
-                        
-                        //if we have an order id then it was auto added and we need to disable these columns
-                        CheckField disableOrderId = new CheckField();
-                        CheckField disableInvItem = new CheckField();
-                        disableOrderId.setValue(CheckBox.CHECKED);
-                        disableInvItem.setValue(CheckBox.CHECKED);
-                        
-                        map.put("disableOrderId", disableOrderId);
-                        map.put("disableInvItem", disableInvItem);
-                            
-                        loadDataMapIntoTableRow(tableRow);
-                        receiptsTable.model.refresh();
-                        
-                        //set the text boxes
-                        itemDescText.setText((String)desc.getValue());
-                        itemStoreText.setText((String)store.getValue());
-                        itemDisUnitsText.setText((String)disUnits.getValue());
+                        window.setStatus("","");
                     }
-                        
-                    window.setStatus("","");
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                        window.setStatus("","");
+                    }
+                });
+            }else if(col == 2 && row > -1 && row < receiptsTable.model.numRows()){
+                final DataSet tableRow = receiptsTable.model.getRow(row);
+                final StringObject upcValue = new StringObject((String)((StringField)tableRow.get(2)).getValue());
+                
+                if(upcValue.getValue() != null && !"".equals(upcValue.getValue())){
+                window.setStatus("","spinnerIcon");
+                
+                //prepare the argument list for the getObject function
+                Data[] args = new Data[] {upcValue}; 
+                
+                screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel>(){
+                    public void onSuccess(DataModel model){   
+                        if(model.size() > 1){
+                            //we need to have the user select which item they want
+                        }else if(model.size() == 1){
+                            //we need to set the values in the datamap
+                            
+                            DataMap map = (DataMap)tableRow.getData();
+                            if(map == null){
+                                map = new DataMap();
+                                tableRow.setData(map);
+                            }
+                            
+                            DataSet set = model.get(0);
+                            
+                            StringObject store = (StringObject)set.get(1);
+                            StringField itemStore = new StringField();
+                            StringObject desc = (StringObject)set.get(2);
+                            StringField itemDesc = new StringField();
+                            StringObject disUnits = (StringObject)set.get(3);
+                            StringField itemDisUnit = new StringField();
+                            StringObject itemIsBulk =(StringObject)set.get(4);
+                            StringField isBulk =  new StringField();
+                            StringObject itemIsLotMaintained = (StringObject)set.get(5);
+                            StringField isLotMaintained = new StringField();
+                            StringObject itemIsSerialMaintained = (StringObject)set.get(6);
+                            StringField isSerialMaintained = new StringField();
+                            StringField upc = new StringField((String)upcValue.getValue());
+                            itemDesc.setValue(desc.getValue());
+                            itemStore.setValue(store.getValue());
+                            itemDisUnit.setValue(disUnits.getValue());
+                            isBulk.setValue(itemIsBulk.getValue());
+                            isLotMaintained.setValue(itemIsLotMaintained.getValue());
+                            isSerialMaintained.setValue(itemIsSerialMaintained.getValue());
+                            
+                            //name, store
+                            DataModel invItemModel = new DataModel();
+                            DataSet invItemSet = new DataSet();
+                            invItemSet.setKey((NumberObject)set.getKey());
+                            invItemSet.add((StringObject)set.get(0));
+                            invItemSet.add(new StringField((String)((StringObject)set.get(1)).getValue()));
+                            DataMap hiddenItems = new DataMap();
+                            hiddenItems.put("desc",new StringField((String)((StringObject)set.get(2)).getValue()));
+                            hiddenItems.put("itemDisUnit", (StringObject)set.get(3));
+                            invItemSet.setData(hiddenItems);
+                            invItemModel.add(invItemSet);
+                            DropDownField invItemField = new DropDownField();
+                            invItemField.setModel(invItemModel);
+                            invItemField.setValue(invItemModel.get(0));
+                            map.put("itemDesc", itemDesc);
+                            map.put("itemStore", itemStore);
+                            map.put("itemDisUnit", itemDisUnit);
+                            map.put("itemIsBulk", isBulk);
+                            map.put("itemIsLotMaintained", isLotMaintained);
+                            map.put("itemIsSerialMaintained", isSerialMaintained);
+                            map.put("inventoryItem",invItemField);
+                            map.put("upc", upc);
+                            
+                            //if we have an order id then it was auto added and we need to disable these columns
+                            CheckField disableOrderId = new CheckField();
+                            CheckField disableInvItem = new CheckField();
+                            disableOrderId.setValue(CheckBox.CHECKED);
+                            disableInvItem.setValue(CheckBox.CHECKED);
+                            
+                            map.put("disableOrderId", disableOrderId);
+                            map.put("disableInvItem", disableInvItem);
+                                
+                            //loadDataMapIntoReceiptTableRow(tableRow);
+                            DataSet tableRow = receiptsTable.model.getRow(row);
+                            
+                            if(map.get("inventoryItem") != null){
+                                ((DropDownField)tableRow.get(3)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
+                                ((DropDownField)tableRow.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+                            }
+                            
+                            receiptsTable.model.refresh();
+                            
+                            //set the text boxes
+                            itemDescText.setText((String)desc.getValue());
+                            itemStoreText.setText((String)store.getValue());
+                            itemDisUnitsText.setText((String)disUnits.getValue());
+                        }
+                            
+                        window.setStatus("","");
+                    }
+                    
+                    public void onFailure(Throwable caught){
+                        Window.alert(caught.getMessage());
+                        window.setStatus("","");
+                    }
+                });
                 }
                 
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                    window.setStatus("","");
-                }
-            });
-            }
-            
-        }else if(col == 3 && row > -1 && row < receiptsTable.model.numRows()){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
-           
-            DataSet set = null;
-            if(selections.size() > 0)
-                set = (DataSet)selections.get(0);
-            
-           if(set != null && set.size() > 1){
-                //set the text boxes
-               DataMap dropdownMap = (DataMap)set.getData();
-               StringField descObj = (StringField)dropdownMap.get("desc");
-               StringField isBulkObj = (StringField)dropdownMap.get("isBulk");
-               StringField isLotMaintainedObj = (StringField)dropdownMap.get("isLotMaintained");            
-               StringField isSerialMaintainedObj = (StringField)dropdownMap.get("isSerialMaintained");
-               StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
+            }else if(col == 3 && row > -1 && row < receiptsTable.model.numRows()){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
                
-               itemDescText.setText((String)descObj.getValue());
-               itemStoreText.setText((String)((StringField)set.get(1)).getValue());
-               itemDisUnitsText.setText((String)dispensedUnits.getValue());
+                DataSet set = null;
+                if(selections.size() > 0)
+                    set = (DataSet)selections.get(0);
                 
-                DataMap map = (DataMap)tableRow.getData();
-                if(map == null)
-                    map = new DataMap();
+               if(set != null && set.size() > 1){
+                    //set the text boxes
+                   DataMap dropdownMap = (DataMap)set.getData();
+                   StringField descObj = (StringField)dropdownMap.get("desc");
+                   StringField isBulkObj = (StringField)dropdownMap.get("isBulk");
+                   StringField isLotMaintainedObj = (StringField)dropdownMap.get("isLotMaintained");            
+                   StringField isSerialMaintainedObj = (StringField)dropdownMap.get("isSerialMaintained");
+                   StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
+                   
+                   itemDescText.setText((String)descObj.getValue());
+                   itemStoreText.setText((String)((StringField)set.get(1)).getValue());
+                   itemDisUnitsText.setText((String)dispensedUnits.getValue());
+                    
+                    DataMap map = (DataMap)tableRow.getData();
+                    if(map == null)
+                        map = new DataMap();
+                    
+                    map.put("itemDesc", descObj);
+                    map.put("itemStore", set.get(1));
+                    map.put("itemIsBulk", isBulkObj);
+                    map.put("itemIsLotMaintained", isLotMaintainedObj);
+                    map.put("itemIsSerialMaintained", isSerialMaintainedObj);
+                    map.put("itemDisUnit", dispensedUnits);
+                    
+                    tableRow.setData(map);
+               }
+            }else if(col == 4 && row > -1 && row < receiptsTable.model.numRows()){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(4)).getSelections();
+                DataSet set = null;
+                if(selections.size() > 0)
+                    set = (DataSet)selections.get(0);
                 
-                map.put("itemDesc", descObj);
-                map.put("itemStore", set.get(1));
-                map.put("itemIsBulk", isBulkObj);
-                map.put("itemIsLotMaintained", isLotMaintainedObj);
-                map.put("itemIsSerialMaintained", isSerialMaintainedObj);
-                map.put("itemDisUnit", dispensedUnits);
+                if(set != null && set.size() > 1){
+                    DataMap orgDropdownMap = (DataMap)set.getData();
+                    //set the text boxes
+                    orgAddressText.setText((String)((StringObject)set.get(1)).getValue());
+                    orgCityText.setText((String)((StringObject)set.get(2)).getValue());
+                    orgStateText.setText((String)((StringObject)set.get(3)).getValue());               
+                    orgAptSuiteText.setText((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
+                    orgZipCodeText.setText((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
+                    
+                    StringField multUnit = new StringField();
+                    StringField streetAddress = new StringField();
+                    StringField city = new StringField();
+                    StringField state = new StringField();
+                    StringField zipCode = new StringField();
+                    
+                    multUnit.setValue((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
+                    streetAddress.setValue((String)((StringObject)set.get(1)).getValue());
+                    city.setValue((String)((StringObject)set.get(2)).getValue());
+                    state.setValue((String)((StringObject)set.get(3)).getValue());
+                    zipCode.setValue((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
+                    
+                    DataMap map = (DataMap)tableRow.getData();
+                    if(map == null)
+                        map = new DataMap();
+                    
+                    map.put("multUnit", multUnit);
+                    map.put("streetAddress", streetAddress);
+                    map.put("city", city);
+                    map.put("state", state);
+                    map.put("zipCode", zipCode);
+                    tableRow.setData(map);
+                    
+                }
+            }
+        }else if("transfer".equals(screenType)){
+            if(col == 0 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getSelections();
+               
+                DataSet set = null;
+                if(selections.size() > 0)
+                    set = (DataSet)selections.get(0);
                 
-                tableRow.setData(map);
-           }
-        }else if(col == 4 && row > -1 && row < receiptsTable.model.numRows()){
-            DataSet tableRow = receiptsTable.model.getRow(row);
-            ArrayList selections = (ArrayList)((DropDownField)tableRow.get(4)).getSelections();
-            DataSet set = null;
-            if(selections.size() > 0)
-                set = (DataSet)selections.get(0);
-            
-            if(set != null && set.size() > 1){
-                DataMap orgDropdownMap = (DataMap)set.getData();
-                //set the text boxes
-                orgAddressText.setText((String)((StringObject)set.get(1)).getValue());
-                orgCityText.setText((String)((StringObject)set.get(2)).getValue());
-                orgStateText.setText((String)((StringObject)set.get(3)).getValue());               
-                orgAptSuiteText.setText((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
-                orgZipCodeText.setText((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
+               if(set != null && set.size() > 1){
+                    //set the text boxes
+                   DataMap dropdownMap = (DataMap)set.getData();
+                   StringField descObj = (StringField)dropdownMap.get("desc");
+                   StringField isBulkObj = (StringField)dropdownMap.get("isBulk");
+                   StringField isLotMaintainedObj = (StringField)dropdownMap.get("isLotMaintained");            
+                   StringField isSerialMaintainedObj = (StringField)dropdownMap.get("isSerialMaintained");
+                   StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
+                   DateField expDate = (DateField)dropdownMap.get("expDate");
+                   StringField lotNum = (StringField)dropdownMap.get("lotNum");
+                   DropDownField storageLocation = new DropDownField();
+                   DataModel locModel = new DataModel();
+                   locModel.add((NumberObject)dropdownMap.get("locId"), new StringObject((String)set.get(2).getValue()));
+                   storageLocation.setModel(locModel);
+                   storageLocation.setValue(locModel.get(0));
+                   
+                   tableRow.get(1).setValue((String)set.get(2).getValue());
+                   
+                   itemDescText.setText((String)descObj.getValue());
+                   itemStoreText.setText((String)((StringField)set.get(1)).getValue());
+                   itemDisUnitsText.setText((String)dispensedUnits.getValue());
+                   
+                   ((TextBox)itemLotNum.getWidget()).setText((String)lotNum.getValue());
+                   itemExpDate.load(expDate);                   
+                    
+                    DataMap map = (DataMap)tableRow.getData();
+                    if(map == null)
+                        map = new DataMap();
+                    
+                    map.put("itemDesc", descObj);
+                    map.put("itemStore", set.get(1));
+                    map.put("itemIsBulk", isBulkObj);
+                    map.put("itemIsLotMaintained", isLotMaintainedObj);
+                    map.put("itemIsSerialMaintained", isSerialMaintainedObj);
+                    map.put("itemDisUnit", dispensedUnits);
+                    map.put("expDate", expDate);
+                    map.put("lotNum", lotNum);
+                    map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), storageLocation);
+                    
+                    tableRow.setData(map);
+                    receiptsTable.model.refresh();
+               }
+            }else if(col == 2 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+                DataSet tableRow = receiptsTable.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(2)).getSelections();
+               
+                DataSet set = null;
+                if(selections.size() > 0)
+                    set = (DataSet)selections.get(0);
                 
-                StringField multUnit = new StringField();
-                StringField streetAddress = new StringField();
-                StringField city = new StringField();
-                StringField state = new StringField();
-                StringField zipCode = new StringField();
-                
-                multUnit.setValue((String)((StringObject)orgDropdownMap.get("aptSuite")).getValue());
-                streetAddress.setValue((String)((StringObject)set.get(1)).getValue());
-                city.setValue((String)((StringObject)set.get(2)).getValue());
-                state.setValue((String)((StringObject)set.get(3)).getValue());
-                zipCode.setValue((String)((StringObject)orgDropdownMap.get("zipCode")).getValue());
-                
-                DataMap map = (DataMap)tableRow.getData();
-                if(map == null)
-                    map = new DataMap();
-                
-                map.put("multUnit", multUnit);
-                map.put("streetAddress", streetAddress);
-                map.put("city", city);
-                map.put("state", state);
-                map.put("zipCode", zipCode);
-                tableRow.setData(map);
-                
+               if(set != null && set.size() > 1){
+                    //set the text boxes
+                   DataMap dropdownMap = (DataMap)set.getData();
+                   NumberField parentRatioObj = (NumberField)dropdownMap.get("parentRatio");
+                   
+                   DataMap map = (DataMap)tableRow.getData();
+                    if(map == null)
+                        map = new DataMap();
+                    
+                    map.put("parentRatio", parentRatioObj);
+                    
+                    tableRow.setData(map);
+               }
+
+            }else if(col == 3 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+                String checkedValue = (String)receiptsTable.model.getCell(row, 2);
+
+                //if the checkbox changes value we need to clear out the to location column
+                if(!checkedValue.equals(tableCheckedValue))
+                    receiptsTable.model.setCell(row, 3, null);
             }
         }
     }
@@ -612,7 +735,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     //
     
     
-    private boolean tableRowEmpty(DataSet row, boolean checkFirstColumn){
+    private boolean receiptTableRowEmpty(DataSet row, boolean checkFirstColumn){
         boolean empty = true;
         
         if(checkFirstColumn){
@@ -637,6 +760,19 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         return empty;
     }
     
+    private boolean transferTableRowEmpty(DataSet row){
+        boolean empty = true;
+        
+        for(int i=0; i<row.size(); i++){
+            if(row.get(i).getValue() != null && !"".equals(row.get(i).getValue())){
+                empty = false;
+                break;
+            }
+        }
+
+        return empty;
+    }
+    
     private void onRemoveReceiptRowButtonClick() {
         int selectedRow = receiptsTable.model.getSelectedIndex();
         if (selectedRow > -1 && receiptsTable.model.numRows() > 0) {
@@ -645,7 +781,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         }
     }
     
-    private void loadDataMapIntoTableRow(DataSet row){
+    private void loadDataMapIntoReceiptTableRow(DataSet row){
         DataMap map = (DataMap)row.getData();
         
         row.get(0).setValue(getValueFromHashWithNulls(map, "orderNumber"));
@@ -687,6 +823,73 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         }
     }
     
+    private void loadDataMapIntoTransferTableRow(DataSet row){
+        DataMap map = (DataMap)row.getData();
+        
+        //row.get(0).setValue(getValueFromHashWithNulls(map, "orderNumber"));
+        //row.get(1).setValue(getValueFromHashWithNulls(map, "receivedDate"));
+        //row.get(2).setValue(getValueFromHashWithNulls(map, "upc"));
+        
+        //if(map.get("org") != null){
+        //    ((DropDownField)row.get(4)).setModel(((DropDownField)map.get("org")).getModel());
+        //    ((DropDownField)row.get(4)).setValue(((DropDownField)map.get("org")).getSelections());
+       // }
+        
+        //row.get(5).setValue(getValueFromHashWithNulls(map, "qtyReceived"));
+        
+        if(map.get("fromInventoryItem") != null){
+            ((DropDownField)row.get(0)).setModel(((DropDownField)map.get("fromInventoryItem")).getModel());
+            ((DropDownField)row.get(0)).setValue(((DropDownField)map.get("fromInventoryItem")).getSelections());
+        }
+        
+        String fromLocationName = InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId();
+        if(map.get(fromLocationName) != null){
+            row.get(1).setValue(((DropDownField)map.get(fromLocationName)).getTextValue());
+        }
+        
+        //if(map.get("inventoryItem") != null){
+        //    ((DropDownField)row.get(2)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
+        //    ((DropDownField)row.get(2)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+       // }
+        
+        if(map.get("inventoryItem") != null){
+            ((DropDownField)row.get(2)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
+            ((DropDownField)row.get(2)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+        }
+        row.get(3).setValue(((CheckField)map.get("addToExisting")).getValue());
+        
+        if(map.get("toInventoryLocation") != null){
+            ((DropDownField)row.get(4)).setModel(((DropDownField)map.get("toInventoryLocation")).getModel());
+            ((DropDownField)row.get(4)).setValue(((DropDownField)map.get("toInventoryLocation")).getSelections());
+        }
+        
+        row.get(5).setValue(getValueFromHashWithNulls(map, "qtyRequested"));
+        
+        
+       /* row.get(7).setValue(getValueFromHashWithNulls(map, "cost"));
+        row.get(8).setValue(getValueFromHashWithNulls(map, "qc"));
+        row.get(9).setValue(getValueFromHashWithNulls(map, "extRef"));
+        
+        //we may need to disable some columns
+        CheckField disableOrderId = new CheckField();
+        CheckField disableUpc = new CheckField();
+        CheckField disableInvItem = new CheckField();
+        CheckField disableOrg = new CheckField();
+        
+        //if we have an order id then it was auto added and we need to disable these columns
+        if(getValueFromHashWithNulls(map, "orderNumber") != null){
+            disableOrderId.setValue(CheckBox.CHECKED);
+            disableUpc.setValue(CheckBox.CHECKED);
+            disableInvItem.setValue(CheckBox.CHECKED);
+            disableOrg.setValue(CheckBox.CHECKED);
+        
+            map.put("disableOrderId", disableOrderId);
+            map.put("disableUpc", disableUpc);
+            map.put("disableInvItem", disableInvItem);
+            map.put("disableOrg", disableOrg);
+        }*/
+    }
+    
     private void createRowAndSetRowData(int row, DataMap tableData){
         DataSet tableRow;
         boolean rowCreated = false;
@@ -699,7 +902,10 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         tableRow.setData(tableData);
         
-        loadDataMapIntoTableRow(tableRow);
+        if("receipt".equals(screenType))
+            loadDataMapIntoReceiptTableRow(tableRow);
+        else
+            loadDataMapIntoTransferTableRow(tableRow);    
         
         if(!rowCreated)
             receiptsTable.model.refresh();
@@ -721,7 +927,21 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     public void callForMatches(final AutoComplete widget, DataModel model, String text) {
         
         DataMap params = new DataMap();
-        params.put("addToExisting", rpc.getField("addToExisting"));
+        if("toInventoryItemTrans".equals(widget.cat)){
+            if(receiptsTable.model.numRows() > 0)
+                params.put("fromInvItemId", new NumberField((Integer)((DropDownField)receiptsTable.model.getObject(currentEditingRow, 0)).getSelectedKey()));
+            else
+                params.put("fromInvItemId", new NumberField());
+        }else{
+            if(addToExisiting != null)
+                params.put("addToExisting", rpc.getField("addToExisting"));
+            else{
+                if(receiptsTable.model.numRows() > 0)
+                    params.put("addToExisting", receiptsTable.model.getObject(currentEditingRow, 3));
+                else
+                    params.put("addToExisiting", new CheckField());
+            }
+        }
         StringObject catObj = new StringObject(widget.cat);
         StringObject matchObj = new StringObject(text);
         
@@ -755,10 +975,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
 
     public void rowDeleted(SourcesTableModelEvents sender, int row) {}
 
-    public void rowSelectd(SourcesTableModelEvents sender, int row) {
+    public void rowSelected(SourcesTableModelEvents sender, int row) {
         DataSet tableRow=null;
-        
-        if(!addToExisiting.isEnabled() && receiptsTable.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
+        if(addToExisiting != null && !addToExisiting.isEnabled() && receiptsTable.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
             itemLotNum.enable(true);
             itemLocation.enable(true);
             itemExpDate.enable(true);
@@ -773,7 +992,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             map = (DataMap)tableRow.getData();
         
         if(tableRow != null){
-            if(map.get("streetAddress") != null && map.get("city") != null){
+            if(orgAptSuiteText != null && map.get("streetAddress") != null && map.get("city") != null){
                 orgAptSuiteText.setText((String)((StringField)map.get("multUnit")).getValue());
                 orgAddressText.setText((String)((StringField)map.get("streetAddress")).getValue());
                 orgCityText.setText((String)((StringField)map.get("city")).getValue());
@@ -788,42 +1007,47 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             if(map.get("itemDisUnit") != null)
                 itemDisUnitsText.setText((String)((StringField)map.get("itemDisUnit")).getValue());
             
-            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()) != null){
+            if(itemLocation != null && map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()) != null){
                 //((AutoComplete)itemLocation.getWidget()).model.load(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getModel());
                 //((AutoComplete)itemLocation.getWidget()).setSelections(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())).getSelections());
                 itemLocation.load(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())));
             }
-            else
+            else if(itemLocation != null)
                 ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
             
-            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber()) != null)
-                ((TextBox)itemLotNum.getWidget()).setText((String)((StringField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber())).getValue());
+            if(map.get("lotNum") != null)
+                ((TextBox)itemLotNum.getWidget()).setText((String)((StringField)map.get("lotNum")).getValue());
             else
                 ((TextBox)itemLotNum.getWidget()).setText("");
             
-            if(map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate()) != null && 
-                            ((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue() != null)
-                ((FormCalendarWidget)itemExpDate.getWidget()).setText(((DatetimeRPC)((DateField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate())).getValue()).toString());
+            if(map.get("expDate") != null && 
+                            ((DateField)map.get("expDate")).getValue() != null)
+                ((CalendarLookUp)itemExpDate.getWidget()).setText(((DatetimeRPC)((DateField)map.get("expDate")).getValue()).toString());
             else
                 ((CalendarLookUp)itemExpDate.getWidget()).setText("");
             
-            if(map.get("addToExisting") != null)
+            if(addToExisiting != null && map.get("addToExisting") != null)
                 ((CheckBox)addToExisiting.getWidget()).setState((String)((CheckField)map.get("addToExisting")).getValue());
-            else
+            else if(addToExisiting != null)
                 ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
         }else{
-            orgAptSuiteText.setText("");
-            orgAddressText.setText("");
-            orgCityText.setText("");
-            orgStateText.setText("");
-            orgZipCodeText.setText("");
+            if(orgAptSuiteText != null){
+                orgAptSuiteText.setText("");
+                orgAddressText.setText("");
+                orgCityText.setText("");
+                orgStateText.setText("");
+                orgZipCodeText.setText("");
+                
+                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+                ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
+            }
             itemDescText.setText("");
             itemStoreText.setText("");
             itemDisUnitsText.setText("");
-            ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+            
             ((TextBox)itemLotNum.getWidget()).setText("");
             ((CalendarLookUp)itemExpDate.getWidget()).setText("");
-            ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
+            
         }
     }
 

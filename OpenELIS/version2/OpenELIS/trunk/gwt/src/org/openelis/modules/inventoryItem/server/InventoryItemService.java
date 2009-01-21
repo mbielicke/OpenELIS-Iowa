@@ -635,7 +635,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<FormRPC, Da
 
         String parsedMatch = match.replace('*', '%');
         
-        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, false, false);
+        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, false, true);
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);

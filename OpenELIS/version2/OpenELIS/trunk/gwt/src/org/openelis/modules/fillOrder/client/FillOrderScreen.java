@@ -26,7 +26,6 @@
 package org.openelis.modules.fillOrder.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.data.CheckField;
@@ -44,6 +43,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -68,6 +68,7 @@ import org.openelis.gwt.widget.tree.event.SourcesTreeWidgetEvents;
 import org.openelis.gwt.widget.tree.event.TreeWidgetListener;
 import org.openelis.metamap.FillOrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.shipping.client.ShippingDataService;
 import org.openelis.modules.shipping.client.ShippingScreen;
 
 import com.google.gwt.user.client.Window;
@@ -78,7 +79,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener{
+public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, CommandListener{
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
@@ -99,7 +100,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     private int currentTreeRow = -1;
     private Integer lastShippedTo;
     private Integer lastShippedFrom;
-    private Integer lastTreeValue;
+    private Object lastTreeValue;
     private Integer orderPendingValue;
     
     private FillOrderMetaMap OrderMeta = new FillOrderMetaMap();
@@ -113,6 +114,8 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     public void performCommand(Enum action, Object obj) {
         if(action == KeyListManager.Action.FETCH){
             fetch();
+        //}else if(action == ShippingScreen.Action.Drawn){
+        //    ((ShippingScreen)obj).add();
         }else{
             super.performCommand(action, obj);
         }
@@ -241,7 +244,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
             load();
             enable(false);
             
-            fillItemsTable.unselect(-1);
+//            fillItemsTable.unselect(-1);
             checkedOrderIds.clear();
             checkedTreeData.clear();
             orderItemsTree.model.clear();
@@ -438,17 +441,29 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         
         if(checkedOrderIds.size() > 0 && row != null){
             DataMap map = (DataMap)row.getData();
-            pickerWindow.setContent(new ShippingScreen((Integer)((DropDownField)row.get(4)).getValue(), (Integer)((DropDownField)row.get(5)).getValue(), 
-                                                       (String)((DropDownField)row.get(5)).getTextValue(), (String)((DataObject)map.get("multUnit")).getValue(), 
-                                                       (String)((DataObject)map.get("streetAddress")).getValue(), (String)((DataObject)map.get("city")).getValue(), (String)((DataObject)map.get("state")).getValue(), 
-                                                       (String)((DataObject)map.get("zipCode")).getValue(), (TreeDataModel)checkedTreeData.clone(), (DataModel)checkedOrderIds.clone()));
-    
+            ShippingScreen shippingScreen = new ShippingScreen();
+            
+            ShippingDataService data = new ShippingDataService();
+            data.setShipFromId((Integer)((DropDownField)row.get(4)).getSelectedKey());
+            data.setShipToId((Integer)((DropDownField)row.get(5)).getSelectedKey());
+            data.setShipToText((String)((DropDownField)row.get(5)).getTextValue());
+            data.setMultUnitText((String)((DataObject)map.get("multUnit")).getValue());
+            data.setStreetAddressText((String)((DataObject)map.get("streetAddress")).getValue());
+            data.setCityText((String)((DataObject)map.get("city")).getValue());
+            data.setStateText((String)((DataObject)map.get("state")).getValue());
+            data.setZipCodeText((String)((DataObject)map.get("zipCode")).getValue());
+            data.setItemsShippedModel(createDataModelFromTree((TreeDataModel)checkedTreeData.clone()));
+            data.setCheckedOrderIds((DataModel)checkedOrderIds.clone());
+        
+            shippingScreen.setShippingData(data);
+            
+            pickerWindow.setContent(shippingScreen);
             shippingPopupPanel.add(pickerWindow);
             int left = this.getAbsoluteLeft();
             int top = this.getAbsoluteTop();
             shippingPopupPanel.setPopupPosition(left, top);
             shippingPopupPanel.show();
-            
+
             enable(false);
             changeState(State.DEFAULT);
         }
@@ -470,11 +485,11 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                    DataSet set = new DataSet();
                    set.setKey(new NumberObject((Integer)((NumberField)row.get(1)).getValue()));
                    checkedOrderIds.add(set);
-                   lastShippedFrom = (Integer)row.get(4).getValue();
-                   lastShippedTo = (Integer)row.get(5).getValue();
+                   lastShippedFrom = (Integer)((DropDownField)row.get(4)).getSelectedKey();
+                   lastShippedTo = (Integer)((DropDownField)row.get(5)).getSelectedKey();
                    
                }else{            //remove the order id from the selected list
-                   checkedOrderIds.remove(checkedOrderIds.getByKey((NumberField)row.get(1)));
+                   checkedOrderIds.remove(checkedOrderIds.getByKey(new NumberObject((Integer)((NumberField)row.get(1)).getValue())));
                    if(checkedOrderIds.size() == 0){
                        lastShippedFrom = null;
                        lastShippedTo = null;
@@ -576,7 +591,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                    checkedTreeData.clear();
                    TableModel model = (TableModel)fillItemsTable.model;
                    for(int k=0; k<model.numRows(); k++){
-                       if(checkedOrderIds.getByKey(new NumberField((Integer)model.getCell(k, 1))) != null){
+                       if(checkedOrderIds.getByKey(new NumberObject((Integer)model.getCell(k, 1))) != null){
                            DataSet itemsRow = model.getRow(k);
                            final DataMap rebuildMap = (DataMap)itemsRow.getData();
                           
@@ -690,7 +705,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
 
     public void rowDeleted(SourcesTableModelEvents sender, int row) {}
 
-    public void rowSelectd(SourcesTableModelEvents sender, int row) {
+    public void rowSelected(SourcesTableModelEvents sender, int row) {
         if(sender == fillItemsTable.model){
             final DataSet tableRow;
             
@@ -835,9 +850,9 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                                 
                                 //we need to check and see if we need to throw the ship from/ship to error
                                 if(lastShippedFrom != null && lastShippedTo != null &&
-                                                (!lastShippedFrom.equals(fillItemsTable.model.getCell(row, 4)) || !lastShippedTo.equals(fillItemsTable.model.getCell(row, 5)))){
+                                                (!lastShippedFrom.equals(((DropDownField)fillItemsTable.model.getObject(row, 4)).getSelectedKey()) || !lastShippedTo.equals(((DropDownField)fillItemsTable.model.getObject(row, 5)).getSelectedKey()))){
                                                 //uncheck the row and throw a form error
-                                    window.setStatus("Shipped from and shipped to need to match on all rows selected.","ErrorPanel");
+                                    window.setStatus(consts.get("shipFromshipToInvalidException"),"ErrorPanel");
                                     fillItemsTable.model.setCell(row, 0, "N");
                                     //TODO we need to unlock the record because we hit thisn error
                                     
@@ -863,7 +878,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                     Data[] args = new Data[] {orderIdObj}; 
                     
                     if(((DataMap)fillItemsTable.model.getRow(row).getData()).get("changed") != null){
-                        if(Window.confirm("The order items in this row have changed, are you sure you want to unselect?"))
+                        if(Window.confirm(consts.get("fillOrderItemsChangedConfirm")))
                             screenService.getObject("fetchOrderItemAndUnlock", args, new AsyncCallback<DataModel>(){
                                 public void onSuccess(DataModel model){
                                     fillOrderCheck(row, "Y".equals(checkedValue));
@@ -957,7 +972,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     //
 
     //
-    //start tree widget listener methods
+    //start tree widget listener methodsl
     //
     public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
         //we need to set the changed flag is the value is changed
@@ -976,6 +991,19 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                     orderItemsTree.model.refresh();
                 }
                 
+            }else if(col == 2){
+                TreeDataItem item = orderItemsTree.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)item.get(2)).getSelections();
+               
+                DataSet set = null;
+                if(selections.size() > 0)
+                    set = (DataSet)selections.get(0);
+                
+               if(set != null && set.size() > 1){
+                    //set the new quantity on hand
+                   orderItemsTree.model.setCell(row, 4, (Integer)set.get(1).getValue());
+                   //orderItemsTree.model.refresh();
+               }
             }
             
             checkedTreeData = orderItemsTree.model.unload();
@@ -994,7 +1022,10 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         if("orderItem".equals(((TreeWidget)sender).model.getRow(row).leafType) && currentTableRow > -1 && 
                         "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 2)){
             currentTreeRow = row;
-            lastTreeValue = (Integer)orderItemsTree.model.getCell(row, col);
+            //if(col == 3)
+              //  lastTreeValue = (Integer)((DropDownField)orderItemsTree.model.getObject(row, col)).getSelectedKey();
+            //else
+                lastTreeValue = orderItemsTree.model.getCell(row, col);
         }
     }
 
@@ -1029,5 +1060,42 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                     Window.alert(caught.getMessage());
             }
         });
+    }
+    
+    private DataModel createDataModelFromTree(TreeDataModel treeModel){
+        DataModel model = new DataModel();
+        for(int i=0; i<treeModel.size(); i++){
+            TreeDataItem row = treeModel.get(i);
+            
+            if(row.getItems().size() > 0){
+                for(int j=0; j<row.getItems().size(); j++){
+                    DataSet tableRow = new DataSet();
+                    TreeDataItem childRow = row.getItems().get(j);
+                    if(!((Integer)childRow.get(0).getValue()).equals(new Integer(0))){
+                        tableRow.add(childRow.get(0));
+                        tableRow.add(childRow.get(1));
+                        
+                        tableRow.setData((DataMap)childRow.getData().clone());
+                        model.add(tableRow);
+                    }
+                }
+            }else{
+                if(!((Integer)row.get(0).getValue()).equals(new Integer(0))){
+                    DataSet tableRow = new DataSet();
+                    tableRow.add(row.get(0));
+                    tableRow.add(row.get(1));
+                    
+                    tableRow.setData((DataMap)row.getData().clone());
+                    
+                    model.add(tableRow);
+                }
+            }
+        }
+        return model;
+    }
+
+    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

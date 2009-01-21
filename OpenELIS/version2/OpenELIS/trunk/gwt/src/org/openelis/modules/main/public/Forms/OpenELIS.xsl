@@ -47,6 +47,10 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityUtil"/>
   </xalan:component>
   
+  <xalan:component prefix="service">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.server.ServiceUtils"/>
+  </xalan:component>
+  
   <xalan:component prefix="so">
     <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.SecurityModule"/>
   </xalan:component>
@@ -122,13 +126,13 @@ UIRF Software License are applicable instead of those above.
 					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" hover="Hover" />
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-					<xsl:call-template name="menuItem">
+<!--					<xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">fullLogin</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="class"></xsl:with-param>
     				  <xsl:with-param name="args"></xsl:with-param>
-				    </xsl:call-template>
+				    </xsl:call-template> -->
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">quickEntry</xsl:with-param>
@@ -136,13 +140,13 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				    <xsl:call-template name="menuItem">
+<!--				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">secondEntry</xsl:with-param>
 				      <xsl:with-param name="enabled">false</xsl:with-param>
 				      <xsl:with-param name="class"></xsl:with-param>
     				  <xsl:with-param name="args"></xsl:with-param>
-				    </xsl:call-template>
+				    </xsl:call-template> -->
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">tracking</xsl:with-param>
@@ -150,8 +154,6 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-
-
 					<html>&lt;hr/&gt;</html>
 					<!--
 					enviromentalSampleLogin = Enviromental Sample Login
@@ -193,15 +195,36 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">PTSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">ptSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">PTSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">SDWISSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">sdwisSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">SDWISSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				   	<xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">PrivateWellWaterSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">privateWellWaterSampleLogin</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">PrivateWellWaterSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="args"></xsl:with-param>
+				    </xsl:call-template>
+				    <!--
+				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">SampleManagement</xsl:with-param>
 				      <xsl:with-param name="label">sampleManagement</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">SampleManagementScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-
+-->
 					<html>&lt;hr/&gt;</html>
-
 
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
@@ -362,8 +385,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="key">InventoryItem</xsl:with-param>
 				      <xsl:with-param name="label">inventoryItem</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
-<!--				      <xsl:with-param name="class">InventoryItemScreen</xsl:with-param>-->
-				      <xsl:with-param name="class">TransferInventoryScreen</xsl:with-param>
+				      <xsl:with-param name="class">InventoryItemScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    </xsl:if>
@@ -623,7 +645,7 @@ sampleManagementDescription = Description...
        </AbsolutePanel>
        <HorizontalPanel>
           <VerticalPanel key="favoritesPanel" visible="false" width="220px">
-            <HorizontalPanel style="Header" width="100%" height="20px">
+            <HorizontalPanel style="FavHeader" width="100%" height="20px">
                 <text style="ScreenWindowLabel">Favorites</text>
               <widget halign="right">
                 <appButton action="editFavorites" key="EditFavorites" onclick="this">
