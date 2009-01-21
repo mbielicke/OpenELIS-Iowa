@@ -46,9 +46,8 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="EnviromentalSampleLogin" name="{resource:getString($constants,'enviromentalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
-				<!--button panel code-->
+		<VerticalPanel spacing="0" padding="0">
+		<!--button panel code-->
 				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 					<buttonPanel key="buttons">
 						<xsl:call-template name="queryButton">
@@ -91,6 +90,7 @@ UIRF Software License are applicable instead of those above.
 					</buttonPanel>
 				</AbsolutePanel>
 				<!--end button panel code-->
+				<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">		
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt">Accession #:</text>
@@ -113,12 +113,9 @@ UIRF Software License are applicable instead of those above.
 						</widget>
 					</row>
 					</TablePanel>
+					<VerticalPanel style="subform" width="98%">
+					<text style="FormTitle">Enviromental Info</text>
 					<TablePanel style="Form" width="100%">
-						<row>
-							<widget align="center" colspan="4">
-								<text style="FormTitle">Enviromental Info</text>
-							</widget>
-						</row>
 						<row>
 							<text style="Prompt">Hazardous:</text>
 							<check key="domain"/>	
@@ -135,16 +132,18 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt">Location:</text>
 							<HorizontalPanel>
 							<textbox key="domain" tab="??,??" width="200px" showError="false"/>	
-							<appButton action="reportTo" key="locationButton" onclick="this" style="Button">
-								<HorizontalPanel>
-									<AbsolutePanel style="LookupButtonImage"/>
-								</HorizontalPanel>
-							</appButton>
+								<appButton action="locationButton" key="locationButton" onclick="this" style="FieldButton">
+									<HorizontalPanel>
+										<AbsolutePanel style="LookupButtonImage"/>
+									</HorizontalPanel>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 					</TablePanel>
+					</VerticalPanel>
 				<HorizontalPanel>
-					<VerticalPanel>
+					<VerticalPanel style="subform">
+						<text style="FormTitle">Analytes</text>
 						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" maxRows="4" manager="this" enable="true" showError="false">
 	    	                <headers>Item/Tests,Type</headers>
 	                        <widths>280,130</widths>					
@@ -188,7 +187,7 @@ UIRF Software License are applicable instead of those above.
 									<text>Add Test</text>
 								</HorizontalPanel>
 							</appButton>
-							<HorizontalPanel width="150px"/>
+							<HorizontalPanel width="135px"/>
 							<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="RemoveRowButtonImage"/>
@@ -197,21 +196,18 @@ UIRF Software License are applicable instead of those above.
 							</appButton>
 	                  	</HorizontalPanel>
 	                  	</VerticalPanel>
+	                  	<VerticalPanel style="subform">
+	                  	<text style="FormTitle">Organization Info</text>
                   <TablePanel style="Form">
-                  		<row>
-                  			<widget colspan="2" align="center">
-	                  			<text style="FormTitle">Organization Info</text>
-							</widget>
-                  		</row>
 						<row>
 							<text style="Prompt">Project:</text>
 							<HorizontalPanel>
 							<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-							<appButton action="reportTo" key="projectButton" onclick="this" style="Button">
-								<HorizontalPanel>
-									<AbsolutePanel style="LookupButtonImage"/>
-								</HorizontalPanel>
-							</appButton>
+								<appButton action="reportTo" key="projectButton" onclick="this" style="FieldButton">
+									<HorizontalPanel>
+										<AbsolutePanel style="LookupButtonImage"/>
+									</HorizontalPanel>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 						<row>
@@ -219,11 +215,11 @@ UIRF Software License are applicable instead of those above.
 							<!--<lookup key="" icon="LookupButtonImage" onclick="this"/>-->
 							<HorizontalPanel>
 							<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-							<appButton action="reportTo" key="reportToButton" onclick="this" style="Button">
-								<HorizontalPanel>
-									<AbsolutePanel style="LookupButtonImage"/>
-								</HorizontalPanel>
-							</appButton>
+								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
+									<HorizontalPanel>
+										<AbsolutePanel style="LookupButtonImage"/>
+									</HorizontalPanel>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 						<row>
@@ -231,9 +227,10 @@ UIRF Software License are applicable instead of those above.
 							<textbox key="domain" tab="??,??" width="200px"/>		
 						</row>
 					</TablePanel>
+					</VerticalPanel>
 				</HorizontalPanel>
 				<VerticalPanel height="5px"/>
-				<TabPanel height="170px" key="orderTabPanel" halign="center">
+				<TabPanel height="170px" key="orderTabPanel">
 					<tab key="tab1" text="Test Info/Result">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
@@ -248,7 +245,7 @@ UIRF Software License are applicable instead of those above.
 					</tab>
 				</TabPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
+		</VerticalPanel>
 	</display>
 	<rpc key="display">
 

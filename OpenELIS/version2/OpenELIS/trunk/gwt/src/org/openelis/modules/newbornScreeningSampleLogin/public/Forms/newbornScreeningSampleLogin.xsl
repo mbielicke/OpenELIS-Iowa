@@ -43,8 +43,7 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="ClinicalSampleLogin" name="{resource:getString($constants,'newbornScreeningSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
-					<VerticalPanel spacing="0">
+				<VerticalPanel spacing="0" padding="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 							<buttonPanel key="buttons">
@@ -88,6 +87,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel code-->
+						<VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
 						<TablePanel style="Form">
 							<row>
 								<text style="Prompt">Accession #:</text>
@@ -110,15 +110,10 @@ UIRF Software License are applicable instead of those above.
 								</widget>
 							</row>
 						</TablePanel>
+						<HorizontalPanel>
+						<VerticalPanel style="subform">
+	                  	<text style="FormTitle">Baby Info</text>
 						<TablePanel style="Form" width="100%">
-							<row>
-								<widget align="center" colspan="2">
-									<text style="FormTitle">Baby Info</text>
-								</widget>
-								<widget align="center" colspan="6">
-									<text style="FormTitle">Mother</text>
-								</widget>
-							</row>
 							<row>
 								<text style="Prompt">Id:</text>
 								<HorizontalPanel>
@@ -139,32 +134,14 @@ UIRF Software License are applicable instead of those above.
 										</HorizontalPanel>
 									</appButton>
 								</HorizontalPanel>
-								<text style="Prompt">Last:</text>
-								<widget colspan="3">
-									<textbox key="domain" tab="??,??" width="175px"/>
-								</widget>
-								<text style="Prompt">Unique Id:</text>
-								<textbox key="aa" width="75px"/>
 							</row>
 							<row>
 								<text style="Prompt">Last:</text>
 								<textbox key="domain" tab="??,??" width="175px"/>
-								<text style="Prompt">First:</text>
-								<widget colspan="3">
-									<textbox key="domain" tab="??,??" width="175px"/>
-								</widget>
-								<text style="Prompt">Birth:</text>
-								<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
 							</row>
 							<row>
 								<text style="Prompt">First:</text>
 								<textbox key="domain" tab="??,??" width="150px"/>
-								<text style="Prompt">Address:</text>
-								<widget colspan="3">
-									<textbox key="aa" width="186px"/>
-								</widget>
-								<text style="Prompt">Phone:</text>
-								<textbox key="motherPhone" width="80px"/>
 							</row>
 							<row>
 								<text style="Prompt">Gender:</text>
@@ -175,10 +152,6 @@ UIRF Software License are applicable instead of those above.
 										<dropdown key="race" tab="??,??" width="70px"/>
 									</HorizontalPanel>
 								</HorizontalPanel>
-								<text style="Prompt">Mult Unit:</text>
-								<widget colspan="3">
-									<textbox key="aa" width="186px"/>
-								</widget>
 							</row>
 							<row>
 								<text style="Prompt">Birth:</text>
@@ -189,25 +162,63 @@ UIRF Software License are applicable instead of those above.
 										<textbox key="time" width="40px"/>
 									</HorizontalPanel>
 								</HorizontalPanel>
-								<text style="Prompt">City:</text>
-								<widget colspan="3">
-									<textbox key="aa" width="186px"/>
-								</widget>
 							</row>
 							<row>
 								<text style="Prompt">Gest Age:</text>
 								<textbox key="aa" width="25px"/>
-								<text style="Prompt">State:</text>
-								<textbox key="aa" width="33px"/>
-								<text style="Prompt">Zip Code:</text>
-								<textbox key="domain" tab="??,??" width="63px"/>
-							</row>
-							<row>
-								<widget align="center" colspan="8">
-									<text style="FormTitle">Sample</text>
-								</widget>
 							</row>
 						</TablePanel>
+						</VerticalPanel>
+						<VerticalPanel style="subform">
+	                  	<text style="FormTitle">Mother</text>
+						<TablePanel style="Form">
+						<row>
+							<text style="Prompt">Last:</text>
+							<widget colspan="3">
+								<textbox key="domain" tab="??,??" width="175px"/>
+							</widget>
+							<text style="Prompt">Unique Id:</text>
+							<textbox key="aa" width="75px"/>
+						</row>
+						<row>
+							<text style="Prompt">First:</text>
+							<widget colspan="3">
+								<textbox key="domain" tab="??,??" width="175px"/>
+							</widget>
+							<text style="Prompt">Birth:</text>
+							<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						</row>
+						<row>
+							<text style="Prompt">Address:</text>
+							<widget colspan="3">
+								<textbox key="aa" width="186px"/>
+							</widget>
+							<text style="Prompt">Phone:</text>
+							<textbox key="motherPhone" width="80px"/>
+						</row>
+						<row>
+							<text style="Prompt">Mult Unit:</text>
+							<widget colspan="3">
+								<textbox key="aa" width="186px"/>
+							</widget>
+						</row>
+						<row>
+							<text style="Prompt">City:</text>
+							<widget colspan="3">
+								<textbox key="aa" width="186px"/>
+							</widget>
+						</row>
+						<row>
+							<text style="Prompt">State:</text>
+							<textbox key="aa" width="33px"/>
+							<text style="Prompt">Zip Code:</text>
+							<textbox key="domain" tab="??,??" width="63px"/>
+						</row>
+						</TablePanel>
+						</VerticalPanel>
+						</HorizontalPanel>
+						<VerticalPanel style="subform" width="98%">
+	                  	<text style="FormTitle">Sample</text>
 						<TablePanel style="Form" width="100%">
 							<row>
 								<text style="Prompt">Feeding:</text>
@@ -230,8 +241,10 @@ UIRF Software License are applicable instead of those above.
 								<check key="repeat"/>
 							</row>
 						</TablePanel>
+						</VerticalPanel>
 						<HorizontalPanel>
-							<VerticalPanel>
+							<VerticalPanel style="subform">
+						<text style="FormTitle">Analytes</text>
 								<tree-table enable="true" key="itemsTestsTree" manager="this" maxRows="4" showError="false" showScroll="ALWAYS" width="auto">
 									<headers>Item/Tests,Source</headers>
 									<widths>280,130</widths>
@@ -275,7 +288,7 @@ UIRF Software License are applicable instead of those above.
 											<text>Add Test</text>
 										</HorizontalPanel>
 									</appButton>
-									<HorizontalPanel width="210px"/>
+									<HorizontalPanel width="225px"/>
 									<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
 										<HorizontalPanel>
 											<AbsolutePanel style="RemoveRowButtonImage"/>
@@ -286,12 +299,9 @@ UIRF Software License are applicable instead of those above.
 									</appButton>
 								</HorizontalPanel>
 							</VerticalPanel>
+							<VerticalPanel style="subform">
+	                  	<text style="FormTitle">Provider/Organization Info</text>
 							<TablePanel style="Form">
-								<row>
-									<widget align="center" colspan="4">
-										<text style="FormTitle">Provider/Organization Info</text>
-									</widget>
-								</row>
 								<row>
 									<text style="Prompt">Provider:</text>
 									<textbox key="domain" tab="??,??" width="100px"/>
@@ -322,11 +332,11 @@ UIRF Software License are applicable instead of those above.
 									<widget colspan="3">
 										<HorizontalPanel>
 											<textbox key="domain" showError="false" tab="??,??" width="167px"/>
-											<appButton action="reportTo" key="reportToButton" onclick="this" style="Button">
-												<HorizontalPanel>
-													<AbsolutePanel style="LookupButtonImage"/>
-												</HorizontalPanel>
-											</appButton>
+											<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
+									<HorizontalPanel>
+										<AbsolutePanel style="LookupButtonImage"/>
+									</HorizontalPanel>
+								</appButton>
 										</HorizontalPanel>
 									</widget>
 								</row>
@@ -335,18 +345,19 @@ UIRF Software License are applicable instead of those above.
 									<widget colspan="3">
 										<HorizontalPanel>
 											<textbox key="domain" showError="false" tab="??,??" width="167px"/>
-											<appButton action="reportTo" key="birthOrgButton" onclick="this" style="Button">
-												<HorizontalPanel>
-													<AbsolutePanel style="LookupButtonImage"/>
-												</HorizontalPanel>
-											</appButton>
+											<appButton action="reportTo" key="birthOrgButton" onclick="this" style="FieldButton">
+									<HorizontalPanel>
+										<AbsolutePanel style="LookupButtonImage"/>
+									</HorizontalPanel>
+								</appButton>
 										</HorizontalPanel>
 									</widget>
 								</row>
 							</TablePanel>
+							</VerticalPanel>
 						</HorizontalPanel>
 						<VerticalPanel height="5px"/>
-						<TabPanel halign="center" height="170px" key="orderTabPanel">
+						<TabPanel height="170px" key="orderTabPanel">
 							<tab key="tab1" text="Test Info/Result">
 								<VerticalPanel height="170px" width="730px"/>
 							</tab>
@@ -361,7 +372,7 @@ UIRF Software License are applicable instead of those above.
 							</tab>
 						</TabPanel>
 					</VerticalPanel>
-				</HorizontalPanel>
+				</VerticalPanel>
 			</display>
 			<rpc key="display"/>
 			<rpc key="query"/>
