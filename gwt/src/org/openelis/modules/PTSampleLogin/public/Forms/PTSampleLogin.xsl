@@ -187,7 +187,7 @@ UIRF Software License are applicable instead of those above.
 									<text>Add Test</text>
 								</HorizontalPanel>
 							</appButton>
-							<HorizontalPanel width="150px"/>
+							<HorizontalPanel width="135px"/>
 							<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="RemoveRowButtonImage"/>
