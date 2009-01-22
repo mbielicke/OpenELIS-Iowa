@@ -784,6 +784,7 @@ public class TestBean implements TestRemote {
 
     public List getPrepTestDropDownValues() {        
         Query query = manager.createNamedQuery("Test.Names");
+        query.setParameter("isActive", "Y");
         List preptestList = query.getResultList();
         return preptestList;
     }    

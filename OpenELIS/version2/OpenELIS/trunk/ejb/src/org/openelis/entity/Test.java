@@ -56,15 +56,16 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailerId = :id"),
     @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
-    @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + "  from Test t, Method m where t.methodId  = m.id order by t.name, m.name"),
+    @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + 
+                "  from Test t, Method m where t.methodId  = m.id and t.isActive = :isActive order by t.name, m.name"),
     @NamedQuery(name = "Test.TestIdNameMethodId", query = "select distinct new org.openelis.domain.TestIdNameMethodIdDO(t.id, t.name, t.methodId) " + "  from Test t where t.id = :id"),
     @NamedQuery(name = "Test.TestDetails", query = "select distinct new org.openelis.domain.TestDetailsDO(t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                                                   "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.scriptletId," +
                                                         "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " + "  from Test t where t.id = :id"),
-    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name"),
+    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name "),
     @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
     @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
-             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s order by t.name,m.name,s.name ")})
+             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name ")})
     
 
 @Entity
