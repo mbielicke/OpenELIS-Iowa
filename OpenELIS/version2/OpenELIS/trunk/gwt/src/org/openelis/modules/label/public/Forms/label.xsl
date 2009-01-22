@@ -52,15 +52,15 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "Label" name = "{resource:getString($constants,'label')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <HorizontalPanel spacing= "0" padding= "0" height="225px" style="WhiteContentPanel">  
-  					<CollapsePanel key="collapsePanel">
+ <HorizontalPanel spacing= "0" padding= "0">  
+  					<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
 						<azTable colwidths ="175" height="225px" key="azTable" maxRows="9" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>  
-  <VerticalPanel>
+  <VerticalPanel padding="0" spacing="0">
    <!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">			
     			<buttonPanel key="buttons">
@@ -110,7 +110,7 @@ UIRF Software License are applicable instead of those above.
 		</AbsolutePanel>
 		<!--end button panel-->
    
-  <VerticalPanel/> 
+	<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel" height="235px" width="620px">
   <TablePanel key = "svfields" style="Form">
     <row>     
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text> 
@@ -132,6 +132,7 @@ UIRF Software License are applicable instead of those above.
                
                             
 						
+  </VerticalPanel>
   </VerticalPanel>
  </HorizontalPanel>
 </display>

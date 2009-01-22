@@ -60,9 +60,9 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Panel" name="{resource:getString($constants,'panel')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="225px">
+					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
 					  <VerticalPanel>	
 						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'panel')}" width="100%">
 							<buttonPanel key="atozButtons">
@@ -72,7 +72,7 @@ UIRF Software License are applicable instead of those above.
 						<VerticalPanel height = "80px"/>
 					  </VerticalPanel>	
 					</CollapsePanel>					
-					<VerticalPanel spacing="0">
+					<VerticalPanel spacing="0" padding="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 							<buttonPanel key="buttons">
@@ -122,9 +122,7 @@ UIRF Software License are applicable instead of those above.
 							
 						</AbsolutePanel>
 						<!--end button panel-->						
-						<HorizontalPanel padding="0" spacing="0">
-						<HorizontalPanel width = "10px"/>
-						<VerticalPanel>						
+						<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">				
 							<TablePanel style="Form">									
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>								  	
@@ -243,7 +241,6 @@ UIRF Software License are applicable instead of those above.
 						        </widget>       						        						         
 						     </HorizontalPanel>					   
 						</VerticalPanel>
-					 </HorizontalPanel>  	 						  			
 					</VerticalPanel>					
 				</HorizontalPanel>				
 			</display>

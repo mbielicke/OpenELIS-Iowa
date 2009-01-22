@@ -106,8 +106,8 @@ UIRF Software License are applicable instead of those above.
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/></headers>
-							<widths>20,45,90,65,120,150,145,60,60</widths>										
+							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Kit</headers>
+							<widths>20,45,90,65,120,150,145,60,60,30</widths>										
 							<editors>
 								<check/>
 								<textbox case="mixed"/>
@@ -117,7 +117,8 @@ UIRF Software License are applicable instead of those above.
 								<dropdown case="upper" width="130px"/>
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
-								<textbox case="mixed"/>								
+								<textbox case="mixed"/>				
+								<check/>				
 							</editors>
 							<fields>
 								<check key="process" type="integer" required="false"/>
@@ -129,10 +130,11 @@ UIRF Software License are applicable instead of those above.
 								<string key="{meta:getDescription($order)}" required="false"/>
 								<number key="{meta:getNeededInDays($order)}" type="integer" required="false"/>
 								<number key="daysLeft" type="integer" required="false"/>
+								<check required="false"/>
 							</fields>
-							<sorts>false,false,true,false,true,true,true,false,false</sorts>
-							<filters>false,false,false,false,false,false,false,false,false</filters>
-							<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
+							<sorts>false,false,true,false,true,true,true,false,false,false</sorts>
+							<filters>false,false,false,false,false,false,false,false,false,false</filters>
+							<colAligns>left,left,left,left,left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">

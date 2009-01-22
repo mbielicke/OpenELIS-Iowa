@@ -54,16 +54,16 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Test" name="{resource:getString($constants,'method')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="235px">
+					<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
 						<azTable colwidths="175"  key="azTable" maxRows="9" tablewidth="auto" headers="{resource:getString($constants,'method')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>					
-					<VerticalPanel spacing="0">
+					<VerticalPanel spacing="0" padding="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 							<buttonPanel key="buttons">
@@ -112,8 +112,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						<VerticalPanel width = "10px"/>
-						 <VerticalPanel>						
+						 <VerticalPanel spacing="0" padding="0" height="235px" style="WhiteContentPanel">
 							<TablePanel style="Form">
 								<!--<row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>

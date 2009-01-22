@@ -67,15 +67,15 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "Provider" name = "{resource:getString($constants,'provider')}" serviceUrl= "OpenElisService" xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <HorizontalPanel  spacing= "0" padding= "0" style="WhiteContentPanel">
- 					<CollapsePanel key="collapsePanel" height="440px">
+ 	<HorizontalPanel spacing="0" padding="0">
+ 					<CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
 						<azTable maxRows="18" tablewidth="auto" key="azTable" title="" width="100%" colwidths ="88,87" headers = "{resource:getString($constants,'lastName')},{resource:getString($constants,'firstName')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>
-   <VerticalPanel spacing= "0">
+   <VerticalPanel spacing= "0" padding="0">
    <!--button panel code-->
 		<AbsolutePanel layout="absolute" spacing="0" style="ButtonPanelContainer">
 			<widget>
@@ -122,11 +122,8 @@ UIRF Software License are applicable instead of those above.
 		</AbsolutePanel>
 		<!--end button panel-->
    
-   <VerticalPanel  height = "5px"/>
-   <HorizontalPanel padding="0" spacing="0">
-   <HorizontalPanel width = "10px"/>
-   <VerticalPanel>
-   <TablePanel width = "450px" style= "Form">
+   <VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
+   <TablePanel style= "Form">
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"id")'/>:</text>
       <textbox  width= "50px"  key = "{meta:getId($pro)}"  tab="{meta:getLastName($pro)},{meta:getNpi($pro)}"/>                
@@ -149,7 +146,7 @@ UIRF Software License are applicable instead of those above.
     </row>
    </TablePanel>
    
-    <TabPanel width = "625px" key= "provTabPanel"  halign="center">
+    <TabPanel width = "625px" key= "provTabPanel">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
       <VerticalPanel>
        <widget valign="top">
@@ -284,8 +281,6 @@ UIRF Software License are applicable instead of those above.
 					</tab>
    </TabPanel>   
   </VerticalPanel>
-  <HorizontalPanel width = "10px"/>
-  </HorizontalPanel>
  </VerticalPanel>
  </HorizontalPanel>
 </display>

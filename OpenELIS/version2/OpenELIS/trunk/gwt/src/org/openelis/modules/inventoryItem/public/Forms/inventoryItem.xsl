@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel" style="LeftSidePanel">
-				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="22" tablewidth="auto" title="" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
+				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="22" tablewidth="auto" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>

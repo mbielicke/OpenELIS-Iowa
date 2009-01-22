@@ -67,7 +67,7 @@ import org.openelis.util.UTFResource;
 public class StorageLocationService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
    											   AutoCompleteServiceInt{
 
-	private static final int leftTableRowsPerPage = 20;
+	private static final int leftTableRowsPerPage = 19;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 

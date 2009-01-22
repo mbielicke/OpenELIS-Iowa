@@ -59,7 +59,7 @@ import org.openelis.util.UTFResource;
 
 public class AnalyteService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt {
 
-	private static final int leftTableRowsPerPage = 10;
+	private static final int leftTableRowsPerPage = 9;
 	
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     

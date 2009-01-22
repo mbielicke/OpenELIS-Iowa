@@ -46,8 +46,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="AnimalSampleLogin" name="{resource:getString($constants,'animalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-			<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+			<VerticalPanel spacing="0" padding="0">
 				<!--button panel code-->
 				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 					<buttonPanel key="buttons">
@@ -91,6 +90,7 @@ UIRF Software License are applicable instead of those above.
 					</buttonPanel>
 				</AbsolutePanel>
 				<!--end button panel code-->
+				<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt">Accession #:</text>
@@ -271,7 +271,7 @@ UIRF Software License are applicable instead of those above.
 					</tab>
 				</TabPanel>
 			</VerticalPanel>
-		</HorizontalPanel>
+		</VerticalPanel>
 	</display>
 	<rpc key="display">
 
