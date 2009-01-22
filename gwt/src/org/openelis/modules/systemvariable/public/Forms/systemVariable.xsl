@@ -53,15 +53,15 @@ UIRF Software License are applicable instead of those above.
 <screen id= "SystemVariable" name="{resource:getString($constants,'systemVariable')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
 
- <HorizontalPanel spacing= "0" padding= "0" height="225px" style="WhiteContentPanel">  
-  					<CollapsePanel key="collapsePanel" height="225px">
+ <HorizontalPanel spacing= "0" padding= "0">  
+  					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
 						<azTable colwidths ="175" key="azTable" maxRows="9" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>  
-  <VerticalPanel>
+  <VerticalPanel spacing="0" padding="0">
    <!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<widget>
@@ -113,7 +113,7 @@ UIRF Software License are applicable instead of those above.
 		</AbsolutePanel>
 		<!--end button panel-->
    
-  <VerticalPanel height = "5px"/> 
+  <VerticalPanel spacing="0" padding="0" style="WhiteContentPanel" height="225px" width="620px">
   <TablePanel key = "svfields" layout= "table" style="Form" xsi:type= "Table">
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
@@ -124,6 +124,7 @@ UIRF Software License are applicable instead of those above.
       <textbox case= "mixed" key= "{meta:getValue($sv)}" width= "425px" tab="{meta:getName($sv)},{meta:getName($sv)}"/>   
     </row>     						                                           					                         
    </TablePanel>                                        						
+  </VerticalPanel>
   </VerticalPanel>
  </HorizontalPanel>
 </display>

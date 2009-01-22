@@ -58,10 +58,10 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Analyte" name="{resource:getString($constants,'analyte')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
+		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
-			<CollapsePanel key="collapsePanel" height="235px">
-			    <azTable width="auto" key="azTable" maxRows="10" title="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
+			<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
+			    <azTable width="auto" key="azTable" maxRows="9" headers="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
@@ -116,7 +116,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 			</AbsolutePanel>
 			<!--end button panel-->
-			<VerticalPanel>
+			<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel" height="235px" width="600px">
 				<TablePanel style="Form">
 					<row>
 						<HorizontalPanel style="FormVerticalSpacing"/>

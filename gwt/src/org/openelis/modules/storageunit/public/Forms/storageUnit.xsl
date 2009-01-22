@@ -52,16 +52,16 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Storage" name="{resource:getString($constants,'storageUnit')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0" style="WhiteContentPanel">
+		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
-			<CollapsePanel key="collapsePanel" height="235px">
-			    <azTable width="100%" key="azTable" maxRows="10" title="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
+			<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
+			    <azTable width="100%" key="azTable" maxRows="10" headers="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 				</azTable>
 				</CollapsePanel>
-			<VerticalPanel spacing="0">
+			<VerticalPanel spacing="0" padding="0">
 			<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 			<buttonPanel key="buttons">
@@ -110,7 +110,8 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
+			<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel" height="235px" width="620px">
+			
 				<TablePanel style="Form">
 					<row>
 						<HorizontalPanel style="FormVerticalSpacing"/>

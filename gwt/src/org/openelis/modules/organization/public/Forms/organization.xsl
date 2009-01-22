@@ -77,9 +77,9 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Organization" name="{resource:getString($constants,'organization')}" serviceUrl="TestService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="440px">
+					<CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
 						<azTable colwidths="175" height="425px" key="azTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>
-					<VerticalPanel spacing="0">
+					<VerticalPanel spacing="0" padding="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 							<buttonPanel key="buttons">
@@ -136,7 +136,7 @@ UIRF Software License are applicable instead of those above.
 
 						</AbsolutePanel>
 						<!--end button panel-->
-						<VerticalPanel>
+						<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 							</TablePanel>
 							<!-- TAB PANEL -->
-							<TabPanel halign="center" key="orgTabPanel">
+							<TabPanel key="orgTabPanel">
 								<!-- TAB 1 -->
 								<tab key="contactsTab" text="{resource:getString($constants,'contact')}">
 									<VerticalPanel  width="610px" padding="0" spacing="0">

@@ -123,10 +123,24 @@ UIRF Software License are applicable instead of those above.
 					</row>-->
 							<row>
 								<text style="Prompt">Id:</text>
-								<!--<HorizontalPanel>-->
-								<textbox key="aa" width="75px" showError="false"/>	
-									
-<!--								</HorizontalPanel>-->
+								<HorizontalPanel>
+									<textbox key="aa" showError="false" width="75px"/>
+									<appButton action="idButton1" key="idButton1" onclick="this" style="FieldButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="LookupButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton2" key="idButton2" onclick="this" style="FieldButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="AdvancedButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+									<appButton action="idButton3" key="idButton3" onclick="this" style="FieldButton">
+										<HorizontalPanel>
+											<AbsolutePanel style="CommentButtonImage"/>
+										</HorizontalPanel>
+									</appButton>
+								</HorizontalPanel>
 								<text style="Prompt">Npi:</text>
 								<widget colspan="3">
 								<textbox key="aa" width="75px"/>	
@@ -175,7 +189,7 @@ UIRF Software License are applicable instead of those above.
 								<textbox key="domain" tab="??,??" width="125px"/>	
 							</row>
 							</TablePanel>
-							<HorizontalPanel style="subformButtons">
+							<!--<HorizontalPanel style="subformButtons">
 							<appButton action="idButton1" key="idButton1" onclick="this" style="FormButton">
 										<HorizontalPanel>
 											<AbsolutePanel style="LookupButtonImage"/>
@@ -191,7 +205,7 @@ UIRF Software License are applicable instead of those above.
 											<AbsolutePanel style="LookupButtonImage"/>
 										</HorizontalPanel>
 									</appButton>
-									</HorizontalPanel>
+									</HorizontalPanel>-->
 									
 							</VerticalPanel>
 				<HorizontalPanel>

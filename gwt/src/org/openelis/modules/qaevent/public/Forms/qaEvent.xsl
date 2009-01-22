@@ -63,15 +63,15 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id= "QAEvents" name="{resource:getString($constants,'QAEvent')}" serviceUrl= "OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <display>
- <HorizontalPanel spacing= "0" padding= "0" style="WhiteContentPanel" xsi:type= "Panel">  
- 					<CollapsePanel key="collapsePanel">
+		 <HorizontalPanel spacing= "0" padding= "0">  
+ 					<CollapsePanel key="collapsePanel" style="LeftSidePanel">
 						<azTable colwidths ="100,65,65" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>
-  <VerticalPanel>
+  		<VerticalPanel padding="0" spacing="0">
    <!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 						<buttonPanel key="buttons">
@@ -116,8 +116,8 @@ UIRF Software License are applicable instead of those above.
 		</AbsolutePanel>
 		<!--end button panel-->
    
-  <VerticalPanel height = "5px"/> 
-  <TablePanel key = "qafields" style="Form" xsi:type= "Table">
+  <VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
+  <TablePanel style="Form">
     <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
       <textbox key = "{meta:getName($qae)}" max = "20" width= "145px" case = "lower" tab="{meta:getDescription($qae)},{meta:getReportingText($qae)}"/>
@@ -157,6 +157,7 @@ UIRF Software License are applicable instead of those above.
                             
 						
   </VerticalPanel>
+ </VerticalPanel>
  </HorizontalPanel>
 </display>
 							  
