@@ -320,7 +320,8 @@ public class CategoryBean implements CategoryRemote {
         query.setParameter("entry", entry);
         Integer entryId = null;
         try {
-            entryId = (Integer)query.getSingleResult();
+            if(query.getResultList().size() > 0)
+             entryId = (Integer)(query.getResultList().get(0));
         } catch (NoResultException ex) {
             return null;
         } catch (Exception ex) {

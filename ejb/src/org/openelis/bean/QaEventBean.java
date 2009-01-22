@@ -33,9 +33,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.QaEventMetaMap;
-import org.openelis.persistence.CachingManager;
 import org.openelis.remote.QaEventRemote;
-import org.openelis.security.domain.SystemUserDO;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -80,9 +78,6 @@ public class QaEventBean implements QaEventRemote{
     }
     
     public QaEventDO getQaEvent(Integer qaEventId) {
-        
-             
-        
         Query query = manager.createNamedQuery("QaEvent.QaEvent");
         query.setParameter("id", qaEventId);
         QaEventDO qaEvent = (QaEventDO) query.getSingleResult();
@@ -91,7 +86,8 @@ public class QaEventBean implements QaEventRemote{
     }  
 
     public List<Object[]> getTestNames() {
-        Query query = manager.createNamedQuery("Test.Names");                               
+        Query query = manager.createNamedQuery("Test.Names");
+        query.setParameter("isActive", "Y");
         List<Object[]> testNames = query.getResultList();         
         return testNames;
     }

@@ -110,6 +110,7 @@ public class PanelBean implements PanelRemote {
 
     public List getTestMethodNames() {
         Query query = manager.createNamedQuery("Test.TestIdNameMethodSectionNames");
+        query.setParameter("isActive", "Y");
         List testMethodList = query.getResultList();
         return testMethodList;
     }
