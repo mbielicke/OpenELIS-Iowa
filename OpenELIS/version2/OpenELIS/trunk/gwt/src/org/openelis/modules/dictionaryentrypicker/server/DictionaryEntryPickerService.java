@@ -96,17 +96,8 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<For
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl"));
         
-        DataModel categoryDropDownField = (DataModel)CachingManager.getElement("InitialData",
-                                                     "categoryDropDown");
-        if (categoryDropDownField == null) {
-            categoryDropDownField = getInitialModel("category");
-            CachingManager.putElement("InitialData",
-                                      "categoryDropDown",
-                                      categoryDropDownField);
-        }
         HashMap<String, Data> map = new HashMap<String, Data>();
         map.put("xml", xml);
-        map.put("categories", categoryDropDownField);
         return map;
     }
 
@@ -160,38 +151,27 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<For
           return numObj;
     }
     
-    private DataModel getInitialModel(String category){
+    public DataModel getInitialModel(){
        DataModel model = new DataModel();
        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
        List<IdNameDO> list = remote.getCategoryList();
-       DataSet blankset = new DataSet();
-
-       StringObject blankStringId = new StringObject();
-
-       blankStringId.setValue(openElisConstants.getString("allCategories"));
-       blankset.add(blankStringId);
-
-       NumberObject blankNumberId = new NumberObject(-1);
-       blankset.setKey(blankNumberId);
+       IdNameDO methodDO = null;
+       StringObject textObject = null;
+       NumberObject numberId = null;                
+       DataSet set = null;
+       DataSet blankset = new DataSet();  
+       blankset.add(new StringObject(openElisConstants.getString("allCategories")));
+       blankset.setKey(new NumberObject(-1));
             
        model.add(blankset);
 
        for (Iterator iter = list.iterator(); iter.hasNext();) {
-           IdNameDO methodDO = (IdNameDO)iter.next();
-
-           DataSet set = new DataSet();
-           // id
-           Integer dropdownId = methodDO.getId();
-           // entry
-           String dropdownText = methodDO.getName();
-
-           StringObject textObject = new StringObject(dropdownText);
-           NumberObject numberId = new NumberObject(dropdownId);
-
+           methodDO = (IdNameDO)iter.next();
+           set = new DataSet();
+           textObject = new StringObject(methodDO.getName());
+           numberId = new NumberObject(methodDO.getId());
            set.add(textObject);
-
            set.setKey(numberId);
-
            model.add(set);
        }
 
