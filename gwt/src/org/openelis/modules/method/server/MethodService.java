@@ -138,9 +138,9 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
     }
 
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-     /*   MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
+        MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpcSend);
-       // List<Exception> exceptionList = remote.validateForAdd(methodDO);
+        List<Exception> exceptionList = remote.validateForAdd(methodDO);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpcSend);    
             return rpcSend;
@@ -161,7 +161,7 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
             
         }
         methodDO.setId(testId);
-        setFieldsInRPC(rpcReturn, methodDO);*/
+        setFieldsInRPC(rpcReturn, methodDO);
         return rpcReturn;
     }
 
@@ -172,7 +172,7 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
 
 
     public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
-        /*
+       
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpcSend);
         List<Exception> exceptionList = remote.validateForUpdate(methodDO);
@@ -195,7 +195,7 @@ public class MethodService implements AppScreenFormServiceInt<FormRPC, DataSet, 
             
         }
         setFieldsInRPC(rpcReturn, methodDO);
-        */
+        
         return rpcReturn;
     }
 

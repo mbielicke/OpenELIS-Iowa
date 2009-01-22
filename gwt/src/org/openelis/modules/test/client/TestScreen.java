@@ -27,7 +27,6 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.gwt.common.FormRPC;
@@ -48,12 +47,10 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenTreeWidget;
 import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
@@ -741,7 +738,7 @@ public class TestScreen extends OpenELISScreenForm implements
      */
     public void finishedEditing(SourcesTableWidgetEvents sender,
                                 int row,
-                                int col) {
+                                int col) {        
         if (sender == sectionWidget && col == 1) {
             final int currRow = row;
             final Integer selValue = (Integer)((DropDownField)sectionWidget.model.getRow(row)
@@ -794,7 +791,20 @@ public class TestScreen extends OpenELISScreenForm implements
         } else if (sender == resultWidget) {
             final String value = (String)resultWidget.model.getRow(row)
                                                            .get(1)
-                                                           .getValue();            
+                                                           .getValue();   
+            DataSet set = resultWidget.model.getData().get(row);
+            DataMap data = (DataMap)set.getData();
+            Integer rg = null;
+            if(data == null) {
+                data = new DataMap();                                                                                            
+                set.setData(data);
+            }
+            
+            if(data.get("resGrp") == null) {
+             rg = resultPanel.getTabBar().getSelectedTab();                                                                                        
+             data.put("resGrp", new NumberField(rg+1));
+            }
+            
             if (col == 1 && !"".equals(value.trim())) {                
                 final int currRow = row;
                 final Integer selValue = (Integer)((DropDownField)resultWidget.model.getRow(row)
@@ -988,7 +998,7 @@ public class TestScreen extends OpenELISScreenForm implements
                                             }
                                         });
 
-            }
+            }            
         } else if(sender == wsItemWidget) {
             if(col == 0){
                 final int currRow = row;
@@ -1051,7 +1061,7 @@ public class TestScreen extends OpenELISScreenForm implements
 
     }
     
-    public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {                   
+    public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {        
        int index = analyteTreeController.modelIndexList[row];
        int tempAnaId = 0;        
        
@@ -1166,7 +1176,7 @@ public class TestScreen extends OpenELISScreenForm implements
      * The function adds new rows to the Results table with the values for the "Value" column
      * being set to the entries that were chosen through the lookup screen 
      */    
-    public void addResultRows(HashMap<Integer,String> dictionaryEntries,DataSet set,List<Integer>idList) {
+    public void addResultRows(List<String> deList,DataSet set,List<Integer>idList) {
         DataMap data = null;
         DataSet row = null;
         String entry = null;
@@ -1178,7 +1188,7 @@ public class TestScreen extends OpenELISScreenForm implements
         for (int iter = 0; iter < idList.size(); iter++) {
           row = resultWidget.model.createRow();
           id = idList.get(iter); 
-          entry  = dictionaryEntries.get(id);
+          entry  = deList.get(iter);
           row.get(0).setValue(set);
           row.get(1).setValue(entry);
           data = new DataMap();
@@ -2114,14 +2124,14 @@ public class TestScreen extends OpenELISScreenForm implements
    private boolean setErrorToItem(TreeDataItem item) {
        boolean someError = false;
        DropDownField field = (DropDownField)item.get(0); 
-       if(fieldInError(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
+       if(fieldBlank(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
             field.addError(consts.get("fieldRequiredException")); 
             field.valid = false;
             someError = true;
        } 
        
        field = (DropDownField)item.get(1);               
-       if(fieldInError(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
+       if(fieldBlank(field) && !field.getErrors().contains(consts.get("fieldRequiredException"))) {           
            field.addError(consts.get("fieldRequiredException"));   
            field.valid = false;
            someError = true;
@@ -2129,7 +2139,7 @@ public class TestScreen extends OpenELISScreenForm implements
       return someError; 
    }
    
-   private boolean fieldInError(DropDownField field) {                    
+   private boolean fieldBlank(DropDownField field) {                    
        if(field.getSelectedKey() == null || (Integer)field.getSelectedKey()==-1) {
           return true; 
        }

@@ -59,7 +59,6 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
                                                                                ChangeListener{
     private TestScreen testScreen;
     
-    private static DataModel categoryDropdown;
     private static boolean loaded =  false;
     
     private TextBox findTextBox = null;
@@ -96,8 +95,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         }
     }
     
-    public void afterDraw(boolean sucess) {
-        loaded = true;
+    public void afterDraw(boolean sucess) {        
         window.setStatus("","spinnerIcon");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         addCommandListener(bpanel);
@@ -111,12 +109,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         prevPressed = null;
         findTextBox = (TextBox)getWidget("findTextBox");
         
-        if (categoryDropdown == null) {
-            categoryDropdown = (DataModel)initData.get("categories");
-        }
-        
-        categoryDrop = (Dropdown)getWidget("category");
-        categoryDrop.setModel(categoryDropdown);              
+        loadCategoryDropdown();
         
         ScreenTableWidget dictTable = (ScreenTableWidget)widgets.get("dictEntTable");        
         dictionaryController  = (TableWidget)dictTable.getWidget();
@@ -142,10 +135,10 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     
     public void commit() {
         List<Integer> idList = new ArrayList<Integer>();
-        HashMap<Integer,String> map = getSelectedEntries(idList);
+        List<String> strlist = getSelectedEntries(idList);
         DataSet set = new DataSet(new NumberObject(dictId));
         window.close();
-        testScreen.addResultRows(map,set,idList);        
+        testScreen.addResultRows(strlist,set,idList);        
     }
 
     public void abort() {
@@ -208,7 +201,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
         FormRPC queryRPC = null;
         if(sender == findButton){                     
           queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-          queryRPC = (FormRPC) this.forms.get("queryByName");
+          queryRPC = (FormRPC) forms.get("queryByName");
           queryRPC.setFieldValue("findTextBox", queryString);      
           pattern = new StringObject(queryString);
           loadDictionaryModel(pattern);
@@ -237,15 +230,15 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
             public void onSuccess(DataModel result) {                  
                 dictionaryController.model.setModel(result);
                 dictionaryController.model.refresh();
-                window.setStatus("","");
+                window.setStatus(consts.get("loadCompleteMessage"),"");
             }
             
         });
         
     }
     
-    private HashMap<Integer,String> getSelectedEntries(List<Integer> idList){
-        HashMap<Integer,String> entries = new HashMap<Integer,String>();
+    private List<String> getSelectedEntries(List<Integer> idList){
+        List<String> entries = new ArrayList<String>();
         DataSet set = null;
         String entry = null;
         Integer id = null;
@@ -254,12 +247,30 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
             set = dictionaryController.model.getSelections().get(iter);
             data = (DataMap)set.getData();
             id = (Integer)((NumberField)data.get("id")).getValue();
-            entry = (String)set.get(0).getValue();
-            entries.put(id,entry);
-            idList.add(id);
+            entry = (String)set.get(0).getValue();            
+            
+            if(!idList.contains(id)) {
+             idList.add(id);
+             entries.add(entry);
+            } 
         }
        return entries; 
     }
         
+    private void loadCategoryDropdown() {
+        screenService.getObject("getInitialModel",new Data[] {},
+                                new AsyncCallback<DataModel>() {
+                                    public void onSuccess(DataModel result) {                                       
+                                        categoryDrop = (Dropdown)getWidget("category");
+                                        categoryDrop.setModel(result);    
+                                    }
+
+                                    public void onFailure(Throwable caught) {
+                                        Window.alert(caught.getMessage());
+                                        window.setStatus("", "");
+                                    }
+                            });
+    }
+    
 
 }

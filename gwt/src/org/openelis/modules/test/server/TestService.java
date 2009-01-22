@@ -1406,21 +1406,31 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         }
     }    
     
-    public FormRPC fillTestResults(DataSet key, FormRPC rpcReturn){
+    public FormRPC fillTestResults(DataSet key, FormRPC rpcReturn){       
+        DataSet row = null;
+        DataMap data = null;
+        NumberField id = null;        
+        NumberField rg = null;
+        TestResultDO resultDO = null;
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");               
         DataModel model = (DataModel)rpcReturn.getField("testResultsTable").getValue();
-        List<IdNameDO> list = remote.getResultGroupsForTest((Integer)((NumberObject)key.getKey()).getValue());
+        List<IdNameDO> list = remote.getResultGroupsForTest((Integer)((NumberObject)key.getKey()).getValue());                
+        
         model.clear();
+        
         if(list.size() > 0) {        
          List<TestResultDO> resultDOList = remote.getTestResults((Integer)((NumberObject)key.getKey()).getValue(),1);                          
           for(int iter = 0; iter < resultDOList.size(); iter++){
-            DataSet row = model.createNewSet();
-            TestResultDO resultDO = resultDOList.get(iter);  
-            NumberField id = new NumberField(resultDO.getId());
-            DataMap data = new DataMap();            
+            row = model.createNewSet();
+            resultDO = resultDOList.get(iter);  
+            id = new NumberField(resultDO.getId());
+            data = new DataMap();  
+            rg = new NumberField(resultDO.getResultGroup());
             data.put("id", id);
-                         
+            data.put("resGrp", rg);
+                                     
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
+            
             if(resultDO.getDictEntry() == null) {
              row.get(1).setValue(resultDO.getValue());     
              data.put("value", new NumberObject(-999));
@@ -1449,16 +1459,25 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     }
 
     public DataModel loadTestResultsByGroup(NumberObject testId, NumberObject resultGroup,DataModel model){
+        DataSet row = null;
+        DataMap data = null;
+        TestResultDO resultDO = null;
+        NumberField id = null;
+        NumberField rg = null;
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestResultDO> resultDOList = remote.getTestResults((Integer)testId.getValue(), (Integer)resultGroup.getValue());
+        
         model.clear(); 
         
         for(int iter = 0; iter < resultDOList.size(); iter++){
-            DataSet row = model.createNewSet();
-            TestResultDO resultDO = resultDOList.get(iter);  
-            NumberField id = new NumberField(resultDO.getId());
-            DataMap data = new DataMap();            
-            data.put("id", id);       
+            row = model.createNewSet();
+            resultDO = resultDOList.get(iter);  
+            id = new NumberField(resultDO.getId());
+            data = new DataMap();     
+            rg = new NumberField(resultDO.getResultGroup());
+            data.put("id", id);   
+            data.put("resGrp", rg);
+            
             row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             
             if(resultDO.getDictEntry() == null) {
@@ -1473,10 +1492,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             row.get(2).setValue(resultDO.getSignificantDigits());
             
-            if(resultDO.getFlagsId()!=null)
+            if(resultDO.getFlagsId()!= null)
                 row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
                
-            if(resultDO.getRoundingMethodId()!=null)
+            if(resultDO.getRoundingMethodId()!= null)
                 row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
             
             row.get(5).setValue(resultDO.getQuantLimit());
@@ -1575,6 +1594,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
       CollectionField field = (CollectionField)rpcSend.getField("resultModelCollection");
       ArrayList<DataModel> list = (ArrayList<DataModel>)field.getValue(); 
       NumberField id = null;
+      NumberField rg = null;
       NumberObject valueObj = null;
       NumberObject valObj = new NumberObject(-999);
       
@@ -1591,6 +1611,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 id = (NumberField)((DataMap)row.getData()).get("id");
                 resultDO.setId((Integer)id.getValue()); 
                 valueObj = (NumberObject)((DataMap)row.getData()).get("value");
+                rg = (NumberField)((DataMap)row.getData()).get("resGrp");
             }
             
             resultDO.setDelete(false);
@@ -1617,7 +1638,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             resultDO.setHazardLevel((String)((StringField)row.get(7)).getValue());
                         
-            resultDO.setResultGroup(fiter+1);
+            //resultDO.setResultGroup(fiter+1);
+            resultDO.setResultGroup((Integer)rg.getValue());
             
             resultDO.setTestId(testId);
             
@@ -1632,10 +1654,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             if(row.getData()!=null){ 
                 id = (NumberField)((DataMap)row.getData()).get("id");
-                resultDO.setId((Integer)id.getValue());                              
+                resultDO.setId((Integer)id.getValue());         
+                rg = (NumberField)((DataMap)row.getData()).get("resGrp");
             }
             
-            resultDO.setResultGroup(fiter+1);
+            //resultDO.setResultGroup(fiter+1);
+            resultDO.setResultGroup((Integer)rg.getValue());
             resultDO.setDelete(true);                        
             
             trDOlist.add(resultDO);                       
