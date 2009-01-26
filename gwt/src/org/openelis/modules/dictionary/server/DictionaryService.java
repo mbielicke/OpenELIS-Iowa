@@ -551,7 +551,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
             if(exceptionList.get(i) instanceof TableFieldErrorException){                               
                     String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName();
                     
-                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();                    
                     entriesTable.getField(index, fieldName)
                      .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the field
