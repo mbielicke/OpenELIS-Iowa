@@ -48,6 +48,7 @@ public class FillOrderDO implements Serializable{
     protected Integer daysLeft;
     protected String requestedBy;
     protected Integer costCenterId;
+    protected String isExternal;
     
     public AddressDO addressDO = new AddressDO();
 
@@ -56,8 +57,8 @@ public class FillOrderDO implements Serializable{
     }
     
     public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId,
-                       Integer shipToId, String shipTo, String description, Integer numberOfDays, /*Integer daysLeft,*/ String requestedBy,
-                       Integer costCenterId, String multUnit, String streetAddress, String city,
+                       Integer shipToId, String shipTo, String description, Integer numberOfDays, String requestedBy,
+                       Integer costCenterId, String isExternal, String multUnit, String streetAddress, String city,
                        String state, String zipCode){
         setOrderId(orderId);
         setStatusId(statusId);
@@ -67,9 +68,9 @@ public class FillOrderDO implements Serializable{
         setShipTo(shipTo);
         setDescription(description);
         setNumberOfDays(numberOfDays);
-        //setDaysLeft(daysLeft);
         setRequestedBy(requestedBy);
         setCostCenterId(costCenterId);
+        setIsExternal(isExternal);
         
         //address values
         addressDO.setMultipleUnit(multUnit);
@@ -165,5 +166,13 @@ public class FillOrderDO implements Serializable{
 
     public void setShipToId(Integer shipToId) {
         this.shipToId = shipToId;
+    }
+
+    public String getIsExternal() {
+        return isExternal;
+    }
+
+    public void setIsExternal(String isExternal) {
+        this.isExternal = DataBaseUtil.trim(isExternal);
     }
 }

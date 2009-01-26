@@ -33,7 +33,7 @@ public class FillOrderMetaMap extends OrderMeta implements MetaMap{
     public FillOrderMetaMap() {
         super("ordr.");
         ORDER_ITEM_META = new OrderItemMetaMap("order_item.");
-        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap("organization.");
+        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap("organization.", true);
     }
     
     public OrderItemMetaMap ORDER_ITEM_META;
