@@ -105,9 +105,9 @@ UIRF Software License are applicable instead of those above.
 						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
-							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Kit</headers>
-							<widths>20,45,90,65,120,150,145,60,60,30</widths>										
+							Ship To/Requested By,<xsl:value-of select='resource:getString($constants,"description")'/>,
+							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Internal</headers>
+							<widths>20,45,95,65,125,160,155,60,60,50</widths>										
 							<editors>
 								<check/>
 								<textbox case="mixed"/>
@@ -141,8 +141,8 @@ UIRF Software License are applicable instead of those above.
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/></headers>
-							<widths>20,45,90,65,120,150,145,60,60</widths>			
+							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Internal</headers>
+							<widths>20,45,95,65,125,160,155,60,60,50</widths>												
 								<editors>
 									<label/>
 									<textbox case="mixed"/>
@@ -152,79 +152,77 @@ UIRF Software License are applicable instead of those above.
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
 									<textbox case="mixed"/>
-									<textbox case="mixed"/> 	
+									<textbox case="mixed"/> 
+									<check/>	
 								</editors>
 								<fields>process,<xsl:value-of select='meta:getId($order)'/>,<xsl:value-of select='meta:getStatusId($order)'/>,
 								<xsl:value-of select='meta:getOrderedDate($order)'/>,<xsl:value-of select='meta:getShipFromId($order)'/>,
 								<xsl:value-of select='orgMeta:getName($org)'/>,<xsl:value-of select='meta:getDescription($order)'/>,
-								<xsl:value-of select='meta:getNeededInDays($order)'/>,daysLeft
+								<xsl:value-of select='meta:getNeededInDays($order)'/>,daysLeft,isInternal
 								</fields>
 							</queryTable>
 							</query>
 						</widget>
 			<HorizontalPanel>
-				<VerticalPanel style="Form">
-					<titledPanel key="borderedPanel">
-						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"shipToAddress")'/></text></legend>
-							<content>
-								<TablePanel style="Form">
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
-									<widget colspan="3">
-										<textbox key="{meta:getRequestedBy($order)}" width="186px" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
-									<widget colspan="3">
-										<dropdown key="{meta:getCostCenterId($order)}" case="mixed" width="186px" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addrMeta:getMultipleUnit($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addrMeta:getStreetAddress($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addrMeta:getCity($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addrMeta:getState($address)}" width="33px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addrMeta:getZipCode($address)}" width="63px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-								</row>
+			<VerticalPanel style="subform">
+            	<text style="FormTitle"><xsl:value-of select='resource:getString($constants,"shipToAddress")'/></text>
+					<TablePanel style="Form">
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"requestedBy")'/>:</text>
+							<widget colspan="3">
+								<textbox key="{meta:getRequestedBy($order)}" width="186px" alwaysDisabled="true"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"costCenter")'/>:</text>
+							<widget colspan="3">
+								<dropdown key="{meta:getCostCenterId($order)}" case="mixed" width="186px" alwaysDisabled="true"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+							<widget colspan="3">
+								<textbox case="upper" key="{addrMeta:getMultipleUnit($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+							<widget colspan="3">
+								<textbox case="upper" key="{addrMeta:getStreetAddress($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+							<widget colspan="3">
+								<textbox case="upper" key="{addrMeta:getCity($address)}" width="186px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>		
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+							<widget>
+								<textbox case="upper" key="{addrMeta:getState($address)}" width="33px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+							<widget>
+								<textbox case="upper" key="{addrMeta:getZipCode($address)}" width="63px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							</widget>
+						</row>
 							</TablePanel>
-						</content>
-						</titledPanel>
 					</VerticalPanel>
-					<HorizontalPanel width="5px"/>
-					<VerticalPanel>
-					<VerticalPanel height="5px"/>
+					<VerticalPanel style="subform">
+		            	<text style="FormTitle">Items Ordered</text>
 						<tree-table key="orderItemsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="7" enable="true" showError="false">
-                                 <headers>Qty,Item,Location,Lot #,On Hand</headers>
-                                 <widths>50,135,145,65,50</widths>					
+                                 <headers>Qty,Order #,Item,Location,Lot #,On Hand</headers>
+                                 <widths>65,45,150,145,60,50</widths>					
                                  <leaves>
                                    <leaf type="top">
                                     <editors>
                                      <label/>
 									 <label/>
+									 <label/>
                                     </editors>
                                     <fields>
+                                     <number type="integer"/>
                                      <number type="integer"/>
                                      <string/>
                                     </fields>
@@ -233,15 +231,17 @@ UIRF Software License are applicable instead of those above.
                                    <editors>
                                    <textbox/>
                                    <label/>
+									<label/>
 									<autoComplete cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="125px">
 										<headers>Desc, On Hand</headers>
 										<widths>300,60</widths>
 									</autoComplete>
-                                   <label/>
+									<label/>
                                    <label/>
                                    </editors>
                                    <fields>
 									<number type="integer" required="false"/>
+									<number type="integer"/>
 								    <string required="false"/>
 									<dropdown required="false"/>
 									<string required="false"/>
@@ -250,6 +250,12 @@ UIRF Software License are applicable instead of those above.
                                   </leaf> 
                                  </leaves> 
                                 </tree-table>
+                                <appButton action="addLocation" onclick="this" style="Button" key="addLocationButton" halign="right">
+								<HorizontalPanel>
+              						<AbsolutePanel style="AddRowButtonImage"/>
+                						<text>Add Location</text>
+							              </HorizontalPanel>
+						            </appButton>
 					<!--
 						<table width="auto" key="orderItemsTable" manager="this" maxRows="7" title="" showError="false" showScroll="ALWAYS">
 							<headers>Item/Sample,Qty,Location</headers>
@@ -270,6 +276,12 @@ UIRF Software License are applicable instead of those above.
 						</table>-->
 						</VerticalPanel>
 					</HorizontalPanel>
+					<TablePanel style="Form">
+						<row>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"orderShippingNotes")'/>:</text>
+							<textarea width="725px" height="50px" case="mixed" key="orderShippingNotes" alwaysDisabled="true" showError="false"/>
+						</row>
+					</TablePanel>
 					</VerticalPanel>		
 					</VerticalPanel>		
 	</display>
@@ -283,7 +295,6 @@ UIRF Software License are applicable instead of those above.
 		<string key="{addrMeta:getCity($address)}" required="false"/>
 		<string key="{addrMeta:getState($address)}" required="false"/>
 		<string key="{addrMeta:getZipCode($address)}" required="false"/>
-		<string key="orderShippingNotes"/>
 		<!--<tree key="orderItemsTree"/>-->
 		
 	</rpc>
@@ -299,6 +310,7 @@ UIRF Software License are applicable instead of those above.
 		<queryString key="{meta:getDescription($order)}" required="false"/>
 		<queryNumber key="{meta:getNeededInDays($order)}" type="integer" required="false"/>
 	 	<queryString key="daysLeft" type="integer" required="false"/> 
+	 	<queryCheck key="isInternal"/> 
 	 	
 	 	<queryString key="{meta:getRequestedBy($order)}" required="false"/>
 		<dropdown key="{meta:getCostCenterId($order)}" required="false"/>	

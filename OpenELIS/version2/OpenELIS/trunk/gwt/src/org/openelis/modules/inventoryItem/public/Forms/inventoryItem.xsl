@@ -206,49 +206,46 @@ UIRF Software License are applicable instead of those above.
 									-->
 								</row>
 							</TablePanel>
-							<VerticalPanel style="Form">
-								<titledPanel key="borderedPanel">
-								<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"controlsParameters")'/></text></legend>
-								<content><TablePanel style="Form">
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
-									<check key="{meta:getIsActive($invItem)}" tab="{meta:getIsReorderAuto($invItem)},{meta:getDispensedUnitsId($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
-									<check key="{meta:getIsReorderAuto($invItem)}" tab="{meta:getIsLotMaintained($invItem)},{meta:getIsActive($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
-									<check key="{meta:getIsLotMaintained($invItem)}" tab="{meta:getIsSerialMaintained($invItem)},{meta:getIsReorderAuto($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
-									<check key="{meta:getIsSerialMaintained($invItem)}" tab="{meta:getIsBulk($invItem)},{meta:getIsLotMaintained($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
-									<check key="{meta:getIsBulk($invItem)}" tab="{meta:getIsNotForSale($invItem)},{meta:getIsSerialMaintained($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
-									<check key="{meta:getIsNotForSale($invItem)}" tab="{meta:getIsSubAssembly($invItem)},{meta:getIsBulk($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
-									<check key="{meta:getIsSubAssembly($invItem)}" tab="{meta:getIsLabor($invItem)},{meta:getIsNotForSale($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
-									<check key="{meta:getIsLabor($invItem)}" tab="{meta:getIsNoInventory($invItem)},{meta:getIsSubAssembly($invItem)}"/>
-								</row>
-								<row>
-									<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
-									<check key="{meta:getIsNoInventory($invItem)}" tab="{meta:getName($invItem)},{meta:getIsLabor($invItem)}"/>
-								</row>
-								</TablePanel>
-								</content>
-								</titledPanel>
+							<VerticalPanel style="subform">
+			                  	<text style="FormTitle"><xsl:value-of select='resource:getString($constants,"controlsParameters")'/></text>
+								<TablePanel style="Form">
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
+										<check key="{meta:getIsActive($invItem)}" tab="{meta:getIsReorderAuto($invItem)},{meta:getDispensedUnitsId($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"autoReorder")'/>:</text>
+										<check key="{meta:getIsReorderAuto($invItem)}" tab="{meta:getIsLotMaintained($invItem)},{meta:getIsActive($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"maintainLot")'/>:</text>
+										<check key="{meta:getIsLotMaintained($invItem)}" tab="{meta:getIsSerialMaintained($invItem)},{meta:getIsReorderAuto($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"serialRequired")'/>:</text>
+										<check key="{meta:getIsSerialMaintained($invItem)}" tab="{meta:getIsBulk($invItem)},{meta:getIsLotMaintained($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"bulk")'/>:</text>
+										<check key="{meta:getIsBulk($invItem)}" tab="{meta:getIsNotForSale($invItem)},{meta:getIsSerialMaintained($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"notForSale")'/>:</text>
+										<check key="{meta:getIsNotForSale($invItem)}" tab="{meta:getIsSubAssembly($invItem)},{meta:getIsBulk($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"subAssembly")'/>:</text>
+										<check key="{meta:getIsSubAssembly($invItem)}" tab="{meta:getIsLabor($invItem)},{meta:getIsNotForSale($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"labor")'/>:</text>
+										<check key="{meta:getIsLabor($invItem)}" tab="{meta:getIsNoInventory($invItem)},{meta:getIsSubAssembly($invItem)}"/>
+									</row>
+									<row>
+										<text style="CondensedPrompt"><xsl:value-of select='resource:getString($constants,"doNotInventory")'/>:</text>
+										<check key="{meta:getIsNoInventory($invItem)}" tab="{meta:getName($invItem)},{meta:getIsLabor($invItem)}"/>
+									</row>
+									</TablePanel>
 								</VerticalPanel>
 								</HorizontalPanel>
 			 	<VerticalPanel halign="center">

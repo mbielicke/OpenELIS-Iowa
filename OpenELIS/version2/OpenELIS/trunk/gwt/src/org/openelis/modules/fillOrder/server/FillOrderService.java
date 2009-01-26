@@ -41,6 +41,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
@@ -151,6 +152,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         return model;
     }
 
+    //if we make it to this method we know we are handling internal orders
     public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
         return null;
     }
@@ -383,7 +385,13 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             NumberField id = new NumberField(resultDO.getOrderId());
             DateField orderDate = new DateField(Datetime.YEAR, Datetime.DAY, resultDO.getOrderedDate().getDate());
             DropDownField status = new DropDownField(new DataSet(new NumberObject(resultDO.getStatusId())));
-            DropDownField shipFrom = new DropDownField(new DataSet(new NumberObject(resultDO.getShipFromId())));
+            
+            DropDownField shipFrom = null;
+            if(resultDO.getShipFromId() != null)
+                shipFrom = new DropDownField(new DataSet(new NumberObject(resultDO.getShipFromId())));
+            else
+                shipFrom = new DropDownField();
+            
             DropDownField shipTo = new DropDownField();
             StringField description = new StringField(resultDO.getDescription());
             NumberField numberOfDays = new NumberField(resultDO.getNumberOfDays());
@@ -399,6 +407,9 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             StringField city = new StringField(resultDO.addressDO.getCity());
             StringField state = new StringField(resultDO.addressDO.getState());
             StringField zipCode = new StringField(resultDO.addressDO.getZipCode());
+            CheckField isInternal = new CheckField();
+            if(resultDO.getShipToId() == null)
+                isInternal.setValue("Y");                
             
             if(resultDO.getShipToId() == null)
                 shipTo.setValue(null);
@@ -428,6 +439,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             row.add(description);
             row.add(numberOfDays);
             row.add(daysLeft);
+            row.add(isInternal);
             row.add(requestedBy);
             row.add(costCenter);
             row.add(multUnit);
@@ -435,7 +447,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             row.add(city);
             row.add(state);
             row.add(zipCode);
-
+            
             model.add(row);
             i++;
         } 
@@ -463,14 +475,17 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             set.setKey(invItemId);
             NumberField quan = new NumberField(itemDO.getQuantity());
             set.add(quan);
+            set.add(orderId);
             StringField itemName = new StringField(itemDO.getInventoryItem());
             set.add(itemName);
             
             DropDownField loc = new DropDownField();
-            DataModel locModel = new DataModel();
-            locModel.add(new NumberObject(itemDO.getLocationId()),new StringObject(itemDO.getLocation()));
-            loc.setModel(locModel);
-            loc.setValue(locModel.get(0));
+            if(itemDO.getLocationId() != null){
+                DataModel locModel = new DataModel();
+                locModel.add(new NumberObject(itemDO.getLocationId()),new StringObject(itemDO.getLocation()));
+                loc.setModel(locModel);
+                loc.setValue(locModel.get(0));
+            }
             set.add(loc);
             
             StringField lotNumber = new StringField(itemDO.getLotNumber());
