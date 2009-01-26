@@ -212,91 +212,83 @@ UIRF Software License are applicable instead of those above.
 						            </appButton>
 						            </widget>
 			<HorizontalPanel>
-				<VerticalPanel style="Form">
-					<titledPanel key="borderedPanel">
-						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"vendorAddress")'/></text></legend>
-							<content>
-								<TablePanel style="Form">
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getCity($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addressMeta:getState($address)}" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="60px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-								</row>
-							</TablePanel>
-						</content>
-						</titledPanel>
+				<VerticalPanel style="subform">
+	                <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"vendorAddress")'/></text>
+					<TablePanel style="Form">
+					<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>		
+					</row>
+					<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>		
+					</row>
+					<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
+						<widget colspan="3">
+							<textbox case="upper" key="{addressMeta:getCity($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>		
+					</row>
+					<row>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
+						<widget>
+							<textbox case="upper" key="{addressMeta:getState($address)}" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>
+						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
+						<widget>
+							<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="60px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+						</widget>
+					</row>
+					</TablePanel>
 					</VerticalPanel>
-					<VerticalPanel style="Form">
-						<titledPanel key="borderedPanel">
-							<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text></legend>
-								<content>
-								<TablePanel style="Form">
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
-									<widget colspan="2">
-										<textbox case="mixed" key="{inventoryItemMeta:getDescription($invItem)}" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<widget valign="middle">
-										<check key="addToExisting" onClick="this" tab="{inventoryLocationMeta:getStorageLocationId($loc)},{inventoryLocationMeta:getExpirationDate($loc)}"><text style="CheckboxPrompt"><xsl:value-of select='resource:getString($constants,"addToExisting")'/></text></check>
-									</widget>
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
-									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getStoreId($invItem)}" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>	
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
-									<widget>
-									<autoComplete key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
-										<headers>Desc</headers>
-										<widths>300</widths>
-									</autoComplete>
-									<query>
-										<textbox case="mixed" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting" width="160px"/>
-									</query>
-									</widget>
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
-									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"lotNum")'/>:</text>
-									<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" tab="{inventoryLocationMeta:getExpirationDate($loc)},{inventoryLocationMeta:getStorageLocationId($loc)}"/>
-								</row>
-								<row>
+					<VerticalPanel style="subform">
+		                <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text>
+						<TablePanel style="Form">
+							<row>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 								<widget colspan="2">
-								<HorizontalPanel/>
+									<textbox case="mixed" key="{inventoryItemMeta:getDescription($invItem)}" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 								</widget>
-								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"expDate")'/>:</text>
-								<calendar key="{inventoryLocationMeta:getExpirationDate($loc)}" onChange="this" begin="0" end="2" tab="addToExisting,{inventoryLocationMeta:getLotNumber($loc)}"/>							
-								</row>
-								</TablePanel>
-								</content>
-								</titledPanel>
+								<widget valign="middle">
+									<check key="addToExisting" onClick="this" tab="{inventoryLocationMeta:getStorageLocationId($loc)},{inventoryLocationMeta:getExpirationDate($loc)}"><text style="CheckboxPrompt"><xsl:value-of select='resource:getString($constants,"addToExisting")'/></text></check>
+								</widget>
+							</row>
+							<row>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
+								<widget>
+									<textbox case="mixed" key="{inventoryItemMeta:getStoreId($invItem)}" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+								</widget>	
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
+								<widget>
+								<autoComplete key="{inventoryLocationMeta:getStorageLocationId($loc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px" onchange="this" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting">
+									<headers>Desc</headers>
+									<widths>300</widths>
+								</autoComplete>
+								<query>
+									<textbox case="mixed" tab="{inventoryLocationMeta:getLotNumber($loc)},addToExisting" width="160px"/>
+								</query>
+								</widget>
+							</row>
+							<row>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
+								<widget>
+									<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+								</widget>
+								<text style="Prompt"><xsl:value-of select='resource:getString($constants,"lotNum")'/>:</text>
+								<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" tab="{inventoryLocationMeta:getExpirationDate($loc)},{inventoryLocationMeta:getStorageLocationId($loc)}"/>
+							</row>
+							<row>
+							<widget colspan="2">
+							<HorizontalPanel/>
+							</widget>
+							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"expDate")'/>:</text>
+							<calendar key="{inventoryLocationMeta:getExpirationDate($loc)}" onChange="this" begin="0" end="2" tab="addToExisting,{inventoryLocationMeta:getLotNumber($loc)}"/>							
+							</row>
+							</TablePanel>
 								</VerticalPanel>
 								</HorizontalPanel>
 								
