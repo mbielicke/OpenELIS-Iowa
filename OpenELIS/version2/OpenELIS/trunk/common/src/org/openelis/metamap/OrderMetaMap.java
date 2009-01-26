@@ -36,9 +36,9 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
     public OrderMetaMap() {
         super("ordr.");
         ORDER_ITEM_META = new OrderItemMetaMap("order_item.");
-        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap("organization.");
-        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap("reportTo.");
-        ORDER_BILL_TO_META = new OrderOrganizationMetaMap("billTo.");
+        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap("organization.", true);
+        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap("reportTo.", false);
+        ORDER_BILL_TO_META = new OrderOrganizationMetaMap("billTo.", false);
         ORDER_SHIPPING_NOTE_META = new NoteMeta("shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta("customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta("store."); 
@@ -52,9 +52,9 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         parentPath=path;
         
         ORDER_ITEM_META = new OrderItemMetaMap(path+"order_item.");
-        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap(path+"organization.");
-        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap(path+"reportTo.");
-        ORDER_BILL_TO_META = new OrderOrganizationMetaMap(path+"billTo.");
+        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap(path+"organization.", true);
+        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap(path+"reportTo.", false);
+        ORDER_BILL_TO_META = new OrderOrganizationMetaMap(path+"billTo.", false);
         ORDER_SHIPPING_NOTE_META = new NoteMeta(path+"shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta(path+"customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta(path+"store."); 
@@ -69,9 +69,9 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
         if(initializeOrderItem)
             ORDER_ITEM_META = new OrderItemMetaMap(path+"order_item.");
         
-        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap(path+"organization.");
-        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap(path+"reportTo.");
-        ORDER_BILL_TO_META = new OrderOrganizationMetaMap(path+"billTo.");
+        ORDER_ORGANIZATION_META = new OrderOrganizationMetaMap(path+"organization.", true);
+        ORDER_REPORT_TO_META = new OrderOrganizationMetaMap(path+"reportTo.", false);
+        ORDER_BILL_TO_META = new OrderOrganizationMetaMap(path+"billTo.", false);
         ORDER_SHIPPING_NOTE_META = new NoteMeta(path+"shippingNote.");
         ORDER_CUSTOMER_NOTE_META = new NoteMeta(path+"customerNote.");
         ORDER_ITEM_STORE_META = new DictionaryMeta(path+"store."); 
@@ -165,8 +165,6 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
             from += ", IN (ordr.orderItem) order_item";
         
         
-        if(name.indexOf("organization.") > -1)
-            from += ", IN (ordr.organization) organization";
         if(name.indexOf("reportTo.") > -1)
             from += ", IN (ordr.reportTo) reportTo";
         if(name.indexOf("billTo.") > -1)
@@ -177,6 +175,8 @@ public class OrderMetaMap extends OrderMeta implements MetaMap{
             from += ", IN(ordr.note) customerNote";
         if(name.indexOf("store.") > -1)
             from += ", Dictionary store";
+        //if(name.indexOf("organization.") > -1)
+            from += " LEFT JOIN ordr.organization organization LEFT JOIN organization.address organizationAddress";
         //if(name.indexOf("inventoryTrans.") > -1)
         //    from += ", TransLocationOrder inventoryTrans";
         

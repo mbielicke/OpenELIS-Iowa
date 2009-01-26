@@ -35,9 +35,12 @@ public class OrderOrganizationMetaMap extends OrganizationMeta implements MetaMa
         super();
     }
     
-    public OrderOrganizationMetaMap(String path){
+    public OrderOrganizationMetaMap(String path, boolean leftJoinAddress){
         super(path);
-        ADDRESS = new AddressMeta(path + "address.");
+        if(leftJoinAddress)
+            ADDRESS = new AddressMeta(path.substring(0,path.length()-1)+"Address.");
+        else
+            ADDRESS = new AddressMeta(path+"address.");
     }
     
     public AddressMeta ADDRESS; 
@@ -51,7 +54,7 @@ public class OrderOrganizationMetaMap extends OrganizationMeta implements MetaMa
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith(path+"address."))
+        if(name.startsWith(path+"address.") || name.startsWith(path.substring(0,path.length()-1)+"Address."))
             return ADDRESS.hasColumn(name);
         return super.hasColumn(name);
     }

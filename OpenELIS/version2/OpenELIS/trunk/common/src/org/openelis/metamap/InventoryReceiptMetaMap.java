@@ -43,7 +43,7 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
     public OrderItemMetaMap ORDER_ITEM_META = new OrderItemMetaMap("oi.");
     public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
     public DictionaryMeta DICTIONARY_DISPENSED_UNITS_META = new DictionaryMeta("dictDis.");
-    public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.");
+    public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.", false);
 
     //public TransReceiptOrderMetaMap getTransReceiptOrder(){
     //    return TRANS_RECEIPT_ORDER_META;
