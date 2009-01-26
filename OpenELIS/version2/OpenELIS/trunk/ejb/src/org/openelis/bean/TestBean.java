@@ -1244,12 +1244,7 @@ public class TestBean implements TestRemote {
        }
        
       if(!resDO.getDelete()) {                   
-       value = resDO.getValue();
-       
-      if(idIsBlank(resDO.getFlagsId(), blankId)) {
-          exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getFlagsId()));  
-       }  
+       value = resDO.getValue();      
       
         if(idIsBlank(typeId, blankId)) {
          exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,

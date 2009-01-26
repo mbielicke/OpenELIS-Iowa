@@ -196,49 +196,38 @@ public class CategoryBean implements CategoryRemote {
         if (category.getId() == null) {
             manager.persist(category);
         }
-
-        int index = 0;
-        ArrayList<String> systemNames = new ArrayList<String>();
-
-        ArrayList<String> entries = new ArrayList<String>();
-        for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
-            DictionaryDO dictDO = (DictionaryDO)iter.next();
-
+        
+        if(dictEntries!=null) {
             exceptionList = new ArrayList<Exception>();
-
-            validateDictionary(dictDO,
-                               categoryDO.getId(),
-                               index,
-                               systemNames,
-                               entries,
-                               exceptionList);
+            validateDictionary(dictEntries, exceptionList, category.getId());
             if (exceptionList.size() > 0) {
                 throw (RPCException)exceptionList.get(0);
             }
+            
+            for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
+                DictionaryDO dictDO = (DictionaryDO)iter.next();
+                if (dictDO.getId() == null)
+                    dictionary = new Dictionary();
+                else
+                    dictionary = manager.find(Dictionary.class, dictDO.getId());
 
-            if (dictDO.getId() == null)
-                dictionary = new Dictionary();
-            else
-                dictionary = manager.find(Dictionary.class, dictDO.getId());
+                if (dictDO.getDelete() && dictDO.getId() != null) {
+                    // delete the dictionary record
+                    manager.remove(dictionary);
 
-            if (dictDO.getDelete() && dictDO.getId() != null) {
-                // delete the dictionary record
-                manager.remove(dictionary);
+                } else {
+                    dictionary.setCategoryId(category.getId());
+                    dictionary.setEntry(dictDO.getEntry());
+                    dictionary.setIsActive(dictDO.getIsActive());
+                    dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
+                    dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());
+                    dictionary.setSystemName(dictDO.getSystemName());
 
-            } else {
-                dictionary.setCategoryId(category.getId());
-                dictionary.setEntry(dictDO.getEntry());
-                dictionary.setIsActive(dictDO.getIsActive());
-                dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
-                dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());
-                dictionary.setSystemName(dictDO.getSystemName());
-
-                if (dictionary.getId() == null) {
-                    manager.persist(dictionary);
+                    if (dictionary.getId() == null) {
+                        manager.persist(dictionary);
+                    }
                 }
             }
-
-            index++;
         }
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
@@ -416,7 +405,7 @@ public class CategoryBean implements CategoryRemote {
 
     }
 
-    private void validateDictionary(DictionaryDO dictDO,
+    /*private void validateDictionary(DictionaryDO dictDO,
                                     Integer categoryId,
                                     int index,
                                     List<String> systemNames,
@@ -478,6 +467,74 @@ public class CategoryBean implements CategoryRemote {
             }
 
         }
+    }*/
+    
+    private void validateDictionary(List<DictionaryDO> dictList,
+                                    List<Exception> exceptionList,
+                                    Integer categoryId) { 
+      ArrayList<String> systemNames = new ArrayList<String>();
+      ArrayList<String> entries = new ArrayList<String>();  
+      DictionaryDO dictDO = null; 
+      for(int iter = 0; iter < dictList.size(); iter++) {             
+        dictDO = dictList.get(iter);  
+        if(!dictDO.getDelete()) {
+        if (dictDO.getEntry()!=null && !("").equals(dictDO.getEntry().trim())) {
+            if (!entries.contains(dictDO.getEntry())) {
+                entries.add(dictDO.getEntry());
+            } else {
+
+                exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
+                                                               iter,
+                                                               CatMeta.getDictionary()
+                                                                      .getEntry()));
+            }
+        } else {
+
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                                                           iter,
+                                                           CatMeta.getDictionary()
+                                                                  .getEntry()));
+        }
+
+        if (dictDO.getSystemName() !=null && !("").equals(dictDO.getSystemName().trim())) {
+            if (!systemNames.contains(dictDO.getSystemName())) {
+                Query catIdQuery = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
+                catIdQuery.setParameter("systemName", dictDO.getSystemName());
+                Integer catId = null;
+                try {
+                    catId = (Integer)catIdQuery.getResultList().get(0);
+                } catch (NoResultException ex) {
+                    ex.printStackTrace();
+                } catch (Exception ex) {
+                    exceptionList.add(ex);
+                }
+
+                if (catId != null) {
+                    if (!catId.equals(categoryId)) {
+                        exceptionList.add(new TableFieldErrorException("fieldUniqueException",
+                                                                       iter,
+                                                                       CatMeta.getDictionary()
+                                                                              .getSystemName()));
+                    }
+                }
+                systemNames.add(dictDO.getSystemName());
+            } else {
+                if (dictDO.getId() == null) {
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
+                                                                   iter,
+                                                                   CatMeta.getDictionary()
+                                                                          .getSystemName()));
+                } else {
+                    exceptionList.add(new TableFieldErrorException("fieldUniqueException",
+                                                                   iter,
+                                                                   CatMeta.getDictionary()
+                                                                          .getSystemName()));
+                }
+            }
+
+        }
+      } 
+     }   
     }
 
     public List validateForAdd(CategoryDO categoryDO,
@@ -486,19 +543,11 @@ public class CategoryBean implements CategoryRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();
 
         validateCategory(categoryDO, exceptionList);
-        ArrayList<String> systemNames = new ArrayList<String>();
+        //ArrayList<String> systemNames = new ArrayList<String>();
 
-        ArrayList<String> entries = new ArrayList<String>();
+        //ArrayList<String> entries = new ArrayList<String>();
 
-        for (int iter = 0; iter < dictDOList.size(); iter++) {
-            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
-            validateDictionary(dictDO,
-                               categoryDO.getId(),
-                               iter,
-                               systemNames,
-                               entries,
-                               exceptionList);
-        }
+        validateDictionary(dictDOList, exceptionList, categoryDO.getId());
 
         return exceptionList;
     }
@@ -508,19 +557,11 @@ public class CategoryBean implements CategoryRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();
 
         validateCategory(categoryDO, exceptionList);
-        ArrayList<String> systemNames = new ArrayList<String>();
+        //ArrayList<String> systemNames = new ArrayList<String>();
 
-        ArrayList<String> entries = new ArrayList<String>();
+       // ArrayList<String> entries = new ArrayList<String>();
 
-        for (int iter = 0; iter < dictDOList.size(); iter++) {
-            DictionaryDO dictDO = (DictionaryDO)dictDOList.get(iter);
-            validateDictionary(dictDO,
-                               categoryDO.getId(),
-                               iter,
-                               systemNames,
-                               entries,
-                               exceptionList);
-        }
+        validateDictionary(dictDOList, exceptionList, categoryDO.getId());
 
         return exceptionList;
     }
