@@ -93,16 +93,16 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Test" name="{resource:getString($constants,'test')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0">
+				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
-					<CollapsePanel key="collapsePanel" height="530px" style="LeftSidePanel">
+					<CollapsePanel key="collapsePanel" height="530px">
 						<azTable colwidths="175"  key="azTable" maxRows="23" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
 					</CollapsePanel>					
-					<VerticalPanel spacing="0" padding="0">
+					<VerticalPanel spacing="0">
 						<!--button panel code-->
 						<AbsolutePanel spacing="0" style="ButtonPanelContainer">
 							<buttonPanel key="buttons">
@@ -151,7 +151,9 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						<VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
+						<HorizontalPanel padding="0" spacing="0">
+						<VerticalPanel width = "10px"/>
+						 <VerticalPanel>						
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
@@ -165,7 +167,7 @@ UIRF Software License are applicable instead of those above.
 								</row>	
 						     </TablePanel>	
 						   <VerticalPanel height = "10px"/>						   							    
-							<TabPanel width = "615px" key="testTabPanel">
+							<TabPanel halign="center" width = "615px" key="testTabPanel">
 							 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">							  
 							   <VerticalPanel padding="0" spacing="0"> 
 							    <TablePanel style="Form">								
@@ -335,7 +337,7 @@ UIRF Software License are applicable instead of those above.
 								  </row> 
 								  <row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingSequence')"/>:</text>								  
-								   <textbox key="{meta:getReportingSequence($test)}"  width="40px" tab="{meta:getTestTrailerId($test)},{meta:getReportingMethodId($test)}"/>					    
+								   <textbox key="{meta:getReportingSequence($test)}"  width="80px" tab="{meta:getTestTrailerId($test)},{meta:getReportingMethodId($test)}"/>					    
 								  </row>								  								   
 		                         </TablePanel>     
 		                         <VerticalPanel height = "6px"/>                    
@@ -423,7 +425,7 @@ UIRF Software License are applicable instead of those above.
 								</widget>							 			
 																								
 						  </HorizontalPanel>
-						  <VerticalPanel height = "7px"/> 
+						  <VerticalPanel height = "7px"/>
 						  <VerticalPanel>
 						   <HorizontalPanel>	
 							<VerticalPanel> 
@@ -602,7 +604,7 @@ UIRF Software License are applicable instead of those above.
 						                     </widget>
 						                    </row> 
 						                  </TablePanel> 
-						                 <VerticalPanel height = "11px"/>
+						                 <VerticalPanel height = "9px"/>
 						     <HorizontalPanel>           
 						      <widget valign="top">
 							   <table key="testReflexTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
@@ -833,7 +835,9 @@ UIRF Software License are applicable instead of those above.
 							</tab>
 						  </TabPanel>							  								 					    			 	
 						</VerticalPanel>
-					  </VerticalPanel>			
+						<HorizontalPanel width = "10px"/>
+					  </HorizontalPanel>			
+					</VerticalPanel>					
 				</HorizontalPanel>
 			</display>
 			<rpc key="display">
