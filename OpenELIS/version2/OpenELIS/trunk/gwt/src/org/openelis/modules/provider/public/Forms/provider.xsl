@@ -146,11 +146,11 @@ UIRF Software License are applicable instead of those above.
     </row>
    </TablePanel>
    
-    <TabPanel width = "625px" key= "provTabPanel">
+    <TabPanel width = "640px" key= "provTabPanel"  halign="center">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
       <VerticalPanel>
        <widget valign="top">
-        <table width= "600px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
+        <table width= "606px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -262,7 +262,7 @@ UIRF Software License are applicable instead of those above.
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/>:</text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="536px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="549px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -270,7 +270,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="170px" width="536px" overflowX="auto" overflowY="scroll">
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="170px" width="549px"  overflowY="scroll">
 								
 								</VerticalPanel>
 								</HorizontalPanel>
@@ -281,8 +281,9 @@ UIRF Software License are applicable instead of those above.
 					</tab>
    </TabPanel>   
   </VerticalPanel>
- </VerticalPanel>
- </HorizontalPanel>
+  <HorizontalPanel width = "10px"/>
+  </VerticalPanel>
+  </HorizontalPanel> 
 </display>
 							  
 <rpc key= "display">	
