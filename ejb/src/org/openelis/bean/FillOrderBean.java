@@ -105,6 +105,7 @@ public class FillOrderBean implements FillOrderRemote {
                             //"current_date()-date("+OrderMap.getOrderedDate()+"), "+
                      OrderMap.getRequestedBy()+", "+
                      OrderMap.getCostCenterId()+" ,"+
+                     OrderMap.getIsExternal()+" ,"+
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
                      OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
@@ -115,11 +116,10 @@ public class FillOrderBean implements FillOrderRemote {
         qb.addWhere(fields); 
 
         qb.addWhere(OrderMap.ORDER_ITEM_META.getOrderId() + " = " + OrderMap.getId());
-        qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
-        qb.addWhere(OrderMap.getOrganizationId()+" is not null");
+        //qb.addWhere(OrderMap.ORDER_ORGANIZATION_META.getId() + " = " + OrderMap.getOrganizationId());
         qb.addWhere(OrderMap.getIsExternal()+"='N'");
         
-        qb.setOrderBy(OrderMap.getId());
+        qb.setOrderBy(OrderMap.ORDER_ORGANIZATION_META.getName()+" DESC, "+OrderMap.getId());
 
         sb.append(qb.getEJBQL());
 
@@ -149,7 +149,7 @@ public class FillOrderBean implements FillOrderRemote {
     }
     
     public List getOrderItems(Integer orderId) {
-        Query query = manager.createNamedQuery("OrderItem.OrderItemsWithLocByOrderId");
+        Query query = manager.createNamedQuery("OrderItem.OrderItemsByOrderId");
         query.setParameter("id", orderId);
         
         return query.getResultList();
