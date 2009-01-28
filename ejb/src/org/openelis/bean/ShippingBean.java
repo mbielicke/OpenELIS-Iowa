@@ -53,7 +53,9 @@ import org.openelis.entity.Shipping;
 import org.openelis.entity.ShippingItem;
 import org.openelis.entity.ShippingTracking;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.local.LockLocal;
@@ -349,7 +351,7 @@ public class ShippingBean implements ShippingRemote{
         return exceptionList;
     }
     
-    private void unlockOrderRecords(DataModel orders) {
+    private void unlockOrderRecords(DataModel<DataSet<Data>> orders) {
         if(orders == null || orders.size() == 0)
             return;
         
