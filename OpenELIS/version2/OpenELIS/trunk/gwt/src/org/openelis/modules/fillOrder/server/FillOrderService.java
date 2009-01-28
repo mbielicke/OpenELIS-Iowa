@@ -25,20 +25,15 @@
 */
 package org.openelis.modules.fillOrder.server;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.FillOrderDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
@@ -67,26 +62,32 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt{
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>, AutoCompleteServiceInt{
 
     private static final FillOrderMetaMap FillOrderMeta = new FillOrderMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     private static final int leftTableRowsPerPage = 250;
     
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List orders;
         //if the rpc is null then we need to get the page
-        if(rpcSend == null){
+        if(form == null){
 
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("FillOrderQuery");
+            form = (Form)SessionManager.getSession().getAttribute("FillOrderQuery");
     
-            if(rpc == null)
+            if(form == null)
                 throw new RPCException(openElisConstants.getString("queryExpiredException"));
 
             FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
             try{
-                orders = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                orders = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
             }catch(Exception e){
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -97,12 +98,12 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         }else{
             FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String,AbstractField> fields = form.getFieldMap();
             fields.remove("fillItemsTable");
             fields.remove("process");
             fields.remove("daysLeft");
             
-            if(isQueryEmpty(rpcSend))
+            if(isQueryEmpty(form))
                 throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
@@ -113,11 +114,11 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
             }    
         
             //need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("FillOrderQuery", rpcSend);
+            SessionManager.getSession().setAttribute("FillOrderQuery", form);
         }
         
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         
         //fill the model with the query results
         fillModelFromQuery(model, orders);        
@@ -125,16 +126,16 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         return model;
     }
 
-    public DataModel commitQueryAndUnlock(DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQueryAndUnlock(DataModel<DataSet> model) throws RPCException {
         List orders;
-        FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("FillOrderQuery");
+        Form form = (Form)SessionManager.getSession().getAttribute("FillOrderQuery");
 
-        if(rpc == null)
+        if(form == null)
             throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try{
-            orders = remote.queryAndUnlock(rpc.getFieldMap(), model, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+            orders = remote.queryAndUnlock(form.getFieldMap(), model, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
         }catch(Exception e){
             if(e instanceof LastPageException){
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -144,36 +145,35 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         }    
         
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         
         //fill the model with the query results
         fillModelFromQuery(model, orders);
  
         return model;
     }
-
-    //if we make it to this method we know we are handling internal orders
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+	//if we make it to this method we know we are handling internal orders
+    public RPC commitAdd(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpcReturn) throws RPCException {
         return null;
     }
 
@@ -229,6 +229,10 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         map.put("orderItemReferenceTableId", orderItemReferenceTableId);
         
         return map;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
     
     public DataModel getInitialModel(String cat){
@@ -351,18 +355,18 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         return (int)((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));  
     }  
     
-    private boolean isQueryEmpty(FormRPC rpc){
+    private boolean isQueryEmpty(Form form){
    
-        return ("".equals(rpc.getFieldValue(FillOrderMeta.getId())) &&
-                    rpc.getFieldValue(FillOrderMeta.getStatusId()) == null && 
-                    "".equals(rpc.getFieldValue(FillOrderMeta.getOrderedDate())) && 
-                    rpc.getFieldValue(FillOrderMeta.getShipFromId()) == null &&
-                    rpc.getFieldValue(FillOrderMeta.getOrganizationId()) == null && 
-                    "".equals(rpc.getFieldValue(FillOrderMeta.getDescription())) && 
-                    "".equals(rpc.getFieldValue(FillOrderMeta.getNeededInDays())) && 
+        return ("".equals(form.getFieldValue(FillOrderMeta.getId())) &&
+                    form.getFieldValue(FillOrderMeta.getStatusId()) == null && 
+                    "".equals(form.getFieldValue(FillOrderMeta.getOrderedDate())) && 
+                    form.getFieldValue(FillOrderMeta.getShipFromId()) == null &&
+                    form.getFieldValue(FillOrderMeta.getOrganizationId()) == null && 
+                    "".equals(form.getFieldValue(FillOrderMeta.getDescription())) && 
+                    "".equals(form.getFieldValue(FillOrderMeta.getNeededInDays())) && 
                     //DAYS LEFT"".equals(rpc.getFieldValue(FillOrderMeta.InventoryReceiptMeta.getQcReference())) && 
-                    "".equals(rpc.getFieldValue(FillOrderMeta.getRequestedBy())) && 
-                    rpc.getFieldValue(FillOrderMeta.getCostCenterId()) == null);
+                    "".equals(form.getFieldValue(FillOrderMeta.getRequestedBy())) && 
+                    form.getFieldValue(FillOrderMeta.getCostCenterId()) == null);
     }
     
     private void fillModelFromQuery(DataModel model, List orders){
@@ -507,8 +511,8 @@ public class FillOrderService implements AppScreenFormServiceInt<FormRPC, DataSe
         return model;
     }
     
-    public DataModel fetchOrderItemAndLock(NumberObject orderId)throws RPCException{
-        DataModel returnModel = new DataModel();
+    public DataModel<DataSet> fetchOrderItemAndLock(NumberObject orderId)throws RPCException{
+        DataModel<DataSet> returnModel = new DataModel<DataSet>();
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         List order=null;
         try{

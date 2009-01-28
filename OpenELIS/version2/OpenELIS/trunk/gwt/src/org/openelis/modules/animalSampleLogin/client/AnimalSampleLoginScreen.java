@@ -25,6 +25,14 @@
 */
 package org.openelis.modules.animalSampleLogin.client;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -34,18 +42,13 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class AnimalSampleLoginScreen extends OpenELISScreenForm implements ClickListener, TabListener, TreeManager{
+public class AnimalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public AnimalSampleLoginScreen() {
-        super("org.openelis.modules.animalSampleLogin.server.AnimalSampleLoginService", false);
+        super("org.openelis.modules.animalSampleLogin.server.AnimalSampleLoginService", false, new RPC<Form,Data>());
     }
 
     public void onClick(Widget sender) {

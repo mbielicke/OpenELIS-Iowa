@@ -27,11 +27,14 @@ package org.openelis.modules.main.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 
 @RemoteServiceRelativePath("OpenELISServlet")
-public interface OpenELISServiceInt<F extends Data,K extends Data, Q extends Data> extends AppScreenFormServiceInt<F,K,Q> {
+public interface OpenELISServiceInt<ScreenRPC extends RPC,Q extends DataModel<DataSet>> extends AppScreenFormServiceInt<ScreenRPC,Q> {
     
     public <T extends Data> T getObject(String method, Data[] args) throws Exception;
    

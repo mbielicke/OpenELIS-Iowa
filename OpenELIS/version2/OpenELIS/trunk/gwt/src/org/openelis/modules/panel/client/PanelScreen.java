@@ -25,8 +25,18 @@
 */
 package org.openelis.modules.panel.client;
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringObject;
@@ -44,14 +54,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class PanelScreen extends OpenELISScreenForm implements
+public class PanelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements
                                                    ClickListener,
                                                    ChangeListener,
                                                    TableManager {
@@ -89,7 +92,7 @@ public class PanelScreen extends OpenELISScreenForm implements
     }
     
     public PanelScreen() {
-        super("org.openelis.modules.panel.server.PanelService",!loaded);
+        super("org.openelis.modules.panel.server.PanelService",!loaded, new RPC<Form,Data>());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -149,7 +152,7 @@ public class PanelScreen extends OpenELISScreenForm implements
         allTestTable.model.setModel(allTestsDataModel);
         allTestTable.model.refresh();
         allTestTable.enabled(false);
-        rpc.setFieldValue("addedTestTable",addTestModel.getData());
+        form.setFieldValue("addedTestTable",addTestModel.getData());
       
   }
     
@@ -207,17 +210,16 @@ public class PanelScreen extends OpenELISScreenForm implements
     
     private void getPanels(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
-            FormRPC rpc;
-            rpc = (FormRPC)this.forms.get("queryByLetter");
-            rpc.setFieldValue(PanelMeta.getName(), query);
-            commitQuery(rpc);
+            Form form = (Form)this.forms.get("queryByLetter");
+            form.setFieldValue(PanelMeta.getName(), query);
+            commitQuery(form);
         }
     }
     
     private boolean testAdded(String testName,String methodName){    
          for(int iter = 0; iter <  addTestModel.numRows(); iter++){
-             String tname = (String)addTestModel.getRow(iter).get(0).getValue();
-             String mname = (String)addTestModel.getRow(iter).get(1).getValue();
+             String tname = (String)((DataObject)addTestModel.getRow(iter).get(0)).getValue();
+             String mname = (String)((DataObject)addTestModel.getRow(iter).get(1)).getValue();
              if(tname.equals(testName.trim())&& mname.equals(methodName)){                 
                 return true;
              }
@@ -257,9 +259,9 @@ public class PanelScreen extends OpenELISScreenForm implements
        private void addTestButtonClick(){
               int selIndex = allTestsTableModel.getData().getSelectedIndex();
               if(selIndex > -1){         
-                  DataSet atRow =  allTestsTableModel.getData().get(selIndex);
+                  DataSet<Data> atRow =  (DataSet<Data>)allTestsTableModel.getData().get(selIndex);
                   String display = (String)((StringObject)atRow.getKey()).getValue();                  
-                  DataSet row = addedTestsController.model.createRow();            
+                  DataSet<Data> row = addedTestsController.model.createRow();            
                   String[] namesArray= display.split(",");                     
                   if(testAdded(namesArray[0],namesArray[1])){
                     boolean ok = Window.confirm("This test has already been added to the panel." +

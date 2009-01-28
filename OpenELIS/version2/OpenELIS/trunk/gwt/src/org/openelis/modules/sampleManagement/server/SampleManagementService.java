@@ -25,9 +25,8 @@
 */
 package org.openelis.modules.sampleManagement.server;
 
-import java.util.HashMap;
-
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
@@ -36,39 +35,41 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.server.constants.Constants;
 
-public class SampleManagementService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
+import java.util.HashMap;
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+public class SampleManagementService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>{
+
+    public RPC abort(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitQuery(FormRPC rpcSend, DataModel data) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -85,5 +86,9 @@ public class SampleManagementService implements AppScreenFormServiceInt<FormRPC,
     public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public RPC getScreen(RPC rpc){
+        return rpc;
     }
 }

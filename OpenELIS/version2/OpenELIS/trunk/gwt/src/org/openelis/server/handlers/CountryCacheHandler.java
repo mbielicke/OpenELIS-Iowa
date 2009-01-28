@@ -15,14 +15,16 @@ import java.util.ArrayList;
 public class CountryCacheHandler implements MessageHandler<CountryCacheMessage> {
     
     static CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+    
+    public static int version = 0;
 
     public void handle(CountryCacheMessage message) {
         CachingManager.remove("InitialData", "countryDropdown");
         
     }
     
-    public static DataModel getCountries() {
-        DataModel model = (DataModel)CachingManager.getElement("InitialData", "countryDropdown");
+    public static DataModel<DataSet> getCountries() {
+        DataModel<DataSet> model = (DataModel<DataSet>)CachingManager.getElement("InitialData", "countryDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("country");
@@ -30,13 +32,14 @@ public class CountryCacheHandler implements MessageHandler<CountryCacheMessage> 
             ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
             //  we need to build the model to return
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         
             model.add(new DataSet(new StringObject(" "),new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
                 model.add(new DataSet(new StringObject(resultDO.getName()),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "countryDropdown", model);
+            version++;
         }
         return model;
         

@@ -25,10 +25,6 @@
 */
 package org.openelis.modules.inventoryAdjustment.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameDateDO;
 import org.openelis.domain.InventoryAdjLocationAutoDO;
@@ -39,12 +35,12 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -72,41 +68,45 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class InventoryAdjustmentService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>, AutoCompleteServiceInt{
     
     private static final InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static final int leftTableRowsPerPage = 20;
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");        
         
-        InventoryAdjustmentDO invAdjustmentDO = remote.getInventoryAdjustmentAndUnlock((Integer)((DataObject)key.getKey()).getValue());
+        InventoryAdjustmentDO invAdjustmentDO = remote.getInventoryAdjustmentAndUnlock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, invAdjustmentDO);
+        setFieldsInRPC(rpc.form, invAdjustmentDO);
 
         //load the adjustment child records
-        List childList = remote.getChildRecordsAndUnlock((Integer)((DataObject)key.getKey()).getValue());
-        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
-        rpcReturn.setFieldValue("adjustmentsTable",rmodel);
+        List childList = remote.getChildRecordsAndUnlock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("adjustmentsTable").getValue(),childList);
+        rpc.form.setFieldValue("adjustmentsTable",rmodel);
         
-        return rpcReturn;  
+        return rpc;  
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         InventoryAdjustmentDO invAdjustmentDO = new InventoryAdjustmentDO();
         List<InventoryAdjustmentChildDO> adjustmentChildren = new ArrayList<InventoryAdjustmentChildDO>();
         
         //build the inventoryAdjustmentDO from the form
-        invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpcSend);
+        invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpc.form);
         
         //adjustment child info
-        TableField adjTableField = (TableField)rpcSend.getField("adjustmentsTable");
+        TableField adjTableField = (TableField)rpc.form.getField("adjustmentsTable");
         DataModel adjustmentsTable = (DataModel)adjTableField.getValue();
         adjustmentChildren = getAdjustmentsListFromRPC(adjustmentsTable, invAdjustmentDO.getId());
         
@@ -114,7 +114,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         List exceptionList = remote.validateForAdd(invAdjustmentDO, adjustmentChildren);
             
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, adjTableField, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpc.form);
         } 
         
         //send the changes to the database
@@ -125,38 +125,38 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, adjTableField, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpc.form);
             
-            return rpcSend;
+            return rpc;
         }
         
         //lookup the changes from the database and build the rpc
         invAdjustmentDO.setId(adjustmentId);
 
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, invAdjustmentDO);
+        setFieldsInRPC(rpc.form, invAdjustmentDO);
 
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         return null;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List inventoryAdjustmentNames;
         
         //if the rpc is null then we need to get the page
-        if(rpcSend == null){
+        if(form == null){
 
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryAdjustmentQuery");
+            form = (Form)SessionManager.getSession().getAttribute("InventoryAdjustmentQuery");
     
-            if(rpc == null)
+            if(form == null)
                 throw new RPCException(openElisConstants.getString("queryExpiredException"));
 
             InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
             try{
-                inventoryAdjustmentNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                inventoryAdjustmentNames = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
             }catch(Exception e){
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -167,7 +167,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         }else{
             InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String,AbstractField> fields = form.getFieldMap();
             fields.remove("adjustmentsTable");
             fields.remove("label1");
             fields.remove(InventoryAdjustmentMeta.getSystemUserId());
@@ -181,53 +181,46 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
     
         
             //need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("InventoryAdjustmentQuery", rpcSend);
+            SessionManager.getSession().setAttribute("InventoryAdjustmentQuery", form);
         }
         
         //fill the model with the query results
         int i=0;
         
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else
         model.clear();
         
         while(i < inventoryAdjustmentNames.size() && i < leftTableRowsPerPage) {
             IdNameDateDO resultDO = (IdNameDateDO)inventoryAdjustmentNames.get(i);
- 
-            DataSet row = new DataSet();
-            NumberObject id = new NumberObject(resultDO.getId());
-            StringObject name = new StringObject(resultDO.getName());
-            
-            row.setKey(id);         
-            row.add(name);
-            model.add(row);
+            model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
             i++;
         } 
  
         return model;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         InventoryAdjustmentDO invAdjustmentDO = new InventoryAdjustmentDO();
         List childRows = new ArrayList();
 
         //build the inventoryAdjustmentDO from the form
-        invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpcSend);
+        invAdjustmentDO = getInventoryAdjustmentDOFromRPC(rpc.form);
         
         //child info
-        TableField adjTableField = (TableField)rpcSend.getField("adjustmentsTable");
+        TableField adjTableField = (TableField)rpc.form.getField("adjustmentsTable");
         DataModel adjustmentsTable = (DataModel)adjTableField.getValue();
         childRows = getAdjustmentsListFromRPC(adjustmentsTable, invAdjustmentDO.getId());
         
         //validate the fields on the backend
         List exceptionList = remote.validateForUpdate(invAdjustmentDO, childRows);
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, adjTableField, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpc.form);
             
-            return rpcSend;
+            return rpc;
         } 
         
         //send the changes to the database
@@ -240,35 +233,35 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, adjTableField, rpcSend);
+            setRpcErrors(exceptionList, adjTableField, rpc.form);
             
-            return rpcSend;
+            return rpc;
         }
 
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, invAdjustmentDO);   
+        setFieldsInRPC(rpc.form, invAdjustmentDO);   
         
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         //remote interface to call the organization bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
-        InventoryAdjustmentDO inventoryAdjustmentDO = remote.getInventoryAdjustment((Integer)((DataObject)key.getKey()).getValue());
+        InventoryAdjustmentDO inventoryAdjustmentDO = remote.getInventoryAdjustment((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, inventoryAdjustmentDO);
+        setFieldsInRPC(rpc.form, inventoryAdjustmentDO);
 
         //load the adjustment child records
-        List childList = remote.getChildRecords((Integer)((DataObject)key.getKey()).getValue());
-        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
-        rpcReturn.setFieldValue("adjustmentsTable",rmodel);
+        List childList = remote.getChildRecords((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("adjustmentsTable").getValue(),childList);
+        rpc.form.setFieldValue("adjustmentsTable",rmodel);
         
-        return rpcReturn;  
+        return rpc;  
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
@@ -276,20 +269,20 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         List childList;
         
         try{
-            invAdjustmentDO = remote.getInventoryAdjustmentAndLock((Integer)((DataObject)key.getKey()).getValue());
-            childList = remote.getChildRecordsAndLock((Integer)((DataObject)key.getKey()).getValue());
+            invAdjustmentDO = remote.getInventoryAdjustmentAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+            childList = remote.getChildRecordsAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
             
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
         
         //set the fields in the RPC
-        setFieldsInRPC(rpcReturn, invAdjustmentDO);        
+        setFieldsInRPC(rpc.form, invAdjustmentDO);        
         
-        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpcReturn.getField("adjustmentsTable").getValue(),childList);
-        rpcReturn.setFieldValue("adjustmentsTable",rmodel);
+        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("adjustmentsTable").getValue(),childList);
+        rpc.form.setFieldValue("adjustmentsTable",rmodel);
         
-        return rpcReturn;  
+        return rpc;  
     }
 
     public String getXML() throws RPCException {
@@ -317,6 +310,10 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
     public HashMap getXMLData(HashMap args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
     
     public DataModel getAddAutoFillValues() throws Exception {
@@ -493,24 +490,24 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         return returnModel;
     }
     
-    private void setFieldsInRPC(FormRPC rpcReturn, InventoryAdjustmentDO adjustmentDO){
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.getId(), adjustmentDO.getId());
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.getDescription(),adjustmentDO.getDescription());
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.getSystemUserId(), adjustmentDO.getSystemUser());
-        rpcReturn.setFieldValue("systemUserId", adjustmentDO.getSystemUserId());
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.getAdjustmentDate(), DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, adjustmentDO.getAdjustmentDate().getDate()));
-        rpcReturn.setFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId(), new DataSet(new NumberObject(adjustmentDO.getStoreId())));        
+    private void setFieldsInRPC(Form form, InventoryAdjustmentDO adjustmentDO){
+        form.setFieldValue(InventoryAdjustmentMeta.getId(), adjustmentDO.getId());
+        form.setFieldValue(InventoryAdjustmentMeta.getDescription(),adjustmentDO.getDescription());
+        form.setFieldValue(InventoryAdjustmentMeta.getSystemUserId(), adjustmentDO.getSystemUser());
+        form.setFieldValue("systemUserId", adjustmentDO.getSystemUserId());
+        form.setFieldValue(InventoryAdjustmentMeta.getAdjustmentDate(), DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, adjustmentDO.getAdjustmentDate().getDate()));
+        form.setFieldValue(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId(), new DataSet(new NumberObject(adjustmentDO.getStoreId())));        
     }
     
-    private InventoryAdjustmentDO getInventoryAdjustmentDOFromRPC(FormRPC rpcSend){
+    private InventoryAdjustmentDO getInventoryAdjustmentDOFromRPC(Form form){
         InventoryAdjustmentDO inventoryAdjustmentDO = new InventoryAdjustmentDO();
         
-        inventoryAdjustmentDO.setId((Integer) rpcSend.getFieldValue(InventoryAdjustmentMeta.getId()));
-        inventoryAdjustmentDO.setAdjustmentDate(((DatetimeRPC)rpcSend.getFieldValue(InventoryAdjustmentMeta.getAdjustmentDate())).getDate());
-        inventoryAdjustmentDO.setDescription((String) rpcSend.getFieldValue(InventoryAdjustmentMeta.getDescription()));
-        inventoryAdjustmentDO.setSystemUser((String) rpcSend.getFieldValue(InventoryAdjustmentMeta.getSystemUserId()));
-        inventoryAdjustmentDO.setSystemUserId((Integer) rpcSend.getFieldValue("systemUserId"));
-        inventoryAdjustmentDO.setStoreId((Integer)((DropDownField)rpcSend.getField(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId())).getSelectedKey());
+        inventoryAdjustmentDO.setId((Integer) form.getFieldValue(InventoryAdjustmentMeta.getId()));
+        inventoryAdjustmentDO.setAdjustmentDate(((DatetimeRPC)form.getFieldValue(InventoryAdjustmentMeta.getAdjustmentDate())).getDate());
+        inventoryAdjustmentDO.setDescription((String) form.getFieldValue(InventoryAdjustmentMeta.getDescription()));
+        inventoryAdjustmentDO.setSystemUser((String) form.getFieldValue(InventoryAdjustmentMeta.getSystemUserId()));
+        inventoryAdjustmentDO.setSystemUserId((Integer) form.getFieldValue("systemUserId"));
+        inventoryAdjustmentDO.setStoreId((Integer)((DropDownField)form.getField(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId())).getSelectedKey());
         
         return inventoryAdjustmentDO;
     }
@@ -521,7 +518,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         
         for(int i=0; i<adjustmentsModel.size(); i++){
             InventoryAdjustmentChildDO childDO = new InventoryAdjustmentChildDO();
-            DataSet row = adjustmentsModel.get(i);
+            DataSet<Data> row = (DataSet<Data>)adjustmentsModel.get(i);
             
             //hidden data
             NumberObject childId = (NumberObject)row.getKey();
@@ -551,7 +548,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
         return adjustmentsList;
     }
     
-    private void setRpcErrors(List exceptionList, TableField adjustmentsTable, FormRPC rpcSend){
+    private void setRpcErrors(List exceptionList, TableField adjustmentsTable, Form form){
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
@@ -561,14 +558,14 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
 
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
             }        
         
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }
     
     private DataModel fillChildrenTable(DataModel childModel, List childrenList){
@@ -579,7 +576,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<FormR
             for(int iter = 0;iter < childrenList.size();iter++) {
                 InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childrenList.get(iter);
 
-               DataSet row = childModel.createNewSet();
+               DataSet<Data> row = childModel.createNewSet();
                
                NumberObject id = new NumberObject(childDO.getId());
                row.setKey(id);

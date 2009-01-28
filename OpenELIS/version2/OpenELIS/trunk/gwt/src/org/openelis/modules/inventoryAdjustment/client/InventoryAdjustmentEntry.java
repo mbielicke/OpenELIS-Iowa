@@ -35,7 +35,7 @@ public class InventoryAdjustmentEntry implements AppModule {
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
         
-        ClassFactory.addClass(new String[] {"InventoryAdjustmentScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"InventoryAdjustmentScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new InventoryAdjustmentScreen();
@@ -43,7 +43,7 @@ public class InventoryAdjustmentEntry implements AppModule {
                                 }
         );
         
-        ClassFactory.addClass(new String[] {"InventoryAdjustmentAutoParams"}, 
+        ClassFactory.addClassFactory(new String[] {"InventoryAdjustmentAutoParams"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new InventoryAdjustmentAutoParams();

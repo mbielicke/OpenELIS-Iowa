@@ -29,7 +29,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -41,13 +43,13 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class SystemVariableScreen extends OpenELISScreenForm implements ClickListener {
+public class SystemVariableScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener {
     
     private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     
     public SystemVariableScreen() {
-        super("org.openelis.modules.systemvariable.server.SystemVariableService",false);
+        super("org.openelis.modules.systemvariable.server.SystemVariableService",false,new RPC<Form,Data>());
     }
     
     private SystemVariableMetaMap Meta = new SystemVariableMetaMap();
@@ -91,9 +93,9 @@ public class SystemVariableScreen extends OpenELISScreenForm implements ClickLis
     
     private void getSystemVariables(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-            letterRPC.setFieldValue(Meta.getName(), query);
-            commitQuery(letterRPC);
+            Form letter = (Form)forms.get("queryByLetter");
+            letter.setFieldValue(Meta.getName(), query);
+            commitQuery(letter);
         }
     }
         

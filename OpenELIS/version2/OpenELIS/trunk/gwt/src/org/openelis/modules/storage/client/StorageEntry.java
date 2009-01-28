@@ -25,7 +25,7 @@ public class StorageEntry implements AppModule {
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
      
-        ClassFactory.addClass(new String[] {"StorageLocationScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"StorageLocationScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new StorageLocationScreen();

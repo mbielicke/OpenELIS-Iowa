@@ -35,7 +35,7 @@ public class TransferInventoryEntry implements AppModule {
     
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"TransferInventoryScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"TransferInventoryScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new TransferInventoryScreen();

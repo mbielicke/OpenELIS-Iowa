@@ -38,7 +38,7 @@ public class MethodEntry implements AppModule {
 
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"MethodScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"MethodScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new MethodScreen();

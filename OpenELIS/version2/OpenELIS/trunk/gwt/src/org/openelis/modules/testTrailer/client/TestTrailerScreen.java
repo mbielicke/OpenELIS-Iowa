@@ -27,7 +27,9 @@ package org.openelis.modules.testTrailer.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -40,7 +42,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class TestTrailerScreen extends OpenELISScreenForm {
+public class TestTrailerScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
 	
 	private TextBox nameTextBox;
 	private ScreenTextArea textArea;
@@ -49,7 +51,7 @@ public class TestTrailerScreen extends OpenELISScreenForm {
     private TestTrailerMetaMap TestTrailerMeta = new TestTrailerMetaMap();
      
 	public TestTrailerScreen() {
-		super("org.openelis.modules.testTrailer.server.TestTrailerService",false);
+		super("org.openelis.modules.testTrailer.server.TestTrailerService",false,new RPC<Form,Data>());
 	}
 	
 	 public void performCommand(Enum action, Object obj) {
@@ -95,11 +97,11 @@ public class TestTrailerScreen extends OpenELISScreenForm {
 	private void getTestTrailers(String query) {
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+			Form letter = (Form)forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue(TestTrailerMeta.getName(), query);
+			letter.setFieldValue(TestTrailerMeta.getName(), query);
 
-			commitQuery(letterRPC);
+			commitQuery(letter);
 		}
 	}
 }

@@ -38,7 +38,7 @@ public class PanelEntry implements AppModule {
 
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"PanelScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"PanelScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new PanelScreen();

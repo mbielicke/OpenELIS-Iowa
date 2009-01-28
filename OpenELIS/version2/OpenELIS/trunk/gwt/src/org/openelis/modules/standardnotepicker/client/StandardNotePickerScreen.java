@@ -25,7 +25,17 @@
 */
 package org.openelis.modules.standardnotepicker.client;
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
@@ -37,23 +47,14 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class StandardNotePickerScreen extends OpenELISScreenForm implements TreeListener, ClickListener{
+public class StandardNotePickerScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements TreeListener, ClickListener{
 
 	public TextArea noteTextArea;
 	
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
 	public StandardNotePickerScreen(TextArea noteTextArea) {
-		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService",false);
+		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService",false,new RPC<Form,Data>());
 		this.noteTextArea = noteTextArea;		
         name="Standard Note Selection";
 	}
@@ -63,7 +64,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 		if(action.equals("find")){
 			TextBox findTextBox = (TextBox)getWidget("findTextBox");
 			 String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
+			Form queryRPC = (Form)forms.get("queryByNameDescription");
 			queryRPC.setFieldValue(StandardNoteMeta.getName(), queryString);
 			queryRPC.setFieldValue(StandardNoteMeta.getDescription(), queryString);
 
@@ -157,7 +158,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm implements Tree
 
             window.setStatus("","spinnerIcon");
             
-			FormRPC queryRPC = (FormRPC) this.forms.get("queryByNameDescription");
+			Form queryRPC = (Form)forms.get("queryByNameDescription");
 
 			StringObject name = new StringObject();
 	        StringObject desc = new StringObject();

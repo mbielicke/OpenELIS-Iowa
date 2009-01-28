@@ -36,7 +36,7 @@ public class OrderEntry implements AppModule {
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
     
-        ClassFactory.addClass(new String[] {"OrderScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"OrderScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new OrderScreen((Object[])args);

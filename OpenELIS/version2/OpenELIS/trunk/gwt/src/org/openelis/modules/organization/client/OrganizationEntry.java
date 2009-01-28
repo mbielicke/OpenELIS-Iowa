@@ -35,7 +35,7 @@ public class OrganizationEntry implements AppModule {
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
       
-        ClassFactory.addClass(new String[] {"OrganizationScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"OrganizationScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new OrganizationScreen();

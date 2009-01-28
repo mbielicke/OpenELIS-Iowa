@@ -25,15 +25,15 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import java.util.HashMap;
-
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.widget.AutoCompleteParamsInt;
 
+import java.util.HashMap;
+
 public class InventoryReceiptAutoParams implements AutoCompleteParamsInt{
 
-    public HashMap<String, AbstractField> getParams(FormRPC rpc) {
+    public HashMap<String, AbstractField> getParams(Form rpc) {
         HashMap params = new HashMap();
         params.put("addToExisting", rpc.getField("addToExisting"));
         

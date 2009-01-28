@@ -25,7 +25,11 @@
 */
 package org.openelis.modules.main.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
@@ -33,21 +37,22 @@ import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-public class OpenELISScreenForm extends AppScreenForm {
+public class OpenELISScreenForm<ScreenRPC extends RPC<Display,Data>,Display extends Form> extends AppScreenForm<ScreenRPC,DataModel<DataSet>,Display> {
     
-    public OpenELISServiceIntAsync<Data,Data,Data> screenService = (OpenELISServiceIntAsync<Data,Data,Data>) GWT.create(OpenELISServiceInt.class);
-    protected ServiceDefTarget target = (ServiceDefTarget) screenService; 
+    public OpenELISServiceIntAsync<ScreenRPC,DataModel<DataSet>> screenService = (OpenELISServiceIntAsync<ScreenRPC,DataModel<DataSet>>)GWT.create(OpenELISServiceInt.class);
+    public ServiceDefTarget target = (ServiceDefTarget)screenService;
+    
          
-    public OpenELISScreenForm(String serviceClass, boolean withData){
+    public OpenELISScreenForm(String serviceClass, boolean withData,ScreenRPC rpc){
         super();          
         target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service="+serviceClass);
         service = screenService;
         formService = screenService;
      
         if(withData)
-            getXMLData();
+            getXMLData(rpc);
         else{
-            getXML();
+            getXML(rpc);
         }
         
     }
@@ -56,6 +61,7 @@ public class OpenELISScreenForm extends AppScreenForm {
         super();              
         target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service="+serviceClass);
         service = screenService;
-        formService = screenService;       
+        formService = screenService;
     }
+    
 }

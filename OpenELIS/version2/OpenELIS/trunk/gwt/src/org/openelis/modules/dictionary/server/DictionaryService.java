@@ -25,25 +25,21 @@
 */
 package org.openelis.modules.dictionary.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -66,7 +62,12 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+public class DictionaryService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>,
                                            AutoCompleteServiceInt{
 
     private static final long serialVersionUID = 1L;
@@ -76,19 +77,19 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
     
     private static final CategoryMetaMap CatMeta = new CategoryMetaMap();  
     
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List systemNames = new ArrayList();
-        if(rpcSend == null){          
+        if(form == null){          
 //          need to get the query rpc out of the cache
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("DictionaryQuery");
+           form = (Form)SessionManager.getSession().getAttribute("DictionaryQuery");
     
-           if(rpc == null)
+           if(form == null)
                throw new QueryException(openElisConstants.getString("queryExpiredException"));
                 
             try{
                 
                 CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
-                systemNames = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                systemNames = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                 
             }catch(Exception e){
             	if(e instanceof LastPageException){
@@ -101,7 +102,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         } else{
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
             
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String,AbstractField> fields = form.getFieldMap();
            
                 try{                                        
                     systemNames = remote.query(fields,0,leftTableRowsPerPage);                     
@@ -111,49 +112,40 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
             }
     
 //          need to save the rpc used to the ehcache
-            SessionManager.getSession().setAttribute("DictionaryQuery", rpcSend);
+            SessionManager.getSession().setAttribute("DictionaryQuery", form);
        }
         
         int i=0;
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else 
             model.clear();
         while(i < systemNames.size() && i < leftTableRowsPerPage) {
     
             IdNameDO resultDO = (IdNameDO)systemNames.get(i);                        
-    
-            DataSet row = new DataSet();
-            
-            NumberObject id = new NumberObject(resultDO.getId());
-            
-            StringObject sysName = new StringObject(resultDO.getName());                        
-            
-            row.setKey(id);                      
-            row.add(sysName);
-            model.add(row);
+            model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
             i++;
          }        
         
         return model;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {       
+    public RPC commitAdd(RPC rpc) throws RPCException {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        NumberField catId = (NumberField) rpcSend.getField(CatMeta.getId());
+        NumberField catId = (NumberField) rpc.form.getField(CatMeta.getId());
         
-        CategoryDO categoryDO = getCategoryDOFromRPC(rpcSend);
+        CategoryDO categoryDO = getCategoryDOFromRPC(rpc.form);
         
                 
-        DataModel dictEntryTable = (DataModel)rpcSend.getField("dictEntTable").getValue();
+        DataModel dictEntryTable = (DataModel)rpc.form.getField("dictEntTable").getValue();
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)catId.getValue());
         
         List<Exception> exceptionList = remote.validateForAdd(categoryDO,dictDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList,rpcSend);   
-            return rpcSend;
+            setRpcErrors(exceptionList,rpc.form);   
+            return rpc;
         } 
         
         Integer categoryId = null;
@@ -163,34 +155,34 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
            exceptionList = new ArrayList<Exception>();
            exceptionList.add(ex);
            
-           setRpcErrors(exceptionList,rpcSend);
+           setRpcErrors(exceptionList,rpc.form);
            
-           return rpcSend;
+           return rpc;
        }
        
          categoryDO.setId(categoryId);
            
-         setFieldsInRPC(rpcReturn, categoryDO);                                            
+         setFieldsInRPC(rpc.form, categoryDO);                                            
                   
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        NumberField categoryId = (NumberField) rpcSend.getField(CatMeta.getId());
+        NumberField categoryId = (NumberField) rpc.form.getField(CatMeta.getId());
         
-        CategoryDO categoryDO = getCategoryDOFromRPC(rpcSend);
+        CategoryDO categoryDO = getCategoryDOFromRPC(rpc.form);
         
                 
-        DataModel dictEntryTable = (DataModel)rpcSend.getField("dictEntTable").getValue();
+        DataModel dictEntryTable = (DataModel)rpc.form.getField("dictEntTable").getValue();
         
         ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, (Integer)categoryId.getValue());
         List<Exception> exceptionList = remote.validateForAdd(categoryDO,dictDOList);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList,rpcSend);   
-            return rpcSend;
+            setRpcErrors(exceptionList,rpc.form);   
+            return rpc;
         } 
         
         
@@ -203,26 +195,26 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
            exceptionList = new ArrayList<Exception>();
            exceptionList.add(ex);
            
-           setRpcErrors(exceptionList, rpcSend);
+           setRpcErrors(exceptionList, rpc.form);
            
-           return rpcSend;
+           return rpc;
        }
          
-         setFieldsInRPC(rpcReturn,categoryDO);                       
+         setFieldsInRPC(rpc.form,categoryDO);                       
          
-        return rpcReturn;
+        return rpc;
     }
 
    
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         // Delete functionality is not needed on the screen 
         return null;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();
+            Integer categoryId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
     
             CategoryDO catDO = new CategoryDO();
              try{
@@ -231,32 +223,32 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                  throw new RPCException(ex.getMessage());
              }  
     //      set the fields in the RPC
-             setFieldsInRPC(rpcReturn,catDO);           
+             setFieldsInRPC(rpc.form,catDO);           
                                                        
             List addressList = remote.getDictionaryEntries(categoryId);
-            rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+            rpc.form.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpc.form.getField("dictEntTable").getValue(),addressList));
             
-            return rpcReturn;
+            return rpc;
         }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {               
+    public RPC fetch(RPC rpc) throws RPCException {               
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();        
+        Integer categoryId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();        
         CategoryDO catDO = remote.getCategory(categoryId);
 //      set the fields in the RPC
                     
-        setFieldsInRPC(rpcReturn,catDO);               
+        setFieldsInRPC(rpc.form,catDO);               
         List addressList = remote.getDictionaryEntries(categoryId);
-        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        rpc.form.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpc.form.getField("dictEntTable").getValue(),addressList));
         
-        return rpcReturn;
+        return rpc;
      
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer categoryId = (Integer)((DataObject)key.getKey()).getValue();
+        Integer categoryId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
 
         CategoryDO catDO = new CategoryDO();
          try{
@@ -265,11 +257,11 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
              throw new RPCException(ex.getMessage());
          }  
 //      set the fields in the RPC
-         setFieldsInRPC(rpcReturn,catDO);                                                  
+         setFieldsInRPC(rpc.form,catDO);                                                  
         List addressList = remote.getDictionaryEntries(categoryId);
-        rpcReturn.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpcReturn.getField("dictEntTable").getValue(),addressList));
+        rpc.form.setFieldValue("dictEntTable",fillDictEntryTable((DataModel)rpc.form.getField("dictEntTable").getValue(),addressList));
         
-        return rpcReturn;
+        return rpc;
     }
 
     public String getXML() throws RPCException {
@@ -294,8 +286,12 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
     	// TODO Auto-generated method stub
     	return null;
     }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
+    }
 
-    public DataModel fillDictEntryTable(DataModel dictEntryModel, List contactsList){        
+    public DataModel<DataSet> fillDictEntryTable(DataModel<DataSet> dictEntryModel, List contactsList){        
          try{
              dictEntryModel.clear();
                           
@@ -303,7 +299,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
              for(int iter = 0;iter < contactsList.size();iter++) {
                  DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
 
-                    DataSet row = dictEntryModel.createNewSet();
+                    DataSet<Data> row = dictEntryModel.createNewSet();
                     NumberField id = new NumberField(dictDO.getId());
                    
                     DataMap data = new DataMap();
@@ -457,24 +453,24 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         return set;
     }
 
-    private void setFieldsInRPC(FormRPC rpcReturn, CategoryDO catDO){
-        rpcReturn.setFieldValue(CatMeta.getId(), catDO.getId());
-        rpcReturn.setFieldValue(CatMeta.getSystemName(),catDO.getSystemName());
-        rpcReturn.setFieldValue(CatMeta.getName(),catDO.getName());
-        rpcReturn.setFieldValue(CatMeta.getDescription(),catDO.getDescription());  
+    private void setFieldsInRPC(Form form, CategoryDO catDO){
+        form.setFieldValue(CatMeta.getId(), catDO.getId());
+        form.setFieldValue(CatMeta.getSystemName(),catDO.getSystemName());
+        form.setFieldValue(CatMeta.getName(),catDO.getName());
+        form.setFieldValue(CatMeta.getDescription(),catDO.getDescription());  
         
         if(catDO.getSection() != null)
-            rpcReturn.setFieldValue(CatMeta.getSectionId(), new DataSet(new NumberObject(catDO.getSection())));
+            form.setFieldValue(CatMeta.getSectionId(), new DataSet(new NumberObject(catDO.getSection())));
     }
     
-    private CategoryDO getCategoryDOFromRPC(FormRPC rpcSend){        
-        NumberField categoryId = (NumberField) rpcSend.getField(CatMeta.getId());
+    private CategoryDO getCategoryDOFromRPC(Form form){        
+        NumberField categoryId = (NumberField) form.getField(CatMeta.getId());
         CategoryDO categoryDO = new CategoryDO();
         categoryDO.setId((Integer)categoryId.getValue());
-        categoryDO.setDescription(((String)rpcSend.getFieldValue(CatMeta.getDescription())));
-        categoryDO.setName(((String)rpcSend.getFieldValue(CatMeta.getName())));
-        categoryDO.setSystemName(((String)rpcSend.getFieldValue(CatMeta.getSystemName())));
-        categoryDO.setSection((Integer)((DropDownField)rpcSend.getField(CatMeta.getSectionId())).getSelectedKey());
+        categoryDO.setDescription(((String)form.getFieldValue(CatMeta.getDescription())));
+        categoryDO.setName(((String)form.getFieldValue(CatMeta.getName())));
+        categoryDO.setSystemName(((String)form.getFieldValue(CatMeta.getSystemName())));
+        categoryDO.setSection((Integer)((DropDownField)form.getField(CatMeta.getSectionId())).getSelectedKey());
         
         return categoryDO; 
     }
@@ -485,7 +481,7 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         ArrayList<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
         for(int iter = 0; iter < dictEntryTable.size(); iter++){
             
-         DataSet row = dictEntryTable.get(iter);
+         DataSet<Data> row = (DataSet<Data>)dictEntryTable.get(iter);
          DictionaryDO dictDO = new DictionaryDO();
 
            NumberField id = null;
@@ -543,8 +539,8 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
         return dictDOList;
     }
 
-	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
-        TableField entriesTable = (TableField)((FormRPC)rpcSend).getField("dictEntTable");
+	private void setRpcErrors(List exceptionList, Form form){
+        TableField entriesTable = (TableField)((Form)form).getField("dictEntTable");
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the entries table
@@ -556,11 +552,11 @@ public class DictionaryService implements AppScreenFormServiceInt<FormRPC, DataS
                      .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                 form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }   
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }
 }

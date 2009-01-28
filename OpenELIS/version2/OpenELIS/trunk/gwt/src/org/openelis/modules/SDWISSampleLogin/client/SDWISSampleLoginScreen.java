@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.SDWISSampleLogin.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
@@ -41,7 +44,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SDWISSampleLoginScreen extends OpenELISScreenForm implements ClickListener, TabListener, TreeManager{
+public class SDWISSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
     
     private static boolean loaded = false;
     private static DataModel sampleStatusDropdown, sampleTypeDropdown,
@@ -51,7 +54,7 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm implements ClickL
     private KeyListManager keyList = new KeyListManager();
     
     public SDWISSampleLoginScreen() {
-        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService", !loaded);
+        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService", !loaded,new RPC<Form,Data>());
     }
 
     public void onClick(Widget sender) {

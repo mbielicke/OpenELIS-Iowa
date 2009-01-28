@@ -34,7 +34,7 @@ public class PTSampleLoginEntry implements AppModule {
 
     public void onModuleLoad() {   
         OpenELIS.modules.addItem(new StringObject(getModuleName()));        
-        ClassFactory.addClass(new String[] {"PTSampleLoginScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"PTSampleLoginScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new PTSampleLoginScreen();

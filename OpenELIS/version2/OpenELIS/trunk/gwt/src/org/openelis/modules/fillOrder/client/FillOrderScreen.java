@@ -27,7 +27,9 @@ package org.openelis.modules.fillOrder.client;
 
 import java.util.ArrayList;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -79,14 +81,14 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FillOrderScreen extends OpenELISScreenForm implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, CommandListener{
+public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, CommandListener{
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
     private ScreenTableWidget fillItemsTableScreenWidget;
     private TreeWidget orderItemsTree;
-    private TableWidget fillItemsTable;
-    private QueryTable fillItemsQueryTable;    
+    private TableWidget<DataSet> fillItemsTable;
+    private QueryTable<DataSet> fillItemsQueryTable;    
     
     private TextBox requestedByText, orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText;
     private TextArea orderShippingNotes;
@@ -108,7 +110,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     private KeyListManager keyList = new KeyListManager();
 
     public FillOrderScreen() {
-        super("org.openelis.modules.fillOrder.server.FillOrderService", !loaded);
+        super("org.openelis.modules.fillOrder.server.FillOrderService", !loaded,new RPC<Form,Data>());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -187,7 +189,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         
         super.afterDraw(success);
         
-        rpc.setFieldValue("fillItemsTable", fillItemsTable.model.getData());
+        rpc.form.setFieldValue("fillItemsTable", fillItemsTable.model.getData());
         
     }
     
@@ -240,7 +242,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         if(state == State.ADD){
             window.setStatus("","spinnerIcon");
             clearErrors();
-            resetRPC();
+            resetForm();
             load();
             enable(false);
             
@@ -327,11 +329,11 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
     //end table manager methods
     //
     
-    private void loadFillItemsTableFromModel(DataModel model){
+    private void loadFillItemsTableFromModel(DataModel<DataSet> model){
         for(int i=0; i<model.size(); i++){
-            DataSet set = model.get(i);
+            DataSet<Data> set = model.get(i);
             
-            DataSet row = fillItemsTable.model.createRow();
+            DataSet<Data> row = fillItemsTable.model.createRow();
             
             Integer orderId = (Integer)((NumberField)set.getKey()).getValue();
             
@@ -368,10 +370,10 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         }
     }
     
-    private void replaceRowDataInFillItemsTable(DataModel model, int rowIndex){
-        DataSet set = model.get(0);
+    private void replaceRowDataInFillItemsTable(DataModel<DataSet> model, int rowIndex){
+        DataSet<Data> set = model.get(0);
 
-        DataSet row = fillItemsTable.model.getRow(rowIndex);
+        DataSet<Data> row = fillItemsTable.model.getRow(rowIndex);
             
         Integer orderId = (Integer)((NumberField)set.getKey()).getValue();
             
@@ -403,10 +405,10 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
         fillItemsTable.model.refresh();
     }
     
-    private void loadOrderItemsTableFromModel(DataModel model){
+    private void loadOrderItemsTableFromModel(DataModel<DataSet> model){
         orderItemsTree.model.clear();
         for(int i=0; i < model.size(); i++){
-            DataSet set = model.get(i);
+            DataSet<Data> set = model.get(i);
             TreeDataItem row = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey());
             
             row.get(0).setValue(set.get(0).getValue());
@@ -511,7 +513,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                
                if(checked){     //we need to add the order items from the selected row to the tree
                    for(int i=0; i<orderItemsModel.size(); i++){
-                       DataSet set = (DataSet)orderItemsModel.get(i).clone();
+                       DataSet<Data> set = (DataSet)((DataSet)orderItemsModel.get(i)).clone();
                        int j=0;
                        
                        while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
@@ -617,8 +619,8 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                               newChild.get(5).setValue(set.get(5).getValue());
                               
                               DataMap rowHiddenMap = new DataMap();
-                              rowHiddenMap.put("referenceTableId", set.get(6));
-                              rowHiddenMap.put("referenceId", set.get(7));
+                              rowHiddenMap.put("referenceTableId", set.get(5));
+                              rowHiddenMap.put("referenceId", set.get(6));
                               rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
                               rowHiddenMap.put("invItemId", set.getKey());
                               newChild.setData(rowHiddenMap);
@@ -643,7 +645,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                            
                            //rebuild the tree model
                            for(int l=0;l<rebuildModel.size(); l++){
-                               DataSet set = (DataSet)rebuildModel.get(l).clone();
+                               DataSet<Data> set = (DataSet)((DataSet)rebuildModel.get(l)).clone();
                                int j=0;
                                while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
                                    j++;
@@ -790,7 +792,7 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                                     
                                     loadOrderItemsTableFromModel(model);
                                     
-                                    StringObject orderNotes = (StringObject)model.get(0).getData();
+                                    StringObject orderNotes = (StringObject)((DataSet<Data>)model.get(0)).getData();
                                     if(orderNotes != null){
                                         map.put("orderNotes", orderNotes);
                                         orderShippingNotes.setText((String)orderNotes.getValue());
@@ -880,13 +882,13 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                     // prepare the argument list for the getObject function
                     Data[] args = new Data[] {orderIdObj}; 
                     
-                    screenService.getObject("fetchOrderItemAndLock", args, new AsyncCallback<DataModel>(){
-                        public void onSuccess(DataModel model){
+                    screenService.getObject("fetchOrderItemAndLock", args, new AsyncCallback<DataModel<DataSet>>(){
+                        public void onSuccess(DataModel<DataSet> model){
                             if(model != null){
                                 replaceRowDataInFillItemsTable(model, row);
                                 ((DataMap)fillItemsTable.model.getRow(row).getData()).put("orderItems", model.get(0).getData());
                                 
-                                StringObject orderNotes = (StringObject)((DataModel)model.get(0).getData()).get(0).getData();
+                                StringObject orderNotes = (StringObject)((DataSet)((DataModel<DataSet>)model.get(0).getData()).get(0)).getData();
                                 if(orderNotes != null)
                                     ((DataMap)fillItemsTable.model.getRow(row).getData()).put("orderNotes", orderNotes);
                                 else
@@ -1045,13 +1047,13 @@ public class FillOrderScreen extends OpenELISScreenForm implements ClickListener
                 TreeDataItem item = orderItemsTree.model.getRow(row);
                 ArrayList selections = (ArrayList)((DropDownField)item.get(2)).getSelections();
                
-                DataSet set = null;
+                DataSet<Data> set = null;
                 if(selections.size() > 0)
-                    set = (DataSet)selections.get(0);
+                    set = (DataSet<Data>)selections.get(0);
                 
                if(set != null && set.size() > 1){
                     //set the new quantity on hand
-                   orderItemsTree.model.setCell(row, 4, (Integer)set.get(1).getValue());
+                   orderItemsTree.model.setCell(row, 4, (Integer)((DataObject)set.get(1)).getValue());
                    //orderItemsTree.model.refresh();
                }
             }

@@ -27,7 +27,10 @@ package org.openelis.modules.analyte.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -39,14 +42,14 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class AnalyteScreen extends OpenELISScreenForm {
+public class AnalyteScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
 	
 	private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 
 	public AnalyteScreen() {
-		super("org.openelis.modules.analyte.server.AnalyteService",false);
+		super("org.openelis.modules.analyte.server.AnalyteService",false, new RPC<Form,Data>());
     }
      
     public void performCommand(Enum action, Object obj) {
@@ -85,7 +88,7 @@ public class AnalyteScreen extends OpenELISScreenForm {
 	private void getAnalytes(String query) {
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+			Form letterRPC = (Form) this.forms.get("queryByLetter");
 
 			letterRPC.setFieldValue(Meta.getName(), query);
 

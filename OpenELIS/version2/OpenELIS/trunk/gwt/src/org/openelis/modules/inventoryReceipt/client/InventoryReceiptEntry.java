@@ -35,7 +35,7 @@ public class InventoryReceiptEntry implements AppModule {
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
         
-        ClassFactory.addClass(new String[] {"InventoryReceiptScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"InventoryReceiptScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new InventoryReceiptScreen();
@@ -43,7 +43,7 @@ public class InventoryReceiptEntry implements AppModule {
                                 }
         );
         
-        ClassFactory.addClass(new String[] {"InventoryReceiptAutoParams"}, 
+        ClassFactory.addClassFactory(new String[] {"InventoryReceiptAutoParams"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new InventoryReceiptAutoParams();

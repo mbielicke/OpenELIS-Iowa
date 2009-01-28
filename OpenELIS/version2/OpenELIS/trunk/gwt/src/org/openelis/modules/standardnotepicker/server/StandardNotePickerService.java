@@ -26,7 +26,8 @@
 package org.openelis.modules.standardnotepicker.server;
 
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
@@ -40,8 +41,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.widget.pagedtree.TreeModel;
 import org.openelis.gwt.widget.pagedtree.TreeModelItem;
-import org.openelis.meta.StandardNoteMeta;
-import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
@@ -55,42 +54,42 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
+public class StandardNotePickerService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>> {
 
 	private static final long serialVersionUID = -2489317407834940845L;
 
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+	public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
     	return null;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+	public RPC commitUpdate(RPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public RPC commitDelete(RPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public RPC fetchForUpdate(RPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -105,6 +104,10 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<FormRP
 	
 	public HashMap getXMLData(HashMap args) throws RPCException {
     	return null;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
 
     public PagedTreeField getTreeModel(StringObject name, StringObject desc) throws RPCException{

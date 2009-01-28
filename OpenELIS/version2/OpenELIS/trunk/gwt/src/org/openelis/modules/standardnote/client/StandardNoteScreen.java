@@ -25,7 +25,11 @@
 */
 package org.openelis.modules.standardnote.client;
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.ui.TextBox;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -41,9 +45,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.TextBox;
-
-public class StandardNoteScreen extends OpenELISScreenForm {
+public class StandardNoteScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
 
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
@@ -55,7 +57,7 @@ public class StandardNoteScreen extends OpenELISScreenForm {
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
 	public StandardNoteScreen() {
-    	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded);
+    	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded, new RPC<Form,Data>());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -113,11 +115,11 @@ public class StandardNoteScreen extends OpenELISScreenForm {
 	private void getStandardNotes(String query) {
     	if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
     
-    		FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+    		Form letter = (Form)forms.get("queryByLetter");
     		
-    		letterRPC.setFieldValue(StandardNoteMeta.getName(), query);
+    		letter.setFieldValue(StandardNoteMeta.getName(), query);
     
-    		commitQuery(letterRPC);
+    		commitQuery(letter);
     	}
     }	
 }

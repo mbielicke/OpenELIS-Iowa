@@ -25,12 +25,6 @@
 */
 package org.openelis.modules.test.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.QaEventTestDropdownDO;
@@ -47,15 +41,16 @@ import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -72,7 +67,6 @@ import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
@@ -88,7 +82,13 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,DataModel>,
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+
+public class TestService implements AppScreenFormServiceInt<RPC,DataModel<DataSet>>,
                                     AutoCompleteServiceInt{
 
     private static final int leftTableRowsPerPage = 24;
@@ -99,21 +99,21 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     
     
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List testNames;
         // if the rpc is null then we need to get the page
-        if (rpcSend == null) {
+        if (form == null) {
 
-            FormRPC rpc = (FormRPC)SessionManager.getSession()
+            form = (Form)SessionManager.getSession()
                                                  .getAttribute("TestQuery");
 
-            if (rpc == null)
+            if (form == null)
                 throw new RPCException(openElisConstants.getString("queryExpiredException"));
 
             TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
             try {
-                testNames = remote.query(rpc.getFieldMap(),
+                testNames = remote.query(form.getFieldMap(),
                                          (model.getPage() * leftTableRowsPerPage),
                                          leftTableRowsPerPage + 1);
             } catch (Exception e) {
@@ -127,7 +127,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         } else {
             TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
-            HashMap<String, AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String, AbstractField> fields = form.getFieldMap();
             // fields.remove("contactsTable");
 
             try {
@@ -139,13 +139,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             }
 
             // need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("TestQuery", rpcSend);
+            SessionManager.getSession().setAttribute("TestQuery", form);
         }
 
         // fill the model with the query results
         int i = 0;
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else 
             model.clear();
         while (i < testNames.size() && i < leftTableRowsPerPage) {
@@ -165,7 +165,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return model;
     }
     
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestIdNameMethodIdDO testDO = null;
         TestDetailsDO testDetailsDO = null;        
@@ -180,31 +180,31 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     
         Integer testId;
     
-        testDO = getTestIdNameMethodIdDOFromRPC(rpcSend);
+        testDO = getTestIdNameMethodIdDOFromRPC(rpc.form);
         // if(((FormRPC)rpcSend.getField("details")).load){
-        testDetailsDO = getTestDetailsDOFromRPC((FormRPC)rpcReturn.getField("details"));
+        testDetailsDO = getTestDetailsDOFromRPC((Form)rpc.form.getField("details"));
         // }
-        testSectionDOList = getTestSectionsFromRPC((FormRPC)rpcReturn.getField("details"), null) ;
+        testSectionDOList = getTestSectionsFromRPC((Form)rpc.form.getField("details"), null) ;
             
-        sampleTypeDOList = getSampleTypesFromRPC((FormRPC)rpcReturn.getField("sampleType"),
+        sampleTypeDOList = getSampleTypesFromRPC((Form)rpc.form.getField("sampleType"),
                                                   null);
         
-        prepTestDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
+        prepTestDOList = getPrepTestsFromRPC((Form)rpc.form.getField("prepAndReflex"),
                                               null);
-        testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+        testReflexDOList = getTestReflexesFromRPC((Form)rpc.form.getField("prepAndReflex")
                                                   ,null);
         
         
         //if (((FormRPC)rpcSend.getField("worksheet")).load) {
-         itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));               
-         worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
+         itemsDOList = getWorksheetItemsFromRPC((Form)rpc.form.getField("worksheet"));               
+         worksheetDO = getTestWorkSheetFromRPC((Form)rpc.form.getField("worksheet"),
                                              null);
         //}
         
        // if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
-            testAnalyteDOList = getTestAnalyteDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
+            testAnalyteDOList = getTestAnalyteDOListFromRPC((Form)rpc.form.getField("testAnalyte"),
                                                         null);
-            resultDOList = getTestResultDOListFromRPC((FormRPC)rpcSend.getField("testAnalyte"),
+            resultDOList = getTestResultDOListFromRPC((Form)rpc.form.getField("testAnalyte"),
                                                       null);
         //}
         
@@ -214,9 +214,9 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                                    itemsDOList,testAnalyteDOList,
                                                    testSectionDOList,resultDOList);
         if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpcSend);
+            setRpcErrors(exceptionList, rpc.form);
     
-            return rpcSend;
+            return rpc;
         }
     
         try {
@@ -232,16 +232,17 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             exceptionList = new ArrayList();
             exceptionList.add(e);
     
-            setRpcErrors(exceptionList, rpcSend);
+            setRpcErrors(exceptionList, rpc.form);
     
-            return rpcSend;
+            return rpc;
         }
     
-        setFieldsInRPC(rpcReturn, testDO);
-        return rpcReturn;
+        testDO.setId(testId);
+        setFieldsInRPC(rpc.form, testDO);
+        return rpc;
     }
     
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         TestDetailsDO testDetailsDO = null;
@@ -254,41 +255,41 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         List<TestSectionDO> testSectionDOList = null;
         List<TestResultDO> resultDOList = null;
 
-        testDO = getTestIdNameMethodIdDOFromRPC(rpcSend);
-        NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
+        testDO = getTestIdNameMethodIdDOFromRPC(rpc.form);
+        NumberField testId = (NumberField)rpc.form.getField(TestMeta.getId());
         
-        if (((FormRPC)rpcSend.getField("details")).load){
-            testDetailsDO = getTestDetailsDOFromRPC((FormRPC)rpcReturn.getField("details"));
-            testSectionDOList = getTestSectionsFromRPC((FormRPC)rpcReturn.getField("details"), 
+        if (((Form)rpc.form.getField("details")).load){
+            testDetailsDO = getTestDetailsDOFromRPC((Form)rpc.form.getField("details"));
+            testSectionDOList = getTestSectionsFromRPC((Form)rpc.form.getField("details"), 
                                                        (Integer)testId.getValue());  
         } 
 
-        if (((FormRPC)rpcSend.getField("prepAndReflex")).load) {
+        if (((Form)rpc.form.getField("prepAndReflex")).load) {
             
-            testPrepDOList = getPrepTestsFromRPC((FormRPC)rpcReturn.getField("prepAndReflex"),
+            testPrepDOList = getPrepTestsFromRPC((Form)rpc.form.getField("prepAndReflex"),
                                                       (Integer)testId.getValue());
             
-            testReflexDOList = getTestReflexesFromRPC((FormRPC)rpcReturn.getField("prepAndReflex")
+            testReflexDOList = getTestReflexesFromRPC((Form)rpc.form.getField("prepAndReflex")
                                                     ,(Integer)testId.getValue());
             
             
         }
         
-        if (((FormRPC)rpcSend.getField("sampleType")).load) {            
-            sampleTypeDOList = getSampleTypesFromRPC((FormRPC)rpcReturn.getField("sampleType"),
+        if (((Form)rpc.form.getField("sampleType")).load) {            
+            sampleTypeDOList = getSampleTypesFromRPC((Form)rpc.form.getField("sampleType"),
                                                       (Integer)testId.getValue());
         }
         
-        if (((FormRPC)rpcSend.getField("worksheet")).load) {
-            itemsDOList = getWorksheetItemsFromRPC((FormRPC)rpcReturn.getField("worksheet"));
-            worksheetDO = getTestWorkSheetFromRPC((FormRPC)rpcReturn.getField("worksheet"),
+        if (((Form)rpc.form.getField("worksheet")).load) {
+            itemsDOList = getWorksheetItemsFromRPC((Form)rpc.form.getField("worksheet"));
+            worksheetDO = getTestWorkSheetFromRPC((Form)rpc.form.getField("worksheet"),
                                                  (Integer)testId.getValue());
         }
         
-        if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
-            testAnalyteDOList = getTestAnalyteDOListFromRPC((FormRPC)rpcReturn.getField("testAnalyte"),
+        if (((Form)rpc.form.getField("testAnalyte")).load) {
+            testAnalyteDOList = getTestAnalyteDOListFromRPC((Form)rpc.form.getField("testAnalyte"),
                                                         (Integer)testId.getValue());
-            resultDOList = getTestResultDOListFromRPC((FormRPC)rpcSend.getField("testAnalyte"),
+            resultDOList = getTestResultDOListFromRPC((Form)rpc.form.getField("testAnalyte"),
                                        (Integer)testId.getValue());
             
             
@@ -301,9 +302,9 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                                       testSectionDOList,resultDOList);        
 
         if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpcSend);
+            setRpcErrors(exceptionList, rpc.form);
 
-            return rpcSend;
+            return rpc;
         }
 
         try {
@@ -320,139 +321,139 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList,rpcSend);
+            setRpcErrors(exceptionList,rpc.form);
             
-            return rpcSend;
+            return rpc;
             
         }
-        setFieldsInRPC(rpcReturn, testDO);
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, testDO);
+        return rpc;
     }
     
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod( (Integer)((DataObject)key.getKey()).getValue());
-        setFieldsInRPC(rpcReturn, testDO);
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod( (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+        setFieldsInRPC(rpc.form, testDO);
 
-        if (((FormRPC)rpcReturn.getField("details")).load) {
-            FormRPC detailsRPC = (FormRPC)rpcReturn.getField("details");
-            loadTestDetails(key, detailsRPC);
+        if (((Form)rpc.form.getField("details")).load) {
+            Form detailsRPC = (Form)rpc.form.getField("details");
+            loadTestDetails((DataSet)rpc.key, detailsRPC);
         }
 
-        if (((FormRPC)rpcReturn.getField("sampleType")).load) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
-            loadSampleTypes(key, samplePrepRPC);
+        if (((Form)rpc.form.getField("sampleType")).load) {
+            Form samplePrepRPC = (Form)rpc.form.getField("sampleType");
+            loadSampleTypes((DataSet)rpc.key, samplePrepRPC);
         }
 
-        if (((FormRPC)rpcReturn.getField("prepAndReflex")).load) {
-            FormRPC prepAndReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
-            loadPrepTestsReflexTests(key, prepAndReflexRPC);
+        if (((Form)rpc.form.getField("prepAndReflex")).load) {
+            Form prepAndReflexRPC = (Form)rpc.form.getField("prepAndReflex");
+            loadPrepTestsReflexTests((DataSet)rpc.key, prepAndReflexRPC);
         }
         
-        if (((FormRPC)rpcReturn.getField("worksheet")).load) {
-            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
-            loadWorksheetLayout(key, worksheetRPC);
+        if (((Form)rpc.form.getField("worksheet")).load) {
+            Form worksheetRPC = (Form)rpc.form.getField("worksheet");
+            loadWorksheetLayout((DataSet)rpc.key, worksheetRPC);
         }
         
-        if (((FormRPC)rpcReturn.getField("testAnalyte")).load) {
-            FormRPC analyteRPC = (FormRPC)rpcReturn.getField("testAnalyte");
-            loadTestAnalyte(key, analyteRPC);
+        if (((Form)rpc.form.getField("testAnalyte")).load) {
+            Form analyteRPC = (Form)rpc.form.getField("testAnalyte");
+            loadTestAnalyte((DataSet)rpc.key, analyteRPC);
         }
 
-        return rpcReturn;
+        return rpc;
     }   
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)((DataObject)key.getKey()).getValue());
-        setFieldsInRPC(rpcReturn, testDO);
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+        setFieldsInRPC(rpc.form, testDO);
 
-        String tab = (String)rpcReturn.getFieldValue("testTabPanel");
+        String tab = (String)rpc.form.getFieldValue("testTabPanel");
         if (tab.equals("detailsTab")) {
-            loadTestDetails(key, (FormRPC)rpcReturn.getField("details"));
+            loadTestDetails((DataSet)rpc.key, (Form)rpc.form.getField("details"));
         }
 
         if (tab.equals("sampleTypeTab")) {
-            FormRPC sampleTypeRPC = (FormRPC)rpcReturn.getField("sampleType");
-            loadSampleTypes(key, sampleTypeRPC);
+            Form sampleTypeRPC = (Form)rpc.form.getField("sampleType");
+            loadSampleTypes((DataSet)rpc.key, sampleTypeRPC);
         }
 
         if (tab.equals("prepAndReflexTab")) {
-            FormRPC prepReflexRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
-            loadPrepTestsReflexTests(key, prepReflexRPC);
+            Form prepReflexRPC = (Form)rpc.form.getField("prepAndReflex");
+            loadPrepTestsReflexTests((DataSet)rpc.key, prepReflexRPC);
         }
         
         if (tab.equals("worksheetTab")) {
-            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
-            loadWorksheetLayout(key, worksheetRPC);
+            Form worksheetRPC = (Form)rpc.form.getField("worksheet");
+            loadWorksheetLayout((DataSet)rpc.key, worksheetRPC);
         }
         
         if (tab.equals("analyteTab")) {
-            FormRPC analyteRPC = (FormRPC)rpcReturn.getField("testAnalyte");
-            loadTestAnalyte(key, analyteRPC);
+            Form analyteRPC = (Form)rpc.form.getField("testAnalyte");
+            loadTestAnalyte((DataSet)rpc.key, analyteRPC);
         }
         
-        return rpcReturn;
+        return rpc;
     }
     
-    public FormRPC loadTestDetails(DataSet key, FormRPC rpcReturn) {
+    public Form loadTestDetails(DataSet key, Form form) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestDetailsDO testDetailsDO = remote.getTestDetails((Integer)((NumberObject)key.getKey()).getValue());
-        fillTestDetails(testDetailsDO, rpcReturn);
+        fillTestDetails(testDetailsDO, form);
         List<TestSectionDO> tsDOList = remote.getTestSections((Integer)((NumberObject)key.getKey()).getValue());
-        fillTestSections(tsDOList,rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
+        fillTestSections(tsDOList,form);
+        form.load = true;
+        return form;
     }
     
-    public FormRPC loadSampleTypes(DataSet key, FormRPC rpcReturn) {
+    public Form loadSampleTypes(DataSet key, Form form) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestTypeOfSampleDO> list = remote.getTestTypeOfSamples((Integer)((NumberObject)key.getKey()).getValue());
-        fillSampleTypes(list, rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
+        fillSampleTypes(list, form);
+        form.load = true;
+        return form;
     }
 
-    public FormRPC loadPrepTestsReflexTests(DataSet key, FormRPC rpcReturn) {
+    public Form loadPrepTestsReflexTests(DataSet key, Form form) {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestPrepDO> prepList = remote.getTestPreps((Integer)((NumberObject)key.getKey()).getValue());
-        fillPrepTests(prepList, rpcReturn);
+        fillPrepTests(prepList, form);
         List<TestReflexDO>  reflexList = remote.getTestReflexes((Integer)((NumberObject)key.getKey()).getValue());    
-        fillTestReflexes(reflexList,rpcReturn,(Integer)((NumberObject)key.getKey()).getValue());
-        rpcReturn.load = true;
-        return rpcReturn;
+        fillTestReflexes(reflexList,form,(Integer)((NumberObject)key.getKey()).getValue());
+        form.load = true;
+        return form;
     }
         
-    public FormRPC loadWorksheetLayout(DataSet key, FormRPC rpcReturn){
+    public Form loadWorksheetLayout(DataSet key, Form form){
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         TestWorksheetDO worksheetDO = remote.getTestWorksheet((Integer)((NumberObject)key.getKey()).getValue());
         List<TestWorksheetItemDO> itemDOList = remote.getTestWorksheetItems((Integer)((NumberObject)key.getKey()).getValue());
-        fillWorksheet(worksheetDO, itemDOList, rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
+        fillWorksheet(worksheetDO, itemDOList, form);
+        form.load = true;
+        return form;
     }
     
-    public FormRPC loadTestAnalyte(DataSet key,FormRPC rpcReturn){
+    public Form loadTestAnalyte(DataSet key,Form form){
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestAnalyteDO> taList = remote.getTestAnalytes((Integer)((NumberObject)key.getKey()).getValue());
-        fillAnalyteTree(taList, rpcReturn);
-        fillTestResults(key,rpcReturn);
-        rpcReturn.load = true;
-        return rpcReturn;
+        fillAnalyteTree(taList, form);
+        fillTestResults(key,form);
+        form.load = true;
+        return form;
     }        
     
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         try {
-            testDO = remote.getTestIdNameMethodAndLock((Integer)((DataObject)key.getKey()).getValue(),
+            testDO = remote.getTestIdNameMethodAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(),
                                                        SessionManager.getSession()
                                                                      .getId());
         } catch (Exception e) {
@@ -460,34 +461,34 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             throw new RPCException(e.getMessage());
         }
 
-        setFieldsInRPC(rpcReturn, testDO);
+        setFieldsInRPC(rpc.form, testDO);
 
-        String tab = (String)rpcReturn.getFieldValue("testTabPanel");
+        String tab = (String)rpc.form.getFieldValue("testTabPanel");
         if (tab.equals("detailsTab")) {
-            loadTestDetails(key, (FormRPC)rpcReturn.getField("details"));
+            loadTestDetails((DataSet)rpc.key, (Form)rpc.form.getField("details"));
         }
 
         if (tab.equals("sampleTypeTab")) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("sampleType");
-            loadSampleTypes(key, samplePrepRPC);
+            Form samplePrepRPC = (Form)rpc.form.getField("sampleType");
+            loadSampleTypes((DataSet)rpc.key, samplePrepRPC);
         }
 
         if (tab.equals("prepAndReflexTab")) {
-            FormRPC samplePrepRPC = (FormRPC)rpcReturn.getField("prepAndReflex");
-            loadPrepTestsReflexTests(key, samplePrepRPC);
+            Form samplePrepRPC = (Form)rpc.form.getField("prepAndReflex");
+            loadPrepTestsReflexTests((DataSet)rpc.key, samplePrepRPC);
         }
         
         if (tab.equals("worksheetTab")) {
-            FormRPC worksheetRPC = (FormRPC)rpcReturn.getField("worksheet");
-            loadWorksheetLayout(key, worksheetRPC);
+            Form worksheetRPC = (Form)rpc.form.getField("worksheet");
+            loadWorksheetLayout((DataSet)rpc.key, worksheetRPC);
         }
         
         if (tab.equals("analyteTab")) {
-            FormRPC analyteRPC = (FormRPC)rpcReturn.getField("testAnalyte");
-            loadTestAnalyte(key, analyteRPC);
+            Form analyteRPC = (Form)rpc.form.getField("testAnalyte");
+            loadTestAnalyte((DataSet)rpc.key, analyteRPC);
         }
 
-        return rpcReturn;
+        return rpc;
     }
 
     public String getXML() throws RPCException {
@@ -506,6 +507,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     public HashMap getXMLData(HashMap args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
     
     public DataModel getTestAnalyteModel(NumberObject key){
@@ -586,8 +591,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return model; 
     }
     
-    public ModelField getResultGroupModel(NumberObject testId,FormRPC rpcReturn){
-        ModelField field  = (ModelField)rpcReturn.getField("resultGroupDropDown");
+    public ModelField getResultGroupModel(NumberObject testId,Form form){
+        ModelField field  = (ModelField)form.getField("resultGroupDropDown");
         DataModel model = new DataModel();
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<IdNameDO> list = remote.getResultGroupsForTest((Integer)testId.getValue());
@@ -634,7 +639,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return new NumberObject(list.size());
     }
     
-    public DataModel getTestResultModel(NumberObject testId,FormRPC rpcReturn){
+    public DataModel getTestResultModel(NumberObject testId,Form form){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<IdNameDO> list = remote.getTestResultsforTest((Integer)testId.getValue());
              DataModel dmodel = new DataModel();
@@ -854,13 +859,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
           return numObj;
     }
     
-    private List<TestPrepDO> getPrepTestsFromRPC(FormRPC rpcSend,Integer testId) {
+    private List<TestPrepDO> getPrepTestsFromRPC(Form form,Integer testId) {
 
-        DataModel model = (DataModel)rpcSend.getField("testPrepTable").getValue();
+        DataModel<DataSet> model = (DataModel)form.getField("testPrepTable").getValue();
 
         List<TestPrepDO> testPrepDOList = new ArrayList<TestPrepDO>();
         for (int j = 0; j < model.size(); j++) {
-            DataSet row = model.get(j);
+            DataSet<Data> row = model.get(j);
             TestPrepDO testPrepDO = new TestPrepDO();
             
                 testPrepDO.setDelete(false);           
@@ -897,16 +902,16 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return testPrepDOList;
     }
 
-    private List<TestTypeOfSampleDO> getSampleTypesFromRPC(FormRPC rpcSend,
+    private List<TestTypeOfSampleDO> getSampleTypesFromRPC(Form form,
                                                            Integer testId) {
-        DataModel model = (DataModel)rpcSend.getField("sampleTypeTable")
+        DataModel<DataSet> model = (DataModel)form.getField("sampleTypeTable")
                                               .getValue();
         
 
         List<TestTypeOfSampleDO> typeOfSampleDOList = new ArrayList<TestTypeOfSampleDO>();
 
         for (int i = 0; i < model.size(); i++) {
-            DataSet row = model.get(i);
+            DataSet<Data> row = model.get(i);
             TestTypeOfSampleDO testTypeOfSampleDO = new TestTypeOfSampleDO();
 
             testTypeOfSampleDO.setDelete(false);
@@ -942,11 +947,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return typeOfSampleDOList;
     }
     
-    private List<TestReflexDO> getTestReflexesFromRPC(FormRPC rpcSend,Integer testId){
-        DataModel model = (DataModel)rpcSend.getField("testReflexTable").getValue();
+    private List<TestReflexDO> getTestReflexesFromRPC(Form form,Integer testId){
+        DataModel<DataSet> model = (DataModel)form.getField("testReflexTable").getValue();
         List<TestReflexDO> list = new ArrayList<TestReflexDO>();
          for (int i = 0; i < model.size(); i++) {
-            DataSet row = model.get(i);
+            DataSet<Data> row = model.get(i);
             TestReflexDO refDO = new TestReflexDO();
             
             if(row.getData()!=null) {
@@ -985,23 +990,23 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
          return list;
     }
     
-    private TestWorksheetDO getTestWorkSheetFromRPC(FormRPC rpcSend, Integer testId){
+    private TestWorksheetDO getTestWorkSheetFromRPC(Form form, Integer testId){
       TestWorksheetDO worksheetDO = null;
-      Integer bc = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getBatchCapacity());
+      Integer bc = (Integer)form.getFieldValue(TestMeta.getTestWorksheet().getBatchCapacity());
       if(bc!=null){
        if(worksheetDO==null)
            worksheetDO = new TestWorksheetDO();   
         worksheetDO.setBatchCapacity(bc);
       }  
       
-      Integer id = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getId());
+      Integer id = (Integer)form.getFieldValue(TestMeta.getTestWorksheet().getId());
       if(id!=null){
        if(worksheetDO==null)
            worksheetDO = new TestWorksheetDO();   
        worksheetDO.setId(id);
       } 
       
-      DropDownField numFormId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getFormatId());       
+      DropDownField numFormId = (DropDownField)form.getField(TestMeta.getTestWorksheet().getFormatId());       
          if(numFormId.getSelectedKey()!=null ){ 
              if(worksheetDO==null)
                  worksheetDO = new TestWorksheetDO();  
@@ -1015,7 +1020,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
           worksheetDO.setTestId(testId);
       } 
       
-      DropDownField scrId = (DropDownField)rpcSend.getField(TestMeta.getTestWorksheet().getScriptletId());      
+      DropDownField scrId = (DropDownField)form.getField(TestMeta.getTestWorksheet().getScriptletId());      
           if(scrId.getValue()!=null){
               if(worksheetDO==null)
                   worksheetDO = new TestWorksheetDO();  
@@ -1023,7 +1028,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
           }  
 
       
-      Integer tc = (Integer)rpcSend.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity());      
+      Integer tc = (Integer)form.getFieldValue(TestMeta.getTestWorksheet().getTotalCapacity());      
       if(tc !=null){
           if(worksheetDO==null)
               worksheetDO = new TestWorksheetDO();   
@@ -1033,13 +1038,13 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
       return worksheetDO;
     }
     
-    private List<TestSectionDO> getTestSectionsFromRPC(FormRPC rpcSend,Integer testId){
-        DataModel model = (DataModel)rpcSend.getField("sectionTable").getValue();
+    private List<TestSectionDO> getTestSectionsFromRPC(Form form,Integer testId){
+        DataModel<DataSet> model = (DataModel)form.getField("sectionTable").getValue();
         
         List<TestSectionDO> tsDOList =  new ArrayList<TestSectionDO>();
         
         for(int iter = 0; iter < model.size(); iter++){
-            DataSet row = model.get(iter);
+            DataSet<Data> row = model.get(iter);
             TestSectionDO tsDO = new TestSectionDO();
             tsDO.setDelete(false);
             
@@ -1074,14 +1079,14 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return tsDOList;
     }
     
-    private List<TestWorksheetItemDO> getWorksheetItemsFromRPC(FormRPC rpcSend) {
-        DataModel model = (DataModel)rpcSend.getField("worksheetTable")
+    private List<TestWorksheetItemDO> getWorksheetItemsFromRPC(Form form) {
+        DataModel<DataSet> model = (DataModel)form.getField("worksheetTable")
                                               .getValue();
         
         List<TestWorksheetItemDO> worksheetItemDOList = new ArrayList<TestWorksheetItemDO>();
 
         for (int i = 0; i < model.size(); i++) {
-            DataSet row = model.get(i);
+            DataSet<Data> row = model.get(i);
             TestWorksheetItemDO worksheetItemDO = new TestWorksheetItemDO();
             
             worksheetItemDO.setDelete(false);            
@@ -1092,7 +1097,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 worksheetItemDO.setId((Integer)id.getValue());
             }
          
-            worksheetItemDO.setTestWorksheetId((Integer)((NumberField)rpcSend.
+            worksheetItemDO.setTestWorksheetId((Integer)((NumberField)form.
                              getField(TestMeta.getTestWorksheet().getId())).getValue());      
             worksheetItemDO.setPosition((Integer)((NumberField)row.get(0)).getValue());               
             worksheetItemDO.setTypeId((Integer)((DropDownField)row.get(1)).getSelectedKey());                         
@@ -1119,93 +1124,93 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     }
     
 
-    private void setFieldsInRPC(FormRPC rpcReturn, TestIdNameMethodIdDO testDO) {
-        rpcReturn.setFieldValue(TestMeta.getId(), testDO.getId());
-        rpcReturn.setFieldValue(TestMeta.getName(), testDO.getName());
+    private void setFieldsInRPC(Form form, TestIdNameMethodIdDO testDO) {
+        form.setFieldValue(TestMeta.getId(), testDO.getId());
+        form.setFieldValue(TestMeta.getName(), testDO.getName());
         //rpcReturn.setFieldValue(TestMeta.getMethodId(), 
           //                      new DataSet(new NumberObject(testDO.getMethodId())));
         DataModel model = new DataModel();
         model.add(new NumberObject(testDO.getMethodId()),new StringObject(testDO.getMethodName()));
-        ((DropDownField)rpcReturn.getField(TestMeta.getMethodId())).setModel(model);
-        rpcReturn.setFieldValue(TestMeta.getMethodId(), model.get(0));
+        ((DropDownField)form.getField(TestMeta.getMethodId())).setModel(model);
+        form.setFieldValue(TestMeta.getMethodId(), model.get(0));       
     }
 
-    private void fillTestDetails(TestDetailsDO testDetailsDO, FormRPC rpcReturn) {
-        rpcReturn.setFieldValue(TestMeta.getDescription(),
+    private void fillTestDetails(TestDetailsDO testDetailsDO, Form form) {
+        form.setFieldValue(TestMeta.getDescription(),
                                 testDetailsDO.getDescription());
-        rpcReturn.setFieldValue(TestMeta.getReportingDescription(),
+        form.setFieldValue(TestMeta.getReportingDescription(),
                                 testDetailsDO.getReportingDescription());
-        rpcReturn.setFieldValue(TestMeta.getIsActive(),
+        form.setFieldValue(TestMeta.getIsActive(),
                                 testDetailsDO.getIsActive());        
-        rpcReturn.setFieldValue(TestMeta.getActiveBegin(),
+        form.setFieldValue(TestMeta.getActiveBegin(),
                                 DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         testDetailsDO.getActiveBegin()
                                                                      .getDate()));
-        rpcReturn.setFieldValue(TestMeta.getActiveEnd(),
+        form.setFieldValue(TestMeta.getActiveEnd(),
                                 DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         testDetailsDO.getActiveEnd()
                                                                      .getDate()));        
-        rpcReturn.setFieldValue(TestMeta.getIsReportable(),
+        form.setFieldValue(TestMeta.getIsReportable(),
                                 testDetailsDO.getIsReportable()); 
         
         if(testDetailsDO.getTestTrailerId()!=null)
-         rpcReturn.setFieldValue(TestMeta.getTestTrailerId(),
+         form.setFieldValue(TestMeta.getTestTrailerId(),
                                 new DataSet(new NumberObject(testDetailsDO.getTestTrailerId())));
         
-        rpcReturn.setFieldValue(TestMeta.getTimeTransit(),
+        form.setFieldValue(TestMeta.getTimeTransit(),
                                 testDetailsDO.getTimeTransit());
-        rpcReturn.setFieldValue(TestMeta.getTimeHolding(),
+        form.setFieldValue(TestMeta.getTimeHolding(),
                                 testDetailsDO.getTimeHolding());
-        rpcReturn.setFieldValue(TestMeta.getTimeTaAverage(),
+        form.setFieldValue(TestMeta.getTimeTaAverage(),
                                 testDetailsDO.getTimeTaAverage());                
-        rpcReturn.setFieldValue(TestMeta.getTimeTaWarning(),
+        form.setFieldValue(TestMeta.getTimeTaWarning(),
                                 testDetailsDO.getTimeTaWarning());
-        rpcReturn.setFieldValue(TestMeta.getTimeTaMax(),
+        form.setFieldValue(TestMeta.getTimeTaMax(),
                                 testDetailsDO.getTimeTaMax()); 
         
         if(testDetailsDO.getLabelId()!=null)
-         rpcReturn.setFieldValue(TestMeta.getLabelId(),
+         form.setFieldValue(TestMeta.getLabelId(),
                                 new DataSet(new NumberObject(testDetailsDO.getLabelId())));
-        rpcReturn.setFieldValue(TestMeta.getLabelQty(),
+        form.setFieldValue(TestMeta.getLabelQty(),
                                testDetailsDO.getLabelQty());                 
         
         if(testDetailsDO.getScriptletId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getScriptletId(),
+        form.setFieldValue(TestMeta.getScriptletId(),
                                 new DataSet(new NumberObject(testDetailsDO.getScriptletId())));
         
         if(testDetailsDO.getTestFormatId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getTestFormatId(),
+        form.setFieldValue(TestMeta.getTestFormatId(),
                                 new DataSet(new NumberObject(testDetailsDO.getTestFormatId())));   
 
         if(testDetailsDO.getRevisionMethodId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getRevisionMethodId(),
+        form.setFieldValue(TestMeta.getRevisionMethodId(),
                                 new DataSet(new NumberObject(testDetailsDO.getRevisionMethodId())));
         
         if(testDetailsDO.getSortingMethodId()!=null)
-            rpcReturn.setFieldValue(TestMeta.getSortingMethodId(),
+            form.setFieldValue(TestMeta.getSortingMethodId(),
                                     new DataSet(new NumberObject(testDetailsDO.getSortingMethodId())));
         
         if(testDetailsDO.getReportingMethodId()!=null)
-            rpcReturn.setFieldValue(TestMeta.getReportingMethodId(),
+            form.setFieldValue(TestMeta.getReportingMethodId(),
                                     new DataSet(new NumberObject(testDetailsDO.getReportingMethodId())));
         
-         rpcReturn.setFieldValue(TestMeta.getReportingSequence(),
+         form.setFieldValue(TestMeta.getReportingSequence(),
                                     testDetailsDO.getReportingSequence());
         
         
     }
     
-    private void fillTestSections(List<TestSectionDO> testSectionDOList, FormRPC rpcReturn){
-        DataModel model = (DataModel)rpcReturn.getField("sectionTable").getValue();
+    private void fillTestSections(List<TestSectionDO> testSectionDOList, Form form){
+        DataModel<DataSet> model = (DataModel)form.getField("sectionTable").getValue();
         model.clear();
         
         if(testSectionDOList.size()>0){
             for(int iter = 0; iter < testSectionDOList.size(); iter++){
                 TestSectionDO sectionDO = (TestSectionDO)testSectionDOList.get(iter);
                 
-                DataSet row = model.createNewSet();
+                DataSet<Data> row = model.createNewSet();
                 
                 NumberField id = new NumberField(sectionDO.getId());
                 
@@ -1226,16 +1231,16 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     }
 
     private void fillPrepTests(List<TestPrepDO> testPrepDOList,
-                               FormRPC rpcReturn) {
+                               Form form) {
 
-        DataModel model = (DataModel)rpcReturn.getField("testPrepTable")
+        DataModel<DataSet> model = (DataModel)form.getField("testPrepTable")
                                                 .getValue();
         model.clear();
         if (testPrepDOList.size() > 0) {
             for (int iter = 0; iter < testPrepDOList.size(); iter++) {
                 TestPrepDO testPrepDO = (TestPrepDO)testPrepDOList.get(iter);
 
-                DataSet row = model.createNewSet();
+                DataSet<Data> row = model.createNewSet();
                 
                 NumberField id = new NumberField(testPrepDO.getId());
 
@@ -1257,15 +1262,15 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     }
     
     private void fillTestReflexes(List<TestReflexDO> testReflexDOList,
-                                  FormRPC rpcReturn, Integer testId){
-        DataModel model = (DataModel)rpcReturn.getField("testReflexTable")
+                                  Form form, Integer testId){
+        DataModel<DataSet> model = (DataModel)form.getField("testReflexTable")
                                                 .getValue();
         model.clear();        
         if(testReflexDOList.size() > 0){
             Integer unselVal = new Integer(-1);
             for(int iter = 0; iter < testReflexDOList.size(); iter++){
               TestReflexDO refDO = testReflexDOList.get(iter);
-              DataSet row = model.createNewSet();
+              DataSet<Data> row = model.createNewSet();
               
               NumberField id = new NumberField(refDO.getId());
               DataMap data = new DataMap();
@@ -1299,9 +1304,9 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         
 
     private void fillSampleTypes(List<TestTypeOfSampleDO> sampleTypeDOList,
-                                 FormRPC rpcReturn) {
+                                 Form form) {
 
-        DataModel model = (DataModel)rpcReturn.getField("sampleTypeTable")
+        DataModel<DataSet> model = (DataModel)form.getField("sampleTypeTable")
                                                 .getValue();
         model.clear();
 
@@ -1309,7 +1314,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             for (int iter = 0; iter < sampleTypeDOList.size(); iter++) {
                 TestTypeOfSampleDO testTypeOfSampleDO = (TestTypeOfSampleDO)sampleTypeDOList.get(iter);
 
-                DataSet row = model.createNewSet();
+                DataSet<Data> row = model.createNewSet();
                 // new TableRow();
                 NumberField id = new NumberField(testTypeOfSampleDO.getId());
                 
@@ -1333,33 +1338,33 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     
     private void fillWorksheet(TestWorksheetDO worksheetDO, 
                                List<TestWorksheetItemDO> worksheetItemList,
-                               FormRPC rpcReturn){
+                               Form form){
        if(worksheetDO!=null){ 
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getBatchCapacity(),
+        form.setFieldValue(TestMeta.getTestWorksheet().getBatchCapacity(),
                                 worksheetDO.getBatchCapacity());
         
         if(worksheetDO.getNumberFormatId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getFormatId(),
+        form.setFieldValue(TestMeta.getTestWorksheet().getFormatId(),
                                 new DataSet(new NumberObject(worksheetDO.getNumberFormatId())));    
         
         if(worksheetDO.getScriptletId()!=null)
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getScriptletId(),
+        form.setFieldValue(TestMeta.getTestWorksheet().getScriptletId(),
                                 new DataSet(new NumberObject(worksheetDO.getScriptletId())));    
         
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getId(),
+        form.setFieldValue(TestMeta.getTestWorksheet().getId(),
                                 worksheetDO.getId());  
         
-        rpcReturn.setFieldValue(TestMeta.getTestWorksheet().getTotalCapacity(),
+        form.setFieldValue(TestMeta.getTestWorksheet().getTotalCapacity(),
                                 worksheetDO.getTotalCapacity());
        } 
-        DataModel model = (DataModel)rpcReturn.getField("worksheetTable").getValue();
+        DataModel<DataSet> model = (DataModel)form.getField("worksheetTable").getValue();
                  model.clear();
 
         if (worksheetItemList.size() > 0) {
          for (int iter = 0; iter < worksheetItemList.size(); iter++) {
              TestWorksheetItemDO worksheetItemDO = (TestWorksheetItemDO)worksheetItemList.get(iter);
 
-           DataSet row = model.createNewSet();                     
+           DataSet<Data> row = model.createNewSet();                     
 
            NumberField id = new NumberField(worksheetItemDO.getId());
 
@@ -1382,8 +1387,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         
     }
     
-    private void fillAnalyteTree(List<TestAnalyteDO> analyteDOList, FormRPC rpcReturn){        
-        TreeDataModel model =  (TreeDataModel)(rpcReturn.getFieldValue("analyteTree"));
+    private void fillAnalyteTree(List<TestAnalyteDO> analyteDOList, Form form){        
+        TreeDataModel model =  (TreeDataModel)(form.getFieldValue("analyteTree"));
         model.clear();
         TreeDataItem currGroupItem = null;
         
@@ -1411,14 +1416,14 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         }
     }    
     
-    public FormRPC fillTestResults(DataSet key, FormRPC rpcReturn){       
-        DataSet row = null;
+    public Form fillTestResults(DataSet key, Form form){       
+        DataSet<Data> row = null;
         DataMap data = null;
         NumberField id = null;        
         NumberField rg = null;
         TestResultDO resultDO = null;
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");               
-        DataModel model = (DataModel)rpcReturn.getField("testResultsTable").getValue();
+        DataModel<DataSet> model = (DataModel)form.getField("testResultsTable").getValue();
         List<IdNameDO> list = remote.getResultGroupsForTest((Integer)((NumberObject)key.getKey()).getValue());                
         
         model.clear();
@@ -1460,11 +1465,11 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             model.add(row);
         }
       }          
-       return rpcReturn;
+       return form;
     }
 
-    public DataModel loadTestResultsByGroup(NumberObject testId, NumberObject resultGroup,DataModel model){
-        DataSet row = null;
+    public DataModel loadTestResultsByGroup(NumberObject testId, NumberObject resultGroup,DataModel<DataSet> model){
+        DataSet<Data> row = null;
         DataMap data = null;
         TestResultDO resultDO = null;
         NumberField id = null;
@@ -1512,8 +1517,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
        return model; 
     }
     
-    private List<TestAnalyteDO> getTestAnalyteDOListFromRPC(FormRPC rpcReturn,Integer testId){
-        TreeDataModel model =  (TreeDataModel)(rpcReturn.getFieldValue("analyteTree"));
+    private List<TestAnalyteDO> getTestAnalyteDOListFromRPC(Form form,Integer testId){
+        TreeDataModel model =  (TreeDataModel)(form.getFieldValue("analyteTree"));
         int  currGroup = 0;
         int sortOrder = 0;
         List<TestAnalyteDO> analyteDOList = new ArrayList<TestAnalyteDO>();
@@ -1594,10 +1599,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         return analyteDO;
     }
     
-    private List<TestResultDO> getTestResultDOListFromRPC(FormRPC rpcSend,Integer testId){
+    private List<TestResultDO> getTestResultDOListFromRPC(Form form,Integer testId){
         
-      CollectionField field = (CollectionField)rpcSend.getField("resultModelCollection");
-      ArrayList<DataModel> list = (ArrayList<DataModel>)field.getValue(); 
+      CollectionField field = (CollectionField)form.getField("resultModelCollection");
+      ArrayList list = field.getValue(); 
       NumberField id = null;
       NumberField rg = null;
       NumberObject valueObj = null;
@@ -1606,10 +1611,10 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
       List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
       
       for(int fiter = 0; fiter < list.size(); fiter++){
-        DataModel model = list.get(fiter);
+        DataModel<DataSet> model = (DataModel<DataSet>)list.get(fiter);
                 
         for(int iter = 0; iter < model.size(); iter++){
-            DataSet row = model.get(iter);
+            DataSet<Data> row = model.get(iter);
             TestResultDO resultDO = new TestResultDO();
             
             if(row.getData()!=null){ 
@@ -1711,74 +1716,74 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
       }
         
 
-    private TestIdNameMethodIdDO getTestIdNameMethodIdDOFromRPC(FormRPC rpcSend) {
-        NumberField testId = (NumberField)rpcSend.getField(TestMeta.getId());
+    private TestIdNameMethodIdDO getTestIdNameMethodIdDOFromRPC(Form form) {
+        NumberField testId = (NumberField)form.getField(TestMeta.getId());
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         testDO.setId((Integer)testId.getValue());
-        testDO.setName(((String)rpcSend.getFieldValue(TestMeta.getName())));        
-        testDO.setMethodId((Integer)((DropDownField)rpcSend.
+        testDO.setName(((String)form.getFieldValue(TestMeta.getName())));        
+        testDO.setMethodId((Integer)((DropDownField)form.
                                       getField(TestMeta.getMethodId())).getSelectedKey());
 
         return testDO;
     }
 
-    private TestDetailsDO getTestDetailsDOFromRPC(FormRPC rpcSend) {
+    private TestDetailsDO getTestDetailsDOFromRPC(Form form) {
         TestDetailsDO testDetailsDO = new TestDetailsDO();
-        DatetimeRPC activeBegin = (DatetimeRPC)rpcSend.getFieldValue(TestMeta.getActiveBegin());
+        DatetimeRPC activeBegin = (DatetimeRPC)form.getFieldValue(TestMeta.getActiveBegin());
         if (activeBegin != null)
             testDetailsDO.setActiveBegin(activeBegin.getDate());
 
-        DatetimeRPC activeEnd = (DatetimeRPC)rpcSend.getFieldValue(TestMeta.getActiveEnd());
+        DatetimeRPC activeEnd = (DatetimeRPC)form.getFieldValue(TestMeta.getActiveEnd());
         if (activeEnd != null)
             testDetailsDO.setActiveEnd(activeEnd.getDate());
 
-        testDetailsDO.setDescription((String)rpcSend.getFieldValue(TestMeta.getDescription()));
-        testDetailsDO.setIsActive((String)rpcSend.getFieldValue(TestMeta.getIsActive()));
-        testDetailsDO.setIsReportable((String)rpcSend.getFieldValue(TestMeta.getIsReportable()));
+        testDetailsDO.setDescription((String)form.getFieldValue(TestMeta.getDescription()));
+        testDetailsDO.setIsActive((String)form.getFieldValue(TestMeta.getIsActive()));
+        testDetailsDO.setIsReportable((String)form.getFieldValue(TestMeta.getIsReportable()));
 
-        testDetailsDO.setLabelId((Integer)((DropDownField)rpcSend.getField(TestMeta.getLabelId())).getSelectedKey());
+        testDetailsDO.setLabelId((Integer)((DropDownField)form.getField(TestMeta.getLabelId())).getSelectedKey());
 
-        testDetailsDO.setLabelQty((Integer)rpcSend.getFieldValue(TestMeta.getLabelQty()));
-        testDetailsDO.setReportingDescription((String)rpcSend.getFieldValue(TestMeta.getReportingDescription()));
+        testDetailsDO.setLabelQty((Integer)form.getFieldValue(TestMeta.getLabelQty()));
+        testDetailsDO.setReportingDescription((String)form.getFieldValue(TestMeta.getReportingDescription()));
 
-        testDetailsDO.setRevisionMethodId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setRevisionMethodId((Integer)((DropDownField)form.
                              getField(TestMeta.getRevisionMethodId())).getSelectedKey());
 
-        testDetailsDO.setScriptletId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setScriptletId((Integer)((DropDownField)form.
                             getField(TestMeta.getScriptletId())).getSelectedKey());
                
-        testDetailsDO.setTestFormatId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setTestFormatId((Integer)((DropDownField)form.
                             getField(TestMeta.getTestFormatId())).getSelectedKey());
         
-        testDetailsDO.setTestTrailerId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setTestTrailerId((Integer)((DropDownField)form.
                             getField(TestMeta.getTestTrailerId())).getSelectedKey());
         
-        testDetailsDO.setTimeHolding((Integer)rpcSend.getFieldValue(TestMeta.getTimeHolding()));
-        testDetailsDO.setTimeTaAverage((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaAverage()));
-        testDetailsDO.setTimeTaMax((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaMax()));
-        testDetailsDO.setTimeTaWarning((Integer)rpcSend.getFieldValue(TestMeta.getTimeTaWarning()));
-        testDetailsDO.setTimeTransit((Integer)rpcSend.getFieldValue(TestMeta.getTimeTransit()));
+        testDetailsDO.setTimeHolding((Integer)form.getFieldValue(TestMeta.getTimeHolding()));
+        testDetailsDO.setTimeTaAverage((Integer)form.getFieldValue(TestMeta.getTimeTaAverage()));
+        testDetailsDO.setTimeTaMax((Integer)form.getFieldValue(TestMeta.getTimeTaMax()));
+        testDetailsDO.setTimeTaWarning((Integer)form.getFieldValue(TestMeta.getTimeTaWarning()));
+        testDetailsDO.setTimeTransit((Integer)form.getFieldValue(TestMeta.getTimeTransit()));
        
-        testDetailsDO.setSortingMethodId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setSortingMethodId((Integer)((DropDownField)form.
                             getField(TestMeta.getSortingMethodId())).getSelectedKey());
 
-        testDetailsDO.setReportingMethodId((Integer)((DropDownField)rpcSend.
+        testDetailsDO.setReportingMethodId((Integer)((DropDownField)form.
                             getField(TestMeta.getReportingMethodId())).getSelectedKey());
         
-        testDetailsDO.setReportingSequence((Integer)rpcSend.getFieldValue(TestMeta.getReportingSequence()));
+        testDetailsDO.setReportingSequence((Integer)form.getFieldValue(TestMeta.getReportingSequence()));
         return testDetailsDO;
     }
     
     
 
-    private void setRpcErrors(List exceptionList, FormRPC rpcSend) {
-        TableField sampleTypeTable = (TableField)((FormRPC)rpcSend.getField("sampleType")).getField("sampleTypeTable");
-        TableField prepTestTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testPrepTable");        
-        TableField testReflexTable = (TableField)((FormRPC)rpcSend.getField("prepAndReflex")).getField("testReflexTable");        
-        TableField worksheetTable = (TableField)((FormRPC)rpcSend.getField("worksheet")).getField("worksheetTable");        
-        TableField testSectionTable = (TableField)((FormRPC)rpcSend.getField("details")).getField("sectionTable");         
-        TableField testResultsTable = (TableField)((FormRPC)rpcSend.getField("testAnalyte")).getField("testResultsTable");        
-        CollectionField cfield = (CollectionField)((FormRPC)rpcSend.getField("testAnalyte")).getField("resultModelCollection");
+    private void setRpcErrors(List exceptionList, Form form) {
+        TableField sampleTypeTable = (TableField)((Form)form.getField("sampleType")).getField("sampleTypeTable");
+        TableField prepTestTable = (TableField)((Form)form.getField("prepAndReflex")).getField("testPrepTable");        
+        TableField testReflexTable = (TableField)((Form)form.getField("prepAndReflex")).getField("testReflexTable");        
+        TableField worksheetTable = (TableField)((Form)form.getField("worksheet")).getField("worksheetTable");        
+        TableField testSectionTable = (TableField)((Form)form.getField("details")).getField("sectionTable");         
+        TableField testResultsTable = (TableField)((Form)form.getField("testAnalyte")).getField("testResultsTable");        
+        CollectionField cfield = (CollectionField)((Form)form.getField("testAnalyte")).getField("resultModelCollection");
 
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
@@ -1840,27 +1845,27 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                 String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
                 if(nameWithRPC.startsWith("worksheet:")){
                     String fieldName = nameWithRPC.substring(10);
-                    FormRPC workSheetRPC = (FormRPC)rpcSend.getField("worksheet");
+                    Form workSheetRPC = (Form)form.getField("worksheet");
                     
                     workSheetRPC.getField(fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                     
                } else if(nameWithRPC.startsWith("details:")) {
                     String fieldName = nameWithRPC.substring(8);
-                    FormRPC detailsRPC = (FormRPC)rpcSend.getField("details");
+                    Form detailsRPC = (Form)form.getField("details");
                     
                     detailsRPC.getField(fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                } else {
-                    rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
+                    form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                }   
             }
             // if the error is on the entire form
             else if (exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }       
 
     private void loadDropDown(List<IdNameDO> list, DataModel model) {
@@ -1928,15 +1933,15 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
         int llim = 0;
         int ulim = 0;
         
-        ArrayList<DataModel> mlist = (ArrayList<DataModel>)cfield.getValue();
-        DataModel m = null;
+        ArrayList mlist = cfield.getValue();
+        DataModel<DataSet> m = null;
         
         DataSet errRow = null;       
         
         for(int i = 0; i < mlist.size(); i++) {
              ulim = getUpperLimit(i,mlist);             
              if(llim <= row && row < ulim) {
-               m = mlist.get(i);
+               m = (DataModel<DataSet>)mlist.get(i);
                errRow = m.get(row - llim);               
                break;    
              }   

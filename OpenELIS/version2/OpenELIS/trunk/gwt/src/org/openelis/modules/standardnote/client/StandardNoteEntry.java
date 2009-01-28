@@ -34,7 +34,7 @@ public class StandardNoteEntry implements AppModule {
 
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"StandardNoteScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"StandardNoteScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new StandardNoteScreen();

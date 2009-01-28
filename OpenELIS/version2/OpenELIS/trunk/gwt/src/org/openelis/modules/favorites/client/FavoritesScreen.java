@@ -25,14 +25,13 @@
 */
 package org.openelis.modules.favorites.client;
 
-import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.widget.MenuPanel;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.gwt.widget.MenuPanel;
 
 public class FavoritesScreen extends AppScreen {
         
@@ -78,7 +77,7 @@ public class FavoritesScreen extends AppScreen {
     }
     
     public void saveFavorites() {
-        screenService.saveFavorites(rpc, new AsyncCallback() {
+        screenService.saveFavorites(form, new AsyncCallback() {
             public void onSuccess(Object result){
                 redrawScreen((String)result);
                 editing=false;

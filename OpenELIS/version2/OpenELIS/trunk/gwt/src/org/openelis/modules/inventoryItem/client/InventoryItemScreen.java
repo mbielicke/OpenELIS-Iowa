@@ -25,8 +25,19 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -38,7 +49,6 @@ import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
-import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -61,17 +71,7 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class InventoryItemScreen extends OpenELISScreenForm implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
+public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
     private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
@@ -94,7 +94,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
 	public InventoryItemScreen() {
-        super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded);
+        super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded, new RPC<Form,Data>());
 	}
 
     public void performCommand(Enum action, Object obj) {
@@ -181,8 +181,8 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         
 		super.afterDraw(success);			
         
-        ((FormRPC)rpc.getField("components")).setFieldValue("componentsTable", componentsTable.model.getData());
-        ((FormRPC)rpc.getField("locations")).setFieldValue("locQuantitiesTable", locsTable.model.getData());
+        ((Form)form.getField("components")).setFieldValue("componentsTable", componentsTable.model.getData());
+        ((Form)form.getField("locations")).setFieldValue("locQuantitiesTable", locsTable.model.getData());
 	}
     
     public void add() {
@@ -248,11 +248,11 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     //
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
-            if (index == 0 && !((FormRPC)rpc.getField("components")).load) 
+            if (index == 0 && !((Form)form.getField("components")).load) 
                 fillComponentsModel(false);
-            else if (index == 1 && !((FormRPC)rpc.getField("locations")).load) 
+            else if (index == 1 && !((Form)form.getField("locations")).load) 
                 fillLocationsModel();
-            else if(index == 4 && !((FormRPC)rpc.getField("comments")).load)
+            else if(index == 4 && !((Form)form.getField("comments")).load)
                 fillCommentsModel();
         }
         
@@ -268,12 +268,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, new BooleanObject(forDuplicate), rpc.getField("components")};
+        Data[] args = new Data[] {key, new BooleanObject(forDuplicate), form.getField("components")};
 
-        screenService.getObject("loadComponents", args, new AsyncCallback<FormRPC>() {
-            public void onSuccess(FormRPC result) {
+        screenService.getObject("loadComponents", args, new AsyncCallback<Form>() {
+            public void onSuccess(Form result) {
                 load(result);
-                rpc.setField("components", (FormRPC)result);
+                form.setField("components", (Form)result);
 
                 if(forDuplicate)
                     key = null;
@@ -295,12 +295,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), rpc.getField("locations")};
+        Data[] args = new Data[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), form.getField("locations")};
 
-        screenService.getObject("loadLocations", args, new AsyncCallback<FormRPC>() {
-            public void onSuccess(FormRPC result) {
+        screenService.getObject("loadLocations", args, new AsyncCallback<Form>() {
+            public void onSuccess(Form result) {
                 load(result);
-                rpc.setField("locations", (FormRPC)result);
+                form.setField("locations", (Form)result);
                 
                 window.setStatus("","");
             }
@@ -319,12 +319,12 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         window.setStatus("","spinnerIcon");
                  
        // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, rpc.getField("comments")}; 
+        Data[] args = new Data[] {key, form.getField("comments")}; 
          
-       screenService.getObject("loadComments", args, new AsyncCallback<FormRPC>(){
-           public void onSuccess(FormRPC result){    
+       screenService.getObject("loadComments", args, new AsyncCallback<Form>(){
+           public void onSuccess(Form result){    
                load(result);
-               rpc.setField("comments",(FormRPC)result);
+               form.setField("comments",(Form)result);
 
                window.setStatus("","");
            }
@@ -339,7 +339,7 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
 	private void getInventories(String query, Widget sender) {
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+			Form letterRPC = (Form) this.forms.get("queryByLetter");
 			letterRPC.setFieldValue(InvItemMeta.getName(), query);
 
 			commitQuery(letterRPC);
@@ -368,34 +368,34 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
     private void onDuplicateRecordClick(){
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
-            FormRPC displayRPC = (FormRPC)rpc.clone();
+            Form displayRPC = (Form)form.clone();
             displayRPC.setFieldValue(InvItemMeta.getId(), null);
             displayRPC.setFieldValue(InvItemMeta.getAverageLeadTime(),null);
             displayRPC.setFieldValue(InvItemMeta.getAverageCost(),null);
             displayRPC.setFieldValue(InvItemMeta.getAverageDailyUse(),null);
             
-            ((FormRPC)displayRPC.getField("locations")).setFieldValue("locQuantitiesTable", null);
-            ((FormRPC)displayRPC.getField("components")).setFieldValue("componentsTable", null);
-            ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
-            ((FormRPC)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
+            ((Form)displayRPC.getField("locations")).setFieldValue("locQuantitiesTable", null);
+            ((Form)displayRPC.getField("components")).setFieldValue("componentsTable", null);
+            ((Form)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
+            ((Form)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
             
             DataSet tempKey = key;
                     
-            DataModel beforeModel = (DataModel)((FormRPC)displayRPC.getField("components")).getFieldValue("componentsTable");
+            DataModel beforeModel = (DataModel)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
             beforeModel.size();
             
             add();
             
-            DataModel afterModel = (DataModel)((FormRPC)displayRPC.getField("components")).getFieldValue("componentsTable");
+            DataModel afterModel = (DataModel)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
             afterModel.size();
             key = tempKey;
             
-            rpc = displayRPC;
+            form = displayRPC;
             
             //set the load flags correctly
-            ((FormRPC)rpc.getField("components")).load = false;
-            ((FormRPC)rpc.getField("locations")).load = true;
-            ((FormRPC)rpc.getField("comments")).load = true;
+            ((Form)form.getField("components")).load = false;
+            ((Form)form.getField("locations")).load = true;
+            ((Form)form.getField("comments")).load = true;
             
             load();
             
@@ -467,9 +467,9 @@ public class InventoryItemScreen extends OpenELISScreenForm implements TableWidg
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
         
-        paramsObj.put("id", rpc.getField(InvItemMeta.getId()));
-        paramsObj.put("store", rpc.getField(InvItemMeta.getStoreId()));
-        paramsObj.put("name", rpc.getField(InvItemMeta.getName()));
+        paramsObj.put("id", form.getField(InvItemMeta.getId()));
+        paramsObj.put("store", form.getField(InvItemMeta.getStoreId()));
+        paramsObj.put("name", form.getField(InvItemMeta.getName()));
         
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 

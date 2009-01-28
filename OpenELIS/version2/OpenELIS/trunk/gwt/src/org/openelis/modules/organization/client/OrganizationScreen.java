@@ -25,9 +25,20 @@
 */
 package org.openelis.modules.organization.client;
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -48,37 +59,74 @@ import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class OrganizationScreen extends OpenELISScreenForm implements
+public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,OrganizationForm> implements
                                                           ClickListener,
                                                           TabListener {
 
-    private static boolean loaded = false;
-    private static DataModel stateDropdown, countryDropdown,
-                    contactTypeDropdown;
-
-    private AppButton        removeContactButton, standardNoteButton;
-    private TableWidget       contactsTable;
-    private ScreenTextBox    orgId;
-    private ScreenTextArea   noteText;
-    private TextBox          orgName;
-    private ButtonPanel      atozButtons;
-    private KeyListManager   keyList = new KeyListManager();
+    private AppButton              removeContactButton, standardNoteButton;
+    private TableWidget<DataSet>   contactsTable;
+    private ScreenTextBox          orgId;
+    private ScreenTextArea         noteText;
+    private TextBox                orgName;
+    private ButtonPanel            atozButtons;
+    private KeyListManager         keyList = new KeyListManager();
+    private Dropdown<DataSet>      states;
+    private Dropdown<DataSet>      countries;
+    private QueryTable<DataSet>    queryContactsTable;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
+    
+    /*
+     * This callback is used to check the returned RPC for updated DataModels for the dropdown
+     * widgets on the screen.  It is inserted at the front of the call chain.
+     * 
+     * if model is returned set it to the widgets and make sure to null the rpc field 
+     * so it is not sent back with future RPC calls
+     */
+    AsyncCallback<OrganizationRPC> checkModels = new AsyncCallback<OrganizationRPC>() {
+        public void onSuccess(OrganizationRPC rpc) {
+            if(rpc.contactTypes != null) {
+                setContactTypesModel(rpc.contactTypes);
+                rpc.contactTypes = null;
+            }
+            if(rpc.countries != null) {
+                setCountriesModel(rpc.countries);
+                rpc.countries = null;
+            }
+            if(rpc.states != null) {
+                setStatesModel(rpc.states);
+                rpc.states = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
 
     public OrganizationScreen() {
-        super("org.openelis.modules.organization.server.OrganizationService",
-              !loaded);
+        super("org.openelis.modules.organization.server.OrganizationService");
+        /*
+         * Setting widgets in wrappedWidgets has three potential effects.  
+         * 1. Can be used to link widgets from the XML definition to member fields in the screen class
+         * 2. Can be used to set widgets to parameterized versions that accept generics
+         * 3. Can be used to set Widgets to classes that extend the widget being defined in the xml.
+         *    (i.e. ContactsTable extends TableWidget<DataSet> could be a table specifically for contacts
+         *     with additional helper methods specific to contacts)
+         */
+        wrappedWidgets.put(OrgMeta.getAddress().getState(), states = new Dropdown<DataSet>());
+        wrappedWidgets.put(OrgMeta.getAddress().getCountry(), countries = new Dropdown<DataSet>());
+        wrappedWidgets.put("contactsTable", contactsTable = new TableWidget<DataSet>());
+        
+        /*
+         * To assign the Form used in the RPC to a specific Form instance which is the point of the upgrade,
+         * we need to insert an instance of the form to use into the forms hash under the "display" key.
+         * 
+         * This is required mostly for backwards compatibility until all screens can be upgraded. Then we may 
+         * have the option of setting this some other way.
+         */
+        forms.put("display",new OrganizationForm());
+        getScreen(new OrganizationRPC());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -101,14 +149,8 @@ public class OrganizationScreen extends OpenELISScreenForm implements
     }
 
     public void afterDraw(boolean success) {
-        loaded = true;
 
-        TableWidget d;
-        QueryTable q;
-        ScreenTableWidget sw;
-        Dropdown drop;
         AToZTable atozTable;
-
         //
         // we are interested in in getting button actions in two places,
         // modelwidget and us.
@@ -132,53 +174,66 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         //
         // disable auto add and make sure there are no rows in the table
         //
-        contactsTable = (TableWidget)getWidget("contactsTable");
         contactsTable.model.enableAutoAdd(false);
         
-        orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
         orgName = (TextBox)getWidget(OrgMeta.getName());
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
+        orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
    
-        if (stateDropdown == null) {
-            stateDropdown = (DataModel)initData.get("states");
-            countryDropdown = (DataModel)initData.get("countries");
-            contactTypeDropdown = (DataModel)initData.get("contacts");
-        }
-
-        drop = (Dropdown)getWidget(OrgMeta.getAddress().getState());
-        drop.setModel(stateDropdown);
-
-        sw = (ScreenTableWidget)widgets.get("contactsTable");
-        d = (TableWidget)sw.getWidget();
-        q = (QueryTable)sw.getQueryWidget().getWidget();
-        //
-        // state dropdown
-        //
-        ((TableDropdown)d.columns.get(5).getColumnWidget()).setModel(stateDropdown);
-        ((TableDropdown)q.columns.get(5).getColumnWidget()).setModel(stateDropdown);
-
-        //
-        // country dropdowns
-        //
-        drop = (Dropdown)getWidget(OrgMeta.getAddress().getCountry());
-        drop.setModel(countryDropdown);
-
-        ((TableDropdown)d.columns.get(7).getColumnWidget()).setModel(countryDropdown);
-        ((TableDropdown)q.columns.get(7).getColumnWidget()).setModel(countryDropdown);
-
-        //
-        // contact type dropdowns
-        //
-        ((TableDropdown)d.columns.get(0).getColumnWidget()).setModel(contactTypeDropdown);
-        ((TableDropdown)q.columns.get(0).getColumnWidget()).setModel(contactTypeDropdown);
+        queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
+   
+        /*
+         * Setting of the models has been split to three methods so that they can be individually updated when needed.
+         * 
+         * Models are now pulled directly from RPC rather than initData.
+         */
+        setContactTypesModel(rpc.contactTypes);
+        setCountriesModel(rpc.countries);
+        setStatesModel(rpc.states);
         
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        rpc.contactTypes = null;
+        rpc.countries = null;
+        rpc.states = null;
 
-        
         //override the callbacks
         updateChain.add(afterUpdate);
         
+        /*
+         * Set the CheckModels to the first call back in all chains
+         * 
+         * It is debatable if the checkmodels needs to be in all call chains
+         * at a minimum though it should be in fetchChain and updateChain 
+         */
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        deleteChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
+        
+        
         super.afterDraw(success);
-       ((FormRPC)rpc.getField("contacts")).setFieldValue("contactsTable", contactsTable.model.getData());
+        rpc.form.contacts.contacts.setValue(contactsTable.model.getData());
+    }
+    
+    public void setContactTypesModel(DataModel<DataSet> typesModel) {
+        ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
+        ((TableDropdown)queryContactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
+    }
+    
+    public void setCountriesModel(DataModel<DataSet> countriesModel) {
+        countries.setModel(countriesModel);
+        ((TableDropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
+        ((TableDropdown)queryContactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
+    }
+    
+    public void setStatesModel(DataModel<DataSet> statesModel) {
+        states.setModel(statesModel);
+        ((TableDropdown)contactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
+        ((TableDropdown)queryContactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
     
     public void query() {
@@ -225,9 +280,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
      */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
-            if (index == 0 && !((FormRPC)rpc.getField("contacts")).load) {
+            if (index == 0 && !((Form)form.getField("contacts")).load) {
                 fillContactsModel();
-            } else if (index == 2 && !((FormRPC)rpc.getField("notes")).load) {
+            } else if (index == 2 && !((Form)form.getField("notes")).load) {
                 fillNotesModel();
             }
         }
@@ -236,12 +291,9 @@ public class OrganizationScreen extends OpenELISScreenForm implements
 
     private void getOrganizations(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            
-            FormRPC rpc;
-
-            rpc = (FormRPC)this.forms.get("queryByLetter");
-            rpc.setFieldValue(OrgMeta.getName(), query);
-            commitQuery(rpc);
+            Form queryByLetter = forms.get("queryByLetter");
+            queryByLetter.setFieldValue(OrgMeta.getName(), query);
+            commitQuery(queryByLetter);
         }
     }
 
@@ -254,11 +306,15 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback<FormRPC>(){
-            public void onSuccess(FormRPC result){    
+        screenService.getObject("loadNotes", new Data[] {key,rpc.form.notes}, new AsyncCallback<NotesForm>(){
+            public void onSuccess(NotesForm result){    
                 // get the datamodel, load it in the notes panel and set the value in the rpc
                 load(result);
-                rpc.setField("notes",(FormRPC)result);
+                /*
+                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                 */
+                rpc.form.fields.put("notes",rpc.form.notes = result);
                 window.setStatus("","");
             }
                    
@@ -275,11 +331,14 @@ public class OrganizationScreen extends OpenELISScreenForm implements
         
         window.setStatus("","spinnerIcon");
         
-        screenService.getObject("loadContacts", new Data[] {key,rpc.getField("contacts")}, new AsyncCallback<FormRPC>() {
-            public void onSuccess(FormRPC result) {
-               
+        screenService.getObject("loadContacts", new Data[] {key,rpc.form.contacts}, new AsyncCallback<ContactsForm>() {
+            public void onSuccess(ContactsForm result) {
                 load(result);
-                rpc.setField("contacts", (FormRPC)result);
+                /*
+                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                 */
+                rpc.form.fields.put("contacts", rpc.form.contacts = result);
                 window.setStatus("","");
 
             }

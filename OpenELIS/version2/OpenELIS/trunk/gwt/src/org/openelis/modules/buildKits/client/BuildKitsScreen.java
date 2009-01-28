@@ -25,7 +25,9 @@
 */
 package org.openelis.modules.buildKits.client;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -63,7 +65,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
+public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -78,7 +80,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
     private InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     
     public BuildKitsScreen() {
-        super("org.openelis.modules.buildKits.server.BuildKitsService", false);
+        super("org.openelis.modules.buildKits.server.BuildKitsService", false, new RPC<Form,Data>());
     }
     
     public void onClick(Widget sender) {
@@ -94,13 +96,13 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
             // prepare the argument list for the getObject function
             DataObject[] args = new DataObject[] {idObj}; 
             
-            screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel>() {
-                public void onSuccess(DataModel model) {
+            screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel<DataSet>>() {
+                public void onSuccess(DataModel<DataSet> model) {
                    subItemsTable.model.clear();
 
                    for(int i=0; i<model.size(); i++){
-                       DataSet set = model.get(i);
-                       DataSet tableRow = subItemsTable.model.createRow();
+                       DataSet<Data> set = model.get(i);
+                       DataSet<Data> tableRow = subItemsTable.model.createRow();
                        //id
                        //name
                        //qty
@@ -187,7 +189,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
         
         super.afterDraw(success);
         
-        rpc.setFieldValue("subItemsTable", subItemsTable.model.getData());
+        rpc.form.setFieldValue("subItemsTable", subItemsTable.model.getData());
     }
     
     public void commit() {
@@ -282,7 +284,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
         DataMap paramsObj = new DataMap();
         
         if(widget == kitLocationDropdown){
-            paramsObj.put("addToExisting", rpc.getField("addToExisting"));    
+            paramsObj.put("addToExisting", rpc.form.getField("addToExisting"));    
         }else{
             paramsObj.put("id", (NumberObject)subItemsTable.model.getRow(currentTableRow).getKey());
         }
@@ -324,7 +326,7 @@ public class BuildKitsScreen extends OpenELISScreenForm implements ClickListener
                 }
                     
                 if(setError)
-                    rpc.setFieldError("numRequested", "Transfer in more components or lower the number requested. Not enough quantity on hand.");
+                    rpc.form.setFieldError("numRequested", "Transfer in more components or lower the number requested. Not enough quantity on hand.");
             }catch(Exception e){
                 //do nothing
             }
