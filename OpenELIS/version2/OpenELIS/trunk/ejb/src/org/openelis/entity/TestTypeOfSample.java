@@ -51,7 +51,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestTypeOfSample.TestTypeOfSample", query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) " 
                                             + "  from TestTypeOfSample ts where ts.testId = :id"),
-               @NamedQuery(name = "TestTypeOfSample.TestTypeOfSampleByTestId", query = "from TestTypeOfSample ts where ts.testId = :testId")})
+               @NamedQuery(name = "TestTypeOfSample.TestTypeOfSampleByTestId", query = "from TestTypeOfSample ts where ts.testId = :testId"),
+               @NamedQuery(name = "TestTypeOfSample.DictEntriesForUnitsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(ts.unitOfMeasureId, d.entry) " 
+                               + "  from TestTypeOfSample ts, Dictionary d where ts.unitOfMeasureId = d.id and ts.testId = :id " )})
             
 @Entity
 @Table(name="test_type_of_sample")
@@ -74,7 +76,7 @@ public class TestTypeOfSample implements Auditable, Cloneable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_of_sample_id",insertable = false, updatable = false)
-  private Dictionary dictionary; 
+  private Dictionary dictionary;   
   
   @Transient
   private TestTypeOfSample original;

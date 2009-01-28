@@ -54,7 +54,8 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "Method.MethodIdName",query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + "  from Method m order by m.name"),
                @NamedQuery(name = "Method.MethodById",query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
                     "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd) " + "  from Method m where m.id = :id"),
-               @NamedQuery(name = "Method.MethodByName", query = "from Method m where m.name = :name order by m.name")})
+               @NamedQuery(name = "Method.MethodByName", query = "from Method m where m.name = :name order by m.name"),
+               @NamedQuery(name = "Method.AutoCompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) from Method m where m.name like :name and m.isActive = :isActive order by m.name ")})
                
 @Entity
 @Table(name="method")

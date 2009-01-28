@@ -128,7 +128,9 @@ public interface TestRemote {
     
     public List<IdNameDO> getResultGroupsForTest(Integer testId);
     
-    public List getMatchingEntries(String name, int maxResults);
+    public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId);
+    
+    public List getMatchingEntries(String name,int maxResults,String cat);
     
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);
     

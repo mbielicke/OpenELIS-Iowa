@@ -58,7 +58,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
     @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + 
                 "  from Test t, Method m where t.methodId  = m.id and t.isActive = :isActive order by t.name, m.name"),
-    @NamedQuery(name = "Test.TestIdNameMethodId", query = "select distinct new org.openelis.domain.TestIdNameMethodIdDO(t.id, t.name, t.methodId) " + "  from Test t where t.id = :id"),
+    @NamedQuery(name = "Test.TestMethodIdName", query = "select distinct new org.openelis.domain.TestIdNameMethodIdDO(t.id, t.name, t.methodId,m.name) " + "  from Test t left join t.method m where t.id = :id"),
     @NamedQuery(name = "Test.TestDetails", query = "select distinct new org.openelis.domain.TestDetailsDO(t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
                                                   "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.scriptletId," +
                                                         "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " + "  from Test t where t.id = :id"),

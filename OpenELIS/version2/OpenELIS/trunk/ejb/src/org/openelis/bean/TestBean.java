@@ -111,7 +111,7 @@ public class TestBean implements TestRemote {
     }
     
     public TestIdNameMethodIdDO getTestIdNameMethod(Integer testId) {
-        Query query = manager.createNamedQuery("Test.TestIdNameMethodId");
+        Query query = manager.createNamedQuery("Test.TestMethodIdName");
         query.setParameter("id", testId);
         TestIdNameMethodIdDO testDO = (TestIdNameMethodIdDO)query.getSingleResult();
         return testDO;
@@ -844,12 +844,24 @@ public class TestBean implements TestRemote {
         return testRGList;
     }
     
-    public List getMatchingEntries(String name, int maxResults){
-        Query query = manager.createNamedQuery("Analyte.AutoCompleteByName");  
-        query.setParameter("name", name);       
-        query.setMaxResults(maxResults);       
-        
+    public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId) {
+        Query query = manager.createNamedQuery("TestTypeOfSample.DictEntriesForUnitsByTestId");
+        query.setParameter("testId",testId);
+        List testumList = query.getResultList();
+        return testumList;
+    }
+    
+    public List getMatchingEntries(String name, int maxResults,String cat){
+        Query query = null;
         List entryList = null;
+        if("analyte".equals(cat)) {
+         query = manager.createNamedQuery("Analyte.AutoCompleteByName");              
+        }else if("method".equals(cat)) {
+          query = manager.createNamedQuery("Method.AutoCompleteByName"); 
+          query.setParameter("isActive", "Y");
+        }
+         query.setParameter("name", name);       
+         query.setMaxResults(maxResults);            
         try{ 
             entryList = (List)query.getResultList();
         }catch(Exception ex){

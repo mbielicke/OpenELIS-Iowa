@@ -41,16 +41,19 @@ public class TestIdNameMethodIdDO implements Serializable {
     
     protected Integer methodId;
     
+    protected String methodName;
+    
     protected Boolean delete = false;
     
     public TestIdNameMethodIdDO(){               
         
     }
     
-    public TestIdNameMethodIdDO(Integer id,String name,Integer methodId){
+    public TestIdNameMethodIdDO(Integer id,String name,Integer methodId,String methodName){
         this.id =  id;
         this.name = name;
         this.methodId = methodId;        
+        this.methodName = methodName;
     }
 
     public Integer getId() {
@@ -83,6 +86,14 @@ public class TestIdNameMethodIdDO implements Serializable {
 
     public void setDelete(Boolean delete) {
         this.delete = delete;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
 }
