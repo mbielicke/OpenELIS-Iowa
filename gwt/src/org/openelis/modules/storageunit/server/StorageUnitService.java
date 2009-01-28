@@ -25,21 +25,18 @@
 */
 package org.openelis.modules.storageunit.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -59,7 +56,11 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class StorageUnitService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>,
 		AutoCompleteServiceInt {
 
 	private static final int leftTableRowsPerPage = 10;
@@ -68,13 +69,13 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 
     private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
-	public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+	public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List storageUnits = new ArrayList();
 		// if the rpc is null then we need to get the page
-		if (rpcSend == null) {
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("StorageUnitQuery");
+		if (form == null) {
+            form = (Form)SessionManager.getSession().getAttribute("StorageUnitQuery");
 
-			if (rpc == null)
+			if (form == null)
 				throw new QueryException(openElisConstants
 						.getString("queryExpiredException"));
 
@@ -82,7 +83,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 			StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 					.lookup("openelis/StorageUnitBean/remote");
 			try {
-				storageUnits = remote.query(rpc.getFieldMap(),
+				storageUnits = remote.query(form.getFieldMap(),
 						(model.getPage() * leftTableRowsPerPage),
 						leftTableRowsPerPage + 1);
 			} catch (Exception e) {
@@ -98,7 +99,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 			StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 					.lookup("openelis/StorageUnitBean/remote");
 
-			HashMap<String, AbstractField> fields = rpcSend.getFieldMap();
+			HashMap<String, AbstractField> fields = form.getFieldMap();
 
 			try {
                 storageUnits = remote.query(fields, 0, leftTableRowsPerPage);
@@ -108,37 +109,24 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 			}
 
             //need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("StorageUnitQuery", rpcSend);
+            SessionManager.getSession().setAttribute("StorageUnitQuery", form);
 		}
         
         int i = 0;
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else
             model.clear();
         while (i < storageUnits.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO) storageUnits.get(i);
-            // org id
-            Integer idResult = resultDO.getId();
-            // org name
-            String nameResult = resultDO.getName();
-
-            DataSet row = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
-            StringObject name = new StringObject();
-            name.setValue(nameResult);
-            id.setValue(idResult);
-
-            row.setKey(id);
-            row.add(name);
-            model.add(row);
+            model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
             i++;
         }
 
 		return model;
 	}
 
-	public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn)
+	public RPC commitUpdate(RPC rpc)
 			throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
@@ -146,14 +134,14 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 		StorageUnitDO newStorageUnitDO = new StorageUnitDO();
 
 		// build the DO from the form
-		newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
+		newStorageUnitDO = getStorageUnitDOFromRPC(rpc.form);
 
 		//validate the fields on the backend
 		List exceptionList = remote.validateForUpdate(newStorageUnitDO);
 		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpcSend);
+			setRpcErrors(exceptionList, rpc.form);
 			
-			return rpcSend;
+			return rpc;
 		} 
 		
 		// send the changes to the database
@@ -166,17 +154,17 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 			exceptionList = new ArrayList();
 			exceptionList.add(e);
 			
-			setRpcErrors(exceptionList, rpcSend);
-			return rpcSend;
+			setRpcErrors(exceptionList, rpc.form);
+			return rpc;
 		}
 		
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, newStorageUnitDO);
+		setFieldsInRPC(rpc.form, newStorageUnitDO);
 
-		return rpcReturn;
+		return rpc;
 	}
 
-	public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn)
+	public RPC commitAdd(RPC rpc)
     		throws RPCException {
     	// remote interface to call the storageunit bean
     	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
@@ -184,14 +172,14 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
     	// build the storage unit DO from the form
-    	newStorageUnitDO = getStorageUnitDOFromRPC(rpcSend);
+    	newStorageUnitDO = getStorageUnitDOFromRPC(rpc.form);
     
     	//validate the fields on the backend
     	List exceptionList = remote.validateForAdd(newStorageUnitDO);
     	if(exceptionList.size() > 0){
-    		setRpcErrors(exceptionList, rpcSend);
+    		setRpcErrors(exceptionList, rpc.form);
     		
-    		return rpcSend;
+    		return rpc;
     	} 
     	
     	// send the changes to the database
@@ -202,75 +190,75 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
     		exceptionList = new ArrayList();
     		exceptionList.add(e);
     		
-    		setRpcErrors(exceptionList, rpcSend);
-    		return rpcSend;
+    		setRpcErrors(exceptionList, rpc.form);
+    		return rpc;
     	}
     
         newStorageUnitDO.setId(storageUnitId);
     
     	// set the fields in the RPC
-    	setFieldsInRPC(rpcReturn, newStorageUnitDO);
+    	setFieldsInRPC(rpc.form, newStorageUnitDO);
     
-    	return rpcReturn;
+    	return rpc;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn)
+    public RPC commitDelete(RPC rpc)
 			throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
 		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete((Integer)((DataObject)key.getKey()).getValue());
+		List exceptionList = remote.validateForDelete((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpcReturn);
+			setRpcErrors(exceptionList, rpc.form);
 			
-			return rpcReturn;
+			return rpc;
 		} 
 
 		try {
-			remote.deleteStorageUnit((Integer)((DataObject)key.getKey()).getValue());
+			remote.deleteStorageUnit((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 
 		} catch (Exception e) {
 			exceptionList = new ArrayList();
 			exceptionList.add(e);
 			
-			setRpcErrors(exceptionList, rpcReturn);
-			return rpcReturn;
+			setRpcErrors(exceptionList, rpc.form);
+			return rpc;
 		}	
 
-		setFieldsInRPC(rpcReturn, new StorageUnitDO());
+		setFieldsInRPC(rpc.form, new StorageUnitDO());
 
-		return rpcReturn;
+		return rpc;
 	}
 
-	public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+	public RPC abort(RPC rpc) throws RPCException {
     	// remote interface to call the storage unit bean
     	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
     			.lookup("openelis/StorageUnitBean/remote");
     
     	StorageUnitDO storageUnitDO = remote
-    			.getStorageUnitAndUnlock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
+    			.getStorageUnitAndUnlock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(), SessionManager.getSession().getId());
     
     	// set the fields in the RPC
-    	setFieldsInRPC(rpcReturn, storageUnitDO);
+    	setFieldsInRPC(rpc.form, storageUnitDO);
     
-    	return rpcReturn;
+    	return rpc;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
 
-		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)((DataObject)key.getKey()).getValue());
+		StorageUnitDO storageUnitDO = remote.getStorageUnit((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageUnitDO);
+		setFieldsInRPC(rpc.form, storageUnitDO);
 
-		return rpcReturn;
+		return rpc;
 	}
 
-	public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn)
+	public RPC fetchForUpdate(RPC rpc)
 			throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
@@ -278,15 +266,15 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 
 		StorageUnitDO storageUnitDO = new StorageUnitDO();
 		try {
-			storageUnitDO = remote.getStorageUnitAndLock((Integer)((DataObject)key.getKey()).getValue(), SessionManager.getSession().getId());
+			storageUnitDO = remote.getStorageUnitAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(), SessionManager.getSession().getId());
 		} catch (Exception e) {
 			throw new RPCException(e.getMessage());
 		}
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpcReturn, storageUnitDO);
+		setFieldsInRPC(rpc.form, storageUnitDO);
 
-		return rpcReturn;
+		return rpc;
 	}
 
 	public String getXML() throws RPCException {
@@ -319,6 +307,10 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
     public HashMap getXMLData(HashMap args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
+    }
+    
+    public RPC getScreen(RPC rpc){
+        return rpc;
     }
 
     public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
@@ -392,34 +384,34 @@ public class StorageUnitService implements AppScreenFormServiceInt<FormRPC, Data
 		return modelField;
 	}
 
-	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, Form form){
 		//we need to get the keys and look them up in the resource bundle for internationalization
 		for (int i=0; i<exceptionList.size();i++) {
 			if(exceptionList.get(i) instanceof FieldErrorException)
-			rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+			form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
 			else if(exceptionList.get(i) instanceof FormErrorException)
-				rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+				form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
 		}	
-		rpcSend.status = Status.invalid;
+		form.status = Form.Status.invalid;
     }
 
-    private void setFieldsInRPC(FormRPC rpcReturn, StorageUnitDO storageUnitDO) {
-    	rpcReturn.setFieldValue(StorageUnitMeta.getId(), storageUnitDO.getId());
+    private void setFieldsInRPC(Form form, StorageUnitDO storageUnitDO) {
+    	form.setFieldValue(StorageUnitMeta.getId(), storageUnitDO.getId());
         
         if(storageUnitDO.getCategory() != null)
-            rpcReturn.setFieldValue(StorageUnitMeta.getCategory(), new DataSet(new StringObject(storageUnitDO.getCategory())));
+            form.setFieldValue(StorageUnitMeta.getCategory(), new DataSet(new StringObject(storageUnitDO.getCategory())));
     	
-        rpcReturn.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
-    	rpcReturn.setFieldValue(StorageUnitMeta.getIsSingular(), storageUnitDO.getIsSingular());
+        form.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
+    	form.setFieldValue(StorageUnitMeta.getIsSingular(), storageUnitDO.getIsSingular());
     }
 
-    private StorageUnitDO getStorageUnitDOFromRPC(FormRPC rpcSend) {
+    private StorageUnitDO getStorageUnitDOFromRPC(Form form) {
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
-    	newStorageUnitDO.setId((Integer) rpcSend.getFieldValue(StorageUnitMeta.getId()));
-    	newStorageUnitDO.setCategory((String)((DropDownField)rpcSend.getField(StorageUnitMeta.getCategory())).getSelectedKey());
-    	newStorageUnitDO.setDescription((String) rpcSend.getFieldValue(StorageUnitMeta.getDescription()));
-    	newStorageUnitDO.setIsSingular((String) rpcSend.getFieldValue(StorageUnitMeta.getIsSingular()));
+    	newStorageUnitDO.setId((Integer) form.getFieldValue(StorageUnitMeta.getId()));
+    	newStorageUnitDO.setCategory((String)((DropDownField)form.getField(StorageUnitMeta.getCategory())).getSelectedKey());
+    	newStorageUnitDO.setDescription((String) form.getFieldValue(StorageUnitMeta.getDescription()));
+    	newStorageUnitDO.setIsSingular((String) form.getFieldValue(StorageUnitMeta.getIsSingular()));
     
     	return newStorageUnitDO;
     }

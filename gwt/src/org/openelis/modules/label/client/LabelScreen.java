@@ -29,7 +29,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -43,7 +45,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class LabelScreen extends OpenELISScreenForm implements ClickListener {
+public class LabelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener {
 
     private static boolean loaded = false;
     private static DataModel printerTypeDropDown ;
@@ -57,7 +59,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
     private LabelMetaMap Meta = new LabelMetaMap(); 
     
     public LabelScreen() {
-        super("org.openelis.modules.label.server.LabelService",!loaded);
+        super("org.openelis.modules.label.server.LabelService",!loaded,new RPC<Form,Data>());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -117,7 +119,7 @@ public class LabelScreen extends OpenELISScreenForm implements ClickListener {
       // mode..
       if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
     
-          FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+          Form letterRPC = (Form) this.forms.get("queryByLetter");
          
           letterRPC.setFieldValue(Meta.getName(), query);
            

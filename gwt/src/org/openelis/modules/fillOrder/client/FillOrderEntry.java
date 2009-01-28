@@ -33,7 +33,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class FillOrderEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"FillOrderScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"FillOrderScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new FillOrderScreen();

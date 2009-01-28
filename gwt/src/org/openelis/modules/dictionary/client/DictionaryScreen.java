@@ -31,10 +31,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
@@ -50,7 +52,6 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
@@ -58,7 +59,7 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm implements ClickListener,
+public class DictionaryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener,
                                                                     TableManager,
                                                                     TableWidgetListener{
 
@@ -74,7 +75,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
-        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded);
+        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded,new RPC<Form,Data>());
     }
     
     public void afterDraw(boolean success) {       
@@ -112,7 +113,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         updateChain.add(afterUpdate);
         super.afterDraw(success);        
         
-        rpc.setFieldValue("dictEntTable",dictEntryController.model.getData());
+        rpc.form.setFieldValue("dictEntTable",dictEntryController.model.getData());
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -161,15 +162,15 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
         }
     };
     
-    protected void doSubmit(){  
-        super.doSubmit();
+    protected void submitForm(){  
+        super.submitForm();
         dictEntryController.model.enableAutoAdd(false);
     }
 
     private void getCategories(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-            FormRPC letterRPC = (FormRPC)this.forms.get("queryByLetter");
+            Form letterRPC = (Form)this.forms.get("queryByLetter");
             letterRPC.setFieldValue(CatMap.getName(), query);
             
             commitQuery(letterRPC);            
@@ -191,7 +192,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
 
     public boolean canAutoAdd(TableWidget widget,DataSet row) {        
-        return row.get(0).getValue() != null;
+        return ((DataObject)row.get(0)).getValue() != null;
     }
 
 
@@ -235,7 +236,7 @@ public class DictionaryScreen extends OpenELISScreenForm implements ClickListene
 
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
       if(col == 3)  {
-        final DataSet set = dictEntryController.model.getData().get(row) ;
+        final DataSet set = (DataSet)dictEntryController.model.getData().get(row) ;
         final int currRow = row;
         DataMap data =  (DataMap)set.getData();
         NumberField field = null;        

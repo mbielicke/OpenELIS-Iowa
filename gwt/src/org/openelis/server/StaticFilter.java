@@ -75,7 +75,7 @@ public class StaticFilter implements Filter {
     private static Logger authLog = Logger.getLogger("org.openelis.auth");
     private int userTrys;
     private int ipTrys;
-    private ServletContext servletCtx;
+    public static ServletContext servletCtx;
     
     public void init(FilterConfig config) throws ServletException {
         log.debug("Initializing the Application.");

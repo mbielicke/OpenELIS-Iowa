@@ -26,9 +26,21 @@
 package org.openelis.modules.provider.client;
 
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -51,17 +63,7 @@ import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class ProviderScreen extends OpenELISScreenForm implements ClickListener, 
+public class ProviderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, 
                                                                   TabListener,
                                                                   TableManager{
          
@@ -70,7 +72,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private ScreenTextArea noteArea = null;
-    private TableWidget provAddController = null;    
+    private TableWidget<DataSet> provAddController = null;    
     private Dropdown displayType = null;
     private KeyListManager keyList = new KeyListManager();
     
@@ -84,7 +86,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
     public ProviderScreen(){
-        super("org.openelis.modules.provider.server.ProviderService",!loaded);
+        super("org.openelis.modules.provider.server.ProviderService",!loaded,new RPC<Form,Data>());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -155,7 +157,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
        ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
        provAddController = (TableWidget)displayAddressTable.getWidget();
-       QueryTable queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
+       QueryTable<DataSet> queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
        
        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(stateDropDown);
        ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(stateDropDown);
@@ -168,7 +170,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        super.afterDraw(success);
        
-       ((FormRPC)rpc.getField("addresses")).setFieldValue("providerAddressTable",
+       ((Form)rpc.form.getField("addresses")).setFieldValue("providerAddressTable",
                                                          provAddController.model.getData());
 
     }
@@ -224,9 +226,9 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
-            if (index == 0 && !((FormRPC)rpc.getField("addresses")).load) {
+            if (index == 0 && !((Form)rpc.form.getField("addresses")).load) {
                 fillAddressModel();
-            } else if (index == 1 && !((FormRPC)rpc.getField("notes")).load) {
+            } else if (index == 1 && !((Form)rpc.form.getField("notes")).load) {
                 fillNotesModel();
             }
         }
@@ -246,7 +248,7 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
 
 
     public boolean canAutoAdd(TableWidget widget,DataSet row) {        
-        return row.get(0).getValue() != null && !row.get(0).getValue().equals("");
+        return ((DataObject)row.get(0)).getValue() != null && !((DataObject)row.get(0)).getValue().equals("");
     }
 
 
@@ -273,10 +275,10 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
     
     private void getProviders(String query) {
         if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+            Form letter = (Form) forms.get("queryByLetter");
             
-            letterRPC.setFieldValue(ProvMeta.getLastName(), query);            
-            commitQuery(letterRPC); 
+            letter.setFieldValue(ProvMeta.getLastName(), query);            
+            commitQuery(letter); 
        }
     }
     
@@ -287,11 +289,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadNotes", new Data[] {key,rpc.getField("notes")}, new AsyncCallback<FormRPC>(){
-           public void onSuccess(FormRPC result){    
+       screenService.getObject("loadNotes", new Data[] {key,rpc.form.getField("notes")}, new AsyncCallback<Form>(){
+           public void onSuccess(Form result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
                load(result);
-               rpc.setField("notes",result);
+               rpc.form.setField("notes",result);
                window.setStatus("","");
            }
                   
@@ -308,11 +310,11 @@ public class ProviderScreen extends OpenELISScreenForm implements ClickListener,
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadAddresses", new Data[] {key,rpc.getField("addresses")}, new AsyncCallback<FormRPC>() {
-           public void onSuccess(FormRPC result) {
+       screenService.getObject("loadAddresses", new Data[] {key,rpc.form.getField("addresses")}, new AsyncCallback<Form>() {
+           public void onSuccess(Form result) {
               
                load(result);
-               rpc.setField("addresses", result);
+               rpc.form.setField("addresses", result);
                window.setStatus("","");
 
            }

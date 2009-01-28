@@ -25,12 +25,17 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -68,14 +73,10 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
+public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
     
     private TableWidget receiptsTable;
     private QueryTable receiptsQueryTable;
@@ -95,7 +96,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
     public InventoryReceiptScreen() {
-        super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false);
+        super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false,new RPC<Form,Data>());
         screenType = "receipt";
     }
     
@@ -107,7 +108,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         HashMap hash = new HashMap();
         hash.put("type", (StringObject)args[0]);
         
-        getXMLData(hash);
+        getXMLData(hash,new RPC());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -197,7 +198,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         
         super.afterDraw(sucess);
         
-        rpc.setFieldValue("receiptsTable", receiptsTable.model.getData());
+        rpc.form.setFieldValue("receiptsTable", receiptsTable.model.getData());
     }
     
     public void add() {
@@ -224,7 +225,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         //we are using it to fill the table
         //super.fetch();
         
-        DataModel model = keyList.getList();
+        DataModel<DataSet> model = keyList.getList();
         
         receiptsTable.model.clear();
         
@@ -254,7 +255,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     }
     
     public void update() {
-        resetRPC();
+        resetForm();
         load();
         
         window.setStatus(consts.get("lockForUpdate"),"spinnerIcon");
@@ -290,7 +291,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         if (state == State.UPDATE) {
             window.setStatus("","spinnerIcon");
             clearErrors();
-            resetRPC();
+            resetForm();
             load();
             enable(false);
             
@@ -321,9 +322,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         super.commit();
         
         if (state == State.ADD || state == State.UPDATE) {
-            rpc.validate();
+            form.validate();
             validate();
-            if (rpc.status == Status.valid){}
+            if (form.status == Form.Status.valid){}
                //TODO not sure how to replace this      receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
         }
     }
@@ -450,8 +451,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 // prepare the argument list for the getObject function
                 Data[] args = new Data[] {orderIdObj}; 
                 
-                screenService.getObject("getReceipts", args, new AsyncCallback<DataModel>(){
-                    public void onSuccess(DataModel model){    
+                screenService.getObject("getReceipts", args, new AsyncCallback<DataModel<DataSet>>(){
+                    public void onSuccess(DataModel<DataSet> model){    
                         for(int i=0; i<model.size(); i++){
                             createRowAndSetRowData(row+i, (DataMap)model.get(i).getData());
                         }
@@ -476,8 +477,8 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 //prepare the argument list for the getObject function
                 Data[] args = new Data[] {upcValue}; 
                 
-                screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel>(){
-                    public void onSuccess(DataModel model){   
+                screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel<DataSet>>(){
+                    public void onSuccess(DataModel<DataSet> model){   
                         if(model.size() > 1){
                             //we need to have the user select which item they want
                         }else if(model.size() == 1){
@@ -573,7 +574,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 DataSet tableRow = receiptsTable.model.getRow(row);
                 ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
                
-                DataSet set = null;
+                DataSet<Data> set = null;
                 if(selections.size() > 0)
                     set = (DataSet)selections.get(0);
                 
@@ -646,10 +647,10 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
             }
         }else if("transfer".equals(screenType)){
             if(col == 0 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
-                DataSet tableRow = receiptsTable.model.getRow(row);
+                DataSet<Data> tableRow = receiptsTable.model.getRow(row);
                 ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getSelections();
                
-                DataSet set = null;
+                DataSet<Data> set = null;
                 if(selections.size() > 0)
                     set = (DataSet)selections.get(0);
                 
@@ -664,7 +665,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                    DateField expDate = (DateField)dropdownMap.get("expDate");
                    StringField lotNum = (StringField)dropdownMap.get("lotNum");
                    DropDownField storageLocation = new DropDownField();
-                   DataModel locModel = new DataModel();
+                   DataModel<DataSet> locModel = new DataModel<DataSet>();
                    locModel.add((NumberObject)dropdownMap.get("locId"), new StringObject((String)set.get(2).getValue()));
                    storageLocation.setModel(locModel);
                    storageLocation.setValue(locModel.get(0));
@@ -735,7 +736,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
     //
     
     
-    private boolean receiptTableRowEmpty(DataSet row, boolean checkFirstColumn){
+    private boolean receiptTableRowEmpty(DataSet<Data> row, boolean checkFirstColumn){
         boolean empty = true;
         
         if(checkFirstColumn){
@@ -760,7 +761,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         return empty;
     }
     
-    private boolean transferTableRowEmpty(DataSet row){
+    private boolean transferTableRowEmpty(DataSet<Data> row){
         boolean empty = true;
         
         for(int i=0; i<row.size(); i++){
@@ -781,7 +782,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         }
     }
     
-    private void loadDataMapIntoReceiptTableRow(DataSet row){
+    private void loadDataMapIntoReceiptTableRow(DataSet<Data> row){
         DataMap map = (DataMap)row.getData();
         
         row.get(0).setValue(getValueFromHashWithNulls(map, "orderNumber"));
@@ -823,7 +824,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
         }
     }
     
-    private void loadDataMapIntoTransferTableRow(DataSet row){
+    private void loadDataMapIntoTransferTableRow(DataSet<Data> row){
         DataMap map = (DataMap)row.getData();
         
         //row.get(0).setValue(getValueFromHashWithNulls(map, "orderNumber"));
@@ -934,7 +935,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm implements ClickL
                 params.put("fromInvItemId", new NumberField());
         }else{
             if(addToExisiting != null)
-                params.put("addToExisting", rpc.getField("addToExisting"));
+                params.put("addToExisting", rpc.form.getField("addToExisting"));
             else{
                 if(receiptsTable.model.numRows() > 0)
                     params.put("addToExisting", receiptsTable.model.getObject(currentEditingRow, 3));

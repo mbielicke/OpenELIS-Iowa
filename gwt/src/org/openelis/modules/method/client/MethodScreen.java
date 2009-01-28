@@ -25,7 +25,13 @@
 */
 package org.openelis.modules.method.client;
 
-import org.openelis.gwt.common.FormRPC;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.TextBox;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AToZTable;
@@ -36,11 +42,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.TextBox;
-
-public class MethodScreen extends OpenELISScreenForm implements ChangeListener{
+public class MethodScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ChangeListener{
     private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
@@ -52,7 +54,7 @@ public class MethodScreen extends OpenELISScreenForm implements ChangeListener{
     private TextBox methodName;            
     
     public MethodScreen() {
-        super("org.openelis.modules.method.server.MethodService",!loaded);
+        super("org.openelis.modules.method.server.MethodService",!loaded,new RPC<Form,Data>());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -121,10 +123,9 @@ public class MethodScreen extends OpenELISScreenForm implements ChangeListener{
     };
     private void getMethods(String query){
        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
-            FormRPC rpc;
-            rpc = (FormRPC)this.forms.get("queryByLetter");
-            rpc.setFieldValue(MethodMeta.getName(), query);
-            commitQuery(rpc);
+            Form form = (Form)this.forms.get("queryByLetter");
+            form.setFieldValue(MethodMeta.getName(), query);
+            commitQuery(form);
         }
     }   
 

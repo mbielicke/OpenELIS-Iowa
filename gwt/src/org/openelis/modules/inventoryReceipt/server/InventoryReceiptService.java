@@ -26,24 +26,19 @@
 package org.openelis.modules.inventoryReceipt.server;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
@@ -71,7 +66,12 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>, AutoCompleteServiceInt {
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>, AutoCompleteServiceInt {
 
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
@@ -79,21 +79,21 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
     
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List receipts;
         //if the rpc is null then we need to get the page
-        if(rpcSend == null){
+        if(form == null){
 
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
+            form = (Form)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
             //get screen type
-            String type = (String)rpc.getFieldValue("type");
+            String type = (String)form.getFieldValue("type");
             
-            if(rpc == null)
+            if(form == null)
                 throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
             InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
             try{
-                receipts = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
+                receipts = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
             }catch(Exception e){
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -103,15 +103,15 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             }    
         }else{
             //get screen type
-            String type = (String)rpcSend.getFieldValue("type");
+            String type = (String)form.getFieldValue("type");
             
             InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         
-            HashMap<String,AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String,AbstractField> fields = form.getFieldMap();
             fields.remove("receiptsTable");
             fields.remove("type");
             
-            if(isQueryEmpty(rpcSend))
+            if(isQueryEmpty(form))
                 throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
@@ -123,11 +123,11 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
     
         
             //need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("InventoryReceiptQuery", rpcSend);
+            SessionManager.getSession().setAttribute("InventoryReceiptQuery", form);
         }
         
         if(model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else
             model.clear();
         
@@ -137,19 +137,19 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         return model;
     }
     
-    public DataModel commitQueryAndLock(DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQueryAndLock(DataModel<DataSet> model) throws RPCException {
         List receipts;
-        FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
+        Form form = (Form)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
 
         //get screen type
-        String type = (String)rpc.getFieldValue("type");
+        String type = (String)form.getFieldValue("type");
         
-        if(rpc == null)
+        if(form == null)
             throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         try{
-            receipts = remote.queryAndLock(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
+            receipts = remote.queryAndLock(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
         }catch(Exception e){
             if(e instanceof LastPageException){
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -164,19 +164,19 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         return model;
     }
     
-    public DataModel commitQueryAndUnlock(DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQueryAndUnlock(DataModel<DataSet> model) throws RPCException {
         List receipts;
-        FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
+        Form form = (Form)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
 
         //get screen type
-        String type = (String)rpc.getFieldValue("type");
+        String type = (String)form.getFieldValue("type");
         
-        if(rpc == null)
+        if(form == null)
             throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         try{
-            receipts = remote.queryAndUnlock(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
+            receipts = remote.queryAndUnlock(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1, (InventoryReceiptRemote.RECEIPT.equals(type)));
         }catch(Exception e){
             if(e instanceof LastPageException){
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -192,16 +192,16 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
     }
 
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         //remote interface to call the inventory receipt bean
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         List inventoryReceipts = new ArrayList();
         
         //get screen type
-        String type = (String)rpcSend.getFieldValue("type");
+        String type = (String)rpc.form.getFieldValue("type");
         
         //receipts table
-        TableField recieptsTableField = (TableField)rpcSend.getField("receiptsTable");
+        TableField recieptsTableField = (TableField)rpc.form.getField("receiptsTable");
         DataModel receiptsModel = (DataModel)recieptsTableField.getValue();
         
         //build the inventory receipts list DO from the form
@@ -211,8 +211,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         List exceptionList = remote.validateForAdd(inventoryReceipts);
         
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, recieptsTableField, rpcSend);
-            return rpcSend;
+            setRpcErrors(exceptionList, recieptsTableField, rpc.form);
+            return rpc;
         } 
         
         //send the changes to the database
@@ -225,24 +225,24 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, recieptsTableField, rpcSend);
+            setRpcErrors(exceptionList, recieptsTableField, rpc.form);
             
-            return rpcSend;
+            return rpc;
         }
 
-        return rpcSend;
+        return rpc;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         //remote interface to call the inventory receipt bean
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         List inventoryReceipts = new ArrayList();
         
         //get screen type
-        String type = (String)rpcSend.getFieldValue("type");
+        String type = (String)rpc.form.getFieldValue("type");
         
         //receipts table
-        TableField receiptsTableField = (TableField)rpcSend.getField("receiptsTable");
+        TableField receiptsTableField = (TableField)rpc.form.getField("receiptsTable");
         DataModel receiptsModel = (DataModel)receiptsTableField.getValue();
         
         //build the inventory receipts list DO from the form
@@ -252,8 +252,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         List exceptionList = remote.validateForAdd(inventoryReceipts);
         
         if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, receiptsTableField, rpcSend);
-            return rpcSend;
+            setRpcErrors(exceptionList, receiptsTableField, rpc.form);
+            return rpc;
         } 
         
         //send the changes to the database
@@ -264,29 +264,29 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
             exceptionList = new ArrayList();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, receiptsTableField, rpcSend);
+            setRpcErrors(exceptionList, receiptsTableField, rpc.form);
             
-            return rpcSend;
+            return rpc;
         }
 
-        return rpcSend;
+        return rpc;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -312,6 +312,10 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         returnMap.put("xml", xmlString);
         
         return returnMap;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
     
     public DataModel getReceipts(NumberObject orderId){
@@ -618,7 +622,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         
         for(int i=0; i<receiptsTable.size(); i++){
             InventoryReceiptDO receiptDO = new InventoryReceiptDO();
-            DataSet row = receiptsTable.get(i);
+            DataSet<Data> row = (DataSet)receiptsTable.get(i);
 
             DataMap map = (DataMap)row.getData();
             DropDownField storageLocation = (DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
@@ -703,7 +707,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
         return inventoryReceipts;
     }
     
-    private void setRpcErrors(List exceptionList, TableField receiptsTable, FormRPC rpcSend){
+    private void setRpcErrors(List exceptionList, TableField receiptsTable, Form form){
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
@@ -713,17 +717,17 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<FormRPC,
 
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
             }        
         
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }
     
-    private boolean isQueryEmpty(FormRPC rpc){
+    private boolean isQueryEmpty(Form rpc){
         return false;
         /*return ("".equals(rpc.getFieldValue(InventoryReceiptMeta.ORDER_ITEM_META.ORDER_META.getId())) &&
                     "".equals(rpc.getFieldValue(InventoryReceiptMeta.getReceivedDate())) && 

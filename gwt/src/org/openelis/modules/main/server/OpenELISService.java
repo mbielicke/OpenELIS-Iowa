@@ -25,7 +25,8 @@
 */
 package org.openelis.modules.main.server;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.Data;
@@ -42,7 +43,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class OpenELISService implements OpenELISServiceInt<FormRPC,DataSet,DataModel> {
+public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet>> {
    
     private static final long serialVersionUID = 1L;
     
@@ -65,37 +66,37 @@ public class OpenELISService implements OpenELISServiceInt<FormRPC,DataSet,DataM
         return map;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -140,5 +141,9 @@ public class OpenELISService implements OpenELISServiceInt<FormRPC,DataSet,DataM
 			return null;
 		}
 	}
+    
+    public RPC getScreen(RPC rpc) {
+        return null;
+    }
 
 }

@@ -33,7 +33,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class AnimalSampleLoginEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"AnimalSampleLoginScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"AnimalSampleLoginScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new AnimalSampleLoginScreen();

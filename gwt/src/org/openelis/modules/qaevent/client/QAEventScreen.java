@@ -30,7 +30,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -44,7 +46,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
- public class QAEventScreen extends OpenELISScreenForm implements ClickListener{
+ public class QAEventScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener{
    
      private TextBox tname = null;
      private Dropdown displayType = null;
@@ -60,7 +62,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      private QaEventMetaMap QAEMeta = new QaEventMetaMap();  
      
      public QAEventScreen(){
-         super("org.openelis.modules.qaevent.server.QAEventService",!loaded);  
+         super("org.openelis.modules.qaevent.server.QAEventService",!loaded, new RPC<Form,Data>());  
      }
      
      public void performCommand(Enum action, Object obj) {
@@ -152,10 +154,10 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
          private void getQAEvents(String query) {
              if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-                 FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
-                 letterRPC.setFieldValue(QAEMeta.getName(), query);
+                 Form letter = (Form)forms.get("queryByLetter");
+                 letter.setFieldValue(QAEMeta.getName(), query);
                   
-                 commitQuery(letterRPC);
+                 commitQuery(letter);
              }
          }
          

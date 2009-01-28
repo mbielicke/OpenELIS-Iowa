@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
-<?xml version="1.0" encoding="UTF-8"?>
 <web-app>
    <filter>
         <filter-name>Login Filter</filter-name>

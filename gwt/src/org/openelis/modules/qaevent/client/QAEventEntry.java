@@ -35,7 +35,7 @@ public class QAEventEntry implements AppModule {
     
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"QAEventScreen"},
+        ClassFactory.addClassFactory(new String[] {"QAEventScreen"},
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new org.openelis.modules.qaevent.client.QAEventScreen();

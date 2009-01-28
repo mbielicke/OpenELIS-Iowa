@@ -25,10 +25,6 @@
 */
 package org.openelis.modules.shipping.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAutoDO;
@@ -39,13 +35,13 @@ import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -74,8 +70,12 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class ShippingService implements
-                            AppScreenFormServiceInt<FormRPC, DataSet, DataModel>,
+                            AppScreenFormServiceInt<RPC, DataModel<DataSet>>,
                             AutoCompleteServiceInt {
 
     private UTFResource                  openElisConstants    = UTFResource.getBundle((String)SessionManager.getSession()
@@ -85,18 +85,18 @@ public class ShippingService implements
 
     private static final int             leftTableRowsPerPage = 20;
 
-    public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
         List shippingIds;
 
-        if (rpcSend == null) {
+        if (form == null) {
 
-            FormRPC rpc = (FormRPC)SessionManager.getSession()
+            form = (Form)SessionManager.getSession()
                                                  .getAttribute("ShippingQuery");
 
-            if (rpc == null)
+            if (form == null)
                 throw new QueryException(openElisConstants.getString("queryExpiredException"));
 
-            HashMap<String, AbstractField> fields = rpc.getFieldMap();
+            HashMap<String, AbstractField> fields = form.getFieldMap();
             fields.remove("trackingNumbersTable");
 
             ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
@@ -113,7 +113,7 @@ public class ShippingService implements
             }
         } else {
             ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
-            HashMap<String, AbstractField> fields = rpcSend.getFieldMap();
+            HashMap<String, AbstractField> fields = form.getFieldMap();
             fields.remove("itemsTable");
             fields.remove("trackingNumbersTable");
 
@@ -125,13 +125,13 @@ public class ShippingService implements
             }
 
             // need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("ShippingQuery", rpcSend);
+            SessionManager.getSession().setAttribute("ShippingQuery", form);
         }
 
         // fill the model with the query results
         int i = 0;
         if (model == null)
-            model = new DataModel();
+            model = new DataModel<DataSet>();
         else
             model.clear();
         while (i < shippingIds.size() && i < leftTableRowsPerPage) {
@@ -148,7 +148,7 @@ public class ShippingService implements
         return model;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
         ShippingDO shippingDO = new ShippingDO();
@@ -156,14 +156,14 @@ public class ShippingService implements
         List shippingItems = new ArrayList();
 
         // build the shippingDO from the form
-        shippingDO = getShippingDOFromRPC(rpcSend);
+        shippingDO = getShippingDOFromRPC(rpc.form);
 
         // tracking numbers info
-        DataModel trackingNumsTable = (DataModel)((FormRPC)rpcSend.getField("shippingItems")).getField("trackingNumbersTable").getValue();
+        DataModel trackingNumsTable = (DataModel)((Form)rpc.form.getField("shippingItems")).getField("trackingNumbersTable").getValue();
         trackingNumbers = getTrackingNumberListFromRPC(trackingNumsTable, shippingDO.getId());
 
         // shipping items info
-        DataModel shippingItemsTable = (DataModel)((FormRPC)rpcSend.getField("shippingItems")).getField("itemsTable").getValue();
+        DataModel shippingItemsTable = (DataModel)((Form)rpc.form.getField("shippingItems")).getField("itemsTable").getValue();
         shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
 
         // validate the fields on the backend
@@ -173,10 +173,10 @@ public class ShippingService implements
 
         if (exceptionList.size() > 0) {
             //TODO setRpcErrors(exceptionList, shippingItemsTable, rpcSend);
-            return rpcSend;
+            return rpc;
         }
         
-        DataModel model = (DataModel)rpcSend.getFieldValue("unlockModel");
+        DataModel model = (DataModel)rpc.form.getFieldValue("unlockModel");
 
         // send the changes to the database
         Integer shippingId;
@@ -190,19 +190,19 @@ public class ShippingService implements
 
             //TODO setRpcErrors(exceptionList, shippingItemsTable, rpcSend);
 
-            return rpcSend;
+            return rpc;
         }
 
         // lookup the changes from the database and build the rpc
         shippingDO.setId(shippingId);
 
         // set the fields in the RPC
-        setFieldsInRPC(rpcReturn, shippingDO);
+        setFieldsInRPC(rpc.form, shippingDO);
 
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
         ShippingDO shippingDO = new ShippingDO();
@@ -210,14 +210,14 @@ public class ShippingService implements
         List shippingItems = new ArrayList();
 
         // build the shippingDO from the form
-        shippingDO = getShippingDOFromRPC(rpcSend);
+        shippingDO = getShippingDOFromRPC(rpc.form);
 
         // tracking numbers info
-        DataModel trackingNumsTable = (DataModel)((FormRPC)rpcSend.getField("shippingItems")).getField("trackingNumbersTable").getValue();
+        DataModel trackingNumsTable = (DataModel)((Form)rpc.form.getField("shippingItems")).getField("trackingNumbersTable").getValue();
         trackingNumbers = getTrackingNumberListFromRPC(trackingNumsTable, shippingDO.getId());
 
         // shipping items info
-        DataModel shippingItemsTable = (DataModel)((FormRPC)rpcSend.getField("shippingItems")).getField("itemsTable").getValue();
+        DataModel shippingItemsTable = (DataModel)((Form)rpc.form.getField("shippingItems")).getField("itemsTable").getValue();
         shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
 
         // validate the fields on the backend
@@ -226,7 +226,7 @@ public class ShippingService implements
         if (exceptionList.size() > 0) {
             //TODO setRpcErrors(exceptionList, trackingNumsTable, rpcSend);
 
-            return rpcSend;
+            return rpc;
         }
 
         // send the changes to the database
@@ -241,90 +241,90 @@ public class ShippingService implements
 
             //TODO setRpcErrors(exceptionList, trackingNumsTable, rpcSend);
 
-            return rpcSend;
+            return rpc;
         }
 
         // set the fields in the RPC
-        setFieldsInRPC(rpcReturn, shippingDO);
+        setFieldsInRPC(rpc.form, shippingDO);
 
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         return null;
     }
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
-        DataModel model = (DataModel)rpcReturn.getFieldValue("unlockModel");
+        DataModel model = (DataModel)rpc.form.getFieldValue("unlockModel");
         
-        ShippingDO shippingDO = remote.getShipmentAndUnlock((Integer)((DataObject)key.getKey()).getValue(), model);
+        ShippingDO shippingDO = remote.getShipmentAndUnlock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(), model);
 
         // set the fields in the RPC
-        setFieldsInRPC(rpcReturn, shippingDO);
+        setFieldsInRPC(rpc.form, shippingDO);
 
-        if(((FormRPC)rpcReturn.getField("shippingItems")).load){
-            FormRPC itemsRpc = (FormRPC)rpcReturn.getField("shippingItems");
-            loadShippingItems(key, itemsRpc);
+        if(((Form)rpc.form.getField("shippingItems")).load){
+            Form itemsRpc = (Form)rpc.form.getField("shippingItems");
+            loadShippingItems((DataSet)rpc.key, itemsRpc);
         }
         
-        if(((FormRPC)rpcReturn.getField("orderShippingNotes")).load){
-            FormRPC notesRpc = (FormRPC)rpcReturn.getField("orderShippingNotes");
-            loadOrderShippingNotes(key, notesRpc);
+        if(((Form)rpc.form.getField("orderShippingNotes")).load){
+            Form notesRpc = (Form)rpc.form.getField("orderShippingNotes");
+            loadOrderShippingNotes((DataSet)rpc.key, notesRpc);
         }
 
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
 
         // get the shipping record
-        ShippingDO shippingDO = remote.getShipment((Integer)((DataObject)key.getKey()).getValue());
+        ShippingDO shippingDO = remote.getShipment((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
 
         // set the fields in the RPC
-        setFieldsInRPC(rpcReturn, shippingDO);
+        setFieldsInRPC(rpc.form, shippingDO);
 
-        if(((FormRPC)rpcReturn.getField("shippingItems")).load){
-            FormRPC itemsRpc = (FormRPC)rpcReturn.getField("shippingItems");
-            loadShippingItems(key, itemsRpc);
+        if(((Form)rpc.form.getField("shippingItems")).load){
+            Form items = (Form)rpc.form.getField("shippingItems");
+            loadShippingItems((DataSet)rpc.key, items);
         }
         
-        if(((FormRPC)rpcReturn.getField("orderShippingNotes")).load){
-            FormRPC notesRpc = (FormRPC)rpcReturn.getField("orderShippingNotes");
-            loadOrderShippingNotes(key, notesRpc);
+        if(((Form)rpc.form.getField("orderShippingNotes")).load){
+            Form notesRpc = (Form)rpc.form.getField("orderShippingNotes");
+            loadOrderShippingNotes((DataSet)rpc.key, notesRpc);
         }
 
-        return rpcReturn;
+        return rpc;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         // remote interface to call the shipping bean
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
 
         ShippingDO shippingDO = new ShippingDO();
         try {
-            shippingDO = remote.getShipmentAndLock((Integer)((DataObject)key.getKey()).getValue());
+            shippingDO = remote.getShipmentAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
         } catch (Exception e) {
             throw new RPCException(e.getMessage());
         }
 
         // set the fields in the RPC
-        setFieldsInRPC(rpcReturn, shippingDO);
+        setFieldsInRPC(rpc.form, shippingDO);
 
-        if(((FormRPC)rpcReturn.getField("shippingItems")).load){
-            FormRPC itemsRpc = (FormRPC)rpcReturn.getField("shippingItems");
-            loadShippingItems(key, itemsRpc);
+        if(((Form)rpc.form.getField("shippingItems")).load){
+            Form itemsRpc = (Form)rpc.form.getField("shippingItems");
+            loadShippingItems((DataSet)rpc.key, itemsRpc);
         }
         
-        if(((FormRPC)rpcReturn.getField("orderShippingNotes")).load){
-            FormRPC notesRpc = (FormRPC)rpcReturn.getField("orderShippingNotes");
-            loadOrderShippingNotes(key, notesRpc);
+        if(((Form)rpc.form.getField("orderShippingNotes")).load){
+            Form notesRpc = (Form)rpc.form.getField("orderShippingNotes");
+            loadOrderShippingNotes((DataSet)rpc.key, notesRpc);
         }
 
-        return rpcReturn;
+        return rpc;
     }
 
     public String getXML() throws RPCException {
@@ -377,20 +377,25 @@ public class ShippingService implements
         return null;
     }
     
-    public FormRPC loadShippingItems(DataSet key, FormRPC rpcReturn) throws RPCException {
-        getShippingItemsModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("itemsTable"));        
-        getTrackingNumbersModel((NumberObject)key.getKey(), (TableField)rpcReturn.getField("trackingNumbersTable"));
-        
-        rpcReturn.load = true;
-        return rpcReturn;
+    public RPC getScreen(RPC rpc){
+        return rpc;
     }
     
-    public FormRPC loadOrderShippingNotes(DataSet key, FormRPC rpcReturn) throws RPCException {
-        rpcReturn.setFieldValue(ShippingMeta.ORDER_SHIPPING_NOTE_META.getText(), getOrderShippingNotesValue((NumberObject)key.getKey()));
+    public Form loadShippingItems(DataSet key, Form form) throws RPCException {
+        getShippingItemsModel((NumberObject)key.getKey(), (TableField)form.getField("itemsTable"));        
+        getTrackingNumbersModel((NumberObject)key.getKey(), (TableField)form.getField("trackingNumbersTable"));
         
-        rpcReturn.load = true;
-        return rpcReturn;
+        form.load = true;
+        return form;
     }
+    
+    public Form loadOrderShippingNotes(DataSet key, Form form) throws RPCException {
+        form.setFieldValue(ShippingMeta.ORDER_SHIPPING_NOTE_META.getText(), getOrderShippingNotesValue((NumberObject)key.getKey()));
+        
+        form.load = true;
+        return form;
+    }
+    
     public void getShippingItemsModel(NumberObject key, TableField shippingItemsTable) throws RPCException {
         ShippingRemote remote = (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote");
         List shippingItemsList = remote.getShippingItems((Integer)key.getValue());
@@ -401,7 +406,7 @@ public class ShippingService implements
         for(int iter = 0;iter < shippingItemsList.size();iter++) {
             ShippingItemDO itemDO = (ShippingItemDO)shippingItemsList.get(iter);
 
-           DataSet row = shippingItemsModel.createNewSet();
+           DataSet<Data> row = shippingItemsModel.createNewSet();
            NumberObject id = new NumberObject(itemDO.getId());
            NumberObject referenceTableId = new NumberObject(itemDO.getReferenceTableId());
            NumberObject referenceId = new NumberObject(itemDO.getReferenceId());
@@ -429,7 +434,7 @@ public class ShippingService implements
         for(int iter = 0;iter < trackingNumbersList.size();iter++) {
             ShippingTrackingDO trackingDO = (ShippingTrackingDO)trackingNumbersList.get(iter);
 
-           DataSet row = trackingNumbersModel.createNewSet();
+           DataSet<Data> row = trackingNumbersModel.createNewSet();
            NumberObject id = new NumberObject(trackingDO.getId());
            
            row.setKey(id);
@@ -547,49 +552,49 @@ public class ShippingService implements
         return model;
     }
 
-    private ShippingDO getShippingDOFromRPC(FormRPC rpcSend) {
+    private ShippingDO getShippingDOFromRPC(Form form) {
         ShippingDO shippingDO = new ShippingDO();
 
-        shippingDO.setId((Integer)rpcSend.getFieldValue(ShippingMeta.getId()));
+        shippingDO.setId((Integer)form.getFieldValue(ShippingMeta.getId()));
 
-        if (rpcSend.getFieldValue(ShippingMeta.getCost()) != null)
-            shippingDO.setCost(((Double)rpcSend.getFieldValue(ShippingMeta.getCost())).doubleValue());
+        if (form.getFieldValue(ShippingMeta.getCost()) != null)
+            shippingDO.setCost(((Double)form.getFieldValue(ShippingMeta.getCost())).doubleValue());
 
-        if (rpcSend.getFieldValue(ShippingMeta.getNumberOfPackages()) != null)
-            shippingDO.setNumberOfPackages((Integer)rpcSend.getFieldValue(ShippingMeta.getNumberOfPackages()));
+        if (form.getFieldValue(ShippingMeta.getNumberOfPackages()) != null)
+            shippingDO.setNumberOfPackages((Integer)form.getFieldValue(ShippingMeta.getNumberOfPackages()));
 
-        shippingDO.setProcessedById((Integer)rpcSend.getFieldValue("systemUserId"));
+        shippingDO.setProcessedById((Integer)form.getFieldValue("systemUserId"));
 
-        if (rpcSend.getFieldValue(ShippingMeta.getProcessedDate()) != null)
-            shippingDO.setProcessedDate(((DatetimeRPC)rpcSend.getFieldValue(ShippingMeta.getProcessedDate())).getDate());
+        if (form.getFieldValue(ShippingMeta.getProcessedDate()) != null)
+            shippingDO.setProcessedDate(((DatetimeRPC)form.getFieldValue(ShippingMeta.getProcessedDate())).getDate());
 
-        if (rpcSend.getFieldValue(ShippingMeta.getShippedDate()) != null)
-            shippingDO.setShippedDate(((DatetimeRPC)rpcSend.getFieldValue(ShippingMeta.getShippedDate())).getDate());
+        if (form.getFieldValue(ShippingMeta.getShippedDate()) != null)
+            shippingDO.setShippedDate(((DatetimeRPC)form.getFieldValue(ShippingMeta.getShippedDate())).getDate());
 
-        shippingDO.setShippedFromId((Integer)((DropDownField)rpcSend.getField(ShippingMeta.getShippedFromId())).getSelectedKey());
-        shippingDO.setShippedMethodId((Integer)((DropDownField)rpcSend.getField(ShippingMeta.getShippedMethodId())).getSelectedKey());
-        shippingDO.setStatusId((Integer)((DropDownField)rpcSend.getField(ShippingMeta.getStatusId())).getSelectedKey());
+        shippingDO.setShippedFromId((Integer)((DropDownField)form.getField(ShippingMeta.getShippedFromId())).getSelectedKey());
+        shippingDO.setShippedMethodId((Integer)((DropDownField)form.getField(ShippingMeta.getShippedMethodId())).getSelectedKey());
+        shippingDO.setStatusId((Integer)((DropDownField)form.getField(ShippingMeta.getStatusId())).getSelectedKey());
 
         // set shipped to values
-        if (rpcSend.getField(ShippingMeta.ORGANIZATION_META.getName()) != null) {
-            shippingDO.setShippedToId((Integer)((DropDownField)rpcSend.getField(ShippingMeta.ORGANIZATION_META.getName())).getSelectedKey());
-            shippingDO.setShippedTo((String)((DropDownField)rpcSend.getField(ShippingMeta.ORGANIZATION_META.getName())).getTextValue());
-            shippingDO.addressDO.setMultipleUnit((String)rpcSend.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit()));
-            shippingDO.addressDO.setStreetAddress((String)rpcSend.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress()));
-            shippingDO.addressDO.setCity((String)rpcSend.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity()));
-            shippingDO.addressDO.setState((String)rpcSend.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState()));
-            shippingDO.addressDO.setZipCode((String)rpcSend.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode()));
+        if (form.getField(ShippingMeta.ORGANIZATION_META.getName()) != null) {
+            shippingDO.setShippedToId((Integer)((DropDownField)form.getField(ShippingMeta.ORGANIZATION_META.getName())).getSelectedKey());
+            shippingDO.setShippedTo((String)((DropDownField)form.getField(ShippingMeta.ORGANIZATION_META.getName())).getTextValue());
+            shippingDO.addressDO.setMultipleUnit((String)form.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit()));
+            shippingDO.addressDO.setStreetAddress((String)form.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress()));
+            shippingDO.addressDO.setCity((String)form.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity()));
+            shippingDO.addressDO.setState((String)form.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState()));
+            shippingDO.addressDO.setZipCode((String)form.getFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode()));
         }
 
         return shippingDO;
     }
 
-    private List getShippingItemsListFromRPC(DataModel itemsTable, Integer shippingId) {
+    private List getShippingItemsListFromRPC(DataModel<DataSet> itemsTable, Integer shippingId) {
         List shippingItems = new ArrayList();
 
         for (int i = 0; i < itemsTable.size(); i++) {
             ShippingItemDO itemDO = new ShippingItemDO();
-            DataSet row = itemsTable.get(i);
+            DataSet<Data> row = itemsTable.get(i);
 
             NumberObject itemId = (NumberObject)row.getKey();
             
@@ -615,13 +620,13 @@ public class ShippingService implements
         return shippingItems;
     }
 
-    private List getTrackingNumberListFromRPC(DataModel trackingNumsTable, Integer shippingId) {
+    private List getTrackingNumberListFromRPC(DataModel<DataSet> trackingNumsTable, Integer shippingId) {
         List tackingNums = new ArrayList();
         List deletedRows = trackingNumsTable.getDeletions();
 
         for (int i = 0; i < trackingNumsTable.size(); i++) {
             ShippingTrackingDO trackingDO = new ShippingTrackingDO();
-            DataSet row = trackingNumsTable.get(i);
+            DataSet<Data> row = trackingNumsTable.get(i);
 
             NumberObject itemId = (NumberObject)row.getKey();
 
@@ -646,7 +651,7 @@ public class ShippingService implements
         return tackingNums;
     }
 
-    private void setRpcErrors(List exceptionList, TableField table, FormRPC rpcSend) {
+    private void setRpcErrors(List exceptionList, TableField table, Form form) {
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
@@ -656,51 +661,51 @@ public class ShippingService implements
 
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
             }        
         
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }
 
-    private void setFieldsInRPC(FormRPC rpcReturn, ShippingDO shippingDO) {
+    private void setFieldsInRPC(Form form, ShippingDO shippingDO) {
         // create dataset for ship to auto complete
         if (shippingDO.getShippedToId() == null)
-            rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), null);
+            form.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), null);
         else {
             DataModel model = new DataModel();
             model.add(new NumberObject(shippingDO.getShippedToId()),new StringObject(shippingDO.getShippedTo()));
-            ((DropDownField)rpcReturn.getField(ShippingMeta.ORGANIZATION_META.getName())).setModel(model);
-            rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), model.get(0));
+            ((DropDownField)form.getField(ShippingMeta.ORGANIZATION_META.getName())).setModel(model);
+            form.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), model.get(0));
         }
 
-        rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), shippingDO.addressDO.getMultipleUnit());
-        rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress(), shippingDO.addressDO.getStreetAddress());
-        rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity(), shippingDO.addressDO.getCity());
-        rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState(), shippingDO.addressDO.getState());
-        rpcReturn.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode(), shippingDO.addressDO.getZipCode());
+        form.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), shippingDO.addressDO.getMultipleUnit());
+        form.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getStreetAddress(), shippingDO.addressDO.getStreetAddress());
+        form.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getCity(), shippingDO.addressDO.getCity());
+        form.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getState(), shippingDO.addressDO.getState());
+        form.setFieldValue(ShippingMeta.ORGANIZATION_META.ADDRESS.getZipCode(), shippingDO.addressDO.getZipCode());
 
-        rpcReturn.setFieldValue(ShippingMeta.getId(), shippingDO.getId());
-        rpcReturn.setFieldValue(ShippingMeta.getCost(), shippingDO.getCost());
-        rpcReturn.setFieldValue(ShippingMeta.getNumberOfPackages(), Integer.valueOf(shippingDO.getNumberOfPackages()));
-        rpcReturn.setFieldValue(ShippingMeta.getProcessedById(), shippingDO.getProcessedBy());
-        rpcReturn.setFieldValue("systemUserId", shippingDO.getProcessedById());
+        form.setFieldValue(ShippingMeta.getId(), shippingDO.getId());
+        form.setFieldValue(ShippingMeta.getCost(), shippingDO.getCost());
+        form.setFieldValue(ShippingMeta.getNumberOfPackages(), Integer.valueOf(shippingDO.getNumberOfPackages()));
+        form.setFieldValue(ShippingMeta.getProcessedById(), shippingDO.getProcessedBy());
+        form.setFieldValue("systemUserId", shippingDO.getProcessedById());
         if (shippingDO.getProcessedDate() != null && shippingDO.getProcessedDate().getDate() != null)
-            rpcReturn.setFieldValue(ShippingMeta.getProcessedDate(), 
+            form.setFieldValue(ShippingMeta.getProcessedDate(), 
                                     DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getProcessedDate().getDate()));
 
         if (shippingDO.getShippedDate() != null && shippingDO.getShippedDate().getDate() != null)
-            rpcReturn.setFieldValue(ShippingMeta.getShippedDate(),
+            form.setFieldValue(ShippingMeta.getShippedDate(),
                                     DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getShippedDate().getDate()));
         if(shippingDO.getShippedFromId() != null)
-            rpcReturn.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet(new NumberObject(shippingDO.getShippedFromId())));
+            form.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet(new NumberObject(shippingDO.getShippedFromId())));
         if(shippingDO.getShippedMethodId() != null)
-            rpcReturn.setFieldValue(ShippingMeta.getShippedMethodId(), new DataSet(new NumberObject(shippingDO.getShippedMethodId())));
+            form.setFieldValue(ShippingMeta.getShippedMethodId(), new DataSet(new NumberObject(shippingDO.getShippedMethodId())));
         if(shippingDO.getStatusId() != null)
-            rpcReturn.setFieldValue(ShippingMeta.getStatusId(), new DataSet(new NumberObject(shippingDO.getStatusId())));
+            form.setFieldValue(ShippingMeta.getStatusId(), new DataSet(new NumberObject(shippingDO.getStatusId())));
 
     }
 

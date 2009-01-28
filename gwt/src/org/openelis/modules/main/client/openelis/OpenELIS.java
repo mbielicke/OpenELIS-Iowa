@@ -34,12 +34,12 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
 import org.openelis.gwt.widget.MenuItem;
@@ -50,7 +50,7 @@ import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
 import java.util.HashMap;
 
-public class OpenELIS extends AppScreen implements ClickListener{
+public class OpenELIS extends AppScreen<RPC> implements ClickListener{
 	
 	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
     public static ServiceDefTarget target = (ServiceDefTarget)screenService;
@@ -67,7 +67,7 @@ public class OpenELIS extends AppScreen implements ClickListener{
         service = screenService;
         HashMap map = new HashMap();
         map.put("modules",modules);
-        getXMLData(map);
+        getXMLData(map, new RPC());
     }
 
    public void afterDraw(boolean Success) {

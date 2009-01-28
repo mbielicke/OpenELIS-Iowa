@@ -37,7 +37,7 @@ public class DictionaryEntry implements AppModule {
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
        
-        ClassFactory.addClass(new String[] {"DictionaryScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"DictionaryScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new DictionaryScreen();

@@ -34,7 +34,7 @@ public class StorageUnitEntry implements AppModule {
 
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"StorageUnitScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"StorageUnitScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                          return new StorageUnitScreen();

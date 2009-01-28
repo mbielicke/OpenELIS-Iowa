@@ -25,7 +25,9 @@
 */
 package org.openelis.modules.storageunit.client;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -39,7 +41,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageUnitScreen extends OpenELISScreenForm {
+public class StorageUnitScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
 
 	private Dropdown cat;
     private static boolean loaded = false;
@@ -49,7 +51,7 @@ public class StorageUnitScreen extends OpenELISScreenForm {
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
 	public StorageUnitScreen() {
-		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded);
+		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded,new RPC<Form,Data>());
 	}
 	
 	 public void performCommand(Enum action, Object obj) {
@@ -95,11 +97,11 @@ public class StorageUnitScreen extends OpenELISScreenForm {
 	private void getStorageUnits(String query) {
 		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
 
-			FormRPC letterRPC = (FormRPC) this.forms.get("queryByLetter");
+			Form letter = (Form)forms.get("queryByLetter");
 			
-			letterRPC.setFieldValue(StorageUnitMeta.getDescription(), query);
+			letter.setFieldValue(StorageUnitMeta.getDescription(), query);
 
-			commitQuery(letterRPC);
+			commitQuery(letter);
 		}
 	}
 }

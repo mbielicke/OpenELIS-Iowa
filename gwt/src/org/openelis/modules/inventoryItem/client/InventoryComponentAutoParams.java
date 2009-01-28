@@ -25,14 +25,14 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import java.util.HashMap;
-
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.widget.AutoCompleteParamsInt;
+
+import java.util.HashMap;
 
 public class InventoryComponentAutoParams implements AutoCompleteParamsInt{
 
-    public HashMap getParams(FormRPC rpc) {
+    public HashMap getParams(Form rpc) {
         HashMap params = new HashMap();
         params.put("id", rpc.getField("inventory_item.id"));
         params.put("name", rpc.getField("inventory_item.name"));

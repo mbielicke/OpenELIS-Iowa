@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.PTSampleLogin.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
@@ -45,7 +48,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PTSampleLoginScreen extends OpenELISScreenForm implements ClickListener, TabListener, TreeManager{
+public class PTSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
 
     private static boolean loaded = false;
     private static DataModel statusDropdown, ptProviderDropdown,
@@ -55,7 +58,7 @@ public class PTSampleLoginScreen extends OpenELISScreenForm implements ClickList
     private KeyListManager keyList = new KeyListManager();
     
     public PTSampleLoginScreen() {
-        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService", !loaded);
+        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService", !loaded, new RPC<Form,Data>());
     }
 
     public void onClick(Widget sender) {

@@ -25,12 +25,9 @@
 */
 package org.openelis.modules.SDWISSampleLogin.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.Data;
@@ -45,39 +42,43 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 
-public class SDWISSampleLoginService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel>{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+public class SDWISSampleLoginService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>{
+
+    public RPC abort(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitQuery(FormRPC rpcSend, DataModel data) throws RPCException {
+    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -129,6 +130,10 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<FormRPC,
     public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public RPC getScreen(RPC rpc) {
+        return rpc;
     }
     
     public DataModel getInitialModel(String cat){

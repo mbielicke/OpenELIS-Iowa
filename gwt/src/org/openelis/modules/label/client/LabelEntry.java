@@ -39,7 +39,7 @@ public class LabelEntry implements AppModule {
 
     public void onModuleLoad() {
     	OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"LabelScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"LabelScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new LabelScreen();

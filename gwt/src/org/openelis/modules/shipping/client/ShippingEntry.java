@@ -33,7 +33,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class ShippingEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"ShippingScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"ShippingScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new ShippingScreen();

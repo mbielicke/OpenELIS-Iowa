@@ -35,7 +35,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Node;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
@@ -129,7 +129,7 @@ public class OpenELIS implements EntryPoint, EventListener {
   }
   
   public void setWidgetMap() {
-	  ClassFactory.addClass(new String[] {org.openelis.modules.main.client.openelis.OpenELIS.class.getName()},
+	  ClassFactory.addClassFactory(new String[] {org.openelis.modules.main.client.openelis.OpenELIS.class.getName()},
 			                new ClassFactory.Factory() {
 		  	                   private org.openelis.modules.main.client.openelis.OpenELIS mainScreen;
 		  	                   public Object newInstance(Object[] args){
@@ -138,7 +138,7 @@ public class OpenELIS implements EntryPoint, EventListener {
 		  	                	   return mainScreen;
 		  	                   }
 	  });
-      ClassFactory.addClass(new String[] {AppConstants.class.getName(),"AppConstants"},
+      ClassFactory.addClassFactory(new String[] {AppConstants.class.getName(),"AppConstants"},
                             new ClassFactory.Factory() {
                               private AppConstants consts;
                               public Object newInstance(Object[] args){
@@ -147,7 +147,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   return consts;
                               }
       });
-      ClassFactory.addClass(new String[] {ScreenVertical.class.getName(),ScreenVertical.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenVertical.class.getName(),ScreenVertical.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -157,7 +157,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenHorizontal.class.getName(),ScreenHorizontal.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenHorizontal.class.getName(),ScreenHorizontal.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -167,7 +167,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTablePanel.class.getName(),ScreenTablePanel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTablePanel.class.getName(),ScreenTablePanel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object args[]) {
                                       if(args == null)
@@ -177,7 +177,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenAbsolute.class.getName(),ScreenAbsolute.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenAbsolute.class.getName(),ScreenAbsolute.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -187,7 +187,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenAppButton.class.getName(),ScreenAppButton.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenAppButton.class.getName(),ScreenAppButton.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -197,7 +197,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenButtonPanel.class.getName(),ScreenButtonPanel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenButtonPanel.class.getName(),ScreenButtonPanel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -207,7 +207,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenCalendar.class.getName(),ScreenCalendar.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenCalendar.class.getName(),ScreenCalendar.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -217,7 +217,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenRichTextArea.class.getName(),ScreenRichTextArea.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenRichTextArea.class.getName(),ScreenRichTextArea.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -227,7 +227,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenCheck.class.getName(),ScreenCheck.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenCheck.class.getName(),ScreenCheck.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -237,7 +237,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenQueryTable.class.getName(),ScreenQueryTable.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenQueryTable.class.getName(),ScreenQueryTable.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -248,7 +248,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {ScreenTitledPanel.class.getName(), ScreenTitledPanel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTitledPanel.class.getName(), ScreenTitledPanel.TAG_NAME},
               new ClassFactory.Factory() {
                     public Object newInstance(Object[] args) {
                         if(args == null)
@@ -258,7 +258,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                         return null;
                     }
       });
-      ClassFactory.addClass(new String[] {ScreenMaskedBox.class.getName(),ScreenMaskedBox.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenMaskedBox.class.getName(),ScreenMaskedBox.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -268,7 +268,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenRadio.class.getName(),ScreenRadio.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenRadio.class.getName(),ScreenRadio.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -278,7 +278,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTableWidget.class.getName(),ScreenTableWidget.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTableWidget.class.getName(),ScreenTableWidget.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -288,7 +288,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTreeWidget.class.getName(),ScreenTreeWidget.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTreeWidget.class.getName(),ScreenTreeWidget.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -298,7 +298,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenText.class.getName(),ScreenText.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenText.class.getName(),ScreenText.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -308,7 +308,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTextArea.class.getName(),ScreenTextArea.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTextArea.class.getName(),ScreenTextArea.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -318,7 +318,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTextBox.class.getName(),ScreenTextBox.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTextBox.class.getName(),ScreenTextBox.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -328,7 +328,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableCalendar.class.getName(),TableCalendar.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableCalendar.class.getName(),TableCalendar.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -338,7 +338,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableLabel.class.getName(),TableLabel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableLabel.class.getName(),TableLabel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -348,7 +348,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableCheck.class.getName(),TableCheck.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableCheck.class.getName(),TableCheck.TAG_NAME},
               new ClassFactory.Factory() {
                     public Object newInstance(Object[] args) {
                         if(args == null)
@@ -358,7 +358,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                         return null;
                     }
       });
-      ClassFactory.addClass(new String[] {TableMaskedTextBox.class.getName(),TableMaskedTextBox.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableMaskedTextBox.class.getName(),TableMaskedTextBox.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -368,7 +368,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableTextBox.class.getName(),TableTextBox.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableTextBox.class.getName(),TableTextBox.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -378,7 +378,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableAutoComplete.class.getName(),TableAutoComplete.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableAutoComplete.class.getName(),TableAutoComplete.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -388,7 +388,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableDropdown.class.getName(),TableDropdown.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableDropdown.class.getName(),TableDropdown.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -398,7 +398,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableCollection.class.getName(),TableCollection.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableCollection.class.getName(),TableCollection.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -408,7 +408,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableDragLabel.class.getName(),TableDragLabel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableDragLabel.class.getName(),TableDragLabel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -418,7 +418,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableTree.class.getName(),TableTree.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableTree.class.getName(),TableTree.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -428,7 +428,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenLabel.class.getName(),ScreenLabel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenLabel.class.getName(),ScreenLabel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -438,7 +438,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenMenuPanel.class.getName(),ScreenMenuPanel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenMenuPanel.class.getName(),ScreenMenuPanel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -448,7 +448,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenMenuItem.class.getName(),ScreenMenuItem.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenMenuItem.class.getName(),ScreenMenuItem.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args){
                                       if(args == null)
@@ -458,7 +458,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenMenuLabel.class.getName(),ScreenMenuLabel.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenMenuLabel.class.getName(),ScreenMenuLabel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -468,7 +468,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {CheckField.class.getName(),CheckField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {CheckField.class.getName(),CheckField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -478,7 +478,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ModelField.class.getName(),ModelField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ModelField.class.getName(),ModelField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -488,7 +488,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {DateField.class.getName(),DateField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {DateField.class.getName(),DateField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -498,7 +498,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {NumberField.class.getName(),NumberField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {NumberField.class.getName(),NumberField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -508,17 +508,17 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {FormRPC.class.getName(),"rpc-rpc"},
+      ClassFactory.addClassFactory(new String[] {Form.class.getName(),"rpc-rpc"},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new FormRPC();
+                                          return new Form();
                                       else if(args[0] instanceof Node)
-                                          return new FormRPC((Node)args[0]);
+                                          return new Form((Node)args[0]);
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {StringField.class.getName(),StringField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {StringField.class.getName(),StringField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -528,7 +528,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {CollectionField.class.getName(),CollectionField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {CollectionField.class.getName(),CollectionField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -538,7 +538,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {TableField.class.getName(),TableField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TableField.class.getName(),TableField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -549,7 +549,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {TreeField.class.getName(),TreeField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {TreeField.class.getName(),TreeField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -559,7 +559,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {QueryCheckField.class.getName(),QueryCheckField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {QueryCheckField.class.getName(),QueryCheckField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -570,7 +570,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {QueryDateField.class.getName(),QueryDateField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {QueryDateField.class.getName(),QueryDateField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -580,7 +580,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {QueryNumberField.class.getName(),QueryNumberField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {QueryNumberField.class.getName(),QueryNumberField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -590,7 +590,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {QueryStringField.class.getName(),QueryStringField.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {QueryStringField.class.getName(),QueryStringField.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -600,7 +600,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenTab.class.getName(),ScreenTab.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTab.class.getName(),ScreenTab.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -610,7 +610,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenScrollableTabBar.class.getName(),ScreenScrollableTabBar.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenScrollableTabBar.class.getName(),ScreenScrollableTabBar.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -620,7 +620,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });      
-      ClassFactory.addClass(new String[] {ScreenStack.class.getName(),ScreenStack.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenStack.class.getName(),ScreenStack.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -630,7 +630,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenWindowBrowser.class.getName(),ScreenWindowBrowser.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenWindowBrowser.class.getName(),ScreenWindowBrowser.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -640,7 +640,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenHTML.class.getName(),ScreenHTML.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenHTML.class.getName(),ScreenHTML.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -650,7 +650,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ProxyListener.class.getName(),"ProxyListener"},
+      ClassFactory.addClassFactory(new String[] {ProxyListener.class.getName(),"ProxyListener"},
                             new ClassFactory.Factory() {
                                   private ProxyListener listener;
                                   public Object newInstance(Object[] args) {
@@ -659,7 +659,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return listener;
                                   }
       });
-      ClassFactory.addClass(new String[] {HoverListener.class.getName(),"HoverListener"},
+      ClassFactory.addClassFactory(new String[] {HoverListener.class.getName(),"HoverListener"},
                             new ClassFactory.Factory() {
                                   private HoverListener listener;
                                   public Object newInstance(Object[] args) {
@@ -668,7 +668,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return listener;
                                   }
       });      
-      ClassFactory.addClass(new String[] {ScreenPagedTree.class.getName(),ScreenPagedTree.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenPagedTree.class.getName(),ScreenPagedTree.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -679,7 +679,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
       
-      ClassFactory.addClass(new String[] {ScreenAutoCompleteWidget.class.getName(),ScreenAutoCompleteWidget.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenAutoCompleteWidget.class.getName(),ScreenAutoCompleteWidget.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -689,7 +689,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {ScreenDropDownWidget.class.getName(),ScreenDropDownWidget.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenDropDownWidget.class.getName(),ScreenDropDownWidget.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
@@ -699,7 +699,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClass(new String[] {DropDownField.class.getName(),DropDownField.TAG_NAME}, 
+      ClassFactory.addClassFactory(new String[] {DropDownField.class.getName(),DropDownField.TAG_NAME}, 
                             new ClassFactory.Factory() {
                                 public Object newInstance(Object[] args) {
                                     if(args == null)
@@ -710,7 +710,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                 }
                            
       });
-      ClassFactory.addClass(new String[] {ScreenCollapsePanel.class.getName(),ScreenCollapsePanel.TAG_NAME}, 
+      ClassFactory.addClassFactory(new String[] {ScreenCollapsePanel.class.getName(),ScreenCollapsePanel.TAG_NAME}, 
                             new ClassFactory.Factory() {
                                 public Object newInstance(Object[] args) {
                                     if(args == null)
@@ -721,7 +721,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                 }
                            
       });
-      ClassFactory.addClass(new String[] {ScreenAToZTable.class.getName(),ScreenAToZTable.TAG_NAME}, 
+      ClassFactory.addClassFactory(new String[] {ScreenAToZTable.class.getName(),ScreenAToZTable.TAG_NAME}, 
                             new ClassFactory.Factory() {
                                 public Object newInstance(Object[] args) {
                                     if(args == null)
@@ -732,7 +732,7 @@ public class OpenELIS implements EntryPoint, EventListener {
                                 }
                            
       });
-      ClassFactory.addClass(new String[] {ScreenLookUp.class.getName(),ScreenLookUp.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenLookUp.class.getName(),ScreenLookUp.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)

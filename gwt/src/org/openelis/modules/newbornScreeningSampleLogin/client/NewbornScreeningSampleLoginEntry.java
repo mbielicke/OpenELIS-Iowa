@@ -33,7 +33,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class NewbornScreeningSampleLoginEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"NewbornScreeningSampleLoginScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"NewbornScreeningSampleLoginScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new NewbornScreeningSampleLoginScreen();

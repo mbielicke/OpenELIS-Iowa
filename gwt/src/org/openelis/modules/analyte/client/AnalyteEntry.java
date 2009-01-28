@@ -34,7 +34,7 @@ public class AnalyteEntry implements AppModule {
 	
 	public void onModuleLoad() {
 		OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"AnalyteScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"AnalyteScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                        return new AnalyteScreen();

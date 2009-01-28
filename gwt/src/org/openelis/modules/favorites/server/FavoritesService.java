@@ -25,13 +25,7 @@
 */
 package org.openelis.modules.favorites.server;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.favorites.client.FavoritesServiceInt;
@@ -40,6 +34,12 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class FavoritesService implements FavoritesServiceInt {
 
@@ -116,7 +116,7 @@ public class FavoritesService implements FavoritesServiceInt {
     }
 
 
-    public String saveFavorites(FormRPC rpc) {
+    public String saveFavorites(Form rpc) {
         // TODO Auto-generated method stub
         Iterator rpcIt = rpc.getFieldMap().keySet().iterator();
         StringBuffer favorites = new StringBuffer();

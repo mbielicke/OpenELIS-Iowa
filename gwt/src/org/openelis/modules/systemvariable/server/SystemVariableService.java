@@ -25,21 +25,18 @@
 */
 package org.openelis.modules.systemvariable.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.FormRPC.Status;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
@@ -54,7 +51,11 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, DataSet, DataModel> {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataModel<DataSet>> {
 
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9;  
@@ -62,18 +63,18 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
     private static SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-     public DataModel commitQuery(FormRPC rpcSend, DataModel model) throws RPCException {
+     public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
          List sysVars = new ArrayList();
-        if(rpcSend == null){           
+        if(form == null){           
             
-            FormRPC rpc = (FormRPC)SessionManager.getSession().getAttribute("SystemVariableQuery");
+            form = (Form)SessionManager.getSession().getAttribute("SystemVariableQuery");
             
-            if(rpc == null)
+            if(form == null)
                 throw new QueryException(openElisConstants.getString("queryExpiredException"));
     
              try{                 
                  SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
-                 sysVars = remote.query(rpc.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                 sysVars = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                  
              }catch(Exception e){
                 if(e instanceof LastPageException){
@@ -86,7 +87,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
          } else{
              SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
              
-             HashMap<String,AbstractField> fields = rpcSend.getFieldMap();             
+             HashMap<String,AbstractField> fields = form.getFieldMap();             
 
              try{
                  sysVars = remote.query(fields,0,leftTableRowsPerPage);
@@ -97,52 +98,34 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
              } 
              
 //           need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("SystemVariableQuery", rpcSend);
+            SessionManager.getSession().setAttribute("SystemVariableQuery", form);
              }    
      
      int i=0;
      
      if(model == null)
-         model = new DataModel();
+         model = new DataModel<DataSet>();
      else
          model.clear();
 
      while(i < sysVars.size() && i < leftTableRowsPerPage) {
          IdNameDO resultDO = (IdNameDO)sysVars.get(i);
-         //qaEvent id
-         Integer idResult = resultDO.getId();
-         //qaEvent name
-         String nameResult = resultDO.getName();             
-
-         DataSet row = new DataSet();
-         
-         NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
-
-         StringObject svname = new StringObject();
-
-         id.setValue(idResult);
-
-          svname.setValue(nameResult);                   
-         row.setKey(id);          
-
-         row.add(svname);
-
-         model.add(row);
+         model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
          i++;
       }  
      
          return model;
     }
 
-    public FormRPC commitAdd(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitAdd(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpcSend);
+        SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
         List<Exception> exceptionList = remote.validateforAdd(sysVarDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpcSend);   
-            return rpcSend;
+            setRpcErrors(exceptionList, rpc.form);   
+            return rpc;
         }
         try{ 
          svId = remote.updateSystemVariable(sysVarDO);
@@ -150,26 +133,26 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, rpcSend);
+            setRpcErrors(exceptionList, rpc.form);
             
-            return rpcSend;
+            return rpc;
         } 
         
         sysVarDO.setId(svId);
         
-        setFieldsInRPC(rpcReturn, sysVarDO);
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, sysVarDO);
+        return rpc;
     }
 
-    public FormRPC commitUpdate(FormRPC rpcSend, FormRPC rpcReturn) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpcSend);
+        SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
         List<Exception> exceptionList = remote.validateforUpdate(sysVarDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpcSend);   
-            return rpcSend;
+            setRpcErrors(exceptionList, rpc.form);   
+            return rpc;
         }
         try{ 
          svId = remote.updateSystemVariable(sysVarDO);
@@ -180,33 +163,33 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, rpcSend);
+            setRpcErrors(exceptionList, rpc.form);
             
-            return rpcSend;
+            return rpc;
         }
         
-        setFieldsInRPC(rpcReturn, sysVarDO);
+        setFieldsInRPC(rpc.form, sysVarDO);
         
-        return rpcReturn;
+        return rpc;
     }
 
 
-    public FormRPC commitDelete(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         try{
-            remote.deleteSystemVariable((Integer)((DataObject)key.getKey()).getValue());
+            remote.deleteSystemVariable((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }
         
-        setFieldsInRPC(rpcReturn, new SystemVariableDO());
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, new SystemVariableDO());
+        return rpc;
     }
 
 
-    public FormRPC abort(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
+        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
         
         SystemVariableDO svDO = null;
         try{
@@ -215,24 +198,24 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
             throw new RPCException(ex.getMessage());
         }  
         
-        setFieldsInRPC(rpcReturn, svDO);
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, svDO);
+        return rpc;
     }
 
 
-    public FormRPC fetch(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
+        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
         
         SystemVariableDO svDO = remote.getSystemVariable(svId);
-        setFieldsInRPC(rpcReturn, svDO);
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, svDO);
+        return rpc;
     }
 
 
-    public FormRPC fetchForUpdate(DataSet key, FormRPC rpcReturn) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)key.getKey()).getValue();
+        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
         
         SystemVariableDO svDO = null;
         try{
@@ -240,8 +223,8 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }  
-        setFieldsInRPC(rpcReturn, svDO);
-        return rpcReturn;
+        setFieldsInRPC(rpc.form, svDO);
+        return rpc;
     }
 
 
@@ -261,34 +244,37 @@ public class SystemVariableService implements AppScreenFormServiceInt<FormRPC, D
     	return null;
     }
 
+    public RPC getScreen(RPC rpc){
+        return rpc;
+    }
 
-    private void setFieldsInRPC(FormRPC rpcReturn, SystemVariableDO svDO){
-        rpcReturn.setFieldValue(Meta.getId(), svDO.getId());
-        rpcReturn.setFieldValue(Meta.getName(),svDO.getName());
-        rpcReturn.setFieldValue(Meta.getValue(),svDO.getValue());        
+    private void setFieldsInRPC(Form form, SystemVariableDO svDO){
+        form.setFieldValue(Meta.getId(), svDO.getId());
+        form.setFieldValue(Meta.getName(),svDO.getName());
+        form.setFieldValue(Meta.getValue(),svDO.getValue());        
     }
     
     
-    private SystemVariableDO getSystemVariableDOFromRPC(FormRPC rpcsend){
+    private SystemVariableDO getSystemVariableDOFromRPC(Form form){
         SystemVariableDO sysVarDO = new SystemVariableDO();
-        Integer svId = (Integer) rpcsend.getFieldValue(Meta.getId());        
+        Integer svId = (Integer) form.getFieldValue(Meta.getId());        
         sysVarDO.setId(svId);
-        sysVarDO.setName(((String)rpcsend.getFieldValue(Meta.getName())));
-        sysVarDO.setValue(((String)rpcsend.getFieldValue(Meta.getValue())));
+        sysVarDO.setName(((String)form.getFieldValue(Meta.getName())));
+        sysVarDO.setValue(((String)form.getFieldValue(Meta.getValue())));
         return sysVarDO;
     }
 
 
-	private void setRpcErrors(List exceptionList, FormRPC rpcSend){
+	private void setRpcErrors(List exceptionList, Form form){
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
              if(exceptionList.get(i) instanceof FieldErrorException)
-                rpcSend.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
-                rpcSend.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }   
-        rpcSend.status = Status.invalid;
+        form.status = Form.Status.invalid;
     }
 }

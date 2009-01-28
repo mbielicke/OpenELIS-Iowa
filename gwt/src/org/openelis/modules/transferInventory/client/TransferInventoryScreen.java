@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.transferInventory.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -36,12 +39,12 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class TransferInventoryScreen extends OpenELISScreenForm implements ClickListener, AutoCompleteCallInt {
+public class TransferInventoryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt {
 
     private KeyListManager keyList = new KeyListManager();
     
     public TransferInventoryScreen() {
-        super("org.openelis.modules.transferInventory.server.TransferInventoryService", false);
+        super("org.openelis.modules.transferInventory.server.TransferInventoryService", false, new RPC<Form,Data>());
     }
     
     public void onClick(Widget sender) {

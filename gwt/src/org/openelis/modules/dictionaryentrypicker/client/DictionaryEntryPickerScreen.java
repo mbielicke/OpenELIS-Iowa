@@ -25,11 +25,15 @@
 */
 package org.openelis.modules.dictionaryentrypicker.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.FormRPC;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
@@ -47,14 +51,10 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.test.client.TestScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements TableManager, 
+public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements TableManager, 
                                                                                ClickListener,
                                                                                ChangeListener{
     private TestScreen testScreen;
@@ -65,7 +65,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     
     private TableWidget dictionaryController;
     
-    private Dropdown categoryDrop;       
+    private Dropdown<DataSet> categoryDrop;       
     
     private AppButton findButton;
     
@@ -76,7 +76,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     private AppButton prevPressed = null;
     
     public DictionaryEntryPickerScreen(TestScreen testScreen) {        
-        super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService",!loaded);
+        super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService",!loaded,new RPC<Form,Data>());
         this.testScreen = testScreen;
     }
     
@@ -198,10 +198,10 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     public void onClick(Widget sender) {
         StringObject pattern = null;
         String queryString = null;
-        FormRPC queryRPC = null;
+        Form queryRPC = null;
         if(sender == findButton){                     
           queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-          queryRPC = (FormRPC) forms.get("queryByName");
+          queryRPC = (Form) forms.get("queryByName");
           queryRPC.setFieldValue("findTextBox", queryString);      
           pattern = new StringObject(queryString);
           loadDictionaryModel(pattern);
@@ -239,12 +239,12 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm implements T
     
     private List<String> getSelectedEntries(List<Integer> idList){
         List<String> entries = new ArrayList<String>();
-        DataSet set = null;
+        DataSet<Data> set = null;
         String entry = null;
         Integer id = null;
         DataMap data = null;
         for(int iter = 0; iter < dictionaryController.model.getSelections().size();iter++){
-            set = dictionaryController.model.getSelections().get(iter);
+            set = (DataSet)dictionaryController.model.getSelections().get(iter);
             data = (DataMap)set.getData();
             id = (Integer)((NumberField)data.get("id")).getValue();
             entry = (String)set.get(0).getValue();            

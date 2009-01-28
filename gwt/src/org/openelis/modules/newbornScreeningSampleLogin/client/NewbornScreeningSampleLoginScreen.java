@@ -25,6 +25,9 @@
 */
 package org.openelis.modules.newbornScreeningSampleLogin.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -39,13 +42,13 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm implements ClickListener, TabListener, TreeManager{
+public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public NewbornScreeningSampleLoginScreen() {
-        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService", false);
+        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService", false, new RPC<Form,Data>());
     }
 
     public void onClick(Widget sender) {
@@ -53,7 +56,7 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm implem
     }
     
     public void afterDraw(boolean sucess) {
-ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);

@@ -38,7 +38,7 @@ public class TestEntry implements AppModule {
 
     public void onModuleLoad() {
         OpenELIS.modules.addItem(new StringObject(getModuleName()));
-        ClassFactory.addClass(new String[] {"TestScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"TestScreen"}, 
                               new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       return new TestScreen();
