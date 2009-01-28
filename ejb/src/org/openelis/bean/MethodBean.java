@@ -107,23 +107,13 @@ public class MethodBean implements MethodRemote {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();        
         
-        //CategoryMeta categoryMeta = CategoryMeta.getInstance();
-        //DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
-        //DictionaryRelatedEntryMeta dicRelatedEntryMeta = DictionaryRelatedEntryMeta.getInstance();
-        
-        //qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta, dicRelatedEntryMeta});
         qb.setMeta(MethodMeta);
         
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+MethodMeta.getId()+", "+MethodMeta.getName() + ") ");
-        
-        //qb.addTable(categoryMeta);
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+MethodMeta.getId()+", "+MethodMeta.getName() + ") ");        
         
         qb.addWhere(fields);      
 
-        qb.setOrderBy(MethodMeta.getName());
-        
-        //if(qb.hasTable(dicRelatedEntryMeta.getTable()))
-        //  qb.addTable(dictionaryMeta);
+        qb.setOrderBy(MethodMeta.getName());       
         
         sb.append(qb.getEJBQL());
         
