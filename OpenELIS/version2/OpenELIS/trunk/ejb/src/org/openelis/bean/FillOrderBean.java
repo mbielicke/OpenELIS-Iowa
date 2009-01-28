@@ -42,7 +42,9 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.local.LockLocal;
@@ -194,7 +196,7 @@ public class FillOrderBean implements FillOrderRemote {
        return query(map,0,1);
     }
 
-    private void unlockRecords(DataModel orders) throws Exception{
+    private void unlockRecords(DataModel<DataSet<Data>> orders) throws Exception{
         if(orders.size() == 0)
             return;
         
