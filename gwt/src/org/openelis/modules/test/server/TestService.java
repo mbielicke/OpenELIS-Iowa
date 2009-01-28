@@ -224,6 +224,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                                        sampleTypeDOList,testReflexDOList,worksheetDO,
                                        itemsDOList,testAnalyteDOList,testSectionDOList,
                                        resultDOList);
+            testDO = remote.getTestIdNameMethod(testId);
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
@@ -236,7 +237,6 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             return rpcSend;
         }
     
-        testDO.setId(testId);
         setFieldsInRPC(rpcReturn, testDO);
         return rpcReturn;
     }
@@ -312,6 +312,7 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
                               testReflexDOList,worksheetDO,
                               itemsDOList,testAnalyteDOList, testSectionDOList,
                               resultDOList);
+            testDO = remote.getTestIdNameMethod((Integer)testId.getValue());
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
                 throw new RPCException(e.getMessage());
@@ -801,9 +802,9 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
 
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {         
         
-        if(("analyte").equals(cat)){ 
+        //if(("analyte").equals(cat)){ 
          TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
-         List entries = remote.getMatchingEntries(match+"%", 10);
+         List entries = remote.getMatchingEntries(match.trim()+"%", 10,cat);
          DataModel dataModel = new DataModel();
          for (Iterator iter = entries.iterator(); iter.hasNext();) {
              
@@ -823,8 +824,8 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
          }       
          
          return dataModel;
-        }
-       return null; 
+        //}
+
      }
     
     public StringObject getCategorySystemName(NumberObject entryId){
@@ -1121,8 +1122,12 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
     private void setFieldsInRPC(FormRPC rpcReturn, TestIdNameMethodIdDO testDO) {
         rpcReturn.setFieldValue(TestMeta.getId(), testDO.getId());
         rpcReturn.setFieldValue(TestMeta.getName(), testDO.getName());
-        rpcReturn.setFieldValue(TestMeta.getMethodId(), 
-                                new DataSet(new NumberObject(testDO.getMethodId())));           
+        //rpcReturn.setFieldValue(TestMeta.getMethodId(), 
+          //                      new DataSet(new NumberObject(testDO.getMethodId())));
+        DataModel model = new DataModel();
+        model.add(new NumberObject(testDO.getMethodId()),new StringObject(testDO.getMethodName()));
+        ((DropDownField)rpcReturn.getField(TestMeta.getMethodId())).setModel(model);
+        rpcReturn.setFieldValue(TestMeta.getMethodId(), model.get(0));
     }
 
     private void fillTestDetails(TestDetailsDO testDetailsDO, FormRPC rpcReturn) {
@@ -1429,29 +1434,29 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             data.put("id", id);
             data.put("resGrp", rg);
                                      
-            row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
+            row.get(1).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             
             if(resultDO.getDictEntry() == null) {
-             row.get(1).setValue(resultDO.getValue());     
+             row.get(2).setValue(resultDO.getValue());     
              data.put("value", new NumberObject(-999));
             } else {
              data.put("value", new NumberObject(new Integer(resultDO.getValue())));   
-             row.get(1).setValue(resultDO.getDictEntry());
+             row.get(2).setValue(resultDO.getDictEntry());
             } 
             
             row.setData(data);
             
-            row.get(2).setValue(resultDO.getSignificantDigits());
+            row.get(3).setValue(resultDO.getSignificantDigits());
             
             if(resultDO.getFlagsId()!=null)
-             row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
+             row.get(4).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
             
             if(resultDO.getRoundingMethodId()!=null)
-             row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+             row.get(5).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
             
-            row.get(5).setValue(resultDO.getQuantLimit());
-            row.get(6).setValue(resultDO.getContLevel());
-            row.get(7).setValue(resultDO.getHazardLevel());  
+            row.get(6).setValue(resultDO.getQuantLimit());
+            row.get(7).setValue(resultDO.getContLevel());
+            row.get(8).setValue(resultDO.getHazardLevel());  
             model.add(row);
         }
       }          
@@ -1478,29 +1483,29 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             data.put("id", id);   
             data.put("resGrp", rg);
             
-            row.get(0).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
+            row.get(1).setValue(new DataSet(new NumberObject(resultDO.getTypeId())));
             
             if(resultDO.getDictEntry() == null) {
-               row.get(1).setValue(resultDO.getValue()); 
+               row.get(2).setValue(resultDO.getValue()); 
                data.put("value", new NumberObject(-999));
             } else {
                data.put("value", new NumberObject(new Integer(resultDO.getValue())));   
-               row.get(1).setValue(resultDO.getDictEntry());
+               row.get(2).setValue(resultDO.getDictEntry());
             } 
                
             row.setData(data);
             
-            row.get(2).setValue(resultDO.getSignificantDigits());
+            row.get(3).setValue(resultDO.getSignificantDigits());
             
             if(resultDO.getFlagsId()!= null)
-                row.get(3).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
+                row.get(4).setValue(new DataSet(new NumberObject(resultDO.getFlagsId())));
                
             if(resultDO.getRoundingMethodId()!= null)
-                row.get(4).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
+                row.get(5).setValue(new DataSet(new NumberObject(resultDO.getRoundingMethodId())));
             
-            row.get(5).setValue(resultDO.getQuantLimit());
-            row.get(6).setValue(resultDO.getContLevel());
-            row.get(7).setValue(resultDO.getHazardLevel());  
+            row.get(6).setValue(resultDO.getQuantLimit());
+            row.get(7).setValue(resultDO.getContLevel());
+            row.get(8).setValue(resultDO.getHazardLevel());  
             model.add(row);
         }
         
@@ -1616,27 +1621,27 @@ public class TestService implements AppScreenFormServiceInt<FormRPC,DataSet,Data
             
             resultDO.setDelete(false);
                                    
-            resultDO.setTypeId((Integer)((DropDownField)row.get(0)).getSelectedKey());
+            resultDO.setTypeId((Integer)((DropDownField)row.get(1)).getSelectedKey());
             
             if(valueObj.equals(valObj)) {
-             resultDO.setValue((String)((StringField)row.get(1)).getValue());
+             resultDO.setValue((String)((StringField)row.get(2)).getValue());
              resultDO.setDictEntry(null);
             } 
             else {
              resultDO.setValue(((Integer)valueObj.getValue()).toString());
-             resultDO.setDictEntry((String)((StringField)row.get(1)).getValue());
+             resultDO.setDictEntry((String)((StringField)row.get(2)).getValue());
             } 
             
-            resultDO.setSignificantDigits((Integer)((NumberField)row.get(2)).getValue());                       
-            resultDO.setFlagsId((Integer)((DropDownField)row.get(3)).getSelectedKey());
+            resultDO.setSignificantDigits((Integer)((NumberField)row.get(3)).getValue());                       
+            resultDO.setFlagsId((Integer)((DropDownField)row.get(4)).getSelectedKey());
            
-            resultDO.setRoundingMethodId((Integer)((DropDownField)row.get(4)).getSelectedKey());
+            resultDO.setRoundingMethodId((Integer)((DropDownField)row.get(5)).getSelectedKey());
             
-            resultDO.setQuantLimit((String)((StringField)row.get(5)).getValue());
+            resultDO.setQuantLimit((String)((StringField)row.get(6)).getValue());
             
-            resultDO.setContLevel((String)((StringField)row.get(6)).getValue());
+            resultDO.setContLevel((String)((StringField)row.get(7)).getValue());
             
-            resultDO.setHazardLevel((String)((StringField)row.get(7)).getValue());
+            resultDO.setHazardLevel((String)((StringField)row.get(8)).getValue());
                         
             //resultDO.setResultGroup(fiter+1);
             resultDO.setResultGroup((Integer)rg.getValue());
