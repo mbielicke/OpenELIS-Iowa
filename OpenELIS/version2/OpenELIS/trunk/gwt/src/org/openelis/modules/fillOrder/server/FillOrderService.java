@@ -47,6 +47,8 @@ import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -152,9 +154,28 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
  
         return model;
     }
-	//if we make it to this method we know we are handling internal orders
+
+    //if we make it to this method we know we are handling internal orders
     public RPC commitAdd(RPC rpc) throws RPCException {
-        return null;
+       
+        
+        
+        TreeDataModel model = (TreeDataModel)rpc.form.getFieldValue("orderItemsTree");
+        List orderList = getListOfOrdersFromTree(model);
+        
+        FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
+        
+        try{
+        remote.updateInternalOrders(orderList);
+        
+        }catch(Exception e){
+            
+            
+            return rpc;
+        }
+        
+        
+        return rpc;
     }
 
     public RPC commitUpdate(RPC rpc) throws RPCException {
@@ -233,6 +254,25 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
     
     public RPC getScreen(RPC rpc) {
         return rpc;
+    }
+    
+    public List getListOfOrdersFromTree(TreeDataModel model){
+        ArrayList orderList = new ArrayList();
+        
+        for(int i=0; i<model.size(); i++){
+            
+            for(int j=0; j<model.get(i).getItems().size(); j++){
+                TreeDataItem childItem = (TreeDataItem)model.get(i).get(j);
+                
+                FillOrderDO orderDO = new FillOrderDO();
+                orderDO.setOrderItemId((Integer)((NumberObject)childItem.getKey()).getValue());
+                orderDO.setOrderId((Integer)childItem.get(1).getValue());
+                orderDO.setInventoryLocationId((Integer)((DropDownField)childItem.get(3)).getSelectedKey());
+                orderDO.setQuantity((Integer)childItem.get(0).getValue());
+            }
+        }
+        
+        return orderList;
     }
     
     public DataModel getInitialModel(String cat){
@@ -475,13 +515,21 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
         for(int i=0; i<orderItems.size(); i++){
             OrderItemDO itemDO = (OrderItemDO)orderItems.get(i);
             DataSet set = new DataSet();
-            NumberObject invItemId = new NumberObject(itemDO.getInventoryItemId());
-            set.setKey(invItemId);
+            NumberObject orderItemId = new NumberObject(itemDO.getId());
+            set.setKey(orderItemId);
             NumberField quan = new NumberField(itemDO.getQuantity());
             set.add(quan);
             set.add(orderId);
-            StringField itemName = new StringField(itemDO.getInventoryItem());
-            set.add(itemName);
+            
+            DropDownField item = new DropDownField();
+            if(itemDO.getInventoryItemId() != null){
+                DataModel itemModel = new DataModel();
+                itemModel.add(new NumberObject(itemDO.getInventoryItemId()),new StringObject(itemDO.getInventoryItem()));
+                item.setModel(itemModel);
+                item.setValue(itemModel.get(0));
+            }
+            
+            set.add(item);
             
             DropDownField loc = new DropDownField();
             if(itemDO.getLocationId() != null){
@@ -498,8 +546,6 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
             set.add(qtyOnHand);
             NumberObject referenceTableId = new NumberObject(orderItemReferenceTableId);
             set.add(referenceTableId);
-            NumberObject orderItemId = new NumberObject(itemDO.getId());
-            set.add(orderItemId);
             
             //we put the note in the data of the first row sent back
             if(i == 0 && noteDO != null)

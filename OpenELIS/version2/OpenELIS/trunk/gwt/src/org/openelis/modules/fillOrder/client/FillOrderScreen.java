@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Form.Status;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -190,6 +191,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         super.afterDraw(success);
         
         rpc.form.setFieldValue("fillItemsTable", fillItemsTable.model.getData());
+        rpc.form.setFieldValue("orderItemsTree", orderItemsTree.model.getData());
         
     }
     
@@ -227,10 +229,19 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     
     public void commit() {
         if (state == State.ADD){
-            window.setStatus("", "");
-            lastShippedFrom = new Integer(-1);
-            lastShippedTo = new Integer(-1);
-            onProcessingCommitClick();
+            orderItemsTree.model.load(checkedTreeData);
+            submitForm();
+            form.validate();
+            if (form.status == Status.valid && validate()) {
+                clearErrors();
+                window.setStatus("", "");
+                lastShippedFrom = new Integer(-1);
+                lastShippedTo = new Integer(-1);
+                onProcessingCommitClick();
+            } else {
+                drawErrors();
+                window.setStatus(consts.get("correctErrors"),"ErrorPanel");
+            }
         }else
             super.commit();
             
@@ -413,7 +424,11 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             
             row.get(0).setValue(set.get(0).getValue());
             row.get(1).setValue(set.get(1).getValue());
-            row.get(2).setValue(set.get(2).getValue());
+            
+            if(set.get(2).getValue() != null){
+                ((DropDownField)row.get(2)).setModel(((DropDownField)set.get(2)).getModel());
+                ((DropDownField)row.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+            }
             
             if(set.get(3).getValue() != null){
                 ((DropDownField)row.get(3)).setModel(((DropDownField)set.get(3)).getModel());
@@ -425,8 +440,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             
             DataMap rowHiddenMap = new DataMap();
             rowHiddenMap.put("referenceTableId", set.get(6));
-            rowHiddenMap.put("referenceId", set.get(7));
-            rowHiddenMap.put("invItemId", set.getKey());
+            rowHiddenMap.put("referenceId", set.getKey());
             row.setData(rowHiddenMap);
             
             orderItemsTree.model.addRow(row);
@@ -479,7 +493,8 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                 changeState(State.DEFAULT);
             }
         }else{
-            Window.alert("we need to handle these internal orders");
+            
+            super.commit();
         }
     }
     
@@ -514,12 +529,12 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                if(checked){     //we need to add the order items from the selected row to the tree
                    for(int i=0; i<orderItemsModel.size(); i++){
                        DataSet<Data> set = (DataSet)((DataSet)orderItemsModel.get(i)).clone();
-                       int j=0;
+                    //   int j=0;
                        
-                       while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
-                           j++;
+                    //   while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
+                    //       j++;
                        
-                       if(j == checkedTreeData.size()){   //we dont have a node for this item yet, we can add a node with no children
+                  //     if(j == checkedTreeData.size()){   //we dont have a node for this item yet, we can add a node with no children
                            /*TreeDataItem newTreeRow = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey());                           
                            newTreeRow.get(0).setValue(set.get(0).getValue());
                            newTreeRow.get(1).setValue(set.get(1).getValue());
@@ -547,11 +562,20 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            parentItemRow.addItem(locRow);
                            parentItemRow.get(0).setValue(set.get(0).getValue());
                            parentItemRow.get(1).setValue(set.get(1).getValue());
-                           parentItemRow.get(2).setValue(set.get(2).getValue());
+                           
+                           
+                           if(set.get(2).getValue() != null){
+                               ((DropDownField)parentItemRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
+                               ((DropDownField)parentItemRow.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+                           }
                            
                            locRow.get(0).setValue(set.get(0).getValue());
                            locRow.get(1).setValue(set.get(1).getValue());
-                           locRow.get(2).setValue(set.get(2).getValue());
+                           
+                           if(set.get(2).getValue() != null){
+                               ((DropDownField)locRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
+                               ((DropDownField)locRow.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+                           }
                            
                            /*if(set.get(3).getValue() != null){
                                ((DropDownField)newTreeRow.get(3)).setModel(((DropDownField)set.get(3)).getModel());
@@ -563,13 +587,14 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            */
                            DataMap rowHiddenMap = new DataMap();
                            rowHiddenMap.put("referenceTableId", set.get(6));
-                           rowHiddenMap.put("referenceId", set.get(7));
+                           rowHiddenMap.put("referenceId", set.getKey());
                            rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
-                           rowHiddenMap.put("invItemId", set.getKey());
                            locRow.setData(rowHiddenMap);
                            
                            checkedTreeData.add(parentItemRow);
-                       }/*else{                            //we already have a node for this item.  If it has no children we need to create a new parent.
+                  //     }
+                           /*else{                            //we already have a node for this item.  If it has no children we need to create a new parent.
+                           
                           TreeDataItem itemSet = checkedTreeData.get(j);
                           if(itemSet.getItems().size() == 0){
                               TreeDataItem parentTreeItem = checkedTreeData.createTreeItem("top", (NumberObject)set.getKey());
@@ -634,11 +659,17 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            
                    }  
                }else{   //we need to rebuild the order items model from scratch using the checkedOrderItems list
-                   checkedTreeData.clear();
-                   TableModel model = (TableModel)fillItemsTable.model;
-                   for(int k=0; k<model.numRows(); k++){
-                       if(checkedOrderIds.getByKey(new NumberObject((Integer)model.getCell(k, 1))) != null){
-                           DataSet itemsRow = model.getRow(k);
+                   //checkedTreeData.clear();
+                   //TableModel model = (TableModel)fillItemsTable.model;
+                   int k=0;
+                   while(k<checkedTreeData.size()){
+                       
+                       if(((Integer)checkedTreeData.get(k).get(1).getValue()).equals((Integer)((NumberField)row.get(1)).getValue())){ //we need to remove this row and children
+                           checkedTreeData.delete(checkedTreeData.get(k));
+                           k--;
+                       }
+                       k++;
+                       /*DataSet itemsRow = model.getRow(k);
                            final DataMap rebuildMap = (DataMap)itemsRow.getData();
                           
                            DataModel rebuildModel = (DataModel)rebuildMap.get("orderItems");
@@ -699,7 +730,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                                }
                            }
                            
-                       }
+                       }*/
                    }
                    
                }                
@@ -1000,7 +1031,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
 
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         //make sure the row is checked, we arent a parent leaf, and its col 0 or 2
-        if("orderItem".equals(set.leafType) && currentTableRow > -1 && "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 2))
+        if("orderItem".equals(set.leafType) && currentTableRow > -1 && "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 3))
             return true;
        
         return false;
@@ -1043,7 +1074,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                     orderItemsTree.model.refresh();
                 }
                 
-            }else if(col == 2){
+            }else if(col == 3){
                 TreeDataItem item = orderItemsTree.model.getRow(row);
                 ArrayList selections = (ArrayList)((DropDownField)item.get(2)).getSelections();
                
@@ -1072,7 +1103,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
 
     public void startedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
         if("orderItem".equals(((TreeWidget)sender).model.getRow(row).leafType) && currentTableRow > -1 && 
-                        "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 2)){
+                        "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 3)){
             currentTreeRow = row;
             //if(col == 3)
               //  lastTreeValue = (Integer)((DropDownField)orderItemsTree.model.getObject(row, col)).getSelectedKey();
@@ -1094,7 +1125,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
 
-        paramsObj.put("id", (NumberObject)((DataMap)orderItemsTree.model.getRow(currentTreeRow).getData()).get("invItemId"));
+        paramsObj.put("id", new NumberObject((Integer)((DropDownField)orderItemsTree.model.getObject(currentTreeRow, 2)).getSelectedKey()));
         
         // prepare the argument list for the getObject function
         Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
