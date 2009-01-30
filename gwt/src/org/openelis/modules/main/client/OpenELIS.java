@@ -70,6 +70,7 @@ import org.openelis.gwt.screen.ScreenMaskedBox;
 import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenMultipleLookUp;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTable;
 import org.openelis.gwt.screen.ScreenRadio;
@@ -742,6 +743,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClassFactory(new String[] {ScreenMultipleLookUp.class.getName(),ScreenMultipleLookUp.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new ScreenMultipleLookUp();
+                                             else if(args[0] instanceof Node) 
+                                                 return new ScreenMultipleLookUp((Node)args[0],(ScreenBase)args[1]);
+                                             return null;
+                                         }
+             });
   }
 
   public void onBrowserEvent(Event event) {
