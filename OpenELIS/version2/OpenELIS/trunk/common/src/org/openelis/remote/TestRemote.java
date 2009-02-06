@@ -135,4 +135,6 @@ public interface TestRemote {
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);
     
     public HashMap<Integer,List<Integer>> getResultGroupAnalytesMap(Integer testId);
+    
+    public HashMap<Integer,Integer> getUnitIdNumResMapForTest(Integer testId);
 }

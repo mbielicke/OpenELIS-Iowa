@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
                                             + "  from TestTypeOfSample ts where ts.testId = :id"),
                @NamedQuery(name = "TestTypeOfSample.TestTypeOfSampleByTestId", query = "from TestTypeOfSample ts where ts.testId = :testId"),
                @NamedQuery(name = "TestTypeOfSample.DictEntriesForUnitsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(ts.unitOfMeasureId, d.entry) " 
-                               + "  from TestTypeOfSample ts, Dictionary d where ts.unitOfMeasureId = d.id and ts.testId = :id " )})
+                               + "  from TestTypeOfSample ts, Dictionary d where ts.unitOfMeasureId = d.id and ts.testId = :testId " )})
             
 @Entity
 @Table(name="test_type_of_sample")

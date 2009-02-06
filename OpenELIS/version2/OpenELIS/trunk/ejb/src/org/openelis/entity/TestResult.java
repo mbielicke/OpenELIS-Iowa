@@ -53,12 +53,13 @@ import org.openelis.utils.Auditable;
                                     " from TestResult tr where tr.testId = :testId order by tr.value "),
                @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, "+
-                        " tr.quantLimit,tr.contLevel,tr.hazardLevel)  from TestResult tr " +
+                        " tr.quantLimit,tr.contLevel,tr.hazardLevel,tr.unitOfMeasureId)  from TestResult tr " +
                         " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),
                @NamedQuery(name = "TestResult.ResultGroupsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.resultGroup,null) " +
                         " from TestResult tr where tr.testId = :testId order by tr.resultGroup "),
-               @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id " +
-                        " from TestResult tr where tr.value = :value")         })
+               @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id from TestResult tr where tr.value = :value"),
+               @NamedQuery(name = "TestResult.NumResultsforUnitIdByTest", query = "select distinct tr.unitOfMeasureId, count(tr.id) " +
+                        " from TestResult tr where tr.testId = :testId and tr.unitOfMeasureId != null group by tr.unitOfMeasureId")})
 @Entity
 @Table(name="test_result")
 @EntityListeners({AuditUtil.class})
@@ -101,8 +102,10 @@ public class TestResult implements Auditable, Cloneable {
   
   @Column(name="hazard_level")
   private String hazardLevel;
-
-
+  
+  @Column(name="unit_of_measure_id")
+  private Integer unitOfMeasureId;
+  
   @Transient
   private TestResult original;
 
@@ -215,6 +218,15 @@ public class TestResult implements Auditable, Cloneable {
         this.hazardLevel = hazardLevel;
     }
   
+  public Integer getUnitOfMeasureId() {
+      return unitOfMeasureId;
+  }
+  public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+      if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
+        (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+      this.unitOfMeasureId = unitOfMeasureId;
+  }
+  
   public void setClone() {
     try {
       original = (TestResult)this.clone();
@@ -249,6 +261,8 @@ public class TestResult implements Auditable, Cloneable {
       AuditUtil.getChangeXML(contLevel,original.contLevel,doc,"cont_level");
       
       AuditUtil.getChangeXML(hazardLevel,original.hazardLevel,doc,"hazard_level");
+      
+      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

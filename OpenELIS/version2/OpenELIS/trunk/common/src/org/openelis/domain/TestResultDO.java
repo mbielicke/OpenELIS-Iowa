@@ -60,6 +60,8 @@ public class TestResultDO implements Serializable {
     
     protected String dictEntry;
     
+    protected Integer unitOfMeasureId;
+    
     private boolean delete = false;
     
     public TestResultDO() {
@@ -67,9 +69,10 @@ public class TestResultDO implements Serializable {
     }
     
     public TestResultDO(Integer id,Integer testId,Integer resultGroup,
-                        Integer sortOrder,Integer flagsId,Integer typeId,String value,
-                        Integer significantDigits,Integer roundingMethodId,
-                        String quantLimit,String contLevel,String hazardLevel) {
+                        Integer sortOrder,Integer flagsId,Integer typeId,
+                        String value,Integer significantDigits,
+                        Integer roundingMethodId,String quantLimit,
+                        String contLevel,String hazardLevel,Integer unitOfMeasureId) {
         
         this.id = id;
         this.testId = testId;
@@ -83,6 +86,7 @@ public class TestResultDO implements Serializable {
         this.quantLimit = quantLimit;
         this.contLevel = contLevel;
         this.hazardLevel = hazardLevel;        
+        this.unitOfMeasureId = unitOfMeasureId;
     }
     
     public String getContLevel() {
@@ -195,6 +199,14 @@ public class TestResultDO implements Serializable {
 
     public void setDictEntry(String dictEntry) {
         this.dictEntry = dictEntry;
+    }
+
+    public Integer getUnitOfMeasureId() {
+        return unitOfMeasureId;
+    }
+
+    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        this.unitOfMeasureId = unitOfMeasureId;
     }
 
 }
