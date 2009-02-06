@@ -48,10 +48,12 @@ public class TestResultMeta implements Meta {
               ROUNDING_METHOD_ID        ="roundingMethodId", 
               QUANT_LIMIT				="quantLimit",
               CONT_LEVEL				="contLevel",
-              HAZARD_LEVEL              ="hazardLevel";
+              HAZARD_LEVEL              ="hazardLevel",
+              UNIT_OF_MEASURE_ID        ="unitOfMeasureId"; 
 
   	private static final String[] columnNames = {
-  	  ID,TEST_ID,RESULT_GROUP,SORT_ORDER,FLAGS_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,ROUNDING_METHOD_ID,QUANT_LIMIT,CONT_LEVEL,HAZARD_LEVEL};
+  	  ID,TEST_ID,RESULT_GROUP,SORT_ORDER,FLAGS_ID,TYPE_ID,VALUE,SIGNIFICANT_DIGITS,
+      ROUNDING_METHOD_ID,QUANT_LIMIT,CONT_LEVEL,HAZARD_LEVEL,UNIT_OF_MEASURE_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -126,6 +128,10 @@ public class TestResultMeta implements Meta {
     
     public String getHazardLevel() {
         return path + HAZARD_LEVEL;
+    }
+    
+    public String getUnitOfMeasureId() {
+        return path + UNIT_OF_MEASURE_ID;
     }
 
   

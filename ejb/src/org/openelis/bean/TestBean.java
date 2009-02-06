@@ -298,7 +298,7 @@ public class TestBean implements TestRemote {
                     }                                                          
                 }
                 
-                if(itemDOList!=null && itemDOList.size() > 0 ){
+                if(itemDOList!=null && itemDOList.size() > 0) {
                     exceptionList = new ArrayList<Exception>();
                     validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
                     if(exceptionList.size() > 0){
@@ -570,16 +570,12 @@ public class TestBean implements TestRemote {
         List<TestReflexDO> testRefDOList = query.getResultList();         
         return testRefDOList;
     }
-    
-
-    
+        
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId){
         List<IdNameDO> idValues = null;
-        Integer resId = null;
         Integer intVal = null;
         String val = null;
         IdNameDO idnDO = null;
-        TestResultDO resDO = null;
         
         Query query = manager.createNamedQuery("TestResult.IdValueByTestAnalyteId");
         query.setParameter("testId", testId);
@@ -639,6 +635,23 @@ public class TestBean implements TestRemote {
           }
          return listMap;
     }
+    
+    public HashMap<Integer,Integer> getUnitIdNumResMapForTest(Integer testId) {        
+       HashMap <Integer, Integer> map = new HashMap<Integer, Integer>(); 
+       List list = null;
+       Object[] obja = null;
+       Query query = manager.createNamedQuery("TestResult.NumResultsforUnitIdByTest");       
+       query.setParameter("testId", testId);  
+       
+       list = query.getResultList();
+       
+       for(int i = 0; i < list.size(); i++) {
+           obja = (Object[])list.get(i);           
+           map.put((Integer)obja[0],((Long)obja[1]).intValue());
+       }
+       
+       return map;
+    } 
     
     public List<IdNameDO> getTestResultsforTest(Integer testId){
         Query query = manager.createNamedQuery("TestResult.IdValueByTestId");
@@ -845,10 +858,16 @@ public class TestBean implements TestRemote {
     }
     
     public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId) {
+        List testumList =null;
+       try { 
         Query query = manager.createNamedQuery("TestTypeOfSample.DictEntriesForUnitsByTestId");
         query.setParameter("testId",testId);
-        List testumList = query.getResultList();
-        return testumList;
+        testumList = query.getResultList();
+       
+       }catch(Exception ex) {
+            ex.printStackTrace();
+       }
+       return testumList;
     }
     
     public List getMatchingEntries(String name, int maxResults,String cat){
@@ -1031,19 +1050,28 @@ public class TestBean implements TestRemote {
     
     private void validateTestPrep(List<Exception> exceptionList,List<TestPrepDO> testPrepDOList){    
             List<Integer> testPrepIdList = new ArrayList<Integer>();
-            for(int i = 0; i < testPrepDOList.size(); i++){
+            Integer blankId = new Integer(-1);
+            int numReq = 0; 
+            for(int i = 0; i < testPrepDOList.size(); i++) {
                 TestPrepDO prepDO = testPrepDOList.get(i);
-                if(prepDO.getPrepTestId()==null){
+                if(idIsBlank(prepDO.getPrepTestId(), blankId)) {
                     exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                           TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getPrepTestId()));
                 }else {
-                  if(!testPrepIdList.contains(prepDO.getPrepTestId())){                
+                  if(!testPrepIdList.contains(prepDO.getPrepTestId())) {                
                       testPrepIdList.add(prepDO.getPrepTestId());
-                   }else{        
+                   } else {        
                    exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
                           TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getPrepTestId()));
                   }                                              
               }   
+                if(!"Y".equals(prepDO.getIsOptional()) ) {
+                  if(numReq >= 1) {  
+                    exceptionList.add(new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
+                     TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getIsOptional()));
+                  }
+                  numReq++;
+                } 
             }    
                 
     }
@@ -1054,7 +1082,7 @@ public class TestBean implements TestRemote {
             TestReflexDO refDO = testReflexDOList.get(i);
             boolean checkForDuplicate = false;
             List<Integer> ids = new ArrayList<Integer>();
-            if(refDO.getAddTestId()==null){
+            if(refDO.getAddTestId()==null) {
                 exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                       TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getAddTestId()));                    
             }else {
@@ -1220,10 +1248,13 @@ public class TestBean implements TestRemote {
      Integer blankId = new Integer(-1);
      Integer typeId = null;
      Integer resultGroup = null;
+     Integer unit = null;
+     HashMap<Integer, Double> unitTtrMaxMap = null;
+     HashMap<Integer, Double> unitNumMaxMap = null;
       
      String[] st = null;
      
-     ArrayList<String> dvl = new ArrayList<String>();  
+     ArrayList<String> dvl = null;  
      ArrayList<Integer> rlist = null;
       
      Double pnMax = null;
@@ -1233,6 +1264,7 @@ public class TestBean implements TestRemote {
      Double ptMax = null;
      Double ctMin = null;
      Double ctMax = null;
+     
       
      String value = null;
       
@@ -1250,14 +1282,26 @@ public class TestBean implements TestRemote {
      for(int i = 0; i < resultDOList.size(); i++){
        resDO = resultDOList.get(i);
        typeId = resDO.getTypeId();
+       unit = resDO.getUnitOfMeasureId();
        
        if(resultGroup == null){
            resultGroup = resDO.getResultGroup();
+           unitTtrMaxMap = new HashMap<Integer, Double>();
+           unitNumMaxMap = new HashMap<Integer, Double>();
+           dvl = new ArrayList<String>();
+       } else if(!resultGroup.equals(resDO.getResultGroup())) {
+           resultGroup = resDO.getResultGroup();
+           unitTtrMaxMap = new HashMap<Integer, Double>();
+           unitNumMaxMap = new HashMap<Integer, Double>();
+           dvl = new ArrayList<String>();
+           ptMax = null;
+           pnMax = null;
        }
        
+       
       if(!resDO.getDelete()) {                   
-       value = resDO.getValue();      
-      
+       value = resDO.getValue();           
+       
         if(idIsBlank(typeId, blankId)) {
          exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getTypeId()));  
@@ -1272,16 +1316,31 @@ public class TestBean implements TestRemote {
                   try {                                      
                    cnMin = Double.valueOf(st[0]); 
                    cnMax = Double.valueOf(st[1]);
-                   
+                                      
                    if(!(cnMin < cnMax)) {
                       exceptionList.add(new TableFieldErrorException("illegalNumericRangeException", i,
                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
-                   }else if(pnMax != null && !(cnMin > pnMax) && resultGroup.equals(resDO.getResultGroup())){
-                       exceptionList.add(new TableFieldErrorException("numRangeOverlapException", i,
-                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                   }else if(pnMax != null && resultGroup.equals(resDO.getResultGroup())){                         
+                       if(idIsBlank(unit, blankId)) { 
+                           pnMax = unitNumMaxMap.get(-1);
+                       } else {
+                           pnMax = unitNumMaxMap.get(unit); 
+                       }
+                       
+                       if(pnMax != null && !(cnMin > pnMax)) {
+                           exceptionList.add(new TableFieldErrorException("numRangeOverlapException", i,
+                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                       }                                               
                    }
                    
-                   pnMax = cnMax;                   
+                   pnMax = cnMax;
+                   
+                   if(idIsBlank(unit, blankId)) {
+                       unitNumMaxMap.put(-1, cnMax);  
+                   } else {
+                       unitNumMaxMap.put(unit, cnMax);
+                   }
+                                     
                    
                  } catch (NumberFormatException ex) {
                      exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
@@ -1306,12 +1365,26 @@ public class TestBean implements TestRemote {
                      if(ctMin > ctMax) {
                          exceptionList.add(new TableFieldErrorException("illegalTiterRangeException", i,
                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
-                     }else if(ptMax != null && !(ctMin > ptMax) && resultGroup.equals(resDO.getResultGroup())){
-                         exceptionList.add(new TableFieldErrorException("titerRangeOverlapException", i,
-                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                     }else if(ptMax != null && resultGroup.equals(resDO.getResultGroup())){                         
+                         if(idIsBlank(unit, blankId)) { 
+                             ptMax = unitTtrMaxMap.get(-1);
+                         } else {
+                             ptMax = unitTtrMaxMap.get(unit); 
+                         }
+                         
+                         if(ptMax != null && !(ctMin > ptMax)) { 
+                          exceptionList.add(new TableFieldErrorException("titerRangeOverlapException", i,
+                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                         } 
                      }
                      
-                     ptMax = ctMax;                   
+                     ptMax = ctMax;                           
+                     
+                     if(idIsBlank(unit, blankId)) {
+                         unitTtrMaxMap.put(-1, ptMax);  
+                     } else {
+                         unitTtrMaxMap.put(unit, ptMax);
+                     }
                      
                    } catch (NumberFormatException ex) {
                        exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
@@ -1348,10 +1421,6 @@ public class TestBean implements TestRemote {
          }            
         } 
       
-       if(!resultGroup.equals(resDO.getResultGroup())) {
-           ptMax = null;
-           pnMax = null;
-       }
         resultGroup = resDO.getResultGroup();
       }
         
@@ -1483,6 +1552,7 @@ public class TestBean implements TestRemote {
     }
     
     private void updateTestResult(TestResultDO resultDO, TestResult result,Integer testId) {
+        result.setUnitOfMeasureId(resultDO.getUnitOfMeasureId());
         result.setContLevel(resultDO.getContLevel());
         result.setValue(resultDO.getValue());
         result.setFlagsId(resultDO.getFlagsId());
