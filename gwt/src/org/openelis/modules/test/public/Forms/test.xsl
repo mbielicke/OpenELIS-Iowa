@@ -148,6 +148,12 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select="language"/>
 									</xsl:with-param>
 								</xsl:call-template>
+								<xsl:call-template name="buttonPanelDivider"/>
+    			                  <xsl:call-template name="optionsButton">
+    			                    <xsl:with-param name="language">
+    			                      <xsl:value-of select="language"/>
+    			                    </xsl:with-param>
+    			                  </xsl:call-template>
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
@@ -174,7 +180,7 @@ UIRF Software License are applicable instead of those above.
 								</row>	
 						     </TablePanel>	
 						   <VerticalPanel height = "10px"/>						   							    
-							<TabPanel halign="center" width = "615px" key="testTabPanel">
+							<TabPanel halign="center" width = "635px" key="testTabPanel">
 							 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">							  
 							   <VerticalPanel padding="0" spacing="0"> 
 							    <TablePanel style="Form">								
@@ -214,7 +220,7 @@ UIRF Software License are applicable instead of those above.
 								</row>																
 								</TablePanel>
 							   </VerticalPanel>
-							  <HorizontalPanel width = "5px"/>	
+							  <!--<HorizontalPanel width = "1px"/>	-->
 								<VerticalPanel style="subform"> 								
 								<text style="FormTitle"><xsl:value-of select='resource:getString($constants,"activity")'/></text>
 								<TablePanel style="Form">
@@ -252,7 +258,7 @@ UIRF Software License are applicable instead of those above.
 								</row>							
 								</TablePanel>								
 								</VerticalPanel>
-								<HorizontalPanel width = "6px"/>
+								<HorizontalPanel width = "1px"/>
 								<VerticalPanel style="subform"> 								
 								 <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"sections")'/></text>
 								  <!--<VerticalPanel height = "6px"/>-->
@@ -262,7 +268,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'name')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
 												</headers>
-												<widths>120,120</widths>
+												<widths>119,119</widths>
 												<editors>
 													<dropdown case="mixed" width="85px"/>
 													<dropdown case="mixed" width="110px"/>													
@@ -281,7 +287,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'name')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
 												</headers>
-												<widths>120,120</widths>
+												<widths>119,119</widths>
 												<editors>
 													<dropdown case="mixed" width="85px" multiSelect = "true"/>
 													<dropdown case="mixed" width="110px" multiSelect = "true"/>													
@@ -343,8 +349,70 @@ UIRF Software License are applicable instead of those above.
 		                         <VerticalPanel height = "6px"/>                    
 							  </VerticalPanel>							  							 
 							</tab>
-							<tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
-							 <VerticalPanel key="treeContainer">
+							
+							<tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
+							 <VerticalPanel>
+							 <HorizontalPanel>                           
+							  	<widget valign="top">
+											<table key="sampleTypeTable" manager="this" maxRows="18" showError="false" showScroll="ALWAYS" title="" width="auto">
+												<headers>
+													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
+													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
+												</headers>
+												<widths>290,291</widths>
+												<editors>
+													<dropdown case = "mixed" width="285px" />
+													<dropdown case = "mixed" width="286px"/>
+												</editors>
+												<fields>
+													<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
+													<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
+												</fields>
+												<sorts>false,false</sorts>
+												<filters>false,false</filters>
+												<colAligns>left,left</colAligns>
+											</table>
+											<query>
+												<queryTable maxRows="18" showError="false" title="" showScroll="ALWAYS" width="auto">
+													<headers>
+														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
+													</headers>													
+													<widths>290,291</widths>
+													<editors>													
+														<dropdown case="mixed" multiSelect="true" width="285px"/>
+														<dropdown case="mixed" multiSelect="true" width="286px"/>
+													</editors>
+													<fields>
+														<xsl:value-of select='testTOS:getTypeOfSampleId($tos)'/>,<xsl:value-of select='testTOS:getUnitOfMeasureId($tos)'/>
+													</fields>
+													<sorts>false,false</sorts>
+												    <filters>false,false</filters>
+												    <colAligns>left,left</colAligns>
+												</queryTable>
+											</query>
+							 			 </widget>	
+							 			<HorizontalPanel width = "10px"/>
+                                       </HorizontalPanel> 
+							 										 		 	 
+						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
+                                         <row>
+                                          <widget  align="center">
+									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
+									        <HorizontalPanel>
+              						         <AbsolutePanel style="RemoveRowButtonImage"/>
+						                      <widget>
+                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
+							                 </widget>
+							               </HorizontalPanel>
+						                 </appButton>
+						                </widget>	
+						              </row>  									 
+						           </TablePanel>
+						           <VerticalPanel height = "16px"/>
+							 </VerticalPanel> 
+					   </tab>
+					   <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
+							<VerticalPanel>
 							 <HorizontalPanel> 							 
 							  <widget>
                                 <tree-table key="analyteTree" multiSelect = "true" targets = "analyteTree" manager = "this" drop = "default" drag = "default" width="auto" showError="false" showScroll="ALWAYS" maxRows="8" enable="true">                                
@@ -425,8 +493,8 @@ UIRF Software License are applicable instead of those above.
 								</widget>							 			
 																								
 						  </HorizontalPanel>
-						  <VerticalPanel height = "7px"/>
-						  <VerticalPanel>
+						  <!--<VerticalPanel height = "1px"/>-->
+						  
 						   <HorizontalPanel>	
 							<VerticalPanel> 
 							  <TabPanel width = "491px" halign="center" key="resultTabPanel">
@@ -444,8 +512,7 @@ UIRF Software License are applicable instead of those above.
 											 </HorizontalPanel>													
 											</appButton>
 							  </widget>
-						  </HorizontalPanel>	
-						  <VerticalPanel> 
+						  </HorizontalPanel>							   
 							<HorizontalPanel>
 							  <widget valign="top">
 							    <table key="testResultsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
@@ -453,35 +520,35 @@ UIRF Software License are applicable instead of those above.
 												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>,
-													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,
-													<xsl:value-of select="resource:getString($constants,'flags')"/>,
-													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>,													
 													<xsl:value-of select="resource:getString($constants,'quantLimit')"/>,
 													<xsl:value-of select="resource:getString($constants,'contLevel')"/>,
-													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>																																																			
+													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>,
+													<xsl:value-of select="resource:getString($constants,'flags')"/>,
+													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,													
+													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>																																																																												
 												</headers>
-												<widths>80,80,200,40,120,100,80,70,70</widths>
+												<widths>50,55,200,75,62,62,120,70,100</widths>
 												<editors>
-												    <dropdown case="mixed" width="75px"/>													
-													<dropdown case="mixed" width="75px"/>
+												    <dropdown case="mixed" width="45px"/>													
+													<dropdown case="mixed" width="50px"/>
+													<textbox/>
+													<textbox/>
 													<textbox/>
 													<textbox/>
 													<dropdown case="mixed" width="115px"/>
-													<dropdown case="mixed" width="95px"/>
-													<textbox/>
-													<textbox/>
-													<textbox/>																						
+													<textbox/>													
+													<dropdown case="mixed" width="95px"/>																																			
 												</editors>
 												<fields>		
-												    <dropdown key="unit" type="integer" required="false"/>										    
+												    <dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer" required="false"/>										    
 												    <dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
-													<string key="{testResult:getValue($tr)}" required="false"/>		
-													<number key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
-													<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
-													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>	
+													<string key="{testResult:getValue($tr)}" required="false"/>	
 													<string key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 													<string key="{testResult:getContLevel($tr)}"  required="false"/>
-													<string key="{testResult:getHazardLevel($tr)}" required="false"/>																				
+													<string key="{testResult:getHazardLevel($tr)}" required="false"/>	
+													<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
+													<number key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>														
+													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>																																		
 												</fields>
 												<sorts>false,false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false,false</filters>
@@ -490,30 +557,30 @@ UIRF Software License are applicable instead of those above.
 								 <query>
 								  <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>			
-												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    										    
+												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>,
-													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,
-													<xsl:value-of select="resource:getString($constants,'flags')"/>,
-													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>,													
 													<xsl:value-of select="resource:getString($constants,'quantLimit')"/>,
 													<xsl:value-of select="resource:getString($constants,'contLevel')"/>,
-													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>																																																			
+													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>,
+													<xsl:value-of select="resource:getString($constants,'flags')"/>,
+													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,													
+													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>																																																			
 												</headers>
-												<widths>80,80,200,40,120,100,80,70,70</widths>
+												<widths>50,55,200,75,62,62,120,70,100</widths>
 												<editors>		
 												    <dropdown multiSelect="true" case="mixed" width="75px"/>  										
 													<dropdown multiSelect="true" case="mixed" width="75px"/>
 													<textbox/>
 													<textbox/>
+													<textbox/>
+													<textbox/>
 													<dropdown multiSelect="true" case="mixed" width="115px"/>
-													<dropdown multiSelect="true" case="mixed" width="95px"/>
-													<textbox/>
-													<textbox/>
-													<textbox/>																						
+													<textbox/>													
+													<dropdown multiSelect="true" case="mixed" width="95px"/>																																			
 												</editors>
 												<fields>												    
-												    unit,<xsl:value-of select="testResult:getTypeId($tr)"/>,<xsl:value-of select="testResult:getValue($tr)"/>,<xsl:value-of select="testResult:getSignificantDigits($tr)"  />,<xsl:value-of select="testResult:getFlagsId($tr)"/>,<xsl:value-of select="testResult:getRoundingMethodId($tr)"/>,<xsl:value-of select="testResult:getQuantLimit($tr)" />,<xsl:value-of select="testResult:getContLevel($tr)" />,<xsl:value-of select="testResult:getHazardLevel($tr)"/>
+												    <xsl:value-of select="testResult:getUnitOfMeasureId($tr)"/>,<xsl:value-of select="testResult:getTypeId($tr)"/>,<xsl:value-of select="testResult:getValue($tr)"/>,<xsl:value-of select="testResult:getQuantLimit($tr)" />,<xsl:value-of select="testResult:getContLevel($tr)" />,<xsl:value-of select="testResult:getHazardLevel($tr)"/>,<xsl:value-of select="testResult:getFlagsId($tr)"/>,<xsl:value-of select="testResult:getSignificantDigits($tr)"/>,<xsl:value-of select="testResult:getRoundingMethodId($tr)"/>
 												</fields>
 												<sorts>false,false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false,false</filters>
@@ -545,72 +612,9 @@ UIRF Software License are applicable instead of those above.
 						                </appButton>
 						               </widget>
 						             </HorizontalPanel>  	
-						    </VerticalPanel>       							
-						 </VerticalPanel>									                   			
+						        															                   			
 						</VerticalPanel>			 
-					   </tab>
-							<tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
-							 <VerticalPanel>
-							 <HorizontalPanel>                           
-							  	<widget valign="top">
-											<table key="sampleTypeTable" manager="this" maxRows="18" showError="false" showScroll="ALWAYS" title="" width="auto">
-												<headers>
-													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
-													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
-												</headers>
-												<widths>290,291</widths>
-												<editors>
-													<dropdown case = "mixed" width="270px" />
-													<dropdown case = "mixed" width="270px"/>
-												</editors>
-												<fields>
-													<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
-													<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
-												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
-											</table>
-											<query>
-												<queryTable maxRows="18" showError="false" title="" showScroll="ALWAYS" width="auto">
-													<headers>
-														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
-													</headers>													
-													<widths>290,291</widths>
-													<editors>													
-														<dropdown case="mixed" multiSelect="true" width="270px"/>
-														<dropdown case="mixed" multiSelect="true" width="270px"/>
-													</editors>
-													<fields>
-														<xsl:value-of select='testTOS:getTypeOfSampleId($tos)'/>,<xsl:value-of select='testTOS:getUnitOfMeasureId($tos)'/>
-													</fields>
-													<sorts>false,false</sorts>
-												    <filters>false,false</filters>
-												    <colAligns>left,left</colAligns>
-												</queryTable>
-											</query>
-							 			 </widget>	
-							 			<HorizontalPanel width = "10px"/>
-                                       </HorizontalPanel> 
-							 										 		 	 
-						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
-                                         <row>
-                                          <widget  align="center">
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeSampleTypeButton">
-									        <HorizontalPanel>
-              						         <AbsolutePanel style="RemoveRowButtonImage"/>
-						                      <widget>
-                						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
-							                 </widget>
-							               </HorizontalPanel>
-						                 </appButton>
-						                </widget>	
-						              </row>  									 
-						           </TablePanel>
-						           <VerticalPanel height = "16px"/>
-							 </VerticalPanel> 
-						 </tab>
-						 
+					   </tab>	 
 					   <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
 							 <VerticalPanel>
 							   <VerticalPanel padding="0" spacing="0">							    						     	
@@ -671,7 +675,7 @@ UIRF Software License are applicable instead of those above.
 						                     </widget>
 						                    </row> 
 						                  </TablePanel> 
-						                 <VerticalPanel height = "9px"/>
+						                 <VerticalPanel height = "10px"/>
 						     <HorizontalPanel>           
 						      <widget valign="top">
 							   <table key="testReflexTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
@@ -891,9 +895,7 @@ UIRF Software License are applicable instead of those above.
 			</rpc>
 			<rpc key = "testAnalyte">
 			 <tree key = "analyteTree"/>
-			 <table key = "testResultsTable"/>
-			 <collection key = "resultModelCollection"/>
-			 <model key = "resultGroupDropDown"/>
+			 <table key = "testResultsTable"/>						 
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
@@ -936,7 +938,7 @@ UIRF Software License are applicable instead of those above.
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" type="integer" />
 				<dropdown key="{testSection:getFlagId($ts)}" type="integer" />
-				<dropdown key="unit" type="integer"/>
+				<dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer"/>
 				<dropdown key="{testResult:getTypeId($tr)}" type="integer"/>																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
 				<queryNumber key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
