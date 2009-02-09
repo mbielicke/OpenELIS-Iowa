@@ -96,7 +96,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="530px">
-						<azTable colwidths="175"  key="azTable" maxRows="23" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
+						<azTable colwidths="175"  key="azTable" maxRows="28" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -254,7 +254,7 @@ UIRF Software License are applicable instead of those above.
 									<textbox key="{meta:getLabelQty($test)}" width = "50px" tab="{meta:getIsReportable($test)},{meta:getLabelId($test)}"/>		
 								</row>				
 								<row>
-									<widget><VerticalPanel height = "2px"/></widget>
+									<widget><VerticalPanel height = "30px"/></widget>
 								</row>							
 								</TablePanel>								
 								</VerticalPanel>
@@ -346,7 +346,7 @@ UIRF Software License are applicable instead of those above.
 								   <textbox key="{meta:getReportingSequence($test)}"  width="80px" tab="{meta:getTestTrailerId($test)},{meta:getReportingMethodId($test)}"/>					    
 								  </row>								  								   
 		                         </TablePanel>     
-		                         <VerticalPanel height = "6px"/>                    
+		                         <VerticalPanel height = "38px"/>                    
 							  </VerticalPanel>							  							 
 							</tab>
 							
@@ -354,7 +354,7 @@ UIRF Software License are applicable instead of those above.
 							 <VerticalPanel>
 							 <HorizontalPanel>                           
 							  	<widget valign="top">
-											<table key="sampleTypeTable" manager="this" maxRows="18" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="sampleTypeTable" manager="this" maxRows="20" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
 													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
@@ -373,7 +373,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											<query>
-												<queryTable maxRows="18" showError="false" title="" showScroll="ALWAYS" width="auto">
+												<queryTable maxRows="20" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
 													</headers>													
@@ -408,7 +408,7 @@ UIRF Software License are applicable instead of those above.
 						                </widget>	
 						              </row>  									 
 						           </TablePanel>
-						           <VerticalPanel height = "16px"/>
+						           <VerticalPanel height = "7px"/>
 							 </VerticalPanel> 
 					   </tab>
 					   <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
@@ -515,7 +515,7 @@ UIRF Software License are applicable instead of those above.
 						  </HorizontalPanel>							   
 							<HorizontalPanel>
 							  <widget valign="top">
-							    <table key="testResultsTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
+							    <table key="testResultsTable" manager="this" maxRows="7" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>		
 												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -555,7 +555,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </table>
 								 <query>
-								  <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="585px">
+								  <queryTable maxRows="7" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>			
 												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -621,7 +621,7 @@ UIRF Software License are applicable instead of those above.
 							 		<VerticalPanel padding="0" spacing="0">
 							 		 <HorizontalPanel>
 										<widget valign="top">
-											<table key="testPrepTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="testPrepTable" manager="this" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,													
 													<xsl:value-of select="resource:getString($constants,'optional')"/>
@@ -640,7 +640,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 											 <query>
-												<queryTable maxRows="8" showError="false" title="" showScroll="ALWAYS" width="auto">
+												<queryTable maxRows="9" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
 														<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,
 														<xsl:value-of select="resource:getString($constants,'optional')"/>													
@@ -779,7 +779,7 @@ UIRF Software License are applicable instead of those above.
 							<VerticalPanel>
 							 <HorizontalPanel>
 							  <widget valign="top">
-							   <table key="worksheetTable" manager="this" maxRows="14" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
+							   <table key="worksheetTable" manager="this" maxRows="16" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -801,7 +801,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left</colAligns>
 								</table>
 								<query>
-								 <queryTable maxRows="14" showError="false" showScroll="ALWAYS" title="" width="auto">
+								 <queryTable maxRows="16" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -839,7 +839,7 @@ UIRF Software License are applicable instead of those above.
 						                </widget>	
 						              </row>  									 
 						           </TablePanel>
-						        <VerticalPanel height = "15px"/>
+						        <VerticalPanel height = "6px"/>
 							  </VerticalPanel>
 						     </VerticalPanel>
 							</tab>
