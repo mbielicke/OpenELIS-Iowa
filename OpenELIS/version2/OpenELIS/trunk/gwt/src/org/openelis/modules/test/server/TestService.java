@@ -96,7 +96,7 @@ import java.util.Map.Entry;
 public class TestService implements AppScreenFormServiceInt<TestRPC,DataModel<DataSet>>,
                                     AutoCompleteServiceInt{
 
-    private static final int leftTableRowsPerPage = 24;
+    private static final int leftTableRowsPerPage = 29;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
 

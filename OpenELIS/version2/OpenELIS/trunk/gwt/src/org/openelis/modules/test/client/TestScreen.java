@@ -2242,19 +2242,34 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         analyteTreeController.model.refresh();
     }
     
-    private void onDuplicateRecordClick() {        
-      Form tform = (Form)form.clone();              
-      ((Form)tform.getField("details")).setFieldValue(TestMeta.getIsActive(),"N");        
-      ((Form)tform.getField("details")).setField(TestMeta.getActiveBegin(),getDateField());
-      ((Form)tform.getField("details")).setField(TestMeta.getActiveEnd(), getDateField());
-      tform.setFieldValue(TestMeta.getId(), null);           
+    private void onDuplicateRecordClick() {                
+      TestForm tform = rpc.form.clone();                    
+      tform.setFieldValue(TestMeta.getId(), null);
+      //((Form)form.getField("details")).setFieldValue(TestMeta.getIsActive(),"N");        
+      //((Form)form.getField("details")).setField(TestMeta.getActiveBegin(),getDateField());
+      //((Form)form.getField("details")).setField(TestMeta.getActiveEnd(), getDateField());
+      tform.details.isActive.setValue("N");
+      tform.details.activeBegin = getDateField();
+      tform.details.activeEnd = getDateField();      
+      fillTestDetails();      
       fillSampleTypes();
       fillTestAnalyte();
       fillPrepTestsReflexTests();
       fillWorksheetLayout();
       add();
+      rpc.form = tform;   
+      rpc.form.fields.put("details",rpc.form.details = tform.details);
       form = tform;
-      load();             
+      load();  
+      /*((Form)form.getField("details")).setFieldValue(TestMeta.getIsActive(),"N");
+      ((Form)form.getField("details")).setField(TestMeta.getActiveBegin(),getDateField());
+      ((Form)form.getField("details")).setField(TestMeta.getActiveEnd(), getDateField());
+      form.setFieldValue(TestMeta.getId(), null);
+      widgets.get(TestMeta.getIsActive()).load(((Form)form.getField("details")).getField(TestMeta.getIsActive()));
+      widgets.get(TestMeta.getActiveBegin()).load(((Form)form.getField("details")).getField(TestMeta.getActiveBegin()));
+      widgets.get(TestMeta.getActiveEnd()).load(((Form)form.getField("details")).getField(TestMeta.getActiveEnd()));
+      changeState(State.ADD);
+      */      
      }
 
     /**
