@@ -32,7 +32,7 @@ import org.openelis.util.DataBaseUtil;
 public class BuildKitComponentDO implements Serializable{
 
     private static final long serialVersionUID = 1L;
-    //protected Integer componentId;
+    protected Integer inventoryItemId;
     protected String component;
     protected Integer locationId;
     protected String location;
@@ -41,7 +41,26 @@ public class BuildKitComponentDO implements Serializable{
     protected Double unit;
     protected Integer total;
     protected Integer qtyOnHand;
+    protected Integer orderItemId;
+    protected Integer inventoryXUseId;
+    protected Integer inventoryReceiptOrderItemId;
     
+    public Integer getInventoryReceiptOrderItemId() {
+        return inventoryReceiptOrderItemId;
+    }
+
+    public void setInventoryReceiptOrderItemId(Integer inventoryReceiptOrderItemId) {
+        this.inventoryReceiptOrderItemId = inventoryReceiptOrderItemId;
+    }
+
+    public Integer getInventoryXUseId() {
+        return inventoryXUseId;
+    }
+
+    public void setInventoryXUseId(Integer inventoryXUseId) {
+        this.inventoryXUseId = inventoryXUseId;
+    }
+
     public BuildKitComponentDO(){
         
     }
@@ -108,5 +127,21 @@ public class BuildKitComponentDO implements Serializable{
 
     public void setUnit(Double unit) {
         this.unit = unit;
+    }
+
+    public Integer getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(Integer orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
+    }
+
+    public void setInventoryItemId(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
     }
 }

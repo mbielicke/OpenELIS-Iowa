@@ -112,7 +112,7 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
     public String buildFrom(String name){
         //we always want to bring back the whole DO so the from wont change
         String from = "InventoryReceipt receipt ";
-        from += " LEFT JOIN receipt.orderItem oi ";
+        from += " LEFT JOIN receipt.orderItems oi ";
         
         //if(name.indexOf("oi.") > -1)
         //from += " LEFT JOIN receipt.transReceiptOrders orderTrans ";

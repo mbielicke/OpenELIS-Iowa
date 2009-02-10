@@ -39,18 +39,22 @@ public class ShippingItemDO implements Serializable{
     protected Integer referenceId;
     protected String itemDescription;
     protected Integer quantity;
+    protected Integer inventoryLocationId;
+    protected Integer transId;
     
     public ShippingItemDO(){
         
     }
     
     public ShippingItemDO(Integer id, Integer shippingId, Integer referenceTableId,
-                          Integer referenceId, Integer quantity){
+                          Integer referenceId, Integer quantity, Integer inventoryLocationId, Integer transId){
         setId(id);
         setShippingId(shippingId);
         setReferenceTableId(referenceTableId);
         setReferenceId(referenceId);
         setQuantity(quantity);
+        setInventoryLocationId(inventoryLocationId);
+        setTransId(transId);
     }
 
     public Integer getId() {
@@ -99,5 +103,21 @@ public class ShippingItemDO implements Serializable{
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+    
+    public Integer getInventoryLocationId() {
+        return inventoryLocationId;
+    }
+
+    public void setInventoryLocationId(Integer inventoryLocationId) {
+        this.inventoryLocationId = inventoryLocationId;
+    }
+
+    public Integer getTransId() {
+        return transId;
+    }
+
+    public void setTransId(Integer transId) {
+        this.transId = transId;
     }
 }

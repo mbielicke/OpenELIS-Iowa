@@ -34,25 +34,22 @@ import org.openelis.util.Datetime;
 public class BuildKitDO implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    protected Integer kitId;
-    protected String kit;
+    protected Integer id;
+    protected Integer inventoryItemId;
+    protected String inventoryItem;
     protected Integer numberRequested;
-    protected boolean addToExisiting;
+    protected Integer storageLocationId;
     protected Integer locationId;
     protected String location;
     protected String lotNumber;
     protected Datetime expDate;
+    protected Integer orderId;
+    protected boolean bulk = false;
+    protected boolean addToExisting = false;
+    protected boolean serialized = false;
     
     public BuildKitDO(){
         
-    }
-
-    public boolean isAddToExisiting() {
-        return addToExisiting;
-    }
-
-    public void setAddToExisiting(boolean addToExisiting) {
-        this.addToExisiting = addToExisiting;
     }
 
     public Datetime getExpDate() {
@@ -63,20 +60,20 @@ public class BuildKitDO implements Serializable {
         this.expDate = new Datetime(Datetime.YEAR, Datetime.DAY, expDate);
     }
 
-    public String getKit() {
-        return kit;
+    public String getInventoryItem() {
+        return inventoryItem;
     }
 
-    public void setKit(String kit) {
-        this.kit = DataBaseUtil.trim(kit);
+    public void setInventoryItem(String kit) {
+        this.inventoryItem = DataBaseUtil.trim(kit);
     }
 
-    public Integer getKitId() {
-        return kitId;
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
     }
 
-    public void setKitId(Integer kitId) {
-        this.kitId = kitId;
+    public void setInventoryItemId(Integer kitId) {
+        this.inventoryItemId = kitId;
     }
 
     public String getLocation() {
@@ -111,4 +108,50 @@ public class BuildKitDO implements Serializable {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(Integer storageLocationId) {
+        this.storageLocationId = storageLocationId;
+    }
+    
+    public boolean isBulk() {
+        return bulk;
+    }
+
+    public void setBulk(boolean bulk) {
+        this.bulk = bulk;
+    }
+    
+    public boolean isAddToExisting() {
+        return addToExisting;
+    }
+
+    public void setAddToExisting(boolean addToExisting) {
+        this.addToExisting = addToExisting;
+    }
+    public boolean isSerialized() {
+        return serialized;
+    }
+
+    public void setSerialized(boolean serialized) {
+        this.serialized = serialized;
+    }
 }

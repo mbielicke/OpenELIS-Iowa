@@ -35,7 +35,7 @@ import org.openelis.domain.BuildKitDO;
 @Remote
 public interface BuildKitsRemote {
     //add a build kit record
-    public Integer updateBuildKits(BuildKitDO buildKitDO, List<BuildKitComponentDO> components) throws Exception;
+    public Integer updateBuildKits(BuildKitDO kitDO, List<BuildKitComponentDO> kitComponents) throws Exception;
 
     //method to validate the fields before the backend adds it in the database
      //public void validateForAdd(BuildKitDO buildKitDO, List<BuildKitComponentDO> components);
