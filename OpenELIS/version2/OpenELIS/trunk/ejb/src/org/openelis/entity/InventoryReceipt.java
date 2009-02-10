@@ -43,6 +43,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -56,8 +58,8 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "InventoryReceipt.OrderItemListWithTransByOrderNum", query = "select distinct oi.id from InventoryTransaction tr LEFT JOIN tr.toOrder oi where " + 
                                " oi.order.id = :id and tr.fromReceiptId is not null "),
     @NamedQuery(name = "InventoryReceipt.OrderItemListByOrderNum", query = "select distinct oi.id from Order o LEFT JOIN o.orderItem oi where " + 
-                               " (NOT EXISTS (select ir.id from InventoryReceipt ir where ir.orderItemId = oi.id) OR " +
-                               " oi.quantity > (select sum(ir2.quantityReceived) from InventoryReceipt ir2 where ir2.orderItemId = oi.id))" + 
+                               " (NOT EXISTS (select ir.id from InventoryReceipt ir LEFT JOIN ir.orderItems ois where ois.id = oi.id) OR " +
+                               " oi.quantity > (select sum(ir2.quantityReceived) from InventoryReceipt ir2 LEFT JOIN ir2.orderItems ois2 where ois2.id = oi.id))" + 
                                " and o.id = :id and o.isExternal='Y'"),
     @NamedQuery(name = "InventoryReceipt.InventoryReceiptNotRecByOrderId", query = "select distinct new org.openelis.domain.InventoryReceiptDO(o.id, oi.inventoryItemId, oi.inventoryItem.name, " +
                                " oi.id, oi.unitCost, o.organizationId,orgz.name,oi.quantity,orgz.address.streetAddress,orgz.address.multipleUnit,orgz.address.city,orgz.address.state, " +
@@ -68,7 +70,7 @@ import org.openelis.utils.Auditable;
                                " and oi.id = :id order by o.id "),
     @NamedQuery(name = "InventoryReceipt.OrderItemsNotFilled", query = "SELECT oi.id FROM OrderItem oi, Order o, Dictionary d WHERE oi.orderId = o.id AND " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' and " + 
-                            " oi.quantity > (SELECT sum(ir.quantityReceived) FROM InventoryReceipt ir where ir.orderItemId = oi.id) " + 
+                            " oi.quantity > (SELECT sum(ir.quantityReceived) FROM InventoryReceipt ir LEFT JOIN ir.orderItems ois where ois.id = oi.id) " + 
                             " and o.id = :id"),
     @NamedQuery(name = "InventoryReceipt.OrdersNotCompletedCanceled", query = "SELECT o.id FROM Order o, Dictionary d WHERE " + 
                             " d.id = o.statusId and d.systemName <> 'order_status_cancelled' and d.systemName <> 'order_status_processed' " +
@@ -125,13 +127,19 @@ public class InventoryReceipt implements Auditable, Cloneable {
   @JoinColumn(name = "organization_id", insertable = false, updatable = false)
   private Organization organization;
   
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-  private OrderItem orderItem;
+//  @OneToOne(fetch = FetchType.LAZY)
+//  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+//  private OrderItem orderItem;
   
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
   private Collection<InventoryXPut> transReceiptLocations;
+  
+  @ManyToMany(fetch  = FetchType.LAZY)
+  @JoinTable(name="inventory_receipt_order_item",
+             joinColumns={@JoinColumn(name="inventory_receipt_id")},
+             inverseJoinColumns={@JoinColumn(name="order_item_id")})
+  private Collection<OrderItem> orderItems; 
 
   @Transient
   private InventoryReceipt original;
@@ -284,11 +292,11 @@ public Organization getOrganization() {
 public Collection<InventoryXPut> getTransReceiptLocations() {
     return transReceiptLocations;
 }
-public OrderItem getOrderItem() {
-    return orderItem;
+public Collection<OrderItem> getOrderItems() {
+    return orderItems;
 }
-public void setOrderItem(OrderItem orderItem) {
-    this.orderItem = orderItem;
+public void setOrderItems(Collection<OrderItem> orderItems) {
+    this.orderItems = orderItems;
 }
   
 }   

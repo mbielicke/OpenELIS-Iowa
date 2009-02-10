@@ -64,7 +64,7 @@ import org.openelis.utils.Auditable;
                             " o.billTo.address.city, o.billTo.address.state, o.billTo.address.zipCode, o.reportToId, o.reportTo.name, o.reportTo.address.multipleUnit, o.reportTo.address.streetAddress, " +
                             " o.reportTo.address.city, o.reportTo.address.state, o.reportTo.address.zipCode) from Order o where o.id = :id"),
     @NamedQuery(name = "Order.ReceiptsForOrder", query = "select new org.openelis.domain.InventoryReceiptDO(r.id,r.inventoryItemId, r.inventoryItem.name,r.organizationId,r.receivedDate,r.quantityReceived, " +
-                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryReceipt r left join r.orderItem o where o.orderId = :id " +
+                            " r.unitCost,r.qcReference,r.externalReference,r.upc) from InventoryReceipt r left join r.orderItems o where o.orderId = :id " +
                             " order by r.receivedDate desc "),
     @NamedQuery(name = "Order.LocsForOrder", query = "select new org.openelis.domain.InventoryLocationDO(loc.id, loc.inventoryItemId, loc.inventoryItem.name, loc.lotNumber, childLoc.name,childLoc.location, "+
                             " parentLoc.name, childLoc.storageUnit.description, trans.quantity, loc.expirationDate) " +

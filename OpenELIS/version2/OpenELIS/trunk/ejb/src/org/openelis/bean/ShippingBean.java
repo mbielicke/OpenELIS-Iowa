@@ -47,6 +47,8 @@ import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.entity.Shipping;
@@ -231,9 +233,27 @@ public class ShippingBean implements ShippingRemote{
                     manager.persist(shippingItem);
                 }
                 
+                //insert inventory_x_use record
+                InventoryXUse trans = null;
+                if (itemDO.getTransId() == null)
+                    trans = new InventoryXUse();
+                else
+                    trans = manager.find(InventoryXUse.class, itemDO.getTransId());
+                
+                trans.setInventoryLocationId(itemDO.getInventoryLocationId());
+                trans.setOrderItemId(itemDO.getReferenceId());
+                trans.setQuantity(itemDO.getQuantity());
+                
+                if(trans.getId() == null)
+                    manager.persist(trans);
+                
+                //update the qty_on_hand field in the inventory location
+                InventoryLocation loc =  manager.find(InventoryLocation.class, itemDO.getInventoryLocationId());
+                loc.setQuantityOnhand(loc.getQuantityOnhand() - itemDO.getQuantity());
+                
                 //update order items
                 OrderItem orderItem = manager.find(OrderItem.class, itemDO.getReferenceId());
-                orderItem.setQuantity(itemDO.getQuantity());
+                //orderItem.setQuantity(itemDO.getQuantity());
                 
                 //add to the list of order ids
                 if(!listOfOrderIds.contains(orderItem.getOrderId()))

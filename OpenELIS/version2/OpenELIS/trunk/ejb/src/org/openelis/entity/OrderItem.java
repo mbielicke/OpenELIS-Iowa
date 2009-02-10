@@ -38,6 +38,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -94,9 +96,19 @@ public class OrderItem implements Auditable, Cloneable {
   @JoinColumn(name = "order_id", insertable = false, updatable = false)
   private Order order;
 
+ // @OneToMany(fetch = FetchType.LAZY)
+ // @JoinColumn(name = "order_item_id")
+ // private Collection<InventoryReceipt> inventoryReceipts;
+  
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_item_id")
-  private Collection<InventoryReceipt> inventoryReceipts;
+  @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
+  private Collection<InventoryXUse> inventoryXUse;
+  
+  @ManyToMany(fetch  = FetchType.LAZY)
+  @JoinTable(name="inventory_receipt_order_item",
+             joinColumns={@JoinColumn(name="order_item_id")},
+             inverseJoinColumns={@JoinColumn(name="inventory_receipt_id")})
+  private Collection<InventoryReceipt> inventoryReceipts; 
   
   @Transient
   private OrderItem original;
@@ -207,6 +219,12 @@ public Collection<InventoryReceipt> getInventoryReceipts() {
 }
 public void setInventoryReceipts(Collection<InventoryReceipt> inventoryReceipts) {
     this.inventoryReceipts = inventoryReceipts;
+}
+public Collection<InventoryXUse> getInventoryXUse() {
+    return inventoryXUse;
+}
+public void setInventoryXUse(Collection<InventoryXUse> inventoryXUse) {
+    this.inventoryXUse = inventoryXUse;
 }
   
 }   

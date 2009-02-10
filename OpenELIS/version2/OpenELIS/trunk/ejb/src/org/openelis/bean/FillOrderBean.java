@@ -37,10 +37,16 @@ import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.FillOrderDO;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXUse;
+import org.openelis.entity.Order;
+import org.openelis.entity.ShippingItem;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
@@ -196,6 +202,56 @@ public class FillOrderBean implements FillOrderRemote {
        return query(map,0,1);
     }
 
+    public void updateInternalOrders(List orders) throws Exception {
+        ArrayList<Integer> orderIds = new ArrayList<Integer>();
+        
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        query.setParameter("systemName","order_status_processed");
+        Integer processedStatusValue = (Integer)query.getResultList().get(0);
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        for(int i=0; i<orders.size(); i++){
+            FillOrderDO orderDO = (FillOrderDO)orders.get(i);
+            
+            //insert new inventory_x_user record for each item
+            InventoryXUse trans = null;
+            if (orderDO.getInventoryXUseId() == null)
+                trans = new InventoryXUse();
+            else
+                trans = manager.find(InventoryXUse.class, orderDO.getInventoryXUseId());
+            System.out.println("transid: ["+orderDO.getInventoryXUseId()+"]");
+            
+            trans.setInventoryLocationId(orderDO.getInventoryLocationId());
+            trans.setOrderItemId(orderDO.getOrderItemId());
+            trans.setQuantity(orderDO.getQuantity());
+            
+            if (trans.getId() == null) {
+                manager.persist(trans);
+            }
+            
+            System.out.println("locId: ["+orderDO.getInventoryLocationId()+"]");
+            //update quantity on hand in Inventory_location for each item
+            InventoryLocation loc = manager.find(InventoryLocation.class, orderDO.getInventoryLocationId());
+            System.out.println("loc:["+loc+"]");
+            System.out.println("new qty:["+(loc.getQuantityOnhand() - orderDO.getQuantity())+"]");
+            
+            loc.setQuantityOnhand(loc.getQuantityOnhand() - orderDO.getQuantity());
+            
+            //put the order id in the array list if necessary
+            if(!orderIds.contains(orderDO.getOrderId()))
+                orderIds.add(orderDO.getOrderId());
+        }
+        
+        for(int j=0; j<orderIds.size(); j++){
+            //update the order and set it to processed for each order effected
+            Order order = manager.find(Order.class, orderIds.get(j));
+            
+            order.setStatusId(processedStatusValue);
+        }
+
+    }
+    
     private void unlockRecords(DataModel<DataSet<Data>> orders) throws Exception{
         if(orders.size() == 0)
             return;
