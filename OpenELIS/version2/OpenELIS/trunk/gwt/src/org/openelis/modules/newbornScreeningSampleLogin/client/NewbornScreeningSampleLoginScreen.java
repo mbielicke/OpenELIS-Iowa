@@ -25,9 +25,13 @@
 */
 package org.openelis.modules.newbornScreeningSampleLogin.client;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -37,18 +41,13 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
+public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public NewbornScreeningSampleLoginScreen() {
-        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService", false, new RPC<Form,Data>());
+        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService", false, new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -66,22 +65,22 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<RPC<Fo
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
         //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top", new NumberObject(0));
+        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         row1.get(0).setValue("0 - Blood Spot");
         row1.get(1).setValue("Heal");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
         row2.get(0).setValue("Hemoglobinopathies - Logged In");
-        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
         row3.get(0).setValue("Biotinidase Deficiency - Logged In");
-        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
         row4.get(0).setValue("Congenital Adrenal Hyperplasia - Logged In");
-        TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
         row5.get(0).setValue("TMS Disorders- Logged In");
-        TreeDataItem row6 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row6 = itemsTestsTree.model.createTreeItem("top");
         row6.get(0).setValue("Galactosemia - Logged In");
-        TreeDataItem row7 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row7 = itemsTestsTree.model.createTreeItem("top");
         row7.get(0).setValue("Hypothyroidism - Logged In");
-        TreeDataItem row8 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row8 = itemsTestsTree.model.createTreeItem("top");
         row8.get(0).setValue("Cystic Fibrosis - Logged In");
         
         row1.addItem(row2);

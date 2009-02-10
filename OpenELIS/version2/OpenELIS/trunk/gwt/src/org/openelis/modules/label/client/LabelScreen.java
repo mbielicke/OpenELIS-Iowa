@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -45,7 +46,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class LabelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener {
+public class LabelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
 
     private static boolean loaded = false;
     private static DataModel printerTypeDropDown ;
@@ -59,7 +60,7 @@ public class LabelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impleme
     private LabelMetaMap Meta = new LabelMetaMap(); 
     
     public LabelScreen() {
-        super("org.openelis.modules.label.server.LabelService",!loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.label.server.LabelService",!loaded,new DefaultRPC());
     }
 
     public void performCommand(Enum action, Object obj) {

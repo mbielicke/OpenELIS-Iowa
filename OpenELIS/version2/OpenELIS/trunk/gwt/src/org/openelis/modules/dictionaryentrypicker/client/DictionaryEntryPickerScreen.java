@@ -32,12 +32,16 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -54,7 +58,7 @@ import org.openelis.modules.test.client.TestScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements TableManager, 
+public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements TableManager, 
                                                                                ClickListener,
                                                                                ChangeListener{
     private TestScreen testScreen;
@@ -65,7 +69,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
     
     private TableWidget dictionaryController;
     
-    private Dropdown<DataSet> categoryDrop;       
+    private Dropdown categoryDrop;       
     
     private AppButton findButton;
     
@@ -76,7 +80,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
     private AppButton prevPressed = null;
     
     public DictionaryEntryPickerScreen(TestScreen testScreen) {        
-        super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService",!loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService",!loaded,new DefaultRPC());
         this.testScreen = testScreen;
     }
     
@@ -121,10 +125,10 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
         super.afterDraw(sucess);              
         
         screenService.getObject("getEntryId",
-               new Data[] {new StringObject("test_res_type_dictionary")},
-                new AsyncCallback<NumberObject>() {
-                   public void onSuccess(NumberObject result) {                                                                                                                           
-                      dictId = (Integer)result.getValue();
+               new DataObject[] {new StringObject("test_res_type_dictionary")},
+                new AsyncCallback<IntegerObject>() {
+                   public void onSuccess(IntegerObject result) {                                                                                                                           
+                      dictId = result.getValue();
                     }
                    public void onFailure(Throwable caught) {
                      Window.alert(caught.getMessage());
@@ -211,7 +215,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
     public void onChange(Widget sender){
         if(sender == categoryDrop){
            NumberObject numObj = (NumberObject)categoryDrop.getSelections().get(0).getKey();
-           categoryId = (Integer)numObj.getValue();
+           categoryId = numObj.getIntegerValue();
         }
     }  
     
@@ -221,7 +225,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
         
         final DataModel model = dictionaryController.model.getData();
         window.setStatus("", "spinnerIcon");        
-        screenService.getObject("getDictionaryEntries", new Data[] {model,new NumberObject(categoryId),pattern}, new AsyncCallback<DataModel>() {
+        screenService.getObject("getDictionaryEntries", new Field[] {model,new NumberObject(categoryId),pattern}, new AsyncCallback<DataModel>() {
             public void onFailure(Throwable caught) {                
                 Window.alert(caught.getMessage());
                 window.setStatus("","");
@@ -239,14 +243,14 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
     
     private List<String> getSelectedEntries(List<Integer> idList){
         List<String> entries = new ArrayList<String>();
-        DataSet<Data> set = null;
+        DataSet<Object> set = null;
         String entry = null;
         Integer id = null;
         DataMap data = null;
         for(int iter = 0; iter < dictionaryController.model.getSelections().size();iter++){
-            set = (DataSet)dictionaryController.model.getSelections().get(iter);
+            set = dictionaryController.model.getSelections().get(iter);
             data = (DataMap)set.getData();
-            id = (Integer)((NumberField)data.get("id")).getValue();
+            id = ((NumberField)data.get("id")).getIntegerValue();
             entry = (String)set.get(0).getValue();            
             
             if(!idList.contains(id)) {
@@ -258,7 +262,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<RPC<Form,Dat
     }
         
     private void loadCategoryDropdown() {
-        screenService.getObject("getInitialModel",new Data[] {},
+        screenService.getObject("getInitialModel",new Field[] {},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {                                       
                                         categoryDrop = (Dropdown)getWidget("category");

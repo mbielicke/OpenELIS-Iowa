@@ -26,12 +26,8 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 
-public class TestRPC extends RPC<TestForm,Data> {
+public class TestRPC extends RPC<TestForm,Integer> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -800823272820332556L;    
+    private static final long serialVersionUID = -1L;    
 }

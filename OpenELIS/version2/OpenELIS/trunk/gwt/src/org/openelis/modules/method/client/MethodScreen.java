@@ -29,9 +29,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AToZTable;
@@ -42,7 +41,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class MethodScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ChangeListener{
+public class MethodScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ChangeListener{
     private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
@@ -54,7 +53,7 @@ public class MethodScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implem
     private TextBox methodName;            
     
     public MethodScreen() {
-        super("org.openelis.modules.method.server.MethodService",!loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.method.server.MethodService",!loaded,new DefaultRPC());
     }
     
     public void performCommand(Enum action, Object obj) {

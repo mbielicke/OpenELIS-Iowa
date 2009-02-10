@@ -252,7 +252,7 @@ public class FillOrderBean implements FillOrderRemote {
 
     }
     
-    private void unlockRecords(DataModel<DataSet<Data>> orders) throws Exception{
+    private void unlockRecords(DataModel<Integer> orders) throws Exception{
         if(orders.size() == 0)
             return;
         
@@ -263,7 +263,7 @@ public class FillOrderBean implements FillOrderRemote {
         orderTableId = (Integer)query.getSingleResult();
         
         for(int i=0; i<orders.size(); i++){
-            Integer orderId = (Integer)((NumberField)orders.get(i).getKey()).getValue();
+            Integer orderId = orders.get(i).getKey();
         
             if(orderId != null)
                 lockBean.giveUpLock(orderTableId, orderId);

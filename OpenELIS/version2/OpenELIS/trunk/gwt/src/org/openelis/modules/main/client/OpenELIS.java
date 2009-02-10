@@ -543,9 +543,9 @@ public class OpenELIS implements EntryPoint, EventListener {
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new TableField();
+                                          return new TableField<Object>();
                                       else if (args[0] instanceof Node)
-                                          return new TableField((Node)args[0]);
+                                          return new TableField<Object>((Node)args[0]);
                                       return null;
                                   }
       });
@@ -704,9 +704,9 @@ public class OpenELIS implements EntryPoint, EventListener {
                             new ClassFactory.Factory() {
                                 public Object newInstance(Object[] args) {
                                     if(args == null)
-                                        return new DropDownField();
+                                        return new DropDownField<Object>();
                                     else if(args[0] instanceof Node)
-                                        return new DropDownField((Node)args[0]);
+                                        return new DropDownField<Object>((Node)args[0]);
                                     return null;
                                 }
                            

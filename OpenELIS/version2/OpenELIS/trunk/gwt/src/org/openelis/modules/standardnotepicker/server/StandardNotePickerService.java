@@ -26,12 +26,13 @@
 package org.openelis.modules.standardnotepicker.server;
 
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.QueryNumberField;
@@ -54,42 +55,42 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>> {
+public class StandardNotePickerService implements AppScreenFormServiceInt<DefaultRPC,Integer> {
 
-	private static final long serialVersionUID = -2489317407834940845L;
+	private static final long serialVersionUID = 1L;
 
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+	public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
     	return null;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public RPC commitUpdate(RPC rpc) throws RPCException {
+	public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public RPC commitDelete(RPC rpc) throws RPCException {
+	public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public RPC fetchForUpdate(RPC rpc) throws RPCException {
+	public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -98,15 +99,15 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<RPC, D
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
 	}
     
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         return null;
     }
 	
-	public HashMap getXMLData(HashMap args) throws RPCException {
+	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
     	return null;
     }
     
-    public RPC getScreen(RPC rpc) {
+    public DefaultRPC getScreen(DefaultRPC rpc) {
         return rpc;
     }
 
@@ -161,7 +162,7 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<RPC, D
 		QueryStringField nameField = new QueryStringField();
 		QueryStringField descField = new QueryStringField();
 		typeField.setType("integer");
-		typeField.setValue(String.valueOf(((Integer)type.getValue()).intValue()));
+		typeField.setValue(String.valueOf(type.getIntegerValue()));
 		nameField.setValue(name.getValue());
 		descField.setValue(desc.getValue());
 		HashMap<String,AbstractField> fields = new HashMap<String, AbstractField>();

@@ -25,12 +25,17 @@
 */
 package org.openelis.modules.fillOrder.client;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.Form.Status;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -39,6 +44,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -78,22 +84,16 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.shipping.client.ShippingDataService;
 import org.openelis.modules.shipping.client.ShippingScreen;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
-public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, TreeModelListener, CommandListener{
+public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, CommandListener, TreeModelListener{
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
     private ScreenTableWidget fillItemsTableScreenWidget;
     private TreeWidget orderItemsTree;
-    private TableWidget<DataSet> fillItemsTable;
-    private QueryTable<DataSet> fillItemsQueryTable;    
+    private TableWidget fillItemsTable;
+    private QueryTable fillItemsQueryTable;    
     
     private TextBox requestedByText, orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText;
     private TextArea orderShippingNotes;
@@ -115,7 +115,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     private KeyListManager keyList = new KeyListManager();
 
     public FillOrderScreen() {
-        super("org.openelis.modules.fillOrder.server.FillOrderService", !loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.fillOrder.server.FillOrderService", !loaded,new DefaultRPC());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -172,7 +172,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             costCenterDropdown = (DataModel)initData.get("costCenter");
             shipFromDropdown = (DataModel)initData.get("shipFrom");
             statusDropdown = (DataModel)initData.get("status");
-            orderPendingValue = (Integer)((NumberObject)initData.get("pendingValue")).getValue();
+            orderPendingValue = ((NumberObject)initData.get("pendingValue")).getIntegerValue();
         }
         
         //
@@ -249,7 +249,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             orderItemsTree.model.load((TreeDataModel)checkedTreeData.clone());
             submitForm();
             form.validate();
-            if (form.status == Status.valid && validate()) {
+            if (form.status == Form.Status.valid && validate()) {
                 clearErrors();
                 window.setStatus("", "");
                 lastShippedFrom = new Integer(-1);
@@ -280,7 +280,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             lastShippedTo = new Integer(-1);
             
             // prepare the argument list for the getObject function
-            Data[] args = new Data[] {keyList.getList()}; 
+            Field[] args = new Field[] {keyList.getList()}; 
             
             screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback<DataModel>(){
                 public void onSuccess(DataModel model){                    
@@ -350,25 +350,25 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     //end table manager methods
     //
     
-    private void loadFillItemsTableFromModel(DataModel<DataSet> model){
+    private void loadFillItemsTableFromModel(DataModel<Integer> model){
         for(int i=0; i<model.size(); i++){
-            DataSet<Data> set = model.get(i);
+            DataSet<Integer> set = model.get(i);
             
-            DataSet<Data> row = fillItemsTable.model.createRow();
+            DataSet<Object> row = (DataSet<Object>)fillItemsTable.model.createRow();
             
-            Integer orderId = (Integer)((NumberField)set.getKey()).getValue();
+            Integer orderId = set.getKey();
             
             if(checkedOrderIds.getByKey(new NumberObject(orderId)) != null)
                 row.get(0).setValue(CheckBox.CHECKED);
             
-            row.get(1).setValue((Integer)((NumberField)set.getKey()).getValue());
-            row.get(2).setValue(((DropDownField)set.get(0)).getSelections());
+            row.get(1).setValue(set.getKey());
+            row.get(2).setValue(((DropDownField)set.get(0)).getValue());
             row.get(3).setValue(((DateField)set.get(1)).getValue());
-            row.get(4).setValue(((DropDownField)set.get(2)).getSelections());
+            row.get(4).setValue(((DropDownField)set.get(2)).getValue());
             
             if(set.get(3).getValue() != null){
                 ((DropDownField)row.get(5)).setModel(((DropDownField)set.get(3)).getModel());
-                row.get(5).setValue(((DropDownField)set.get(3)).getSelections());
+                row.get(5).setValue(((DropDownField)set.get(3)).getValue());
             }
             row.get(6).setValue(((StringField)set.get(4)).getValue());
             row.get(7).setValue(((NumberField)set.get(5)).getValue());
@@ -391,22 +391,22 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         }
     }
     
-    private void replaceRowDataInFillItemsTable(DataModel<DataSet> model, int rowIndex){
-        DataSet<Data> set = model.get(0);
+    private void replaceRowDataInFillItemsTable(DataModel<Integer> model, int rowIndex){
+        DataSet<Integer> set = model.get(0);
 
-        DataSet<Data> row = fillItemsTable.model.getRow(rowIndex);
+        DataSet<Object> row = fillItemsTable.model.getRow(rowIndex);
             
-        Integer orderId = (Integer)((NumberField)set.getKey()).getValue();
+        Integer orderId = set.getKey();
             
         if(checkedOrderIds.getByKey(new NumberObject(orderId)) != null)
             row.get(0).setValue(CheckBox.CHECKED);
             
-        row.get(1).setValue((Integer)((NumberField)set.getKey()).getValue());
-        row.get(2).setValue(((DropDownField)set.get(0)).getSelections());
+        row.get(1).setValue(set.getKey());
+        row.get(2).setValue(((DropDownField)set.get(0)).getValue());
         row.get(3).setValue(((DateField)set.get(1)).getValue());
-        row.get(4).setValue(((DropDownField)set.get(2)).getSelections());
+        row.get(4).setValue(((DropDownField)set.get(2)).getValue());
         ((DropDownField)row.get(5)).setModel(((DropDownField)set.get(3)).getModel());
-        row.get(5).setValue(((DropDownField)set.get(3)).getSelections());
+        row.get(5).setValue(((DropDownField)set.get(3)).getValue());
         row.get(6).setValue(((StringField)set.get(4)).getValue());
         row.get(7).setValue(((NumberField)set.get(5)).getValue());
         row.get(8).setValue(((NumberField)set.get(6)).getValue());
@@ -426,23 +426,23 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         fillItemsTable.model.refresh();
     }
     
-    private void loadOrderItemsTableFromModel(DataModel<DataSet> model){
+    private void loadOrderItemsTableFromModel(DataModel<Integer> model){
         orderItemsTree.model.clear();
         for(int i=0; i < model.size(); i++){
-            DataSet<Data> set = model.get(i);
-            TreeDataItem row = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey());
+            DataSet<Integer> set = model.get(i);
+            TreeDataItem row = orderItemsTree.model.createTreeItem("orderItem");
             
             row.get(0).setValue(set.get(0).getValue());
             row.get(1).setValue(set.get(1).getValue());
             
             if(set.get(2).getValue() != null){
                 ((DropDownField)row.get(2)).setModel(((DropDownField)set.get(2)).getModel());
-                ((DropDownField)row.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+                ((DropDownField)row.get(2)).setValue(((DropDownField)set.get(2)).getValue());
             }
             
             if(set.get(3).getValue() != null){
                 ((DropDownField)row.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                ((DropDownField)row.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
+                ((DropDownField)row.get(3)).setValue(((DropDownField)set.get(3)).getValue());
             }
             
             row.get(4).setValue(set.get(4).getValue());
@@ -450,7 +450,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             
             DataMap rowHiddenMap = new DataMap();
             rowHiddenMap.put("referenceTableId", set.get(6));
-            rowHiddenMap.put("referenceId", set.getKey());
+            rowHiddenMap.put("referenceId", new NumberObject(set.getKey()));
             row.setData(rowHiddenMap);
             
             orderItemsTree.model.addRow(row);
@@ -462,10 +462,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         //get the first row in the table that is selected
         TableModel model = (TableModel)fillItemsTable.model;
         int i=0;
-        while(i<model.numRows() && checkedOrderIds.getByKey(new NumberObject((Integer)((NumberField)((DataSet)model.getRow(i)).get(1)).getValue())) == null)
+        while(i<model.numRows() && checkedOrderIds.getByKey(new NumberObject((Integer)model.getRow(i).get(1).getValue())) == null)
             i++;
         
-        DataSet row = model.getRow(i);
+        DataSet<Object> row = model.getRow(i);
         
         if(!((CheckField)row.get(9)).isChecked()){
             PopupPanel shippingPopupPanel = new PopupPanel(false, true);
@@ -517,7 +517,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     }
     
     private void fillOrderCheck(final int rowIndex, final boolean checked){
-        final DataSet row = fillItemsTable.model.getRow(rowIndex);
+        final DataSet<Integer> row = fillItemsTable.model.getRow(rowIndex);
         final DataMap map;
         
         if(row.getData() != null)
@@ -525,18 +525,18 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         else
             map = new DataMap();
         
-        DataModel orderItemsModel = (DataModel)map.get("orderItems");
+        DataModel<Integer> orderItemsModel = (DataModel<Integer>)map.get("orderItems");
             
            if(orderItemsModel != null){
                if(checked){     //add the order id to the selected list
-                   DataSet set = new DataSet();
-                   set.setKey(new NumberObject((Integer)((NumberField)row.get(1)).getValue()));
+                   DataSet<Integer> set = new DataSet<Integer>();
+                   set.setKey(((NumberObject)row.get(1)).getIntegerValue());
                    checkedOrderIds.add(set);
                    lastShippedFrom = (Integer)((DropDownField)row.get(4)).getSelectedKey();
                    lastShippedTo = (Integer)((DropDownField)row.get(5)).getSelectedKey();
                    
                }else{            //remove the order id from the selected list
-                   checkedOrderIds.remove(checkedOrderIds.getByKey(new NumberObject((Integer)((NumberField)row.get(1)).getValue())));
+                   checkedOrderIds.remove(checkedOrderIds.getByKey(new NumberObject(((NumberField)row.get(1)).getValue())));
                    if(checkedOrderIds.size() == 0){
                        lastShippedFrom = new Integer(-1);
                        lastShippedTo = new Integer(-1);
@@ -546,10 +546,11 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                
                if(checked){     //we need to add the order items from the selected row to the tree
                    for(int i=0; i<orderItemsModel.size(); i++){
-                       DataSet<Data> set = (DataSet)((DataSet)orderItemsModel.get(i)).clone();
+                       DataSet<Integer> set = (DataSet<Integer>)orderItemsModel.get(i).clone();
+                      
 
-                           TreeDataItem parentItemRow = orderItemsTree.model.createTreeItem("top", (NumberObject)set.getKey());
-                           TreeDataItem locRow = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey()); 
+                          TreeDataItem parentItemRow = orderItemsTree.model.createTreeItem("top");
+                           TreeDataItem locRow = orderItemsTree.model.createTreeItem("orderItem"); 
                            parentItemRow.addItem(locRow);
                            parentItemRow.get(0).setValue(set.get(0).getValue());
                            parentItemRow.get(1).setValue(set.get(1).getValue());
@@ -559,20 +560,22 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            
                            if(set.get(2).getValue() != null){
                                ((DropDownField)parentItemRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
-                               ((DropDownField)parentItemRow.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+                               ((DropDownField)parentItemRow.get(2)).setValue(((DropDownField)set.get(2)).getValue());
                            }
                            
                            locRow.get(0).setValue(set.get(0).getValue());
                            locRow.get(1).setValue(set.get(1).getValue());
+                           locRow.get(2).setValue(set.get(2).getValue());
                            
                            if(set.get(2).getValue() != null){
                                ((DropDownField)locRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
-                               ((DropDownField)locRow.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
+                               ((DropDownField)locRow.get(2)).setValue(((DropDownField)set.get(2)).getValue());
                            }
 
+                        
                            DataMap rowHiddenMap = new DataMap();
                            rowHiddenMap.put("referenceTableId", set.get(6));
-                           rowHiddenMap.put("referenceId", set.getKey());
+                           rowHiddenMap.put("referenceId", new NumberObject(set.getKey()));
                            rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
                            rowHiddenMap.put("locId", new NumberObject((Integer)((DropDownField)set.get(3)).getSelectedKey()));
                            locRow.setData(rowHiddenMap);
@@ -580,15 +583,16 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            checkedTreeData.add(parentItemRow);
                    }  
                }else{   //we need to rebuild the order items model from scratch using the checkedOrderItems list
-                   int k=0;
+                  int k=0;
                    while(k<checkedTreeData.size()){
                        
-                       if(((Integer)checkedTreeData.get(k).get(1).getValue()).equals((Integer)((NumberField)row.get(1)).getValue())){ //we need to remove this row and children
+                       if(((Integer)checkedTreeData.get(k).get(1).getValue()).equals(row.get(1).getValue())){ //we need to remove this row and children
                            checkedTreeData.delete(checkedTreeData.get(k));
                            k--;
                        }
                        k++;
                    }
+                   
                }                
                 
                if(!checked && checkedTreeData.size() == 0)
@@ -601,10 +605,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
            }else{
                 window.setStatus("","spinnerIcon");
                 
-                NumberObject orderIdObj = new NumberObject((Integer)((NumberField)row.get(1)).getValue());
+                NumberObject orderIdObj = new NumberObject(((NumberField)row.get(1)).getValue());
                 
                 // prepare the argument list for the getObject function
-                Data[] args = new Data[] {orderIdObj}; 
+                Field[] args = new Field[] {orderIdObj}; 
                 
                 screenService.getObject("getOrderItemsOrderNotes", args, new AsyncCallback<DataModel>(){
                     public void onSuccess(DataModel orderItemsModel){
@@ -643,10 +647,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
 
     public void rowSelected(SourcesTableModelEvents sender, int row) {
         if(sender == fillItemsTable.model){
-            removeRowButton.changeState(ButtonState.DISABLED);
+                       removeRowButton.changeState(ButtonState.DISABLED);
             addLocationButton.changeState(ButtonState.DISABLED);
             
-            final DataSet tableRow;
+            final DataSet<Integer> tableRow;
             
             if(row >=0 && fillItemsTable.model.numRows() > row)
                 tableRow = fillItemsTable.model.getRow(row);
@@ -670,10 +674,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                         //we need to look up the order items if they arent there yet
                         //window.setStatus("","spinnerIcon");
                         
-                        NumberObject orderIdObj = new NumberObject((Integer)((NumberField)tableRow.get(1)).getValue());
+                        NumberObject orderIdObj = new NumberObject(((NumberObject)tableRow.get(1)).getIntegerValue());
                         
                         // prepare the argument list for the getObject function
-                        Data[] args = new Data[] {orderIdObj}; 
+                        Field[] args = new Field[] {orderIdObj}; 
                         
                         screenService.getObject("getOrderItemsOrderNotes", args, new AsyncCallback<DataModel>(){
                             public void onSuccess(DataModel model){
@@ -712,7 +716,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                      orgStateText.setText("");
                      orgZipCodeText.setText("");
                      requestedByText.setText("");
-                     costCenterDrop.setSelections(new ArrayList<DataSet>());
+                     costCenterDrop.setSelections(new ArrayList<DataSet<Object>>());
                  }
             }
     }
@@ -752,7 +756,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             requestedByText.setText("");
         
         if(map.get("costCenter") != null)
-            costCenterDrop.setSelections(((DropDownField)map.get("costCenter")).getSelections());
+            costCenterDrop.setSelections(((ArrayList<DataSet<Object>>)((DropDownField)map.get("costCenter")).getValue()));
         else
             costCenterDrop.setSelections(new ArrayList());
     }
@@ -770,10 +774,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                     NumberObject orderIdObj = new NumberObject((Integer)fillItemsTable.model.getCell(row, 1));
                     
                     // prepare the argument list for the getObject function
-                    Data[] args = new Data[] {orderIdObj}; 
+                    Field[] args = new Field[] {orderIdObj}; 
                     
-                    screenService.getObject("fetchOrderItemAndLock", args, new AsyncCallback<DataModel<DataSet>>(){
-                        public void onSuccess(DataModel<DataSet> model){
+                    screenService.getObject("fetchOrderItemAndLock", args, new AsyncCallback<DataModel<Integer>>(){
+                        public void onSuccess(DataModel<Integer> model){
                             if(model != null){
                                 replaceRowDataInFillItemsTable(model, row);
                                 ((DataMap)fillItemsTable.model.getRow(row).getData()).put("orderItems", model.get(0).getData());
@@ -817,7 +821,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                     NumberObject orderIdObj = new NumberObject((Integer)fillItemsTable.model.getCell(row, 1));
                     
                     // prepare the argument list for the getObject function
-                    Data[] args = new Data[] {orderIdObj}; 
+                    Field[] args = new Field[] {orderIdObj}; 
                     
                     if(((DataMap)fillItemsTable.model.getRow(row).getData()).get("changed") != null){
                         if(Window.confirm(consts.get("fillOrderItemsChangedConfirm")))
@@ -935,13 +939,13 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
 
                 checkedTreeData = (TreeDataModel)orderItemsTree.model.unload().clone();
                 
-            }else if(col == 3){
+            }else if(col == 2){
                 TreeDataItem item = orderItemsTree.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)item.get(3)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)item.get(3)).getValue();
                
-                DataSet<Data> set = null;
+                DataSet<Field> set = null;
                 if(selections.size() > 0)
-                    set = (DataSet<Data>)selections.get(0);
+                    set = (DataSet<Field>)selections.get(0);
                 
                if(set != null && set.size() > 1){
                    //set the lot num
@@ -955,9 +959,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                
             }
             
+            
             //need to add a changed flag to the fill order table row
             DataMap map = (DataMap)fillItemsTable.model.getRow(
-                                       (Integer)((NumberObject)((DataMap)orderItemsTree.model.getRow(row).getData()).get("tableRowId")).getValue()).getData();
+                                       ((NumberObject)((DataMap)orderItemsTree.model.getRow(row).getData()).get("tableRowId")).getIntegerValue()).getData();
             map.put("changed", new CheckField("Y"));
         }
         
@@ -990,7 +995,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         paramsObj.put("id", new NumberObject((Integer)((DropDownField)orderItemsTree.model.getObject(currentTreeRow, 2)).getSelectedKey()));
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
+        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {
@@ -1014,13 +1019,13 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             
             if(row.getItems().size() > 0){
                 for(int j=0; j<row.getItems().size(); j++){
-                    DataSet tableRow = new DataSet();
+                    DataSet<Field> tableRow = new DataSet<Field>();
                     TreeDataItem childRow = row.getItems().get(j);
                     if(!((Integer)childRow.get(0).getValue()).equals(new Integer(0))){
                         tableRow.add(childRow.get(0));
                         tableRow.add(childRow.get(2));
                         
-                        DataMap rowDataMap = (DataMap)childRow.getData().clone();
+                        DataMap rowDataMap = (DataMap)((DataMap)childRow.getData()).clone();
                         rowDataMap.put("locId", new NumberObject((Integer)((DropDownField)childRow.get(3)).getSelectedKey()));
                         tableRow.setData(rowDataMap);
                         model.add(tableRow);
@@ -1032,7 +1037,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                     tableRow.add(row.get(0));
                     tableRow.add(row.get(2));
                     
-                    tableRow.setData((DataMap)row.getData().clone());
+                    tableRow.setData((Field)((DataMap)row.getData()).clone());
                     
                     model.add(tableRow);
                 }
@@ -1054,7 +1059,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     
     public void onAddLocationButtonClick(){
         TreeDataItem selectedRow = orderItemsTree.model.getRow(currentTreeRow);
-        TreeDataItem item = orderItemsTree.model.createTreeItem("orderItem", new NumberObject(1));
+        TreeDataItem item = orderItemsTree.model.createTreeItem("orderItem");
         //item.get(0).setValue(selectedRow.get(0).getValue());
         item.get(1).setValue(selectedRow.get(1).getValue());
         ((DropDownField)item.get(2)).setModel(((DropDownField)selectedRow.get(2)).getModel());
@@ -1119,7 +1124,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         for(int i=0; i<checkedTreeData.size(); i++){
             TreeDataItem row = checkedTreeData.get(i);
             if(((DataMap)row.getData()).get("totalQty") != null){
-                Integer totalQty = (Integer)((NumberObject)((DataMap)row.getData()).get("totalQty")).getValue();
+                Integer totalQty = ((NumberObject)((DataMap)row.getData()).get("totalQty")).getIntegerValue();
                 if(totalQty.compareTo((Integer)row.get(0).getValue()) < 0){
                     valid = false;
                     ((NumberField)row.get(0)).addError(consts.get("fillOrderQtyException"));

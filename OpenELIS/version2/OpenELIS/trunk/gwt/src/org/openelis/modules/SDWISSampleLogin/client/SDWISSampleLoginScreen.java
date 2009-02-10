@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.SDWISSampleLogin.client;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -44,7 +45,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SDWISSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
+public class SDWISSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
     
     private static boolean loaded = false;
     private static DataModel sampleStatusDropdown, sampleTypeDropdown,
@@ -54,7 +55,7 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
     private KeyListManager keyList = new KeyListManager();
     
     public SDWISSampleLoginScreen() {
-        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService", !loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService", !loaded,new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -74,16 +75,16 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
         //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top", new NumberObject(0));
+        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         row1.get(0).setValue("0 - Bottle #26");
         row1.get(1).setValue("Water");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
         row2.get(0).setValue("SDWA Pb - Logged In");
         row1.addItem(row2);
-        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top", new NumberObject(0));
+        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
         row3.get(0).setValue("1 - Bottle #74");
         row3.get(1).setValue("Water");
-        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
         row4.get(0).setValue("SDWA TOC - Logged In");
         row3.addItem(row4);
         itemsTestsTree.model.addRow(row1);

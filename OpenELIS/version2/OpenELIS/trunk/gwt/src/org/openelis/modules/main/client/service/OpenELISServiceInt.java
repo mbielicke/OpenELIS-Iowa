@@ -29,15 +29,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 
 @RemoteServiceRelativePath("OpenELISServlet")
-public interface OpenELISServiceInt<ScreenRPC extends RPC,Q extends DataModel<DataSet>> extends AppScreenFormServiceInt<ScreenRPC,Q> {
+public interface OpenELISServiceInt<ScreenRPC extends RPC,Key> extends AppScreenFormServiceInt<ScreenRPC,Key> {
     
-    public <T extends Data> T getObject(String method, Data[] args) throws Exception;
+    
+    @Deprecated public <T extends Field> T getObject(String method, Field[] args) throws Exception;
    
+    public <T extends RPC> T call(String method, T rpc) throws Exception;
     
     public void logout();
 	 

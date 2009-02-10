@@ -30,22 +30,21 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -75,7 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>{
+public class ProviderService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
     
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 18;
@@ -83,7 +82,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {        
+    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {        
         List providers = new ArrayList();
         
         if(form == null){
@@ -124,7 +123,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
             //fill the model with the query result
             int i=0;
             if(model == null)
-                model = new DataModel<DataSet>();
+                model = new DataModel<Integer>();
             else
                 model.clear();
             while(i < providers.size() && i < leftTableRowsPerPage) {
@@ -137,16 +136,15 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
                 
                 String fnameResult = resultDO.getFirstName();
         
-                DataSet row = new DataSet();
+                DataSet<Integer> row = new DataSet<Integer>();
                 
-                NumberObject id = new NumberObject(idResult);            
                 StringObject lname = new StringObject();
                 StringObject fname = new StringObject();
                  lname.setValue(lnameResult);
                  fname.setValue(fnameResult);
                 
                 
-                row.setKey(id); 
+                row.setKey(idResult); 
                 row.add(lname);
                 row.add(fname);
                 
@@ -156,7 +154,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         return model;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
                
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpc.form);
@@ -198,11 +196,8 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         
         String tab = (String)rpc.form.getFieldValue("provTabPanel");
         if(tab.equals("notesTab")){
-            DataSet key = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, providerDO.getId());
-            key.setKey(id);
-            
-            loadNotes(key, (Form)rpc.form.getField("notes"));
+
+            loadNotes(providerDO.getId(), (Form)rpc.form.getField("notes"));
         }
         
         //we need to set the notes load param to true because update doesnt call resetRPC
@@ -215,7 +210,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         return rpc;
     }
 
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpc.form);
     
@@ -262,11 +257,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
          
         String tab = (String)rpc.form.getFieldValue("provTabPanel");
         if(tab.equals("notesTab")){
-            DataSet key = new DataSet();
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER, providerDO.getId());
-            key.setKey(id);
-            
-            loadNotes(key, (Form)rpc.form.getField("notes"));
+            loadNotes(providerDO.getId(), (Form)rpc.form.getField("notes"));
         }
         
         //we need to set the notes load param to true because update doesnt call resetRPC
@@ -279,13 +270,13 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         return rpc;
     }
 
-    public RPC commitDelete(RPC rpcReturn) throws RPCException {
+    public DefaultRPC commitDelete(DefaultRPC rpcReturn) throws RPCException {
         return null;
     }
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+            Integer providerId = rpc.key;
             
             
             ProviderDO provDO = new ProviderDO();
@@ -299,20 +290,20 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
               
               if(((Form)rpc.form.getField("addresses")).load){
                   Form contacts = (Form)rpc.form.getField("addresses");
-                  getAddressesModel((NumberObject)((DataSet)rpc.key).getKey(), (TableField)contacts.getField("providerAddressTable"));
+                  getAddressesModel(rpc.key, (TableField)contacts.getField("providerAddressTable"));
               }
               
               if(((Form)rpc.form.getField("notes")).load){
                   Form notesRpc = (Form)rpc.form.getField("notes");
-                  notesRpc.setFieldValue("notesPanel",getNotesModel((NumberObject)((DataSet)rpc.key).getKey()).getValue());
+                  notesRpc.setFieldValue("notesPanel",getNotesModel(rpc.key));
               }
               return rpc;
            
         }
 
-    public RPC fetch(RPC rpc) throws RPCException {        
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {        
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+            Integer providerId = rpc.key;
                     
             ProviderDO provDO = (ProviderDO)remote.getProvider(providerId);        
     //      set the fields in the RPC
@@ -320,31 +311,31 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
              
             String tab = (String)rpc.form.getFieldValue("provTabPanel");
             if(tab.equals("addressesTab")){
-                loadAddresses((DataSet)rpc.key,(Form)rpc.form.getField("addresses"));
+                loadAddresses(rpc.key,(Form)rpc.form.getField("addresses"));
             }
            
             if(tab.equals("notesTab")){
-                loadNotes((DataSet)rpc.key, (Form)rpc.form.getField("notes"));
+                loadNotes(rpc.key, (Form)rpc.form.getField("notes"));
             }
             return rpc;
         }
     
-    public Form loadAddresses(DataSet key, Form form) throws RPCException {
-        getAddressesModel((NumberObject)key.getKey(), (TableField)form.getField("providerAddressTable"));
+    public Form loadAddresses(Integer key, Form form) throws RPCException {
+        getAddressesModel(key, (TableField)form.getField("providerAddressTable"));
         form.load = true;
         return form;
     }
     
-    public Form loadNotes(DataSet key, Form form) throws RPCException {
-        StringObject so = getNotesModel((NumberObject)key.getKey());
+    public Form loadNotes(Integer key, Form form) throws RPCException {
+        StringObject so = getNotesModel(key);
         form.setFieldValue("notesPanel",so.getValue());
         form.load = true;
         return form;
     }
 
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+            Integer providerId = rpc.key;
             
             
             ProviderDO provDO = new ProviderDO();
@@ -358,11 +349,11 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
 
              String tab = (String)rpc.form.getFieldValue("provTabPanel");
              if(tab.equals("addressesTab")){
-                 loadAddresses((DataSet)rpc.key,(Form)rpc.form.getField("addresses"));
+                 loadAddresses(rpc.key,(Form)rpc.form.getField("addresses"));
              }
             
              if(tab.equals("notesTab")){
-                 loadNotes((DataSet)rpc.key, (Form)rpc.form.getField("notes"));
+                 loadNotes(rpc.key, (Form)rpc.form.getField("notes"));
              }
                                                           
             return rpc;
@@ -372,7 +363,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");        
     }
     
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl"));
         
@@ -399,7 +390,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
              CachingManager.putElement("InitialData", "countryDropDown", countryDropDownField);
          } */  
          
-         HashMap map = new HashMap();
+         HashMap<String,Field> map = new HashMap<String,Field>();
          map.put("xml", xml);
          map.put("providers", providerTypeDropDownField);
          map.put("states", stateDropdownField);
@@ -408,25 +399,25 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
          return map;
     }
 
-    public HashMap getXMLData(HashMap args) throws RPCException {
+    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public RPC getScreen(RPC rpc) {
+    public DefaultRPC getScreen(DefaultRPC rpc) {
         return rpc;
     }
 
-    public DataModel fillAddressTable(DataModel addressModel, List contactsList){       
+    public DataModel fillAddressTable(DataModel<Integer> addressModel, List contactsList){       
         try{
             addressModel.clear();
             
             for(int iter = 0;iter < contactsList.size();iter++) {
                 ProviderAddressDO addressRow = (ProviderAddressDO)contactsList.get(iter);
 
-                   DataSet<Data> row = addressModel.createNewSet();
-                   NumberField id = new NumberField(NumberObject.Type.INTEGER);
-                   NumberField addId = new NumberField(NumberObject.Type.INTEGER);
+                   DataSet<Integer> row = addressModel.createNewSet();
+                   NumberField id = new NumberField(NumberField.Type.INTEGER);
+                   NumberField addId = new NumberField(NumberField.Type.INTEGER);
                     id.setValue(addressRow.getId());
                     addId.setValue(addressRow.getAddressDO().getId());
                     DataMap data = new DataMap();                    
@@ -439,16 +430,14 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
                     row.get(3).setValue(addressRow.getAddressDO().getStreetAddress());
                     row.get(4).setValue(addressRow.getAddressDO().getCity());     
                     if(addressRow.getAddressDO().getState()!=null){
-                     row.get(5).setValue(new DataSet(new StringObject(addressRow
-                                                                      .getAddressDO().getState())));
+                     ((DropDownField<String>)(Field)row.get(5)).setValue(new DataSet<String>(addressRow.getAddressDO().getState()));
                     }else{
-                        row.get(5).setValue(new DataSet(new StringObject("")));  
+                      ((DropDownField<String>)(Field)row.get(5)).setValue(new DataSet<String>(""));  
                     } 
                     if(addressRow.getAddressDO().getCountry()!=null){                    
-                     row.get(6).setValue(new DataSet(new StringObject(addressRow
-                                                                      .getAddressDO().getCountry())));
+                      ((DropDownField<String>)(Field)row.get(6)).setValue(new DataSet<String>(addressRow.getAddressDO().getCountry()));
                     }else{
-                        row.get(6).setValue(new DataSet(new StringObject("")));  
+                        ((DropDownField<String>)(Field)row.get(6)).setValue(new DataSet<String>(""));  
                     }                    
                                         
                     row.get(7).setValue(addressRow.getAddressDO().getZipCode());
@@ -478,9 +467,9 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
     }
 
     
-    public void getAddressesModel(NumberObject orgId,TableField model){
+    public void getAddressesModel(Integer orgId,TableField model){
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        List contactsList = remote.getProviderAddresses((Integer)orgId.getValue());
+        List contactsList = remote.getProviderAddresses(orgId);
         fillAddressTable((DataModel)model.getValue(),contactsList);
 
     }
@@ -560,12 +549,12 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         return model;
     }
     
-    public StringObject getNotesModel(NumberObject key){
+    public StringObject getNotesModel(Integer key){
 //      remote interface to call the provider bean
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
 
         //gets the whole notes list now
-        List notesList = remote.getProviderNotes((Integer)key.getValue());
+        List notesList = remote.getProviderNotes(key);
         
         Iterator itr = notesList.iterator();
         try{
@@ -656,7 +645,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
 
     public TableField getAddressModel(NumberObject providerId,TableField model){
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-        List addressList = remote.getProviderAddresses((Integer)providerId.getValue());
+        List addressList = remote.getProviderAddresses(providerId.getIntegerValue());
         model.setValue(fillAddressTable((DataModel)model.getValue(),addressList));
         return model;
     }
@@ -667,14 +656,14 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         form.setFieldValue(ProvMeta.getFirstName(),provDO.getFirstName());
         form.setFieldValue(ProvMeta.getNpi(),provDO.getNpi());        
         form.setFieldValue(ProvMeta.getMiddleName(),provDO.getMiddleName());              
-        form.setFieldValue(ProvMeta.getTypeId(),new DataSet(new NumberObject(provDO.getTypeId())));         
+        ((DropDownField<Integer>)form.getField(ProvMeta.getTypeId())).setValue(new DataSet<Integer>(provDO.getTypeId()));         
     }
     
     private ProviderDO getProviderDOFromRPC(Form form){
      NumberField providerId = (NumberField) form.getField(ProvMeta.getId());   
      ProviderDO providerDO = new ProviderDO();
      //provider info        
-     providerDO.setId((Integer)providerId.getValue());
+     providerDO.setId(providerId.getIntegerValue());
      providerDO.setFirstName(((String)form.getFieldValue(ProvMeta.getFirstName())));
      providerDO.setLastName(((String)form.getFieldValue(ProvMeta.getLastName())));
      providerDO.setMiddleName(((String)form.getFieldValue(ProvMeta.getMiddleName())));
@@ -687,18 +676,18 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
     }
     
     
-    private ArrayList<ProviderAddressDO> getProviderAddressListFromRPC(DataModel addressTable, Integer providerId){
+    private ArrayList<ProviderAddressDO> getProviderAddressListFromRPC(DataModel<Integer> addressTable, Integer providerId){
         ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
           
            for(int iter = 0; iter < addressTable.size(); iter++){            
             ProviderAddressDO provAddDO = new ProviderAddressDO();
-            DataSet<Data> row = (DataSet)addressTable.get(iter);
+            DataSet<Integer> row = addressTable.get(iter);
             
             NumberField provAddId = (NumberField)((DataMap)row.getData()).get("provAddId");
             NumberField addId = (NumberField)((DataMap)row.getData()).get("addId");
             
             if(provAddId != null){
-             provAddDO.setId((Integer)(provAddId).getValue());
+             provAddDO.setId(provAddId.getIntegerValue());
             } 
             provAddDO.setLocation((String)((StringField)row.get(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.get(1)).getValue());
@@ -713,7 +702,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
                 //do nothing
             //}else{
              if(addId != null){              
-              provAddDO.getAddressDO().setId((Integer)addId.getValue());             
+              provAddDO.getAddressDO().setId(addId.getIntegerValue());          
              }             
             //}
             provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.get(2)).getValue()));
@@ -732,7 +721,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
         }
            for(int iter = 0; iter < addressTable.getDeletions().size(); iter++){            
                ProviderAddressDO provAddDO = new ProviderAddressDO();
-               DataSet<Data> row = (DataSet)addressTable.getDeletions().get(iter);
+               DataSet<Integer> row = addressTable.getDeletions().get(iter);
                
                NumberField provAddId = null;
                NumberField addId = null;
@@ -742,7 +731,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
                }
                
                if(provAddId != null){
-                provAddDO.setId((Integer)(provAddId).getValue());
+                provAddDO.setId(provAddId.getIntegerValue());
                } 
                provAddDO.setLocation((String)((StringField)row.get(0)).getValue());
                provAddDO.setExternalId((String)((StringField)row.get(1)).getValue());
@@ -757,7 +746,7 @@ public class ProviderService implements AppScreenFormServiceInt<RPC, DataModel<D
                    //do nothing
                //}else{
                 if(addId != null){              
-                 provAddDO.getAddressDO().setId((Integer)addId.getValue());             
+                 provAddDO.getAddressDO().setId(addId.getIntegerValue());             
                 }             
                //}
                

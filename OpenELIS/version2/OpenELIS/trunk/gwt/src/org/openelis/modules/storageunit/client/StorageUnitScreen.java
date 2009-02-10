@@ -25,9 +25,8 @@
 */
 package org.openelis.modules.storageunit.client;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -41,7 +40,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageUnitScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
+public class StorageUnitScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
 
 	private Dropdown cat;
     private static boolean loaded = false;
@@ -51,7 +50,7 @@ public class StorageUnitScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
 	public StorageUnitScreen() {
-		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded,new RPC<Form,Data>());
+		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded,new DefaultRPC());
 	}
 	
 	 public void performCommand(Enum action, Object obj) {

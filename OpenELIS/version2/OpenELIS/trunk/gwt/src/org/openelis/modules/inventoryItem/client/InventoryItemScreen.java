@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.RPC;
@@ -44,6 +45,8 @@ import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -71,7 +74,7 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
+public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
     private AppButton        removeComponentButton, standardNoteButton;
 	private ScreenTextBox nameTextbox;
@@ -94,7 +97,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
     
 	public InventoryItemScreen() {
-        super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded, new RPC<Form,Data>());
+        super("org.openelis.modules.inventoryItem.server.InventoryItemService",!loaded, new DefaultRPC());
 	}
 
     public void performCommand(Enum action, Object obj) {
@@ -268,7 +271,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, new BooleanObject(forDuplicate), form.getField("components")};
+        Field[] args = new Field[] {new IntegerObject(key), new BooleanObject(forDuplicate), form.getField("components")};
 
         screenService.getObject("loadComponents", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -295,7 +298,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), form.getField("locations")};
+        Field[] args = new Field[] {new IntegerObject(key), new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), form.getField("locations")};
 
         screenService.getObject("loadLocations", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -319,7 +322,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
         window.setStatus("","spinnerIcon");
                  
        // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, form.getField("comments")}; 
+        Field[] args = new Field[] {new IntegerObject(key), form.getField("comments")}; 
          
        screenService.getObject("loadComments", args, new AsyncCallback<Form>(){
            public void onSuccess(Form result){    
@@ -379,14 +382,14 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
             ((Form)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getSubject(),null);
             ((Form)displayRPC.getField("comments")).setFieldValue(InvItemMeta.ITEM_NOTE.getText(),null);   
             
-            DataSet tempKey = key;
+            Integer tempKey = key;
                     
-            DataModel beforeModel = (DataModel)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
+            DataModel<Integer> beforeModel = (DataModel<Integer>)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
             beforeModel.size();
             
             add();
             
-            DataModel afterModel = (DataModel)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
+            DataModel<Integer> afterModel = (DataModel<Integer>)((Form)displayRPC.getField("components")).getFieldValue("componentsTable");
             afterModel.size();
             key = tempKey;
             
@@ -429,13 +432,13 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
                     final NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
                       
                     // prepare the argument list for the getObject function
-                    Data[] args = new Data[] {componentIdObj}; 
+                    Field[] args = new Field[] {componentIdObj}; 
                       
                     screenService.getObject("getComponentDescriptionText", args, new AsyncCallback<StringObject>(){
                         public void onSuccess(StringObject result){
                             if(row < componentsTable.model.numRows()){
                                 Integer currentId = (Integer)componentsTable.model.getCell(row, 0);
-                                Integer oldId = (Integer)componentIdObj.getValue();
+                                Integer oldId = componentIdObj.getIntegerValue();
                                 
                                 //make sure the row hasnt been deleted and it still has the same values
                                 if(currentId.equals(oldId))
@@ -472,7 +475,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
         paramsObj.put("name", form.getField(InvItemMeta.getName()));
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
+        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {

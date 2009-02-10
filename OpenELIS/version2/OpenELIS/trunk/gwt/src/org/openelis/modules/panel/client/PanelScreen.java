@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -54,7 +55,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class PanelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements
+public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements
                                                    ClickListener,
                                                    ChangeListener,
                                                    TableManager {
@@ -92,7 +93,8 @@ public class PanelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impleme
     }
     
     public PanelScreen() {
-        super("org.openelis.modules.panel.server.PanelService",!loaded, new RPC<Form,Data>());
+        super("org.openelis.modules.panel.server.PanelService",!loaded, new DefaultRPC());
+        
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -259,9 +261,9 @@ public class PanelScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impleme
        private void addTestButtonClick(){
               int selIndex = allTestsTableModel.getData().getSelectedIndex();
               if(selIndex > -1){         
-                  DataSet<Data> atRow =  (DataSet<Data>)allTestsTableModel.getData().get(selIndex);
+                  DataSet<Object> atRow =  (DataSet<Object>)allTestsTableModel.getData().get(selIndex);
                   String display = (String)((StringObject)atRow.getKey()).getValue();                  
-                  DataSet<Data> row = addedTestsController.model.createRow();            
+                  DataSet<Object> row = (DataSet<Object>)addedTestsController.model.createRow();            
                   String[] namesArray= display.split(",");                     
                   if(testAdded(namesArray[0],namesArray[1])){
                     boolean ok = Window.confirm("This test has already been added to the panel." +

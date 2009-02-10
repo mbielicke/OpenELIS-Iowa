@@ -23,8 +23,8 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
         
     }
     
-    public static DataModel<DataSet> getStates() {
-        DataModel<DataSet> model = (DataModel<DataSet>)CachingManager.getElement("InitialData", "stateDropdown");
+    public static DataModel<String> getStates() {
+        DataModel<String> model = (DataModel<String>)CachingManager.getElement("InitialData", "stateDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("state");
@@ -32,11 +32,11 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
             ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
             //  we need to build the model to return
-            model = new DataModel<DataSet>();
+            model = new DataModel<String>();
         
-            model.add(new DataSet(new StringObject(" "),new StringObject(" ")));
+            model.add(new DataSet<String>("",new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
-                model.add(new DataSet(new StringObject(resultDO.getName()),new StringObject(resultDO.getName())));
+                model.add(new DataSet<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "stateDropdown", model);
             version++;

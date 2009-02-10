@@ -27,10 +27,8 @@ package org.openelis.modules.analyte.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -42,14 +40,14 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class AnalyteScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
+public class AnalyteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
 	
 	private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
 
 	public AnalyteScreen() {
-		super("org.openelis.modules.analyte.server.AnalyteService",false, new RPC<Form,Data>());
+		super("org.openelis.modules.analyte.server.AnalyteService",false, new DefaultRPC());
     }
      
     public void performCommand(Enum action, Object obj) {

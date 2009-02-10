@@ -25,17 +25,18 @@
 */
 package org.openelis.modules.main.client.service;
 
+import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
-public interface OpenELISServiceIntAsync<ScreenRPC extends RPC,Q extends DataModel<DataSet>> extends AppScreenFormServiceIntAsync<ScreenRPC,Q> {
+public interface OpenELISServiceIntAsync<ScreenRPC extends RPC,Key> extends AppScreenFormServiceIntAsync<ScreenRPC,Key> {
     
-    public void getObject(String method, Data[] args, AsyncCallback<? extends Data> callback);
+    @Deprecated public void getObject(String method, Field[] args, AsyncCallback<? extends Field> callback);
+    
+    public Request call(String method, RPC rpc, AsyncCallback<? extends RPC> callback);
     
     public void logout(AsyncCallback callback);
     
