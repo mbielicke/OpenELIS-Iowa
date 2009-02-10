@@ -50,6 +50,9 @@ public interface FillOrderRemote {
      //method to query order items
      public List getOrderItems(Integer orderId);
      
+     //method to update internal orders
+     public void updateInternalOrders(List orders) throws Exception;
+     
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();
      

@@ -30,6 +30,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.InventoryReceiptDO;
+
 @Remote
 public interface InventoryReceiptRemote {
     public static final String  RECEIPT          = "receipt",
@@ -64,9 +66,9 @@ public interface InventoryReceiptRemote {
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();
           
-     //method to validate the fields before the backend updates it in the database
-     public List validateForUpdate(List inventoryReceipts);
+     //method to validate the receipt fields before the backend updates it in the database
+     public void validateReceipts(List<InventoryReceiptDO> inventoryReceipts) throws Exception;
      
-     //method to validate the fields before the backend updates it in the database
-     public List validateForAdd(List inventoryReceipts);
+     //method to validate the transfer fields before the backend updates it in the database     
+     public void validateTransfers(List<InventoryReceiptDO> inventoryTransfers) throws Exception;
 }

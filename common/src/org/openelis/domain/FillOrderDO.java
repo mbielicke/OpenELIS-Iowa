@@ -26,10 +26,10 @@
 package org.openelis.domain;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Date;
 
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
@@ -49,6 +49,11 @@ public class FillOrderDO implements Serializable{
     protected String requestedBy;
     protected Integer costCenterId;
     protected String isExternal;
+
+    protected Integer inventoryLocationId;
+    protected Integer orderItemId;
+    protected Integer quantity;
+    protected Integer inventoryXUseId;
     
     public AddressDO addressDO = new AddressDO();
 
@@ -174,5 +179,36 @@ public class FillOrderDO implements Serializable{
 
     public void setIsExternal(String isExternal) {
         this.isExternal = DataBaseUtil.trim(isExternal);
+    }
+    public Integer getInventoryLocationId() {
+        return inventoryLocationId;
+    }
+
+    public void setInventoryLocationId(Integer inventoryLocationId) {
+        this.inventoryLocationId = inventoryLocationId;
+    }
+
+    public Integer getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(Integer orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Integer getInventoryXUseId() {
+        return inventoryXUseId;
+    }
+
+    public void setInventoryXUseId(Integer inventoryXUseId) {
+        this.inventoryXUseId = inventoryXUseId;
     }
 }
