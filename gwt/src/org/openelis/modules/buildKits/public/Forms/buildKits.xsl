@@ -141,8 +141,8 @@ UIRF Software License are applicable instead of those above.
 							<editors>
 								<label/>
 								<autoComplete cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
-									<headers>Desc</headers>
-									<widths>300</widths>
+									<headers>Desc,Lot #,Qty</headers>
+									<widths>300,65,30</widths>
 								</autoComplete>
 								<label/>
 								<label/>

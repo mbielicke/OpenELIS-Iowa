@@ -50,12 +50,14 @@ import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
@@ -67,7 +69,9 @@ import org.openelis.gwt.widget.table.event.TableModelListener;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.SourcesTreeModelEvents;
 import org.openelis.gwt.widget.tree.event.SourcesTreeWidgetEvents;
+import org.openelis.gwt.widget.tree.event.TreeModelListener;
 import org.openelis.gwt.widget.tree.event.TreeWidgetListener;
 import org.openelis.metamap.FillOrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -82,7 +86,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, CommandListener{
+public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, TableManager, TableWidgetListener, TableModelListener, TreeManager, TreeWidgetListener, TreeModelListener, CommandListener{
     
     private static boolean loaded = false;
     private static DataModel costCenterDropdown, shipFromDropdown, statusDropdown;
@@ -94,10 +98,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     private TextBox requestedByText, orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText;
     private TextArea orderShippingNotes;
     private Dropdown costCenterDrop;
+    private AppButton              removeRowButton, addLocationButton;
     
     private TreeDataModel checkedTreeData;
     private DataModel checkedOrderIds = new DataModel();
-    //private List checkedOrderIds = new ArrayList();
     private String tableCheckedValue;
     private int currentTableRow = -2;
     private int currentTreeRow = -1;
@@ -125,7 +129,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     }      
     
     public void onClick(Widget sender) {
-
+        if (sender == removeRowButton)
+            onRemoveRowButtonClick();
+        else if (sender == addLocationButton)
+            onAddLocationButtonClick();
     }
     
     public void afterDraw(boolean success) {
@@ -149,6 +156,10 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         fillItemsTable.model.addTableModelListener(this);
         orderItemsTree = (TreeWidget)getWidget("orderItemsTree");
         orderItemsTree.addTreeWidgetListener(this);
+        orderItemsTree.model.addTreeModelListener(this);
+        
+        removeRowButton = (AppButton)getWidget("removeRowButton");
+        addLocationButton = (AppButton)getWidget("addLocationButton");
         
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -214,10 +225,16 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         enable(true);
         changeState(State.ADD);
         window.setStatus(consts.get("enterInformationPressCommit"),"");
+        
+        removeRowButton.changeState(ButtonState.DISABLED);
+        addLocationButton.changeState(ButtonState.DISABLED);
     }
 
     public void query() {
         super.query();
+        
+        removeRowButton.changeState(ButtonState.DISABLED);
+        addLocationButton.changeState(ButtonState.DISABLED);
         
         fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new DataSet(new NumberObject(orderPendingValue)));
         fillItemsQueryTable.select(0, 1);
@@ -229,7 +246,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     
     public void commit() {
         if (state == State.ADD){
-            orderItemsTree.model.load(checkedTreeData);
+            orderItemsTree.model.load((TreeDataModel)checkedTreeData.clone());
             submitForm();
             form.validate();
             if (form.status == Status.valid && validate()) {
@@ -244,9 +261,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             }
         }else
             super.commit();
-            
-        checkedOrderIds.clear();
-        checkedTreeData.clear();
+
     }
     
     public void abort() {
@@ -310,12 +325,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                 return true;
             }
         }
-        
-        /*else if(controller == orderItemsController){
-            //if the fillItemsController row is checked then then col==1 returns true
-            return true;
-        }*/
-        
+
        return false;
     }
 
@@ -496,6 +506,14 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
             
             super.commit();
         }
+        
+        //clear out all the temp values
+        checkedOrderIds.clear();
+        checkedTreeData.clear();
+        orderItemsTree.model.clear();
+        lastShippedFrom = new Integer(-1);
+        lastShippedTo = new Integer(-1);
+        
     }
     
     private void fillOrderCheck(final int rowIndex, final boolean checked){
@@ -529,40 +547,15 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                if(checked){     //we need to add the order items from the selected row to the tree
                    for(int i=0; i<orderItemsModel.size(); i++){
                        DataSet<Data> set = (DataSet)((DataSet)orderItemsModel.get(i)).clone();
-                    //   int j=0;
-                       
-                    //   while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
-                    //       j++;
-                       
-                  //     if(j == checkedTreeData.size()){   //we dont have a node for this item yet, we can add a node with no children
-                           /*TreeDataItem newTreeRow = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey());                           
-                           newTreeRow.get(0).setValue(set.get(0).getValue());
-                           newTreeRow.get(1).setValue(set.get(1).getValue());
-                           newTreeRow.get(2).setValue(set.get(2).getValue());
-                           
-                           if(set.get(3).getValue() != null){
-                               ((DropDownField)newTreeRow.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                               ((DropDownField)newTreeRow.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                           }
 
-                           newTreeRow.get(4).setValue(set.get(4).getValue());
-                           newTreeRow.get(5).setValue(set.get(5).getValue());
-                           
-                           DataMap rowHiddenMap = new DataMap();
-                           rowHiddenMap.put("referenceTableId", set.get(6));
-                           rowHiddenMap.put("referenceId", set.get(7));
-                           rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
-                           rowHiddenMap.put("invItemId", set.getKey());
-                           newTreeRow.setData(rowHiddenMap);
-                           
-                           checkedTreeData.add(newTreeRow);
-                           */
                            TreeDataItem parentItemRow = orderItemsTree.model.createTreeItem("top", (NumberObject)set.getKey());
                            TreeDataItem locRow = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey()); 
                            parentItemRow.addItem(locRow);
                            parentItemRow.get(0).setValue(set.get(0).getValue());
                            parentItemRow.get(1).setValue(set.get(1).getValue());
-                           
+                           DataMap parentRowHiddenMap = new DataMap();
+                           parentRowHiddenMap.put("totalQty", new NumberObject((Integer)set.get(0).getValue()));
+                           parentItemRow.setData(parentRowHiddenMap);                           
                            
                            if(set.get(2).getValue() != null){
                                ((DropDownField)parentItemRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
@@ -576,91 +569,17 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                                ((DropDownField)locRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
                                ((DropDownField)locRow.get(2)).setValue(((DropDownField)set.get(2)).getSelections());
                            }
-                           
-                           /*if(set.get(3).getValue() != null){
-                               ((DropDownField)newTreeRow.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                               ((DropDownField)newTreeRow.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                           }
 
-                           newTreeRow.get(4).setValue(set.get(4).getValue());
-                           newTreeRow.get(5).setValue(set.get(5).getValue());
-                           */
                            DataMap rowHiddenMap = new DataMap();
                            rowHiddenMap.put("referenceTableId", set.get(6));
                            rowHiddenMap.put("referenceId", set.getKey());
                            rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
+                           rowHiddenMap.put("locId", new NumberObject((Integer)((DropDownField)set.get(3)).getSelectedKey()));
                            locRow.setData(rowHiddenMap);
                            
                            checkedTreeData.add(parentItemRow);
-                  //     }
-                           /*else{                            //we already have a node for this item.  If it has no children we need to create a new parent.
-                           
-                          TreeDataItem itemSet = checkedTreeData.get(j);
-                          if(itemSet.getItems().size() == 0){
-                              TreeDataItem parentTreeItem = checkedTreeData.createTreeItem("top", (NumberObject)set.getKey());
-                              parentTreeItem.get(1).setValue(set.get(1).getValue());
-                              parentTreeItem.get(2).setValue(set.get(2).getValue());
-                              
-                              TreeDataItem firstChildTreeItem = (TreeDataItem)itemSet.clone();
-                              parentTreeItem.get(0).setValue((Integer)set.get(0).getValue()+(Integer)firstChildTreeItem.get(0).getValue());
-                              
-                              TreeDataItem secChildTreeItem = checkedTreeData.createTreeItem("orderItem", (NumberObject)set.getKey());
-                              secChildTreeItem.get(0).setValue(set.get(0).getValue());
-                              secChildTreeItem.get(1).setValue(set.get(1).getValue());
-                              secChildTreeItem.get(2).setValue(set.get(2).getValue());
-                              
-                              if(set.get(3).getValue() != null){
-                                  ((DropDownField)secChildTreeItem.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                                  ((DropDownField)secChildTreeItem.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                              }
-                              
-                              secChildTreeItem.get(4).setValue(set.get(4).getValue());
-                              secChildTreeItem.get(5).setValue(set.get(5).getValue());
-                              
-                              DataMap rowHiddenMap = new DataMap();
-                              rowHiddenMap.put("referenceTableId", set.get(6));
-                              rowHiddenMap.put("referenceId", set.get(7));
-                              rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
-                              rowHiddenMap.put("invItemId", set.getKey());
-                              secChildTreeItem.setData(rowHiddenMap);
-                             
-                              parentTreeItem.addItem(firstChildTreeItem);
-                              parentTreeItem.addItem(secChildTreeItem);
-                              
-                              checkedTreeData.remove(j);
-                              checkedTreeData.add(j, parentTreeItem);
-                          }else{    //we dont need to create a parent...just add another child node
-                              TreeDataItem newChild = checkedTreeData.createTreeItem("orderItem", (NumberObject)set.getKey());
-                              newChild.get(0).setValue(set.get(0).getValue());
-                              newChild.get(1).setValue(set.get(1).getValue());
-                              newChild.get(2).setValue(set.get(2).getValue());
-                              
-                              if(set.get(3).getValue() != null){
-                                  ((DropDownField)newChild.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                                  ((DropDownField)newChild.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                              }
-                              
-                              newChild.get(4).setValue(set.get(4).getValue());
-                              newChild.get(5).setValue(set.get(5).getValue());
-                              
-                              DataMap rowHiddenMap = new DataMap();
-                              rowHiddenMap.put("referenceTableId", set.get(5));
-                              rowHiddenMap.put("referenceId", set.get(6));
-                              rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
-                              rowHiddenMap.put("invItemId", set.getKey());
-                              newChild.setData(rowHiddenMap);
-                              
-                              ((TreeDataItem)checkedTreeData.get(j)).addItem(newChild);
-                              
-                              //update the qty on the parent node
-                              itemSet.get(0).setValue((Integer)itemSet.get(0).getValue()+(Integer)set.get(0).getValue());
-                          }
-                       }*/
-                           
                    }  
                }else{   //we need to rebuild the order items model from scratch using the checkedOrderItems list
-                   //checkedTreeData.clear();
-                   //TableModel model = (TableModel)fillItemsTable.model;
                    int k=0;
                    while(k<checkedTreeData.size()){
                        
@@ -669,70 +588,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                            k--;
                        }
                        k++;
-                       /*DataSet itemsRow = model.getRow(k);
-                           final DataMap rebuildMap = (DataMap)itemsRow.getData();
-                          
-                           DataModel rebuildModel = (DataModel)rebuildMap.get("orderItems");
-                           
-                           //rebuild the tree model
-                           for(int l=0;l<rebuildModel.size(); l++){
-                               DataSet<Data> set = (DataSet)((DataSet)rebuildModel.get(l)).clone();
-                               int j=0;
-                               while(j<checkedTreeData.size() && !set.getKey().equals(checkedTreeData.get(j).getKey()))
-                                   j++;
-                               
-                               if(j == checkedTreeData.size()){   //we dont have a node for this item yet, we can add a node with no children
-                                   TreeDataItem newTreeRow = orderItemsTree.model.createTreeItem("orderItem", (NumberObject)set.getKey());                           
-                                   newTreeRow.get(0).setValue(set.get(0).getValue());
-                                   newTreeRow.get(1).setValue(set.get(1).getValue());
-                                   newTreeRow.get(2).setValue(set.get(2).getValue());
-                                   
-                                   if(set.get(3).getValue() != null){
-                                       ((DropDownField)newTreeRow.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                                       ((DropDownField)newTreeRow.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                                   }
-                                   
-                                   newTreeRow.get(4).setValue(set.get(4).getValue());
-                                   newTreeRow.get(5).setValue(set.get(5).getValue());
-                                   
-                                   checkedTreeData.add(newTreeRow);
-                               }else{                            //we already have a node for this item.  If it has no children we need to create a new parent.
-                                  TreeDataItem itemSet = checkedTreeData.get(j);
-                                  if(itemSet.getItems().size() == 0){
-                                      TreeDataItem parentTreeItem = checkedTreeData.createTreeItem("top", (NumberObject)set.getKey());
-                                      parentTreeItem.get(1).setValue(set.get(1).getValue());
-                                      parentTreeItem.get(2).setValue(set.get(2).getValue());
-                                      
-                                      TreeDataItem firstChildTreeItem = (TreeDataItem)itemSet.clone();
-                                      
-                                      TreeDataItem secChildTreeItem = checkedTreeData.createTreeItem("orderItem", (NumberObject)set.getKey());
-                                      secChildTreeItem.get(0).setValue(set.get(0).getValue());
-                                      secChildTreeItem.get(1).setValue(set.get(1).getValue());
-                                      secChildTreeItem.get(2).setValue(set.get(2).getValue());
-                                      
-                                      if(set.get(3).getValue() != null){
-                                          ((DropDownField)secChildTreeItem.get(3)).setModel(((DropDownField)set.get(3)).getModel());
-                                          ((DropDownField)secChildTreeItem.get(3)).setValue(((DropDownField)set.get(3)).getSelections());
-                                      }
-                                      
-                                      secChildTreeItem.get(4).setValue(set.get(4).getValue());
-                                      secChildTreeItem.get(5).setValue(set.get(5).getValue());
-                                     
-                                      parentTreeItem.addItem(firstChildTreeItem);
-                                      parentTreeItem.addItem(secChildTreeItem);
-                                      
-                                      checkedTreeData.remove(j);
-                                      checkedTreeData.add(j, parentTreeItem);
-                                  }else{    //we dont need to create a parent...just add another child node
-                                      TreeDataItem newChild = checkedTreeData.createTreeItem("orderItem", (NumberObject)set.getKey());
-                                      ((TreeDataItem)checkedTreeData.get(j)).addItem(newChild);
-                                  }
-                               }
-                           }
-                           
-                       }*/
                    }
-                   
                }                
                 
                if(!checked && checkedTreeData.size() == 0)
@@ -787,6 +643,9 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
 
     public void rowSelected(SourcesTableModelEvents sender, int row) {
         if(sender == fillItemsTable.model){
+            removeRowButton.changeState(ButtonState.DISABLED);
+            addLocationButton.changeState(ButtonState.DISABLED);
+            
             final DataSet tableRow;
             
             if(row >=0 && fillItemsTable.model.numRows() > row)
@@ -905,7 +764,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         if(col == 0){ 
             final String checkedValue = (String)fillItemsTable.model.getCell(row, 0);
             if(!checkedValue.equals(tableCheckedValue)){
-                /* NEW */
+
                 if(checkedValue.equals(CheckBox.CHECKED)){
                     //we need to fetch the row, make sure it isnt locked, and reload the data
                     NumberObject orderIdObj = new NumberObject((Integer)fillItemsTable.model.getCell(row, 1));
@@ -1060,7 +919,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
         //we need to set the changed flag is the value is changed
         //we also need to save the new model if the value is changed
-        if(lastTreeValue != null && !orderItemsTree.model.getCell(row, col).equals(lastTreeValue)){
+        if(orderItemsTree.model.getCell(row, col) != null && !orderItemsTree.model.getCell(row, col).equals(lastTreeValue)){
             if(col == 0){
                 //we need to add up all the child nodes and get a new parent quantity, if necessary
                 TreeDataItem item = orderItemsTree.model.getRow(row);
@@ -1070,26 +929,31 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                         newTotalQuantity += (Integer)item.parent.getItems().get(i).get(0).getValue();
                     }
                     
-                    item.parent.get(0).setValue(newTotalQuantity);
-                    orderItemsTree.model.refresh();
-                }
+                    ((DataMap)item.parent.getData()).put("totalQty", new NumberObject(newTotalQuantity));
+ //                   orderItemsTree.model.refresh();
+               }
+
+                checkedTreeData = (TreeDataModel)orderItemsTree.model.unload().clone();
                 
             }else if(col == 3){
                 TreeDataItem item = orderItemsTree.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)item.get(2)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)item.get(3)).getSelections();
                
                 DataSet<Data> set = null;
                 if(selections.size() > 0)
                     set = (DataSet<Data>)selections.get(0);
                 
                if(set != null && set.size() > 1){
-                    //set the new quantity on hand
-                   orderItemsTree.model.setCell(row, 4, (Integer)((DataObject)set.get(1)).getValue());
-                   //orderItemsTree.model.refresh();
+                   //set the lot num
+                   orderItemsTree.model.setCell(row, 4, (String)((DataObject)set.get(1)).getValue());
+                   
+                   //set the new quantity on hand
+                   orderItemsTree.model.setCell(row, 5, (Integer)((DataObject)set.get(2)).getValue());
                }
+
+               checkedTreeData = (TreeDataModel)orderItemsTree.model.unload().clone();
+               
             }
-            
-            checkedTreeData = orderItemsTree.model.unload();
             
             //need to add a changed flag to the fill order table row
             DataMap map = (DataMap)fillItemsTable.model.getRow(
@@ -1105,10 +969,8 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         if("orderItem".equals(((TreeWidget)sender).model.getRow(row).leafType) && currentTableRow > -1 && 
                         "Y".equals(fillItemsTable.model.getCell(currentTableRow, 0)) && (col == 0 || col == 3)){
             currentTreeRow = row;
-            //if(col == 3)
-              //  lastTreeValue = (Integer)((DropDownField)orderItemsTree.model.getObject(row, col)).getSelectedKey();
-            //else
-                lastTreeValue = orderItemsTree.model.getCell(row, col);
+
+            lastTreeValue = orderItemsTree.model.getCell(row, col);
         }
     }
 
@@ -1156,9 +1018,11 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                     TreeDataItem childRow = row.getItems().get(j);
                     if(!((Integer)childRow.get(0).getValue()).equals(new Integer(0))){
                         tableRow.add(childRow.get(0));
-                        tableRow.add(childRow.get(1));
+                        tableRow.add(childRow.get(2));
                         
-                        tableRow.setData((DataMap)childRow.getData().clone());
+                        DataMap rowDataMap = (DataMap)childRow.getData().clone();
+                        rowDataMap.put("locId", new NumberObject((Integer)((DropDownField)childRow.get(3)).getSelectedKey()));
+                        tableRow.setData(rowDataMap);
                         model.add(tableRow);
                     }
                 }
@@ -1166,7 +1030,7 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                 if(!((Integer)row.get(0).getValue()).equals(new Integer(0))){
                     DataSet tableRow = new DataSet();
                     tableRow.add(row.get(0));
-                    tableRow.add(row.get(1));
+                    tableRow.add(row.get(2));
                     
                     tableRow.setData((DataMap)row.getData().clone());
                     
@@ -1176,9 +1040,93 @@ public class FillOrderScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         }
         return model;
     }
-
+   
     public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    public void onRemoveRowButtonClick(){
+        orderItemsTree.model.deleteRow(currentTreeRow);
+        currentTreeRow=-1;
+        checkedTreeData = (TreeDataModel)orderItemsTree.model.unload().clone();
+    }
+    
+    public void onAddLocationButtonClick(){
+        TreeDataItem selectedRow = orderItemsTree.model.getRow(currentTreeRow);
+        TreeDataItem item = orderItemsTree.model.createTreeItem("orderItem", new NumberObject(1));
+        //item.get(0).setValue(selectedRow.get(0).getValue());
+        item.get(1).setValue(selectedRow.get(1).getValue());
+        ((DropDownField)item.get(2)).setModel(((DropDownField)selectedRow.get(2)).getModel());
+        item.get(2).setValue(selectedRow.get(2).getValue());
+        
+        DataMap rowHiddenMap = (DataMap)((DataMap)selectedRow.getData()).clone();
+        item.setData(rowHiddenMap);
+        
+        if(selectedRow.parent == null){
+            selectedRow.addItem(item);
+            if(!selectedRow.open)
+                selectedRow.toggle();
+        }else{
+            selectedRow.parent.addItem(item);
+            
+        }
+        
+        //TODO eventually select the first column of the added row
+
+        orderItemsTree.model.refresh();
+    }
+
+    //
+    //start tree model listener methods
+    //
+    public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {}
+
+    public void dataChanged(SourcesTreeModelEvents sender) {}
+
+    public void rowAdded(SourcesTreeModelEvents sender, int rows) {}
+
+    public void rowClosed(SourcesTreeModelEvents sender, int row, TreeDataItem item) {}
+
+    public void rowDeleted(SourcesTreeModelEvents sender, int row) {}
+
+    public void rowOpened(SourcesTreeModelEvents sender, int row, TreeDataItem item) {}
+
+    public void rowSelectd(SourcesTreeModelEvents sender, int row) {
+        boolean parentNull = ((TreeDataItem)orderItemsTree.model.getRow(row)).parent == null;
+        if(parentNull || (!parentNull && ((TreeDataItem)orderItemsTree.model.getRow(row)).childIndex == 0))
+            removeRowButton.changeState(ButtonState.DISABLED);
+        else
+            removeRowButton.changeState(ButtonState.UNPRESSED);
+        
+        addLocationButton.changeState(ButtonState.UNPRESSED);
+        currentTreeRow = row;
+                
+    }
+
+    public void rowUnselected(SourcesTreeModelEvents sender, int row) {}
+
+    public void rowUpdated(SourcesTreeModelEvents sender, int row) {}
+
+    public void unload(SourcesTreeModelEvents sender) {}
+    //
+    //end tree model listener
+    //
+    
+    protected boolean validate() {
+        boolean valid = true;
+        //we need to iterate through the tree and make sure there is enough qty set to fill the orders
+        for(int i=0; i<checkedTreeData.size(); i++){
+            TreeDataItem row = checkedTreeData.get(i);
+            if(((DataMap)row.getData()).get("totalQty") != null){
+                Integer totalQty = (Integer)((NumberObject)((DataMap)row.getData()).get("totalQty")).getValue();
+                if(totalQty.compareTo((Integer)row.get(0).getValue()) < 0){
+                    valid = false;
+                    ((NumberField)row.get(0)).addError(consts.get("fillOrderQtyException"));
+                }
+            }
+                
+        }
+        return valid;
     }
 }

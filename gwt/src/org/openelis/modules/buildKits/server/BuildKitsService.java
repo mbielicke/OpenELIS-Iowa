@@ -84,7 +84,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         //build the build kits DO from the form
         buildKitDO = getBuildKitDOFromRPC(rpc.form);
         
-        //contacts info
+        //components info
         TableField componentsField = (TableField)rpc.form.getField("subItemsTable");
         DataModel componentsTable = (DataModel)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable);
@@ -150,10 +150,22 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     private BuildKitDO getBuildKitDOFromRPC(Form form){
         BuildKitDO buildKitDO = new BuildKitDO();
         
-        buildKitDO.setKitId((Integer)((DropDownField)form.getField(InventoryItemMeta.getName())).getSelectedKey());
-        buildKitDO.setKit((String)((DropDownField)form.getField(InventoryItemMeta.getName())).getTextValue());
+        DropDownField invItemDrop = (DropDownField)form.getField(InventoryItemMeta.getName());
+        ArrayList<DataSet> selected = invItemDrop.getSelections();
+        DataSet selectedRow = null;
+        DataMap selectedRowMap = null;
+        if(selected.size() > 0){
+            selectedRow = selected.get(0);
+            selectedRowMap = (DataMap)selectedRow.getData();
+        }
+        buildKitDO.setInventoryItemId((Integer)invItemDrop.getSelectedKey());
+        buildKitDO.setInventoryItem((String)invItemDrop.getTextValue());
         buildKitDO.setNumberRequested((Integer)form.getFieldValue("numRequested"));
-        buildKitDO.setAddToExisiting("Y".equals((String)form.getFieldValue("addToExisting")));
+        buildKitDO.setAddToExisting("Y".equals((String)form.getFieldValue("addToExisting")));
+        if(selectedRowMap != null){
+            buildKitDO.setBulk("Y".equals((String)((StringObject)selectedRowMap.get("isBulk")).getValue()));
+            buildKitDO.setSerialized("Y".equals((String)((StringObject)selectedRowMap.get("isSerialMaintained")).getValue()));
+        }
         buildKitDO.setLocationId((Integer)((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).getSelectedKey());
         buildKitDO.setLocation((String)((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).getTextValue());
         buildKitDO.setLotNumber((String)form.getFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getLotNumber()));
@@ -171,6 +183,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
             BuildKitComponentDO componentDO = new BuildKitComponentDO();
             DataSet<Data> row = componentsTable.get(i);
             
+            componentDO.setInventoryItemId((Integer)((NumberObject)row.getKey()).getValue());
             componentDO.setComponent((String)row.get(0).getValue());
             componentDO.setLocationId((Integer)((DropDownField)row.get(1)).getSelectedKey());
             componentDO.setLotNum((String)row.get(2).getValue());
@@ -186,15 +199,15 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     
     private void setFieldsInRPC(Form form, BuildKitDO kitDO){
         //we need to create a dataset for the kit name auto complete
-        if(kitDO.getKitId() == null)
+        if(kitDO.getInventoryItemId() == null)
             form.setFieldValue(InventoryItemMeta.getName(), null);
         else{
             DataModel<DataSet> model = new DataModel();
-            model.add(new NumberObject(kitDO.getKitId()),new StringObject(kitDO.getKit()));
+            model.add(new NumberObject(kitDO.getInventoryItemId()),new StringObject(kitDO.getInventoryItem()));
             ((DropDownField)form.getField(InventoryItemMeta.getName())).setModel(model);
             form.setFieldValue(InventoryItemMeta.getName(), model.get(0));
         }
-        form.setFieldValue("addToExisiting", (kitDO.isAddToExisiting() ? "Y" : "N"));
+        form.setFieldValue("addToExisiting", (kitDO.isAddToExisting() ? "Y" : "N"));
         form.setFieldValue("numRequested", kitDO.getNumberRequested());
         
         //we need to create a dataset for the kit location auto complete
@@ -260,6 +273,14 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
             StringObject disUnitsObj = new StringObject();
             disUnitsObj.setValue(dispensedUnits);
             data.add(disUnitsObj);
+            
+            //hidden fields
+            DataMap map = new DataMap();
+            StringObject isBulkObj = new StringObject(resultDO.getIsBulk());
+            map.put("isBulk", isBulkObj);
+            StringObject isSerialMaintainedObj = new StringObject(resultDO.getIsSerialMaintained());
+            map.put("isSerialMaintained", isSerialMaintainedObj);
+            data.setData(map);
                         
             //add the dataset to the datamodel
             dataModel.add(data);                        
@@ -323,7 +344,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         for(int i=0; i < autoCompleteList.size(); i++){
             StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
             //id
-            Integer autoId = resultDO.getId();
+            Integer autoId = resultDO.getLocationId();
             //desc
             String desc = resultDO.getLocation();
           
@@ -335,11 +356,10 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
             set.add(descObject);
-            
-            DataMap map = new DataMap();
-            map.put("qtyOnHand", new NumberObject(resultDO.getQtyOnHand()));
-            map.put("lotNumber", new StringObject(resultDO.getLotNum()));
-            set.setData(map);
+            StringObject lotNum = new StringObject(resultDO.getLotNum());
+            set.add(lotNum);
+            NumberObject qtyOnHand = new NumberObject(resultDO.getQtyOnHand());
+            set.add(qtyOnHand);
             
             //add the dataset to the datamodel
             dataModel.add(set);                            

@@ -31,20 +31,23 @@ import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ClinicalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
+public class ClinicalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, CommandListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
+    public enum LookupType {ID_1,ID_2,ID_3,ID_4,ID_5};
     private KeyListManager keyList = new KeyListManager();
     
     public ClinicalSampleLoginScreen() {
@@ -53,6 +56,28 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>
 
     public void onClick(Widget sender) {
     
+    }
+    
+    public boolean canPerformCommand(Enum action, Object obj) {
+        if(action instanceof LookupType)
+            return true;
+        else
+            return super.canPerformCommand(action, obj);
+    }
+    
+    public void performCommand(Enum action, Object obj) {
+        if(action.equals(LookupType.ID_1))
+            Window.alert("clicked first id lookup button");
+        else if(action.equals(LookupType.ID_2))
+            Window.alert("clicked second id lookup button");
+        else if(action.equals(LookupType.ID_3))
+            Window.alert("clicked third id lookup button");
+        else if(action.equals(LookupType.ID_4))
+            Window.alert("clicked project lookup button");
+        else if(action.equals(LookupType.ID_5))
+            Window.alert("clicked report to lookup button");
+        else
+            super.performCommand(action, obj);
     }
     
     public void afterDraw(boolean sucess) {

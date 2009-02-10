@@ -30,10 +30,9 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale" 
                 xmlns:meta="xalan://org.openelis.metamap.InventoryReceiptMetaMap" 
                 xmlns:inventoryReceiptMeta="xalan://org.openelis.meta.InventoryReceiptMeta" 
-                xmlns:transReceiptOrderMeta="xalan://org.openelis.metamap.TransReceiptOrderMetaMap" 
-                xmlns:transReceiptLocationMeta="xalan://org.openelis.metamap.TransReceiptLocationMetaMap" 
                 xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap"
                 xmlns:orderItemMeta="xalan://org.openelis.metamap.OrderItemMetaMap"
+                xmlns:transReceiptLocationMeta="xalan://org.openelis.metamap.TransReceiptLocationMetaMap"
                 xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
                 xmlns:organizationMeta="xalan://org.openelis.metamap.OrderOrganizationMetaMap"
                 xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
@@ -41,7 +40,6 @@ UIRF Software License are applicable instead of those above.
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
-
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>
@@ -58,10 +56,6 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryReceiptMeta"/>
   </xalan:component>
 
-  <xalan:component prefix="transReceiptOrderMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TransReceiptOrderMetaMap"/>
-  </xalan:component>
-  
   <xalan:component prefix="transReceiptLocationMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TransReceiptLocationMetaMap"/>
   </xalan:component>
@@ -92,7 +86,6 @@ UIRF Software License are applicable instead of those above.
   
   <xsl:template match="doc"> 
     <xsl:variable name="receipt" select="meta:new()"/>
-    <xsl:variable name="transReceiptOrder" select="meta:getTransReceiptOrder($receipt)"/>
     <xsl:variable name="transForLoc" select="meta:getTransReceiptLocation($receipt)"/>
     <xsl:variable name="loc" select="transReceiptLocationMeta:getInventoryLocation($transForLoc)"/>
     <xsl:variable name="orderItem" select="meta:getOrderItem($receipt)"/>
@@ -105,8 +98,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="InventoryReceipt" name="{resource:getString($constants,'inventoryTransfer')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
-			<VerticalPanel spacing="0">
+		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 		<AbsolutePanel spacing="0" style="ButtonPanelContainer">
     			<buttonPanel key="buttons">
@@ -140,17 +132,17 @@ UIRF Software License are applicable instead of those above.
 				</buttonPanel>
 		</AbsolutePanel>
 		<!--end button panel-->
-			<VerticalPanel>
-				<VerticalPanel spacing="0" padding="0">
+			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 					<widget valign="top">
 						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
-							<headers>From Item,From Loc,To Item,Ext,To Loc,Qty</headers>
-							<widths>140,160,140,40,160,50</widths>										
+							<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
+							<widths>140,160,65,140,40,160,50</widths>										
 							<editors>
 								<autoComplete cat="inventoryItemTrans" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store,Location,Qty</headers>
 									<widths>135,110,160,30</widths>
 								</autoComplete>
+								<label/>
 								<label/>
 								<autoComplete cat="toInventoryItemTrans" case="lower" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store</headers>
@@ -165,22 +157,24 @@ UIRF Software License are applicable instead of those above.
 							</editors>
 							<fields>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
-								<string/>
+								<string key="fromLoc"/>
+								<number type="integer" key="qtyOnHand"/>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
-								<check/>
+								<check key="addToExisting"/>
 								<dropdown required="true"/>
 								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
 							</fields>
-							<sorts>false,false,false,false,false,false</sorts>
-							<filters>false,false,false,false,false,false</filters>
-							<colAligns>left,left,left,left,left,left</colAligns>
+							<sorts>false,false,false,false,false,false,false</sorts>
+							<filters>false,false,false,false,false,false,false</filters>
+							<colAligns>left,left,left,left,left,left,left</colAligns>
 						</table>
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
-								<headers>From Item,From Loc,To Item,Ext,To Loc,Qty</headers>
-								<widths>140,160,140,40,160,50</widths>							
+								<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
+								<widths>140,160,65,140,40,160,50</widths>							
 								<editors>
 								<textbox/>
+								<label/>
 								<label/>
 								<textbox/>
 								<check/>
@@ -188,7 +182,7 @@ UIRF Software License are applicable instead of those above.
 								<textbox/>
 							</editors>
 								<fields>
-									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
+									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,label1,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
 									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>
 									<!--,
 									<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
@@ -205,11 +199,9 @@ UIRF Software License are applicable instead of those above.
 							              </HorizontalPanel>
 						            </appButton>
 						            </widget>
-							</VerticalPanel>
+							
 						
-				</VerticalPanel>
-			
-			<HorizontalPanel>
+
 				<!--<VerticalPanel style="Form">
 					<titledPanel key="borderedPanel">
 						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"vendorAddress")'/></text></legend>
@@ -248,11 +240,9 @@ UIRF Software License are applicable instead of those above.
 						</titledPanel>
 					</VerticalPanel>
 					-->
-					<VerticalPanel style="Form">
-						<titledPanel key="borderedPanel">
-							<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text></legend>
-								<content>
-								<TablePanel style="Form">
+					<VerticalPanel style="subform">
+		                <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text>
+							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
 									<widget>
@@ -275,14 +265,10 @@ UIRF Software License are applicable instead of those above.
 										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
 								</row>
-								</TablePanel>
-								</content>
-								</titledPanel>
+							</TablePanel>
+						</VerticalPanel>
 								</VerticalPanel>
-								</HorizontalPanel>
-								
-				</VerticalPanel>				
-		</HorizontalPanel>
+				</VerticalPanel>
 	</display>
 	<rpc key="display">
 		<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
@@ -317,6 +303,7 @@ UIRF Software License are applicable instead of those above.
 		<queryNumber key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 		<queryString key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
+		<queryString key="label1"/>
       
     </rpc>
 </screen>

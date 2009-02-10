@@ -418,7 +418,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
             DataSet<Data> tableRow = itemsTable.model.createRow();
             
             tableRow.get(0).setValue(set.get(0).getValue());
-            tableRow.get(1).setValue(set.get(1).getValue());
+            tableRow.get(1).setValue(((DropDownField)set.get(1)).getTextValue());
             
             tableRow.setData((DataMap)set.getData().clone());
             

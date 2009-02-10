@@ -212,50 +212,64 @@ UIRF Software License are applicable instead of those above.
 					<VerticalPanel style="subform">
 		            	<text style="FormTitle">Items Ordered</text>
 						<tree-table key="orderItemsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="7" enable="true" showError="false">
-                                 <headers>Qty,Order #,Item,Location,Lot #,On Hand</headers>
+                                 <headers>Qty,Ord #,Item,Location,Lot #,On Hand</headers>
                                  <widths>65,45,150,145,60,50</widths>					
                                  <leaves>
                                    <leaf type="top">
                                     <editors>
-                                     <label/>
-									 <label/>
-									 <label/>
+	                                     <label/>
+										 <label/>
+										 <autoComplete cat="orderItemInvItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.FillOrder.server.FillOrderService" width="130px">												
+											<widths>118</widths>
+										</autoComplete>
                                     </editors>
                                     <fields>
-                                     <number type="integer"/>
-                                     <number type="integer"/>
-                                     <string/>
+                                     	<number type="integer" required="true"/>
+                                     	<number type="integer" required="true"/>
+                                     	<dropdown required="true"/>
                                     </fields>
                                   </leaf>
                                   <leaf type="orderItem">                                   
                                    <editors>
-                                   <textbox/>
-                                   <label/>
-									<label/>
-									<autoComplete cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="125px">
-										<headers>Desc, On Hand</headers>
-										<widths>300,60</widths>
-									</autoComplete>
-									<label/>
-                                   <label/>
+                                   		<textbox/>
+                                   		<label/>
+										<autoComplete cat="orderItemInvItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.FillOrder.server.FillOrderService" width="130px">												
+											<widths>118</widths>
+										</autoComplete>
+										<autoComplete cat="invLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.fillOrder.server.FillOrderService" case="mixed" width="125px">
+											<headers>Desc,Lot #,On Hand</headers>
+											<widths>300,65,60</widths>
+										</autoComplete>
+										<label/>
+        	                           <label/>
                                    </editors>
                                    <fields>
-									<number type="integer" required="false"/>
-									<number type="integer"/>
-								    <string required="false"/>
-									<dropdown required="false"/>
-									<string required="false"/>
-									<number type="integer" required="false"/>
+										<number type="integer" required="true"/>
+										<number type="integer" required="true"/>
+									    <dropdown required="true"/>
+										<dropdown required="false"/>
+										<string required="false"/>
+										<number type="integer" required="false"/>
                                    </fields>
                                   </leaf> 
                                  </leaves> 
+                                 <buttons>
+                                 </buttons>
                                 </tree-table>
-                                <appButton action="addLocation" onclick="this" style="Button" key="addLocationButton" halign="right">
-								<HorizontalPanel>
-              						<AbsolutePanel style="AddRowButtonImage"/>
+                                <HorizontalPanel style="TableButtonFooter" halign="right">
+                                <appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">
+									<HorizontalPanel>
+            	  						<AbsolutePanel style="RemoveRowButtonImage"/>
+                						<text>Remove Row</text>
+					              </HorizontalPanel>
+					            </appButton>
+					            <appButton action="addLocation" onclick="this" style="Button" key="addLocationButton">
+									<HorizontalPanel>
+    	          						<AbsolutePanel style="AddRowButtonImage"/>
                 						<text>Add Location</text>
-							              </HorizontalPanel>
-						            </appButton>
+						              </HorizontalPanel>
+					            </appButton>
+					            </HorizontalPanel>
 					<!--
 						<table width="auto" key="orderItemsTable" manager="this" maxRows="7" title="" showError="false" showScroll="ALWAYS">
 							<headers>Item/Sample,Qty,Location</headers>
@@ -295,7 +309,8 @@ UIRF Software License are applicable instead of those above.
 		<string key="{addrMeta:getCity($address)}" required="false"/>
 		<string key="{addrMeta:getState($address)}" required="false"/>
 		<string key="{addrMeta:getZipCode($address)}" required="false"/>
-		<!--<tree key="orderItemsTree"/>-->
+		<tree key="orderItemsTree"/>
+		<string key="orderShippingNotes" required="false"/>
 		
 	</rpc>
 	

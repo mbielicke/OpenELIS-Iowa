@@ -1278,7 +1278,8 @@ public class OrderService implements AppScreenFormServiceInt<RPC, DataModel<Data
                     row.get(1).setValue(locRow.getStorageLocation());
                     row.get(2).setValue(locRow.getQuantityOnHand());
                     row.get(3).setValue(locRow.getLotNumber());
-                    row.get(4).setValue(locRow.getExpirationDate().toString());
+                    if(locRow.getExpirationDate() != null && locRow.getExpirationDate().getDate() != null)
+                        row.get(4).setValue(locRow.getExpirationDate().toString());
                     
                     receiptsModel.add(row);
                 }

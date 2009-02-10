@@ -262,13 +262,15 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
         for(int i=0; i<model.size(); i++){
             
             for(int j=0; j<model.get(i).getItems().size(); j++){
-                TreeDataItem childItem = (TreeDataItem)model.get(i).get(j);
+                TreeDataItem childItem = (TreeDataItem)model.get(i).getItem(j);
                 
                 FillOrderDO orderDO = new FillOrderDO();
                 orderDO.setOrderItemId((Integer)((NumberObject)childItem.getKey()).getValue());
                 orderDO.setOrderId((Integer)childItem.get(1).getValue());
                 orderDO.setInventoryLocationId((Integer)((DropDownField)childItem.get(3)).getSelectedKey());
                 orderDO.setQuantity((Integer)childItem.get(0).getValue());
+                
+                orderList.add(orderDO);
             }
         }
         
@@ -367,9 +369,11 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
         for(int i=0; i < autoCompleteList.size(); i++){
             StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
             //id
-            Integer id = resultDO.getId();
+            Integer id = resultDO.getLocationId();
             //desc
             String desc = resultDO.getLocation();
+            //lot num
+            String lotNum = resultDO.getLotNum();
             //qty on hand
             Integer qty = resultDO.getQtyOnHand();
           
@@ -380,6 +384,8 @@ public class FillOrderService implements AppScreenFormServiceInt<RPC, DataModel<
             //columns
             StringObject descObject = new StringObject(desc);
             set.add(descObject);
+            StringObject lotNumObject = new StringObject(lotNum);
+            set.add(lotNumObject);
             NumberObject qtyObject = new NumberObject(qty);
             set.add(qtyObject);
             

@@ -314,7 +314,7 @@ UIRF Software License are applicable instead of those above.
 					<!-- TAB 3 (customer notes)-->		
 					<tab key="customerNotesTab" text="{resource:getString($constants,'customerNotes')}">
 						<VerticalPanel width="626px" height="247px" spacing="0" padding="0">
-							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+							<TablePanel style="Form" padding="0" spacing="0">
 								<row>
 									<widget colspan="2" align="center">
 										<appButton action="standardNoteCustomer" onclick="this" key="standardNoteCustomerButton" style="Button">
@@ -337,7 +337,7 @@ UIRF Software License are applicable instead of those above.
 					<!-- TAB 4 (order notes) -->
 					<tab key="orderNotesTab" text="{resource:getString($constants,'orderShippingNotes')}">
 						<VerticalPanel width="626px" height="247px" spacing="0" padding="0">
-							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
+							<TablePanel style="Form" padding="0" spacing="0">
 								<row>
 									<widget colspan="2" align="center">
 										<appButton action="standardNoteShipping" onclick="this" key="standardNoteShippingButton" style="Button">
