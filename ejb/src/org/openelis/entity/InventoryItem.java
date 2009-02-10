@@ -104,7 +104,7 @@ import org.w3c.dom.Element;
                             " left join childLoc.parentStorageLocation parentLoc, Dictionary d where i.storeId = d.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and ((i.isSerialMaintained = 'Y' and il.quantityOnhand > 0) or (i.isSerialMaintained = 'N')) and " +
                             " i.storeId = :store order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemByNameKits", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+     @NamedQuery(name = "InventoryItem.AutocompleteItemByNameKits", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, i.isBulk, i.isSerialMaintained) " +
                             "  from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and 0 < (select count(ic.id) from InventoryComponent ic where ic.inventoryItemId=i.id) order by i.name"),
      @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description from InventoryItem i where i.id = :id"),

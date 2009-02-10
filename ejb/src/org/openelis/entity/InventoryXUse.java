@@ -149,7 +149,7 @@ public Integer getId() {
   }
    
   public String getTableName() {
-    return "trans_location_order";
+    return "inventory_x_use";
   }
 public InventoryLocation getInventoryLocation() {
     return inventoryLocation;

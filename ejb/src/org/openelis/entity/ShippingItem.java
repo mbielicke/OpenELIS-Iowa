@@ -49,8 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
     @NamedQueries( {
-        @NamedQuery(name = "ShippingItem.ShippingItem", query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, oi.quantity) "+
-                               " from ShippingItem s LEFT JOIN s.orderItem oi where s.shippingId = :id")})
+        @NamedQuery(name = "ShippingItem.ShippingItem", query = "select new org.openelis.domain.ShippingItemDO(s.id, s.shippingId, s.referenceTableId, s.referenceId, oi.quantity, loc.id, trans.id) "+
+                               " from ShippingItem s LEFT JOIN s.orderItem oi LEFT JOIN oi.inventoryXUse trans LEFT JOIN trans.inventoryLocation loc where s.shippingId = :id")})
                                
 @Entity
 @Table(name="shipping_item")

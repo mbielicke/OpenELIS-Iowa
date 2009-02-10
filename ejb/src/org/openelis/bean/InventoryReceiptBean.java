@@ -42,16 +42,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BuildKitComponentDO;
+import org.openelis.domain.BuildKitDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
+import org.openelis.entity.InventoryReceiptOrderItem;
 import org.openelis.entity.InventoryXPut;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.persistence.CachingManager;
@@ -185,7 +188,8 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.getStorageLocationId()+", "+ //from storage loc
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getName()+", "+ //from loc name 
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.STORAGE_UNIT_META.getDescription()+", "+ //from loc desc
-                      InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation()+")"; //from loc
+                      InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation()+", "+ //from loc
+                      InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.getQuantityOnhand()+")"; //from qty on hand
                   }else
                       selectString+=")";
                  
@@ -218,7 +222,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         
         String fromClause = qb.getFromClause(qb.getWhereClause());
         if(!receipt)
-            fromClause+=", TransLocationOrder locOrderTrans ";
+            fromClause+=", InventoryXUse locOrderTrans ";
         
         sb.append(qb.getSelectClause()).append(fromClause).append(qb.getWhereClause()).append(qb.getOrderBy());
         System.out.println(sb.toString());
@@ -243,6 +247,9 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     @RolesAllowed("receipt-update")
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception {
 
+        //validate the data before we start the transaction
+        validateReceipts(inventoryReceipts);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
         //lock the necessary records
@@ -267,18 +274,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             else
                 receipt = manager.find(InventoryReceipt.class, receiptDO.getId());
 
-            //validate the receipt record
-            List exceptionList = new ArrayList();
-            validateReceiptAndLocation(receiptDO, i, exceptionList);
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            }
-            
             System.out.println("1");
             if(!receiptDO.getDelete() && receiptDO.getQuantityReceived() != null && receiptDO.getQuantityReceived() > 0){
                 receipt.setExternalReference(receiptDO.getExternalReference());
                 receipt.setInventoryItemId(receiptDO.getInventoryItemId());
-                receipt.setOrderItemId(receiptDO.getOrderItemId());
+                //TODO may not need this anymore receipt.setOrderItemId(receiptDO.getOrderItemId());
                 receipt.setOrganizationId(receiptDO.getOrganizationId());
                 receipt.setQcReference(receiptDO.getQcReference());
                 receipt.setQuantityReceived(receiptDO.getQuantityReceived());
@@ -288,6 +288,21 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
 
                 if (receipt.getId() == null) {
                     manager.persist(receipt);
+                }
+                
+                if(receiptDO.getOrderItemId() != null){
+                    InventoryReceiptOrderItem invReceiptOrderItem = null;
+                    
+                    if (receiptDO.getInventoryReceiptOrderItemId() == null)
+                        invReceiptOrderItem = new InventoryReceiptOrderItem();
+                    else
+                        invReceiptOrderItem = manager.find(InventoryReceiptOrderItem.class, receiptDO.getInventoryReceiptOrderItemId());
+                    
+                    invReceiptOrderItem.setInventoryReceiptId(receipt.getId());
+                    invReceiptOrderItem.setOrderItemId(receiptDO.getOrderItemId());
+                    
+                    if(invReceiptOrderItem.getId() == null)
+                        manager.persist(invReceiptOrderItem);
                 }
             }
             
@@ -425,7 +440,9 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
 
     @RolesAllowed("receipt-update")
     public void updateInventoryTransfer(List inventoryTransfers) throws Exception {
-        System.out.println("INVENTORY TRANSFER!");
+        //validate the data before we start the transaction
+        validateTransfers(inventoryTransfers);
+        
        manager.setFlushMode(FlushModeType.COMMIT);
         
         if(inventoryTransfers.size() == 0)
@@ -512,7 +529,22 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
 
             if(receipt.getId() == null)
                 manager.persist(receipt);
+           
+            //create inventory_receipt_order_item record
+            InventoryReceiptOrderItem invReceiptOrderItem = null;
             
+            if (transferDO.getInventoryReceiptOrderItemId() == null)
+                invReceiptOrderItem = new InventoryReceiptOrderItem();
+            else
+                invReceiptOrderItem = manager.find(InventoryReceiptOrderItem.class, transferDO.getInventoryReceiptOrderItemId());
+            
+            invReceiptOrderItem.setInventoryReceiptId(receipt.getId());
+            invReceiptOrderItem.setOrderItemId(orderItem.getId());
+            
+            if(invReceiptOrderItem.getId() == null)
+                manager.persist(invReceiptOrderItem);
+            
+            //create inventory x put record
             query = manager.createNamedQuery("InventoryXPut.TransIdsLocIdsByReceiptId");
             query.setParameter("id", receipt.getId());
             List locTransLocIds = query.getResultList();
@@ -555,6 +587,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 
         //TODO remove for now  unlockRecords(inventoryReceipts);
     }
+    
+    @RolesAllowed("receipt-update")
+    public void updateBuildKits(BuildKitDO kitDO, List kitComponents) throws Exception {
+        
+    }
 
     public List autoCompleteLocationLookupByName(String name, int maxResults){
         Query query = manager.createNamedQuery("InventoryLocation.AutoCompleteByName");
@@ -585,31 +622,73 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         return query.getResultList();
     }
     
-    public List validateForAdd(List inventoryReceipts) {
-        List exceptionList = new ArrayList();
-        
-        for(int i=0; i<inventoryReceipts.size();i++){            
-            InventoryReceiptDO receiptDO = (InventoryReceiptDO) inventoryReceipts.get(i);
-            
-            validateReceiptAndLocation(receiptDO, i, exceptionList);
-        }
-        
-        return exceptionList;
-    }
+    public void validateReceipts(List<InventoryReceiptDO> inventoryReceipts) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
 
-    public List validateForUpdate(List inventoryReceipts) {
-        List exceptionList = new ArrayList();
+        for(int i=0; i<inventoryReceipts.size(); i++)
+           validateReceiptAndLocation(inventoryReceipts.get(i), i, list);
         
-        for(int i=0; i<inventoryReceipts.size();i++){            
-            InventoryReceiptDO receiptDO = (InventoryReceiptDO) inventoryReceipts.get(i);
-            
-            validateReceiptAndLocation(receiptDO, i, exceptionList);
-        }
-        
-        return exceptionList;
+        if(list.size() > 0)
+            throw list;
     }
     
-    private void validateReceiptAndLocation(InventoryReceiptDO receiptDO, int rowIndex, List exceptionList){
+    public void validateTransfers(List<InventoryReceiptDO> inventoryTransfers) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
+
+        for(int i=0; i<inventoryTransfers.size(); i++)
+            validateTransferAndLocation(inventoryTransfers.get(i), i, list);
+        
+        if(list.size() > 0)
+            throw list;
+    }
+    
+    private void validateTransferAndLocation(InventoryReceiptDO transferDO, int rowIndex, ValidationErrorsList exceptionList){
+        System.out.println("validate transfers");
+        System.out.println("1");
+        //from item required
+        if(transferDO.getFromInventoryItemId() == null){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
+        }
+        System.out.println("2");
+        //from loc required
+        if(transferDO.getFromStorageLocationId() == null){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, "fromLoc"));
+        }
+        System.out.println("3");
+        //on hand required
+        if(transferDO.getQuantityReceived() == null){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, "qtyOnHand"));
+        }
+        System.out.println("4");
+        //to item required
+        if(transferDO.getInventoryItemId() == null){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.INVENTORY_ITEM_META.getName()));
+        }
+        System.out.println("5");
+        //make sure check is only for bulk
+        if("N".equals(transferDO.getIsBulk()) && transferDO.isAddToExisting()){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, "addToExisting"));
+        }
+        System.out.println("6");
+        //to loc required
+        if(transferDO.getStorageLocationId() == null){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId()));
+        }
+        System.out.println("7");
+        //qty required
+        if(transferDO.getQuantityReceived() == null || new Integer(0).compareTo(transferDO.getQuantityReceived()) >= 0){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.getQuantityReceived()));
+        }
+        System.out.println("8");
+        //validate qtys    
+        if(transferDO.getQuantityReceived().compareTo(transferDO.getFromQtyOnHand()) > 0){
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.getQuantityOnhand()));
+        }
+        System.out.println("9");
+            
+    }
+    
+    private void validateReceiptAndLocation(InventoryReceiptDO receiptDO, int rowIndex, ValidationErrorsList exceptionList){
         System.out.println("1");
         //date received required
         if(receiptDO.getReceivedDate() == null){

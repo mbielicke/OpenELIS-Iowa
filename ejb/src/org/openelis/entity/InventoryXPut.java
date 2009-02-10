@@ -150,7 +150,7 @@ public class InventoryXPut implements Auditable, Cloneable {
   }
    
   public String getTableName() {
-    return "trans_receipt_location";
+    return "inventory_x_put";
   }
 public InventoryLocation getInventoryLocation() {
     return inventoryLocation;

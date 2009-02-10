@@ -163,7 +163,7 @@ public class InventoryXAdjust implements Auditable, Cloneable {
   }
    
   public String getTableName() {
-    return "trans_adjustment_location";
+    return "inventory_x_adjust";
   }
 public InventoryLocation getInventoryLocation() {
     return inventoryLocation;
