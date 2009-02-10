@@ -30,9 +30,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -46,7 +45,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
- public class QAEventScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener{
+ public class QAEventScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener{
    
      private TextBox tname = null;
      private Dropdown displayType = null;
@@ -62,7 +61,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      private QaEventMetaMap QAEMeta = new QaEventMetaMap();  
      
      public QAEventScreen(){
-         super("org.openelis.modules.qaevent.server.QAEventService",!loaded, new RPC<Form,Data>());  
+         super("org.openelis.modules.qaevent.server.QAEventService",!loaded, new DefaultRPC());  
      }
      
      public void performCommand(Enum action, Object obj) {

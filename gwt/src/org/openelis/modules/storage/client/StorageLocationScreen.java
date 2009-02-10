@@ -29,9 +29,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -44,7 +43,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageLocationScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener {
+public class StorageLocationScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
 	
 	private TextBox nameTextbox;
 	private TableWidget childTable;
@@ -55,7 +54,7 @@ public class StorageLocationScreen extends OpenELISScreenForm<RPC<Form,Data>,For
     private StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
     
 	public StorageLocationScreen() {
-		super("org.openelis.modules.storage.server.StorageLocationService",false,new RPC<Form,Data>());
+		super("org.openelis.modules.storage.server.StorageLocationService",false,new DefaultRPC());
 	}
 	
 	public void performCommand(Enum action, Object obj) {

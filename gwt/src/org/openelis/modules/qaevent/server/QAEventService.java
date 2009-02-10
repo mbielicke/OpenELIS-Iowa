@@ -29,6 +29,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameTestMethodDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventTestDropdownDO;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -41,6 +42,8 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -61,7 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>{
+public class QAEventService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 19;  
@@ -70,7 +73,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
     
     private static final QaEventMetaMap QAEMeta = new QaEventMetaMap();
     
-    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
         List qaEventNames = new ArrayList();
         
         if(form == null){           
@@ -111,7 +114,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         
         int i=0;
         if(model == null)
-            model = new DataModel<DataSet>();
+            model = new DataModel<Integer>();
         else
             model.clear();    
         while(i < qaEventNames.size() && i < leftTableRowsPerPage) {
@@ -123,20 +126,18 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
             String tnameResult = resultDO.getTest();
             String mnameResult = resultDO.getMethod();
    
-            DataSet row = new DataSet();
+            DataSet<Integer> row = new DataSet<Integer>();
             
-            NumberObject id = new NumberObject(NumberObject.Type.INTEGER);
    
             StringObject qaname = new StringObject();
             StringObject tname = new StringObject();
             StringObject mname = new StringObject();
    
-            id.setValue(idResult);
    
             qaname.setValue(nameResult);  
             tname.setValue(tnameResult);
             mname.setValue(mnameResult);
-            row.setKey(id);          
+            row.setKey(idResult);          
    
             row.add(qaname);
             row.add(tname);
@@ -148,7 +149,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
          return model;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpc.form);
         
@@ -176,7 +177,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         return rpc;
     }
 
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         QaEventDO qaeDO =  getQaEventDOFromRPC(rpc.form);
         
@@ -206,14 +207,14 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
     }
     
 
-    public RPC commitDelete(RPC rpc) throws RPCException {
+    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
             QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-            Integer qaEventId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+            Integer qaEventId = rpc.key;
     
             QaEventDO qaeDO = new QaEventDO();
              try{
@@ -227,9 +228,9 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
             
         }
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-        Integer qaeId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+        Integer qaeId = rpc.key;
         QaEventDO qaeDO = remote.getQaEvent(qaeId);
 //      set the fields in the RPC
         setFieldsInRPC(rpc.form, qaeDO);      
@@ -237,9 +238,9 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         return rpc;
     }
 
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-        Integer qaEventId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+        Integer qaEventId = rpc.key;
 
         QaEventDO qaeDO = new QaEventDO();
          try{
@@ -257,7 +258,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"); 
     }
 
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));    
         
@@ -272,7 +273,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         if(testDropDownField ==null)
             testDropDownField = getInitialModel("test");
         
-        HashMap map = new HashMap();
+        HashMap<String,Field> map = new HashMap<String,Field>();
         map.put("xml", xml);
         map.put("qaevent", qaTypeDropDownField);
         map.put("tests",testDropDownField);
@@ -280,21 +281,21 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         return map;
     }
 
-    public HashMap getXMLData(HashMap args) throws RPCException {
+    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
     
-    public RPC getScreen(RPC rpc){
+    public DefaultRPC getScreen(DefaultRPC rpc){
         return rpc;
     }
 
-    public DataModel getInitialModel(String cat) {
+    public DataModel<Integer> getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = null; 
         Integer id = null;
                 
-        DataModel model = new DataModel();
+        DataModel<Integer> model = new DataModel<Integer>();
         
         if(cat.equals("qaEventType")){
             id = catRemote.getCategoryId("qaevent_type"); 
@@ -305,25 +306,13 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         }            
         
         if(entries.size() > 0){ 
-            DataSet blankset = new DataSet();           
-            StringObject blankStringId = new StringObject();
-                          
-             
-            blankStringId.setValue("");
-            blankset.add(blankStringId);
-            
-            NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-            blankNumberId.setValue(new Integer(-1));
-            
-
-            blankset.setKey(blankNumberId);
     
-            model.add(blankset);        
+            model.add(new DataSet<Integer>(-1,new StringObject("")));        
         }
     
         int i=0;
         while(i < entries.size()){
-            DataSet set = new DataSet();
+            DataSet<Integer> set = new DataSet<Integer>();
             
         //id
         Integer dropdownId = null;
@@ -353,11 +342,7 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         
         set.add(textObject);            
 
-            NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
-
-            numberId.setValue(dropdownId);
-
-            set.setKey(numberId);           
+        set.setKey(dropdownId);           
         
         model.add(set);
         i++;
@@ -373,15 +358,15 @@ public class QAEventService implements AppScreenFormServiceInt<RPC, DataModel<Da
         form.setFieldValue(QAEMeta.getIsBillable(),qaeDO.getIsBillable());     
         form.setFieldValue(QAEMeta.getDescription(),qaeDO.getDescription());
         form.setFieldValue(QAEMeta.getReportingText(),qaeDO.getReportingText());   
-        form.setFieldValue(QAEMeta.getTestId(),new DataSet(new NumberObject(qaeDO.getTest())));        
-        form.setFieldValue(QAEMeta.getTypeId(),new DataSet(new NumberObject(qaeDO.getType())));
+        ((DropDownField<Integer>)(Field)form.getField(QAEMeta.getTestId())).setValue(new DataSet<Integer>(qaeDO.getTest()));        
+        ((DropDownField<Integer>)(Field)form.getField(QAEMeta.getTypeId())).setValue(new DataSet<Integer>(qaeDO.getType()));
     }
     
     private QaEventDO getQaEventDOFromRPC(Form form){
         QaEventDO qaeDO = new QaEventDO();
         NumberField qaeIdField = (NumberField) form.getField(QAEMeta.getId());
         
-        qaeDO.setId((Integer)qaeIdField.getValue());
+        qaeDO.setId(qaeIdField.getIntegerValue());
         qaeDO.setDescription(((String)form.getFieldValue(QAEMeta.getDescription())));
         
 

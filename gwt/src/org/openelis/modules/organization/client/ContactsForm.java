@@ -17,10 +17,10 @@ public class ContactsForm extends Form {
     
     private static final long serialVersionUID = 1L;
     
-    public TableField contacts;
+    public TableField<Contact> contacts;
     
     public ContactsForm() {
-        fields.put("contactsTable",contacts = new TableField());
+        fields.put("contactsTable",contacts = new TableField<Contact>());
     }
     
     public ContactsForm(Node node){

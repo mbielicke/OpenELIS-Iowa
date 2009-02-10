@@ -30,9 +30,9 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
@@ -47,35 +47,35 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,DataModel<DataSet>>, AutoCompleteServiceInt, FavoritesServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,Object>, AutoCompleteServiceInt, FavoritesServiceInt {
 
     private static final long serialVersionUID = 1L; 
 
-    public <T extends Data> T abort(RPC rpc) throws RPCException {
+    public RPC abort(RPC rpc) throws RPCException {
         return getService().abort(rpc);
     }
 
-    public <T extends Data> T commitAdd(RPC rpc) throws RPCException {
+    public RPC  commitAdd(RPC rpc) throws RPCException {
         return getService().commitAdd(rpc);
     }
 
-    public <T extends Data> T commitDelete(RPC rpc) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws RPCException {
         return getService().commitDelete(rpc);
     }
 
-    public <T extends Data> T commitQuery(Form form,  DataModel<DataSet> model) throws RPCException {
+    public DataModel<Object> commitQuery(Form form,  DataModel<Object> model) throws RPCException {
         return getService().commitQuery(form, model);
     }
 
-    public <T extends Data> T commitUpdate(RPC rpc) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws RPCException {
         return getService().commitUpdate(rpc);
     }
 
-    public <T extends Data> T fetch(RPC rpc) throws RPCException {
+    public RPC fetch(RPC rpc) throws RPCException {
         return getService().fetch(rpc);
     }
 
-    public <T extends Data> T fetchForUpdate(RPC rpc) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws RPCException {
         return getService().fetchForUpdate(rpc);
     }
 
@@ -87,11 +87,11 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return ((AppScreenServiceInt<RPC>)getService()).getScreen(rpc);
     }
 
-    public HashMap<String,Data> getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
        return getService().getXMLData();
     }
     
-    public <T extends Data> T getObject(String method, Data[] args) throws RPCException {
+    public <T extends Field> T getObject(String method, Field[] args) throws RPCException {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
@@ -114,9 +114,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         }
     }
     
-    private AppScreenFormServiceInt<RPC,DataModel<DataSet>> getService() throws RPCException {
+    private AppScreenFormServiceInt<RPC,Object> getService() throws RPCException {
         try {
-            return (AppScreenFormServiceInt<RPC,DataModel<DataSet>>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
+            return (AppScreenFormServiceInt<RPC,Object>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
             if(e instanceof FormErrorException)
                 throw new FormErrorException(e.getMessage());
@@ -165,7 +165,24 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return new FavoritesService().saveFavorites(form);
     }
 
-	public HashMap<String,Data> getXMLData(HashMap<String,Data> args) throws RPCException {
+	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
 		return getService().getXMLData(args);
-	}    
+	}
+
+    public <T extends RPC> T call(String method, T rpc) throws Exception {
+        AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
+        try {
+            return (T)service.getClass().getMethod(method,new Class[] {rpc.getClass()}).invoke(service, new Object[]{rpc});
+        }catch(Exception e){
+            if(e instanceof InvocationTargetException){
+                InvocationTargetException er = (InvocationTargetException)e;
+                if(er.getCause() != null)
+                    throw (RPCException)er.getCause();
+            }
+
+            e.printStackTrace();
+            throw new RPCException(e.getMessage());
+        }
+    }
+
 }

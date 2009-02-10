@@ -33,9 +33,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
@@ -44,6 +44,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -77,7 +78,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
+public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
     
     private TableWidget receiptsTable;
     private QueryTable receiptsQueryTable;
@@ -97,7 +98,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
     public InventoryReceiptScreen() {
-        super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false,new RPC<Form,Data>());
+        super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService",false,new DefaultRPC());
         screenType = "receipt";
     }
     
@@ -109,7 +110,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         HashMap hash = new HashMap();
         hash.put("type", (StringObject)args[0]);
         
-        getXMLData(hash,new RPC());
+        getXMLData(hash,new DefaultRPC());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -132,7 +133,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         
             DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
             ((DataMap)tableRow.getData()).put("addToExisting", existing);  
-            ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+            ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet<Object>>());
         }
         
     }
@@ -153,7 +154,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 ((DataMap)tableRow.getData()).put("lotNum", lotNum);
             }else if(sender == itemExpDate.getWidget()){
                 DateField expDate = new DateField();
-                expDate.setValue(((CalendarLookUp)itemExpDate.getWidget()).getValue());
+                expDate.setValue((String)((CalendarLookUp)itemExpDate.getWidget()).getValue());
                 DataSet tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
                 ((DataMap)tableRow.getData()).put("expDate", expDate);
             }
@@ -278,7 +279,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         window.setStatus(consts.get("lockForUpdate"),"spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {keyList.getList()}; 
+        Field[] args = new Field[] {keyList.getList()}; 
         
         screenService.getObject("commitQueryAndLock", args, new AsyncCallback(){
             public void onSuccess(Object result){                    
@@ -313,7 +314,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
             enable(false);
             
             // prepare the argument list for the getObject function
-            Data[] args = new Data[] {keyList.getList()}; 
+            Field[] args = new Field[] {keyList.getList()}; 
             
             screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback<DataModel>(){
                 public void onSuccess(DataModel model){                    
@@ -470,10 +471,10 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
             if(col == 0 && row < receiptsTable.model.numRows() && receiptTableRowEmpty(receiptsTable.model.getRow(row), false)){
                 window.setStatus("","spinnerIcon");
                 
-                NumberObject orderIdObj = new NumberObject((Integer)((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
+                NumberObject orderIdObj = new NumberObject(((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
                 
                 // prepare the argument list for the getObject function
-                Data[] args = new Data[] {orderIdObj}; 
+                Field[] args = new Field[] {orderIdObj}; 
                 
                 screenService.getObject("getReceipts", args, new AsyncCallback<DataModel<DataSet>>(){
                     public void onSuccess(DataModel<DataSet> model){    
@@ -499,7 +500,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 window.setStatus("","spinnerIcon");
                 
                 //prepare the argument list for the getObject function
-                Data[] args = new Data[] {upcValue}; 
+                Field[] args = new Field[] {upcValue}; 
                 
                 screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel<DataSet>>(){
                     public void onSuccess(DataModel<DataSet> model){   
@@ -573,7 +574,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                             
                             if(map.get("inventoryItem") != null){
                                 ((DropDownField)tableRow.get(3)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
-                                ((DropDownField)tableRow.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+                                ((DropDownField)tableRow.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getValue());
                             }
                             
                             receiptsTable.model.refresh();
@@ -596,7 +597,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 
             }else if(col == 3 && row > -1 && row < receiptsTable.model.numRows()){
                 DataSet tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getValue();
                
                 DataSet<Data> set = null;
                 if(selections.size() > 0)
@@ -630,7 +631,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                }
             }else if(col == 4 && row > -1 && row < receiptsTable.model.numRows()){
                 DataSet tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(4)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(4)).getValue();
                 DataSet set = null;
                 if(selections.size() > 0)
                     set = (DataSet)selections.get(0);
@@ -672,7 +673,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         }else if("transfer".equals(screenType)){
             if(col == 0 && row < receiptsTable.model.numRows()/* && transferTableRowEmpty(receiptsTable.model.getRow(row))*/){
                 DataSet<Data> tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getValue();
                
                 DataSet<Data> set = null;
                 if(selections.size() > 0)
@@ -688,9 +689,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                    StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
                    DateField expDate = (DateField)dropdownMap.get("expDate");
                    StringField lotNum = (StringField)dropdownMap.get("lotNum");
-                   DropDownField storageLocation = new DropDownField();
-                   DataModel<DataSet> locModel = new DataModel<DataSet>();
-                   locModel.add((NumberObject)dropdownMap.get("locId"), new StringObject((String)set.get(2).getValue()));
+                   DropDownField<Integer> storageLocation = new DropDownField<Integer>();
+                   DataModel<Integer> locModel = new DataModel<Integer>();
+                   locModel.add(new DataSet<Integer>((Integer)dropdownMap.get("locId").getValue(), new StringObject((String)set.get(2).getValue())));
                    storageLocation.setModel(locModel);
                    storageLocation.setValue(locModel.get(0));
                    
@@ -729,7 +730,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                
             }else if(col == 3 && row < receiptsTable.model.numRows()/* && transferTableRowEmpty(receiptsTable.model.getRow(row))*/){
                 DataSet tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getValue();
                
                 DataSet set = null;
                 if(selections.size() > 0)
@@ -819,7 +820,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         }
     }
     
-    private void loadDataMapIntoReceiptTableRow(DataSet<Data> row){
+    private void loadDataMapIntoReceiptTableRow(DataSet<Integer> row){
         DataMap map = (DataMap)row.getData();
         
         row.get(0).setValue(getValueFromHashWithNulls(map, "orderNumber"));
@@ -828,11 +829,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         
         if(map.get("inventoryItem") != null){
             ((DropDownField)row.get(3)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
-            ((DropDownField)row.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+            ((DropDownField)row.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getValue());
         }
         if(map.get("org") != null){
             ((DropDownField)row.get(4)).setModel(((DropDownField)map.get("org")).getModel());
-            ((DropDownField)row.get(4)).setValue(((DropDownField)map.get("org")).getSelections());
+            ((DropDownField)row.get(4)).setValue(((DropDownField)map.get("org")).getValue());
         }
         
         row.get(5).setValue(getValueFromHashWithNulls(map, "qtyReceived"));
@@ -877,7 +878,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         
         if(map.get("fromInventoryItem") != null){
             ((DropDownField)row.get(0)).setModel(((DropDownField)map.get("fromInventoryItem")).getModel());
-            ((DropDownField)row.get(0)).setValue(((DropDownField)map.get("fromInventoryItem")).getSelections());
+            ((DropDownField)row.get(0)).setValue(((DropDownField)map.get("fromInventoryItem")).getValue());
         }
         
         String fromLocationName = InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId();
@@ -894,13 +895,13 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         
         if(map.get("inventoryItem") != null){
             ((DropDownField)row.get(3)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
-            ((DropDownField)row.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+            ((DropDownField)row.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getValue());
         }
         row.get(4).setValue(((CheckField)map.get("addToExisting")).getValue());
         
         if(map.get("toInventoryLocation") != null){
             ((DropDownField)row.get(5)).setModel(((DropDownField)map.get("toInventoryLocation")).getModel());
-            ((DropDownField)row.get(5)).setValue(((DropDownField)map.get("toInventoryLocation")).getSelections());
+            ((DropDownField)row.get(5)).setValue(((DropDownField)map.get("toInventoryLocation")).getValue());
         }
         
         row.get(6).setValue(getValueFromHashWithNulls(map, "qtyRequested"));
@@ -954,7 +955,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
     }
     
     //helper method: get value from hash, dealing with nulls (params: hash, key)
-    private Object getValueFromHashWithNulls(HashMap<String, Data> hash, String key){
+    private Object getValueFromHashWithNulls(HashMap<String, Field> hash, String key){
         if(hash.get(key) != null)
             return ((DataObject)hash.get(key)).getValue();
             
@@ -987,7 +988,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {catObj, model, matchObj, params}; 
+        Field[] args = new Field[] {catObj, model, matchObj, params}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback() {
@@ -1016,7 +1017,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
     public void rowDeleted(SourcesTableModelEvents sender, int row) {}
 
     public void rowSelected(SourcesTableModelEvents sender, int row) {
-        DataSet tableRow=null;
+        DataSet<Integer> tableRow=null;
         if(addToExisiting != null && !addToExisiting.isEnabled() && receiptsTable.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
             itemLotNum.enable(true);
             itemLocation.enable(true);
@@ -1053,7 +1054,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 itemLocation.load(((DropDownField)map.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId())));
             }
             else if(itemLocation != null)
-                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet<Object>>());
             
             if(map.get("lotNum") != null)
                 ((TextBox)itemLotNum.getWidget()).setText((String)((StringField)map.get("lotNum")).getValue());
@@ -1078,7 +1079,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 orgStateText.setText("");
                 orgZipCodeText.setText("");
                 
-                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet>());
+                ((AutoComplete)itemLocation.getWidget()).setSelections(new ArrayList<DataSet<Object>>());
                 ((CheckBox)addToExisiting.getWidget()).setState(CheckBox.UNCHECKED);
             }
             itemDescText.setText("");

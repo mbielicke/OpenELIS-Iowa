@@ -1,7 +1,6 @@
 package org.openelis.modules.organization.client;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 
@@ -11,16 +10,16 @@ import org.openelis.gwt.common.data.DataSet;
  * @author tschmidt
  *
  */
-public class OrganizationRPC extends RPC<OrganizationForm,Data>{
+public class OrganizationRPC extends RPC<OrganizationForm,Integer>{
 
     private static final long serialVersionUID = 1L;
     
     /**
      * Initializing DataModels for widgets on the screen
      */
-    public DataModel<DataSet> countries;
-    public DataModel<DataSet> states;
-    public DataModel<DataSet> contactTypes;
+    public DataModel<String> countries;
+    public DataModel<String> states;
+    public DataModel<Integer> contactTypes;
     
 
 }

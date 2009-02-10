@@ -27,6 +27,7 @@ package org.openelis.modules.standardnote.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -45,7 +46,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StandardNoteScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> {
+public class StandardNoteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
 
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
@@ -57,7 +58,7 @@ public class StandardNoteScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> 
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
 	public StandardNoteScreen() {
-    	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded, new RPC<Form,Data>());
+    	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded, new DefaultRPC());
     }
 
     public void performCommand(Enum action, Object obj) {

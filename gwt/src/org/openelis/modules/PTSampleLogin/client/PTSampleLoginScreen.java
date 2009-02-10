@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.PTSampleLogin.client;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -48,7 +49,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PTSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
+public class PTSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
 
     private static boolean loaded = false;
     private static DataModel statusDropdown, ptProviderDropdown,
@@ -58,7 +59,7 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
     private KeyListManager keyList = new KeyListManager();
     
     public PTSampleLoginScreen() {
-        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService", !loaded, new RPC<Form,Data>());
+        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService", !loaded, new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -78,10 +79,10 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form>
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
         //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top", new NumberObject(0));
+        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         row1.get(0).setValue("0 - Serum");
         row1.get(1).setValue("Left Arm");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
         row2.get(0).setValue("Hiv - Logged In");
         row1.addItem(row2);
         //TODO itemsTestsTree.model.addRow(row1);

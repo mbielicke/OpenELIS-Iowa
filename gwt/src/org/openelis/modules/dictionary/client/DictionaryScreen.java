@@ -31,13 +31,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -59,7 +59,7 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener,
+public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener,
                                                                     TableManager,
                                                                     TableWidgetListener{
 
@@ -75,7 +75,7 @@ public class DictionaryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> im
         
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
-        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded,new RPC<Form,Data>());
+        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded,new DefaultRPC());
     }
     
     public void afterDraw(boolean success) {       
@@ -244,7 +244,7 @@ public class DictionaryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> im
             field = (NumberField)data.get("id");
             if(field != null) {
                 screenService.getObject("getNumResultsAffected",
-                                        new Data[] {(StringField)set.get(col),field},
+                                        new Field[] {(StringField)set.get(col),field},
                                         new AsyncCallback<DataSet>() {
                                           public void onSuccess(DataSet result) {
                                             NumberObject nobj = null;
@@ -252,7 +252,7 @@ public class DictionaryScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> im
                                             if(result != null) {
                                              nobj = (NumberObject)result.get(0);
                                              sobj = (StringObject)result.get(1);
-                                             if((Integer)nobj.getValue() > 0) {
+                                             if(nobj.getIntegerValue() > 0) {
                                               boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
                                                if(!ok) {                                                 
                                                  dictEntryController.model.setCell(currRow, 3, (String)sobj.getValue());

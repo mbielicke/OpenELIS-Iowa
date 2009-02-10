@@ -30,9 +30,9 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -42,13 +42,13 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class AnimalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TabListener, TreeManager{
+public class AnimalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public AnimalSampleLoginScreen() {
-        super("org.openelis.modules.animalSampleLogin.server.AnimalSampleLoginService", false, new RPC<Form,Data>());
+        super("org.openelis.modules.animalSampleLogin.server.AnimalSampleLoginService", false, new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -66,10 +66,10 @@ public class AnimalSampleLoginScreen extends OpenELISScreenForm<RPC<Form,Data>,F
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
         //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top", new NumberObject(0));
+        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         row1.get(0).setValue("0 - Brain");
         row1.get(1).setValue("Dog");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top", new NumberObject(1));
+        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
         row2.get(0).setValue("Rabies - Logged In");
         row1.addItem(row2);
         itemsTestsTree.model.addRow(row1);

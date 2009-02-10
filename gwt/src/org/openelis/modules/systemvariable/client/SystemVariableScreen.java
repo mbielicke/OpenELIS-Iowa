@@ -29,9 +29,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -43,13 +43,13 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class SystemVariableScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener {
+public class SystemVariableScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
     
     private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     
     public SystemVariableScreen() {
-        super("org.openelis.modules.systemvariable.server.SystemVariableService",false,new RPC<Form,Data>());
+        super("org.openelis.modules.systemvariable.server.SystemVariableService",false,new DefaultRPC());
     }
     
     private SystemVariableMetaMap Meta = new SystemVariableMetaMap();

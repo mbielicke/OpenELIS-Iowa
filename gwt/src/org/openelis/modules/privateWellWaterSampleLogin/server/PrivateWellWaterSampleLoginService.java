@@ -25,51 +25,53 @@
 */
 package org.openelis.modules.privateWellWaterSampleLogin.server;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.server.constants.Constants;
 
 import java.util.HashMap;
 
-public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>{
+public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC commitDelete(RPC rpc) throws RPCException {
+    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> data) throws RPCException {
+    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -78,17 +80,17 @@ public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceI
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/privateWellWaterSampleLogin.xsl");
     }
 
-    public HashMap<String, Data> getXMLData() throws RPCException {
+    public HashMap<String, Field> getXMLData() throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
+    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public RPC getScreen(RPC rpc){
+    public DefaultRPC getScreen(DefaultRPC rpc){
         return rpc;
     }
 }

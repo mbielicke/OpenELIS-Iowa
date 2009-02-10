@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Data;
@@ -44,6 +45,8 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -63,7 +66,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import java.util.ArrayList;
 
-public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, TableManager, ChangeListener, TabListener{
+public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TableManager, ChangeListener, TabListener{
 
     private static boolean loaded = false;
     public enum Action {Drawn}
@@ -83,7 +86,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
     private KeyListManager keyList = new KeyListManager();
     
     public ShippingScreen() {
-        super("org.openelis.modules.shipping.server.ShippingService", !loaded, new RPC<Form,Data>());
+        super("org.openelis.modules.shipping.server.ShippingService", !loaded, new DefaultRPC());
     }
     
     public void setShippingData(ShippingDataService data){
@@ -216,7 +219,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
        
        window.setStatus("","spinnerIcon");
        
-       Data[] args = new Data[0]; 
+       Field[] args = new Field[0]; 
          
        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<DataSet>>(){
            public void onSuccess(DataModel<DataSet> model){    
@@ -224,10 +227,10 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
                DataSet set = model.get(0);
                
                //set the values in the rpc
-               rpc.form.setFieldValue(ShippingMeta.getStatusId(), (ArrayList)((DropDownField)set.get(0)).getSelections());
+               rpc.form.setFieldValue(ShippingMeta.getStatusId(), (ArrayList)((DropDownField)set.get(0)).getValue());
                rpc.form.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.get(1)).getValue());
                rpc.form.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.get(2)).getValue());
-               rpc.form.setFieldValue("systemUserId", (Integer)((NumberField)set.get(3)).getValue());
+               rpc.form.setFieldValue("systemUserId", ((NumberField)set.get(3)).getValue());
                       
                if(data != null)
                    initScreen();
@@ -253,11 +256,11 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
         loadShippingScreenFromData();
         
         //set the values after the screen is in add mode
-        rpc.form.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet(new NumberObject(shipFromId)));
+        rpc.form.setFieldValue(ShippingMeta.getShippedFromId(), new DataSet<Integer>(shipFromId));
         
         if(shipToId != null){
-            DataModel shipToModel = new DataModel();
-            shipToModel.add(new NumberObject(shipToId),new StringObject(shipToText));
+            DataModel<Integer> shipToModel = new DataModel<Integer>();
+            shipToModel.add(new DataSet<Integer>(shipToId,new StringObject(shipToText)));
             ((DropDownField)rpc.form.getField(ShippingMeta.ORGANIZATION_META.getName())).setModel(shipToModel);
             rpc.form.setFieldValue(ShippingMeta.ORGANIZATION_META.getName(), shipToModel.get(0));
         }
@@ -298,7 +301,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
               */      
                 //rpc.setFieldValue("unlockModel", checkedOrderIds);    
                 
-                Data[] args = new Data[] {checkedOrderIds}; 
+                Field[] args = new Field[] {checkedOrderIds}; 
                 
                 screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
                     public void onSuccess(StringObject obj){
@@ -338,7 +341,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
             }
             */
              // prepare the argument list for the getObject function
-            Data[] args = new Data[] {checkedOrderIds}; 
+            Field[] args = new Field[] {checkedOrderIds}; 
             
             screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
                 public void onSuccess(StringObject obj){
@@ -410,17 +413,17 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
     //end table manager methods
     //
     
-    private void loadItemsShippedTableFromModel(DataModel<DataSet> model){
+    private void loadItemsShippedTableFromModel(DataModel<Integer> model){
         itemsTable.model.clear();
         for(int i=0; i<model.size(); i++){
-            DataSet<Data> set = model.get(i);
+            DataSet<Integer> set = model.get(i);
             
-            DataSet<Data> tableRow = itemsTable.model.createRow();
+            DataSet<Object> tableRow = (DataSet<Object>)itemsTable.model.createRow();
             
             tableRow.get(0).setValue(set.get(0).getValue());
             tableRow.get(1).setValue(((DropDownField)set.get(1)).getTextValue());
             
-            tableRow.setData((DataMap)set.getData().clone());
+            tableRow.setData((Field)((DataMap)set.getData()).clone());
             
             itemsTable.model.addRow(tableRow);
         }
@@ -489,7 +492,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, rpc.form.getField("shippingItems")};
+        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("shippingItems")};
 
         screenService.getObject("loadShippingItems", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -512,7 +515,7 @@ public class ShippingScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> impl
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {key, rpc.form.getField("orderShippingNotes")};
+        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("orderShippingNotes")};
 
         screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {

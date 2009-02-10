@@ -27,6 +27,7 @@ package org.openelis.modules.standardnote.server;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -41,6 +42,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -59,7 +61,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>, 
+public class StandardNoteService implements AppScreenFormServiceInt<DefaultRPC, Integer>, 
 																AutoCompleteServiceInt {
 	
 	private static final long serialVersionUID = 734713425110147476L;
@@ -69,7 +71,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 	
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+	public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
         List standardNotes = new ArrayList();
         //		if the rpc is null then we need to get the page
     		if(form == null){
@@ -109,19 +111,19 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
     		
             int i=0;
             if(model == null)
-                model = new DataModel<DataSet>();
+                model = new DataModel<Integer>();
             else
                 model.clear();
             while(i < standardNotes.size() && i < leftTableRowsPerPage) {
                 IdNameDO resultDO = (IdNameDO)standardNotes.get(i);
-                model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
+                model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
                 i++;
              } 
             
     		return model;
     	}
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
 //		remote interface to call the standardNote bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
@@ -157,7 +159,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 		return rpc;
 	}
 
-	public RPC commitUpdate(RPC rpc) throws RPCException {
+	public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
 //		remote interface to call the standardnote bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
@@ -193,12 +195,12 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 		return rpc;
 	}
 
-	public RPC commitDelete(RPC rpc) throws RPCException {
+	public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
     //		remote interface to call the standard note bean
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
     		//validate the fields on the backend
-    		List exceptionList = remote.validateForDelete((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+    		List exceptionList = remote.validateForDelete(rpc.key);
     		if(exceptionList.size() > 0){
     			setRpcErrors(exceptionList, rpc.form);
     			
@@ -206,7 +208,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
     		} 
     		
     		try {
-    			remote.deleteStandardNote((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+    			remote.deleteStandardNote(rpc.key);
     			
     		} catch (Exception e) {
     			exceptionList = new ArrayList();
@@ -222,12 +224,12 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
     		return rpc;
     	}
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
     //		remote interface to call the storage unit bean
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
     		
-    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(), SessionManager.getSession().getId());
+    		StandardNoteDO standardNoteDO = remote.getStandardNoteAndUnlock(rpc.key, SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpc.form, standardNoteDO);
@@ -235,11 +237,11 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
           return rpc;  
     	}
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
-		StandardNoteDO standardNoteDO = remote.getStandardNote((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+		StandardNoteDO standardNoteDO = remote.getStandardNote(rpc.key);
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpc.form, standardNoteDO);
@@ -247,13 +249,13 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 		return rpc;
 	}
 
-	public RPC fetchForUpdate(RPC rpc) throws RPCException {
+	public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
 		
 		try{
-			standardNoteDO = remote.getStandardNoteAndLock((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue(), SessionManager.getSession().getId());
+			standardNoteDO = remote.getStandardNoteAndLock(rpc.key, SessionManager.getSession().getId());
 		}catch(Exception e){
 			throw new RPCException(e.getMessage());
 		}
@@ -268,7 +270,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl");
     }
 
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl"));
         
@@ -280,14 +282,14 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
             CachingManager.putElement("InitialData", "standardNoteTypeDropdown", standardNoteTypeDropdownField);
         }
         
-        HashMap map = new HashMap();
+        HashMap<String,Field> map = new HashMap<String,Field>();
         map.put("xml",xml);
         map.put("noteTypes",standardNoteTypeDropdownField);
         
         return map;
     }
 
-    public HashMap getXMLData(HashMap args) throws RPCException {
+    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
@@ -296,7 +298,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 		return null;
 	}
     
-    public RPC getScreen(RPC rpc){
+    public DefaultRPC getScreen(DefaultRPC rpc){
         return rpc;
     }
 
@@ -317,45 +319,17 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
 			entries = remote.getDropdownValues(id);
 		
 		//we need to build the model to return
-		DataModel returnModel = new DataModel();
+		DataModel<Integer> returnModel = new DataModel<Integer>();
 			
         if(entries.size() > 0){
     		//create a blank entry to begin the list
-    		DataSet blankset = new DataSet();
-    		
-    		StringObject blankStringId = new StringObject();
-    		NumberObject blankNumberId = new NumberObject(NumberObject.Type.INTEGER);
-    				
-    		blankStringId.setValue("");
-    		blankset.add(blankStringId);
-    		
-    		blankNumberId.setValue(new Integer(0));
-    		
-    		blankset.setKey(blankNumberId);
-    		
-    		returnModel.add(blankset);
+    		returnModel.add(new DataSet<Integer>(0,new StringObject("")));
         }
         
 		int i=0;
 		while(i < entries.size()){
-			DataSet set = new DataSet();
 			IdNameDO resultDO = (IdNameDO) entries.get(i);
-			//id
-			Integer dropdownId = resultDO.getId();
-			//entry
-			String dropdownText = resultDO.getName();
-			
-			StringObject textObject = new StringObject();
-			NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
-			
-			textObject.setValue(dropdownText);
-			set.add(textObject);
-			
-			numberId.setValue(dropdownId);
-
-			set.setKey(numberId);
-			
-			returnModel.add(set);
+			returnModel.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
 			
 			i++;
 		}		
@@ -392,6 +366,6 @@ public class StandardNoteService implements AppScreenFormServiceInt<RPC, DataMod
     	form.setFieldValue(StandardNoteMeta.getText(), standardNoteDO.getText());
         
         if(standardNoteDO.getType() != null)
-            form.setFieldValue(StandardNoteMeta.getTypeId(), new DataSet(new NumberObject(standardNoteDO.getType())));
+            ((DropDownField<Integer>)(Field)form.getField(StandardNoteMeta.getTypeId())).setValue(new DataSet<Integer>(standardNoteDO.getType()));
     }
 }

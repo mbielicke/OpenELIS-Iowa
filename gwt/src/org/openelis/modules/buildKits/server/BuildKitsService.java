@@ -31,6 +31,7 @@ import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -42,8 +43,10 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -65,17 +68,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<DataSet>>, AutoCompleteServiceInt{
+public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Integer>, AutoCompleteServiceInt{
 
     private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     //not used
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
         return null;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
         //remote interface to call the build kits bean
         BuildKitsRemote remote = (BuildKitsRemote)EJBFactory.lookup("openelis/BuildKitsBean/remote");
         BuildKitDO buildKitDO = new BuildKitDO();
@@ -107,27 +110,27 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     }
 
     //not used
-    public RPC commitDelete(RPC rpc) throws RPCException {
+    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
         return null;
     }
 
     //not used
-    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
         return null;
     }
 
     //not used
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
         return null;
     }
 
     //not used
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
         return null;
     }
 
     //not used
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
         return null;
     }
 
@@ -135,23 +138,23 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/buildKits.xsl");
     }
 
-    public HashMap<String, Data> getXMLData() throws RPCException {
+    public HashMap<String, Field> getXMLData() throws RPCException {
         return null;
     }
 
-    public HashMap<String, Data> getXMLData(HashMap<String, Data> args) throws RPCException {
+    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
         return null;
     }
     
-    public RPC getScreen(RPC rpc) {
+    public DefaultRPC getScreen(DefaultRPC rpc) {
         return rpc;
     }
     
     private BuildKitDO getBuildKitDOFromRPC(Form form){
         BuildKitDO buildKitDO = new BuildKitDO();
         
-        DropDownField invItemDrop = (DropDownField)form.getField(InventoryItemMeta.getName());
-        ArrayList<DataSet> selected = invItemDrop.getSelections();
+        DropDownField<Field> invItemDrop = (DropDownField<Field>)form.getField(InventoryItemMeta.getName());
+        ArrayList<DataSet<Field>> selected = invItemDrop.getValue();
         DataSet selectedRow = null;
         DataMap selectedRowMap = null;
         if(selected.size() > 0){
@@ -176,14 +179,14 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         return buildKitDO;
     }
     
-    private List<BuildKitComponentDO> getComponentsListFromRPC(DataModel<DataSet> componentsTable){
+    private List<BuildKitComponentDO> getComponentsListFromRPC(DataModel<Integer> componentsTable){
         List<BuildKitComponentDO> components = new ArrayList<BuildKitComponentDO>();
         
         for(int i=0; i<componentsTable.size(); i++){
             BuildKitComponentDO componentDO = new BuildKitComponentDO();
-            DataSet<Data> row = componentsTable.get(i);
+            DataSet<Integer> row = componentsTable.get(i);
             
-            componentDO.setInventoryItemId((Integer)((NumberObject)row.getKey()).getValue());
+            componentDO.setInventoryItemId(row.getKey());
             componentDO.setComponent((String)row.get(0).getValue());
             componentDO.setLocationId((Integer)((DropDownField)row.get(1)).getSelectedKey());
             componentDO.setLotNum((String)row.get(2).getValue());
@@ -202,8 +205,8 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         if(kitDO.getInventoryItemId() == null)
             form.setFieldValue(InventoryItemMeta.getName(), null);
         else{
-            DataModel<DataSet> model = new DataModel();
-            model.add(new NumberObject(kitDO.getInventoryItemId()),new StringObject(kitDO.getInventoryItem()));
+            DataModel<Integer> model = new DataModel<Integer>();
+            model.add(new DataSet<Integer>(kitDO.getInventoryItemId(),new StringObject(kitDO.getInventoryItem())));
             ((DropDownField)form.getField(InventoryItemMeta.getName())).setModel(model);
             form.setFieldValue(InventoryItemMeta.getName(), model.get(0));
         }
@@ -214,8 +217,8 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
         if(kitDO.getLocationId() == null)
             form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation(), null);
         else{
-            DataModel<DataSet> model = new DataModel();
-            model.add(new NumberObject(kitDO.getLocationId()),new StringObject(kitDO.getLocation()));
+            DataModel<Integer> model = new DataModel<Integer>();
+            model.add(new DataSet<Integer>(kitDO.getLocationId(),new StringObject(kitDO.getLocation())));
             ((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).setModel(model);
             form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation(), model.get(0));
         }
@@ -244,7 +247,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     
     private DataModel getKitMatches(String match) throws RPCException{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        DataModel dataModel = new DataModel();
+        DataModel<Integer> dataModel = new DataModel<Integer>();
         List autoCompleteList;
     
         //lookup by name
@@ -258,11 +261,11 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
             String store = resultDO.getStore();
             String dispensedUnits = resultDO.getDispensedUnits();
             
-            DataSet data = new DataSet();
+            DataSet<Integer> data = new DataSet<Integer>();
             //hidden id
-            NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
-            idObject.setValue(itemId);
-            data.setKey(idObject);
+            //NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
+            //idObject.setValue(itemId);
+            data.setKey(itemId);
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
@@ -290,7 +293,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     }
     
     private DataModel getLocationMatches(String match, HashMap params) throws RPCException{
-        DataModel dataModel = new DataModel();
+        DataModel<Integer> dataModel = new DataModel<Integer>();
         String addToExisting = null;
         List autoCompleteList = new ArrayList();
         
@@ -313,10 +316,10 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
             //desc
             String desc = resultDO.getLocation();
           
-            DataSet set = new DataSet();
+            DataSet<Integer> set = new DataSet<Integer>();
             //hidden id
-            NumberObject idObject = new NumberObject(id);
-            set.setKey(idObject);
+            //NumberObject idObject = new NumberObject(id);
+            set.setKey(id);
             //columns
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
@@ -331,11 +334,11 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     }
     
     private DataModel getComponentLocationMatches(String match, HashMap params) throws RPCException{
-        DataModel dataModel = new DataModel();
+        DataModel<Integer> dataModel = new DataModel<Integer>();
         Integer id = null;
         List autoCompleteList = new ArrayList();
         
-        id = (Integer)((NumberObject)params.get("id")).getValue();
+        id = ((NumberObject)params.get("id")).getIntegerValue();
 
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         //lookup by name
@@ -350,8 +353,8 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
           
             DataSet set = new DataSet();
             //hidden id
-            NumberObject idObject = new NumberObject(autoId);
-            set.setKey(idObject);
+            //NumberObject idObject = new NumberObject(autoId);
+            set.setKey(autoId);
             //columns
             StringObject descObject = new StringObject();
             descObject.setValue(desc);
@@ -370,7 +373,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<RPC, DataModel<
     
     public DataModel getComponentsFromId(NumberObject inventoryItemId){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        Integer invItemId = (Integer)inventoryItemId.getValue();
+        Integer invItemId = inventoryItemId.getIntegerValue();
         DataModel model = new DataModel();
         
         List components = remote.getInventoryComponents(invItemId);

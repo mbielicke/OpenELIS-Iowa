@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.buildKits.client;
 
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.RPC;
@@ -35,6 +36,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -57,6 +59,8 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -65,7 +69,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
+public class BuildKitsScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -80,7 +84,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     private InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     
     public BuildKitsScreen() {
-        super("org.openelis.modules.buildKits.server.BuildKitsService", false, new RPC<Form,Data>());
+        super("org.openelis.modules.buildKits.server.BuildKitsService", false, new DefaultRPC());
     }
     
     public void onClick(Widget sender) {
@@ -90,19 +94,19 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     
     public void onChange(Widget sender) {
         super.onChange(sender);
-        if(sender == kitDropdown && kitDropdown.getSelections().size() > 0 && !((NumberObject)kitDropdown.getSelections().get(0).getKey()).getValue().equals(currentKitDropdownValue)){
-            currentKitDropdownValue = (Integer)((NumberObject)kitDropdown.getSelections().get(0).getKey()).getValue();
+        if(sender == kitDropdown && kitDropdown.getSelections().size() > 0 && !kitDropdown.getSelections().get(0).getKey().equals(currentKitDropdownValue)){
+            currentKitDropdownValue = (Integer)kitDropdown.getSelections().get(0).getKey();
             NumberObject idObj = (NumberObject)((DataSet)kitDropdown.getSelections().get(0)).getKey();
             // prepare the argument list for the getObject function
             DataObject[] args = new DataObject[] {idObj}; 
             
-            screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel<DataSet>>() {
-                public void onSuccess(DataModel<DataSet> model) {
+            screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel<Integer>>() {
+                public void onSuccess(DataModel<Integer> model) {
                    subItemsTable.model.clear();
 
                    for(int i=0; i<model.size(); i++){
-                       DataSet<Data> set = model.get(i);
-                       DataSet<Data> tableRow = subItemsTable.model.createRow();
+                       DataSet<Integer> set = model.get(i);
+                       DataSet<Integer> tableRow = (DataSet<Integer>)subItemsTable.model.createRow();
                        //id
                        //name
                        //qty
@@ -271,12 +275,12 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
     //start table widget listener methods
     //
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        DropDownField locationField;
+        DropDownField<Object> locationField;
         if(col == 1 && row < subItemsTable.model.numRows()){
             locationField = (DropDownField)subItemsTable.model.getObject(row, col);
             if(locationField.getValue() != null){
-                DataSet tableRow = subItemsTable.model.getRow(row);
-                DataSet selectedRow = ((DropDownField)tableRow.get(1)).getSelections().get(0);
+                DataSet<Object> tableRow = subItemsTable.model.getRow(row);
+                DataSet<Object> selectedRow = ((ArrayList<DataSet<Object>>)((DropDownField)tableRow.get(1)).getValue()).get(0);
                 DataMap map = (DataMap)selectedRow.getData();
             
                 subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.get(1)).getValue());
@@ -313,7 +317,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         }
         
         // prepare the argument list for the getObject function
-        Data[] args = new Data[] {catObj, model, matchObj, paramsObj}; 
+        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {

@@ -41,7 +41,7 @@ public class TestForm extends Form {
     /**
      * 
      */
-    private static final long serialVersionUID = -6352405584633772505L;
+    private static final long serialVersionUID = 1L;
     
     public NumberField id; 
     public StringField name;

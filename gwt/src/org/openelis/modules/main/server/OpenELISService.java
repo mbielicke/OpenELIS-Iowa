@@ -29,9 +29,9 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.ConstantMap;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -43,7 +43,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet>> {
+public class OpenELISService implements OpenELISServiceInt<RPC,Integer> {
    
     private static final long serialVersionUID = 1L;
     
@@ -57,10 +57,10 @@ public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet
         }
 	}
     
-    public HashMap<String,Data> getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-        HashMap<String,Data> map = new HashMap<String,Data>();
+        HashMap<String,Field> map = new HashMap<String,Field>();
         map.put("xml",xml);
         map.put("AppConstants", getConstants());
         return map;
@@ -81,7 +81,7 @@ public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet
         return null;
     }
 
-    public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -106,7 +106,7 @@ public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet
         return null;
     }
 
-    public Data getObject(String method, Data[] args) throws RPCException {
+    public Field getObject(String method, Field[] args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -128,11 +128,11 @@ public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet
         return cmap;
     }
 
-	public HashMap<String,Data> getXMLData(HashMap<String,Data> args) throws RPCException {
+	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
 		try {
 			StringObject xml = new StringObject();
 			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-            HashMap<String,Data> map = new HashMap<String,Data>();
+            HashMap<String,Field> map = new HashMap<String,Field>();
             map.put("xml", xml);
             map.put("AppConstants",getConstants());
 			return map;
@@ -143,6 +143,11 @@ public class OpenELISService implements OpenELISServiceInt<RPC,DataModel<DataSet
 	}
     
     public RPC getScreen(RPC rpc) {
+        return null;
+    }
+
+    public <T extends RPC> T call(String method, T rpc) throws Exception {
+        // TODO Auto-generated method stub
         return null;
     }
 

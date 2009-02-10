@@ -25,6 +25,29 @@
 */
 package org.openelis.bean;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ShippingAddAutoFillDO;
+import org.openelis.domain.ShippingDO;
+import org.openelis.domain.ShippingItemDO;
+import org.openelis.domain.ShippingTrackingDO;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXUse;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.entity.Shipping;
+import org.openelis.entity.ShippingItem;
+import org.openelis.entity.ShippingTracking;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.persistence.JBossCachingManager;
+import org.openelis.remote.ShippingRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,33 +64,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.ShippingAddAutoFillDO;
-import org.openelis.domain.ShippingDO;
-import org.openelis.domain.ShippingItemDO;
-import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryXUse;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.entity.Shipping;
-import org.openelis.entity.ShippingItem;
-import org.openelis.entity.ShippingTracking;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.persistence.JBossCachingManager;
-import org.openelis.remote.ShippingRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -371,7 +367,7 @@ public class ShippingBean implements ShippingRemote{
         return exceptionList;
     }
     
-    private void unlockOrderRecords(DataModel<DataSet<Data>> orders) {
+    private void unlockOrderRecords(DataModel<Integer> orders) {
         if(orders == null || orders.size() == 0)
             return;
         
@@ -382,7 +378,7 @@ public class ShippingBean implements ShippingRemote{
         orderTableId = (Integer)query.getSingleResult();
         
         for(int i=0; i<orders.size(); i++){
-            Integer orderId = (Integer)((NumberObject)orders.get(i).getKey()).getValue();
+            Integer orderId = orders.get(i).getKey();
         
             if(orderId != null)
                 lockBean.giveUpLock(orderTableId, orderId);

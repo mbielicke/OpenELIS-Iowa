@@ -41,15 +41,14 @@ import com.google.gwt.xml.client.XMLParser;
 
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -92,7 +91,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
+public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> implements
                                                                      ClickListener,
                                                                      TabListener,
                                                                      ChangeListener,
@@ -101,7 +100,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                                                                      TreeManager,
                                                                      TreeWidgetListener {
 
-    private DataModel<DataSet> resultGroupDropdownModel,
+    private DataModel resultGroupDropdownModel,
                     testAnalyteDropdownModel, defaultModel, unitDropdownModel;
 
     private AppButton removeSampleTypeButton, removePrepTestButton,
@@ -117,7 +116,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
 
     private int group = 0;
 
-    private TableWidget<DataSet> reflexTestWidget, prepTestWidget,
+    private TableWidget reflexTestWidget, prepTestWidget,
                     wsItemWidget, sampleTypeWidget, sectionWidget,
                     resultWidget;
 
@@ -410,7 +409,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
     public void performCommand(Enum action, Object obj) {
         Form tdrpc = null;
         if (action == KeyListManager.Action.FETCH) {
-            key = (DataSet)((Object[])obj)[0];
+            key = (Integer)((Object[])obj)[0];
             //
             // See fillTestAnalyteDropDown(), fillTestResultDropDown(),
             // fillMaps(), fillResultModelCollection()
@@ -586,8 +585,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         }
     };
 
-    protected AsyncCallback<? extends Data> commitUpdateCallback = new AsyncCallback<RPC>() {
-        public void onSuccess(RPC result) {
+    protected AsyncCallback<TestRPC> commitUpdateCallback = new AsyncCallback<TestRPC>() {
+        public void onSuccess(TestRPC result) {
             // CollectionField cf = null;
             if (rpc.form.status == Form.Status.invalid) {
                 analyteRPC = (TestAnalyteForm)(rpc.form.getField("testAnalyte"));
@@ -606,8 +605,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         }
     };
 
-    protected AsyncCallback<? extends Data> commitAddCallback = new AsyncCallback<RPC>() {
-        public void onSuccess(RPC result) {
+    protected AsyncCallback<TestRPC> commitAddCallback = new AsyncCallback<TestRPC>() {
+        public void onSuccess(TestRPC result) {
             // CollectionField cf = null;
             if (rpc.form.status == Form.Status.invalid) {
                 analyteRPC = (TestAnalyteForm)(rpc.form.getField("testAnalyte"));
@@ -665,10 +664,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
      * the screen
      */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        DataModel<DataSet> model = null;
+        DataModel model = null;
         ArrayList<DataSet> list = null;
-        DataSet<Data> mr = null;
-        DataSet<Data> dr = null;
+        DataSet mr = null;
+        DataSet dr = null;
 
         AbstractField mf = null;
         AbstractField df = null;
@@ -686,17 +685,17 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             if (resultModelCollection.size() > tabIndex) {
                 if (prevSelTabIndex > -1 && prevSelTabIndex != tabIndex) {
                     resultWidget.finishEditing();
-                    model = (DataModel<DataSet>)resultWidget.model.getData()
+                    model = (DataModel)resultWidget.model.getData()
                                                                   .clone();
-                    list = resultWidget.model.getData().getDeletions();
+                    list = (ArrayList<DataSet>)resultWidget.model.getData().getDeletions();
 
                     for (int i = 0; i < list.size(); i++) {
-                        model.getDeletions().add((DataSet)list.get(i).clone());
+                        model.getDeletions().add(((DataSet)list.get(i)).clone());
                     }
 
                     for (int i = 0; i < model.size(); i++) {
                         dr = (DataSet)resultWidget.model.getData().get(i);
-                        mr = model.get(i);
+                        mr = (DataSet)model.get(i);
 
                         for (int j = 0; j < dr.size(); j++) {
                             mf = (AbstractField)mr.get(j);
@@ -849,7 +848,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             // the values for the other rows can be changed accordingly
             //
             screenService.getObject("getCategorySystemName",
-                                    new Data[] {new NumberObject(selValue)},
+                                    new Field[] {new NumberObject(selValue)},
                                     new AsyncCallback<StringObject>() {
                                         public void onSuccess(StringObject result) {
                                             if ("test_section_default".equals((String)result.getValue())) {
@@ -931,7 +930,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                 // column
                 //
                 screenService.getObject("getCategorySystemName",
-                                        new Data[] {new NumberObject(selValue)},
+                                        new Field[] {new NumberObject(selValue)},
                                         new AsyncCallback<StringObject>() {
                                             public void onSuccess(StringObject result) {
                                                 Double[] darray = new Double[2];
@@ -944,7 +943,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                                                     // "Dictionary"
                                                     //
                                                     screenService.getObject("getEntryId",
-                                                                            new Data[] {new StringObject(value)},
+                                                                            new Field[] {new StringObject(value)},
                                                                             new AsyncCallback<NumberObject>() {
 
                                                                                 public void onSuccess(NumberObject result1) {
@@ -1211,17 +1210,17 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                     data.put("unitId", new NumberObject(id));
                     if (id != -1) {
                         numRes = (NumberObject)unitIdNumResMap.get(id.toString());
-                        numRes.setValue((Integer)numRes.getValue() + 1);
+                        numRes.setValue(numRes.getIntegerValue() + 1);
                     }
                 } else {
                     unitId = (NumberObject)data.get("unitId");
-                    if ((Integer)unitId.getValue() != id) {
+                    if (unitId.getIntegerValue() != id) {
                         data.put("unitId", new NumberObject(id));
-                        numRes = (NumberObject)unitIdNumResMap.get(((Integer)unitId.getValue()).toString());
-                        numRes.setValue((Integer)numRes.getValue() - 1);
+                        numRes = (NumberObject)unitIdNumResMap.get((unitId.getIntegerValue()).toString());
+                        numRes.setValue(numRes.getIntegerValue() - 1);
                         if (id != -1) {
                             numRes = (NumberObject)unitIdNumResMap.get(id.toString());
-                            numRes.setValue((Integer)numRes.getValue() + 1);
+                            numRes.setValue(numRes.getIntegerValue() + 1);
                         }
                     }
                 }
@@ -1233,7 +1232,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                 final Integer selValue = (Integer)((DropDownField)wsItemWidget.model.getRow(row)
                                                                                     .get(1)).getSelectedKey();
                 screenService.getObject("getCategorySystemName",
-                                        new Data[] {new NumberObject(selValue)},
+                                        new Field[] {new NumberObject(selValue)},
                                         new AsyncCallback<StringObject>() {
                                             public void onSuccess(StringObject result) {
                                                 Integer value = (Integer)((DataObject)wsItemWidget.model.getRow(currRow)
@@ -1292,7 +1291,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             Integer unitId = null;
 
             if (data != null) {
-                unitId = (Integer)((NumberField)data.get("unitId")).getValue();
+                unitId = ((NumberField)data.get("unitId")).getIntegerValue();
             } else {
                 if (id != null && id != -1) {
                     data = new DataMap();
@@ -1309,7 +1308,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             if (unitId != null) {
                 if (unitId != -1 && !unitId.equals(id)) {
                     numRes = (NumberObject)unitIdNumResMap.get(unitId.toString());
-                    if ((Integer)numRes.getValue() > 0 && !(getNumRowsHavingUnit(unitId) >= 1)) {
+                    if (numRes.getIntegerValue() > 0 && !(getNumRowsHavingUnit(unitId) >= 1)) {
                         Window.alert(consts.get("cantChangeUnit"));
                         ufield.setValue(new DataSet<NumberObject>(new NumberObject(unitId)));
                         sampleTypeWidget.model.refresh();
@@ -1358,8 +1357,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         String selText = null;
         String prevVal = null;
 
-        DataSet<Data> ddset = null;
-        DataSet<Data> lset = null;
+        DataSet<NumberObject> ddset = null;
+        DataSet<NumberObject> lset = null;
 
         DataMap data = null;
 
@@ -1388,7 +1387,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                     prevVal = (String)ddset.get(0).getValue();
                     if (!prevVal.trim().equals(selText.trim())) {
                         setErrorToReflexFields(consts.get("analyteNameChanged"),
-                                               (Integer)obj.getValue(),
+                                               obj.getIntegerValue(),
                                                1);
                         ddset.get(0).setValue(selText);
                         ((TableDropdown)reflexTestWidget.columns.get(1)
@@ -1431,7 +1430,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             if (item.getData() != null && !("").equals(selText.trim())) {
                 data = (DataMap)item.getData();
                 if (data.get("id") != null) {
-                    anaId = (Integer)((NumberObject)data.get("id")).getValue();
+                    anaId = ((NumberObject)data.get("id")).getIntegerValue();
                     lset = (DataSet)resGroupAnalyteIdMap.get(selText);
                     obj = new NumberObject(anaId);
                     if (lset != null) {
@@ -1471,7 +1470,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                               DataSet set,
                               List<Integer> idList) {
         DataMap data = null;
-        DataSet<Data> row = null;
+        DataSet<Field> row = null;
         String entry = null;
         Integer id = null;
         if (resultPanel.getTabBar().getTabCount() == 0) {
@@ -1479,7 +1478,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             return;
         }
         for (int iter = 0; iter < idList.size(); iter++) {
-            row = resultWidget.model.createRow();
+            row = (DataSet<Field>)resultWidget.model.createRow();
             id = idList.get(iter);
             entry = deList.get(iter);
             row.get(0).setValue(set);
@@ -1657,7 +1656,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
      * This function sets the Data Model for a dropdown field that's inside the
      * TableWidget "widget" in the column "column" to the argument "model"
      */
-    private void setTableDropdownModel(TableWidget<DataSet> widget,
+    private void setTableDropdownModel(TableWidget widget,
                                        int column,
                                        DataModel model) {
         ((TableDropdown)widget.columns.get(column).getColumnWidget()).setModel(model);
@@ -1687,7 +1686,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         window.setStatus("", "spinnerIcon");
 
         screenService.getObject("loadTestDetails",
-                                new Data[] {key, rpc.form.details},
+                                new Field[] {new NumberObject(key), rpc.form.details},
                                 new AsyncCallback<DetailsForm>() {
                                     public void onSuccess(DetailsForm result) {
                                         load(result);                                        
@@ -1715,7 +1714,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         window.setStatus("", "spinnerIcon");
 
         screenService.getObject("loadPrepTestsReflexTests",
-                                new Data[] {key,rpc.form.prepAndReflex},
+                                new Field[] {new NumberObject(key),rpc.form.prepAndReflex},
                                 new AsyncCallback<PrepAndReflexForm>() {
                                     public void onSuccess(PrepAndReflexForm result) {
                                         load(result);
@@ -1743,7 +1742,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         window.setStatus("", "spinnerIcon");
 
         screenService.getObject("loadSampleTypes",
-                                new Data[] {key,rpc.form.sampleType},
+                                new Field[] {new NumberObject(key),rpc.form.sampleType},
                                 new AsyncCallback<SampleTypeForm>() {
                                     public void onSuccess(SampleTypeForm result) {
                                         load(result);
@@ -1771,7 +1770,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         window.setStatus("", "spinnerIcon");
 
         screenService.getObject("loadWorksheetLayout",
-                                new Data[] {key, rpc.form.worksheet},
+                                new Field[] {new NumberObject(key), rpc.form.worksheet},
                                 new AsyncCallback<WorksheetForm>() {
                                     public void onSuccess(WorksheetForm result) {
                                         load(result);
@@ -1798,7 +1797,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         window.setStatus("", "spinnerIcon");
 
         screenService.getObject("loadTestAnalyte",
-                                new Data[] {key,rpc.form.testAnalyte},
+                                new Field[] {new NumberObject(key),rpc.form.testAnalyte},
                                 new AsyncCallback<TestAnalyteForm>() {
                                     public void onSuccess(TestAnalyteForm result) {
                                         load(result);
@@ -1823,10 +1822,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         resultModelCollection = new ArrayList<DataModel>();
 
         screenService.getObject("getGroupCountForTest",
-                                new Data[] {(NumberObject)key.getKey()},
+                                new Field[] {new NumberObject(key)},
                                 new AsyncCallback<NumberObject>() {
                                     public void onSuccess(NumberObject result) {
-                                        group = (Integer)result.getValue();                                        
+                                        group = result.getIntegerValue();                                        
                                         if (group > 0) {
                                             for (int iter = 1; iter < group + 1; iter++) {
                                                 resultPanel.add(getDummyPanel(),
@@ -1834,7 +1833,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                                                 // resultPanel.addTab(new
                                                 // Integer(iter).toString());
                                                 screenService.getObject("loadTestResultsByGroup",
-                                                                        new Data[] {(NumberObject)key.getKey(),
+                                                                        new Field[] {new NumberObject(key),
                                                                                     new NumberObject(iter),
                                                                                     (DataModel)defaultModel.clone()},
                                                                         new AsyncCallback<DataModel>() {
@@ -1875,9 +1874,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             return;
         }
 
-        NumberObject testId = (NumberObject)key.getKey();
+        NumberObject testId = new NumberObject(key);
         screenService.getObject("getTestAnalyteModel",
-                                new Data[] {testId},
+                                new Field[] {testId},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {
                                         ((TableDropdown)reflexTestWidget.columns.get(1)
@@ -1897,9 +1896,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         if (key == null) {
             return;
         }
-        NumberObject testId = (NumberObject)key.getKey();
+        NumberObject testId = new NumberObject(key);
         screenService.getObject("getResultGroupModel",
-                                new Data[] {testId,rpc.form.testAnalyte},
+                                new Field[] {testId,rpc.form.testAnalyte},
                                 new AsyncCallback<DataModel<DataSet>>() {
                                     public void onSuccess(DataModel<DataSet> result) {
                                         resultGroupDropdownModel = result;
@@ -1919,9 +1918,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         if (key == null) {
             return;
         }
-        NumberObject testId = (NumberObject)key.getKey();
+        NumberObject testId = new NumberObject(key);
         screenService.getObject("getUnitDropdownModel",
-                                new Data[] {testId},
+                                new Field[] {testId},
                                 new AsyncCallback<DataModel<DataSet>>() {
                                     public void onSuccess(DataModel<DataSet> result) {
                                         if (result != null) {
@@ -1958,10 +1957,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         if (key == null) {
             return;
         }
-        NumberObject testId = (NumberObject)key.getKey();
+        NumberObject testId = new NumberObject(key);
         DataMap dataMap = new DataMap();
         screenService.getObject("getTestResultModelMap",
-                                new Data[] {testId, dataMap},
+                                new Field[] {testId, dataMap},
                                 new AsyncCallback<DataMap>() {
                                     public void onSuccess(DataMap result) {
                                         resultDropdownModelMap = result;
@@ -1975,7 +1974,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
 
         dataMap = new DataMap();
         screenService.getObject("getResultGroupAnalyteMap",
-                                new Data[] {testId, dataMap},
+                                new Field[] {testId, dataMap},
                                 new AsyncCallback<DataMap>() {
                                     public void onSuccess(DataMap result) {
                                         resGroupAnalyteIdMap = result;
@@ -1989,7 +1988,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
 
         dataMap = new DataMap();
         screenService.getObject("getUnitIdNumResMapForTest",
-                                new Data[] {testId, dataMap},
+                                new Field[] {testId, dataMap},
                                 new AsyncCallback<DataMap>() {
                                     public void onSuccess(DataMap result) {
                                         unitIdNumResMap = result;
@@ -2015,7 +2014,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         if (row > -1) {
             if (id != null && id != -1) {
                 numRes = (NumberObject)unitIdNumResMap.get(id.toString());
-                if ((Integer)numRes.getValue() > 0 && !(getNumRowsHavingUnit(id) >= 1)) {
+                if (numRes.getIntegerValue() > 0 && !(getNumRowsHavingUnit(id) >= 1)) {
                     Window.alert(consts.get("cantChangeUnit"));
                     ufield.setValue(new DataSet<NumberObject>(new NumberObject(id)));
                     sampleTypeWidget.model.refresh();
@@ -2064,7 +2063,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
                     if (field != null) {
                         disableResultOptions(set);
                         setErrorToReflexFields(consts.get("resultDeleted"),
-                                               (Integer)field.getValue(),
+                                               field.getIntegerValue(),
                                                2);
                     }
                 }
@@ -2110,9 +2109,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
 
     private void onAddRowButtonClicked() {
         gid++;
-        TreeDataItem newItem = analyteTreeController.model.getData()
-                                                          .createTreeItem("analyte",
-                                                                          new NumberObject(gid));
+        TreeDataItem newItem = analyteTreeController.model.getData().createTreeItem("analyte");
         analyteTreeController.model.addRow(newItem);
         analyteTreeController.model.refresh();
     }
@@ -2128,9 +2125,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             return;
         }
         gid++;
-        item = analyteTreeController.model.getData()
-                                          .createTreeItem("top",
-                                                          new NumberObject(gid));
+        item = analyteTreeController.model.getData().createTreeItem("top");
         item.get(0).setValue(consts.get("analyteGroup"));
 
         Arrays.sort(selectedRowIndexes);
@@ -2233,7 +2228,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             field = (NumberObject)((DataMap)item.getData()).get("id");
             if (field != null)
                 setErrorToReflexFields(consts.get("analyteDeleted"),
-                                       (Integer)field.getValue(),
+                                       field.getIntegerValue(),
                                        1);
             testAnalyteDropdownModel.getByKey(field).enabled = false;
             ((TableDropdown)reflexTestWidget.columns.get(1).getColumnWidget()).setModel(testAnalyteDropdownModel);
@@ -2303,7 +2298,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         final String name = fieldName;
         StringObject catObj = new StringObject(name);
         screenService.getObject("getInitialModel",
-                                new Data[] {catObj},
+                                new Field[] {catObj},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {
                                         setDropdownModel(name, result);
@@ -2325,7 +2320,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         final TableWidget w = widget;
         StringObject catObj = new StringObject(name);
         screenService.getObject("getInitialModel",
-                                new Data[] {catObj},
+                                new Field[] {catObj},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {
                                         setTableDropdownModel(w, col, result);
@@ -2349,7 +2344,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         final TreeWidget w = widget;
         StringObject catObj = new StringObject(name);
         screenService.getObject("getInitialModel",
-                                new Data[] {catObj},
+                                new Field[] {catObj},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {
                                         setTableDropdownModel(w,
@@ -2447,32 +2442,32 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
     }       
 
     private DataModel getDropdownModelForRsltGrp(int rsltGrp) {
-        DataModel<DataSet> rmodel = null;
-        DataModel<DataSet> ddmodel = new DataModel();
+        DataModel rmodel = null;
+        DataModel ddmodel = new DataModel();
 
         if (resultPanel.getTabBar().getSelectedTab() != rsltGrp - 1)
             rmodel = (DataModel<DataSet>)resultModelCollection.get(rsltGrp - 1);
         else
             rmodel = resultWidget.model.getData();
 
-        DataSet<Data> rset = null;
-        DataSet<Data> ddset = null;
+        DataSet<Field> rset = null;
+        DataSet ddset = null;
 
         DataMap data = null;
 
         NumberField field = null;
 
-        DataSet<Data> blankset = new DataSet();
+        DataSet blankset = new DataSet();
         blankset.add(new StringObject(""));
         blankset.setKey(new NumberObject(-1));
         ddmodel.add(blankset);
 
         for (int i = 0; i < rmodel.size(); i++) {
             ddset = new DataSet();
-            rset = rmodel.get(i);
+            rset = (DataSet)rmodel.get(i);
             data = (DataMap)rset.getData();
             field = (NumberField)data.get("id");
-            ddset.setKey(new NumberObject((Integer)field.getValue()));
+            ddset.setKey(new NumberObject(field.getValue()));
             ddset.add(new StringObject((String)rset.get(1).getValue()));
             ddmodel.add(ddset);
         }
@@ -2486,15 +2481,15 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
     }
 
     private void setErrorToReflexFields(String error, Integer id, int col) {
-        DataSet<Data> rset = null;
-        DataSet<Data> vset = null;
+        DataSet<Field> rset = null;
+        DataSet<Field> vset = null;
         DropDownField field = null;
         for (int i = 0; i < reflexTestWidget.model.getData().size(); i++) {
             rset = (DataSet)reflexTestWidget.model.getData().get(i);
             field = (DropDownField)rset.get(col);
             vset = (DataSet)field.getValue();
 
-            if (id.equals((Integer)((NumberObject)vset.getKey()).getValue()))
+            if (id.equals(((NumberObject)vset.getKey()).getValue()))
                 if (!field.getErrors().contains(error)) {
                     reflexTestWidget.model.setCellError(i, col, error);
                 }
@@ -2505,17 +2500,17 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         int selTab = resultPanel.getTabBar().getSelectedTab();
         NumberObject obj = null;
         NumberField field = (NumberField)((DataMap)set.getData()).get("id");
-        Integer addKey = (Integer)field.getValue();
+        Integer addKey = field.getIntegerValue();
         NumberObject akobj = new NumberObject(addKey);
-        DataModel<DataSet> ddModel = null;
-        DataSet<Data> lset = (DataSet)resGroupAnalyteIdMap.get(new Integer(selTab + 1).toString());
-        DataSet<Data> addset = null;
+        DataModel<Field> ddModel = null;
+        DataSet<Field> lset = (DataSet)resGroupAnalyteIdMap.get(new Integer(selTab + 1).toString());
+        DataSet<Field> addset = null;
         String prevVal = null;
 
         if (lset != null) {
             for (int i = 0; i < lset.size(); i++) {
                 obj = (NumberObject)lset.get(i);
-                ddModel = (DataModel)resultDropdownModelMap.get(((Integer)obj.getValue()).toString());
+                ddModel = (DataModel)resultDropdownModelMap.get((obj.getValue()).toString());
                 addset = ddModel.getByKey(akobj);
                 if (addset != null) {
                     prevVal = (String)addset.get(0).getValue();
@@ -2538,7 +2533,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
         NumberObject obj = null;
         NumberField field = (NumberField)((DataMap)set.getData()).get("id");
         if (field != null) {
-            Integer addKey = (Integer)field.getValue();
+            Integer addKey = field.getIntegerValue();
             NumberObject akobj = new NumberObject(addKey);
             DataModel ddModel = null;
             DataSet lset = (DataSet)resGroupAnalyteIdMap.get(new Integer(selTab + 1).toString());
@@ -2547,7 +2542,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
             if (lset != null) {
                 for (int i = 0; i < lset.size(); i++) {
                     obj = (NumberObject)lset.get(i);
-                    ddModel = (DataModel)resultDropdownModelMap.get(((Integer)obj.getValue()).toString());
+                    ddModel = (DataModel)resultDropdownModelMap.get((obj.getIntegerValue()).toString());
                     addset = ddModel.getByKey(akobj);
                     if (addset != null)
                         addset.enabled = false;
@@ -2580,7 +2575,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm> implements
     private int getNumRowsHavingUnit(Integer unitId) {
         int numRows = 0;
         DataSet set = null;
-        DataModel<DataSet> model = sampleTypeWidget.model.getData();
+        DataModel<Field> model = (DataModel<Field>)sampleTypeWidget.model.getData();
         DropDownField field = null;
         for (int i = 0; i < model.size(); i++) {
             set = model.get(i);

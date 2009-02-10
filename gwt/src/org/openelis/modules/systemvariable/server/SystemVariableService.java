@@ -27,20 +27,18 @@ package org.openelis.modules.systemvariable.server;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -55,7 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataModel<DataSet>> {
+public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC,Integer> {
 
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9;  
@@ -63,7 +61,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
     private static SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-     public DataModel<DataSet> commitQuery(Form form, DataModel<DataSet> model) throws RPCException {
+     public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
          List sysVars = new ArrayList();
         if(form == null){           
             
@@ -104,20 +102,20 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
      int i=0;
      
      if(model == null)
-         model = new DataModel<DataSet>();
+         model = new DataModel<Integer>();
      else
          model.clear();
 
      while(i < sysVars.size() && i < leftTableRowsPerPage) {
          IdNameDO resultDO = (IdNameDO)sysVars.get(i);
-         model.add(new DataSet<Data>(new NumberObject(resultDO.getId()),new StringObject(resultDO.getName())));
+         model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
          i++;
       }  
      
          return model;
     }
 
-    public RPC commitAdd(RPC rpc) throws RPCException {
+    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
@@ -144,7 +142,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
         return rpc;
     }
 
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
@@ -174,10 +172,10 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
     }
 
 
-    public RPC commitDelete(RPC rpc) throws RPCException {
+    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         try{
-            remote.deleteSystemVariable((Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue());
+            remote.deleteSystemVariable(rpc.key);
         }catch(Exception ex){
             throw new RPCException(ex.getMessage());
         }
@@ -187,9 +185,9 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
     }
 
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+        Integer svId = rpc.key;
         
         SystemVariableDO svDO = null;
         try{
@@ -203,9 +201,9 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
     }
 
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+        Integer svId = rpc.key;
         
         SystemVariableDO svDO = remote.getSystemVariable(svId);
         setFieldsInRPC(rpc.form, svDO);
@@ -213,9 +211,9 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
     }
 
 
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-        Integer svId = (Integer)((DataObject)((DataSet)rpc.key).getKey()).getValue();
+        Integer svId = rpc.key;
         
         SystemVariableDO svDO = null;
         try{
@@ -233,18 +231,18 @@ public class SystemVariableService implements AppScreenFormServiceInt<RPC,DataMo
      }
 
 
-    public HashMap getXMLData() throws RPCException {
+    public HashMap<String,Field> getXMLData() throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
 
-    public HashMap getXMLData(HashMap args) throws RPCException {
+    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public RPC getScreen(RPC rpc){
+    public DefaultRPC getScreen(DefaultRPC rpc){
         return rpc;
     }
 

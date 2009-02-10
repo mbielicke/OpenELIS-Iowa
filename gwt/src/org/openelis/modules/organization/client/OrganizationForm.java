@@ -27,9 +27,9 @@ public class OrganizationForm extends Form {
     public StringField city;
     public StringField zipCode;
     public CheckField isActive;
-    public DropDownField parentOrg;
-    public DropDownField state;
-    public DropDownField country;
+    public DropDownField<Integer> parentOrg;
+    public DropDownField<String> state;
+    public DropDownField<String> country;
     public ContactsForm contacts;
     public NotesForm notes;
     public String orgTabPanel = "contactsTab"; 
@@ -43,9 +43,9 @@ public class OrganizationForm extends Form {
         fields.put(meta.ADDRESS.getCity(), city = new StringField());
         fields.put(meta.ADDRESS.getZipCode(), zipCode = new StringField());
         fields.put(meta.getIsActive(), isActive = new CheckField());
-        fields.put(meta.PARENT_ORGANIZATION.getName(), parentOrg = new DropDownField());
-        fields.put(meta.ADDRESS.getState(), state = new DropDownField());
-        fields.put(meta.ADDRESS.getCountry(), country = new DropDownField());
+        fields.put(meta.PARENT_ORGANIZATION.getName(), parentOrg = new DropDownField<Integer>());
+        fields.put(meta.ADDRESS.getState(), state = new DropDownField<String>());
+        fields.put(meta.ADDRESS.getCountry(), country = new DropDownField<String>());
         fields.put("contacts", contacts = new ContactsForm());
         fields.put("notes", notes = new NotesForm());
     }
