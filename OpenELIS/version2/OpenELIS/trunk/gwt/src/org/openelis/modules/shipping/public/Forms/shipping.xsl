@@ -234,7 +234,7 @@ UIRF Software License are applicable instead of those above.
 							<colAligns>left</colAligns>
 						</table>
 						<query>
-							<queryTable maxRows="5" showError="false" title="" width="auto" showScroll="ALWAYS">
+							<queryTable maxRows="6" showError="false" title="" width="auto" showScroll="ALWAYS">
 								<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 								<widths>180</widths>
 								<editors>

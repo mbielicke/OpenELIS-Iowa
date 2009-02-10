@@ -51,6 +51,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.DropdownWidget;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
@@ -89,6 +90,16 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<RPC<Form,Data>
             onRemoveRowButtonClick();
     }
     
+/*    public void onChange(Widget sender) {
+        if(sender == storesDropdown.getWidget()){
+            Dropdown storeD = (Dropdown)storesDropdown.getWidget();
+            form.setFieldValue(storeIdKey, storeD.getSelections());
+           
+        }else
+            super.onChange(sender);
+    }
+    */
+    
     public void afterDraw(boolean sucess) {
         Dropdown drop;
         loaded = true;
@@ -120,6 +131,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<RPC<Form,Data>
         chain.addCommand(bpanel);
         
         updateChain.add(afterUpdate);
+        commitAddChain.add(afterCommitAdd);
+        commitUpdateChain.add(afterCommitUpdate);
         
         super.afterDraw(sucess);
         
@@ -189,10 +202,24 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<RPC<Form,Data>
         idText.setFocus(true);
     }
     
-    public void commit() {
-        adjustmentsTable.model.enableAutoAdd(false);
-        super.commit();
-    }
+    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+        public void onSuccess(Object result){
+            adjustmentsTable.model.enableAutoAdd(false);
+        }
+        
+        public void onFailure(Throwable caught){
+            
+        }
+  };
+    
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+      public void onFailure(Throwable caught) {
+          
+      }
+      public void onSuccess(Object result) {
+          adjustmentsTable.model.enableAutoAdd(false);
+      }   
+  };
     
     //
     //start table manager methods
@@ -248,6 +275,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<RPC<Form,Data>
         final DropDownField invItemField = (DropDownField)tableRow.get(1);
         switch (col){
             case 0:
+                form.setFieldValue(storeIdKey, ((Dropdown)storesDropdown.getWidget()).getSelections());
                 if(form.getFieldValue(storeIdKey) == null){
                     window.setStatus(consts.get("inventoryAdjLocAutoException"),"ErrorPanel");
                     return;
@@ -384,7 +412,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<RPC<Form,Data>
         StringObject catObj = new StringObject(widget.cat);
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
-        
+        form.setFieldValue(storeIdKey, ((Dropdown)storesDropdown.getWidget()).getSelections());
+
         paramsObj.put("storeId", form.getField(storeIdKey));
         
         // prepare the argument list for the getObject function

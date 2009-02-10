@@ -152,7 +152,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                         if(totalProposed.compareTo(qtyOnHand) > 0){
                             total.setValue(new Integer(totalProposed));
                             subItemsTable.model.clearCellError(i, 4);
-                            subItemsTable.model.setCellError(i, 4, "NOT ENOUGH ITEMS ON HAND");
+                            subItemsTable.model.setCellError(i, 4, consts.get("totalIsGreaterThanOnHandException"));
                         }else{
                             subItemsTable.model.clearCellError(i, 4);
                             total.setValue(totalProposed);
@@ -171,7 +171,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         kitDropdown = (AutoComplete)getWidget(InventoryItemMeta.getName());
         
         kitLocationDropdown = (AutoComplete)getWidget(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation());
-        
+         
         numRequestedText = (TextBox)getWidget("numRequested");
         
         startWidget = (ScreenInputWidget)widgets.get(InventoryItemMeta.getName());
@@ -187,6 +187,9 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         subItemsTable = (TableWidget)getWidget("subItemsTable");
         subItemsTable.addTableWidgetListener(this);
         
+        commitAddChain.add(afterCommitAdd);
+        commitUpdateChain.add(afterCommitUpdate);
+        
         super.afterDraw(success);
         
         rpc.form.setFieldValue("subItemsTable", subItemsTable.model.getData());
@@ -196,6 +199,25 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
         super.commit();
         currentKitDropdownValue = null;
     }
+    
+    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+        public void onSuccess(Object result){
+            subItemsTable.model.enableAutoAdd(false);
+        }
+        
+        public void onFailure(Throwable caught){
+            
+        }
+  };
+    
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+      public void onFailure(Throwable caught) {
+          
+      }
+      public void onSuccess(Object result) {
+          subItemsTable.model.enableAutoAdd(false);
+      }   
+  };
     
     public void abort() {
         super.abort();
@@ -257,13 +279,14 @@ public class BuildKitsScreen extends OpenELISScreenForm<RPC<Form,Data>,Form> imp
                 DataSet selectedRow = ((DropDownField)tableRow.get(1)).getSelections().get(0);
                 DataMap map = (DataMap)selectedRow.getData();
             
-                subItemsTable.model.setCell(row, 2, ((StringObject)map.get("lotNumber")).getValue());
-                subItemsTable.model.setCell(row, 5, ((NumberObject)map.get("qtyOnHand")).getValue());
+                subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.get(1)).getValue());
+                subItemsTable.model.setCell(row, 5, ((NumberObject)selectedRow.get(2)).getValue());
                 
                 if(subItemsTable.model.getCell(row, 4) != null && ((Integer)subItemsTable.model.getCell(row, 5)).compareTo((Integer)subItemsTable.model.getCell(row, 4)) < 0){
                     subItemsTable.model.clearCellError(row, 4);
-                    subItemsTable.model.setCellError(row, 4, "NOT ENOUGH ITEMS ON HAND");
-                }
+                    subItemsTable.model.setCellError(row, 4, consts.get("totalIsGreaterThanOnHandException"));
+                }else
+                    subItemsTable.model.clearCellError(row, 4);
             }
         }     
     }

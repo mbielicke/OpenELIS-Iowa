@@ -63,6 +63,7 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -196,10 +197,26 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         formChain.addCommand(atozTable);
         formChain.addCommand(atozButtons);
         
+        updateChain.add(afterUpdate);
+        commitUpdateChain.add(afterCommitUpdate);
+        commitAddChain.add(afterCommitAdd);
+        
         super.afterDraw(sucess);
         
         rpc.form.setFieldValue("receiptsTable", receiptsTable.model.getData());
     }
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onSuccess(Object result){
+            if("transfer".equals(screenType)){
+                removeReceiptButton.changeState(ButtonState.DISABLED);
+            }
+        }
+        
+        public void onFailure(Throwable caught){
+            
+        }
+    };
+    
     
     public void add() {
         //
@@ -318,17 +335,24 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         }
     }
     
-    public void commit() {
-        super.commit();
-        
-        if (state == State.ADD || state == State.UPDATE) {
-            form.validate();
-            validate();
-            if (form.status == Form.Status.valid){}
-               //TODO not sure how to replace this      receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 1);
+    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
         }
-    }
-
+        public void onSuccess(Object result) {
+            receiptsTable.model.enableAutoAdd(false);
+            
+        }
+    };
+    
+    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            receiptsTable.model.enableAutoAdd(false);
+            
+        }
+    };
+    
     //
     //start table manager methods
     //
@@ -646,7 +670,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 }
             }
         }else if("transfer".equals(screenType)){
-            if(col == 0 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+            if(col == 0 && row < receiptsTable.model.numRows()/* && transferTableRowEmpty(receiptsTable.model.getRow(row))*/){
                 DataSet<Data> tableRow = receiptsTable.model.getRow(row);
                 ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getSelections();
                
@@ -671,6 +695,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                    storageLocation.setValue(locModel.get(0));
                    
                    tableRow.get(1).setValue((String)set.get(2).getValue());
+                   tableRow.get(2).setValue((Integer)set.get(3).getValue());
                    
                    itemDescText.setText((String)descObj.getValue());
                    itemStoreText.setText((String)((StringField)set.get(1)).getValue());
@@ -696,9 +721,15 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                     tableRow.setData(map);
                     receiptsTable.model.refresh();
                }
-            }else if(col == 2 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+               
+               if(receiptsTable.model.getCell(row, 6) != null && ((Integer)receiptsTable.model.getCell(row, 6)).compareTo((Integer)receiptsTable.model.getCell(row, 2)) > 0){
+                   receiptsTable.model.clearCellError(row, 6);
+                   receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
+               }
+               
+            }else if(col == 3 && row < receiptsTable.model.numRows()/* && transferTableRowEmpty(receiptsTable.model.getRow(row))*/){
                 DataSet tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(2)).getSelections();
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getSelections();
                
                 DataSet set = null;
                 if(selections.size() > 0)
@@ -718,12 +749,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                     tableRow.setData(map);
                }
 
-            }else if(col == 3 && row < receiptsTable.model.numRows() && transferTableRowEmpty(receiptsTable.model.getRow(row))){
+            }else if(col == 4 && row < receiptsTable.model.numRows()/* && transferTableRowEmpty(receiptsTable.model.getRow(row))*/){
                 String checkedValue = (String)receiptsTable.model.getCell(row, 2);
 
                 //if the checkbox changes value we need to clear out the to location column
                 if(!checkedValue.equals(tableCheckedValue))
-                    receiptsTable.model.setCell(row, 3, null);
+                    receiptsTable.model.setCell(row, 5 , null);
+            }else if(col == 6 && row < receiptsTable.model.numRows()){ //qty column
+                if(receiptsTable.model.getCell(row, 2) != null && ((Integer)receiptsTable.model.getCell(row, 2)).compareTo((Integer)receiptsTable.model.getCell(row, 6)) < 0){
+                    receiptsTable.model.clearCellError(row, 6);
+                    receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
+                }
+                
             }
         }
     }
@@ -853,18 +890,20 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
         //    ((DropDownField)row.get(2)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
        // }
         
+        row.get(2).setValue(getValueFromHashWithNulls(map, "fromQtyOnHand"));
+        
         if(map.get("inventoryItem") != null){
-            ((DropDownField)row.get(2)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
-            ((DropDownField)row.get(2)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
+            ((DropDownField)row.get(3)).setModel(((DropDownField)map.get("inventoryItem")).getModel());
+            ((DropDownField)row.get(3)).setValue(((DropDownField)map.get("inventoryItem")).getSelections());
         }
-        row.get(3).setValue(((CheckField)map.get("addToExisting")).getValue());
+        row.get(4).setValue(((CheckField)map.get("addToExisting")).getValue());
         
         if(map.get("toInventoryLocation") != null){
-            ((DropDownField)row.get(4)).setModel(((DropDownField)map.get("toInventoryLocation")).getModel());
-            ((DropDownField)row.get(4)).setValue(((DropDownField)map.get("toInventoryLocation")).getSelections());
+            ((DropDownField)row.get(5)).setModel(((DropDownField)map.get("toInventoryLocation")).getModel());
+            ((DropDownField)row.get(5)).setValue(((DropDownField)map.get("toInventoryLocation")).getSelections());
         }
         
-        row.get(5).setValue(getValueFromHashWithNulls(map, "qtyRequested"));
+        row.get(6).setValue(getValueFromHashWithNulls(map, "qtyRequested"));
         
         
        /* row.get(7).setValue(getValueFromHashWithNulls(map, "cost"));
@@ -938,7 +977,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<RPC<Form,Data>,Fo
                 params.put("addToExisting", rpc.form.getField("addToExisting"));
             else{
                 if(receiptsTable.model.numRows() > 0)
-                    params.put("addToExisting", receiptsTable.model.getObject(currentEditingRow, 3));
+                    params.put("addToExisting", receiptsTable.model.getObject(currentEditingRow, 4));
                 else
                     params.put("addToExisiting", new CheckField());
             }

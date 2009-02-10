@@ -410,11 +410,15 @@ public class ShippingService implements
            NumberObject id = new NumberObject(itemDO.getId());
            NumberObject referenceTableId = new NumberObject(itemDO.getReferenceTableId());
            NumberObject referenceId = new NumberObject(itemDO.getReferenceId());
+           NumberObject invLocId = new NumberObject(itemDO.getInventoryLocationId());
+           NumberObject transId = new NumberObject(itemDO.getTransId());
            
             row.setKey(id);
             DataMap map = new DataMap();
             map.put("referenceTableId", referenceTableId);
             map.put("referenceId", referenceId);
+            map.put("locId", invLocId);
+            map.put("transId", transId);
             row.setData(map);
             
             row.get(0).setValue(itemDO.getQuantity());
@@ -601,6 +605,8 @@ public class ShippingService implements
             DataMap map = (DataMap)row.getData();
             NumberObject referenceId = (NumberObject)map.get("referenceId");
             NumberObject referenceTableId = (NumberObject)map.get("referenceTableId");
+            NumberObject invLocId = (NumberObject)map.get("locId");
+            NumberObject transId = (NumberObject)map.get("transId");
             
             if(itemId != null)
                 itemDO.setId((Integer)itemId.getValue());
@@ -610,6 +616,12 @@ public class ShippingService implements
             
             if(referenceTableId != null)
                 itemDO.setReferenceTableId((Integer)referenceTableId.getValue());
+            
+            if(invLocId != null)
+            itemDO.setInventoryLocationId((Integer)invLocId.getValue());
+            
+            if(transId != null)
+            itemDO.setTransId((Integer)transId.getValue());
             
             itemDO.setQuantity((Integer)row.get(0).getValue());
             itemDO.setShippingId(shippingId);

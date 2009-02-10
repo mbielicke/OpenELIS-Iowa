@@ -39,6 +39,7 @@ import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.Data;
@@ -110,6 +111,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
             HashMap<String,AbstractField> fields = form.getFieldMap();
             fields.remove("receiptsTable");
             fields.remove("type");
+            fields.remove("label1");
+            
             
             if(isQueryEmpty(form))
                 throw new QueryException(openElisConstants.getString("emptyQueryException"));
@@ -207,29 +210,21 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
         //build the inventory receipts list DO from the form
         inventoryReceipts = getInventoryReceiptsFromTable(receiptsModel, InventoryReceiptRemote.TRANSFER.equals(type));
         
-        //validate the fields on the backend
-        List exceptionList = remote.validateForAdd(inventoryReceipts);
-        
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, recieptsTableField, rpc.form);
-            return rpc;
-        } 
-        
         //send the changes to the database
         try{
             if(type.equals(InventoryReceiptRemote.RECEIPT))
                 remote.updateInventoryReceipt(inventoryReceipts);
             else
                 remote.updateInventoryTransfer(inventoryReceipts);
+            
         }catch(Exception e){
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, recieptsTableField, rpc.form);
-            
-            return rpc;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), recieptsTableField, rpc.form);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
         }
-
+        
         return rpc;
     }
 
@@ -248,25 +243,16 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
         //build the inventory receipts list DO from the form
         inventoryReceipts = getInventoryReceiptsFromTable(receiptsModel, InventoryReceiptRemote.TRANSFER.equals(type));
         
-        //validate the fields on the backend
-        List exceptionList = remote.validateForAdd(inventoryReceipts);
-        
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, receiptsTableField, rpc.form);
-            return rpc;
-        } 
-        
         //send the changes to the database
         try{
             remote.updateInventoryReceipt(inventoryReceipts);
+            
         }catch(Exception e){
-            System.out.println(e.getMessage());
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, receiptsTableField, rpc.form);
-            
-            return rpc;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), receiptsTableField, rpc.form);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
         }
 
         return rpc;
@@ -640,12 +626,13 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
             if(transfer){
                 receiptDO.setFromInventoryItemId((Integer)((DropDownField)row.get(0)).getSelectedKey());
                 receiptDO.setFromInventoryItem((String)((DropDownField)row.get(0)).getTextValue());
-                receiptDO.setInventoryItemId((Integer)((DropDownField)row.get(2)).getSelectedKey());
-                receiptDO.setInventoryItem((String)((DropDownField)row.get(2)).getTextValue());
+                receiptDO.setFromQtyOnHand((Integer)row.get(2).getValue());
+                receiptDO.setInventoryItemId((Integer)((DropDownField)row.get(3)).getSelectedKey());
+                receiptDO.setInventoryItem((String)((DropDownField)row.get(3)).getTextValue());
                 if(storageLocation != null && storageLocation.getSelectedKey() != null)
                     receiptDO.setFromStorageLocationId((Integer)storageLocation.getSelectedKey());
-                receiptDO.setStorageLocationId((Integer)((DropDownField)row.get(4)).getSelectedKey());
-                receiptDO.setQuantityReceived((Integer)row.get(5).getValue());
+                receiptDO.setStorageLocationId((Integer)((DropDownField)row.get(5)).getSelectedKey());
+                receiptDO.setQuantityReceived((Integer)row.get(6).getValue());
                 if(parentRatio != null)
                     receiptDO.setToParentRatio((Integer)parentRatio.getValue());
             }else{
@@ -777,6 +764,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
             DateField expDate = new DateField();
             NumberField receiptId = new NumberField(NumberObject.Type.INTEGER);
             NumberField transReceiptOrder = new NumberField(NumberObject.Type.INTEGER);
+            NumberField qtyOnHand = new NumberField();
             
             orderNumber.setValue(resultDO.getOrderNumber());
             if(resultDO.getReceivedDate() != null)
@@ -817,6 +805,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
             itemIsSerialMaintained.setValue(resultDO.getIsSerialMaintained());
             orderItemId.setValue(resultDO.getOrderItemId());
             addToExisting.setValue(resultDO.getIsBulk());
+            qtyOnHand.setValue(resultDO.getFromQtyOnHand());
             //transReceiptOrder.setValue(resultDO.getTransReceiptOrderId());
             
             //inventory location set
@@ -879,6 +868,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<RPC, Dat
             map.put("expDate", expDate);
             map.put("id", receiptId);
             map.put("transReceiptOrderId", transReceiptOrder);
+            map.put("fromQtyOnHand", qtyOnHand);
             if(resultDO.getFromInventoryItemId() != null){
                 map.put("fromInventoryItem", fromInvItem);
                 map.put("toInventoryLocation", inventoryLocation);

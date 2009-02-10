@@ -109,12 +109,13 @@ UIRF Software License are applicable instead of those above.
 						<dropdown key="organization" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="175px"/>					
+							<textbox key="clientRef" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
 					<VerticalPanel style="subform">
 					<text style="FormTitle">Patient Info</text>
+					<VerticalPanel style="WhiteContentPanel" padding="0" spacing="0">
 					<TablePanel style="Form">
 <!--										<row>
 						<widget align="center" colspan="8">
@@ -123,7 +124,13 @@ UIRF Software License are applicable instead of those above.
 					</row>-->
 							<row>
 								<text style="Prompt">Id:</text>
-								<HorizontalPanel>
+								<multLookup key="look" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
+								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
+								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
+								</multLookup>
+								
+								<!--<HorizontalPanel>
 									<textbox key="aa" showError="false" width="75px"/>
 									<appButton action="idButton1" key="idButton1" onclick="this" style="FieldButton">
 										<HorizontalPanel>
@@ -140,7 +147,7 @@ UIRF Software License are applicable instead of those above.
 											<AbsolutePanel style="CommentButtonImage"/>
 										</HorizontalPanel>
 									</appButton>
-								</HorizontalPanel>
+								</HorizontalPanel>-->
 								<text style="Prompt">Npi:</text>
 								<widget colspan="3">
 								<textbox key="aa" width="75px"/>	
@@ -150,7 +157,7 @@ UIRF Software License are applicable instead of those above.
 							</row>
 							<row>
 								<text style="Prompt">Last:</text>
-								<textbox key="domain" tab="??,??" width="175px"/>
+								<textbox key="last" tab="??,??" width="175px"/>
 								<text style="Prompt">Address:</text>
 								<widget colspan="3">
 								<textbox key="aa" width="186px"/>	
@@ -160,23 +167,23 @@ UIRF Software License are applicable instead of those above.
 							</row>
 							<row>
 								<text style="Prompt">First:</text>
-								<textbox key="domain" tab="??,??" width="150px"/>		
+								<textbox key="first" tab="??,??" width="150px"/>		
 									<text style="Prompt">Mult Unit:</text>
 								<widget colspan="3">									
 								<textbox key="aa" width="186px"/>	
 								</widget>
 								<text style="Prompt">Race:</text>
-								<dropdown key="domain" tab="??,??" width="150px"/>		
+								<dropdown key="race" tab="??,??" width="150px"/>		
 							</row>
 							<row>
 								<text style="Prompt">Middle:</text>
-								<textbox key="domain" tab="??,??" width="150px"/>		
+								<textbox key="middle" tab="??,??" width="150px"/>		
 									<text style="Prompt">City:</text>
 								<widget colspan="3">									
 								<textbox key="aa" width="186px"/>	
 								</widget>
 								<text style="Prompt">Ethinicity:</text>
-								<dropdown key="domain" tab="??,??" width="150px"/>
+								<dropdown key="eht" tab="??,??" width="150px"/>
 							</row>
 							<row>
 								<text style="Prompt">Birth:</text>
@@ -184,11 +191,12 @@ UIRF Software License are applicable instead of those above.
 								<text style="Prompt">State:</text>
 								<textbox key="aa" width="33px"/>	
 								<text style="Prompt">Zip Code:</text>
-								<textbox key="domain" tab="??,??" width="63px"/>		
+								<textbox key="zipCode" tab="??,??" width="63px"/>		
 								<text style="Prompt">Phone:</text>
-								<textbox key="domain" tab="??,??" width="125px"/>	
+								<textbox key="phone" tab="??,??" width="125px"/>	
 							</row>
 							</TablePanel>
+							</VerticalPanel>
 							<!--<HorizontalPanel style="subformButtons">
 							<appButton action="idButton1" key="idButton1" onclick="this" style="FormButton">
 										<HorizontalPanel>
@@ -211,6 +219,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel>
 					<VerticalPanel style="subform">
 						<text style="FormTitle">Analytes</text>
+						<VerticalPanel style="WhiteContentPanel">
 						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="4" enable="true" showError="false">
 	    	                <headers>Item/Tests,Source</headers>
 	                        <widths>280,130</widths>					
@@ -241,7 +250,7 @@ UIRF Software License are applicable instead of those above.
 	                        	</leaf>--> 
 	                      	</leaves> 
 	                  	</tree-table>
-	                  	<HorizontalPanel>
+	                  	<HorizontalPanel style="TableButtonFooter">
 	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
@@ -254,7 +263,6 @@ UIRF Software License are applicable instead of those above.
 									<text>Add Test</text>
 								</HorizontalPanel>
 							</appButton>
-							<HorizontalPanel width="135px"/>
 							<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="RemoveRowButtonImage"/>
@@ -263,9 +271,11 @@ UIRF Software License are applicable instead of those above.
 							</appButton>
 	                  	</HorizontalPanel>
 	                  	</VerticalPanel>
+	                  	</VerticalPanel>
 	                  	<VerticalPanel style="subform">
 	                  	<text style="FormTitle">Provider/Organization Info</text>
-                  <TablePanel style="Form">
+          				<VerticalPanel style="WhiteContentPanel" padding="0" spacing="0">
+	                  <TablePanel style="Form">
 <!--                  		<row>
                   			<widget colspan="4" align="center">
 		                  		<text style="FormTitle">Provider/Organization Info</text>
@@ -274,43 +284,52 @@ UIRF Software License are applicable instead of those above.
                   		-->
                   		<row>
 							<text style="Prompt">Provider:</text>
-							<textbox key="domain" tab="??,??" width="100px"/>		
+							<textbox key="provider" tab="??,??" width="100px"/>		
 							<text style="Prompt">Id:</text>
-							<textbox key="domain" tab="??,??" width="50px"/>		
+							<textbox key="id" tab="??,??" width="50px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Phone:</text>
 							<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="200px"/>		
+							<textbox key="phone" tab="??,??" width="200px"/>		
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt">Project:</text>
 							<widget colspan="3">
+							<multLookup key="projectLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
+								<!--
 							<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
+								<textbox key="project" tab="??,??" width="167px" showError="false"/>	
 								<appButton action="reportTo" key="projectButton" onclick="this" style="FieldButton">
 									<HorizontalPanel>
 										<AbsolutePanel style="LookupButtonImage"/>
 									</HorizontalPanel>
 								</appButton>
-								</HorizontalPanel>	
+								</HorizontalPanel>	-->
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt">Report To:</text>
 							<widget colspan="3">
-								<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
+								<multLookup key="reportToLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_5"/>
+								</multLookup>
+								<!--
+															<HorizontalPanel>
+								<textbox key="reportTo" tab="??,??" width="167px" showError="false"/>	
 								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
 									<HorizontalPanel>
 										<AbsolutePanel style="LookupButtonImage"/>
 									</HorizontalPanel>
 								</appButton>
-								</HorizontalPanel>
+								</HorizontalPanel>-->
 							</widget>
 						</row>
 					</TablePanel>
+					</VerticalPanel>
 					</VerticalPanel>
 				</HorizontalPanel>
 				<TabPanel height="170px" key="orderTabPanel">

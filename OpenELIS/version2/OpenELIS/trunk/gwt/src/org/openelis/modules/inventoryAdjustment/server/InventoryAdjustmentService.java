@@ -393,7 +393,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<RPC, 
     }
     
     private DataModel getInventoryItemMatches(String match, HashMap<String, Data> params) throws RPCException{
-         Integer storeId = (Integer)((DropDownField)params.get("storeId")).getValue();
+         Integer storeId = (Integer)((DropDownField)params.get("storeId")).getSelectedKey();
          
         if(storeId == null || storeId == 0){
             //we dont want to do anything...throw error
