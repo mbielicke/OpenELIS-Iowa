@@ -45,6 +45,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -280,7 +281,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
             lastShippedTo = new Integer(-1);
             
             // prepare the argument list for the getObject function
-            Field[] args = new Field[] {keyList.getList()}; 
+            FieldType[] args = new FieldType[] {keyList.getList()}; 
             
             screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback<DataModel>(){
                 public void onSuccess(DataModel model){                    
@@ -608,7 +609,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                 NumberObject orderIdObj = new NumberObject(((NumberField)row.get(1)).getValue());
                 
                 // prepare the argument list for the getObject function
-                Field[] args = new Field[] {orderIdObj}; 
+                FieldType[] args = new FieldType[] {orderIdObj}; 
                 
                 screenService.getObject("getOrderItemsOrderNotes", args, new AsyncCallback<DataModel>(){
                     public void onSuccess(DataModel orderItemsModel){
@@ -677,7 +678,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                         NumberObject orderIdObj = new NumberObject(((NumberObject)tableRow.get(1)).getIntegerValue());
                         
                         // prepare the argument list for the getObject function
-                        Field[] args = new Field[] {orderIdObj}; 
+                        FieldType[] args = new FieldType[] {orderIdObj}; 
                         
                         screenService.getObject("getOrderItemsOrderNotes", args, new AsyncCallback<DataModel>(){
                             public void onSuccess(DataModel model){
@@ -774,7 +775,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                     NumberObject orderIdObj = new NumberObject((Integer)fillItemsTable.model.getCell(row, 1));
                     
                     // prepare the argument list for the getObject function
-                    Field[] args = new Field[] {orderIdObj}; 
+                    FieldType[] args = new FieldType[] {orderIdObj}; 
                     
                     screenService.getObject("fetchOrderItemAndLock", args, new AsyncCallback<DataModel<Integer>>(){
                         public void onSuccess(DataModel<Integer> model){
@@ -821,7 +822,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                     NumberObject orderIdObj = new NumberObject((Integer)fillItemsTable.model.getCell(row, 1));
                     
                     // prepare the argument list for the getObject function
-                    Field[] args = new Field[] {orderIdObj}; 
+                    FieldType[] args = new FieldType[] {orderIdObj}; 
                     
                     if(((DataMap)fillItemsTable.model.getRow(row).getData()).get("changed") != null){
                         if(Window.confirm(consts.get("fillOrderItemsChangedConfirm")))
@@ -995,7 +996,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
         paramsObj.put("id", new NumberObject((Integer)((DropDownField)orderItemsTree.model.getObject(currentTreeRow, 2)).getSelectedKey()));
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
+        FieldType[] args = new FieldType[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {
@@ -1037,7 +1038,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                     tableRow.add(row.get(0));
                     tableRow.add(row.get(2));
                     
-                    tableRow.setData((Field)((DataMap)row.getData()).clone());
+                    tableRow.setData((FieldType)((DataMap)row.getData()).clone());
                     
                     model.add(tableRow);
                 }

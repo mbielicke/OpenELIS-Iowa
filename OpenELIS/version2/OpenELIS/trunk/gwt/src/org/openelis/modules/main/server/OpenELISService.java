@@ -32,6 +32,7 @@ import org.openelis.gwt.common.data.ConstantMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -57,10 +58,10 @@ public class OpenELISService implements OpenELISServiceInt<RPC,Integer> {
         }
 	}
     
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml",xml);
         map.put("AppConstants", getConstants());
         return map;
@@ -106,7 +107,7 @@ public class OpenELISService implements OpenELISServiceInt<RPC,Integer> {
         return null;
     }
 
-    public Field getObject(String method, Field[] args) throws RPCException {
+    public FieldType getObject(String method, FieldType[] args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -128,11 +129,11 @@ public class OpenELISService implements OpenELISServiceInt<RPC,Integer> {
         return cmap;
     }
 
-	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
 		try {
 			StringObject xml = new StringObject();
 			xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl"));
-            HashMap<String,Field> map = new HashMap<String,Field>();
+            HashMap<String,FieldType> map = new HashMap<String,FieldType>();
             map.put("xml", xml);
             map.put("AppConstants",getConstants());
 			return map;

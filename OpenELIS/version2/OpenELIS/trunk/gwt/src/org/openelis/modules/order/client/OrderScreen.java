@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
@@ -349,7 +350,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
           
-        Field[] args = new Field[0]; 
+        FieldType[] args = new FieldType[0]; 
           
         screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<Integer>>(){
             public void onSuccess(DataModel<Integer> model){    
@@ -632,7 +633,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), new BooleanObject(forDuplicate), new StringObject(orderType), rpc.form.getField("items")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), new BooleanObject(forDuplicate), new StringObject(orderType), (FieldType)rpc.form.getField("items")};
 
         screenService.getObject("loadItems", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -659,7 +660,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), new StringObject(orderType), rpc.form.getField("receipts")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), new StringObject(orderType), (FieldType)rpc.form.getField("receipts")};
 
         screenService.getObject("loadReceipts", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -682,7 +683,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("custNote")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("custNote")};
 
         screenService.getObject("loadCustomerNotes", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -705,7 +706,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("shippingNote")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("shippingNote")};
 
         screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -728,7 +729,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("reportToBillTo")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("reportToBillTo")};
 
         screenService.getObject("loadReportToBillTo", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {

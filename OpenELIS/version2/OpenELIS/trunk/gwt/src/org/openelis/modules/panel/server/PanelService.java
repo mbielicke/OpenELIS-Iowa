@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -242,11 +243,11 @@ public class PanelService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl"));
                         
-        HashMap<String, Field> map = new HashMap<String, Field>();
+        HashMap<String, FieldType> map = new HashMap<String, FieldType>();
         DataModel testMethodNamesModelField = (DataModel)CachingManager.getElement("InitialData","testMethodNamesModel");
         if (testMethodNamesModelField == null) {
             testMethodNamesModelField = getTestMethodNames();
@@ -260,7 +261,7 @@ public class PanelService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return map;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

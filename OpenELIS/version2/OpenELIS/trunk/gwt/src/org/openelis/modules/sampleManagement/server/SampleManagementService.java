@@ -30,7 +30,7 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.server.constants.Constants;
@@ -78,12 +78,12 @@ public class SampleManagementService implements AppScreenFormServiceInt<DefaultR
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleManagement.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

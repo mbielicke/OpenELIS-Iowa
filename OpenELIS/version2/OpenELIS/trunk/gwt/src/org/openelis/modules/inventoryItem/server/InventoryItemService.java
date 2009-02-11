@@ -51,6 +51,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -137,7 +138,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         while(i < inventoryItemNames.size() && i < leftTableRowsPerPage) {
             IdNameStoreDO resultDO = (IdNameStoreDO)inventoryItemNames.get(i);
 
-            model.add(new DataSet<Integer>(resultDO.getId(),new DataObject[] {new StringObject(resultDO.getName()), new StringObject(resultDO.getStore())}));
+            model.add(new DataSet<Integer>(resultDO.getId(),new FieldType[] {new StringObject(resultDO.getName()), new StringObject(resultDO.getStore())}));
             i++;
         } 
  
@@ -381,7 +382,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl"));
         
@@ -405,7 +406,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
             CachingManager.putElement("InitialData", "inventoryItemUnitsDropdown", unitsDropdownField);
         }
         
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("categories", categoriesDropdownField);
         map.put("stores", storesDropdownField);
@@ -414,7 +415,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return map;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	return null;
     }
     

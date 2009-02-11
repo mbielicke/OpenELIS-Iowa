@@ -38,14 +38,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -82,14 +82,15 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
     
     private static boolean loaded = false;
 
-    private static DataModel typeDropDown = null;
-    private static DataModel stateDropDown = null;  
-    private static DataModel countryDropDown = null; 
+    private static DataModel<Integer> typeDropDown = null;
+    private static DataModel<String> stateDropDown = null;  
+    private static DataModel<String> countryDropDown = null; 
     
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService",!loaded,new DefaultRPC());
+        
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -292,7 +293,7 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadNotes", new Field[] {new IntegerObject(key),rpc.form.getField("notes")}, new AsyncCallback<Form>(){
+       screenService.getObject("loadNotes", new FieldType[] {new IntegerObject(key),(FieldType)rpc.form.getField("notes")}, new AsyncCallback<Form>(){
            public void onSuccess(Form result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
                load(result);
@@ -313,7 +314,7 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadAddresses", new Field[] {new IntegerObject(key),rpc.form.getField("addresses")}, new AsyncCallback<Form>() {
+       screenService.getObject("loadAddresses", new FieldType[] {new IntegerObject(key),(FieldType)rpc.form.getField("addresses")}, new AsyncCallback<Form>() {
            public void onSuccess(Form result) {
               
                load(result);

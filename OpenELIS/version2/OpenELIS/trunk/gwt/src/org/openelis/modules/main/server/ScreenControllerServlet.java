@@ -33,6 +33,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
@@ -87,11 +88,11 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return ((AppScreenServiceInt<RPC>)getService()).getScreen(rpc);
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
        return getService().getXMLData();
     }
     
-    public <T extends Field> T getObject(String method, Field[] args) throws RPCException {
+    public <T extends FieldType> T getObject(String method, FieldType[] args) throws RPCException {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
@@ -165,7 +166,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return new FavoritesService().saveFavorites(form);
     }
 
-	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
 		return getService().getXMLData(args);
 	}
 

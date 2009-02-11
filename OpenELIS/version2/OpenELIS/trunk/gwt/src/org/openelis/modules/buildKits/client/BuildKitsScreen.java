@@ -37,6 +37,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -98,7 +99,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
             currentKitDropdownValue = (Integer)kitDropdown.getSelections().get(0).getKey();
             NumberObject idObj = (NumberObject)((DataSet)kitDropdown.getSelections().get(0)).getKey();
             // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {idObj}; 
+            FieldType[] args = new FieldType[] {idObj}; 
             
             screenService.getObject("getComponentsFromId", args, new AsyncCallback<DataModel<Integer>>() {
                 public void onSuccess(DataModel<Integer> model) {
@@ -111,12 +112,12 @@ public class BuildKitsScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                        //name
                        //qty
                        tableRow.setKey(set.getKey());
-                       tableRow.get(0).setValue(set.get(0).getValue());
-                       tableRow.get(3).setValue(set.get(1).getValue());
+                       ((Field)tableRow.get(0)).setValue(((Field)set.get(0)).getValue());
+                       ((Field)tableRow.get(3)).setValue(((Field)set.get(1)).getValue());
                        
                        if(numRequestedText.getText() != null && !"".equals(numRequestedText.getText())){
                            Integer unit = new Integer((int)((Double)((NumberField)tableRow.get(3)).getValue()).doubleValue());
-                           tableRow.get(4).setValue(unit * Integer.valueOf(numRequestedText.getText()));
+                           ((Field)tableRow.get(4)).setValue(unit * Integer.valueOf(numRequestedText.getText()));
                        }
                        
                        subItemsTable.model.addRow(tableRow);
@@ -311,13 +312,13 @@ public class BuildKitsScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
         DataMap paramsObj = new DataMap();
         
         if(widget == kitLocationDropdown){
-            paramsObj.put("addToExisting", rpc.form.getField("addToExisting"));    
+            paramsObj.put("addToExisting", (FieldType)rpc.form.getField("addToExisting"));    
         }else{
             paramsObj.put("id", (NumberObject)subItemsTable.model.getRow(currentTableRow).getKey());
         }
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
+        FieldType[] args = new FieldType[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {

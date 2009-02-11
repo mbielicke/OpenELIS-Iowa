@@ -50,6 +50,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -283,13 +284,13 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<DefaultR
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryReceipt.xsl");
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         return null;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         String type = (String)((StringObject)args.get("type")).getValue();
-        HashMap<String,Field> returnMap = new HashMap<String,Field>();
+        HashMap<String,FieldType> returnMap = new HashMap<String,FieldType>();
         StringObject xmlString = new StringObject();
         
         if(type.equals(InventoryReceiptRemote.RECEIPT))
@@ -373,7 +374,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<DefaultR
         
     }
     
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, Field> params) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
         if(cat.equals("location"))
             return getLocationMatches(match, params);
         else if(cat.equals("inventoryItem"))

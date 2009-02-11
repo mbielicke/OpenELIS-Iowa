@@ -41,6 +41,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -125,7 +126,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DefaultRPC,F
         super.afterDraw(sucess);              
         
         screenService.getObject("getEntryId",
-               new DataObject[] {new StringObject("test_res_type_dictionary")},
+               new FieldType[] {new StringObject("test_res_type_dictionary")},
                 new AsyncCallback<IntegerObject>() {
                    public void onSuccess(IntegerObject result) {                                                                                                                           
                       dictId = result.getValue();
@@ -225,7 +226,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DefaultRPC,F
         
         final DataModel model = dictionaryController.model.getData();
         window.setStatus("", "spinnerIcon");        
-        screenService.getObject("getDictionaryEntries", new Field[] {model,new NumberObject(categoryId),pattern}, new AsyncCallback<DataModel>() {
+        screenService.getObject("getDictionaryEntries", new FieldType[] {model,new NumberObject(categoryId),pattern}, new AsyncCallback<DataModel>() {
             public void onFailure(Throwable caught) {                
                 Window.alert(caught.getMessage());
                 window.setStatus("","");
@@ -251,7 +252,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DefaultRPC,F
             set = dictionaryController.model.getSelections().get(iter);
             data = (DataMap)set.getData();
             id = ((NumberField)data.get("id")).getIntegerValue();
-            entry = (String)set.get(0).getValue();            
+            entry = (String)((Field)set.get(0)).getValue();            
             
             if(!idList.contains(id)) {
              idList.add(id);
@@ -262,7 +263,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DefaultRPC,F
     }
         
     private void loadCategoryDropdown() {
-        screenService.getObject("getInitialModel",new Field[] {},
+        screenService.getObject("getInitialModel",new FieldType[] {},
                                 new AsyncCallback<DataModel>() {
                                     public void onSuccess(DataModel result) {                                       
                                         categoryDrop = (Dropdown)getWidget("category");

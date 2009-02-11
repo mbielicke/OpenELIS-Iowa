@@ -34,16 +34,13 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -219,16 +216,16 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl"));
                         
-        HashMap<String, Field> map = new HashMap<String, Field>();
+        HashMap<String, FieldType> map = new HashMap<String, FieldType>();
         map.put("xml", xml);
         return map;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }

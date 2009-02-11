@@ -40,6 +40,8 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.QueryCheckField;
@@ -543,9 +545,9 @@ public class OpenELIS implements EntryPoint, EventListener {
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new TableField<Object>();
+                                          return new TableField<FieldType>();
                                       else if (args[0] instanceof Node)
-                                          return new TableField<Object>((Node)args[0]);
+                                          return new TableField<FieldType>((Node)args[0]);
                                       return null;
                                   }
       });
@@ -704,9 +706,9 @@ public class OpenELIS implements EntryPoint, EventListener {
                             new ClassFactory.Factory() {
                                 public Object newInstance(Object[] args) {
                                     if(args == null)
-                                        return new DropDownField<Object>();
+                                        return new DropDownField<FieldType>();
                                     else if(args[0] instanceof Node)
-                                        return new DropDownField<Object>((Node)args[0]);
+                                        return new DropDownField<FieldType>((Node)args[0]);
                                     return null;
                                 }
                            

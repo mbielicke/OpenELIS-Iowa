@@ -44,6 +44,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -267,7 +268,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DefaultRPC,Int
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"); 
     }
     
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl"));
         
@@ -275,13 +276,13 @@ public class DictionaryService implements AppScreenFormServiceInt<DefaultRPC,Int
         
         if(sectionDropDownField ==null)
             sectionDropDownField = getInitialModel("section");                     
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("sections",sectionDropDownField);
         return map;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
@@ -310,21 +311,21 @@ public class DictionaryService implements AppScreenFormServiceInt<DefaultRPC,Int
                     row.setData(data);
                     row.setKey(dictDO.getId());
                     
-                    row.get(0).setValue(dictDO.getIsActive());                      
-                    row.get(1).setValue(dictDO.getSystemName());                                                               
-                    row.get(2).setValue(dictDO.getLocalAbbrev());
-                    row.get(3).setValue(dictDO.getEntry());
+                    ((Field)row.get(0)).setValue(dictDO.getIsActive());                      
+                    ((Field)row.get(1)).setValue(dictDO.getSystemName());                                                               
+                    ((Field)row.get(2)).setValue(dictDO.getLocalAbbrev());
+                    ((Field)row.get(3)).setValue(dictDO.getEntry());
                                                                                                         
                      
                     //we need to create a dataset for the parent organization auto complete
                     if(dictDO.getRelatedEntryId() == null)
-                       row.get(4).setValue(null);
+                       ((Field)row.get(4)).setValue(null);
                     else{
                         DataModel<Integer> model = new DataModel<Integer>();
                         model.add(new DataSet<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
                         model.add(new DataSet<Integer>(-1,new StringObject("")));                        
                         ((DropDownField)row.get(4)).setModel(model);
-                        row.get(4).setValue(model.get(0));
+                        ((Field)row.get(4)).setValue(model.get(0));
                     }
                      dictEntryModel.add(row);
             } 

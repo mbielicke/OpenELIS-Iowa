@@ -52,6 +52,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -332,7 +333,7 @@ public class ShippingService implements
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl"));
 
@@ -365,7 +366,7 @@ public class ShippingService implements
                                       shippingMethodDropdownField);
         }
 
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("status", statusDropdownField);
         map.put("shipFrom", shipFromDropdownField);
@@ -374,7 +375,7 @@ public class ShippingService implements
         return map;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         return null;
     }
     

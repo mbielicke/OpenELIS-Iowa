@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -67,10 +68,10 @@ public class AnimalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - Brain");
-        row1.get(1).setValue("Dog");
+        ((Field)row1.get(0)).setValue("0 - Brain");
+        ((Field)row1.get(1)).setValue("Dog");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("Rabies - Logged In");
+        ((Field)row2.get(0)).setValue("Rabies - Logged In");
         row1.addItem(row2);
         itemsTestsTree.model.addRow(row1);
         

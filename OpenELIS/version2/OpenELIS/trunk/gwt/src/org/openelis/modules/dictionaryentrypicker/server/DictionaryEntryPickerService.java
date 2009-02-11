@@ -35,6 +35,7 @@ import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -94,16 +95,16 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Def
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionaryEntryPicker.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl"));
         
-        HashMap<String, Field> map = new HashMap<String, Field>();
+        HashMap<String, FieldType> map = new HashMap<String, FieldType>();
         map.put("xml", xml);
         return map;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         return null;
     }
     
@@ -137,7 +138,7 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Def
              data.put("id", id);             
              row.setData(data);
              
-             row.get(0).setValue(dictDO.getName());
+             ((Field)row.get(0)).setValue(dictDO.getName());
              model.add(row);
          }
         return model;

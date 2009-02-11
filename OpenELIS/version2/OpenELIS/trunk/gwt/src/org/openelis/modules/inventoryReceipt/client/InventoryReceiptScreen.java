@@ -45,6 +45,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -279,7 +280,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
         window.setStatus(consts.get("lockForUpdate"),"spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {keyList.getList()}; 
+        FieldType[] args = new FieldType[] {keyList.getList()}; 
         
         screenService.getObject("commitQueryAndLock", args, new AsyncCallback(){
             public void onSuccess(Object result){                    
@@ -314,7 +315,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
             enable(false);
             
             // prepare the argument list for the getObject function
-            Field[] args = new Field[] {keyList.getList()}; 
+            FieldType[] args = new FieldType[] {keyList.getList()}; 
             
             screenService.getObject("commitQueryAndUnlock", args, new AsyncCallback<DataModel>(){
                 public void onSuccess(DataModel model){                    
@@ -474,7 +475,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
                 NumberObject orderIdObj = new NumberObject(((NumberField)receiptsTable.model.getRow(row).get(0)).getValue());
                 
                 // prepare the argument list for the getObject function
-                Field[] args = new Field[] {orderIdObj}; 
+                FieldType[] args = new FieldType[] {orderIdObj}; 
                 
                 screenService.getObject("getReceipts", args, new AsyncCallback<DataModel<DataSet>>(){
                     public void onSuccess(DataModel<DataSet> model){    
@@ -500,7 +501,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
                 window.setStatus("","spinnerIcon");
                 
                 //prepare the argument list for the getObject function
-                Field[] args = new Field[] {upcValue}; 
+                FieldType[] args = new FieldType[] {upcValue}; 
                 
                 screenService.getObject("getInvItemFromUPC", args, new AsyncCallback<DataModel<DataSet>>(){
                     public void onSuccess(DataModel<DataSet> model){   
@@ -955,7 +956,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
     }
     
     //helper method: get value from hash, dealing with nulls (params: hash, key)
-    private Object getValueFromHashWithNulls(HashMap<String, Field> hash, String key){
+    private Object getValueFromHashWithNulls(HashMap<String, FieldType> hash, String key){
         if(hash.get(key) != null)
             return ((DataObject)hash.get(key)).getValue();
             
@@ -975,7 +976,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
                 params.put("fromInvItemId", new NumberField());
         }else{
             if(addToExisiting != null)
-                params.put("addToExisting", rpc.form.getField("addToExisting"));
+                params.put("addToExisting", (FieldType)rpc.form.getField("addToExisting"));
             else{
                 if(receiptsTable.model.numRows() > 0)
                     params.put("addToExisting", receiptsTable.model.getObject(currentEditingRow, 4));
@@ -988,7 +989,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<DefaultRPC,Form,I
         
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {catObj, model, matchObj, params}; 
+        FieldType[] args = new FieldType[] {catObj, model, matchObj, params}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback() {
