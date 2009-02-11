@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.StringObject;
@@ -74,7 +75,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
 	        desc.setValue(queryString);
 	        
 	       // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {name,desc}; 
+            FieldType[] args = new FieldType[] {name,desc}; 
 	        screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
 	            public void onSuccess(PagedTreeField treeField){
 	            	ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
@@ -110,7 +111,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
         desc.setValue("*");
         
        // prepare the argument list for the getObject function
-        DataObject[] args = new DataObject[] {name,desc}; 
+        FieldType[] args = new FieldType[] {name,desc}; 
         screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
             public void onSuccess(PagedTreeField treeField){
             	vp.clear();
@@ -169,7 +170,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
 			idObj.setValue(id);
 	        
 	       // prepare the argument list for the getObject function
-            DataObject[] args = new DataObject[] {idObj,name,desc}; 
+            FieldType[] args = new FieldType[] {idObj,name,desc}; 
 	        
             screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback<StringObject>(){
 	            public void onSuccess(StringObject result){

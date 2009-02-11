@@ -41,7 +41,7 @@ import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -260,12 +260,12 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/testTrailer.xsl");
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }

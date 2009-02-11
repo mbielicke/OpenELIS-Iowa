@@ -45,6 +45,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -200,7 +201,7 @@ public class FillOrderService implements AppScreenFormServiceInt<DefaultRPC, Int
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl"));
         
@@ -239,7 +240,7 @@ public class FillOrderService implements AppScreenFormServiceInt<DefaultRPC, Int
         
         NumberObject pendingValueObj = new NumberObject(pendingValue);
         
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("status", statusDropdownField);
         map.put("costCenter", costCenterDropdownField);
@@ -309,7 +310,7 @@ public class FillOrderService implements AppScreenFormServiceInt<DefaultRPC, Int
         return returnModel;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         return null;
     }
 
@@ -318,7 +319,7 @@ public class FillOrderService implements AppScreenFormServiceInt<DefaultRPC, Int
         
     }
     
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, Field> params) throws RPCException {
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
         if(cat.equals("invLocation"))
             return getLocationMatches(match, params);
         
@@ -342,7 +343,7 @@ public class FillOrderService implements AppScreenFormServiceInt<DefaultRPC, Int
             StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
  
             //add the dataset to the datamodel
-            dataModel.add(new DataSet<Integer>(resultDO.getId(),new DataObject[] {new StringObject(resultDO.getLocation()),new NumberObject(resultDO.getQtyOnHand())}));                            
+            dataModel.add(new DataSet<Integer>(resultDO.getId(),new FieldType[] {new StringObject(resultDO.getLocation()),new NumberObject(resultDO.getQtyOnHand())}));                            
 
         }       
         

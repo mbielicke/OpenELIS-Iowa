@@ -43,6 +43,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -253,7 +254,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl"); 
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl"));    
         
@@ -266,7 +267,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         if(scriptletDropDownField ==null)
             scriptletDropDownField = getInitialModel("scriptlet");
         
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("printer",printertypeDropDownField);
         map.put("scriptlet", scriptletDropDownField);
@@ -274,7 +275,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return map;
     }
     
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }

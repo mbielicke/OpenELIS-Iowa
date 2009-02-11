@@ -47,6 +47,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -138,11 +139,11 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/buildKits.xsl");
     }
 
-    public HashMap<String, Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         return null;
     }
 
-    public HashMap<String, Field> getXMLData(HashMap<String, Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         return null;
     }
     
@@ -187,12 +188,12 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
             DataSet<Integer> row = componentsTable.get(i);
             
             componentDO.setInventoryItemId(row.getKey());
-            componentDO.setComponent((String)row.get(0).getValue());
-            componentDO.setLocationId((Integer)((DropDownField)row.get(1)).getSelectedKey());
-            componentDO.setLotNum((String)row.get(2).getValue());
-            componentDO.setUnit((Double)row.get(3).getValue());
-            componentDO.setTotal((Integer)row.get(4).getValue());
-            componentDO.setQtyOnHand((Integer)row.get(5).getValue());
+            componentDO.setComponent((String)((Field)row.get(0)).getValue());
+            componentDO.setLocationId((Integer)((DropDownField)((Field)row.get(1))).getSelectedKey());
+            componentDO.setLotNum((String)((Field)row.get(2)).getValue());
+            componentDO.setUnit((Double)((Field)row.get(3)).getValue());
+            componentDO.setTotal((Integer)((Field)row.get(4)).getValue());
+            componentDO.setQtyOnHand((Integer)((Field)row.get(5)).getValue());
             
             components.add(componentDO);    
         }

@@ -51,6 +51,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
@@ -436,14 +437,14 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return null;
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         return null;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         String action = (String)((StringObject)args.get("type")).getValue();
         boolean loaded = ((Boolean)((BooleanObject)args.get("loaded")).getValue()).booleanValue();
-        HashMap<String,Field> returnMap = new HashMap<String,Field>();
+        HashMap<String,FieldType> returnMap = new HashMap<String,FieldType>();
         StringObject xmlString = new StringObject();
         
         if(OrderRemote.INTERNAL.equals(action))

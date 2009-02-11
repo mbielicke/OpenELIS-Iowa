@@ -41,7 +41,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -371,7 +371,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl"));
         
@@ -427,7 +427,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
         }
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	return null;
     }
 
@@ -441,13 +441,13 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     		for(int iter = 0;iter < contactsList.size();iter++) {
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
-               DataSet<Contact> row = contactsModel.createNewSet();
-               //ContactRow  row = new ContactRow();
+               //DataSet<Contact> row = contactsModel.createNewSet();
+               ContactRow  row = new ContactRow();
                Contact key = new Contact();
                key.orgId = contactRow.getId();
                key.addId = contactRow.getAddressDO().getId();
                row.setKey(key);
-               /*
+               
                row.type.setValue(new DataSet<Integer>(contactRow.getContactType()));
                row.name.setValue(contactRow.getName());
                row.multipleUnit.setValue(contactRow.getAddressDO().getMultipleUnit());
@@ -462,7 +462,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
                row.faxPhone.setValue(contactRow.getAddressDO().getFaxPhone());
                row.email.setValue(contactRow.getAddressDO().getEmail());       
                
-               */
+               /*
                ((DropDownField<Integer>)(Field)row.get(0)).setValue(new DataSet<Integer>(contactRow.getContactType()));
                row.get(1).setValue(contactRow.getName());
                row.get(2).setValue(contactRow.getAddressDO().getMultipleUnit());
@@ -476,7 +476,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
                row.get(10).setValue(contactRow.getAddressDO().getCellPhone());
                row.get(11).setValue(contactRow.getAddressDO().getFaxPhone());
                row.get(12).setValue(contactRow.getAddressDO().getEmail());	                
-               
+               */
                contactsModel.add(row);
            } 
     		

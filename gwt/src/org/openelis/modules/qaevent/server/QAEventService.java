@@ -44,6 +44,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
@@ -258,7 +259,7 @@ public class QAEventService implements AppScreenFormServiceInt<DefaultRPC, Integ
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"); 
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl"));    
         
@@ -273,7 +274,7 @@ public class QAEventService implements AppScreenFormServiceInt<DefaultRPC, Integ
         if(testDropDownField ==null)
             testDropDownField = getInitialModel("test");
         
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml", xml);
         map.put("qaevent", qaTypeDropDownField);
         map.put("tests",testDropDownField);
@@ -281,7 +282,7 @@ public class QAEventService implements AppScreenFormServiceInt<DefaultRPC, Integ
         return map;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }

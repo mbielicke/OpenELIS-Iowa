@@ -38,6 +38,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -244,7 +245,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
             field = (NumberField)data.get("id");
             if(field != null) {
                 screenService.getObject("getNumResultsAffected",
-                                        new Field[] {(StringField)set.get(col),field},
+                                        new FieldType[] {(StringField)set.get(col),field},
                                         new AsyncCallback<DataSet>() {
                                           public void onSuccess(DataSet result) {
                                             NumberObject nobj = null;

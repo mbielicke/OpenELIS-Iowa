@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
@@ -219,7 +220,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
        
        window.setStatus("","spinnerIcon");
        
-       Field[] args = new Field[0]; 
+       FieldType[] args = new FieldType[0]; 
          
        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<DataSet>>(){
            public void onSuccess(DataModel<DataSet> model){    
@@ -301,7 +302,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
               */      
                 //rpc.setFieldValue("unlockModel", checkedOrderIds);    
                 
-                Field[] args = new Field[] {checkedOrderIds}; 
+                FieldType[] args = new FieldType[] {checkedOrderIds};
                 
                 screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
                     public void onSuccess(StringObject obj){
@@ -341,7 +342,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
             }
             */
              // prepare the argument list for the getObject function
-            Field[] args = new Field[] {checkedOrderIds}; 
+            FieldType[] args = new FieldType[] {checkedOrderIds}; 
             
             screenService.getObject("unlockOrderRecords", args, new AsyncCallback<StringObject>(){
                 public void onSuccess(StringObject obj){
@@ -423,7 +424,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
             tableRow.get(0).setValue(set.get(0).getValue());
             tableRow.get(1).setValue(((DropDownField)set.get(1)).getTextValue());
             
-            tableRow.setData((Field)((DataMap)set.getData()).clone());
+            tableRow.setData((FieldType)((DataMap)set.getData()).clone());
             
             itemsTable.model.addRow(tableRow);
         }
@@ -492,7 +493,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("shippingItems")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("shippingItems")};
 
         screenService.getObject("loadShippingItems", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -515,7 +516,7 @@ public class ShippingScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), rpc.form.getField("orderShippingNotes")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("orderShippingNotes")};
 
         screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {

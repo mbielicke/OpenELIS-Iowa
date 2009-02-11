@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
@@ -271,7 +272,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         window.setStatus("","spinnerIcon");
 
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), new BooleanObject(forDuplicate), form.getField("components")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), new BooleanObject(forDuplicate), (FieldType)form.getField("components")};
 
         screenService.getObject("loadComponents", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -298,7 +299,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         window.setStatus("","spinnerIcon");
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), form.getField("locations")};
+        FieldType[] args = new FieldType[] {new IntegerObject(key), new StringObject(((CheckBox)isSerializedCheck.getWidget()).getState()), (FieldType)form.getField("locations")};
 
         screenService.getObject("loadLocations", args, new AsyncCallback<Form>() {
             public void onSuccess(Form result) {
@@ -322,7 +323,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         window.setStatus("","spinnerIcon");
                  
        // prepare the argument list for the getObject function
-        Field[] args = new Field[] {new IntegerObject(key), form.getField("comments")}; 
+        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)form.getField("comments")}; 
          
        screenService.getObject("loadComments", args, new AsyncCallback<Form>(){
            public void onSuccess(Form result){    
@@ -432,7 +433,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
                     final NumberObject componentIdObj = new NumberObject((Integer)componentField.getValue());
                       
                     // prepare the argument list for the getObject function
-                    Field[] args = new Field[] {componentIdObj}; 
+                    FieldType[] args = new FieldType[] {componentIdObj}; 
                       
                     screenService.getObject("getComponentDescriptionText", args, new AsyncCallback<StringObject>(){
                         public void onSuccess(StringObject result){
@@ -470,12 +471,12 @@ public class InventoryItemScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         StringObject matchObj = new StringObject(text);
         DataMap paramsObj = new DataMap();
         
-        paramsObj.put("id", form.getField(InvItemMeta.getId()));
-        paramsObj.put("store", form.getField(InvItemMeta.getStoreId()));
-        paramsObj.put("name", form.getField(InvItemMeta.getName()));
+        paramsObj.put("id", (FieldType)form.getField(InvItemMeta.getId()));
+        paramsObj.put("store", (FieldType)form.getField(InvItemMeta.getStoreId()));
+        paramsObj.put("name", (FieldType)form.getField(InvItemMeta.getName()));
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
+        FieldType[] args = new FieldType[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {

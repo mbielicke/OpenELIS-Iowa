@@ -43,6 +43,7 @@ import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -270,7 +271,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<DefaultRPC, 
     	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl");
     }
 
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl"));
         
@@ -282,14 +283,14 @@ public class StandardNoteService implements AppScreenFormServiceInt<DefaultRPC, 
             CachingManager.putElement("InitialData", "standardNoteTypeDropdown", standardNoteTypeDropdownField);
         }
         
-        HashMap<String,Field> map = new HashMap<String,Field>();
+        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
         map.put("xml",xml);
         map.put("noteTypes",standardNoteTypeDropdownField);
         
         return map;
     }
 
-    public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }

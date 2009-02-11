@@ -39,6 +39,7 @@ import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -153,7 +154,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         adjustmentDateText.enable(false);
         userText.enable(false);
         
-        Field[] args = new Field[0]; 
+        FieldType[] args = new FieldType[0]; 
         
         screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<DataSet>>(){
             public void onSuccess(DataModel<DataSet> model){    
@@ -297,7 +298,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
                 window.setStatus("","spinnerIcon");
                 
                 // prepare the argument list for the getObject function
-                Field[] args = new Field[] {locIdObj, storeIdObj}; 
+                FieldType[] args = new FieldType[] {locIdObj, storeIdObj}; 
                 
                 screenService.getObject("getInventoryItemInformation", args, new AsyncCallback<DataModel<Integer>>(){
                     public void onSuccess(DataModel<Integer> model){    
@@ -416,10 +417,10 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         DataMap paramsObj = new DataMap();
         form.setFieldValue(storeIdKey, ((Dropdown)storesDropdown.getWidget()).getSelections());
 
-        paramsObj.put("storeId", form.getField(storeIdKey));
+        paramsObj.put("storeId", (FieldType)form.getField(storeIdKey));
         
         // prepare the argument list for the getObject function
-        Field[] args = new Field[] {catObj, model, matchObj, paramsObj}; 
+        FieldType[] args = new FieldType[] {catObj, model, matchObj, paramsObj}; 
         
         
         screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {

@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.TreeDataItem;
@@ -66,21 +67,21 @@ public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - #69 Bottle");
-        row1.get(1).setValue("Water");
+        ((Field)row1.get(0)).setValue("0 - #69 Bottle");
+        ((Field)row1.get(1)).setValue("Water");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("Lead Analysis - Logged In");
+        ((Field)row2.get(0)).setValue("Lead Analysis - Logged In");
         TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.get(0).setValue("Metals - Logged In");
+        ((Field)row3.get(0)).setValue("Metals - Logged In");
         row1.addItem(row2);
         row1.addItem(row3);
         itemsTestsTree.model.addRow(row1);
         
         TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        row4.get(0).setValue("1 - #18 Bottle");
-        row4.get(1).setValue("Water");
+        ((Field)row4.get(0)).setValue("1 - #18 Bottle");
+        ((Field)row4.get(1)).setValue("Water");
         TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
-        row5.get(0).setValue("Ortho Phosphate - Logged In");
+        ((Field)row5.get(0)).setValue("Ortho Phosphate - Logged In");
         row4.addItem(row5);
         itemsTestsTree.model.addRow(row4);
         

@@ -32,7 +32,7 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.PagedTreeField;
 import org.openelis.gwt.common.data.QueryNumberField;
@@ -99,11 +99,11 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Defaul
 		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
 	}
     
-    public HashMap<String,Field> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws RPCException {
         return null;
     }
 	
-	public HashMap<String,Field> getXMLData(HashMap<String,Field> args) throws RPCException {
+	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	return null;
     }
     
