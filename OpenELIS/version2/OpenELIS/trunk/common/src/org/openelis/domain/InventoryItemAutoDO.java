@@ -72,6 +72,7 @@ public class InventoryItemAutoDO implements Serializable{
         setName(name);
         setStore(store);
     }
+    
     public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isSerialMaintained){
         setId(id);
         setName(name);
