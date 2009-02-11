@@ -83,7 +83,8 @@ import org.w3c.dom.Element;
                             " and i.storeId = d.id  and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and d.systemName = 'inv_main_store' " +
                             " order by i.name"), 
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+                            " i.isBulk, i.isSerialMaintained) " +
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' order by i.name"),    
      @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameMainStoreSubItems", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
@@ -95,7 +96,8 @@ import org.w3c.dom.Element;
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.parentInventoryItemId = :parentId and " +
                             " i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' order by i.name"),
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry) " +
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreByNameReceipt", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " + 
+                            " i.isBulk, i.isSerialMaintained) " +
                             " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' order by i.name"),
      @NamedQuery(name = "InventoryItem.AutocompleteItemByNameStore", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, d.entry, il.id, childLoc.name, " +
