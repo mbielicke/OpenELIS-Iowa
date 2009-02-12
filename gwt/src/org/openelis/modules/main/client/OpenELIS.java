@@ -39,9 +39,10 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.CollectionField;
 import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.QueryCheckField;
@@ -511,6 +512,26 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClassFactory(new String[] {IntegerField.class.getName(),IntegerField.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new IntegerField();
+                                             else if(args[0] instanceof Node)
+                                                 return new IntegerField((Node)args[0]);
+                                             return null;
+                                         }
+       });
+      ClassFactory.addClassFactory(new String[] {DoubleField.class.getName(),DoubleField.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new DoubleField();
+                                             else if(args[0] instanceof Node)
+                                                 return new DoubleField((Node)args[0]);
+                                             return null;
+                                         }
+       });
       ClassFactory.addClassFactory(new String[] {Form.class.getName(),"rpc-rpc"},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
