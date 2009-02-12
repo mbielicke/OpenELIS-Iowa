@@ -238,7 +238,8 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         List orderItems = new ArrayList();
         NoteDO customerNote = new NoteDO();
         NoteDO shippingNote = new NoteDO();
-        Integer originalStatus = (Integer)rpc.form.getFieldValue("originalStatus");
+
+        Integer originalStatus = ((NumberField)rpc.form.getField("originalStatus")).getIntegerValue();
         boolean qtyErrors = false;
         
         String orderType = (String)rpc.form.getFieldValue("orderType");
@@ -842,8 +843,8 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
     private OrderDO getOrderDOFromRPC(Form form){
         OrderDO orderDO = new OrderDO();
         
-        orderDO.setId((Integer) form.getFieldValue(OrderMeta.getId()));
-        orderDO.setNeededInDays((Integer) form.getFieldValue(OrderMeta.getNeededInDays()));
+        orderDO.setId(((NumberField)form.getField(OrderMeta.getId())).getIntegerValue());
+        orderDO.setNeededInDays(((NumberField)form.getField(OrderMeta.getNeededInDays())).getIntegerValue());
         orderDO.setStatusId((Integer)((DropDownField)form.getField(OrderMeta.getStatusId())).getSelectedKey());
         orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, (String)form.getFieldValue(OrderMeta.getOrderedDate())).getDate());
         orderDO.setRequestedBy((String)form.getFieldValue(OrderMeta.getRequestedBy()));
@@ -952,35 +953,35 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             DataSet<Integer> row = itemsTable.get(i);
             //contact data
             Integer itemId = row.getKey();
-            DataMap map = (DataMap)row.getData();
-            NumberField locationId = null;
-            NumberField qtyOnHand = null;
-            NumberField inventoryTransactionId = null;
-            if(map != null){
-                locationId = (NumberField)map.get("locationId");
-                qtyOnHand = (NumberField)map.get("qtyOnHand");
-                inventoryTransactionId = (NumberField)map.get("transactionId");
-            }
+           // DataMap map = (DataMap)row.getData();
+           // NumberField locationId = null;
+          //  NumberField qtyOnHand = null;
+          //  NumberField inventoryTransactionId = null;
+           // if(map != null){
+           //     locationId = (NumberField)map.get("locationId");
+           //     qtyOnHand = (NumberField)map.get("qtyOnHand");
+           //     inventoryTransactionId = (NumberField)map.get("transactionId");
+            //}
 
             if(itemId != null)
                 orderItemDO.setId(itemId);
             orderItemDO.setOrder(orderId);
             orderItemDO.setInventoryItemId((Integer)((DropDownField)row.get(1)).getSelectedKey());
-            orderItemDO.setQuantity((Integer)row.get(0).getValue());
+            orderItemDO.setQuantity(((NumberField)row.get(0)).getIntegerValue());
             
             if(row.size() == 5){
                 orderItemDO.setUnitCost((Double)row.get(3).getValue());
                 orderItemDO.setCatalogNumber((String)row.get(4).getValue());
             }
             
-            if(locationId != null)
-                orderItemDO.setLocationId(locationId.getIntegerValue());
+           // if(locationId != null)
+           //     orderItemDO.setLocationId(locationId.getIntegerValue());
             
-            if(qtyOnHand != null)
-                orderItemDO.setQuantityOnHand(qtyOnHand.getIntegerValue());
+            //if(qtyOnHand != null)
+            //    orderItemDO.setQuantityOnHand(qtyOnHand.getIntegerValue());
             
-            if(inventoryTransactionId != null)
-                orderItemDO.setTransactionId(inventoryTransactionId.getIntegerValue());
+            ////if(inventoryTransactionId != null)
+            //    orderItemDO.setTransactionId(inventoryTransactionId.getIntegerValue());
             
             orderItems.add(orderItemDO);    
         }
@@ -1163,14 +1164,14 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
     
                    DataSet<Integer> row = orderItemsModel.createNewSet();
                    Integer id = orderItemRow.getId();
-                   NumberField locationId = new NumberField(orderItemRow.getLocationId());
-                   NumberField qtyOnHand = new NumberField(orderItemRow.getQuantityOnHand());
-                   NumberField inventoryTransactionId = new NumberField(orderItemRow.getTransactionId());
+                   //NumberField locationId = new NumberField(orderItemRow.getLocationId());
+                   //NumberField qtyOnHand = new NumberField(orderItemRow.getQuantityOnHand());
+                  // NumberField inventoryTransactionId = new NumberField(orderItemRow.getTransactionId());
                   
-                   locationId.setValue(orderItemRow.getLocationId());
-                   inventoryTransactionId.setValue(orderItemRow.getTransactionId());
+                  // locationId.setValue(orderItemRow.getLocationId());
+                  // inventoryTransactionId.setValue(orderItemRow.getTransactionId());
                    
-                   DataMap map = new DataMap();
+                  // DataMap map = new DataMap();
                    
                     if(orderItemRow.getId() != null && !forDuplicate)
                         row.setKey(id);
@@ -1178,13 +1179,13 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
                     //if(orderItemRow.getLocationId() != null)
                     //    map.put("locationId", locationId);
                     
-                    if(orderItemRow.getQuantityOnHand() != null)
-                        map.put("qtyOnHand", qtyOnHand);
+                  //  if(orderItemRow.getQuantityOnHand() != null)
+                  //      map.put("qtyOnHand", qtyOnHand);
                     
                     //if(orderItemRow.getTransactionId() != null && !forDuplicate)
                     //    map.put("transactionId", inventoryTransactionId);
                     
-                    row.setData(map);
+                  //  row.setData(map);
                     row.get(0).setValue(orderItemRow.getQuantity());
                     
                     if(orderItemRow.getInventoryItemId() == null)
