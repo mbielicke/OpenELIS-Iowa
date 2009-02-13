@@ -47,6 +47,8 @@ import org.openelis.gwt.common.data.ModelField;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.QueryCheckField;
 import org.openelis.gwt.common.data.QueryDateField;
+import org.openelis.gwt.common.data.QueryDoubleField;
+import org.openelis.gwt.common.data.QueryIntegerField;
 import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
@@ -613,6 +615,26 @@ public class OpenELIS implements EntryPoint, EventListener {
                                           return new QueryNumberField((Node)args[0]);
                                       return null;
                                   }
+      });
+      ClassFactory.addClassFactory(new String[] {QueryDoubleField.class.getName(),QueryDoubleField.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new QueryDoubleField();
+                                             else if (args[0] instanceof Node)
+                                                 return new QueryDoubleField((Node)args[0]);
+                                             return null;
+                                         }
+      });
+      ClassFactory.addClassFactory(new String[] {QueryIntegerField.class.getName(),QueryIntegerField.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new QueryIntegerField();
+                                             else if (args[0] instanceof Node)
+                                                 return new QueryIntegerField((Node)args[0]);
+                                             return null;
+                                         }
       });
       ClassFactory.addClassFactory(new String[] {QueryStringField.class.getName(),QueryStringField.TAG_NAME},
                             new ClassFactory.Factory() {
