@@ -1,3 +1,4 @@
+
 /** Exhibit A - UIRF Open-source Based Public Software License.
 * 
 * The contents of this file are subject to the UIRF Open-source Based
@@ -25,6 +26,10 @@
 */
 package org.openelis.modules.order.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
@@ -35,7 +40,6 @@ import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrganizationAutoDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -45,15 +49,11 @@ import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -61,22 +61,33 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.OrderMetaMap;
-import org.openelis.persistence.CachingManager;
+import org.openelis.modules.order.client.ItemsForm;
+import org.openelis.modules.order.client.OrderForm;
+import org.openelis.modules.order.client.OrderItemRPC;
+import org.openelis.modules.order.client.OrderNoteForm;
+import org.openelis.modules.order.client.OrderNoteRPC;
+import org.openelis.modules.order.client.OrderOrgKey;
+import org.openelis.modules.order.client.OrderRPC;
+import org.openelis.modules.order.client.OrderReceiptRPC;
+import org.openelis.modules.order.client.OrderShippingNoteForm;
+import org.openelis.modules.order.client.OrderShippingNoteRPC;
+import org.openelis.modules.order.client.ReceiptForm;
+import org.openelis.modules.order.client.ReportToBillToForm;
+import org.openelis.modules.order.client.ReportToBillToRpc;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.CostCentersCacheHandler;
+import org.openelis.server.handlers.OrderStatusCacheHandler;
+import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer>, AutoCompleteServiceInt {
+public class OrderService implements AppScreenFormServiceInt<OrderRPC, Integer>, AutoCompleteServiceInt {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
@@ -132,8 +143,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             fields.remove("label1");
             fields.remove("item");
             fields.remove("receiptsTable");
-            //FIXME we may need to put this back fields.remove(OrderMeta.getInventoryTransaction().getReceivedDate());
-
+            
             try{    
                 orderIds = remote.query(fields,0,leftTableRowsPerPage, orderType);
     
@@ -163,7 +173,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return model;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public OrderRPC commitAdd(OrderRPC rpc) throws RPCException {
 //      remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
@@ -171,7 +181,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         NoteDO customerNotes = new NoteDO();
         NoteDO orderShippingNotes = new NoteDO();
         
-        String orderType = (String)rpc.form.getFieldValue("orderType");
+        String orderType = rpc.orderType;
         
         //build the orderDO from the form
         orderDO = getOrderDOFromRPC(rpc.form);
@@ -187,18 +197,18 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         //build customer notes do from form
         if(OrderRemote.KITS.equals(orderType)){
             customerNotes.setSubject("");
-            customerNotes.setText((String)((Form)rpc.form.getField("custNote")).getFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText()));
+            customerNotes.setText((String)rpc.form.customerNotes.text.getValue());
             customerNotes.setIsExternal("Y");
         }
         
         //build order shipping do notes from form
         orderShippingNotes.setSubject("");
-        orderShippingNotes.setText((String)((Form)rpc.form.getField("shippingNote")).getFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText()));
+        orderShippingNotes.setText((String)rpc.form.shippingNotes.text.getValue());
         orderShippingNotes.setIsExternal("Y");
         
         //order items info
-        TableField itemsTableField = (TableField)((Form)rpc.form.getField("items")).getField("itemsTable");
-        DataModel itemsModel = (DataModel)itemsTableField.getValue();
+        TableField<Integer> itemsTableField = rpc.form.items.itemsTable;
+        DataModel<Integer> itemsModel = (DataModel<Integer>)itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);
                 
         //validate the fields on the backend
@@ -231,7 +241,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return rpc;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public OrderRPC commitUpdate(OrderRPC rpc) throws RPCException {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
@@ -239,10 +249,10 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         NoteDO customerNote = new NoteDO();
         NoteDO shippingNote = new NoteDO();
 
-        Integer originalStatus = ((NumberField)rpc.form.getField("originalStatus")).getIntegerValue();
+        Integer originalStatus = rpc.originalStatus;
         boolean qtyErrors = false;
         
-        String orderType = (String)rpc.form.getFieldValue("orderType");
+        String orderType = rpc.orderType;
 
         //build the order DO from the form
         orderDO = getOrderDOFromRPC(rpc.form);
@@ -258,18 +268,18 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         //build customer notes do from form (only for kit orders)
         if(OrderRemote.KITS.equals(orderType)){
             customerNote.setSubject("");
-            customerNote.setText((String)((Form)rpc.form.getField("custNote")).getFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText()));
+            customerNote.setText(rpc.form.customerNotes.text.getValue());
             customerNote.setIsExternal("Y");
         }
         
         //build order shipping do notes from form
         shippingNote.setSubject("");
-        shippingNote.setText((String)((Form)rpc.form.getField("shippingNote")).getFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText()));
+        shippingNote.setText(rpc.form.shippingNotes.text.getValue());
         shippingNote.setIsExternal("Y");
         
         //items info
-        TableField itemsTableField = (TableField)((Form)rpc.form.getField("items")).getField("itemsTable");
-        DataModel itemsModel = (DataModel)itemsTableField.getValue();
+        TableField<Integer> itemsTableField = rpc.form.items.itemsTable;
+        DataModel<Integer> itemsModel = (DataModel<Integer>)itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);     
         
         //if the status changed we need to verify we have enough quantity to fill the order
@@ -293,7 +303,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         }
         
         //validate the fields on the backend
-        List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems, ((Form)rpc.form.getField("items")).load);
+        List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems, rpc.form.items.load);
         if(exceptionList.size() > 0 || qtyErrors){
             setRpcErrors(exceptionList, itemsTableField, rpc.form);
             
@@ -321,88 +331,87 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public OrderRPC commitDelete(OrderRPC rpc) throws RPCException {
         return null;
     }
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public OrderRPC abort(OrderRPC rpc) throws RPCException {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        String orderType = (String)rpc.form.getFieldValue("orderType");
-        StringObject orderTypeObj = new StringObject(orderType);
+        String orderType = rpc.orderType;
+        //StringObject orderTypeObj = new StringObject(orderType);
         
         OrderDO orderDO = remote.getOrderAndUnlock(rpc.key, orderType, SessionManager.getSession().getId());
 
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, orderDO);
         
-        if(((Form)rpc.form.getField("items")).load){
-            Form itemsForm = (Form)rpc.form.getField("items");
-            loadItems(rpc.key, new BooleanObject(false), orderTypeObj, itemsForm);
-        }
+        if(rpc.form.items.load)
+            loadItemsForm(rpc.key, false, rpc.form.items);
         
-        if(rpc.form.getField("receipts") != null && ((Form)rpc.form.getField("receipts")).load){
-            Form receipts = (Form)rpc.form.getField("receipts");
-            loadReceipts(rpc.key, orderTypeObj, receipts);
-        }
+        if(rpc.form.receipts.load)
+            loadReceiptsForm(rpc.key, orderType, rpc.form.receipts);
         
-        if(rpc.form.getField("shippingNote") != null && ((Form)rpc.form.getField("shippingNote")).load){
-            Form shippingNoteRpc = (Form)rpc.form.getField("shippingNote");
-            loadOrderShippingNotes(rpc.key, shippingNoteRpc);
-        }
+        if(rpc.form.shippingNotes.load)
+            loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotes);
         
-        if(rpc.form.getField("reportToBillTo") != null && ((Form)rpc.form.getField("reportToBillTo")).load){
-            Form reportToBillToRpc = (Form)rpc.form.getField("reportToBillTo");
-            loadReportToBillTo(rpc.key, reportToBillToRpc);
-        }
+        if(rpc.form.reportToBillTo.load)
+            loadReportToBillToForm(rpc.key, rpc.form.reportToBillTo);
         
-        if(rpc.form.getField("custNote") != null && ((Form)rpc.form.getField("custNote")).load){
-            Form custNoteRpc = (Form)rpc.form.getField("custNote");
-            loadCustomerNotes(rpc.key, custNoteRpc);
-        }
+        if(rpc.form.customerNotes.load)
+            loadCustomerNotesForm(rpc.key, rpc.form.customerNotes);
         
         return rpc;  
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public OrderRPC fetch(OrderRPC rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        String orderType = (String)rpc.form.getFieldValue("orderType");
-        StringObject orderTypeObj = new StringObject(orderType);
+        String orderType = rpc.orderType;
+        //StringObject orderTypeObj = new StringObject(orderType);
         
         OrderDO orderDO = remote.getOrder(rpc.key, orderType);
 
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, orderDO);
         
-        String tab = (String)rpc.form.getFieldValue("orderTabPanel");
-        if(tab.equals("itemsTab")){
-            loadItems(rpc.key, new BooleanObject(false), orderTypeObj, (Form)rpc.form.getField("items"));
-        }
-        if(tab.equals("receiptsTab")){
-            loadReceipts(rpc.key, orderTypeObj, (Form)rpc.form.getField("receipts"));
-        }
-        if(tab.equals("orderNotesTab")){
-            loadOrderShippingNotes(rpc.key, (Form)rpc.form.getField("shippingNote"));
-        }
-        if(tab.equals("customerNotesTab")){
-            loadCustomerNotes(rpc.key, (Form)rpc.form.getField("custNote"));
-        }
-        if(tab.equals("reportToBillToTab")){
-            loadReportToBillTo(rpc.key, (Form)rpc.form.getField("reportToBillTo"));
-        }
+        String tab = rpc.form.orderTabPanel;
+        if(tab.equals("itemsTab"))
+            loadItemsForm(rpc.key, false, rpc.form.items);
+        
+        if(tab.equals("receiptsTab"))
+            loadReceiptsForm(rpc.key, orderType, rpc.form.receipts);
+        
+        if(tab.equals("orderNotesTab"))
+            loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotes);
+        
+        if(tab.equals("customerNotesTab"))
+            loadCustomerNotesForm(rpc.key, rpc.form.customerNotes);
+        
+        if(tab.equals("reportToBillToTab"))
+            loadReportToBillToForm(rpc.key, rpc.form.reportToBillTo);
         
         return rpc;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public OrderRPC fetchForUpdate(OrderRPC rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        String orderType = (String)rpc.form.getFieldValue("orderType");
-        StringObject orderTypeObj = new StringObject(orderType);
+        String orderType = rpc.orderType;
+        //StringObject orderTypeObj = new StringObject(orderType);
         
         OrderDO orderDO = new OrderDO();
         try{
@@ -414,22 +423,21 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, orderDO);
         
-        String tab = (String)rpc.form.getFieldValue("orderTabPanel");
-        if(tab.equals("itemsTab")){
-            loadItems(rpc.key, new BooleanObject(false), orderTypeObj, (Form)rpc.form.getField("items"));
-        }
-        if(tab.equals("receiptsTab")){
-            loadReceipts(rpc.key, orderTypeObj, (Form)rpc.form.getField("receipts"));
-        }
-        if(tab.equals("orderNotesTab")){
-            loadOrderShippingNotes(rpc.key, (Form)rpc.form.getField("shippingNote"));
-        }
-        if(tab.equals("customerNotesTab")){
-            loadCustomerNotes(rpc.key, (Form)rpc.form.getField("custNote"));
-        }
-        if(tab.equals("reportToBillToTab")){
-            loadReportToBillTo(rpc.key, (Form)rpc.form.getField("reportToBillTo"));
-        }
+        String tab = rpc.form.orderTabPanel;
+        if(tab.equals("itemsTab"))
+            loadItemsForm(rpc.key, false, rpc.form.items);
+        
+        if(tab.equals("receiptsTab"))
+            loadReceiptsForm(rpc.key, orderType, rpc.form.receipts);
+        
+        if(tab.equals("orderNotesTab"))
+            loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotes);
+        
+        if(tab.equals("customerNotesTab"))
+            loadCustomerNotesForm(rpc.key, rpc.form.customerNotes);
+        
+        if(tab.equals("reportToBillToTab"))
+            loadReportToBillToForm(rpc.key, rpc.form.reportToBillTo);
         
         return rpc;  
     }
@@ -443,88 +451,106 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
     }
 
     public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        String action = (String)((StringObject)args.get("type")).getValue();
-        boolean loaded = ((Boolean)((BooleanObject)args.get("loaded")).getValue()).booleanValue();
-        HashMap<String,FieldType> returnMap = new HashMap<String,FieldType>();
-        StringObject xmlString = new StringObject();
-        
-        if(OrderRemote.INTERNAL.equals(action))
-            xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/internalOrder.xsl"));
-        else if(OrderRemote.EXTERNAL.equals(action))
-            xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/vendorOrder.xsl"));
-        else if(OrderRemote.KITS.equals(action))
-            xmlString.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/kitOrder.xsl"));
-        
-        returnMap.put("xml", xmlString);
-        
-        if(!loaded){        
-            DataModel statusDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderStatusDropdown");
-            DataModel storeDropdownField = (DataModel)CachingManager.getElement("InitialData", "orderStoreDropdown");
-            DataModel costCenterDropdownField = (DataModel)CachingManager.getElement("InitialData", "costCenterDropdown");
-            DataModel shipFromDropdownField = (DataModel)CachingManager.getElement("InitialData", "shipFromDropdown");
-            
-            //status dropdown
-            if(statusDropdownField == null){
-                statusDropdownField = getInitialModel("status");
-                CachingManager.putElement("InitialData", "orderStatusDropdown", statusDropdownField);
-            }
-            //store dropdown
-            if(storeDropdownField == null){
-                storeDropdownField = getInitialModel("store");
-                CachingManager.putElement("InitialData", "orderStoreDropdown", storeDropdownField);
-                }
-            //cost center type dropdown
-            if(costCenterDropdownField == null){
-                costCenterDropdownField = getInitialModel("costCenter");
-                CachingManager.putElement("InitialData", "costCenterDropdown", costCenterDropdownField);
-            }
-            //ship from dropdown
-            if(shipFromDropdownField == null){
-                shipFromDropdownField = getInitialModel("shipFrom");
-                CachingManager.putElement("InitialData", "shipFromDropdown", shipFromDropdownField);
-            }
-            
-            returnMap.put("status", statusDropdownField);
-            returnMap.put("store", storeDropdownField);
-            returnMap.put("costCenter", costCenterDropdownField);
-            returnMap.put("shipFrom", shipFromDropdownField);    
-        }
-        
-        return returnMap;
+        return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public OrderRPC getScreen(OrderRPC rpc) throws RPCException {
+        String action = rpc.orderType;
+        
+        if(OrderRemote.INTERNAL.equals(action))
+            rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/internalOrder.xsl");
+        else if(OrderRemote.EXTERNAL.equals(action))
+            rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/vendorOrder.xsl");
+        else if(OrderRemote.KITS.equals(action))
+            rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/kitOrder.xsl");
+
+        /*
+         * Load initial  models to RPC and store cache verison of models into Session for 
+         * comparisons for later fetches
+         */
+        rpc.status = OrderStatusCacheHandler.getStatuses();
+        SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
+        rpc.costCenters = CostCentersCacheHandler.getCostCenters();
+        SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
+        rpc.shipFrom = ShipFromCacheHandler.getShipFroms();
+        SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
+
         return rpc;
     }
     
-    public Form loadItems(Integer key, BooleanObject forDuplicate, StringObject orderTypeObj, Form form) throws RPCException {
-        getItemsModel(key, forDuplicate, (TableField<Integer>)form.getField("itemsTable"), orderTypeObj);
-        form.load = true;
-        return form;
-    }
-
-    public Form loadReceipts(Integer key, StringObject orderTypeObj, Form form) throws RPCException {
-        getReceiptsModel(key, (TableField)form.getField("receiptsTable"), orderTypeObj);
-        form.load = true;
-        return form;
-    }
-
-    public Form loadOrderShippingNotes(Integer key, Form form) throws RPCException {
-        form.setFieldValue(OrderMeta.ORDER_SHIPPING_NOTE_META.getText(), getShippingNotes(key));
-        form.load = true;
-        return form;
+    public void checkModels(OrderRPC rpc) {
+        /*
+         * Retrieve current version of models from session.
+         */
+        int statuses = (Integer)SessionManager.getSession().getAttribute("orderStatusVersion");
+        int costCenters = (Integer)SessionManager.getSession().getAttribute("costCenterVersion");
+        int shipFroms = (Integer)SessionManager.getSession().getAttribute("shipFromVersion");
+        /*
+         * Compare stored version to current cache versions and update if necessary. 
+         */
+        if(statuses != OrderStatusCacheHandler.version){
+            rpc.status = OrderStatusCacheHandler.getStatuses();
+            SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
+        }
+        if(costCenters != CostCentersCacheHandler.version){
+            rpc.costCenters = CostCentersCacheHandler.getCostCenters();
+            SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
+        }
+        if(shipFroms != ShipFromCacheHandler.version){
+            rpc.shipFrom = ShipFromCacheHandler.getShipFroms();
+            SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
+        }
     }
     
-    public Form loadCustomerNotes(Integer key, Form form) throws RPCException {
-        form.setFieldValue(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText(), getCustomerNotes(key));
+    public OrderItemRPC loadContacts(OrderItemRPC rpc) throws RPCException {
+        loadItemsForm(rpc.key, rpc.forDuplicate, rpc.form);
+        return rpc;
+    }
+    
+    public void loadItemsForm(Integer key, boolean forDuplicate, ItemsForm form) throws RPCException {
+        getItemsModel(key, forDuplicate, form.itemsTable);
+        form.load = true;
+    }
+
+    public OrderReceiptRPC loadReceipts(OrderReceiptRPC rpc) throws RPCException {
+        loadReceiptsForm(rpc.key, rpc.orderType, rpc.form);
+        return rpc;
+    }
+    
+    public Form loadReceiptsForm(Integer key, String orderType, ReceiptForm form) throws RPCException {
+        getReceiptsModel(key, form.receiptsTable, orderType);
         form.load = true;
         return form;
     }
 
-    public Form loadReportToBillTo(Integer key, Form form) throws RPCException {
-        fillReportToBillToValues(form, getReportToBillTo(key));
+    public OrderShippingNoteRPC loadOrderShippingNotes(OrderShippingNoteRPC rpc) throws RPCException {
+        loadOrderShippingNotesForm(rpc.key, rpc.form);
+        return rpc;
+    }
+    
+    public void loadOrderShippingNotesForm(Integer key, OrderShippingNoteForm form) throws RPCException {
+        form.text.setValue(getShippingNotes(key));
         form.load = true;
-        return form;
+    }
+    
+    public OrderNoteRPC loadCustomerNotes(OrderNoteRPC rpc) throws RPCException {
+        loadCustomerNotesForm(rpc.key, rpc.form);
+        return rpc;
+    }
+    
+    public void loadCustomerNotesForm(Integer key, OrderNoteForm form) throws RPCException {
+        form.text.setValue(getCustomerNotes(key));
+        form.load = true;
+    }
+
+    public ReportToBillToRpc loadReportToBillTo(ReportToBillToRpc rpc) throws RPCException {
+        loadReportToBillToForm(rpc.key, rpc.form);
+        return rpc;
+    }
+    
+    public void loadReportToBillToForm(Integer key, ReportToBillToForm form) throws RPCException {
+        fillReportToBillToValues(key, form);
+        form.load = true;
     }
     
     private void setRpcErrors(List exceptionList, TableField orderItemsTable, Form  form){
@@ -583,30 +609,17 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return returnModel;
     }
     
-    public DataModel getAddAutoFillValues() throws Exception {
-        DataModel model = new DataModel();
-        DataSet set = new DataSet();
-        
+    public OrderRPC getAddAutoFillValues(OrderRPC orderRpc) throws Exception {
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderAddAutoFillDO autoDO;
         
         autoDO = remote.getAddAutoFillValues();
                 
-        DropDownField<NumberObject> status = new DropDownField<NumberObject>();
-        StringField dateOrdered = new StringField();
-        StringField requestedBy = new StringField();
+        orderRpc.form.statusId.setValue(new DataSet<Integer>(autoDO.getStatus()));
+        orderRpc.form.orderedDate.setValue(autoDO.getOrderedDate().toString());
+        orderRpc.form.requestedBy.setValue(autoDO.getRequestedBy());
         
-        status.setValue(new DataSet<NumberObject>(new NumberObject(autoDO.getStatus())));
-        dateOrdered.setValue(autoDO.getOrderedDate().toString());
-        requestedBy.setValue(autoDO.getRequestedBy());
-        
-        set.add(status);
-        set.add(dateOrdered);
-        set.add(requestedBy);
-        
-        model.add(set);
-        
-        return model;
+        return orderRpc;
     }
 
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
@@ -680,15 +693,11 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             data.add(stateObject);
             
             //hidden fields
-            DataMap map = new DataMap();
-            StringObject aptSuiteObj = new StringObject();
-            aptSuiteObj.setValue(aptSuite);
-            map.put("aptSuite", aptSuiteObj);
-            StringObject zipCodeObj = new StringObject();
-            zipCodeObj.setValue(zipCode);
-            map.put("zipCode", zipCodeObj);
+            OrderOrgKey key = new OrderOrgKey();
+            key.aptSuite = aptSuite;
+            key.zipCode = zipCode;
             
-            data.setData(map);
+            data.setData(key);
             
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -781,15 +790,13 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             StringObject expDateObj = new StringObject();
             expDateObj.setValue(expDate);
             data.add(expDateObj);
-            NumberObject qtyObject = new NumberObject(NumberObject.Type.INTEGER);
+            IntegerObject qtyObject = new IntegerObject();
             qtyObject.setValue(qty);
             data.add(qtyObject);
             
-            DataMap map = new DataMap();
-            NumberObject locIdObject = new NumberObject(NumberObject.Type.INTEGER);
+            IntegerObject locIdObject = new IntegerObject();
             locIdObject.setValue(locationId);
-            map.put("locId", locIdObject);
-            data.setData(map);
+            data.setData(locIdObject);
                        
             //add the dataset to the datamodel
             dataModel.add(data);                            
@@ -840,108 +847,99 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return dataModel;           
     }
     
-    private OrderDO getOrderDOFromRPC(Form form){
+    private OrderDO getOrderDOFromRPC(OrderForm form){
         OrderDO orderDO = new OrderDO();
         
-        orderDO.setId(((NumberField)form.getField(OrderMeta.getId())).getIntegerValue());
-        orderDO.setNeededInDays(((NumberField)form.getField(OrderMeta.getNeededInDays())).getIntegerValue());
-        orderDO.setStatusId((Integer)((DropDownField)form.getField(OrderMeta.getStatusId())).getSelectedKey());
-        orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, (String)form.getFieldValue(OrderMeta.getOrderedDate())).getDate());
-        orderDO.setRequestedBy((String)form.getFieldValue(OrderMeta.getRequestedBy()));
-        orderDO.setCostCenter((Integer)((DropDownField)form.getField(OrderMeta.getCostCenterId())).getSelectedKey());
-        
-        if(form.getField(OrderMeta.getShipFromId()) != null)
-            orderDO.setShipFromId((Integer)((DropDownField)form.getField(OrderMeta.getShipFromId())).getSelectedKey());
-        
-        if(form.getField(OrderMeta.getExternalOrderNumber()) != null)
-            orderDO.setExternalOrderNumber((String)form.getFieldValue(OrderMeta.getExternalOrderNumber()));
+        orderDO.setId(form.id.getValue());
+        orderDO.setNeededInDays(form.neededInDays.getValue());
+        orderDO.setStatusId((Integer)form.statusId.getSelectedKey());
+        orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, form.orderedDate.getValue()).getDate());
+        orderDO.setRequestedBy(form.requestedBy.getValue());
+        orderDO.setCostCenter((Integer)form.costCenterId.getSelectedKey());
+        orderDO.setShipFromId((Integer)form.shipFromId.getSelectedKey());
+        orderDO.setExternalOrderNumber(form.externalOrderNumber.getValue());
         
         //set org values
-        if(form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName()) != null){
-            orderDO.setOrganization((String)((DropDownField)form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).getTextValue());
-            orderDO.setOrganizationId((Integer)((DropDownField)form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).getSelectedKey());
-            orderDO.organizationAddressDO.setMultipleUnit((String)form.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()));
-            orderDO.organizationAddressDO.setStreetAddress((String)form.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()));
-            orderDO.organizationAddressDO.setCity((String)form.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getCity()));
-            orderDO.organizationAddressDO.setState((String)form.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getState()));
-            orderDO.organizationAddressDO.setZipCode((String)form.getFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()));
-        }
+        orderDO.setOrganization((String)form.organization.getTextValue());
+        orderDO.setOrganizationId((Integer)form.organization.getSelectedKey());
+        orderDO.organizationAddressDO.setMultipleUnit(form.multipleUnit.getValue());
+        orderDO.organizationAddressDO.setStreetAddress(form.streetAddress.getValue());
+        orderDO.organizationAddressDO.setCity(form.city.getValue());
+        orderDO.organizationAddressDO.setState(form.state.getValue());
+        orderDO.organizationAddressDO.setZipCode(form.zipCode.getValue());
+
+        //set report to / bill to values
+        orderDO.setReportTo((String)form.reportToBillTo.reportTo.getTextValue());
+        orderDO.setReportToId((Integer)form.reportToBillTo.reportTo.getSelectedKey());
+        orderDO.setBillTo((String)form.reportToBillTo.billTo.getTextValue());
+        orderDO.setBillToId((Integer)form.reportToBillTo.billTo.getSelectedKey());
         
-        if(form.getField("reportToBillTo") != null){
-            Form reportToBillToRPC = (Form)form.getField("reportToBillTo");
-            orderDO.setReportTo((String)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_REPORT_TO_META.getName())).getTextValue());
-            orderDO.setReportToId((Integer)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_REPORT_TO_META.getName())).getSelectedKey());
-            orderDO.setBillTo((String)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_BILL_TO_META.getName())).getTextValue());
-            orderDO.setBillToId((Integer)((DropDownField)reportToBillToRPC.getField(OrderMeta.ORDER_BILL_TO_META.getName())).getSelectedKey());
-        }
-        
-        //set description
-        if(form.getField(OrderMeta.getDescription()) != null)
-            orderDO.setDescription((String)((DropDownField)form.getField(OrderMeta.getDescription())).getSelectedKey());
+
+        orderDO.setDescription((String)form.description.getSelectedKey());
         
         return orderDO;
     }
     
-    private void setFieldsInRPC(Form form, OrderDO orderDO){
-        form.setFieldValue(OrderMeta.getId(), orderDO.getId());
-        form.setFieldValue(OrderMeta.getNeededInDays(), orderDO.getNeededInDays());
-        ((DropDownField<Integer>)(Field)form.getField(OrderMeta.getStatusId())).setValue(new DataSet<Integer>(orderDO.getStatusId()));
-        form.setFieldValue(OrderMeta.getOrderedDate(), orderDO.getOrderedDate().toString());
-        form.setFieldValue(OrderMeta.getRequestedBy(), orderDO.getRequestedBy());
+    private void setFieldsInRPC(OrderForm form, OrderDO orderDO){
+        form.id.setValue(orderDO.getId());
+        form.neededInDays.setValue(orderDO.getNeededInDays());
+        form.statusId.setValue(new DataSet<Integer>(orderDO.getStatusId()));
+        form.orderedDate.setValue(orderDO.getOrderedDate().toString());
+        form.requestedBy.setValue(orderDO.getRequestedBy());
         
         if(orderDO.getCostCenter() != null)
-            ((DropDownField<Integer>)(Field)form.getField(OrderMeta.getCostCenterId())).setValue(new DataSet<Integer>(orderDO.getCostCenter()));
+            form.costCenterId.setValue(new DataSet<Integer>(orderDO.getCostCenter()));
         
         if(orderDO.getExternalOrderNumber() != null)
-            form.setFieldValue(OrderMeta.getExternalOrderNumber(), orderDO.getExternalOrderNumber());
+            form.externalOrderNumber.setValue(orderDO.getExternalOrderNumber());
         
-        if(form.getField(OrderMeta.getShipFromId()) != null && orderDO.getShipFromId() != null)
-            ((DropDownField<Integer>)(Field)form.getField(OrderMeta.getShipFromId())).setValue(new DataSet<Integer>(orderDO.getShipFromId()));
+        if(orderDO.getShipFromId() != null)
+            form.shipFromId.setValue(new DataSet<Integer>(orderDO.getShipFromId()));
         
         //create dataset for organization auto complete
-        if(form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName()) != null){
-            if(orderDO.getOrganizationId() == null)
-                form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName(), null);
-            else{
-                DataModel orgModel = new DataModel();
-                DataSet orgSet = new DataSet();
-                
-                orgSet.setKey(new NumberObject(orderDO.getOrganizationId()));
-                //columns
-                orgSet.add(new StringObject(orderDO.getOrganization()));
-                orgSet.add(new StringObject(orderDO.organizationAddressDO.getStreetAddress()));
-                orgSet.add(new StringObject(orderDO.organizationAddressDO.getCity()));
-                orgSet.add(new StringObject(orderDO.organizationAddressDO.getState()));
-                                
-                //hidden fields
-                DataMap map = new DataMap();
-                map.put("aptSuite", new StringObject(orderDO.organizationAddressDO.getMultipleUnit()));
-                map.put("zipCode", new StringObject(orderDO.organizationAddressDO.getZipCode()));
-                orgSet.setData(map);
-                
-                orgModel.add(orgSet);
+        //if(form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName()) != null){
+        if(orderDO.getOrganizationId() == null)
+            form.organization.clear();
+        else{
+            DataModel<Integer> orgModel = new DataModel<Integer>();
+            DataSet<Integer> orgSet = new DataSet<Integer>();
+            
+            orgSet.setKey(orderDO.getOrganizationId());
+            //columns
+            orgSet.add(new StringObject(orderDO.getOrganization()));
+            orgSet.add(new StringObject(orderDO.organizationAddressDO.getStreetAddress()));
+            orgSet.add(new StringObject(orderDO.organizationAddressDO.getCity()));
+            orgSet.add(new StringObject(orderDO.organizationAddressDO.getState()));
+                            
+            //hidden fields
+            OrderOrgKey data = new OrderOrgKey();
+            data.aptSuite = orderDO.organizationAddressDO.getMultipleUnit();
+            data.zipCode = orderDO.organizationAddressDO.getZipCode();
+            orgSet.setData(data);
+            
+            orgModel.add(orgSet);
 
-                ((DropDownField)form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName())).setModel(orgModel);
-                form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.getName(), orgModel.get(0));
-            }
-            form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit(), orderDO.organizationAddressDO.getMultipleUnit());
-            form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress(),orderDO.organizationAddressDO.getStreetAddress());
-            form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getCity(), orderDO.organizationAddressDO.getCity());
-            form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getState(),orderDO.organizationAddressDO.getState());
-            form.setFieldValue(OrderMeta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode(), orderDO.organizationAddressDO.getZipCode());
+            form.organization.setModel(orgModel);
+            form.organization.setValue(orgModel.get(0));
         }
+        form.multipleUnit.setValue(orderDO.organizationAddressDO.getMultipleUnit());
+        form.streetAddress.setValue(orderDO.organizationAddressDO.getStreetAddress());
+        form.city.setValue(orderDO.organizationAddressDO.getCity());
+        form.state.setValue(orderDO.organizationAddressDO.getState());
+        form.zipCode.setValue(orderDO.organizationAddressDO.getZipCode());
+        //}
         
         //create dataset for description autocomplete
-        if(form.getField(OrderMeta.getDescription()) != null){
-            if(orderDO.getDescription() == null)
-                form.setFieldValue(OrderMeta.getDescription(), null);
-            else{
-                DataModel<String> descModel = new DataModel<String>();
-                descModel.add(new DataSet<String>(orderDO.getDescription(),new StringObject(orderDO.getDescription())));
-                ((DropDownField)form.getField(OrderMeta.getDescription())).setModel(descModel);
-                form.setFieldValue(OrderMeta.getDescription(), descModel.get(0));
-            }
+        //if(form.getField(OrderMeta.getDescription()) != null){
+        if(orderDO.getDescription() == null)
+            form.description.clear();
+        else{
+            DataModel<String> descModel = new DataModel<String>();
+            descModel.add(new DataSet<String>(orderDO.getDescription(),new StringObject(orderDO.getDescription())));
+            form.description.setModel(descModel);
+            form.description.setValue(descModel.get(0));
         }
+        //}
     }
     
     private List getOrderItemsListFromRPC(DataModel<Integer> itemsTable, Integer orderId, String orderType){
@@ -967,7 +965,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
                 orderItemDO.setId(itemId);
             orderItemDO.setOrder(orderId);
             orderItemDO.setInventoryItemId((Integer)((DropDownField)row.get(1)).getSelectedKey());
-            orderItemDO.setQuantity(((NumberField)row.get(0)).getIntegerValue());
+            orderItemDO.setQuantity((Integer)row.get(0).getValue());
             
             if(row.size() == 5){
                 orderItemDO.setUnitCost((Double)row.get(3).getValue());
@@ -1000,23 +998,19 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return orderItems;
     }
     
-    public void getItemsModel(Integer orderId, BooleanObject forDuplicate, TableField<Integer> model, StringObject orderTypeObj){
+    public void getItemsModel(Integer orderId, boolean forDuplicate, TableField<Integer> model){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
-        //boolean withLocation = false;
-        String orderType = (String)orderTypeObj.getValue();
         
         //if(orderType.equals(OrderRemote.INTERNAL) || orderType.equals(OrderRemote.KITS))
         //    withLocation = true;
         
         List itemsList = remote.getOrderItems(orderId);
         
-        model.setValue(fillOrderItemsTable((DataModel<Integer>)model.getValue(),itemsList, ((Boolean)forDuplicate.getValue()).booleanValue()));
+        model.setValue(fillOrderItemsTable((DataModel<Integer>)model.getValue(), itemsList, forDuplicate));
     }
     
-    public void getReceiptsModel(Integer orderId, TableField model, StringObject orderTypeObj){
+    public void getReceiptsModel(Integer orderId, TableField<Integer> model, String orderType){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
-        
-        String orderType = (String)orderTypeObj.getValue();
         
         List receiptsList = new ArrayList();
         if(orderType.equals(OrderRemote.EXTERNAL))
@@ -1049,16 +1043,16 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
         return null;
     }
     
+    /*
     public DataModel getReportToBillTo(Integer orderId){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         BillToReportToDO billToReportToDO = remote.getBillToReportTo(orderId);
         
         if(billToReportToDO != null){
-            //datamodel
             DataModel model = new DataModel();
             DataSet set = new DataSet();
-            NumberObject billToId = new NumberObject(NumberObject.Type.INTEGER);
+            IntegerObject billToId = new IntegerObject();
             StringObject billTo = new StringObject();
             StringObject billToMultUnit = new StringObject();
             StringObject billToStreetAddress = new StringObject();
@@ -1067,7 +1061,7 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             StringObject billToZipCode = new StringObject();
             
             
-            NumberObject reportToId = new NumberObject(NumberObject.Type.INTEGER);
+            IntegerObject reportToId = new IntegerObject();
             StringObject reportTo = new StringObject();
             StringObject reportToMultUnit = new StringObject();
             StringObject reportToStreetAddress = new StringObject();
@@ -1109,49 +1103,44 @@ public class OrderService implements AppScreenFormServiceInt<DefaultRPC, Integer
             
             model.add(set);
             
-            /*reportToAutoset.setKey(reportToId);
-            reportToAutoset.add(reportTo);
-            model.add(reportToAutoset);
-            
-            billToAutoSet.setKey(billToId);
-            billToAutoSet.add(billTo);
-            model.add(billToAutoSet);*/
-            
             return model;
         }
         
         return null;
     }
+    */
     
-    public void fillReportToBillToValues(Form form, DataModel<Integer> model){
-        if(model == null)
-            return;
+    public void fillReportToBillToValues(Integer key, ReportToBillToForm form){
+        OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        DataSet<Integer> set = model.get(0);
+        BillToReportToDO billToReportToDO = remote.getBillToReportTo(key);
         
-        //bill to values
-        DataModel<Integer> billToModel = new DataModel<Integer>();
-        billToModel.add(new DataSet<Integer>((Integer)set.get(0).getValue(),(StringObject)set.get(1)));
-        ((DropDownField)form.getField(OrderMeta.ORDER_BILL_TO_META.getName())).setModel(billToModel);
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.getName(), billToModel.get(0));
-        
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getMultipleUnit(), (String)((StringObject)set.get(2)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getStreetAddress(), (String)((StringObject)set.get(3)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getCity(), (String)((StringObject)set.get(4)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getState(), (String)((StringObject)set.get(5)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_BILL_TO_META.ADDRESS.getZipCode(), (String)((StringObject)set.get(6)).getValue());
-        
-        //report to values
-        DataModel<Integer> reportToModel = new DataModel<Integer>();
-        reportToModel.add(new DataSet<Integer>((Integer)set.get(7).getValue(),(StringObject)set.get(8)));
-        ((DropDownField)form.getField(OrderMeta.ORDER_REPORT_TO_META.getName())).setModel(reportToModel);
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.getName(), reportToModel.get(0));
-        
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getMultipleUnit(), (String)((StringObject)set.get(9)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getStreetAddress(), (String)((StringObject)set.get(10)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getCity(), (String)((StringObject)set.get(11)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getState(), (String)((StringObject)set.get(12)).getValue());
-        form.setFieldValue(OrderMeta.ORDER_REPORT_TO_META.ADDRESS.getZipCode(), (String)((StringObject)set.get(13)).getValue());
+        if(billToReportToDO != null){
+            //bill to values
+            DataModel<Integer> billToModel = new DataModel<Integer>();
+            billToModel.add(new DataSet<Integer>(billToReportToDO.getBillToId(),new StringObject(billToReportToDO.getBillTo())));
+            form.billTo.setModel(billToModel);
+            form.billTo.setValue(billToModel.get(0));
+            
+            form.billToMultUnit.setValue(billToReportToDO.billToAddress.getMultipleUnit());
+            form.billToStreetAddress.setValue(billToReportToDO.billToAddress.getStreetAddress());
+            form.billToCity.setValue(billToReportToDO.billToAddress.getCity());
+            form.billToState.setValue(billToReportToDO.billToAddress.getState());
+            form.billToZipCode.setValue(billToReportToDO.billToAddress.getZipCode());
+            
+            //report to values
+            DataModel<Integer> reportToModel = new DataModel<Integer>();
+            reportToModel.add(new DataSet<Integer>(billToReportToDO.getReportToId(),new StringObject(billToReportToDO.getReportTo())));
+            form.reportTo.setModel(reportToModel);
+            form.reportTo.setValue(reportToModel.get(0));
+            
+            form.reportToMultUnit.setValue(billToReportToDO.reportToAddress.getMultipleUnit());
+            form.reportToStreetAddress.setValue(billToReportToDO.reportToAddress.getStreetAddress());
+            form.reportToCity.setValue(billToReportToDO.reportToAddress.getCity());
+            form.reportToState.setValue(billToReportToDO.reportToAddress.getState());
+            form.reportToZipCode.setValue(billToReportToDO.reportToAddress.getZipCode());
+            
+        }
     }
     
     public DataModel<Integer> fillOrderItemsTable(DataModel<Integer> orderItemsModel, List orderItemsList, boolean forDuplicate){
