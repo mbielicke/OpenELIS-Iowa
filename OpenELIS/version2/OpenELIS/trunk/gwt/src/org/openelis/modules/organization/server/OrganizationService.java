@@ -297,7 +297,6 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 		//remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
-//		    System.out.println("in contacts");
         OrganizationAddressDO organizationDO = remote.getOrganizationAddress(rpc.key);
 
             //		set the fields in the RPC

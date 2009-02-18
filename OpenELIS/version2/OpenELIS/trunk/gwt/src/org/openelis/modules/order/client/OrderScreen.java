@@ -25,31 +25,16 @@
 */
 package org.openelis.modules.order.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.BooleanObject;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
@@ -73,10 +58,18 @@ import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
+public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer> implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
     
     private static boolean loaded = false;
     
@@ -97,7 +90,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     
     private ScreenTextArea   shippingNoteText, customerNoteText;
     
-    private ScreenDropDownWidget status;
+    private Dropdown status, shipFrom, costCenter;
     
     private TableWidget itemsTable, receiptsTable;
     
@@ -105,18 +98,51 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
     
+    AsyncCallback<OrderRPC> checkModels = new AsyncCallback<OrderRPC>() {
+        public void onSuccess(OrderRPC rpc) {
+            if(rpc.status != null) {
+                setStatusIdModel(rpc.status);
+                rpc.status = null;
+            }
+            if(rpc.costCenters != null) {
+                setCostCentersModel(rpc.costCenters);
+                rpc.costCenters = null;
+            }
+            if(rpc.shipFrom != null) {
+                setShipFromModel(rpc.shipFrom);
+                rpc.shipFrom = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
     public OrderScreen(Object[] args) {                
         super("org.openelis.modules.order.server.OrderService");
         
         orderType = (String)((StringObject)args[0]).getValue();
         
-        HashMap hash = new HashMap();
-        hash.put("type", (StringObject)args[0]);
+       // HashMap hash = new HashMap();
+       // hash.put("type", (StringObject)args[0]);
         
-        BooleanObject loadedObj = new BooleanObject((loaded ? "Y" : "N"));
-        hash.put("loaded", loadedObj);
+      //  BooleanObject loadedObj = new BooleanObject((loaded ? "Y" : "N"));
+      //  hash.put("loaded", loadedObj);
         
-        getXMLData(hash, new DefaultRPC());
+        //wrappedWidgets.put(OrderMeta.getStatusId(), status = new Dropdown());
+        //wrappedWidgets.put(OrderMeta.getCostCenterId(), costCenter = new Dropdown());
+        //wrappedWidgets.put(OrderMeta.getShipFromId(), shipFrom = new Dropdown());
+        //wrappedWidgets.put("itemsTable", itemsTable = new TableWidget());
+        //wrappedWidgets.put("receiptsTable", receiptsTable = new TableWidget());
+
+        forms.put("display",new OrderForm());
+        OrderRPC orderRPC = new OrderRPC();
+        orderRPC.orderType = orderType;
+        
+        getScreen(orderRPC);
+        
+       // getXMLData(hash, new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -138,7 +164,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         if(sender == orgDropdown){
             if(orgDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)orgDropdown.getSelections().get(0);
-                DataMap map = (DataMap)selectedRow.getData();
+                OrderOrgKey selectedKey = (OrderOrgKey)selectedRow.getData();
                 
                 //load address
                 orgAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -147,14 +173,21 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
                 //load state
                 orgState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                orgAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
+                orgAptSuite.setText(selectedKey.aptSuite);
                 //load zipcode
-                orgZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
-            }            
+                orgZipCode.setText(selectedKey.zipCode);
+            }else{
+                orgAddress.setText("");
+                orgCity.setText("");
+                orgState.setText("");               
+                orgAptSuite.setText("");
+                orgZipCode.setText("");
+            }
+                
         }else if(sender == reportToDropdown){
             if(reportToDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)reportToDropdown.getSelections().get(0);
-                DataMap map = (DataMap)selectedRow.getData();
+                OrderOrgKey selectedKey = (OrderOrgKey)selectedRow.getData();
                 
                 //load address
                 reportToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -163,14 +196,20 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
                 //load state
                 reportToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                reportToAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
+                reportToAptSuite.setText(selectedKey.aptSuite);
                 //load zipcode
-                reportToZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
+                reportToZipCode.setText(selectedKey.zipCode);
+            }else{
+                reportToAddress.setText("");
+                reportToCity.setText("");
+                reportToState.setText("");               
+                reportToAptSuite.setText("");
+                reportToZipCode.setText("");
             }
         }else if(sender == billToDropdown){
             if(billToDropdown.getSelections().size() > 0){
                 DataSet selectedRow = (DataSet)billToDropdown.getSelections().get(0);
-                DataMap map = (DataMap)selectedRow.getData();
+                OrderOrgKey selectedKey = (OrderOrgKey)selectedRow.getData();
                 
                 //load address
                 billToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
@@ -179,9 +218,15 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
                 //load state
                 billToState.setText((String)((StringObject)selectedRow.get(3)).getValue());               
                 //load apt/suite
-                billToAptSuite.setText((String)((StringObject)map.get("aptSuite")).getValue());
+                billToAptSuite.setText(selectedKey.aptSuite);
                 //load zipcode
-                billToZipCode.setText((String)((StringObject)map.get("zipCode")).getValue());
+                billToZipCode.setText(selectedKey.zipCode);
+            }else{
+                billToAddress.setText("");
+                billToCity.setText("");
+                billToState.setText("");               
+                billToAptSuite.setText("");
+                billToZipCode.setText("");                
             }
         }
     }
@@ -193,7 +238,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
 
         orderNum = (ScreenTextBox)widgets.get(OrderMeta.getId());
         neededInDays = (ScreenTextBox)widgets.get(OrderMeta.getNeededInDays());
-        status = (ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId());
+        //status = (ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId());
         orderDate = (ScreenTextBox)widgets.get(OrderMeta.getOrderedDate());
         requestedBy = (ScreenTextBox)widgets.get(OrderMeta.getRequestedBy());
         shippingNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_SHIPPING_NOTE_META.getText());
@@ -216,6 +261,10 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         receiptsTable = (TableWidget)getWidget("receiptsTable");
         receiptsTable.model.enableAutoAdd(false);
+        
+        status = (Dropdown)getWidget(OrderMeta.getStatusId());
+        costCenter = (Dropdown)getWidget(OrderMeta.getCostCenterId());
+        shipFrom = (Dropdown)getWidget(OrderMeta.getShipFromId());
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         
@@ -249,26 +298,37 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         billToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
         reportToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
         
-        if (statusDropdown == null) {
-            statusDropdown = (DataModel)initData.get("status");
-            costCenterDropdown = (DataModel)initData.get("costCenter");
-            shipFromDropdown = (DataModel)initData.get("shipFrom");
-        }
+        //if (statusDropdown == null) {
+        //    statusDropdown = (DataModel)initData.get("status");
+        //    costCenterDropdown = (DataModel)initData.get("costCenter");
+        //    shipFromDropdown = (DataModel)initData.get("shipFrom");
+       // }
 
-        drop = (Dropdown)getWidget(OrderMeta.getStatusId());
-        drop.setModel(statusDropdown);
+        //drop = (Dropdown)getWidget(OrderMeta.getStatusId());
+        //drop.setModel(statusDropdown);
         
        // drop = (AutoCompleteDropdown)getWidget("store");
        // if(drop != null)
        //     drop.setModel(storeDropdown);
         
-        drop = (Dropdown)getWidget(OrderMeta.getCostCenterId());
-        drop.setModel(costCenterDropdown);
+        //drop = (Dropdown)getWidget(OrderMeta.getCostCenterId());
+        //drop.setModel(costCenterDropdown);
         
-        if("kits".equals(orderType)){
-            drop = (Dropdown)getWidget(OrderMeta.getShipFromId());
-            drop.setModel(shipFromDropdown);
-        }
+        setStatusIdModel(rpc.status);
+        setCostCentersModel(rpc.costCenters);
+        setShipFromModel(rpc.shipFrom);
+        
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        rpc.status = null;
+        rpc.costCenters = null;
+        rpc.shipFrom = null;
+        
+        //if("kits".equals(orderType)){
+        //    drop = (Dropdown)getWidget(OrderMeta.getShipFromId());
+        //    drop.setModel(shipFromDropdown);
+       // }
         
         //addCommandListener((ButtonPanel)getWidget("buttons"));
         //((ButtonPanel)getWidget("buttons")).addCommandListener(this);
@@ -282,8 +342,8 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         super.afterDraw(sucess);
         
-        ((Form)rpc.form.getField("items")).setFieldValue("itemsTable", itemsTable.model.getData());
-        ((Form)rpc.form.getField("receipts")).setFieldValue("receiptsTable", receiptsTable.model.getData());
+        rpc.form.items.itemsTable.setValue(itemsTable.model.getData());
+        rpc.form.receipts.receiptsTable.setValue(receiptsTable.model.getData());
     }
      
     /*protected AsyncCallback afterCommitAdd = new AsyncCallback() {
@@ -311,8 +371,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     */
     
     public void update() {
-        if(rpc.form.getField("originalStatus") != null)
-            rpc.form.setFieldValue("originalStatus", ((DataSet)((Dropdown)status.getWidget()).getSelections().get(0)).getKey());
+        rpc.originalStatus = (Integer)((DataSet)status.getSelections().get(0)).getKey();
         super.update();
         
     }
@@ -342,30 +401,29 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     }
     
     public void add() {
-        itemsTable.model.enableAutoAdd(true);
         super.add();
-        
+        itemsTable.model.enableAutoAdd(true);
         //rpc.setFieldValue("orderType", orderType);
         
         
         window.setStatus("","spinnerIcon");
           
         FieldType[] args = new FieldType[0]; 
+        OrderRPC orpc = new OrderRPC();
+        orpc.key = rpc.key;
+        orpc.form = rpc.form;
           
-        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<Integer>>(){
-            public void onSuccess(DataModel<Integer> model){    
-              // get the datamodel, load the fields in the form
-                DataSet<Integer> set = model.get(0);
-
+        screenService.call("getAddAutoFillValues", orpc, new AsyncCallback<OrderRPC>(){
+            public void onSuccess(OrderRPC returnRpc){    
                 //load the values
-                status.load((DropDownField)set.get(0));
-                orderDate.load((StringField)set.get(1));
-                requestedBy.load((StringField)set.get(2));
+                ((ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId())).load(returnRpc.form.statusId);
+                orderDate.load(returnRpc.form.orderedDate);
+                requestedBy.load(returnRpc.form.requestedBy);
                 
                 //set the values in the rpc
-                rpc.form.setFieldValue(OrderMeta.getStatusId(), ((DropDownField)set.get(0)).getValue());
-                rpc.form.setFieldValue(OrderMeta.getOrderedDate(), (String)((StringField)set.get(1)).getValue());
-                rpc.form.setFieldValue(OrderMeta.getRequestedBy(), (String)((StringField)set.get(2)).getValue());
+                rpc.form.statusId.setValue(returnRpc.form.statusId.getValue());
+                rpc.form.orderedDate.setValue(returnRpc.form.orderedDate.getValue());
+                rpc.form.requestedBy.setValue(returnRpc.form.requestedBy.getValue());
                 
                 window.setStatus("","");
             }
@@ -376,7 +434,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         }); 
         
         orderNum.enable(false);
-        status.enable(false);
+        ((ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId())).enable(false);
         orderDate.enable(false);
         
         neededInDays.setFocus(true);
@@ -418,22 +476,22 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
-            if (index == 0 && !((Form)rpc.form.getField("items")).load) {
+            if (index == 0 && !rpc.form.items.load) {
                 fillItemsModel(false);
                 
-            }else if( index == 1 && !((Form)rpc.form.getField("receipts")).load) {
+            }else if( index == 1 && !rpc.form.receipts.load) {
                 fillReceipts();
                 
-            } else if (index == 2 && "kits".equals(orderType) && !((Form)rpc.form.getField("custNote")).load) {
+            } else if (index == 2 && "kits".equals(orderType) && !rpc.form.customerNotes.load) {
                 fillCustomerNotes();
                 
-            } else if ((index == 2 && !"kits".equals(orderType) && !((Form)rpc.form.getField("shippingNote")).load)) {
+            } else if ((index == 2 && !"kits".equals(orderType) && !rpc.form.shippingNotes.load)) {
                 fillShippingNotes();
             
-            } else if ((index == 3 && !((Form)rpc.form.getField("shippingNote")).load)) {
+            } else if ((index == 3 && !rpc.form.shippingNotes.load)) {
                 fillShippingNotes();
                 
-            } else if (index == 4 && !((Form)rpc.form.getField("reportToBillTo")).load) {
+            } else if (index == 4 && !rpc.form.reportToBillTo.load) {
                 fillReportToBillTo();
                 
             }
@@ -591,7 +649,7 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     private void onDuplicateRecordClick(){
         if(state == FormInt.State.DISPLAY){
             //we need to do the duplicate method
-            Form display = (Form)rpc.form.clone();
+            OrderForm display = (OrderForm)rpc.form.clone();
             display.setFieldValue(OrderMeta.getId(), null);
             display.setFieldValue(OrderMeta.getExternalOrderNumber(), null);
             display.setFieldValue("orderType", orderType);
@@ -632,13 +690,21 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
         
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {new IntegerObject(key), new BooleanObject(forDuplicate), new StringObject(orderType), (FieldType)rpc.form.getField("items")};
-
-        screenService.getObject("loadItems", args, new AsyncCallback<Form>() {
-            public void onSuccess(Form result) {
-                load(result);
-                rpc.form.setField("items", (Form)result);
+        //prepare the argument list
+        OrderItemRPC oirpc = new OrderItemRPC();
+        oirpc.key = key;
+        oirpc.forDuplicate = forDuplicate;
+        oirpc.form = rpc.form.items;
+        
+        
+        screenService.call("loadItems", oirpc, new AsyncCallback<OrderItemRPC>() {
+            public void onSuccess(OrderItemRPC result) {
+                load(result.form);
+                /*
+                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                 */
+                rpc.form.fields.put("items", rpc.form.items = result.form);
                 
                 if(forDuplicate)
                     key = null;
@@ -659,13 +725,20 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
 
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {new IntegerObject(key), new StringObject(orderType), (FieldType)rpc.form.getField("receipts")};
-
-        screenService.getObject("loadReceipts", args, new AsyncCallback<Form>() {
-            public void onSuccess(Form result) {
-                load(result);
-                rpc.form.setField("receipts", (Form)result);
+      //prepare the argument list
+        OrderReceiptRPC orrpc = new OrderReceiptRPC();
+        orrpc.key = key;
+        orrpc.orderType = rpc.orderType;
+        orrpc.form = rpc.form.receipts;
+        
+        screenService.call("loadReceipts", orrpc, new AsyncCallback<OrderReceiptRPC>() {
+            public void onSuccess(OrderReceiptRPC result) {
+                load(result.form);
+                /*
+                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                 */
+                rpc.form.fields.put("receipts", rpc.form.receipts = result.form);
                 window.setStatus("","");
             }
 
@@ -682,13 +755,15 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
 
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("custNote")};
-
-        screenService.getObject("loadCustomerNotes", args, new AsyncCallback<Form>() {
-            public void onSuccess(Form result) {
-                load(result);
-                rpc.form.setField("custNote",(Form)result);
+      //prepare the argument list
+        OrderNoteRPC onrpc = new OrderNoteRPC();
+        onrpc.key = key;
+        onrpc.form = rpc.form.customerNotes;
+        
+        screenService.call("loadCustomerNotes", onrpc, new AsyncCallback<OrderNoteRPC>() {
+            public void onSuccess(OrderNoteRPC result) {
+                load(result.form);
+                rpc.form.fields.put("custNote", rpc.form.customerNotes = result.form);
                 window.setStatus("","");
             }
 
@@ -705,13 +780,16 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
 
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("shippingNote")};
+     // prepare the argument list
+        OrderShippingNoteRPC osnrpc = new OrderShippingNoteRPC();
+        osnrpc.key = key;
+        osnrpc.form = rpc.form.shippingNotes;
 
-        screenService.getObject("loadOrderShippingNotes", args, new AsyncCallback<Form>() {
-            public void onSuccess(Form result) {
-                load(result);
-                rpc.form.setField("shippingNote",(Form)result);
+        screenService.call("loadOrderShippingNotes", osnrpc, new AsyncCallback<OrderShippingNoteRPC>() {
+            public void onSuccess(OrderShippingNoteRPC result) {
+                load(result.form);
+                rpc.form.fields.put("shippingNote", rpc.form.shippingNotes = result.form);
+
                 window.setStatus("","");
             }
 
@@ -728,14 +806,15 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         window.setStatus("","spinnerIcon");
 
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {new IntegerObject(key), (FieldType)rpc.form.getField("reportToBillTo")};
-
-        screenService.getObject("loadReportToBillTo", args, new AsyncCallback<Form>() {
-            public void onSuccess(Form result) {
+        ReportToBillToRpc rtbtrpc = new ReportToBillToRpc();
+        rtbtrpc.key = key;
+        rtbtrpc.form = rpc.form.reportToBillTo;
+        
+        screenService.call("loadReportToBillTo", rtbtrpc, new AsyncCallback<ReportToBillToRpc>() {
+            public void onSuccess(ReportToBillToRpc result) {
                 if(result != null){
-                    load(result);
-                    rpc.form.setField("reportToBillTo",result);
+                    load(result.form);
+                    rpc.form.fields.put("reportToBillTo", rpc.form.reportToBillTo = result.form);
 
                 }
                 window.setStatus("","");
@@ -759,5 +838,18 @@ public class OrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         }
         
         return empty;
+    }
+
+    public void setStatusIdModel(DataModel<Integer> statusIdsModel) {
+        status.setModel(statusIdsModel);
+    }
+    
+    public void setCostCentersModel(DataModel<Integer> costCentersModel) {
+        costCenter.setModel(costCentersModel);
+    }
+    
+    public void setShipFromModel(DataModel<Integer> shipFromsModel) {
+        if(shipFrom != null)
+            shipFrom.setModel(shipFromsModel);
     }
 }

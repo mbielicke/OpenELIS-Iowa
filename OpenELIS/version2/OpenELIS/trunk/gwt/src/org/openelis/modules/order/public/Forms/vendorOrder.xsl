@@ -233,10 +233,10 @@ UIRF Software License are applicable instead of those above.
 											<textbox case="mixed"/>
 										</editors>
 										<fields>
-											<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="true"/>
+											<integer key="{orderItemMeta:getQuantity($orderItem)}" required="true"/>
 											<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
 											<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
-											<number type="double" required="false"/>
+											<double required="false"/>
 											<string required="false"/>
 										</fields>
 										<sorts>false,true,true,false,false</sorts>
@@ -301,8 +301,8 @@ UIRF Software License are applicable instead of those above.
 											<string/>
 											<string/>
 											<string/>
-											<number type="integer"/>
-											<number type="double"/>
+											<integer/>
+											<double/>
 											<string/>
 										</fields>
 										<sorts>true,true,true,true,true,true</sorts>
@@ -367,14 +367,15 @@ UIRF Software License are applicable instead of those above.
 	</display>
 	<rpc key="display">
   	  <!-- values on the screen -->
-  	  <number key="{orderMeta:getId($order)}" type="integer" required="false"/>
-      <number key="{orderMeta:getNeededInDays($order)}" type="integer" required="true"/>
+  	  <integer key="{orderMeta:getId($order)}" required="false"/>
+      <integer key="{orderMeta:getNeededInDays($order)}" required="true"/>
       <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="true"/> 
       <dropdown key="{orgMeta:getName($organization)}" required="true"/>
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
+      <integer key="originalStatus" reset="false"/>
      
       <rpc key="shippingNote">
     	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
