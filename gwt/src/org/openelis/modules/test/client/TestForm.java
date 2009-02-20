@@ -30,7 +30,7 @@ import java.util.Set;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.TestMetaMap;
 
@@ -43,7 +43,7 @@ public class TestForm extends Form {
      */
     private static final long serialVersionUID = 1L;
     
-    public NumberField id; 
+    public IntegerField id; 
     public StringField name;
     public DropDownField methodId;
     public String testTabPanel = "detailsTab";
@@ -55,7 +55,7 @@ public class TestForm extends Form {
     
     public TestForm() {
         TestMetaMap meta = new TestMetaMap();
-        fields.put(meta.getId(), id = new NumberField());
+        fields.put(meta.getId(), id = new IntegerField());
         fields.put(meta.getName(), name = new StringField());
         fields.put(meta.getMethodId(), methodId = new DropDownField());
         fields.put("details",details = new DetailsForm());
@@ -68,21 +68,6 @@ public class TestForm extends Form {
     public TestForm(Node node) {
         this();
         createFields(node);
-    }
-    
-    public TestForm clone() {
-        TestForm clone = new TestForm();        
-        Object[] keys = (Object[]) ((Set)fields.keySet()).toArray();    
-        for (int i = 0; i < keys.length; i++) {
-            if(fields.get((String)keys[i]) instanceof Form)
-                clone.setField((String)keys[i], (Form)fields.get((String)keys[i]).clone());
-            else
-                clone.setField((String)keys[i], (AbstractField)fields.get((String)keys[i]).clone());
-        }        
-        
-        clone.status = status;
-        
-        return clone;
     }
 
 }

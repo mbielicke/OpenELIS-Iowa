@@ -26,8 +26,12 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.DataModel;
 
 public class TestRPC extends RPC<TestForm,Integer> {
 
-    private static final long serialVersionUID = -1L;    
+    private static final long serialVersionUID = -1L;   
+    
+    public DataModel<Integer> resultTableModel;
+    public Integer numGroups;
 }

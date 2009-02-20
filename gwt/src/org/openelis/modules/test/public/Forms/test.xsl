@@ -96,7 +96,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="530px">
-						<azTable colwidths="175"  key="azTable" maxRows="28" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
+						<azTable colwidths="175"  key="azTable" maxRows="27" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
@@ -300,7 +300,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 										 </queryTable>
 							 			</query>										
-							 			 </widget>
+							 		  </widget>
 							 			
 							 		
 							 		 <TablePanel width = "241px" spacing="0" padding="0" style="TableFooter">
@@ -346,7 +346,7 @@ UIRF Software License are applicable instead of those above.
 								   <textbox key="{meta:getReportingSequence($test)}"  width="80px" tab="{meta:getTestTrailerId($test)},{meta:getReportingMethodId($test)}"/>					    
 								  </row>								  								   
 		                         </TablePanel>     
-		                         <VerticalPanel height = "38px"/>                    
+		                         <VerticalPanel height = "36px"/>                    
 							  </VerticalPanel>							  							 
 							</tab>
 							
@@ -547,7 +547,7 @@ UIRF Software License are applicable instead of those above.
 													<string key="{testResult:getContLevel($tr)}"  required="false"/>
 													<string key="{testResult:getHazardLevel($tr)}" required="false"/>	
 													<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
-													<number key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>														
+													<integer key="{testResult:getSignificantDigits($tr)}"  required="false"/>														
 													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>																																		
 												</fields>
 												<sorts>false,false,false,false,false,false,false,false,false</sorts>
@@ -792,7 +792,7 @@ UIRF Software License are applicable instead of those above.
 													<textbox/>																						
 												</editors>
 												<fields>
-												    <number key="{testWrkshtItm:getPosition($twsi)}" type="integer" required="false"/>
+												    <integer key="{testWrkshtItm:getPosition($twsi)}" required="false"/>
 													<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
 													<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>																										
 												</fields>
@@ -851,30 +851,30 @@ UIRF Software License are applicable instead of those above.
 				</HorizontalPanel>
 			</display>
 			<rpc key="display">
-			 <number key="{meta:getId($test)}" required="false" type="integer"/>
+			 <integer key="{meta:getId($test)}" required="false" type="integer"/>
 			 <string key="{meta:getName($test)}" max = "20" required="true" />
 			 <dropdown key="{meta:getMethodId($test)}" required="true" type="integer"/>
 			 <string key="testTabPanel" reset="false">detailsTab</string>
 			 <rpc key = "details">
 				<string key="{meta:getDescription($test)}" max="60" required="true"/>
 				<string key="{meta:getReportingDescription($test)}" max="60" required="false"/>
-				<number key="{meta:getTimeTaMax($test)}"  type="integer" required="false"/>
-				<number key="{meta:getTimeTaAverage($test)}" type="integer" required="false"/>
-				<number key="{meta:getTimeTaWarning($test)}" type="integer" required="false"/>
-				<number key="{meta:getTimeTransit($test)}" type="integer" required="false"/>	
+				<integer key="{meta:getTimeTaMax($test)}"  type="integer" required="false"/>
+				<integer key="{meta:getTimeTaAverage($test)}" type="integer" required="false"/>
+				<integer key="{meta:getTimeTaWarning($test)}" type="integer" required="false"/>
+				<integer key="{meta:getTimeTransit($test)}" type="integer" required="false"/>	
 				<check key="{meta:getIsActive($test)}" required="true"/>
 				<check key="{meta:getIsReportable($test)}" required="true"/>
 				<date key="{meta:getActiveBegin($test)}" begin="0" end="2" required="true"/>
 				<date key="{meta:getActiveEnd($test)}" begin="0" end="2" required="true"/>
-				<number key="{meta:getTimeHolding($test)}" type="integer" required="false"/> 			
+				<integer key="{meta:getTimeHolding($test)}" type="integer" required="false"/> 			
 				<dropdown key="{meta:getLabelId($test)}" required="false" type="integer"/>
-				<number key="{meta:getLabelQty($test)}" required="false" type="integer"/>
+				<integer key="{meta:getLabelQty($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getTestTrailerId($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>				
 				<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
 				<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
-				<number key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
+				<integer key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
 				<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
 				<table key="sectionTable"/>
 			</rpc>			
@@ -886,11 +886,11 @@ UIRF Software License are applicable instead of those above.
 		 	 <table key="sampleTypeTable"/>
 			</rpc>
 			<rpc key = "worksheet">
-			 <number key="{testWrksht:getId($tws)}" required="false" type="integer"/>
+			 <integer key="{testWrksht:getId($tws)}" required="false" type="integer"/>
 			 <dropdown key="{testWrksht:getFormatId($tws)}" required="true" type="integer"/>
 			 <dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
-			 <number key="{testWrksht:getBatchCapacity($tws)}" required="true" type="integer"/>
-			 <number key="{testWrksht:getTotalCapacity($tws)}" required="true" type="integer"/>
+			 <integer key="{testWrksht:getBatchCapacity($tws)}" required="true" type="integer"/>
+			 <integer key="{testWrksht:getTotalCapacity($tws)}" required="true" type="integer"/>
 		 	 <table key="worksheetTable"/>
 			</rpc>
 			<rpc key = "testAnalyte">
@@ -899,27 +899,27 @@ UIRF Software License are applicable instead of those above.
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
-			 <queryNumber key="{meta:getId($test)}"  type="integer"/>
+			 <queryInteger key="{meta:getId($test)}"  type="integer"/>
 			 <queryString key="{meta:getName($test)}" />
 			 <dropdown key="{meta:getMethodId($test)}"  type="integer"/>
 			 <queryString key="{meta:getDescription($test)}"/>
 				<queryString key="{meta:getReportingDescription($test)}" />
-				<queryNumber key="{meta:getTimeTaMax($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTaAverage($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTaWarning($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTransit($test)}" type="integer"/>	
+				<queryInteger key="{meta:getTimeTaMax($test)}" type="integer"/>
+				<queryInteger key="{meta:getTimeTaAverage($test)}" type="integer"/>
+				<queryInteger key="{meta:getTimeTaWarning($test)}" type="integer"/>
+				<queryInteger key="{meta:getTimeTransit($test)}" type="integer"/>	
 				<queryCheck key="{meta:getIsActive($test)}" />
 				<queryCheck key="{meta:getIsReportable($test)}" />				
-				<queryNumber key="{meta:getTimeHolding($test)}" type="integer"/> 			
+				<queryInteger key="{meta:getTimeHolding($test)}" type="integer"/> 			
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>				
-				<queryNumber key="{meta:getLabelQty($test)}" type="integer"/>
+				<queryInteger key="{meta:getLabelQty($test)}" type="integer"/>
 				<dropdown key="{meta:getTestTrailerId($test)}" type="integer"/>
 				<dropdown key="{meta:getTestFormatId($test)}"  type="integer"/>				
 				<dropdown key="{meta:getRevisionMethodId($test)}" type="integer"/>	
 				<dropdown key="{meta:getScriptletId($test)}" type="integer"/>
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
 				<dropdown key="{meta:getReportingMethodId($test)}" type="integer"/>
-				<queryNumber key="{meta:getReportingSequence($test)}" type="integer"/>
+				<queryInteger key="{meta:getReportingSequence($test)}" type="integer"/>
 				<dropdown key="{meta:getSortingMethodId($test)}" type="integer"/>
 				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" type="integer"/>					
 				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" type="integer"/> 
@@ -931,9 +931,9 @@ UIRF Software License are applicable instead of those above.
 				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
 				<dropdown key="{testWrksht:getFormatId($tws)}"  type="integer"/>
 				<dropdown key="{testWrksht:getScriptletId($tws)}"  type="integer"/>
-				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
-				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
-				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
+				<queryInteger key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
+				<queryInteger key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
+				<queryInteger key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
 				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"  type="integer"/>				
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" type="integer" />
@@ -941,7 +941,7 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer"/>
 				<dropdown key="{testResult:getTypeId($tr)}" type="integer"/>																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
-				<queryNumber key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
+				<queryInteger key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
 				<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
 				<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>	
 				<queryString key="{testResult:getQuantLimit($tr)}"  required="false"/>	

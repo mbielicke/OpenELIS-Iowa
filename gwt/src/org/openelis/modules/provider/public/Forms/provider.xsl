@@ -287,7 +287,7 @@ UIRF Software License are applicable instead of those above.
 </display>
 							  
 <rpc key= "display">	
-  <number key="{meta:getId($pro)}" type="integer" required="false"/>				
+  <integer key="{meta:getId($pro)}" type="integer" required="false"/>				
   <string key="{meta:getLastName($pro)}"  required = "true"/>
   <string key="{meta:getFirstName($pro)}"  required="false"/> 
   <string key="{meta:getNpi($pro)}" required="false"/>
@@ -305,7 +305,7 @@ UIRF Software License are applicable instead of those above.
 </rpc>
 					   
 <rpc key= "query">     
-  <queryNumber key="{meta:getId($pro)}" type="integer" />				
+  <queryInteger key="{meta:getId($pro)}" type="integer" />				
   <queryString key="{meta:getLastName($pro)}" />
   <queryString key="{meta:getFirstName($pro)}" /> 
   <queryString key="{meta:getNpi($pro)}" />

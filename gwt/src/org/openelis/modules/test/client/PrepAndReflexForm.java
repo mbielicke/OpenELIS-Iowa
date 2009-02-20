@@ -37,16 +37,17 @@ public class PrepAndReflexForm extends Form {
      */
     private static final long serialVersionUID = -3032313687560960088L;
     
-    public TableField testPrepTable;
-    public TableField testReflexTable;
+    public TableField<Integer> testPrepTable;
+    public TableField<Integer> testReflexTable;
+    public Boolean duplicate;
 
     public PrepAndReflexForm() {
-       fields.put("testPrepTable", testPrepTable = new TableField());
-       fields.put("testReflexTable", testReflexTable = new TableField());
+       fields.put("testPrepTable", testPrepTable = new TableField<Integer>());
+       fields.put("testReflexTable", testReflexTable = new TableField<Integer>());
     }
 
     public PrepAndReflexForm(Node node) {
-        super(node);
+        this();
         createFields(node);
     }
 
