@@ -29,7 +29,7 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.TestMetaMap;
@@ -45,49 +45,50 @@ public class DetailsForm extends Form {
     
     public StringField description; 
     public StringField reportingDescription;
-    public NumberField timeTaMax;
-    public NumberField timeTaAverage;
-    public NumberField timeTaWarning;
-    public NumberField timeTransit;
+    public IntegerField timeTaMax;
+    public IntegerField timeTaAverage;
+    public IntegerField timeTaWarning;
+    public IntegerField timeTransit;
     public CheckField isActive;
     public CheckField isReportable;
     public DateField activeBegin;
     public DateField activeEnd;
-    public NumberField timeHolding;
+    public IntegerField timeHolding;
     public DropDownField labelId;
-    public NumberField labelQty;
+    public IntegerField labelQty;
     public DropDownField testTrailerId;
     public DropDownField testFormatId;
     public DropDownField scriptletId;
     public DropDownField revisionMethodId;
     public DropDownField reportingMethodId;
-    public NumberField reportingSequence;
+    public IntegerField reportingSequence;
     public DropDownField sortingMethodId;
     public TableField sectionTable;
+    public Boolean duplicate;
     
     public DetailsForm() {
        TestMetaMap meta = new TestMetaMap();
        fields.put(meta.getDescription(), description = new StringField());
        fields.put(meta.getReportingDescription(), reportingDescription = new StringField());
-       fields.put(meta.getTimeTaMax(), timeTaMax = new NumberField());
-       fields.put(meta.getTimeTaAverage(), timeTaAverage = new NumberField());
-       fields.put(meta.getTimeTaWarning(), timeTaWarning = new NumberField());
-       fields.put(meta.getTimeTransit(), timeTransit = new NumberField());
+       fields.put(meta.getTimeTaMax(), timeTaMax = new IntegerField());
+       fields.put(meta.getTimeTaAverage(), timeTaAverage = new IntegerField());
+       fields.put(meta.getTimeTaWarning(), timeTaWarning = new IntegerField());
+       fields.put(meta.getTimeTransit(), timeTransit = new IntegerField());
        fields.put(meta.getIsActive(), isActive = new CheckField());
        fields.put(meta.getIsReportable(), isReportable = new CheckField());
        fields.put(meta.getActiveBegin(), activeBegin = new DateField());
        fields.put(meta.getActiveEnd(), activeEnd = new DateField());
-       fields.put(meta.getTimeHolding(), timeHolding = new NumberField());
+       fields.put(meta.getTimeHolding(), timeHolding = new IntegerField());
        fields.put(meta.getLabelId(), labelId = new DropDownField());
-       fields.put(meta.getLabelQty(), labelQty = new NumberField());
+       fields.put(meta.getLabelQty(), labelQty = new IntegerField());
        fields.put(meta.getTestTrailerId(), testTrailerId = new DropDownField());
        fields.put(meta.getTestFormatId(), testFormatId = new DropDownField());
        fields.put(meta.getScriptletId(), scriptletId = new DropDownField());
        fields.put(meta.getRevisionMethodId(), revisionMethodId = new DropDownField());
        fields.put(meta.getReportingMethodId(), reportingMethodId = new DropDownField());
-       fields.put(meta.getReportingSequence(), reportingSequence = new NumberField());
+       fields.put(meta.getReportingSequence(), reportingSequence = new IntegerField());
        fields.put(meta.getSortingMethodId(), sortingMethodId = new DropDownField());
-       fields.put("sectionTable",sectionTable = new TableField());
+       fields.put("sectionTable",sectionTable = new TableField());       
     }
     
     public DetailsForm(Node node) {

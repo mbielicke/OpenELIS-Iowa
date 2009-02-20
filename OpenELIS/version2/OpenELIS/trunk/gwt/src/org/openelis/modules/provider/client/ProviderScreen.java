@@ -35,17 +35,14 @@ import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -66,7 +63,7 @@ import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, 
+public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,Integer> implements ClickListener, 
                                                                   TabListener,
                                                                   TableManager{
          
@@ -75,22 +72,45 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
     private ScreenTextBox provId = null; 
     private TextBox lastName = null;
     private ScreenTextArea noteArea = null;
-    private TableWidget provAddController = null;    
+    private TableWidget provAddController = null;  
+    private QueryTable queryContactTable = null;
     private Dropdown displayType = null;
-    private KeyListManager keyList = new KeyListManager();
-    
-    
-    private static boolean loaded = false;
-
-    private static DataModel<Integer> typeDropDown = null;
-    private static DataModel<String> stateDropDown = null;  
-    private static DataModel<String> countryDropDown = null; 
+    private KeyListManager keyList = new KeyListManager();       
     
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
-    public ProviderScreen(){
-        super("org.openelis.modules.provider.server.ProviderService",!loaded,new DefaultRPC());
+    /*
+     * This callback is used to check the returned RPC for updated DataModels for the dropdown
+     * widgets on the screen.  It is inserted at the front of the call chain.
+     * 
+     * if model is returned set it to the widgets and make sure to null the rpc field 
+     * so it is not sent back with future RPC calls
+     */
+    AsyncCallback<ProviderRPC> checkModels = new AsyncCallback<ProviderRPC>() {
+        public void onSuccess(ProviderRPC rpc) {
+            if(rpc.providerTypes != null) {
+                setProviderTypesModel(rpc.providerTypes);
+                rpc.providerTypes = null;
+            }
+            if(rpc.countries != null) {
+                setCountriesModel(rpc.countries);
+                rpc.countries = null;
+            }
+            if(rpc.states != null) {
+                setStatesModel(rpc.states);
+                rpc.states = null;
+            }
+        }
         
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
+    public ProviderScreen(){
+        super("org.openelis.modules.provider.server.ProviderService");      
+        forms.put("display",new ProviderForm());        
+        getScreen(new ProviderRPC());        
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -118,7 +138,6 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
     }
 
     public void afterDraw(boolean success) {
-        loaded = true;
         AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
@@ -132,10 +151,8 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
                    
-       //load other widgets
-
-        removeContactButton = (AppButton) getWidget("removeAddressButton");
-        
+        //load other widgets
+        removeContactButton = (AppButton) getWidget("removeAddressButton");        
         standardNoteButton = (AppButton) getWidget("standardNoteButton");
         
         provId = (ScreenTextBox)widgets.get(ProvMeta.getId());
@@ -150,35 +167,59 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
         
         provAddController = ((TableWidget)getWidget("providerAddressTable"));
                 
-        //load dropdowns
-       if(typeDropDown == null){
-         typeDropDown = (DataModel) initData.get("providers");
-         stateDropDown = (DataModel) initData.get("states");
-         countryDropDown = (DataModel) initData.get("countries");
-        } 
-                                
-       displayType.setModel(typeDropDown);                                
-    
-       ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
-       provAddController = (TableWidget)displayAddressTable.getWidget();
-       QueryTable queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
+        //load dropdowns                                                                         
+        ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
+        provAddController = (TableWidget)displayAddressTable.getWidget();
+        queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
        
-       ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(stateDropDown);
-       ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(stateDropDown);
-       
-       
-       ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countryDropDown);
-       ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countryDropDown);                      
+        /*
+         * Setting of the models has been split to three methods so that they can be individually updated when needed.
+         * 
+         * Models are now pulled directly from RPC rather than initData.
+         */
+        setProviderTypesModel(rpc.providerTypes);
+        setCountriesModel(rpc.countries);
+        setStatesModel(rpc.states);
+        
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        rpc.providerTypes = null;
+        rpc.countries = null;
+        rpc.states = null;                      
   
        updateChain.add(afterUpdate);
        
+       /*
+        * Set the CheckModels to the first call back in all chains
+        * 
+        * It is debatable if the checkmodels needs to be in all call chains
+        * at a minimum though it should be in fetchChain and updateChain 
+        */
+       updateChain.add(0,checkModels);
+       fetchChain.add(0,checkModels);
+       abortChain.add(0,checkModels);
+       commitUpdateChain.add(0,checkModels);
+       commitAddChain.add(0,checkModels);
+       
        super.afterDraw(success);
        
-       ((Form)rpc.form.getField("addresses")).setFieldValue("providerAddressTable",
-                                                         provAddController.model.getData());
-
+       rpc.form.addresses.providerAddressTable.setValue(provAddController.model.getData());
     }
     
+    public void setProviderTypesModel(DataModel<Integer> typesModel) {
+        displayType.setModel(typesModel);
+    }
+    
+    public void setCountriesModel(DataModel<String> countriesModel) {
+        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);
+        ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
+    }
+    
+    public void setStatesModel(DataModel<String> statesModel) {
+        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
+        ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
+    }
        
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {
@@ -199,18 +240,15 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
     	//clearNotes();   	       
        super.query();
     
-        //    set focus to the last name field
+        //set focus to the last name field
         provId.setFocus(true);
         noteArea.enable(false);
     }
 
-    public void add(){                                       
-    
-        
+    public void add(){                                                  
         svp.clear();
         
-        //provAddController.setAutoAdd(true);
-         
+        //provAddController.setAutoAdd(true);         
         super.add();     
         
         noteArea.enable(true);
@@ -230,9 +268,9 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
-            if (index == 0 && !((Form)rpc.form.getField("addresses")).load) {
+            if (index == 0 && !rpc.form.addresses.load) {
                 fillAddressModel();
-            } else if (index == 1 && !((Form)rpc.form.getField("notes")).load) {
+            } else if (index == 1 && !rpc.form.notes.load) {
                 fillNotesModel();
             }
         }
@@ -286,18 +324,22 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
        }
     }
     
-   private void fillNotesModel(){  
-       
+   private void fillNotesModel() {  
+       DefaultRPC drpc = null;
        if(key == null)
            return;
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadNotes", new FieldType[] {new IntegerObject(key),(FieldType)rpc.form.getField("notes")}, new AsyncCallback<Form>(){
-           public void onSuccess(Form result){    
+       drpc = new DefaultRPC();
+       drpc.key = key;
+       drpc.form = rpc.form.notes;
+       
+       screenService.call("loadNotes", drpc, new AsyncCallback<DefaultRPC>(){
+           public void onSuccess(DefaultRPC result){    
                // get the datamodel, load it in the notes panel and set the value in the rpc
-               load(result);
-               rpc.form.setField("notes",result);
+               load(result.form);
+               rpc.form.setField("notes",rpc.form.notes = (NotesForm)result.form);
                window.setStatus("","");
            }
                   
@@ -308,19 +350,23 @@ public class ProviderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> 
        });       
    }
    
-   private void fillAddressModel(){
+   private void fillAddressModel() {
+       DefaultRPC drpc = null;
+       
        if(key == null)
            return;
        
        window.setStatus("","spinnerIcon");
        
-       screenService.getObject("loadAddresses", new FieldType[] {new IntegerObject(key),(FieldType)rpc.form.getField("addresses")}, new AsyncCallback<Form>() {
-           public void onSuccess(Form result) {
-              
-               load(result);
-               rpc.form.setField("addresses", result);
+       drpc = new DefaultRPC();
+       drpc.key = key;
+       drpc.form = rpc.form.addresses;
+       
+       screenService.call("loadAddresses", drpc, new AsyncCallback<DefaultRPC>() {
+           public void onSuccess(DefaultRPC result) {              
+               load(result.form);
+               rpc.form.setField("addresses",rpc.form.addresses = (AddressesForm)result.form);
                window.setStatus("","");
-
            }
            public void onFailure(Throwable caught) {
                Window.alert(caught.getMessage());

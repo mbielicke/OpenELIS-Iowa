@@ -27,7 +27,7 @@ package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.TestMetaMap;
 
@@ -41,19 +41,20 @@ public class WorksheetForm extends Form {
     private static final long serialVersionUID = -2134012961429860507L;
     
     public Integer id;
-    public DropDownField formatId;
-    public DropDownField scriptletId;
-    public NumberField batchCapacity;
-    public NumberField totalCapacity;
-    public TableField worksheetTable;
+    public DropDownField<Integer> formatId;
+    public DropDownField<Integer> scriptletId;
+    public IntegerField batchCapacity;
+    public IntegerField totalCapacity;
+    public TableField<Integer> worksheetTable;
+    public Boolean duplicate;
     
     public WorksheetForm() {
         TestMetaMap meta = new TestMetaMap();
-        fields.put(meta.getTestWorksheet().getFormatId(), formatId = new DropDownField());
-        fields.put(meta.getTestWorksheet().getScriptletId(), scriptletId = new DropDownField());
-        fields.put(meta.getTestWorksheet().getBatchCapacity(), batchCapacity = new NumberField());
-        fields.put(meta.getTestWorksheet().getTotalCapacity(), totalCapacity = new NumberField());
-        fields.put("worksheetTable", worksheetTable = new TableField());
+        fields.put(meta.getTestWorksheet().getFormatId(), formatId = new DropDownField<Integer>());
+        fields.put(meta.getTestWorksheet().getScriptletId(), scriptletId = new DropDownField<Integer>());
+        fields.put(meta.getTestWorksheet().getBatchCapacity(), batchCapacity = new IntegerField());
+        fields.put(meta.getTestWorksheet().getTotalCapacity(), totalCapacity = new IntegerField());
+        fields.put("worksheetTable", worksheetTable = new TableField<Integer>());
     }
     
     public WorksheetForm(Node node) {

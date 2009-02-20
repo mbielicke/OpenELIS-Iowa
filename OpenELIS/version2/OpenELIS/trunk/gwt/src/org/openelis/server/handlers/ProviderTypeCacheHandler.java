@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class ProviderTypeCacheHandler implements MessageHandler {
 
+    public static int version = 0;
+    
     public void handle(Message message) {
         CachingManager.remove("InitialData", "providerTypeDropDown");
     }

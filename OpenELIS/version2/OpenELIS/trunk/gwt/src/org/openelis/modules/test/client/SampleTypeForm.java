@@ -38,6 +38,7 @@ public class SampleTypeForm extends Form {
     private static final long serialVersionUID = -4379514134954333709L;
     
     public TableField sampleTypeTable;
+    public Boolean duplicate;
     
     public SampleTypeForm() {
       fields.put("sampleTypeTable",sampleTypeTable = new TableField());

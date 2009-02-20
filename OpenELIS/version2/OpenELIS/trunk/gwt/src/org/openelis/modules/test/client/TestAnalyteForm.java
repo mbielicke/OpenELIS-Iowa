@@ -29,8 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeField;
 
@@ -44,13 +42,13 @@ public class TestAnalyteForm extends Form {
     private static final long serialVersionUID = -5480320235097945045L;
 
     public TreeField analyteTree;
-    public TableField testResultsTable;
-    public ArrayList<DataModel<Field>> resultModelCollection;
-    public ArrayList<DataSet<Field>> resultGroupDropDown;
+    public TableField<Integer> testResultsTable;
+    public ArrayList<DataModel<Integer>> resultModelCollection;
+    public Boolean duplicate;
     
     public TestAnalyteForm() {
         fields.put("analyteTree", analyteTree = new TreeField());
-        fields.put("testResultsTable", testResultsTable = new TableField());        
+        fields.put("testResultsTable", testResultsTable = new TableField<Integer>());        
     }
     
     public TestAnalyteForm(Node node) {
