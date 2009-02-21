@@ -153,9 +153,9 @@ UIRF Software License are applicable instead of those above.
 								<string key="{inventoryComponentMeta:getComponentId($component)}" required="true"/>
       							<dropdown key="{storageLocationMeta:getLocation($componentLocStorageLoc)}" required="true"/>
       							<string key="{locationMeta:getLotNumber($componentLocation)}" required="false"/>
-      							<number key="{inventoryComponentMeta:getQuantity($component)}" type="double" required="true"/>
-      							<number key="total" type="integer" required="true"/>
-      							<number key="{locationMeta:getQuantityOnhand($componentLocation)}" type="integer" required="true"/>
+      							<double key="{inventoryComponentMeta:getQuantity($component)}" required="true"/>
+      							<integer key="total" required="true"/>
+      							<integer key="{locationMeta:getQuantityOnhand($componentLocation)}" required="true"/>
 							</fields>
 							<sorts>false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false</filters>
@@ -180,7 +180,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">
   	  <check key="addToExisting" required="false"/>
   	  <dropdown key="{meta:getName($invItem)}" required="true"/>
-  	  <number key="numRequested" type="integer" required="true"/>
+  	  <integer key="numRequested" type="integer" required="true"/>
   	  <dropdown key="{storageLocationMeta:getLocation($locStorageLoc)}" required="true"/>
   	  <string key="{locationMeta:getLotNumber($location)}" required="false"/>
 	  <date key="{locationMeta:getExpirationDate($location)}" begin="0" end="2" required="false"/>

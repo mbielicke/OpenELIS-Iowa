@@ -25,14 +25,19 @@
  */
  package org.openelis.modules.buildKits.client;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.DataModel;
 
-public class BuildKitsRPC extends RPC<BuildKitsForm,Integer>{
+public class SubLocationAutoRPC extends RPC<Form,Integer>{
 
     private static final long serialVersionUID = 1L;
     
-    public Integer kitId;
-    public DataModel<Integer> subItemsModel;
+    public String cat;
+    public String match;
+    public String addToExisting;
+    public Integer id;
+    
+    public DataModel matchesModel;
 
 }
