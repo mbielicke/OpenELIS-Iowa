@@ -25,36 +25,38 @@
 */
 package org.openelis.modules.buildKits.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.BuildKitComponentDO;
 import org.openelis.domain.BuildKitDO;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DoubleObject;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.modules.buildKits.client.BuildKitsForm;
+import org.openelis.modules.buildKits.client.BuildKitsInvItemKey;
+import org.openelis.modules.buildKits.client.BuildKitsRPC;
+import org.openelis.modules.buildKits.client.SubLocationAutoRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.BuildKitsRemote;
 import org.openelis.remote.InventoryItemRemote;
@@ -65,21 +67,17 @@ import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Integer>, AutoCompleteServiceInt{
+public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsRPC, Integer>, AutoCompleteServiceInt{
 
     private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     //not used
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC abort(BuildKitsRPC rpc) throws RPCException {
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC commitAdd(BuildKitsRPC rpc) throws RPCException {
         //remote interface to call the build kits bean
         BuildKitsRemote remote = (BuildKitsRemote)EJBFactory.lookup("openelis/BuildKitsBean/remote");
         BuildKitDO buildKitDO = new BuildKitDO();
@@ -89,8 +87,8 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         buildKitDO = getBuildKitDOFromRPC(rpc.form);
         
         //components info
-        TableField componentsField = (TableField)rpc.form.getField("subItemsTable");
-        DataModel componentsTable = (DataModel)componentsField.getValue();
+        TableField<Integer> componentsField = rpc.form.subItemsTable;
+        DataModel<Integer> componentsTable = (DataModel<Integer>)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable);
         
         //send the changes to the database
@@ -111,7 +109,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
     }
 
     //not used
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC commitDelete(BuildKitsRPC rpc) throws RPCException {
         return null;
     }
 
@@ -121,22 +119,22 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
     }
 
     //not used
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC commitUpdate(BuildKitsRPC rpc) throws RPCException {
         return null;
     }
 
     //not used
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC fetch(BuildKitsRPC rpc) throws RPCException {
         return null;
     }
 
     //not used
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public BuildKitsRPC fetchForUpdate(BuildKitsRPC rpc) throws RPCException {
         return null;
     }
 
     public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/buildKits.xsl");
+        return null;
     }
 
     public HashMap<String, FieldType> getXMLData() throws RPCException {
@@ -147,35 +145,34 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public BuildKitsRPC getScreen(BuildKitsRPC rpc) throws RPCException{
+    	rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/buildKits.xsl");
+        
         return rpc;
     }
     
-    private BuildKitDO getBuildKitDOFromRPC(Form form){
+    private BuildKitDO getBuildKitDOFromRPC(BuildKitsForm form){
         BuildKitDO buildKitDO = new BuildKitDO();
         
-        DropDownField<Field> invItemDrop = (DropDownField<Field>)form.getField(InventoryItemMeta.getName());
-        ArrayList<DataSet<Field>> selected = invItemDrop.getValue();
-        DataSet selectedRow = null;
-        DataMap selectedRowMap = null;
-        if(selected.size() > 0){
-            selectedRow = selected.get(0);
-            selectedRowMap = (DataMap)selectedRow.getData();
+        DropDownField<Integer> invItemDrop = form.inventoryItem;
+        ArrayList<DataSet<Integer>> selected = invItemDrop.getValue();
+        BuildKitsInvItemKey selectedData = null;
+        if(selected.size() > 0)
+            selectedData = (BuildKitsInvItemKey)selected.get(0).getData();
+        
+        buildKitDO.setInventoryItemId((Integer)form.inventoryItem.getSelectedKey());
+        buildKitDO.setInventoryItem((String)form.inventoryItem.getTextValue());
+        buildKitDO.setNumberRequested(form.numRequested.getValue());
+        buildKitDO.setAddToExisting("Y".equals(form.addToExisiting.getValue()));
+        if(selectedData != null){
+            buildKitDO.setBulk(selectedData.isBulk);
+            buildKitDO.setSerialized(selectedData.isSerialized);
         }
-        buildKitDO.setInventoryItemId((Integer)invItemDrop.getSelectedKey());
-        buildKitDO.setInventoryItem((String)invItemDrop.getTextValue());
-        buildKitDO.setNumberRequested((Integer)form.getFieldValue("numRequested"));
-        buildKitDO.setAddToExisting("Y".equals((String)form.getFieldValue("addToExisting")));
-        if(selectedRowMap != null){
-            buildKitDO.setBulk("Y".equals((String)((StringObject)selectedRowMap.get("isBulk")).getValue()));
-            buildKitDO.setSerialized("Y".equals((String)((StringObject)selectedRowMap.get("isSerialMaintained")).getValue()));
-        }
-        buildKitDO.setLocationId((Integer)((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).getSelectedKey());
-        buildKitDO.setLocation((String)((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).getTextValue());
-        buildKitDO.setLotNumber((String)form.getFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getLotNumber()));
-        if(form.getFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getExpirationDate()) != null && 
-                        ((DatetimeRPC)form.getFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getExpirationDate())).getDate() != null)
-            buildKitDO.setExpDate(((DatetimeRPC)form.getFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getExpirationDate())).getDate());
+        buildKitDO.setLocationId((Integer) form.storageLocation.getSelectedKey());
+        buildKitDO.setLocation((String)form.storageLocation.getTextValue());
+        buildKitDO.setLotNumber(form.lotNumber.getValue());
+        if(form.expirationDate.getValue() != null && ((DatetimeRPC)form.expirationDate.getValue()).getDate() != null)
+            buildKitDO.setExpDate(((DatetimeRPC)form.expirationDate.getValue()).getDate());
         
         return buildKitDO;
     }
@@ -188,12 +185,12 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
             DataSet<Integer> row = componentsTable.get(i);
             
             componentDO.setInventoryItemId(row.getKey());
-            componentDO.setComponent((String)((Field)row.get(0)).getValue());
-            componentDO.setLocationId((Integer)((DropDownField)((Field)row.get(1))).getSelectedKey());
-            componentDO.setLotNum((String)((Field)row.get(2)).getValue());
-            componentDO.setUnit((Double)((Field)row.get(3)).getValue());
-            componentDO.setTotal((Integer)((Field)row.get(4)).getValue());
-            componentDO.setQtyOnHand((Integer)((Field)row.get(5)).getValue());
+            componentDO.setComponent((String)row.get(0).getValue());
+            componentDO.setLocationId((Integer)((DropDownField<Integer>)row.get(1)).getSelectedKey());
+            componentDO.setLotNum((String)row.get(2).getValue());
+            componentDO.setUnit((Double)row.get(3).getValue());
+            componentDO.setTotal((Integer)row.get(4).getValue());
+            componentDO.setQtyOnHand((Integer)row.get(5).getValue());
             
             components.add(componentDO);    
         }
@@ -201,47 +198,48 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return components;
     }
     
-    private void setFieldsInRPC(Form form, BuildKitDO kitDO){
+    private void setFieldsInRPC(BuildKitsForm form, BuildKitDO kitDO){
         //we need to create a dataset for the kit name auto complete
         if(kitDO.getInventoryItemId() == null)
-            form.setFieldValue(InventoryItemMeta.getName(), null);
+        	form.inventoryItem.clear();
         else{
             DataModel<Integer> model = new DataModel<Integer>();
             model.add(new DataSet<Integer>(kitDO.getInventoryItemId(),new StringObject(kitDO.getInventoryItem())));
-            ((DropDownField)form.getField(InventoryItemMeta.getName())).setModel(model);
-            form.setFieldValue(InventoryItemMeta.getName(), model.get(0));
+            form.inventoryItem.setModel(model);
+            form.inventoryItem.setValue(model.get(0));
         }
-        form.setFieldValue("addToExisiting", (kitDO.isAddToExisting() ? "Y" : "N"));
-        form.setFieldValue("numRequested", kitDO.getNumberRequested());
+        form.addToExisiting.setValue((kitDO.isAddToExisting() ? "Y" : "N"));
+        form.numRequested.setValue(kitDO.getNumberRequested());
         
         //we need to create a dataset for the kit location auto complete
         if(kitDO.getLocationId() == null)
-            form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation(), null);
+        	form.storageLocation.clear();
         else{
             DataModel<Integer> model = new DataModel<Integer>();
             model.add(new DataSet<Integer>(kitDO.getLocationId(),new StringObject(kitDO.getLocation())));
-            ((DropDownField)form.getField(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation())).setModel(model);
-            form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation(), model.get(0));
+            form.storageLocation.setModel(model);
+            form.storageLocation.setValue(model.get(0));
         }
         
-        form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getLotNumber(), kitDO.getLotNumber());
+        form.lotNumber.setValue(kitDO.getLotNumber());
         
         if(kitDO.getExpDate() != null && kitDO.getExpDate().getDate() != null)
-            form.setFieldValue(InventoryItemMeta.INVENTORY_LOCATION.getExpirationDate(), DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, kitDO.getExpDate().getDate()));
+            form.expirationDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, kitDO.getExpDate().getDate()));
     }
     
-    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
-        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
+    public SubLocationAutoRPC getMatchesObj(SubLocationAutoRPC rpc) throws RPCException {
+    	if("invLocation".equals(rpc.cat))
+            rpc.matchesModel = getLocationMatches(rpc.match, rpc.addToExisting);
+        else if("componentLocation".equals(rpc.cat))
+            rpc.matchesModel = getComponentLocationMatches(rpc.match, rpc.id);
+    	
+        return rpc;
         
     }
     
     public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
         if(cat.equals("kitDropdown"))
             return getKitMatches(match);
-        else if(cat.equals("invLocation"))
-            return getLocationMatches(match, params);
-        else if(cat.equals("componentLocation"))
-            return getComponentLocationMatches(match, params);
         
         return null;    
     }
@@ -264,8 +262,6 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
             
             DataSet<Integer> data = new DataSet<Integer>();
             //hidden id
-            //NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
-            //idObject.setValue(itemId);
             data.setKey(itemId);
             //columns
             StringObject nameObject = new StringObject();
@@ -279,12 +275,11 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
             data.add(disUnitsObj);
             
             //hidden fields
-            DataMap map = new DataMap();
-            StringObject isBulkObj = new StringObject(resultDO.getIsBulk());
-            map.put("isBulk", isBulkObj);
-            StringObject isSerialMaintainedObj = new StringObject(resultDO.getIsSerialMaintained());
-            map.put("isSerialMaintained", isSerialMaintainedObj);
-            data.setData(map);
+            BuildKitsInvItemKey hiddenData = new BuildKitsInvItemKey();
+            hiddenData.isBulk = "Y".equals(resultDO.getIsBulk());
+            hiddenData.isSerialized = "Y".equals(resultDO.getIsSerialMaintained());
+
+            data.setData(hiddenData);
                         
             //add the dataset to the datamodel
             dataModel.add(data);                        
@@ -293,12 +288,9 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return dataModel;       
     }
     
-    private DataModel getLocationMatches(String match, HashMap params) throws RPCException{
+    private DataModel getLocationMatches(String match, String addToExisting) throws RPCException{
         DataModel<Integer> dataModel = new DataModel<Integer>();
-        String addToExisting = null;
         List autoCompleteList = new ArrayList();
-        
-        addToExisting = (String)((CheckField)params.get("addToExisting")).getValue();
         
         if("Y".equals(addToExisting)){
             InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
@@ -334,13 +326,10 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return dataModel;       
     }
     
-    private DataModel getComponentLocationMatches(String match, HashMap params) throws RPCException{
+    private DataModel getComponentLocationMatches(String match, Integer id) throws RPCException{
         DataModel<Integer> dataModel = new DataModel<Integer>();
-        Integer id = null;
         List autoCompleteList = new ArrayList();
         
-        id = ((NumberObject)params.get("id")).getIntegerValue();
-
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         //lookup by name
         autoCompleteList = remote.autoCompleteLocationLookupByNameInvId(match+"%", id, 10);
@@ -362,7 +351,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
             set.add(descObject);
             StringObject lotNum = new StringObject(resultDO.getLotNum());
             set.add(lotNum);
-            NumberObject qtyOnHand = new NumberObject(resultDO.getQtyOnHand());
+            IntegerObject qtyOnHand = new IntegerObject(resultDO.getQtyOnHand());
             set.add(qtyOnHand);
             
             //add the dataset to the datamodel
@@ -372,27 +361,26 @@ public class BuildKitsService implements AppScreenFormServiceInt<DefaultRPC,Inte
         return dataModel;       
     }
     
-    public DataModel getComponentsFromId(NumberObject inventoryItemId){
+    public BuildKitsRPC getComponentsFromId(BuildKitsRPC rpc){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        Integer invItemId = inventoryItemId.getIntegerValue();
-        DataModel model = new DataModel();
+        Integer invItemId = rpc.kitId;
+        DataModel<Integer> model = new DataModel<Integer>();
         
         List components = remote.getInventoryComponents(invItemId);
         
         for(int i=0; i<components.size(); i++){
             InventoryComponentDO componentDO = (InventoryComponentDO)components.get(i);
-            DataSet set = new DataSet();
-            NumberObject id = new NumberObject(componentDO.getComponentInventoryItemId());
-            set.setKey(id);
+            DataSet<Integer> set = new DataSet<Integer>();
+            set.setKey(componentDO.getComponentInventoryItemId());
             StringObject name = new StringObject(componentDO.getComponentName());
             set.add(name);
-            NumberObject qty = new NumberObject(componentDO.getQuantity());
+            DoubleObject qty = new DoubleObject(componentDO.getQuantity());
             set.add(qty);
             
             model.add(set);
         }
-        
-        return model;
+        rpc.subItemsModel = model;
+        return rpc;
     }
     
     private void setRpcErrors(List exceptionList, TableField componentsTable, Form form){

@@ -43,9 +43,9 @@ public class BuildKitsForm extends Form{
     public DropDownField<Integer> inventoryItem;
     public IntegerField numRequested;
     public DropDownField<Integer> storageLocation;
-    StringField lotNumber;
-    DateField expirationDate;
-    TableField<Integer> subItemsTable;
+    public StringField lotNumber;
+    public DateField expirationDate;
+    public TableField<Integer> subItemsTable;
     
     public BuildKitsForm() {
        InventoryItemMetaMap meta = new InventoryItemMetaMap();

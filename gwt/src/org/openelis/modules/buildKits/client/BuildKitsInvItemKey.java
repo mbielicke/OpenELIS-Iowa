@@ -25,14 +25,23 @@
  */
  package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.FieldType;
 
-public class BuildKitsRPC extends RPC<BuildKitsForm,Integer>{
-
+public class BuildKitsInvItemKey implements FieldType {
+   
     private static final long serialVersionUID = 1L;
-    
-    public Integer kitId;
-    public DataModel<Integer> subItemsModel;
 
+    public boolean isBulk;
+    public boolean isSerialized;
+    
+    public Object getValue() {
+        return null;
+    }
+
+    public void setValue(Object obj) {
+    }
+    
+    public Object clone() {
+        return null;
+    }
 }
