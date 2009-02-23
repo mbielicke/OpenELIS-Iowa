@@ -36,7 +36,6 @@ public class AnalyteDO implements Serializable{
 	protected Integer id;
 	protected String name;
 	protected String isActive;
-	protected Integer analyteGroup;
 	protected Integer parentAnalyteId;
 	protected String parentAnalyte;
 	protected String externalId;
@@ -45,23 +44,16 @@ public class AnalyteDO implements Serializable{
 		
 	}
 
-	public AnalyteDO(Integer id, String name, String isActive, Integer analyteGroup, Integer parentAnalyteId, String parentAnalyte,
+	public AnalyteDO(Integer id, String name, String isActive, Integer parentAnalyteId, String parentAnalyte,
 						String externalId){
 		setId(id);
 		setName(name);
 		setIsActive(isActive);
-		setAnalyteGroup(analyteGroup);
 		setParentAnalyteId(parentAnalyteId);
 		setParentAnalyte(parentAnalyte);
 		setExternalId(externalId);		
 	}
-	
-	public Integer getAnalyteGroup() {
-		return analyteGroup;
-	}
-	public void setAnalyteGroup(Integer analyteGroup) {
-		this.analyteGroup = analyteGroup;
-	}
+
 	public String getExternalId() {
 		return externalId;
 	}
