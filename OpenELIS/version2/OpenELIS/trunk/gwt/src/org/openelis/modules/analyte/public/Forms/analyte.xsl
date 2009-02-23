@@ -123,21 +123,17 @@ UIRF Software License are applicable instead of those above.
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"name")'/>:</text>
-						<textbox case="mixed" key="{meta:getName($meta)}" max="60" width="350px" tab="{meta:getAnalyteGroupId($meta)},{meta:getIsActive($meta)}"/>
-					</row>
-					<row>								
-						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"analyteGroup")'/>:</text>
-						<textbox case="mixed" key="{meta:getAnalyteGroupId($meta)}" width="200px" tab="{parentMeta:getName($parentMeta)},{meta:getName($meta)}"/>
+						<textbox case="mixed" key="{meta:getName($meta)}" max="60" width="350px" tab="{parentMeta:getName($parentMeta)},{meta:getIsActive($meta)}"/>
 					</row>
 					<row>								
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"parentAnalyte")'/>:</text>
 						<widget>	
-							<autoComplete cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}">
+							<autoComplete cat="parentAnalyte" key="{parentMeta:getName($parentMeta)}" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.analyte.server.AnalyteService" width="184px" tab="{meta:getExternalId($meta)},{meta:getName($meta)}">
 								<headers>Name</headers>
 								<widths>194</widths>
 							</autoComplete>
 							<query>
-								<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getAnalyteGroupId($meta)}"/>
+								<textbox case="mixed" width="200px" tab="{meta:getExternalId($meta)},{meta:getName($meta)}"/>
 							</query>
 						</widget>
 					</row>
@@ -157,7 +153,6 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">
   	<integer key="{meta:getId($meta)}" required="false"/>
   	<string key="{meta:getName($meta)}" required="true"/>
-  	<integer key="{meta:getAnalyteGroupId($meta)}" required="false"/>
   	<dropdown key="{parentMeta:getName($parentMeta)}" type="integer" required="false"/>
   	<string key="{meta:getExternalId($meta)}" required="false"/>
   	<check key="{meta:getIsActive($meta)}" required="false"/>

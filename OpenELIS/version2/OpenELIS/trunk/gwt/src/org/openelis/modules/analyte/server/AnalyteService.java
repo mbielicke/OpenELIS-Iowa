@@ -272,7 +272,6 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteRPC,Intege
     	form.id.setValue(analyteDO.getId());
     	form.name.setValue(analyteDO.getName());
     	form.isActive.setValue(analyteDO.getIsActive());
-    	form.groupId.setValue(analyteDO.getAnalyteGroup());
     	form.externalId.setValue(analyteDO.getExternalId());
 		
 //		we need to create a dataset for the parent organization auto complete
@@ -292,7 +291,6 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteRPC,Intege
 		newAnalyteDO.setId(form.id.getValue());
 		newAnalyteDO.setName(form.name.getValue());
 		newAnalyteDO.setIsActive(form.isActive.getValue());
-		newAnalyteDO.setAnalyteGroup(form.groupId.getValue());
 		newAnalyteDO.setParentAnalyteId((Integer) form.parentName.getSelectedKey());
         newAnalyteDO.setParentAnalyte((String) form.parentName.getTextValue());
 		newAnalyteDO.setExternalId(form.externalId.getValue());		

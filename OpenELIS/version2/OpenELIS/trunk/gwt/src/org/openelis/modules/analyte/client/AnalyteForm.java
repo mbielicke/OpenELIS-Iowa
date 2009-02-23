@@ -39,7 +39,6 @@ public class AnalyteForm extends Form{
 
   	public IntegerField id;
   	public StringField name;
-  	public IntegerField groupId;
   	public DropDownField<Integer> parentName;
   	public StringField externalId;
   	public CheckField isActive;
@@ -48,7 +47,6 @@ public class AnalyteForm extends Form{
        AnalyteMetaMap meta = new AnalyteMetaMap();
        fields.put(meta.getId(), id = new IntegerField());
        fields.put(meta.getName(),name = new StringField());
-       fields.put(meta.getAnalyteGroupId(), groupId = new IntegerField());
        fields.put(meta.PARENT_ANALYTE.getName(), parentName = new DropDownField<Integer>());
        fields.put(meta.getExternalId(), externalId = new StringField());
        fields.put(meta.getIsActive(), isActive = new CheckField());
