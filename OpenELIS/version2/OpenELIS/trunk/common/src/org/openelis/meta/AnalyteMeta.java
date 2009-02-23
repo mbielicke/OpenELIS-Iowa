@@ -40,12 +40,11 @@ public class AnalyteMeta implements Meta {
               ID					="id",
               NAME					="name",
               IS_ACTIVE				="isActive",
-              ANALYTE_GROUP_ID		="analyteGroupId",
               PARENT_ANALYTE_ID		="parentAnalyteId",
               EXTERNAL_ID			="externalId";
 
   	private static final String[] columnNames = {
-  	  ID,NAME,IS_ACTIVE,ANALYTE_GROUP_ID,PARENT_ANALYTE_ID,EXTERNAL_ID};
+  	  ID,NAME,IS_ACTIVE,PARENT_ANALYTE_ID,EXTERNAL_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -88,10 +87,6 @@ public class AnalyteMeta implements Meta {
 
     public String getIsActive() {
         return path + IS_ACTIVE;
-    } 
-
-    public String getAnalyteGroupId() {
-        return path + ANALYTE_GROUP_ID;
     } 
 
     public String getParentAnalyteId() {
