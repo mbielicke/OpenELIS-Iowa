@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.NumberField;
 import org.openelis.gwt.common.data.NumberObject;
@@ -555,9 +556,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                            parentItemRow.addItem(locRow);
                            parentItemRow.get(0).setValue(set.get(0).getValue());
                            parentItemRow.get(1).setValue(set.get(1).getValue());
-                           DataMap parentRowHiddenMap = new DataMap();
-                           parentRowHiddenMap.put("totalQty", new NumberObject((Integer)set.get(0).getValue()));
-                           parentItemRow.setData(parentRowHiddenMap);                           
+                           parentItemRow.setData(new IntegerObject((Integer)set.get(0).getValue()));                           
                            
                            if(set.get(2).getValue() != null){
                                ((DropDownField)parentItemRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
@@ -573,13 +572,12 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                                ((DropDownField)locRow.get(2)).setValue(((DropDownField)set.get(2)).getValue());
                            }
 
-                        
-                           DataMap rowHiddenMap = new DataMap();
-                           rowHiddenMap.put("referenceTableId", set.get(6));
-                           rowHiddenMap.put("referenceId", new NumberObject(set.getKey()));
-                           rowHiddenMap.put("tableRowId", new NumberObject(currentTableRow));
-                           rowHiddenMap.put("locId", new NumberObject((Integer)((DropDownField)set.get(3)).getSelectedKey()));
-                           locRow.setData(rowHiddenMap);
+                           FillOrderOrderItemsKey hiddenData = new FillOrderOrderItemsKey();
+                           hiddenData.referenceTableId = (Integer)set.get(6).getValue();
+                           hiddenData.referenceId = set.getKey();
+                           hiddenData.tableRowId = currentTableRow;
+                           hiddenData.locId = (Integer)((DropDownField)set.get(3)).getSelectedKey();
+                           locRow.setData(hiddenData);
                            
                            checkedTreeData.add(parentItemRow);
                    }  
@@ -588,7 +586,7 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                    while(k<checkedTreeData.size()){
                        
                        if(((Integer)checkedTreeData.get(k).get(1).getValue()).equals(row.get(1).getValue())){ //we need to remove this row and children
-                           checkedTreeData.delete(checkedTreeData.get(k));
+                           //FIXME this is removed for some reason..fix  checkedTreeData.delete(checkedTreeData.get(k));
                            k--;
                        }
                        k++;
@@ -1026,9 +1024,9 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                         tableRow.add(childRow.get(0));
                         tableRow.add(childRow.get(2));
                         
-                        DataMap rowDataMap = (DataMap)((DataMap)childRow.getData()).clone();
-                        rowDataMap.put("locId", new NumberObject((Integer)((DropDownField)childRow.get(3)).getSelectedKey()));
-                        tableRow.setData(rowDataMap);
+                        //DataMap rowDataMap = (DataMap)((DataMap)childRow.getData()).clone();
+                        //rowDataMap.put("locId", new NumberObject((Integer)((DropDownField)childRow.get(3)).getSelectedKey()));
+                        tableRow.setData(new IntegerObject((Integer)((DropDownField)childRow.get(3)).getSelectedKey()));
                         model.add(tableRow);
                     }
                 }
@@ -1038,7 +1036,9 @@ public class FillOrderScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer>
                     tableRow.add(row.get(0));
                     tableRow.add(row.get(2));
                     
-                    tableRow.setData((FieldType)((DataMap)row.getData()).clone());
+                    //TODO made this change...not sure what the ramifications are yet
+                    tableRow.setData(new IntegerObject((Integer)((DropDownField)row.get(3)).getSelectedKey()));
+                    //tableRow.setData((FieldType)((IntegerObject)row.getData()).clone());
                     
                     model.add(tableRow);
                 }

@@ -32,7 +32,6 @@ UIRF Software License are applicable instead of those above.
                 xmlns:transAdjustmentLocationMeta="xalan://org.openelis.metamap.TransAdjustmentLocationMetaMap" 
                 xmlns:inventoryLocationMeta="xalan://org.openelis.metamap.InventoryLocationMetaMap" 
                 xmlns:inventoryItemMeta="xalan://org.openelis.meta.InventoryItemMeta" 
-                xmlns:dictionaryMeta="xalan://org.openelis.meta.DictionaryMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -61,16 +60,11 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
   </xalan:component>
   
-  <xalan:component prefix="dictionaryMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.DictionaryMeta"/>
-  </xalan:component>
-  
   <xsl:template match="doc"> 
   <xsl:variable name="adj" select="meta:new()"/>
   <xsl:variable name="transAdjustmentLocation" select="meta:getTransAdjustmentLocation($adj)"/>
    <xsl:variable name="loc" select="transAdjustmentLocationMeta:getInventoryLocation($transAdjustmentLocation)"/>
    <xsl:variable name="invItem" select="inventoryLocationMeta:getInventoryItem($loc)"/>
-   <xsl:variable name="dict" select="meta:getDictionary($adj)"/>
    <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
    <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -158,12 +152,12 @@ UIRF Software License are applicable instead of those above.
 								<label/>
 							</editors>
 							<fields>
-								<number key="{inventoryLocationMeta:getId($loc)}" type="integer" required="true"/>
+								<integer key="{inventoryLocationMeta:getId($loc)}" required="true"/>
       							<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
       							<string required="false"/>
-      							<number key="{inventoryLocationMeta:getQuantityOnhand($loc)}" type="integer" required="false"/>
-      							<number key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" type="integer" required="true"/>
-      							<number key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer" required="false"/>
+      							<integer key="{inventoryLocationMeta:getQuantityOnhand($loc)}" required="false"/>
+      							<integer key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" required="true"/>
+      							<integer key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" required="false"/>
 							</fields>
 							<sorts>false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false</filters>
@@ -202,14 +196,14 @@ UIRF Software License are applicable instead of those above.
 			</VerticalPanel>				
 	</display>
 	<rpc key="display">
-  	  <number key="{meta:getId($adj)}" type="integer" required="false"/>
+  	  <integer key="{meta:getId($adj)}" required="false"/>
       <string key="{meta:getDescription($adj)}" max="60" required="true"/>
 	  <date key="{meta:getAdjustmentDate($adj)}" begin="0" end="2" required="true"/>
       <string key="{meta:getSystemUserId($adj)}" required="true"/>
       <dropdown key="{inventoryItemMeta:getStoreId($invItem)}" required="true"/>
       <table key="adjustmentsTable"/>
       
-      <number key="systemUserId" type="integer" required="false"/>
+      <integer key="systemUserId" required="false"/>
 	</rpc>
 	<rpc key="query">
   	  <queryNumber key="{meta:getId($adj)}" type="integer"/>

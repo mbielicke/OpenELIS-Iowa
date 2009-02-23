@@ -517,10 +517,9 @@ public class OrderService implements AppScreenFormServiceInt<OrderRPC, Integer>,
         return rpc;
     }
     
-    public Form loadReceiptsForm(Integer key, String orderType, ReceiptForm form) throws RPCException {
+    public void loadReceiptsForm(Integer key, String orderType, ReceiptForm form) throws RPCException {
         getReceiptsModel(key, form.receiptsTable, orderType);
         form.load = true;
-        return form;
     }
 
     public OrderShippingNoteRPC loadOrderShippingNotes(OrderShippingNoteRPC rpc) throws RPCException {
@@ -572,6 +571,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderRPC, Integer>,
         form.status = Form.Status.invalid;
     }
     
+    /*
     public DataModel<Integer> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
@@ -608,6 +608,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderRPC, Integer>,
         
         return returnModel;
     }
+    */
     
     public OrderRPC getAddAutoFillValues(OrderRPC orderRpc) throws Exception {
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");

@@ -25,6 +25,11 @@
 */
 package org.openelis.modules.inventoryItem.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameStoreDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -32,28 +37,22 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.BooleanObject;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -62,13 +61,23 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.persistence.CachingManager;
+import org.openelis.modules.inventoryItem.client.InventoryCommentsForm;
+import org.openelis.modules.inventoryItem.client.InventoryCommentsRPC;
+import org.openelis.modules.inventoryItem.client.InventoryComponentAutoRPC;
+import org.openelis.modules.inventoryItem.client.InventoryComponentsForm;
+import org.openelis.modules.inventoryItem.client.InventoryComponentsRPC;
+import org.openelis.modules.inventoryItem.client.InventoryItemForm;
+import org.openelis.modules.inventoryItem.client.InventoryItemRPC;
+import org.openelis.modules.inventoryItem.client.InventoryLocationsForm;
+import org.openelis.modules.inventoryItem.client.InventoryLocationsRPC;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.InventoryItemCategoriesCacheHandler;
+import org.openelis.server.handlers.InventoryItemDispensedUnitsCacheHandler;
+import org.openelis.server.handlers.InventoryItemStoresCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -76,12 +85,7 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,Integer>, 
+public class InventoryItemService implements AppScreenFormServiceInt<InventoryItemRPC,Integer>, 
 									     AutoCompleteServiceInt {
     
     private static final int leftTableRowsPerPage = 22;
@@ -145,7 +149,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return model;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC commitAdd(InventoryItemRPC rpc) throws RPCException {
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
@@ -156,8 +160,8 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         inventoryItemDO = getInventoryItemDOFromRPC(rpc.form);
         
         //components info
-        TableField componentsField = (TableField)((Form)rpc.form.getField("components")).getField("componentsTable");
-        DataModel componentsTable = (DataModel)componentsField.getValue();
+        TableField<Integer> componentsField = rpc.form.components.componentsTable;
+        DataModel<Integer> componentsTable = (DataModel<Integer>)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());
         
         //build the noteDo from the form
@@ -193,23 +197,23 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         setFieldsInRPC(rpc.form, inventoryItemDO);
 
         //we need to refresh the comments tab if it is showing
-        String tab = (String)rpc.form.getFieldValue("itemTabPanel");
+        String tab = rpc.form.itemTabPanel;
         if(tab.equals("commentsTab")){
 
-            loadComments(inventoryItemDO.getId(), (Form)rpc.form.getField("notes"));
+            loadCommentsForm(rpc.key, rpc.form.comments);
         }
         
         //we need to clear out the note subject and the note text fields after a commit
-        ((Form)rpc.form.getField("comments")).setFieldValue(InvItemMeta.getNote().getSubject(), null);
-        ((Form)rpc.form.getField("comments")).setFieldValue(InvItemMeta.getNote().getText(), null);  
+        rpc.form.comments.subject.setValue(null);
+        rpc.form.comments.text.setValue(null);  
         
         //we need to set the component rpc value to the orig component value since it is an add
-        ((Form)rpc.form.getField("components")).setFieldValue("componentsTable", componentsTable);
+        rpc.form.components.componentsTable.setValue(componentsTable);
         
         return rpc;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC commitUpdate(InventoryItemRPC rpc) throws RPCException {
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
@@ -221,14 +225,13 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         inventoryItemDO = getInventoryItemDOFromRPC(rpc.form);
         
         //components info
-        TableField componentsField = (TableField)((Form)rpc.form.getField("components")).getField("componentsTable");
-        DataModel componentsTable = (DataModel)componentsField.getValue();
+        TableField<Integer> componentsField = rpc.form.components.componentsTable;
+        DataModel<Integer> componentsTable = (DataModel<Integer>)componentsField.getValue();
         components = getComponentsListFromRPC(componentsTable, inventoryItemDO.getId());   
         
         //build the noteDo from the form
-        Form noteRPC = (Form)rpc.form.getField("comments");
-        inventoryItemNote.setSubject((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getSubject()));
-        inventoryItemNote.setText((String)noteRPC.getFieldValue(InvItemMeta.ITEM_NOTE.getText()));
+        inventoryItemNote.setSubject(rpc.form.comments.subject.getValue());
+        inventoryItemNote.setText(rpc.form.comments.text.getValue());
         inventoryItemNote.setIsExternal("Y");
         
         //validate the fields on the backend
@@ -258,27 +261,27 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         setFieldsInRPC(rpc.form, inventoryItemDO);   
         
         //we need to refresh the comments tab if it is showing
-        String tab = (String)rpc.form.getFieldValue("itemTabPanel");
-        if(tab.equals("commentsTab")){            
-            loadComments(inventoryItemDO.getId(), (Form)rpc.form.getField("comments"));
+        String tab = rpc.form.itemTabPanel;
+        if(tab.equals("commentsTab")){     
+            loadCommentsForm(rpc.key, rpc.form.comments);
         }
         
         //we need to set the notes load param to true because update doesnt call resetRPC
-        ((Form)rpc.form.getField("comments")).load = false;
+        rpc.form.comments.load = false;
         
         //we need to clear out the note subject and the note text fields after a commit
-        ((Form)rpc.form.getField("comments")).setFieldValue(InvItemMeta.getNote().getSubject(), null);
-        ((Form)rpc.form.getField("comments")).setFieldValue(InvItemMeta.getNote().getText(), null);  
+        rpc.form.comments.subject.setValue(null);
+        rpc.form.comments.text.setValue(null);
         
         return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC commitDelete(InventoryItemRPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC abort(InventoryItemRPC rpc) throws RPCException {
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
@@ -288,23 +291,28 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, inventoryItemDO);
         
-        String tab = (String)rpc.form.getFieldValue("itemTabPanel");
+        String tab = rpc.form.itemTabPanel;
         if(tab.equals("componentsTab")){
-            loadComponents(rpc.key, new BooleanObject(false), (Form)rpc.form.getField("components"));
+            loadComponentsForm(rpc.key, false, rpc.form.components);
         }
        
         if(tab.equals("locationsTab")){
-            loadLocations(rpc.key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (Form)rpc.form.getField("locations"));
+            loadLocationsForm(rpc.key, rpc.form.isSerialMaintained.getValue(), rpc.form.locations);
         }
         
         if(tab.equals("commentsTab")){
-            loadComments(rpc.key, (Form)rpc.form.getField("comments"));
+            loadCommentsForm(rpc.key, rpc.form.comments);
         }
         
         return rpc;  
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC fetch(InventoryItemRPC rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
@@ -313,23 +321,28 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, inventoryItemDO);
         
-        String tab = (String)rpc.form.getFieldValue("itemTabPanel");
+        String tab = rpc.form.itemTabPanel;
         if(tab.equals("componentsTab")){
-            loadComponents(rpc.key, new BooleanObject(false), (Form)rpc.form.getField("components"));
+            loadComponentsForm(rpc.key, false, rpc.form.components);
         }
        
         if(tab.equals("locationsTab")){
-            loadLocations(rpc.key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (Form)rpc.form.getField("locations"));
+            loadLocationsForm(rpc.key, rpc.form.isSerialMaintained.getValue(), rpc.form.locations);
         }
         
         if(tab.equals("commentsTab")){
-            loadComments(rpc.key, (Form)rpc.form.getField("comments"));
+            loadCommentsForm(rpc.key, rpc.form.comments);
         }
         
       return rpc;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public InventoryItemRPC fetchForUpdate(InventoryItemRPC rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
@@ -343,101 +356,118 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         //set the fields in the RPC
         setFieldsInRPC(rpc.form, inventoryItemDO);
         
-        String tab = (String)rpc.form.getFieldValue("itemTabPanel");
+        String tab = rpc.form.itemTabPanel;
         if(tab.equals("componentsTab")){
-            loadComponents(rpc.key, new BooleanObject(false), (Form)rpc.form.getField("components"));
+            loadComponentsForm(rpc.key, false, rpc.form.components);
         }
        
         if(tab.equals("locationsTab")){
-            loadLocations(rpc.key, new StringObject(inventoryItemDO.getIsSerialMaintained()), (Form)rpc.form.getField("locations"));
+            loadLocationsForm(rpc.key, rpc.form.isSerialMaintained.getValue(), rpc.form.locations);
         }
         
         if(tab.equals("commentsTab")){
-            loadComments(rpc.key, (Form)rpc.form.getField("comments"));
+            loadCommentsForm(rpc.key, rpc.form.comments);
         }
         
         return rpc;  
     }
     
-    public Form loadComponents(Integer key, BooleanObject forDuplicate, Form form) throws RPCException {
-        getComponentsModel(key, forDuplicate, (TableField)form.getField("componentsTable"));
-        form.load = true;
-        return form;
+    public InventoryComponentsRPC loadComponents(InventoryComponentsRPC rpc) throws RPCException {
+        loadComponentsForm(rpc.key, rpc.forDuplicate, rpc.form);
+        return rpc;
     }
     
-    public Form loadLocations(Integer key, StringObject isSerialized, Form form) throws RPCException {
-        getLocationsModel(key, isSerialized, (TableField)form.getField("locQuantitiesTable"));
+    public void loadComponentsForm(Integer key, boolean forDuplicate, InventoryComponentsForm form) throws RPCException {
+        getComponentsModel(key, forDuplicate, form.componentsTable);
         form.load = true;
-        return form;
     }
     
-    public Form loadComments(Integer key, Form form) throws RPCException {
-        StringObject so = getCommentsModel(key);
-        form.setFieldValue("notesPanel",so.getValue());
+    public InventoryLocationsRPC loadLocations(InventoryLocationsRPC rpc) throws RPCException {
+        loadLocationsForm(rpc.key, rpc.isSerialized, rpc.form);
+        return rpc;
+    }
+    
+    public void loadLocationsForm(Integer key, String isSerialized, InventoryLocationsForm form) throws RPCException {
+        getLocationsModel(key, isSerialized, form.locQuantitiesTable);
         form.load = true;
-        return form;
+    }
+    
+    public InventoryCommentsRPC loadComments(InventoryCommentsRPC rpc) throws RPCException {
+        loadCommentsForm(rpc.key, rpc.form);
+        return rpc;
+    }
+    
+    public void loadCommentsForm(Integer key, InventoryCommentsForm form) throws RPCException {
+        form.notesPanel.setValue(getCommentsModel(key));
+        form.load = true;
     }
 
     public String getXML() throws RPCException {
-    	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
+    	return null;
     }
 
     public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl"));
-        
-        DataModel categoriesDropdownField = (DataModel)CachingManager.getElement("InitialData", "inventoryItemCategoriesDropdown");
-        DataModel storesDropdownField = (DataModel)CachingManager.getElement("InitialData", "inventoryItemStoresDropdown");
-        DataModel unitsDropdownField = (DataModel)CachingManager.getElement("InitialData", "inventoryItemUnitsDropdown");
-        
-        //state dropdown
-        if(categoriesDropdownField == null){
-            categoriesDropdownField = getInitialModel("itemCategories");
-            CachingManager.putElement("InitialData", "inventoryItemCategoriesDropdown", categoriesDropdownField);
-        }
-        //country dropdown
-        if(storesDropdownField == null){
-            storesDropdownField = getInitialModel("itemStores");
-            CachingManager.putElement("InitialData", "inventoryItemStoresDropdown", storesDropdownField);
-            }
-        //contact type dropdown
-        if(unitsDropdownField == null){
-            unitsDropdownField = getInitialModel("itemUnits");
-            CachingManager.putElement("InitialData", "inventoryItemUnitsDropdown", unitsDropdownField);
-        }
-        
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("categories", categoriesDropdownField);
-        map.put("stores", storesDropdownField);
-        map.put("units", unitsDropdownField);
-        
-        return map;
+        return null;
     }
 
     public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
     	return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public InventoryItemRPC getScreen(InventoryItemRPC rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
+        /*
+         * Load initial  models to RPC and store cache verison of models into Session for 
+         * comparisons for later fetches
+         */
+        rpc.categories = InventoryItemCategoriesCacheHandler.getCategories();
+        SessionManager.getSession().setAttribute("invItemCategoriesVersion",InventoryItemCategoriesCacheHandler.version);
+        rpc.dispensedUnits = InventoryItemDispensedUnitsCacheHandler.getDispensedUnits();
+        SessionManager.getSession().setAttribute("invItemDispensedUnitsVersion",InventoryItemDispensedUnitsCacheHandler.version);
+        rpc.stores = InventoryItemStoresCacheHandler.getStores();
+        SessionManager.getSession().setAttribute("invItemStoresVersion",InventoryItemStoresCacheHandler.version);
         return rpc;
     }
     
-    public TableField getComponentsModel(Integer itemId, BooleanObject forDuplicate, TableField model){
+    public void checkModels(InventoryItemRPC rpc) {
+        /*
+         * Retrieve current version of models from session.
+         */
+        int categories = (Integer)SessionManager.getSession().getAttribute("invItemCategoriesVersion");
+        int dispensedUnits = (Integer)SessionManager.getSession().getAttribute("invItemDispensedUnitsVersion");
+        int stores = (Integer)SessionManager.getSession().getAttribute("invItemStoresVersion");
+        /*
+         * Compare stored version to current cache versions and update if necessary. 
+         */
+        if(categories != InventoryItemCategoriesCacheHandler.version){
+            rpc.categories = InventoryItemCategoriesCacheHandler.getCategories();
+            SessionManager.getSession().setAttribute("invItemCategoriesVersion", InventoryItemCategoriesCacheHandler.version);
+        }
+        if(dispensedUnits != InventoryItemDispensedUnitsCacheHandler.version){
+            rpc.dispensedUnits = InventoryItemDispensedUnitsCacheHandler.getDispensedUnits();
+            SessionManager.getSession().setAttribute("invItemDispensedUnitsVersion", InventoryItemDispensedUnitsCacheHandler.version);
+        }
+        if(stores != InventoryItemStoresCacheHandler.version){
+            rpc.stores = InventoryItemStoresCacheHandler.getStores();
+            SessionManager.getSession().setAttribute("invItemStoresVersion", InventoryItemStoresCacheHandler.version);
+        }
+    }
+    
+    public TableField getComponentsModel(Integer itemId, boolean forDuplicate, TableField<Integer> model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List componentsList = remote.getInventoryComponents(itemId);
-        model.setValue(fillComponentsTable((DataModel)model.getValue(),(Boolean)forDuplicate.getValue(), componentsList));
+        model.setValue(fillComponentsTable((DataModel)model.getValue(), forDuplicate, componentsList));
         return model;
     }
     
-    public TableField getLocationsModel(Integer itemId, StringObject isSerialized, TableField model){
+    public TableField getLocationsModel(Integer itemId, String isSerialized, TableField<Integer> model){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         List locationsList = remote.getInventoryLocations(itemId);
-        model.setValue(fillLocationsTable((DataModel)model.getValue(), (String)isSerialized.getValue(), locationsList));
+        model.setValue(fillLocationsTable((DataModel)model.getValue(), isSerialized, locationsList));
         return model;
     }
     
-    public StringObject getCommentsModel(Integer key){
+    public String getCommentsModel(Integer key){
         //remote interface to call the organization bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
     
@@ -521,10 +551,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
              i++;
       }
     
-        StringObject returnObject = new StringObject();
-        returnObject.setValue(XMLUtil.toString(doc));
-        
-        return returnObject;
+        return XMLUtil.toString(doc);
         
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -532,27 +559,27 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return null;
     }
 
-    public DataModel fillComponentsTable(DataModel<NumberObject> componentsModel, boolean forDuplicate, List componentsList){
+    public DataModel fillComponentsTable(DataModel<Integer> componentsModel, boolean forDuplicate, List componentsList){
         try {
             componentsModel.clear();
             
             for(int iter = 0;iter < componentsList.size();iter++) {
                 InventoryComponentDO componentRow = (InventoryComponentDO)componentsList.get(iter);
     
-                   DataSet<NumberObject> row = componentsModel.createNewSet();
+                   DataSet<Integer> row = componentsModel.createNewSet();
                    
                    if(componentRow.getId() != null && !forDuplicate){
-                       row.setKey(new NumberObject(componentRow.getId()));
+                       row.setKey(componentRow.getId());
                    }
 
 //                  we need to create a dataset for the component auto complete
                     if(componentRow.getComponentNameId() == null)
-                        ((DropDownField<NumberObject>)row.get(0)).setValue(new DataSet<NumberObject>(null));
+                        ((DropDownField<Integer>)row.get(0)).clear();
                     else{
-                        DataModel<NumberObject> componentModel = new DataModel<NumberObject>();
-                        componentModel.add(new DataSet<NumberObject>(new NumberObject(componentRow.getComponentNameId()),new StringObject(componentRow.getComponentName())));
-                        ((DropDownField<NumberObject>)(Field)row.get(0)).setModel(componentModel);
-                        ((DropDownField<NumberObject>)(Field)row.get(0)).setValue(componentModel.get(0));
+                        DataModel<Integer> componentModel = new DataModel<Integer>();
+                        componentModel.add(new DataSet<Integer>(componentRow.getComponentNameId(),new StringObject(componentRow.getComponentName())));
+                        ((DropDownField<Integer>)(Field)row.get(0)).setModel(componentModel);
+                        ((DropDownField<Integer>)(Field)row.get(0)).setValue(componentModel.get(0));
                     }
                     
                     row.get(1).setValue(componentRow.getComponentDesc());
@@ -570,16 +597,16 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return componentsModel;
     }
     
-    public DataModel fillLocationsTable(DataModel<NumberObject> locationsModel, String isSerialized, List locationsList){
+    public DataModel fillLocationsTable(DataModel<Integer> locationsModel, String isSerialized, List locationsList){
         try {
             locationsModel.clear();
             
             for(int iter = 0;iter < locationsList.size();iter++) {
                 InventoryLocationDO locationRow = (InventoryLocationDO)locationsList.get(iter);
     
-                   DataSet<NumberObject> row = locationsModel.createNewSet();
+                   DataSet<Integer> row = locationsModel.createNewSet();
            
-                    row.setKey(new NumberObject(locationRow.getId()));
+                    row.setKey(locationRow.getId());
                     
                     row.get(0).setValue(locationRow.getStorageLocation());
                     row.get(1).setValue(locationRow.getLotNumber());
@@ -609,17 +636,19 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return locationsModel;
     }
     
-    public DataModel getMatchesObj(StringObject cat, DataModel model, StringObject match, DataMap params) throws RPCException {
-        return getMatches((String)cat.getValue(), model, (String)match.getValue(), params);
+    public InventoryComponentAutoRPC getMatchesCall(InventoryComponentAutoRPC rpc) throws RPCException {
+        if("component".equals(rpc.cat))
+            rpc.autoMatches = getComponentMatches(rpc.match, rpc.storeId, rpc.name);
+        return rpc;
         
     }
     
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException {
-        if(cat.equals("component"))
-            return getComponentMatches(match, params);
-        else if(cat.equals("queryComponent"))
-            return getComponentMatches(match, null);
-        else if(cat.equals("parentItem"))
+    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+        //if(cat.equals("component"))
+          //  return getComponentMatches(match, params);
+        //else if(cat.equals("queryComponent"))
+        //    return getComponentMatches(match, null);
+        if(cat.equals("parentItem"))
             return getParentItemMatches(match);
         
         return null;    
@@ -627,7 +656,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
     
     private DataModel getParentItemMatches(String match) throws RPCException{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        DataModel dataModel = new DataModel();
+        DataModel<Integer> dataModel = new DataModel<Integer>();
         List autoCompleteList;
 
         String parsedMatch = match.replace('*', '%');
@@ -641,11 +670,9 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
             String name = resultDO.getName();
             String store = resultDO.getStore();
             
-            DataSet data = new DataSet();
+            DataSet<Integer> data = new DataSet<Integer>();
             //hidden id
-            NumberObject idObject = new NumberObject(NumberObject.Type.INTEGER);
-            idObject.setValue(itemId);
-            data.setKey(idObject);
+            data.setKey(itemId);
             //columns
             StringObject nameObject = new StringObject();
             nameObject.setValue(name);
@@ -661,27 +688,19 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return dataModel;           
     }
     
-    private DataModel getComponentMatches(String match, HashMap params) throws RPCException{
+    private DataModel getComponentMatches(String match, Integer store, String currentName) throws RPCException{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         DataModel<Integer> dataModel = new DataModel<Integer>();
         List autoCompleteList;
+
+        if(store == null || store == 0){
+            //we dont want to do anything...throw error
+            throw new FormErrorException(openElisConstants.getString("inventoryComponentAutoException"));
+        }
         
-        Integer store = null;
-        String currentName = null;
-        
-        if(params != null){
-            if(((DropDownField)params.get("store")).getValue() == null || (Integer)((DropDownField)params.get("store")).getValue() == 0){
-                //we dont want to do anything...throw error
-                throw new FormErrorException(openElisConstants.getString("inventoryComponentAutoException"));
-            }
-            
-            if("".equals((String)((StringField)params.get("name")).getValue())){
-                //we dont want to do anything...throw error
-                throw new FormErrorException(openElisConstants.getString("inventoryComponentAutoException"));
-            }
-            
-            store = (Integer)((DropDownField)params.get("store")).getValue();
-            currentName = (String)((StringField)params.get("name")).getValue();
+        if("".equals(currentName)){
+            //we dont want to do anything...throw error
+            throw new FormErrorException(openElisConstants.getString("inventoryComponentAutoException"));
         }
     
         //lookup by name
@@ -702,7 +721,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return dataModel;       
     }
     
-    public DataModel getInitialModel(String cat){
+    /*public DataModel getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 
@@ -731,44 +750,45 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         
         return returnModel;
     }
+    */
 
-    private void setFieldsInRPC(Form form, InventoryItemDO inventoryItemDO){
-        form.setFieldValue(InvItemMeta.getAverageCost(), inventoryItemDO.getAveCost());
-        form.setFieldValue(InvItemMeta.getAverageDailyUse(), inventoryItemDO.getAveDailyUse());
-        form.setFieldValue(InvItemMeta.getAverageLeadTime(), inventoryItemDO.getAveLeadTime());
-        ((DropDownField<NumberObject>)form.getField(InvItemMeta.getCategoryId())).setValue(new DataSet<NumberObject>(new NumberObject(inventoryItemDO.getCategory())));
-        form.setFieldValue(InvItemMeta.getDescription(), inventoryItemDO.getDescription());
-        ((DropDownField<NumberObject>)form.getField(InvItemMeta.getDispensedUnitsId())).setValue(new DataSet<NumberObject>(new NumberObject(inventoryItemDO.getDispensedUnits())));
-        form.setFieldValue(InvItemMeta.getId(), inventoryItemDO.getId());
-        form.setFieldValue(InvItemMeta.getIsActive(), inventoryItemDO.getIsActive());
-        form.setFieldValue(InvItemMeta.getIsBulk(), inventoryItemDO.getIsBulk());
-        form.setFieldValue(InvItemMeta.getIsLabor(), inventoryItemDO.getIsLabor());
-        form.setFieldValue(InvItemMeta.getIsLotMaintained(), inventoryItemDO.getIsLotMaintained());
-        form.setFieldValue(InvItemMeta.getIsNoInventory(), inventoryItemDO.getIsNoInventory());
-        form.setFieldValue(InvItemMeta.getIsNotForSale(), inventoryItemDO.getIsNotForSale());
-        form.setFieldValue(InvItemMeta.getIsReorderAuto(), inventoryItemDO.getIsReorderAuto());
-        form.setFieldValue(InvItemMeta.getIsSerialMaintained(), inventoryItemDO.getIsSerialMaintained());
-        form.setFieldValue(InvItemMeta.getIsSubAssembly(), inventoryItemDO.getIsSubAssembly());
-        form.setFieldValue(InvItemMeta.getName(), inventoryItemDO.getName());
-        form.setFieldValue(InvItemMeta.getProductUri(), inventoryItemDO.getProductUri());
-        form.setFieldValue(InvItemMeta.getQuantityMaxLevel(), inventoryItemDO.getQuantityMaxLevel());
-        form.setFieldValue(InvItemMeta.getQuantityMinLevel(), inventoryItemDO.getQuantityMinLevel());
-        form.setFieldValue(InvItemMeta.getQuantityToReorder(), inventoryItemDO.getQuantityToReorder());
-        ((DropDownField<NumberObject>)form.getField(InvItemMeta.getStoreId())).setValue(new DataSet<NumberObject>(new NumberObject(inventoryItemDO.getStore())));
-        form.setFieldValue(InvItemMeta.getParentRatio(), inventoryItemDO.getParentRatio());    
+    private void setFieldsInRPC(InventoryItemForm form, InventoryItemDO inventoryItemDO){
+        form.averageCost.setValue(inventoryItemDO.getAveCost());
+        form.averageDailyUse.setValue(inventoryItemDO.getAveDailyUse());
+        form.averageLeadTime.setValue(inventoryItemDO.getAveLeadTime());
+        form.categoryId.setValue(new DataSet<Integer>(inventoryItemDO.getCategory()));
+        form.description.setValue(inventoryItemDO.getDescription());
+        form.dispensedUnitsId.setValue(new DataSet<Integer>(inventoryItemDO.getDispensedUnits()));
+        form.id.setValue(inventoryItemDO.getId());
+        form.isActive.setValue(inventoryItemDO.getIsActive());
+        form.isBulk.setValue(inventoryItemDO.getIsBulk());
+        form.isLabor.setValue(inventoryItemDO.getIsLabor());
+        form.isLotMaintained.setValue(inventoryItemDO.getIsLotMaintained());
+        form.isNoInventory.setValue(inventoryItemDO.getIsNoInventory());
+        form.isNotForSale.setValue(inventoryItemDO.getIsNotForSale());
+        form.isReorderAuto.setValue(inventoryItemDO.getIsReorderAuto());
+        form.isSerialMaintained.setValue(inventoryItemDO.getIsSerialMaintained());
+        form.isSubAssembly.setValue(inventoryItemDO.getIsSubAssembly());
+        form.name.setValue(inventoryItemDO.getName());
+        form.productUri.setValue(inventoryItemDO.getProductUri());
+        form.quantityMaxLevel.setValue(inventoryItemDO.getQuantityMaxLevel());
+        form.quantityMinLevel.setValue(inventoryItemDO.getQuantityMinLevel());
+        form.quantityToReorder.setValue(inventoryItemDO.getQuantityToReorder());
+        form.storeId.setValue(new DataSet<Integer>(inventoryItemDO.getStore()));
+        form.parentRatio.setValue(inventoryItemDO.getParentRatio());    
         
         //we need to create a dataset for the parent inventory item auto complete
         if(inventoryItemDO.getParentInventoryItemId() == null)
-            ((DropDownField<NumberObject>)form.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).setValue(new DataSet<NumberObject>(null));
+            form.parentInventoryItem.clear();
         else{
-            DataModel<NumberObject> parentItemModel = new DataModel<NumberObject>();
-            parentItemModel.add(new DataSet<NumberObject>(new NumberObject(inventoryItemDO.getParentInventoryItemId()),new StringObject(inventoryItemDO.getParentInventoryItem())));
-            ((DropDownField<NumberObject>)form.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).setModel(parentItemModel);
-            ((DropDownField<NumberObject>)form.getField(InvItemMeta.PARENT_INVENTORY_ITEM.getName())).setValue(parentItemModel.get(0));
+            DataModel<Integer> parentItemModel = new DataModel<Integer>();
+            parentItemModel.add(new DataSet<Integer>(inventoryItemDO.getParentInventoryItemId(),new StringObject(inventoryItemDO.getParentInventoryItem())));
+            form.parentInventoryItem.setModel(parentItemModel);
+            form.parentInventoryItem.setValue(parentItemModel.get(0));
         }
     }
     
-    private InventoryItemDO getInventoryItemDOFromRPC(Form form){
+    private InventoryItemDO getInventoryItemDOFromRPC(InventoryItemForm form){
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         
         if(form.getFieldValue(InvItemMeta.getAverageCost()) != null)
@@ -802,35 +822,34 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return inventoryItemDO;
     }
     
-    private List getComponentsListFromRPC(DataModel<NumberObject> componentsTable, Integer itemId){
+    private List getComponentsListFromRPC(DataModel<Integer> componentsTable, Integer itemId){
         List components = new ArrayList();
-        List<DataSet<NumberObject>> deletedRows = componentsTable.getDeletions();
+        List<DataSet<Integer>> deletedRows = componentsTable.getDeletions();
 
-        
         for(int i=0; i<componentsTable.size(); i++){
             InventoryComponentDO componentDO = new InventoryComponentDO();
-            DataSet<NumberObject> row = componentsTable.get(i);
+            DataSet<Integer> row = componentsTable.get(i);
             //hidden data
-            NumberObject id = row.getKey();
+            Integer id = row.getKey();
 
             if(id != null)
-                componentDO.setId(id.getIntegerValue());
+                componentDO.setId(id);
 
             componentDO.setComponentNameId((Integer)((DropDownField)row.get(0)).getSelectedKey());
             componentDO.setComponentName((String)((DropDownField)row.get(0)).getTextValue());
             componentDO.setComponentDesc((String)((StringField)row.get(1)).getValue());
-            componentDO.setQuantity((Double)((NumberField)row.get(2)).getValue());
+            componentDO.setQuantity((Double)((DoubleField)row.get(2)).getValue());
             componentDO.setParentInventoryItemId(itemId);
             
             components.add(componentDO);    
         }
         
         for(int j=0; j<deletedRows.size(); j++){
-            DataSet<NumberObject> deletedRow = deletedRows.get(j);
+            DataSet<Integer> deletedRow = deletedRows.get(j);
             if(deletedRow.getKey() != null){
                 InventoryComponentDO componentDO = new InventoryComponentDO();
                 componentDO.setDelete(true);
-                componentDO.setId(deletedRow.getKey().getIntegerValue());
+                componentDO.setId(deletedRow.getKey());
                                 
                 components.add(componentDO);
             }
@@ -839,13 +858,12 @@ public class InventoryItemService implements AppScreenFormServiceInt<DefaultRPC,
         return components;
     }
     
-    public StringObject getComponentDescriptionText(NumberObject componentId){
+    public InventoryItemRPC getComponentDescriptionText(InventoryItemRPC rpc){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        StringObject descText = new StringObject();
         
-        descText.setValue(remote.getInventoryDescription(componentId.getIntegerValue()));
+        rpc.descText = remote.getInventoryDescription(rpc.componentId);
         
-        return descText;
+        return rpc;
     }
     
     private void setRpcErrors(List exceptionList, TableField componentsTable, Form form){

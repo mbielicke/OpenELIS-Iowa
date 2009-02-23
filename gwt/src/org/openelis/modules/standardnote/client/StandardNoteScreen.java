@@ -25,16 +25,10 @@
 */
 package org.openelis.modules.standardnote.client;
 
-import com.google.gwt.user.client.ui.TextBox;
-
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.widget.AToZTable;
@@ -46,19 +40,37 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StandardNoteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TextBox;
+
+public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,StandardNoteForm,Integer> {
 
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
     private KeyListManager keyList = new KeyListManager();
-	
-	private static DataModel typeDropdown;
-	private static boolean loaded = false;
+    private Dropdown noteType;
 	
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
+
+    AsyncCallback<StandardNoteRPC> checkModels = new AsyncCallback<StandardNoteRPC>() {
+        public void onSuccess(StandardNoteRPC rpc) {
+            if(rpc.noteTypes != null) {
+            	setNoteTypesModel(rpc.noteTypes);
+                rpc.noteTypes = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
     
-	public StandardNoteScreen() {
-    	super("org.openelis.modules.standardnote.server.StandardNoteService",!loaded, new DefaultRPC());
+	public StandardNoteScreen() {                
+        super("org.openelis.modules.standardnote.server.StandardNoteService");
+       
+        forms.put("display",new StandardNoteForm());
+       
+        getScreen(new StandardNoteRPC());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -74,7 +86,6 @@ public class StandardNoteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integ
     }
 
     public void afterDraw(boolean success) {
-		loaded = true;
         AToZTable atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
@@ -90,17 +101,24 @@ public class StandardNoteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integ
         
         textArea = (ScreenTextArea)widgets.get(StandardNoteMeta.getText());
         nameTextbox = (TextBox)getWidget(StandardNoteMeta.getName());
-
+        noteType = (Dropdown)getWidget(StandardNoteMeta.getTypeId());
+        
         startWidget = (ScreenInputWidget)widgets.get(StandardNoteMeta.getName());
         
-        if(typeDropdown == null)
-            typeDropdown = (DataModel)initData.get("noteTypes");
+        setNoteTypesModel(rpc.noteTypes);
         
-//      load standard note type dropdowns
-        ScreenDropDownWidget displayType = (ScreenDropDownWidget)widgets.get(StandardNoteMeta.getTypeId());
-                   
-       ((Dropdown)displayType.getWidget()).setModel(typeDropdown);
-		
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        rpc.noteTypes = null;
+        
+       updateChain.add(0,checkModels);
+       fetchChain.add(0,checkModels);
+       abortChain.add(0,checkModels);
+       deleteChain.add(0,checkModels);
+       commitUpdateChain.add(0,checkModels);
+       commitAddChain.add(0,checkModels);
+       
 		super.afterDraw(success);
 	}
 	
@@ -122,5 +140,9 @@ public class StandardNoteScreen extends OpenELISScreenForm<DefaultRPC,Form,Integ
     
     		commitQuery(letter);
     	}
-    }	
+    }
+	
+	public void setNoteTypesModel(DataModel<Integer> noteTypesModel) {
+		noteType.setModel(noteTypesModel);
+    }
 }
