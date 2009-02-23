@@ -25,10 +25,14 @@
 */
 package org.openelis.modules.storage.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageUnitAutoDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -42,9 +46,7 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -52,6 +54,8 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.modules.storage.client.StorageLocationForm;
+import org.openelis.modules.storage.client.StorageLocationRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageUnitRemote;
@@ -59,12 +63,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-public class StorageLocationService implements AppScreenFormServiceInt<DefaultRPC,Integer>,
+public class StorageLocationService implements AppScreenFormServiceInt<StorageLocationRPC,Integer>,
    											   AutoCompleteServiceInt{
 
 	private static final int leftTableRowsPerPage = 19;
@@ -125,7 +124,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
     		return model;
     	}
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public StorageLocationRPC commitAdd(StorageLocationRPC rpc) throws RPCException {
 //		remote interface to call the storageLocation bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
@@ -135,7 +134,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 		newStorageLocDO = getStorageLocationDOFromRPC(rpc.form);
 		
 //		child locs info
-        TableField childTableField = (TableField)rpc.form.getField("childStorageLocsTable");
+        TableField childTableField = rpc.form.childStorageLocsTable;
         DataModel childTable = (DataModel)childTableField.getValue();
 		storageLocationChildren = getChildStorageLocsFromRPC(childTable);
 				
@@ -168,7 +167,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 		return rpc;
 	}
 
-	public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+	public StorageLocationRPC commitUpdate(StorageLocationRPC rpc) throws RPCException {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
@@ -178,7 +177,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 		newStorageLocDO = getStorageLocationDOFromRPC(rpc.form);
 		
 //		children info
-        TableField childTableField = (TableField)rpc.form.getField("childStorageLocsTable");
+        TableField childTableField = rpc.form.childStorageLocsTable;
         DataModel childTable = (DataModel)childTableField.getValue();
 		storageLocationChildren = getChildStorageLocsFromRPC(childTable);
 		
@@ -211,7 +210,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 		return rpc;
 	}
 
-	public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+	public StorageLocationRPC commitDelete(StorageLocationRPC rpc) throws RPCException {
 //		remote interface to call the storage location bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
@@ -235,12 +234,12 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 		}	
 		
 		setFieldsInRPC(rpc.form, new StorageLocationDO());
-		rpc.form.setFieldValue("childStorageLocsTable",null);
+		rpc.form.childStorageLocsTable.setValue(null);
 		
 		return rpc;
 	}
 
-	public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+	public StorageLocationRPC abort(StorageLocationRPC rpc) throws RPCException {
     //		remote interface to call the storage location bean
     		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     		
@@ -253,13 +252,13 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
     //		load the children
             List childrenList = remote.getStorageLocChildren(rpc.key);
             //need to build the children table now...
-            DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("childStorageLocsTable").getValue(),childrenList);
-            rpc.form.setFieldValue("childStorageLocsTable",rmodel);
+            DataModel rmodel = (DataModel)fillChildrenTable(rpc.form.childStorageLocsTable.getValue(),childrenList);
+            rpc.form.childStorageLocsTable.setValue(rmodel);
             
     		return rpc;  
     	}
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public StorageLocationRPC fetch(StorageLocationRPC rpc) throws RPCException {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
@@ -271,13 +270,13 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 //		load the children
         List childrenList = remote.getStorageLocChildren(rpc.key);
         //need to build the children table now...
-        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("childStorageLocsTable").getValue(),childrenList);
-        rpc.form.setFieldValue("childStorageLocsTable",rmodel);
+        DataModel rmodel = (DataModel)fillChildrenTable(rpc.form.childStorageLocsTable.getValue(),childrenList);
+        rpc.form.childStorageLocsTable.setValue(rmodel);
 
 		return rpc;
 	}
 
-	public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+	public StorageLocationRPC fetchForUpdate(StorageLocationRPC rpc) throws RPCException {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO storageLocDO = new StorageLocationDO();
@@ -294,32 +293,27 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 //		load the children
         List childrenList = remote.getStorageLocChildren(rpc.key);
         //need to build the children table now...
-        DataModel rmodel = (DataModel)fillChildrenTable((DataModel)rpc.form.getField("childStorageLocsTable").getValue(),childrenList);
-        rpc.form.setFieldValue("childStorageLocsTable",rmodel);
+        DataModel rmodel = (DataModel)fillChildrenTable(rpc.form.childStorageLocsTable.getValue(),childrenList);
+        rpc.form.childStorageLocsTable.setValue(rmodel);
 
 		return rpc;
 	}
 
 	public String getXML() throws RPCException {
-    	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl");
+    	return null;
     }
 
     public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl"));
-        DataModel model = new DataModel();
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("data",model);
-        return map;
+        return null;
     }
 
     public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-    	// TODO Auto-generated method stub
     	return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public StorageLocationRPC getScreen(StorageLocationRPC rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl");
+
         return rpc;
     }
 
@@ -368,33 +362,32 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
     	return null;
     }
 
-    private void setFieldsInRPC(Form form, StorageLocationDO storageLocDO){
-		form.setFieldValue(StorageLocationMeta.getId(), storageLocDO.getId());
-		form.setFieldValue(StorageLocationMeta.getIsAvailable(), storageLocDO.getIsAvailable());
-		form.setFieldValue(StorageLocationMeta.getLocation(), storageLocDO.getLocation());
-		form.setFieldValue(StorageLocationMeta.getName(), storageLocDO.getName());
-		
+    private void setFieldsInRPC(StorageLocationForm form, StorageLocationDO storageLocDO){
+        form.id.setValue(storageLocDO.getId());
+        form.isAvailable.setValue(storageLocDO.getIsAvailable());
+        form.location.setValue(storageLocDO.getLocation());
+        form.name.setValue(storageLocDO.getName());
+        
 //		we need to create a dataset for the storage unit auto complete
 		if(storageLocDO.getStorageUnitId() == null)
-			form.setFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription(), null);
+			form.storageUnit.clear();
 		else{
             DataModel<Integer> unitModel = new DataModel<Integer>();
             unitModel.add(new DataSet<Integer>(storageLocDO.getStorageUnitId(),new StringObject(storageLocDO.getStorageUnit())));
-            ((DropDownField)form.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).setModel(unitModel);
-            form.setFieldValue(StorageLocationMeta.STORAGE_UNIT_META.getDescription(), unitModel.get(0));
+            form.storageUnit.setModel(unitModel);
+            form.storageUnit.setValue(unitModel.get(0));
 		}
 	}
 	
-	private StorageLocationDO getStorageLocationDOFromRPC(Form form){
+	private StorageLocationDO getStorageLocationDOFromRPC(StorageLocationForm form){
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
 		
-		newStorageLocDO.setId((Integer)form.getFieldValue(StorageLocationMeta.getId()));
-		newStorageLocDO.setIsAvailable((String) form.getFieldValue(StorageLocationMeta.getIsAvailable()));
-		newStorageLocDO.setLocation(((String)form.getFieldValue(StorageLocationMeta.getLocation())));
-		newStorageLocDO.setName(((String)form.getFieldValue(StorageLocationMeta.getName())));
-		newStorageLocDO.setParentStorageLocationId((Integer)form.getFieldValue(StorageLocationMeta.CHILD_STORAGE_LOCATION_META.getId()));
-		newStorageLocDO.setStorageUnitId((Integer)((DropDownField)form.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).getSelectedKey());
-        newStorageLocDO.setStorageUnit((String)((DropDownField)form.getField(StorageLocationMeta.STORAGE_UNIT_META.getDescription())).getTextValue());
+		newStorageLocDO.setId(form.id.getValue());
+		newStorageLocDO.setIsAvailable(form.isAvailable.getValue());
+		newStorageLocDO.setLocation(form.location.getValue());
+		newStorageLocDO.setName(form.name.getValue());
+		newStorageLocDO.setStorageUnitId((Integer)form.storageUnit.getSelectedKey());
+        newStorageLocDO.setStorageUnit((String)form.storageUnit.getTextValue());
 		
 		return newStorageLocDO;
 	}
@@ -408,11 +401,9 @@ public class StorageLocationService implements AppScreenFormServiceInt<DefaultRP
 			DataSet row = childTable.get(i);
 			
 			//parent data
-			NumberObject id = (NumberObject)row.getKey();
+			Integer id = (Integer)row.getKey();
 			
-			if(id != null)
-				childDO.setId(id.getIntegerValue());
-			
+			childDO.setId(id);
 			childDO.setStorageUnitId((Integer)((DropDownField)row.get(0)).getSelectedKey());
 			childDO.setLocation(((String)((StringField)row.get(1)).getValue()));
 			childDO.setIsAvailable(((String)((CheckField)row.get(2)).getValue()));

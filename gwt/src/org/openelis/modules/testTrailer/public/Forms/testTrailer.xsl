@@ -133,7 +133,7 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	<number key="{testTrailerMeta:getId($meta)}" type="integer" required="false"/>
+  	<integer key="{testTrailerMeta:getId($meta)}" required="false"/>
   	<string key="{testTrailerMeta:getName($meta)}" max="20" required="true"/>
   	<string key="{testTrailerMeta:getDescription($meta)}" max="60" required="true"/>
   	<string key="{testTrailerMeta:getText($meta)}" required="true"/>

@@ -134,9 +134,9 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	<number key="{storageUnitMeta:getId($meta)}" type="integer" required="false"/>
-  	<dropdown key="{storageUnitMeta:getCategory($meta)}" required="false"/><!---->
-  	<string key="{storageUnitMeta:getDescription($meta)}" max="60" required="false"/><!---->
+  	<integer key="{storageUnitMeta:getId($meta)}" required="false"/>
+  	<dropdown key="{storageUnitMeta:getCategory($meta)}" required="true"/>
+  	<string key="{storageUnitMeta:getDescription($meta)}" max="60" required="true"/>
   	<check key="{storageUnitMeta:getIsSingular($meta)}" required="false"/>
 	</rpc>
 	<rpc key="query">

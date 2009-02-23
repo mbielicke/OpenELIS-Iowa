@@ -25,39 +25,36 @@
 */
 package org.openelis.modules.testTrailer.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestTrailerDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.TestTrailerMetaMap;
+import org.openelis.modules.testTrailer.client.TestTrailerForm;
+import org.openelis.modules.testTrailer.client.TestTrailerRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,Integer> {
+public class TestTrailerService implements AppScreenFormServiceInt<TestTrailerRPC,Integer> {
 
 	private static final int leftTableRowsPerPage = 9;
 	
@@ -114,7 +111,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
     		return model;
     	}
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public TestTrailerRPC commitAdd(TestTrailerRPC rpc) throws RPCException {
 		//remote interface to call the testTrailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		TestTrailerDO newTestTrailerDO = new TestTrailerDO();
@@ -150,7 +147,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+	public TestTrailerRPC commitUpdate(TestTrailerRPC rpc) throws RPCException {
     	//remote interface to call the test trailer bean
     	TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     	TestTrailerDO newTestTrailerDO = new TestTrailerDO();
@@ -186,7 +183,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
     	return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public TestTrailerRPC commitDelete(TestTrailerRPC rpc) throws RPCException {
 		//remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 
@@ -214,7 +211,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+	public TestTrailerRPC abort(TestTrailerRPC rpc) throws RPCException {
     //		remote interface to call the testTrailer bean
     		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
     		
@@ -227,7 +224,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
     		return rpc;  
     	}
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public TestTrailerRPC fetch(TestTrailerRPC rpc) throws RPCException {
 //		remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		
@@ -239,7 +236,7 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+	public TestTrailerRPC fetchForUpdate(TestTrailerRPC rpc) throws RPCException {
 //		remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 		TestTrailerDO testTrailerDO = new TestTrailerDO();
@@ -257,37 +254,37 @@ public class TestTrailerService implements AppScreenFormServiceInt<DefaultRPC,In
 	}
 
 	public String getXML() throws RPCException {
-    	return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/testTrailer.xsl");
+    	return null;
     }
 
     public HashMap<String, FieldType> getXMLData() throws RPCException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-    	// TODO Auto-generated method stub
     	return null;
     }
 
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public TestTrailerRPC getScreen(TestTrailerRPC rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/testTrailer.xsl");
+
         return rpc;
     }
     
-    private void setFieldsInRPC(Form form, TestTrailerDO testTrailerDO){
-		form.setFieldValue(TestTrailerMeta.getId(), testTrailerDO.getId());
-		form.setFieldValue(TestTrailerMeta.getName(), testTrailerDO.getName());
-		form.setFieldValue(TestTrailerMeta.getDescription(), testTrailerDO.getDescription());
-		form.setFieldValue(TestTrailerMeta.getText(), testTrailerDO.getText());		
+    private void setFieldsInRPC(TestTrailerForm form, TestTrailerDO testTrailerDO){
+        form.id.setValue(testTrailerDO.getId());
+        form.name.setValue(testTrailerDO.getName());
+        form.description.setValue(testTrailerDO.getDescription());
+        form.text.setValue(testTrailerDO.getText());		
 	}
 	
-	private TestTrailerDO getTestTrailerDOFromRPC(Form form){
+	private TestTrailerDO getTestTrailerDOFromRPC(TestTrailerForm form){
 		TestTrailerDO newTestTrailerDO = new TestTrailerDO();
 		
-		newTestTrailerDO.setId((Integer)form.getFieldValue(TestTrailerMeta.getId()));
-		newTestTrailerDO.setName(((String) form.getFieldValue(TestTrailerMeta.getName())));
-		newTestTrailerDO.setDescription(((String)form.getFieldValue(TestTrailerMeta.getDescription())));
-		newTestTrailerDO.setText(((String)form.getFieldValue(TestTrailerMeta.getText())));
+		newTestTrailerDO.setId(form.id.getValue());
+		newTestTrailerDO.setName(form.name.getValue());
+		newTestTrailerDO.setDescription(form.description.getValue());
+		newTestTrailerDO.setText(form.text.getValue());
 		
 		return newTestTrailerDO;
 	}

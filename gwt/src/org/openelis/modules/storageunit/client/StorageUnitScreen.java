@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.storageunit.client;
 
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -40,17 +39,34 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageUnitScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-	private Dropdown cat;
-    private static boolean loaded = false;
-    private static DataModel storageUnitCategoryDropdown;
+public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,StorageUnitForm,Integer> {
+
+    private static Dropdown category;
     private KeyListManager keyList = new KeyListManager();
 	
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
-	public StorageUnitScreen() {
-		super("org.openelis.modules.storageunit.server.StorageUnitService",!loaded,new DefaultRPC());
+    AsyncCallback<StorageUnitRPC> checkModels = new AsyncCallback<StorageUnitRPC>() {
+        public void onSuccess(StorageUnitRPC rpc) {
+            if(rpc.categories != null) {
+                setCategoriesModel(rpc.categories);
+                rpc.categories = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
+	public StorageUnitScreen() {                
+	    super("org.openelis.modules.storageunit.server.StorageUnitService");
+	      
+	    forms.put("display",new StorageUnitForm());
+	       
+	    getScreen(new StorageUnitRPC());
 	}
 	
 	 public void performCommand(Enum action, Object obj) {
@@ -66,9 +82,7 @@ public class StorageUnitScreen extends OpenELISScreenForm<DefaultRPC,Form,Intege
 	    }
 	
 	public void afterDraw(boolean success) {
-		loaded = true;
-        
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
+		AToZTable atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         
@@ -81,14 +95,22 @@ public class StorageUnitScreen extends OpenELISScreenForm<DefaultRPC,Form,Intege
               
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        cat = (Dropdown)getWidget(StorageUnitMeta.getCategory());
+        category = (Dropdown)getWidget(StorageUnitMeta.getCategory());
         startWidget = (ScreenInputWidget)widgets.get(StorageUnitMeta.getCategory());
 
-        //load the dropdowns
-        if(storageUnitCategoryDropdown == null)
-            storageUnitCategoryDropdown = (DataModel)initData.get("categories");
+        setCategoriesModel(rpc.categories);
         
-        cat.setModel(storageUnitCategoryDropdown);
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        rpc.categories = null;
+        
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        deleteChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
         
 		super.afterDraw(success);
 	}
@@ -103,4 +125,8 @@ public class StorageUnitScreen extends OpenELISScreenForm<DefaultRPC,Form,Intege
 			commitQuery(letter);
 		}
 	}
+	
+	public void setCategoriesModel(DataModel<String> categoriesModel) {
+        category.setModel(categoriesModel);
+    }
 }
