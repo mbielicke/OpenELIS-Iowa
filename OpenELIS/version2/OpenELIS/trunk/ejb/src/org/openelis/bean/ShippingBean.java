@@ -26,12 +26,14 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
+import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
 import org.openelis.entity.Shipping;
@@ -45,6 +47,7 @@ import org.openelis.persistence.JBossCachingManager;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -145,7 +148,7 @@ public class ShippingBean implements ShippingRemote{
     }
 
     @RolesAllowed("shipping-update")
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList) throws Exception {
+    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList, NoteDO shippingNote) throws Exception {
         //shipping reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "shipping");
@@ -184,6 +187,28 @@ public class ShippingBean implements ShippingRemote{
                 
         if (shipping.getId() == null)
             manager.persist(shipping);
+        
+        //update shipping note
+        Note note = null;
+        
+        if (shippingNote.getId() == null)
+            note = new Note();
+        else
+            note = manager.find(Note.class, shippingNote.getId());
+        
+        note.setIsExternal(shippingNote.getIsExternal());
+        note.setReferenceId(shipping.getId());
+        note.setReferenceTableId(shippingReferenceId);
+        note.setText(shippingNote.getText());
+        
+        if(note.getId() == null)
+            note.setSystemUserId(lockBean.getSystemUserId());
+
+        note.setTimestamp(Datetime.getInstance());
+        
+        if (note.getId() == null) {
+            manager.persist(note);
+        }
         
         //update tracking numbers
         if(trackingNumbers != null) {
@@ -309,6 +334,23 @@ public class ShippingBean implements ShippingRemote{
     public void unlockOrders(DataModel unlockList){
         //unlock the order records
         unlockOrderRecords(unlockList);
+    }
+    
+    public NoteDO getShippingNote(Integer shippingId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "shipping");
+        Integer shippingReferenceId = (Integer)query.getSingleResult();
+        
+        query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable",shippingReferenceId);
+        query.setParameter("id", shippingId);
+        
+        List results = query.getResultList();
+        
+        if(results.size() > 0)
+            return (NoteDO)results.get(0);
+        else 
+            return null;
     }
     
     public List getTrackingNumbers(Integer shippingId) {
