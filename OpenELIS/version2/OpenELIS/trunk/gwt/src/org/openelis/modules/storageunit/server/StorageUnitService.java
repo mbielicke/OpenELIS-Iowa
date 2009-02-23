@@ -25,46 +25,37 @@
 */
 package org.openelis.modules.storageunit.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.ModelField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.StorageUnitMetaMap;
-import org.openelis.persistence.CachingManager;
+import org.openelis.modules.storageunit.client.StorageUnitForm;
+import org.openelis.modules.storageunit.client.StorageUnitRPC;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.StorageUnitCategoriesCacheHandler;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,Integer>,
-		AutoCompleteServiceInt {
+public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitRPC,Integer> {
 
 	private static final int leftTableRowsPerPage = 10;
 
@@ -129,7 +120,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 		return model;
 	}
 
-	public DefaultRPC commitUpdate(DefaultRPC rpc)
+	public StorageUnitRPC commitUpdate(StorageUnitRPC rpc)
 			throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
@@ -167,11 +158,10 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC commitAdd(DefaultRPC rpc)
+	public StorageUnitRPC commitAdd(StorageUnitRPC rpc)
     		throws RPCException {
     	// remote interface to call the storageunit bean
-    	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
-    			.lookup("openelis/StorageUnitBean/remote");
+    	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
     	// build the storage unit DO from the form
@@ -205,7 +195,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
     	return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc)
+    public StorageUnitRPC commitDelete(StorageUnitRPC rpc)
 			throws RPCException {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
@@ -234,7 +224,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+	public StorageUnitRPC abort(StorageUnitRPC rpc) throws RPCException {
     	// remote interface to call the storage unit bean
     	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
     			.lookup("openelis/StorageUnitBean/remote");
@@ -248,7 +238,12 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
     	return rpc;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public StorageUnitRPC fetch(StorageUnitRPC rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -261,8 +256,13 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 		return rpc;
 	}
 
-	public DefaultRPC fetchForUpdate(DefaultRPC rpc)
+	public StorageUnitRPC fetchForUpdate(StorageUnitRPC rpc)
 			throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -281,87 +281,43 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 	}
 
 	public String getXML() throws RPCException {
-    	return ServiceUtils.getXML(Constants.APP_ROOT
-    			+ "/Forms/storageUnit.xsl");
+	    return null;
     }
 
     public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT
-                + "/Forms/storageUnit.xsl"));
-
-        DataModel storageUnitCategoryDropdownField = (DataModel) CachingManager
-                .getElement("InitialData", "storageUnitCategoryDropdown");
-
-        // storage unit category dropdown
-        if (storageUnitCategoryDropdownField == null) {
-            storageUnitCategoryDropdownField = getInitialModel("category");
-            CachingManager.putElement("InitialData",
-                    "storageUnitCategoryDropdown",
-                    storageUnitCategoryDropdownField);
-        }
-        
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("categories", storageUnitCategoryDropdownField);
-        return map;
+        return null;
     }
 
     public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-    	// TODO Auto-generated method stub
     	return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public StorageUnitRPC getScreen(StorageUnitRPC rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageUnit.xsl");
+        
+        /*
+         * Load initial  models to RPC and store cache verison of models into Session for 
+         * comparisons for later fetches
+         */
+        rpc.categories = StorageUnitCategoriesCacheHandler.getCategories();
+        SessionManager.getSession().setAttribute("storageUnitCategoriesVersion",StorageUnitCategoriesCacheHandler.version);
+        
         return rpc;
     }
-
-    public DataModel getDisplay(String cat, DataModel model, AbstractField value) {
-		return null;
-	}
-
-	public DataModel<String> getInitialModel(String cat) {
-		Integer id = null;
-		CategoryRemote remote = (CategoryRemote) EJBFactory
-				.lookup("openelis/CategoryBean/remote");
-
-		if (cat.equals("category")) {
-			id = remote.getCategoryId("storage_unit_category");
-		}
-
-		List entries = new ArrayList();
-		if (id != null)
-			entries = remote.getDropdownValues(id);
-
-		// we need to build the model to return
-		DataModel<String> returnModel = new DataModel<String>();
-
-        if(entries.size() > 0){
-    		// create a blank entry to begin the list
-    		returnModel.add(new DataSet<String>("",new StringObject("")));
+    
+    public void checkModels(StorageUnitRPC rpc) {
+        /*
+         * Retrieve current version of models from session.
+         */
+        int categories = (Integer)SessionManager.getSession().getAttribute("storageUnitCategoriesVersion");
+        /*
+         * Compare stored version to current cache versions and update if necessary. 
+         */
+        if(categories != StorageUnitCategoriesCacheHandler.version){
+            rpc.categories = StorageUnitCategoriesCacheHandler.getCategories();
+            SessionManager.getSession().setAttribute("storageUnitCategoriesVersion",StorageUnitCategoriesCacheHandler.version);
         }
-        
-		int i = 0;
-		while (i < entries.size()){
-			IdNameDO resultDO = (IdNameDO) entries.get(i);
-            returnModel.add(new DataSet<String>(resultDO.getName(),new StringObject(resultDO.getName())));
-
-			i++;
-		}
-
-		return returnModel;
-	}
-
-	public DataModel getMatches(String cat, DataModel model, String match, HashMap params) {
-		return null;
-	}
-
-	public ModelField getModelField(StringObject cat) {
-		ModelField modelField = new ModelField();
-		DataModel<String> model = getInitialModel((String) cat.getValue());
-		modelField.setValue(model);
-		return modelField;
-	}
+    }
 
 	private void setRpcErrors(List exceptionList, Form form){
 		//we need to get the keys and look them up in the resource bundle for internationalization
@@ -374,23 +330,23 @@ public class StorageUnitService implements AppScreenFormServiceInt<DefaultRPC,In
 		form.status = Form.Status.invalid;
     }
 
-    private void setFieldsInRPC(Form form, StorageUnitDO storageUnitDO) {
-    	form.setFieldValue(StorageUnitMeta.getId(), storageUnitDO.getId());
+    private void setFieldsInRPC(StorageUnitForm form, StorageUnitDO storageUnitDO) {
+        form.id.setValue(storageUnitDO.getId());
         
         if(storageUnitDO.getCategory() != null)
-            ((DropDownField<String>)(Field)form.getField(StorageUnitMeta.getCategory())).setValue(new DataSet<String>(storageUnitDO.getCategory()));
-    	
-        form.setFieldValue(StorageUnitMeta.getDescription(), storageUnitDO.getDescription());
-    	form.setFieldValue(StorageUnitMeta.getIsSingular(), storageUnitDO.getIsSingular());
+            form.category.setValue(new DataSet<String>(storageUnitDO.getCategory()));
+        
+    	form.description.setValue(storageUnitDO.getDescription());
+    	form.isSingular.setValue(storageUnitDO.getIsSingular());
     }
 
-    private StorageUnitDO getStorageUnitDOFromRPC(Form form) {
+    private StorageUnitDO getStorageUnitDOFromRPC(StorageUnitForm form) {
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
     
-    	newStorageUnitDO.setId((Integer) form.getFieldValue(StorageUnitMeta.getId()));
-    	newStorageUnitDO.setCategory((String)((DropDownField)form.getField(StorageUnitMeta.getCategory())).getSelectedKey());
-    	newStorageUnitDO.setDescription((String) form.getFieldValue(StorageUnitMeta.getDescription()));
-    	newStorageUnitDO.setIsSingular((String) form.getFieldValue(StorageUnitMeta.getIsSingular()));
+    	newStorageUnitDO.setId(form.id.getValue());
+    	newStorageUnitDO.setCategory((String)form.category.getSelectedKey());
+    	newStorageUnitDO.setDescription(form.description.getValue());
+    	newStorageUnitDO.setIsSingular(form.isSingular.getValue());
     
     	return newStorageUnitDO;
     }

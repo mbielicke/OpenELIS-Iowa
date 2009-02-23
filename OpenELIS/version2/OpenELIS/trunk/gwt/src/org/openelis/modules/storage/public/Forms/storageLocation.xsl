@@ -204,7 +204,7 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-	<number key="{storageLocationMeta:getId($storageLoc)}" required="false" type="integer"/>
+	<integer key="{storageLocationMeta:getId($storageLoc)}" required="false"/>
     <string key="{storageLocationMeta:getName($storageLoc)}" max="20" required="true"/>
     <dropdown  key="{storageUnitMeta:getDescription($storageUnit)}" type="integer" required="true"/>
     <string key="{storageLocationMeta:getLocation($storageLoc)}" max="80" required="true"/>

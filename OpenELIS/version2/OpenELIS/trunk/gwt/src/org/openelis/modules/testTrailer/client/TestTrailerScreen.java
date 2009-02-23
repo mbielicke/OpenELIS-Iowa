@@ -25,9 +25,6 @@
 */
 package org.openelis.modules.testTrailer.client;
 
-import com.google.gwt.user.client.ui.TextBox;
-
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -41,17 +38,23 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class TestTrailerScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> {
+import com.google.gwt.user.client.ui.TextBox;
+
+public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerRPC,TestTrailerForm,Integer> {
 	
 	private TextBox nameTextBox;
 	private ScreenTextArea textArea;
     private KeyListManager keyList = new KeyListManager();
 	
     private TestTrailerMetaMap TestTrailerMeta = new TestTrailerMetaMap();
-     
-	public TestTrailerScreen() {
-		super("org.openelis.modules.testTrailer.server.TestTrailerService",false,new DefaultRPC());
-	}
+    
+	public TestTrailerScreen() {                
+        super("org.openelis.modules.testTrailer.server.TestTrailerService");
+        
+        forms.put("display",new TestTrailerForm());
+        
+        getScreen(new TestTrailerRPC());
+    }
 	
 	 public void performCommand(Enum action, Object obj) {
 	        if(obj instanceof AppButton){

@@ -25,11 +25,6 @@
 */
 package org.openelis.modules.storage.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -43,7 +38,11 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageLocationScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC,StorageLocationForm,Integer> implements ClickListener {
 	
 	private TextBox nameTextbox;
 	private TableWidget childTable;
@@ -53,10 +52,14 @@ public class StorageLocationScreen extends OpenELISScreenForm<DefaultRPC,Form,In
    	
     private StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
     
-	public StorageLocationScreen() {
-		super("org.openelis.modules.storage.server.StorageLocationService",false,new DefaultRPC());
-	}
-	
+    public StorageLocationScreen() {                
+        super("org.openelis.modules.storage.server.StorageLocationService");
+      
+        forms.put("display",new StorageLocationForm());
+        
+        getScreen(new StorageLocationRPC());
+    }
+    
 	public void performCommand(Enum action, Object obj) {
         if(obj instanceof AppButton) {
            String baction = ((AppButton)obj).action;
