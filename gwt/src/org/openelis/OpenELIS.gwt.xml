@@ -34,6 +34,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
     <inherits name="gwt.canvas.gwt-canvas"/>
+    <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
@@ -60,7 +61,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
-    <inherits name="org.openelis.modules.test.Test"/>
+    <inherits name="org.openelis.modules.test.Test"/> 
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.ELISCommon"/>     
     
