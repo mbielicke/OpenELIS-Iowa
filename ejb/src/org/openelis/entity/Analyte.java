@@ -50,7 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.analyteGroupId,a.parentAnalyteId,p.name,a.externalId) from " + 
+@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,p.name,a.externalId) from " + 
 " Analyte a left join a.parentAnalyte p where a.id = :id"),
 @NamedQuery(name = "Analyte.AnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
 @NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
@@ -73,9 +73,6 @@ public class Analyte implements Auditable, Cloneable {
 
   @Column(name="is_active")
   private String isActive;             
-
-  @Column(name="analyte_group_id")
-  private Integer analyteGroupId;             
 
   @Column(name="parent_analyte_id")
   private Integer parentAnalyteId;             
@@ -119,15 +116,6 @@ public class Analyte implements Auditable, Cloneable {
       this.isActive = isActive;
   }
 
-  public Integer getAnalyteGroupId() {
-    return analyteGroupId;
-  }
-  public void setAnalyteGroupId(Integer analyteGroupId) {
-    if((analyteGroupId == null && this.analyteGroupId != null) || 
-       (analyteGroupId != null && !analyteGroupId.equals(this.analyteGroupId)))
-      this.analyteGroupId = analyteGroupId;
-  }
-
   public Integer getParentAnalyteId() {
     return parentAnalyteId;
   }
@@ -163,8 +151,6 @@ public class Analyte implements Auditable, Cloneable {
       AuditUtil.getChangeXML(name,original.name,doc,"name");
 
       AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
-
-      AuditUtil.getChangeXML(analyteGroupId,original.analyteGroupId,doc,"analyte_group_id");
 
       AuditUtil.getChangeXML(parentAnalyteId,original.parentAnalyteId,doc,"parent_analyte_id");
 
