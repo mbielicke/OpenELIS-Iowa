@@ -270,7 +270,7 @@ UIRF Software License are applicable instead of those above.
 										<fields>
 											<dropdown key="{componentMeta:getComponentId($component)}" required="true"/>
 											<string key="{invItemMeta:getDescription($compInvItem)}"/>
-											<number key="{componentMeta:getQuantity($component)}" type="double" required="true"/>
+											<double key="{componentMeta:getQuantity($component)}" required="true"/>
 										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false,false</filters>
@@ -325,9 +325,9 @@ UIRF Software License are applicable instead of those above.
 										<fields>
 											<string key="{locationMeta:getStorageLocationId($location)}"/>
 											<string key="{locationMeta:getLotNumber($location)}"/>
-											<number key="{locationMeta:getId($location)}" type="integer"/>
+											<integer key="{locationMeta:getId($location)}"/>
 											<string key="{locationMeta:getExpirationDate($location)}"/>
-											<number key="{locationMeta:getQuantityOnhand($location)}" type="integer"/>
+											<integer key="{locationMeta:getQuantityOnhand($location)}"/>
 										</fields>
 										<sorts>true,true,true,true,true</sorts>
 										<filters>false,false,false,false,false</filters>
@@ -444,14 +444,14 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	  <number key="{meta:getId($invItem)}" type="integer" required="false"/>
+  	  <integer key="{meta:getId($invItem)}" required="false"/>
       <string key="{meta:getName($invItem)}" max="20" required="true"/>
       <string key="{meta:getDescription($invItem)}" max="60" required="false"/>
       <dropdown key="{meta:getStoreId($invItem)}" type="integer" required="true"/> 
       <dropdown key="{meta:getCategoryId($invItem)}" type="integer" required="false"/> 
-      <number key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
-      <number key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
-      <number key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
+      <integer key="{meta:getQuantityMinLevel($invItem)}" required="false"/>
+      <integer key="{meta:getQuantityMaxLevel($invItem)}" required="false"/>
+      <integer key="{meta:getQuantityToReorder($invItem)}" required="false"/>
       <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="true"/> 
       <check key="{meta:getIsActive($invItem)}" required="false"/>
       <check key="{meta:getIsReorderAuto($invItem)}" required="false"/>
@@ -463,12 +463,12 @@ UIRF Software License are applicable instead of those above.
       <check key="{meta:getIsLabor($invItem)}" required="false"/>
       <check key="{meta:getIsNoInventory($invItem)}" required="false"/>
       <string key="{meta:getProductUri($invItem)}" required="false"/>
-      <number key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
-      <number key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
-      <number key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
+      <integer key="{meta:getAverageLeadTime($invItem)}" required="false"/>
+      <double key="{meta:getAverageCost($invItem)}" required="false"/>
+      <integer key="{meta:getAverageDailyUse($invItem)}" required="false"/>
       
       <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
-      <number key="{meta:getParentRatio($invItem)}" type="integer" required="false"/>
+      <integer key="{meta:getParentRatio($invItem)}" required="false"/>
       
       <rpc key="components">
 	      <table key="componentsTable"/>

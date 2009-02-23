@@ -27,23 +27,13 @@ package org.openelis.modules.inventoryAdjustment.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCalendar;
@@ -54,7 +44,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.DropdownWidget;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
@@ -69,25 +58,40 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements TableManager, TableWidgetListener, ClickListener, AutoCompleteCallInt {
+public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjustmentRPC,InventoryAdjustmentForm,Integer> implements TableManager, TableWidgetListener, ClickListener, AutoCompleteCallInt {
 
     private TableWidget        adjustmentsTable;
     private AppButton        removeRowButton;
-    private static boolean loaded = false;
     
     private ScreenTextBox   idText, userText, descText;
-    private static DataModel storesDropdownModel;
-    private ScreenDropDownWidget storesDropdown;
+    private Dropdown store;
     private ScreenCalendar adjustmentDateText;
     private KeyListManager   keyList = new KeyListManager();
     
     private InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static String storeIdKey;
     
+    
+    AsyncCallback<InventoryAdjustmentRPC> checkModels = new AsyncCallback<InventoryAdjustmentRPC>() {
+        public void onSuccess(InventoryAdjustmentRPC rpc) {
+            if(rpc.stores != null) {
+                setStoresModel(rpc.stores);
+                rpc.stores = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
     public InventoryAdjustmentScreen() {
-        super("org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService",!loaded, new DefaultRPC());
+        super("org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
+        
+        forms.put("display",new InventoryAdjustmentForm());
+        getScreen(new InventoryAdjustmentRPC());
     }
-
+    
     public void onClick(Widget sender) {
         if (sender == removeRowButton)
             onRemoveRowButtonClick();
@@ -104,9 +108,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
     */
     
     public void afterDraw(boolean sucess) {
-        Dropdown drop;
-        loaded = true;
-        
         removeRowButton = (AppButton)getWidget("removeRowButton");
         adjustmentsTable = (TableWidget)getWidget("adjustmentsTable");
         adjustmentsTable.addTableWidgetListener(this);
@@ -117,14 +118,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         idText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getId());
         adjustmentDateText = (ScreenCalendar) widgets.get(InventoryAdjustmentMeta.getAdjustmentDate());
         userText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getSystemUserId());
-        storesDropdown = (ScreenDropDownWidget) widgets.get(storeIdKey);
+        store = (Dropdown) getWidget(storeIdKey);
         descText = (ScreenTextBox) widgets.get(InventoryAdjustmentMeta.getDescription());
-        
-        if (storesDropdownModel == null) 
-            storesDropdownModel = (DataModel)initData.get("stores");
-         
-        drop = (Dropdown)storesDropdown.getWidget();
-        drop.setModel(storesDropdownModel);
         
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -133,9 +128,19 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
         
+        setStoresModel(rpc.stores);
+        rpc.stores = null;
+        
         updateChain.add(afterUpdate);
         commitAddChain.add(afterCommitAdd);
         commitUpdateChain.add(afterCommitUpdate);
+        
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        deleteChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
         
@@ -154,21 +159,21 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         adjustmentDateText.enable(false);
         userText.enable(false);
         
-        FieldType[] args = new FieldType[0]; 
+        InventoryAdjustmentRPC iarpc = new InventoryAdjustmentRPC();
+        iarpc.key = rpc.key;
+        iarpc.form = rpc.form;
         
-        screenService.getObject("getAddAutoFillValues", args, new AsyncCallback<DataModel<DataSet>>(){
-            public void onSuccess(DataModel<DataSet> model){    
-              // get the datamodel, load the fields in the form
-                DataSet set = model.get(0);
+        screenService.call("getAddAutoFillValues", iarpc, new AsyncCallback<InventoryAdjustmentRPC>(){
+            public void onSuccess(InventoryAdjustmentRPC result){    
 
                 //load the values
-                adjustmentDateText.load((DateField)set.get(2));
-                userText.load((StringField)set.get(0));
+                adjustmentDateText.load(result.form.adjustmentDate);
+                userText.load(result.form.systemUser);
                 
                 //set the values in the rpc
-                form.setFieldValue(InventoryAdjustmentMeta.getSystemUserId(), (String)((StringField)set.get(0)).getValue());
-                form.setFieldValue(InventoryAdjustmentMeta.getAdjustmentDate(), (DatetimeRPC)((DateField)set.get(2)).getValue());
-                form.setFieldValue("systemUserId", ((NumberField)set.get(1)).getIntegerValue());
+                rpc.form.systemUser.setValue(result.form.systemUser.getValue());
+                rpc.form.adjustmentDate.setValue(result.form.adjustmentDate.getValue());
+                rpc.form.systemUserId = result.form.systemUserId;
                 descText.setFocus(true);
                 window.setStatus("","");
             }
@@ -184,7 +189,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
             idText.enable(false);
             adjustmentDateText.enable(false);
             userText.enable(false);
-            storesDropdown.enable(false);
+            ((ScreenDropDownWidget)widgets.get(storeIdKey)).enable(false);
             descText.setFocus(true);
             removeRowButton.changeState(AppButton.ButtonState.DISABLED);
         }
@@ -278,19 +283,22 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
         final DropDownField<Object> invItemField = (DropDownField)tableRow.get(1);
         switch (col){
             case 0:
-                form.setFieldValue(storeIdKey, ((Dropdown)storesDropdown.getWidget()).getSelections());
-                if(form.getFieldValue(storeIdKey) == null){
+                if(store.getSelections().size() == 0){
                     window.setStatus(consts.get("inventoryAdjLocAutoException"),"ErrorPanel");
                     return;
                 }
                 
-                final NumberObject locIdObj = new NumberObject((Integer)adjustmentsTable.model.getCell(row, 0));
-                NumberObject storeIdObj = new NumberObject((Integer)form.getFieldValue(storeIdKey));
+                InventoryAdjustmentRPC iarpc = new InventoryAdjustmentRPC();
+                iarpc.key = rpc.key;
+                iarpc.form = rpc.form;
                 
+                if(store.getSelections().size() > 0)
+                    iarpc.storeId = (Integer)store.getSelections().get(0).getKey();
+                iarpc.locId = (Integer)adjustmentsTable.model.getCell(row, 0);
                 
                 //we need to make sure the location id isnt already in the table
-                if(locationIdAlreadyExists(locIdObj.getIntegerValue(), row)){
-                    ((NumberField)tableRow.get(0)).clearErrors();
+                if(locationIdAlreadyExists(iarpc.locId, row)){
+                    ((IntegerField)tableRow.get(0)).clearErrors();
                     adjustmentsTable.model.setCellError(row, 0, consts.get("fieldUniqueException"));
                     return;
                 }
@@ -298,24 +306,20 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
                 window.setStatus("","spinnerIcon");
                 
                 // prepare the argument list for the getObject function
-                FieldType[] args = new FieldType[] {locIdObj, storeIdObj}; 
+                //FieldType[] args = new FieldType[] {locIdObj, storeIdObj}; 
                 
-                screenService.getObject("getInventoryItemInformation", args, new AsyncCallback<DataModel<Integer>>(){
-                    public void onSuccess(DataModel<Integer> model){    
+                screenService.call("getInventoryItemInformation", iarpc, new AsyncCallback<InventoryAdjustmentRPC>(){
+                    public void onSuccess(InventoryAdjustmentRPC result){    
                         if(row < adjustmentsTable.model.numRows()){
                         Integer currentId = (Integer)adjustmentsTable.model.getCell(row, 0);
-                        Integer oldId = locIdObj.getIntegerValue();
+                        Integer oldId = result.locId;
                         
                         //make sure the row hasnt been deleted and it still has the same values
                         if(currentId.equals(oldId)){
-                          if(model.size() > 0){
-                              DataSet set = model.get(0);
-                                    
-                              invItemField.setModel(((DropDownField)set.get(1)).getModel());
-                              adjustmentsTable.model.setCell(row, 1, ((DropDownField)set.get(1)).getModel().get(0));
-                              adjustmentsTable.model.setCell(row, 2, ((StringField)set.get(2)).getValue());
-                              adjustmentsTable.model.setCell(row, 3, ((NumberField)set.get(3)).getValue());
-                          }
+                              invItemField.setModel(result.invItemModel);
+                              adjustmentsTable.model.setCell(row, 1, result.invItemModel.get(0));
+                              adjustmentsTable.model.setCell(row, 2, result.storageLocation);
+                              adjustmentsTable.model.setCell(row, 3, result.qtyOnHand);
                         }
                         }
                       window.setStatus("","");
@@ -335,14 +339,14 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
       
                     if(selectedRow.size() > 1){
                         //we need to make sure this inventory item isnt already in the table
-                        if(locationIdAlreadyExists(((NumberObject)selectedRow.getData()).getIntegerValue(), row)){
+                        if(locationIdAlreadyExists(((IntegerObject)selectedRow.getData()).getValue(), row)){
                             ((DropDownField)tableRow.get(1)).clearErrors();
                             adjustmentsTable.model.setCellError(row, 1, consts.get("fieldUniqueException"));
                          
                         }else{
-                            adjustmentsTable.model.setCell(row, 0, ((NumberObject)selectedRow.getData()).getValue());
+                            adjustmentsTable.model.setCell(row, 0, ((IntegerObject)selectedRow.getData()).getValue());
                             adjustmentsTable.model.setCell(row, 2, ((StringObject)selectedRow.get(2)).getValue());
-                            adjustmentsTable.model.setCell(row, 3, ((NumberObject)selectedRow.get(5)).getValue());
+                            adjustmentsTable.model.setCell(row, 3, ((IntegerObject)selectedRow.get(5)).getValue());
                             
                         }
                     }    
@@ -354,8 +358,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
                 Integer physicalCount = null;
                 Integer adjQty = null;
                 
-                qtyOnHand = ((NumberField)tableRow.get(3)).getIntegerValue();
-                physicalCount = ((NumberField)tableRow.get(4)).getIntegerValue();
+                qtyOnHand = (Integer)tableRow.get(3).getValue();
+                physicalCount = (Integer)tableRow.get(4).getValue();
                 
                 if(qtyOnHand != null && physicalCount != null){
                     adjQty = physicalCount - qtyOnHand;
@@ -373,7 +377,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
     //end table listener methods
     //
     
-    private boolean tableRowEmpty(DataSet<Data> row){
+    private boolean tableRowEmpty(DataSet<Integer> row){
         boolean empty = true;
         
         for(int i=0; i<row.size(); i++){
@@ -412,20 +416,17 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
     }
 
     public void callForMatches(final AutoComplete widget, DataModel model, String text) {
-        StringObject catObj = new StringObject(widget.cat);
-        StringObject matchObj = new StringObject(text);
-        DataMap paramsObj = new DataMap();
-        form.setFieldValue(storeIdKey, ((Dropdown)storesDropdown.getWidget()).getSelections());
-
-        paramsObj.put("storeId", (FieldType)form.getField(storeIdKey));
+        // prepare the arguments
+        InventoryAdjustmentItemAutoRPC iaarpc = new InventoryAdjustmentItemAutoRPC();
+        iaarpc.key = rpc.key;
+        iaarpc.cat = widget.cat;
+        iaarpc.text = text;
+        if(store.getSelections().size() > 0)
+            iaarpc.storeId = (Integer)store.getSelections().get(0).getKey();
         
-        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {catObj, model, matchObj, paramsObj}; 
-        
-        
-        screenService.getObject("getMatchesObj", args, new AsyncCallback<DataModel>() {
-            public void onSuccess(DataModel model) {
-                widget.showAutoMatches(model);
+        screenService.call("getMatchesObj", iaarpc, new AsyncCallback<InventoryAdjustmentItemAutoRPC>() {
+            public void onSuccess(InventoryAdjustmentItemAutoRPC result) {
+                widget.showAutoMatches(result.autoMatches);
             }
             
             public void onFailure(Throwable caught) {
@@ -435,5 +436,9 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<DefaultRPC,For
                     Window.alert(caught.getMessage());
             }
         });        
+    }
+    
+    public void setStoresModel(DataModel<Integer> storesModel) {
+        store.setModel(storesModel);
     }
 }

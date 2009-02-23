@@ -137,7 +137,7 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	<number key="{standardNoteMeta:getId($meta)}" type="integer" required="false"/>
+  	<integer key="{standardNoteMeta:getId($meta)}" required="false"/>
   	<string key="{standardNoteMeta:getName($meta)}" required="true" max="20"/>
   	<string key="{standardNoteMeta:getDescription($meta)}" required="true" max="60"/>
   	<dropdown key="{standardNoteMeta:getTypeId($meta)}" required="true"/>

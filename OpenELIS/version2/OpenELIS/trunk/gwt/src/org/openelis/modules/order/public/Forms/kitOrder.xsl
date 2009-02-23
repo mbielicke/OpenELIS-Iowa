@@ -461,8 +461,8 @@ UIRF Software License are applicable instead of those above.
       <dropdown key="{orgMeta:getName($organization)}" required="true"/>
       <dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
       <dropdown key="{orderMeta:getDescription($order)}" required="false"/>
-      <integer key="originalStatus" reset="false"/>
       
+      <string key="orderTabPanel" reset="false">itemsTab</string>
       <rpc key="shippingNote">
     	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
       </rpc>
@@ -501,12 +501,8 @@ UIRF Software License are applicable instead of those above.
       <string key="{addr:getState($orgAddress)}" required="false"/>
       <string key="{addr:getZipCode($orgAddress)}" required="false"/>
       
-      <string key="orderType" reset="false"/>
-      
       <!-- values not on this screen -->
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>    
-
-	  <string key="orderTabPanel" reset="false">itemsTab</string>  
 	</rpc>
 	<rpc key="query">  
 	  <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>

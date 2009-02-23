@@ -28,12 +28,9 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -70,10 +67,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer> implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
-    
-    private static boolean loaded = false;
-    
-    private static DataModel statusDropdown, costCenterDropdown, shipFromDropdown;
     
     private AutoComplete orgDropdown, billToDropdown, reportToDropdown;
     
@@ -123,26 +116,12 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         super("org.openelis.modules.order.server.OrderService");
         
         orderType = (String)((StringObject)args[0]).getValue();
-        
-       // HashMap hash = new HashMap();
-       // hash.put("type", (StringObject)args[0]);
-        
-      //  BooleanObject loadedObj = new BooleanObject((loaded ? "Y" : "N"));
-      //  hash.put("loaded", loadedObj);
-        
-        //wrappedWidgets.put(OrderMeta.getStatusId(), status = new Dropdown());
-        //wrappedWidgets.put(OrderMeta.getCostCenterId(), costCenter = new Dropdown());
-        //wrappedWidgets.put(OrderMeta.getShipFromId(), shipFrom = new Dropdown());
-        //wrappedWidgets.put("itemsTable", itemsTable = new TableWidget());
-        //wrappedWidgets.put("receiptsTable", receiptsTable = new TableWidget());
-
+      
         forms.put("display",new OrderForm());
         OrderRPC orderRPC = new OrderRPC();
         orderRPC.orderType = orderType;
         
         getScreen(orderRPC);
-        
-       // getXMLData(hash, new DefaultRPC());
     }
 
     public void onClick(Widget sender) {
@@ -232,10 +211,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
     }
     
     public void afterDraw(boolean sucess) {
-        Dropdown drop;
-        
-        loaded = true;
-
         orderNum = (ScreenTextBox)widgets.get(OrderMeta.getId());
         neededInDays = (ScreenTextBox)widgets.get(OrderMeta.getNeededInDays());
         //status = (ScreenDropDownWidget)widgets.get(OrderMeta.getStatusId());
@@ -297,23 +272,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         orgDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_ORGANIZATION_META.getName()); 
         billToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
         reportToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
-        
-        //if (statusDropdown == null) {
-        //    statusDropdown = (DataModel)initData.get("status");
-        //    costCenterDropdown = (DataModel)initData.get("costCenter");
-        //    shipFromDropdown = (DataModel)initData.get("shipFrom");
-       // }
-
-        //drop = (Dropdown)getWidget(OrderMeta.getStatusId());
-        //drop.setModel(statusDropdown);
-        
-       // drop = (AutoCompleteDropdown)getWidget("store");
-       // if(drop != null)
-       //     drop.setModel(storeDropdown);
-        
-        //drop = (Dropdown)getWidget(OrderMeta.getCostCenterId());
-        //drop.setModel(costCenterDropdown);
-        
+               
         setStatusIdModel(rpc.status);
         setCostCentersModel(rpc.costCenters);
         setShipFromModel(rpc.shipFrom);
@@ -325,13 +284,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         rpc.costCenters = null;
         rpc.shipFrom = null;
         
-        //if("kits".equals(orderType)){
-        //    drop = (Dropdown)getWidget(OrderMeta.getShipFromId());
-        //    drop.setModel(shipFromDropdown);
-       // }
-        
-        //addCommandListener((ButtonPanel)getWidget("buttons"));
-        //((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         //set order type in display and query rpcs
         ((Form)forms.get("display")).setFieldValue("orderType", orderType);
@@ -339,6 +291,13 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         
         updateChain.add(afterUpdate);
         //commitQueryChain.add(afterCommitQuery);
+        
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        deleteChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
         
@@ -407,8 +366,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         
         
         window.setStatus("","spinnerIcon");
-          
-        FieldType[] args = new FieldType[0]; 
+
         OrderRPC orpc = new OrderRPC();
         orpc.key = rpc.key;
         orpc.form = rpc.form;
@@ -827,7 +785,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
         });
     }
     
-    private boolean tableRowEmpty(DataSet<Data> row){
+    private boolean tableRowEmpty(DataSet<Integer> row){
         boolean empty = true;
         
         for(int i=0; i<row.size(); i++){

@@ -209,7 +209,7 @@ UIRF Software License are applicable instead of those above.
 									<label/>
 								</editors>
 								<fields>
-									<number type="integer" required="true"/>
+									<integer required="true"/>
 									<string required="true"/>
 								</fields>
 								<sorts>false,false</sorts>
@@ -266,7 +266,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<HorizontalPanel width="14px"/>
 									<widget>
-										<textarea width="576px" height="155px" case="mixed" key="{noteMeta:getText($note)}" alwaysDisabled="true"/>
+										<textarea width="576px" height="155px" case="mixed" key="{noteMeta:getText($note)}"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -277,10 +277,10 @@ UIRF Software License are applicable instead of those above.
 			</VerticalPanel>
 	</display>
 	<rpc key="display">
-		<number key="{meta:getId($shipping)}" type="integer" required="false"/>
+		<integer key="{meta:getId($shipping)}" required="false"/>
 		<dropdown key="{meta:getStatusId($shipping)}" required="true"/>
-		<number key="{meta:getNumberOfPackages($shipping)}" type="integer" required="true"/>
-		<number key="{meta:getCost($shipping)}" type="double" required="false"/>
+		<integer key="{meta:getNumberOfPackages($shipping)}" required="true"/>
+		<double key="{meta:getCost($shipping)}" required="false"/>
 		<dropdown key="{meta:getShippedFromId($shipping)}" required="true"/>
 		<dropdown key="{orgMeta:getName($organization)}" required="true"/>
 		<date key="{meta:getProcessedDate($shipping)}" begin="0" end="2" required="false"/>
@@ -292,7 +292,7 @@ UIRF Software License are applicable instead of those above.
 	    <string key="{addr:getCity($orgAddress)}" required="false"/>
 	    <string key="{addr:getState($orgAddress)}" required="false"/>
 	    <string key="{addr:getZipCode($orgAddress)}" required="false"/>
-        <number key="systemUserId" type="integer" required="false"/>
+        <integer key="systemUserId" required="false"/>
 		
 		<rpc key="shippingItems">
     		<table key="itemsTable"/>

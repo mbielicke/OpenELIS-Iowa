@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
@@ -58,7 +59,6 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -313,7 +313,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
     	autoRPC.match = text;
     	
         if(widget == kitLocationDropdown){
-            autoRPC.addToExisting = (((CheckBox)addToExisiting.getWidget()).isChecked() ? "Y" : "N");    
+            autoRPC.addToExisting = ((CheckBox)addToExisiting.getWidget()).getState();    
         }else{
             autoRPC.id = (Integer) subItemsTable.model.getRow(currentTableRow).getKey();
         }

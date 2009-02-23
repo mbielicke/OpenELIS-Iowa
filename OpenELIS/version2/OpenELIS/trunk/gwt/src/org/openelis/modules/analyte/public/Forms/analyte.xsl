@@ -155,9 +155,9 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key="display">
-  	<number key="{meta:getId($meta)}" type="integer" required="false"/>
+  	<integer key="{meta:getId($meta)}" required="false"/>
   	<string key="{meta:getName($meta)}" required="true"/>
-  	<number key="{meta:getAnalyteGroupId($meta)}" type="integer" required="false"/>
+  	<integer key="{meta:getAnalyteGroupId($meta)}" required="false"/>
   	<dropdown key="{parentMeta:getName($parentMeta)}" type="integer" required="false"/>
   	<string key="{meta:getExternalId($meta)}" required="false"/>
   	<check key="{meta:getIsActive($meta)}" required="false"/>
