@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
@@ -53,12 +54,14 @@ public interface ShippingRemote {
     public List getShippingItems(Integer shippingId);
     
     //commit a change to shipping record, or insert a new shipping record
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList) throws Exception;
+    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList, NoteDO shippingNotes) throws Exception;
     
     //method to query for shipments
     public List query(HashMap fields, int first, int max) throws Exception;
      
     public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception;
+    
+    public NoteDO getShippingNote(Integer shippingId);
     
      //method to validate the fields before the backend updates it in the database
      public List validateForUpdate(ShippingDO shippingDO, List shippingItems, List trackngNumbers);

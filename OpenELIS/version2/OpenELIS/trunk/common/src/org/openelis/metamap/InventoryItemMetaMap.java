@@ -89,6 +89,8 @@ public class InventoryItemMetaMap extends InventoryItemMeta implements MetaMap{
             return ITEM_NOTE.hasColumn(name);
         if(name.startsWith("dictStore."))
             return DICTIONARY_STORE_META.hasColumn(name);
+        if(name.startsWith("inventory_item.parentInventoryItem."))
+            return PARENT_INVENTORY_ITEM.hasColumn(name);                      
         return super.hasColumn(name);
     }
     
