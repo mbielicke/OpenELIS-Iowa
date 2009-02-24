@@ -253,8 +253,7 @@ UIRF Software License are applicable instead of those above.
                                    </fields>
                                   </leaf> 
                                  </leaves> 
-                                 <buttons>
-                                 </buttons>
+                                 
                                 </tree-table>
                                 <HorizontalPanel style="TableButtonFooter" halign="right">
                                 <appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">

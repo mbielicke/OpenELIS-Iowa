@@ -25,6 +25,11 @@
 */
 package org.openelis.modules.organization.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -57,7 +62,6 @@ import org.openelis.modules.organization.client.NotesForm;
 import org.openelis.modules.organization.client.NotesRPC;
 import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.modules.organization.client.OrganizationRPC;
-import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -71,11 +75,6 @@ import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class OrganizationService implements AppScreenFormServiceInt<OrganizationRPC,Integer>, 
 															  AutoCompleteServiceInt {
@@ -622,7 +621,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 	private OrganizationAddressDO getOrganizationDOFromRPC(OrganizationForm form){
 		OrganizationAddressDO newOrganizationDO = new OrganizationAddressDO();
 		
-		newOrganizationDO.setOrganizationId(form.id.getIntegerValue());
+		newOrganizationDO.setOrganizationId(form.id.getValue());
 		newOrganizationDO.setName(form.name.getValue());
 		newOrganizationDO.setIsActive(form.isActive.getValue());
 		newOrganizationDO.setParentOrganizationId((Integer)form.parentOrg.getSelectedKey());		

@@ -25,64 +25,57 @@
 */
 package org.openelis.modules.standardnotepicker.client;
 
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.tree.TreeManager;
+import org.openelis.gwt.widget.tree.TreeModel;
+import org.openelis.gwt.widget.tree.TreeServiceCallInt;
+import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.SourcesTreeModelEvents;
+import org.openelis.gwt.widget.tree.event.TreeModelListener;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.PagedTreeField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.screen.ScreenPagedTree;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements TreeListener, ClickListener{
+public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePickerRPC,StandardNotePickerForm,Integer> implements TreeManager, TreeServiceCallInt, TreeModelListener, ClickListener{
 
 	public TextArea noteTextArea;
-	
+	private TextBox findTextBox;
+	private TreeWidget tree;
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
 	public StandardNotePickerScreen(TextArea noteTextArea) {
-		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService",false,new DefaultRPC());
+		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService");
+
 		this.noteTextArea = noteTextArea;		
         name="Standard Note Selection";
+        
+        forms.put("display",new StandardNotePickerForm());
+        
+        getScreen(new StandardNotePickerRPC());
 	}
-	
+		
 	public void onClick(Widget sender) {
 		String action = ((AppButton)sender).action;
 		if(action.equals("find")){
-			TextBox findTextBox = (TextBox)getWidget("findTextBox");
-			 String queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-			Form queryRPC = (Form)forms.get("queryByNameDescription");
-			queryRPC.setFieldValue(StandardNoteMeta.getName(), queryString);
-			queryRPC.setFieldValue(StandardNoteMeta.getDescription(), queryString);
-
-			StringObject name = new StringObject();
-	        StringObject desc = new StringObject();
-	        name.setValue(queryString);
-	        desc.setValue(queryString);
+		    StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+	        snprpc.key = rpc.key;
+	        snprpc.form = rpc.form;
+	        snprpc.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
 	        
-	       // prepare the argument list for the getObject function
-            FieldType[] args = new FieldType[] {name,desc}; 
-	        screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
-	            public void onSuccess(PagedTreeField treeField){
-	            	ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
-	            	ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-	            	vp.clear();
-	            	vp.getPanel().add(tree);
-	                tree.load(treeField);
+	        screenService.call("getTreeModel" , snprpc, new AsyncCallback<StandardNotePickerRPC>(){
+	            public void onSuccess(StandardNotePickerRPC result){
+	                tree.model.load(result.treeModel);
 	            }
 	            
 	            public void onFailure(Throwable caught){
@@ -93,31 +86,29 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
 	}
 	
 	public void afterDraw(boolean sucess) {
-        final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-        tree.controller.setTreeListener(this);
+        tree = (TreeWidget)getWidget("noteTree");
+        tree.model.addTreeModelListener(this);
+        findTextBox = (TextBox)getWidget("findTextBox");
+        
         addCommandListener((ButtonPanel) getWidget("buttons"));
         ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         
-        vp.clear();
-        vp.remove(tree);
+        //vp.clear();
+       // vp.remove(tree);
         
         window.setStatus("","spinnerIcon");
-        
-        StringObject name = new StringObject();
-        StringObject desc = new StringObject();
-        name.setValue("*");
-        desc.setValue("*");
-        
        // prepare the argument list for the getObject function
-        FieldType[] args = new FieldType[] {name,desc}; 
-        screenService.getObject("getTreeModel" , args, new AsyncCallback<PagedTreeField>(){
-            public void onSuccess(PagedTreeField treeField){
-            	vp.clear();
-            	vp.getPanel().add(tree);
-                tree.load(treeField);
-                
+        StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+        snprpc.key = rpc.key;
+        snprpc.form = rpc.form;
+        snprpc.queryString = "*";
+        
+        screenService.call("getTreeModel" , snprpc, new AsyncCallback<StandardNotePickerRPC>(){
+            public void onSuccess(StandardNotePickerRPC result){
+                tree.model.load(result.treeModel);
+            	
                 window.setStatus("","");
             }
             
@@ -138,15 +129,9 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
     public void abort() {
     	window.close();
     }
-
+/*
     public void onTreeItemSelected(TreeItem item) {
-		try{
-			item.setState(!item.getState(), true);
 		
-		}catch(NumberFormatException e){
-			TextArea textArea = (TextArea)getWidget("noteText");
-			textArea.setText((String)item.getUserObject());
-		}
 	}
 	
 	public void onTreeItemStateChanged(TreeItem item) {
@@ -190,4 +175,163 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<DefaultRPC,Form
 			//this means that it is the bottom level...
 		}
 	}
+	*/
+
+	//
+	//start tree manager methods
+	//
+    public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
+        return false;
+    }
+
+    public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
+        return true;
+    }
+
+    public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
+        return false;
+    }
+
+    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
+        return false;
+    }
+
+    public boolean canDrop(TreeWidget widget,
+                           Widget dragWidget,
+                           TreeDataItem dropTarget,
+                           int targetRow) {
+        return false;
+    }
+
+    public boolean canDrop(TreeWidget widget,
+                           Widget dragWidget,
+                           Widget dropWidget) {
+        return false;
+    }
+
+    public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
+        return false;
+    }
+
+    public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
+        return true;
+    }
+
+    public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
+        if("leaf".equals(set.leafType))
+            return true;
+        
+        return false;
+    }
+
+    public void drop(TreeWidget widget,
+                     Widget dragWidget,
+                     TreeDataItem dropTarget,
+                     int targetRow) {
+        
+    }
+
+    public void drop(TreeWidget widget, Widget dragWidget) {
+
+        
+    }
+    //
+    //end tree manager methods
+    //
+
+    //
+    //start tree model listener methods
+    //
+    public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void dataChanged(SourcesTreeModelEvents sender) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void rowAdded(SourcesTreeModelEvents sender, int rows) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void rowClosed(SourcesTreeModelEvents sender,
+                          int row,
+                          TreeDataItem item) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void rowDeleted(SourcesTreeModelEvents sender, int row) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void rowOpened(SourcesTreeModelEvents sender, int row, final TreeDataItem item) {
+        
+    }
+
+    public void rowSelectd(SourcesTreeModelEvents sender, int row) {
+        final TreeDataItem item = tree.model.getRow(row);
+            TextArea textArea = (TextArea)getWidget("noteText");
+            textArea.setText((String)((StringObject)item.getData()).getValue());
+                
+    }
+
+    public void rowUnselected(SourcesTreeModelEvents sender, int row) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void rowUpdated(SourcesTreeModelEvents sender, int row) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void unload(SourcesTreeModelEvents sender) {
+        // TODO Auto-generated method stub
+        
+    }
+    //
+    //end tree model listener methods
+    //
+
+    //method to help lazy load the tree
+    public void getChildNodes(final TreeModel model, final int row) {
+        final TreeDataItem item = model.getRow(row);
+        Integer id = item.getKey();
+        item.getItems().clear();
+        
+        //final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
+
+        window.setStatus("","spinnerIcon");
+        
+        Form queryRPC = (Form)forms.get("queryByNameDescription");
+        
+        StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+        snprpc.key = rpc.key;
+        snprpc.form = rpc.form;
+        snprpc.id = id;
+        snprpc.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
+        
+        screenService.call("getTreeModelSecondLevel", snprpc, new AsyncCallback<StandardNotePickerRPC>(){
+            public void onSuccess(StandardNotePickerRPC result){
+                for(TreeDataItem child : result.treeModel) {
+                    item.addItem(child);
+                }
+                item.loaded = true;
+                
+                model.toggle(row);
+                
+                window.setStatus("","");
+            }
+            
+            public void onFailure(Throwable caught){
+                Window.alert(caught.getMessage());
+            }
+         });        
+        
+    }
 }
