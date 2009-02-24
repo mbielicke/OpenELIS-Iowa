@@ -25,37 +25,31 @@
 */
 package org.openelis.modules.standardnotepicker.server;
 
-import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.PagedTreeField;
-import org.openelis.gwt.common.data.QueryNumberField;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.widget.pagedtree.TreeModel;
-import org.openelis.gwt.widget.pagedtree.TreeModelItem;
-import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StandardNoteRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt<DefaultRPC,Integer> {
+import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerRPC;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.StandardNoteRemote;
+import org.openelis.server.constants.Constants;
+
+public class StandardNotePickerService implements AppScreenFormServiceInt<StandardNotePickerRPC,Integer> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -65,38 +59,38 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Defaul
     	return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public StandardNotePickerRPC commitAdd(StandardNotePickerRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+	public StandardNotePickerRPC commitUpdate(StandardNotePickerRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+	public StandardNotePickerRPC commitDelete(StandardNotePickerRPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public StandardNotePickerRPC abort(StandardNotePickerRPC rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public StandardNotePickerRPC fetch(StandardNotePickerRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+	public StandardNotePickerRPC fetchForUpdate(StandardNotePickerRPC rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getXML() throws RPCException {
-		return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
+		return null;
 	}
     
     public HashMap<String, FieldType> getXMLData() throws RPCException {
@@ -107,19 +101,21 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Defaul
     	return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public StandardNotePickerRPC getScreen(StandardNotePickerRPC rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
+
         return rpc;
     }
 
-    public PagedTreeField getTreeModel(StringObject name, StringObject desc) throws RPCException{
+    public StandardNotePickerRPC getTreeModel(StandardNotePickerRPC rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
-		PagedTreeField returnTree = new PagedTreeField();
-		TreeModel treeModel = new TreeModel();
+		TreeDataModel returnTree = new TreeDataModel();
+		//TreeModel treeModel = new TreeModel();
 		
 		QueryStringField nameField = new QueryStringField();
 		QueryStringField descField = new QueryStringField();
-		nameField.setValue(name.getValue());
-		descField.setValue(desc.getValue());
+		nameField.setValue(rpc.queryString);
+		descField.setValue(rpc.queryString);
 		
 		HashMap fields = new HashMap();
 		fields.put(StandardNoteMeta.getName(), nameField);
@@ -143,28 +139,30 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Defaul
 			//standard note category name
 			String nameParam = (String)result[1];
 			
-			TreeModelItem treeModelItem = new TreeModelItem();
-			treeModelItem.setText(nameParam);
-			treeModelItem.setUserObject(String.valueOf(idParam));
-			treeModelItem.setHasDummyChild(true);
-			treeModel.addItem(treeModelItem);
+			TreeDataItem treeModelItem = new TreeDataItem();
+			treeModelItem.leafType = "top";
+			treeModelItem.lazy = true;
+			treeModelItem.setKey(idParam);
+			treeModelItem.add(new StringObject(nameParam));
+			
+			returnTree.add(treeModelItem);
 			
 			i++;
 		}	
-		returnTree.setValue(treeModel);
-	    return returnTree;
+		rpc.treeModel = returnTree;
+	    return rpc;
 	}
 
-	public StringObject getTreeModelSecondLevel(NumberObject type, StringObject name, StringObject desc) throws RPCException{
+    public StandardNotePickerRPC getTreeModelSecondLevel(StandardNotePickerRPC rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
 		QueryNumberField typeField = new QueryNumberField();
 		QueryStringField nameField = new QueryStringField();
 		QueryStringField descField = new QueryStringField();
 		typeField.setType("integer");
-		typeField.setValue(String.valueOf(type.getIntegerValue()));
-		nameField.setValue(name.getValue());
-		descField.setValue(desc.getValue());
+		typeField.setValue(String.valueOf(rpc.id));
+		nameField.setValue(rpc.queryString);
+		descField.setValue(rpc.queryString);
 		HashMap<String,AbstractField> fields = new HashMap<String, AbstractField>();
 		fields.put(StandardNoteMeta.getTypeId(), typeField);
 		fields.put(StandardNoteMeta.getName(), nameField);
@@ -179,28 +177,23 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Defaul
 	       StringObject returnString = new StringObject(); 
 	     try {
 	    	 Iterator itr = list.iterator();
-	            
-	         Document doc = XMLUtil.createNew("tree");
-	         while(itr.hasNext()){
-				 StandardNoteDO standardNoteDO = (StandardNoteDO) itr.next();
-				 
-				 Element root = doc.getDocumentElement();
-				 root.setAttribute("key", "menuList");
-				 root.setAttribute("height", "100%");
-				 root.setAttribute("vertical","true");           
-				      
-				  Element elem = doc.createElement("label");
-				  elem.setAttribute("text", standardNoteDO.getName()+" : "+standardNoteDO.getDescription()); 
-				  elem.setAttribute("value", standardNoteDO.getText()); 
-				  
-				  root.appendChild(elem); 
-	         }
-			 
-	         returnString.setValue(XMLUtil.toString(doc));
-			 return returnString;
+	            TreeDataModel treeModel = new TreeDataModel();
+	            while(itr.hasNext()){
+	                StandardNoteDO standardNoteDO = (StandardNoteDO) itr.next();
+	                
+	                TreeDataItem treeModelItem = new TreeDataItem();
+	                treeModelItem.leafType = "leaf";
+	                treeModelItem.setKey(rpc.id);
+	                treeModelItem.setData(new StringObject(standardNoteDO.getText()));
+	                treeModelItem.add(new StringObject(standardNoteDO.getName()+" : "+standardNoteDO.getDescription()));
+	                
+	                
+	                treeModel.add(treeModelItem);
+	            }   
+	            rpc.treeModel = treeModel;
+	            return rpc;
 		}catch(Exception e){
-			returnString.setValue("");
-			return returnString;
+			return rpc;
 		}
 	}
 }

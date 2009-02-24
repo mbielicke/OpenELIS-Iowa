@@ -398,8 +398,8 @@ UIRF Software License are applicable instead of those above.
 			</display>
 
 			<rpc key="display">
-				<number key="{meta:getId($org)}" required="false" type="integer"/>
-				<number key="{meta:getAddressId($org)}" required="false" type="integer"/>
+				<integer key="{meta:getId($org)}" required="false" />
+				<integer key="{meta:getAddressId($org)}" required="false"/>
 				<string key="{meta:getName($org)}" max="40" required="true"/>
 				<string key="{addr:getStreetAddress($addr)}" max="30" required="true"/>
 				<string key="{addr:getMultipleUnit($addr)}" max="30" required="false"/>
