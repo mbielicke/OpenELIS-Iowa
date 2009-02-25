@@ -252,7 +252,6 @@ public class OrganizationBean implements OrganizationRemote {
 	}
 
 	public List query(HashMap fields, int first, int max) throws Exception{
-        System.out.println("INSIDE QUERY!!!!");
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
