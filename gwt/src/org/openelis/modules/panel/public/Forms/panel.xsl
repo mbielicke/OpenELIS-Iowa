@@ -197,8 +197,7 @@ UIRF Software License are applicable instead of those above.
 												 <xsl:value-of select="resource:getString($constants,'section')"/>
 												</headers>
 												<widths>78,78,78</widths>
-												<editors>
-													<!--<dragLabel targets="addedTestTable"/>-->
+												<editors>												
 													<label/>
 													<label/>	
 													<label/>
@@ -245,10 +244,9 @@ UIRF Software License are applicable instead of those above.
 				</HorizontalPanel>				
 			</display>
 			<rpc key="display">		
-			 <number key="{meta:getId($panel)}" type = "integer" required="false" />	 
+			 <integer key="{meta:getId($panel)}" type = "integer" required="false" />	 
 			 <string key="{meta:getName($panel)}" max = "20" required="true" />			 
 			 <string key="{meta:getDescription($panel)}" max="60" required="false"/>		 			 					
-		     <model key="allTests"/>
 		     <table key = "addedTestTable"/>
 		   </rpc>
 		   <rpc key="query">			 

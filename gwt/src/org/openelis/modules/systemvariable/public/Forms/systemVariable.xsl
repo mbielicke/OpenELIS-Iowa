@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
 </display>
 							  
 <rpc key= "display">
- <number key="{meta:getId($sv)}" type="integer" required = "false" />
+ <integer key="{meta:getId($sv)}" type="integer" required = "false" />
  <string key="{meta:getName($sv)}" required="true"/>
  <string key="{meta:getValue($sv)}" required="true"/>
 </rpc>

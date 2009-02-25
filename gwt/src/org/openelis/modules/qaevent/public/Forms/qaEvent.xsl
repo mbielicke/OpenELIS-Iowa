@@ -162,9 +162,9 @@ UIRF Software License are applicable instead of those above.
 </display>
 							  
 <rpc key= "display">
- <number key="{meta:getId($qae)}" type="integer" required = "false" />
+ <integer key="{meta:getId($qae)}" type="integer" required = "false" />
  <string key="{meta:getName($qae)}" max = "20" required = "true"/>
- <number key="{meta:getReportingSequence($qae)}"  type="integer" required = "false" />
+ <integer key="{meta:getReportingSequence($qae)}"  type="integer" required = "false" />
  <string key="{meta:getDescription($qae)}" max = "60" required = "false" /> 	 
  <check key= "{meta:getIsBillable($qae)}" required = "false" />
  <string key="{meta:getReportingText($qae)}" required = "true"/>
@@ -174,7 +174,7 @@ UIRF Software License are applicable instead of those above.
 					   
 <rpc key= "query">     
  <queryString key="{meta:getName($qae)}" />
- <queryNumber key="{meta:getReportingSequence($qae)}" type="integer" />
+ <queryInteger key="{meta:getReportingSequence($qae)}" type="integer" />
  <queryString key="{meta:getDescription($qae)}"  /> 	
  <dropdown key="{meta:getTypeId($qae)}" type="integer"/> 
  <dropdown key="{meta:getTestId($qae)}" type="integer"/>

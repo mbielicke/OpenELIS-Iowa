@@ -24,39 +24,19 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.modules.provider.client;
+package org.openelis.modules.qaevent.client;
 
-import com.google.gwt.xml.client.Node;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.DataModel;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.ProviderMetaMap;
+public class QAEventRPC extends RPC<QAEventForm, Integer> {
 
-/**
- * Specific instance of Form for loading and submitting 
- * data on the notes tab on the ProviderScreen
- * 
- * This is included as a SubForm in ProviderForm
- * @author akampoow
- *
- */
-public class NotesForm extends Form {
-        
+    /**
+     * 
+     */
     private static final long serialVersionUID = 1L;
-    public StringField subject;
-    public StringField text;
-    public StringField notesPanel;
-      
-      public NotesForm() {
-          ProviderMetaMap meta = new ProviderMetaMap();
-          fields.put(meta.getNote().getSubject(), subject = new StringField());
-          fields.put(meta.getNote().getText(),text = new StringField());
-          fields.put("notesPanel",notesPanel = new StringField());
-      }
-      
-      public NotesForm(Node node){
-          this();
-          createFields(node);
-      }
+    
+    public DataModel<Integer> qaeventTypes;
+    public DataModel<Integer> tests;
 
 }

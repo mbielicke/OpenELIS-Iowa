@@ -26,12 +26,9 @@
 package org.openelis.modules.systemvariable.client;
 
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -43,13 +40,14 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class SystemVariableScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
+public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableRPC,SystemVariableForm,Integer> implements ClickListener {
     
-    private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     
     public SystemVariableScreen() {
-        super("org.openelis.modules.systemvariable.server.SystemVariableService",false,new DefaultRPC());
+        super("org.openelis.modules.systemvariable.server.SystemVariableService");
+        forms.put("display", new SystemVariableForm());
+        getScreen(new SystemVariableRPC());        
     }
     
     private SystemVariableMetaMap Meta = new SystemVariableMetaMap();
@@ -85,7 +83,6 @@ public class SystemVariableScreen extends OpenELISScreenForm<DefaultRPC,Form,Int
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
         
-        nameTextBox = (TextBox)getWidget(Meta.getName());
         startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
         super.afterDraw(success);

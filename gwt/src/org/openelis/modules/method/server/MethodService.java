@@ -28,7 +28,6 @@ package org.openelis.modules.method.server;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -38,13 +37,14 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberField;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.MethodMetaMap;
+import org.openelis.modules.method.client.MethodForm;
+import org.openelis.modules.method.client.MethodRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.MethodRemote;
 import org.openelis.server.constants.Constants;
@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Integer> {
+public class MethodService implements AppScreenFormServiceInt<MethodRPC, Integer> {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
@@ -116,7 +116,7 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return model;
     }
     
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public MethodRPC abort(MethodRPC rpc) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.key;
         MethodDO methodDO = new MethodDO();
@@ -129,7 +129,7 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return rpc;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public MethodRPC commitAdd(MethodRPC rpc) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc.form);
         List<Exception> exceptionList = remote.validateForAdd(methodDO);
@@ -157,13 +157,13 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public MethodRPC commitDelete(MethodRPC rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public MethodRPC commitUpdate(MethodRPC rpc) throws RPCException {
        
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc.form);
@@ -191,7 +191,7 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return rpc;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public MethodRPC fetch(MethodRPC rpc) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.key;
         MethodDO methodDO = remote.getMethod(methodId);
@@ -199,7 +199,7 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return rpc;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public MethodRPC fetchForUpdate(MethodRPC rpc) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.key;
         MethodDO methodDO = new MethodDO();
@@ -230,47 +230,43 @@ public class MethodService implements AppScreenFormServiceInt<DefaultRPC, Intege
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public MethodRPC getScreen(MethodRPC rpc) throws RPCException{
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl");
         return rpc;
     }
 
-    private void setFieldsInRPC(Form form, MethodDO methodDO) {
-        form.setFieldValue(MethodMeta.getId(), methodDO.getId());
-        form.setFieldValue(MethodMeta.getName(), methodDO.getName());
-        form.setFieldValue(MethodMeta.getDescription(),
-                                methodDO.getDescription());
-        form.setFieldValue(MethodMeta.getReportingDescription(),
-                                methodDO.getReportingDescription());
-        form.setFieldValue(MethodMeta.getIsActive(),
-                                methodDO.getIsActive());        
-        form.setFieldValue(MethodMeta.getActiveBegin(),
-                                DatetimeRPC.getInstance(Datetime.YEAR,
+    private void setFieldsInRPC(MethodForm form, MethodDO methodDO) {
+        form.id.setValue(methodDO.getId());
+        form.name.setValue(methodDO.getName());
+        form.description.setValue(methodDO.getDescription());
+        form.reportingDescription.setValue(methodDO.getReportingDescription());
+        form.isActive.setValue(methodDO.getIsActive());        
+        form.activeBegin.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         methodDO.getActiveBegin()
                                                                      .getDate()));
-        form.setFieldValue(MethodMeta.getActiveEnd(),
-                                DatetimeRPC.getInstance(Datetime.YEAR,
+        form.activeEnd.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         methodDO.getActiveEnd()
                                                                      .getDate()));        
     }
     
-    private MethodDO getMethodDOFromRPC(Form form){
-      NumberField methodId = (NumberField)form.getField(MethodMeta.getId());
+    private MethodDO getMethodDOFromRPC(MethodForm form){
+      IntegerField methodId = (IntegerField)form.getField(MethodMeta.getId());
       MethodDO methodDO = new MethodDO();
-      methodDO.setId(methodId.getIntegerValue());
+      methodDO.setId(methodId.getValue());
       methodDO.setName(((String)form.getFieldValue(MethodMeta.getName())));
-      DatetimeRPC activeBegin = (DatetimeRPC)form.getFieldValue(MethodMeta.getActiveBegin());
+      DatetimeRPC activeBegin = (DatetimeRPC)form.activeBegin.getValue();
       if (activeBegin != null)
           methodDO.setActiveBegin(activeBegin.getDate());
 
-      DatetimeRPC activeEnd = (DatetimeRPC)form.getFieldValue(MethodMeta.getActiveEnd());
+      DatetimeRPC activeEnd = (DatetimeRPC)form.activeEnd.getValue();
       if (activeEnd != null)
           methodDO.setActiveEnd(activeEnd.getDate());
 
-      methodDO.setDescription((String)form.getFieldValue(MethodMeta.getDescription()));
-      methodDO.setIsActive((String)form.getFieldValue(MethodMeta.getIsActive()));
-      methodDO.setReportingDescription((String)form.getFieldValue(MethodMeta.getReportingDescription()));
+      methodDO.setDescription(form.description.getValue());
+      methodDO.setIsActive(form.isActive.getValue());
+      methodDO.setReportingDescription(form.reportingDescription.getValue());
       return methodDO;
     }
     

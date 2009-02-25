@@ -55,12 +55,10 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements
+public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> implements
                                                    ClickListener,
                                                    ChangeListener,
-                                                   TableManager {
-        
-    private static boolean loaded = false;
+                                                   TableManager {       
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -69,7 +67,6 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     
     private TableModel addTestModel = null;
     
-    private static DataModel allTestsDataModel;
     
     private PanelMetaMap PanelMeta = new PanelMetaMap();
     
@@ -93,7 +90,9 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     }
     
     public PanelScreen() {
-        super("org.openelis.modules.panel.server.PanelService",!loaded, new DefaultRPC());
+        super("org.openelis.modules.panel.server.PanelService");
+        forms.put("display", new PanelForm());
+        getScreen(new PanelRPC());
         
     }
     
@@ -111,7 +110,6 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
     
     
     public void afterDraw(boolean success) {
-        loaded = true;
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");        
         AToZTable atozTable = (AToZTable) getWidget("azTable");    
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");        
@@ -125,10 +123,10 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
                 
         //bpanel.enableButton("delete", false);
         
-        if(allTestsDataModel==null){
+        /*if(allTestsDataModel==null){
             allTestsDataModel = (DataModel)initData.get("allTests");
             
-        }
+        }*/
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);          
         addedTestsTable = (ScreenTableWidget)widgets.get("addedTestTable");
@@ -143,19 +141,16 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         
         allTestTable =  ((TableWidget)getWidget("allTestsTable"));
         
+        setAllTestsDataModel(rpc.allTests);
+        rpc.allTests = null;
         allTestsTableModel = (TableModel)allTestTable.model;
         allTestsTableModel.enableMultiSelect(true);
         
         panelName = (TextBox)getWidget(PanelMeta.getName());
         updateChain.add(afterUpdate);  
                 
-        super.afterDraw(success);
-        
-        allTestTable.model.setModel(allTestsDataModel);
-        allTestTable.model.refresh();
-        allTestTable.enabled(false);
-        form.setFieldValue("addedTestTable",addTestModel.getData());
-      
+        rpc.form.addedTestTable.setValue(addTestModel.getData());
+        super.afterDraw(success);              
   }
     
     public void query() {        
@@ -282,24 +277,10 @@ public class PanelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
                   }
           }            
        }
-
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-        
-    }
+       
+       private void setAllTestsDataModel(DataModel model) {
+           allTestTable.model.setModel(model);
+           allTestTable.model.refresh();
+           allTestTable.enabled(false);             
+       }
 }

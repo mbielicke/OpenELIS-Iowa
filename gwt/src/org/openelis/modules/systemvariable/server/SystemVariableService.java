@@ -23,11 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
+
 package org.openelis.modules.systemvariable.server;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -42,7 +42,8 @@ import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.metamap.SystemVariableMetaMap;
+import org.openelis.modules.systemvariable.client.SystemVariableForm;
+import org.openelis.modules.systemvariable.client.SystemVariableRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.server.constants.Constants;
@@ -53,16 +54,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC,Integer> {
+public class SystemVariableService implements AppScreenFormServiceInt<SystemVariableRPC,Integer> {
 
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9;  
     
-    private static SystemVariableMetaMap Meta = new SystemVariableMetaMap();
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
      public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
-         List sysVars = new ArrayList();
+        List sysVars = new ArrayList();
         if(form == null){           
             
             form = (Form)SessionManager.getSession().getAttribute("SystemVariableQuery");
@@ -115,7 +115,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
          return model;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC commitAdd(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
@@ -142,7 +142,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
         return rpc;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC commitUpdate(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         SystemVariableDO sysVarDO = getSystemVariableDOFromRPC(rpc.form);
         Integer svId = null;
@@ -172,7 +172,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
     }
 
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC commitDelete(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         try{
             remote.deleteSystemVariable(rpc.key);
@@ -185,7 +185,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
     }
 
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC abort(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.key;
         
@@ -201,7 +201,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
     }
 
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC fetch(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.key;
         
@@ -211,7 +211,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
     }
 
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public SystemVariableRPC fetchForUpdate(SystemVariableRPC rpc) throws RPCException {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.key;
         
@@ -242,23 +242,23 @@ public class SystemVariableService implements AppScreenFormServiceInt<DefaultRPC
     	return null;
     }
 
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public SystemVariableRPC getScreen(SystemVariableRPC rpc) throws RPCException{
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/systemVariable.xsl");
         return rpc;
     }
 
-    private void setFieldsInRPC(Form form, SystemVariableDO svDO){
-        form.setFieldValue(Meta.getId(), svDO.getId());
-        form.setFieldValue(Meta.getName(),svDO.getName());
-        form.setFieldValue(Meta.getValue(),svDO.getValue());        
+    private void setFieldsInRPC(SystemVariableForm form, SystemVariableDO svDO){
+        form.id.setValue(svDO.getId());
+        form.name.setValue(svDO.getName());
+        form.value.setValue(svDO.getValue());        
     }
     
     
-    private SystemVariableDO getSystemVariableDOFromRPC(Form form){
-        SystemVariableDO sysVarDO = new SystemVariableDO();
-        Integer svId = (Integer) form.getFieldValue(Meta.getId());        
-        sysVarDO.setId(svId);
-        sysVarDO.setName(((String)form.getFieldValue(Meta.getName())));
-        sysVarDO.setValue(((String)form.getFieldValue(Meta.getValue())));
+    private SystemVariableDO getSystemVariableDOFromRPC(SystemVariableForm form){
+        SystemVariableDO sysVarDO = new SystemVariableDO();       
+        sysVarDO.setId(form.id.getValue());
+        sysVarDO.setName(form.name.getValue());
+        sysVarDO.setValue(form.value.getValue());
         return sysVarDO;
     }
 

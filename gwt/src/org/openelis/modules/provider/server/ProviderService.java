@@ -33,6 +33,7 @@ import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
+
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -56,6 +57,7 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.provider.client.AddressesForm;
 import org.openelis.modules.provider.client.NotesForm;
+import org.openelis.modules.provider.client.ProviderForm;
 import org.openelis.modules.provider.client.ProviderRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -295,7 +297,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderRPC, Int
                 loadAddressesModel(rpc.key, rpc.form.addresses.providerAddressTable);
               
               
-              if(((Form)rpc.form.getField("notes")).load)
+              if(rpc.form.notes.load)
                   rpc.form.notes.notesPanel.setValue(getNotesModel(rpc.key));
               
               return rpc;
@@ -670,40 +672,39 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderRPC, Int
         return model;
     }
     
-    private Form loadAddresses(Integer key, AddressesForm form) throws RPCException {
+    private AddressesForm loadAddresses(Integer key, AddressesForm form) throws RPCException {
         loadAddressesModel(key, form.providerAddressTable);
         form.load = true;
         return form;
     }
     
-    private Form loadNotes(Integer key, NotesForm form) throws RPCException {
+    private NotesForm loadNotes(Integer key, NotesForm form) throws RPCException {
         StringObject so = getNotesModel(key);
         form.notesPanel.setValue(so.getValue());
         form.load = true;
         return form;
     }
         
-    private void setFieldsInRPC(Form form, ProviderDO provDO){
-        form.setFieldValue(ProvMeta.getId(), provDO.getId());
-        form.setFieldValue(ProvMeta.getLastName(),provDO.getLastName());
-        form.setFieldValue(ProvMeta.getFirstName(),provDO.getFirstName());
-        form.setFieldValue(ProvMeta.getNpi(),provDO.getNpi());        
-        form.setFieldValue(ProvMeta.getMiddleName(),provDO.getMiddleName());              
-        ((DropDownField<Integer>)form.getField(ProvMeta.getTypeId())).setValue(new DataSet<Integer>(provDO.getTypeId()));         
+    private void setFieldsInRPC(ProviderForm form, ProviderDO provDO){
+        form.id.setValue(provDO.getId());
+        form.lastName.setValue(provDO.getLastName());
+        form.firstName.setValue(provDO.getFirstName());
+        form.npi.setValue(provDO.getNpi());        
+        form.middleName.setValue(provDO.getMiddleName());              
+        form.typeId.setValue(new DataSet<Integer>(provDO.getTypeId()));         
     }
     
-    private ProviderDO getProviderDOFromRPC(Form form){
-     IntegerField providerId = (IntegerField) form.getField(ProvMeta.getId());   
+    private ProviderDO getProviderDOFromRPC(ProviderForm form){
      ProviderDO providerDO = new ProviderDO();
      //provider info        
-     providerDO.setId(providerId.getValue());
-     providerDO.setFirstName(((String)form.getFieldValue(ProvMeta.getFirstName())));
-     providerDO.setLastName(((String)form.getFieldValue(ProvMeta.getLastName())));
-     providerDO.setMiddleName(((String)form.getFieldValue(ProvMeta.getMiddleName())));
-     providerDO.setNpi(((String)form.getFieldValue(ProvMeta.getNpi())));
+     providerDO.setId(form.id.getValue());
+     providerDO.setFirstName(form.firstName.getValue());
+     providerDO.setLastName(form.lastName.getValue());
+     providerDO.setMiddleName(form.middleName.getValue());
+     providerDO.setNpi(form.npi.getValue());
      
      if(!new Integer(-1).equals(form.getFieldValue(ProvMeta.getTypeId())))
-      providerDO.setTypeId((Integer)((DropDownField)form.getField(ProvMeta.getTypeId())).getSelectedKey());
+      providerDO.setTypeId((Integer)(form.typeId.getSelectedKey()));
      
      return providerDO;
     }
