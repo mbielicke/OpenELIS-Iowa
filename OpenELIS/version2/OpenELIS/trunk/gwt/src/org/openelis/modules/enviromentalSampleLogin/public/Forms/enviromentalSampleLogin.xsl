@@ -96,20 +96,20 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Accession #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="orderNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 						<text style="Prompt">Time:</text>
-						<textbox key="time" width="40px"/>
+						<textbox key="collectedTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="receuived" begin="0" end="2" width="110px" tab="??,??"/>
 						<text style="Prompt">Status:</text>
-						<dropdown key="organization" case="mixed" width="110px"/>
+						<dropdown key="status" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="175px"/>					
+							<textbox key="clientref" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
@@ -118,26 +118,21 @@ UIRF Software License are applicable instead of those above.
 					<TablePanel style="Form" width="100%">
 						<row>
 							<text style="Prompt">Hazardous:</text>
-							<check key="domain"/>	
+							<check key="hazard"/>	
 							<text style="Prompt">Desc:</text>
-							<textbox key="domain" tab="??,??" width="315px"/>		
+							<textbox key="desc" tab="??,??" width="315px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Collector:</text>
-							<textbox key="domain" tab="??,??" width="235px"/>		
+							<textbox key="collector" tab="??,??" width="235px"/>		
 							<text style="Prompt">Phone:</text>
-							<textbox key="domain" tab="??,??" width="120px"/>		
+							<textbox key="colPhone" tab="??,??" width="120px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Location:</text>
-							<HorizontalPanel>
-							<textbox key="domain" tab="??,??" width="200px" showError="false"/>	
-								<appButton action="locationButton" key="locationButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-							</HorizontalPanel>
+							<multLookup key="locationLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+							</multLookup>
 						</row>
 					</TablePanel>
 					</VerticalPanel>
@@ -201,30 +196,20 @@ UIRF Software License are applicable instead of those above.
                   <TablePanel style="Form">
 						<row>
 							<text style="Prompt">Project:</text>
-							<HorizontalPanel>
-							<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="projectButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-							</HorizontalPanel>
+							<multLookup key="projectLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+							</multLookup>
 						</row>
 						<row>
 							<text style="Prompt">Report To:</text>
 							<!--<lookup key="" icon="LookupButtonImage" onclick="this"/>-->
-							<HorizontalPanel>
-							<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-							</HorizontalPanel>
+							<multLookup key="reportToLook" listeners="this">
+							    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+							</multLookup>
 						</row>
 						<row>
 							<text style="Prompt">Bill To:</text>
-							<textbox key="domain" tab="??,??" width="200px"/>		
+							<textbox key="billto" tab="??,??" width="200px"/>		
 						</row>
 					</TablePanel>
 					</VerticalPanel>

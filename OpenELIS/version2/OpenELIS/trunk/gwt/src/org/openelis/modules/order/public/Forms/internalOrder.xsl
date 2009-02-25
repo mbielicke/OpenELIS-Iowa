@@ -74,9 +74,6 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="invItemMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
   </xalan:component>
-  
-  {noteMeta:getText($shippingNote)}
-  
   <xsl:template match="doc"> 
     <xsl:variable name="order" select="orderMeta:new()"/>
     <xsl:variable name="orderItem" select="orderMeta:getOrderItem($order)"/>

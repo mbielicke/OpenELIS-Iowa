@@ -33,23 +33,25 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
-    <inherits name="gwt.canvas.gwt-canvas"/>
-    <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
+    <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
+    <inherits name="org.openelis.modules.enviromentalSampleLogin.EnviromentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
     <inherits name="org.openelis.modules.inventoryItem.InventoryItem"/>
     <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceipt"/>
     <inherits name="org.openelis.modules.label.Label"/> 
-    <inherits name="org.openelis.modules.method.Method"/> 
+      <inherits name="org.openelis.modules.method.Method"/> 
+    <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>
     <inherits name="org.openelis.modules.order.Order"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
+    <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>
     <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
@@ -63,7 +65,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
-    <inherits name="org.openelis.modules.test.Test"/>
+    <inherits name="org.openelis.modules.test.Test"/> 
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.ELISCommon"/>     
     

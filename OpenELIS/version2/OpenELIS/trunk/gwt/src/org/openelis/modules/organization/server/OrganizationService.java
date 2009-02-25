@@ -55,7 +55,6 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.organization.client.Contact;
-import org.openelis.modules.organization.client.ContactRow;
 import org.openelis.modules.organization.client.ContactsForm;
 import org.openelis.modules.organization.client.ContactsRPC;
 import org.openelis.modules.organization.client.NotesForm;
@@ -439,42 +438,26 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     		for(int iter = 0;iter < contactsList.size();iter++) {
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
-               //DataSet<Contact> row = contactsModel.createNewSet();
-               ContactRow  row = new ContactRow();
+               DataSet<Contact> row = contactsModel.createNewSet();
                Contact key = new Contact();
                key.orgId = contactRow.getId();
                key.addId = contactRow.getAddressDO().getId();
                row.setKey(key);
                
-               row.type.setValue(new DataSet<Integer>(contactRow.getContactType()));
-               row.name.setValue(contactRow.getName());
-               row.multipleUnit.setValue(contactRow.getAddressDO().getMultipleUnit());
-               row.street.setValue(contactRow.getAddressDO().getStreetAddress());
-               row.city.setValue(contactRow.getAddressDO().getCity());          
-               row.state.setValue(new DataSet<String>(contactRow.getAddressDO().getState()));
-               row.zip.setValue(contactRow.getAddressDO().getZipCode());
-               row.country.setValue(new DataSet<String>(contactRow.getAddressDO().getCountry()));
-               row.workPhone.setValue(contactRow.getAddressDO().getWorkPhone());
-               row.homePhone.setValue(contactRow.getAddressDO().getHomePhone());
-               row.cellPhone.setValue(contactRow.getAddressDO().getCellPhone());
-               row.faxPhone.setValue(contactRow.getAddressDO().getFaxPhone());
-               row.email.setValue(contactRow.getAddressDO().getEmail());       
-               
-               /*
-               ((DropDownField<Integer>)(Field)row.get(0)).setValue(new DataSet<Integer>(contactRow.getContactType()));
+               ((DropDownField<Integer>)row.get(0)).setValue(new DataSet<Integer>(contactRow.getContactType()));
                row.get(1).setValue(contactRow.getName());
                row.get(2).setValue(contactRow.getAddressDO().getMultipleUnit());
                row.get(3).setValue(contactRow.getAddressDO().getStreetAddress());
                row.get(4).setValue(contactRow.getAddressDO().getCity());          
-               ((DropDownField<String>)(Field)row.get(5)).setValue(new DataSet<String>(contactRow.getAddressDO().getState()));
+               ((DropDownField<String>)row.get(5)).setValue(new DataSet<String>(contactRow.getAddressDO().getState()));
                row.get(6).setValue(contactRow.getAddressDO().getZipCode());
-               ((DropDownField<String>)(Field)row.get(7)).setValue(new DataSet<String>(contactRow.getAddressDO().getCountry()));
+               ((DropDownField<String>)row.get(7)).setValue(new DataSet<String>(contactRow.getAddressDO().getCountry()));
                row.get(8).setValue(contactRow.getAddressDO().getWorkPhone());
                row.get(9).setValue(contactRow.getAddressDO().getHomePhone());
                row.get(10).setValue(contactRow.getAddressDO().getCellPhone());
                row.get(11).setValue(contactRow.getAddressDO().getFaxPhone());
                row.get(12).setValue(contactRow.getAddressDO().getEmail());	                
-               */
+               
                contactsModel.add(row);
            } 
     		
