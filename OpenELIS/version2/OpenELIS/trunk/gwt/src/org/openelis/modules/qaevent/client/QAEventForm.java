@@ -24,17 +24,18 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.modules.provider.client;
+package org.openelis.modules.qaevent.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.ProviderMetaMap;
+import org.openelis.metamap.QaEventMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class ProviderForm extends Form {
+public class QAEventForm extends Form {
 
     /**
      * 
@@ -42,33 +43,28 @@ public class ProviderForm extends Form {
     private static final long serialVersionUID = 1L;
     
     public IntegerField id;
-    public StringField lastName;
-    public StringField firstName;
-    public StringField npi;
-    public StringField middleName;
-    public DropDownField<Integer> typeId; 
-    public NotesForm notes;
-    public AddressesForm addresses;
-    public String provTabPanel = "addressesTab";
+    public StringField name;
+    public IntegerField reportingSequence;
+    public StringField description;
+    public CheckField isBillable;
+    public StringField reportingText;
+    public DropDownField<Integer> testId;
+    public DropDownField<Integer> typeId;    
     
-    public ProviderForm() {
-      ProviderMetaMap meta = new ProviderMetaMap();
-      fields.put(meta.getId(), id = new IntegerField());
-      fields.put(meta.getLastName(), lastName = new StringField());
-      fields.put(meta.getFirstName(), firstName = new StringField());
-      fields.put(meta.getNpi(),npi = new StringField());
-      fields.put(meta.getMiddleName(), middleName = new StringField());
-      fields.put(meta.getTypeId(), typeId = new DropDownField<Integer>());
-      fields.put("addresses", addresses = new AddressesForm());     
-      fields.put("notes", notes = new NotesForm());
+    public QAEventForm() {
+        QaEventMetaMap meta = new QaEventMetaMap();
+        fields.put(meta.getId(), id = new IntegerField());
+        fields.put(meta.getName(), name = new StringField());
+        fields.put(meta.getReportingSequence(), reportingSequence = new IntegerField());
+        fields.put(meta.getDescription(), description =  new StringField());
+        fields.put(meta.getIsBillable(), isBillable = new CheckField());
+        fields.put(meta.getReportingText(), reportingText = new StringField());
+        fields.put(meta.getTestId(), testId = new DropDownField<Integer>());
+        fields.put(meta.getTypeId(), typeId = new DropDownField<Integer>());              
     }
     
-    public ProviderForm(Node node) {
+    public QAEventForm(Node node) {
         this();
         createFields(node);
     }
-    
-    
-    
-
 }

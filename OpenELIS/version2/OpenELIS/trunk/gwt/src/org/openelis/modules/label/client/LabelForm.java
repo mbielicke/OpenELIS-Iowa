@@ -22,41 +22,45 @@
 * "Separately-Licensed" may be used under the terms of a UIRF Software
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
-*/
+*/  
 
-package org.openelis.modules.provider.client;
+package org.openelis.modules.label.client;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.metamap.LabelMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.ProviderMetaMap;
+public class LabelForm extends Form {
 
-/**
- * Specific instance of Form for loading and submitting 
- * data on the notes tab on the ProviderScreen
- * 
- * This is included as a SubForm in ProviderForm
- * @author akampoow
- *
- */
-public class NotesForm extends Form {
-        
+    /**
+     * 
+     */
     private static final long serialVersionUID = 1L;
-    public StringField subject;
-    public StringField text;
-    public StringField notesPanel;
-      
-      public NotesForm() {
-          ProviderMetaMap meta = new ProviderMetaMap();
-          fields.put(meta.getNote().getSubject(), subject = new StringField());
-          fields.put(meta.getNote().getText(),text = new StringField());
-          fields.put("notesPanel",notesPanel = new StringField());
-      }
-      
-      public NotesForm(Node node){
-          this();
-          createFields(node);
-      }
+
+    public IntegerField id;
+    public StringField name;
+    public StringField description;
+    public DropDownField<Integer> printerTypeId;
+    public DropDownField<Integer> scriptletId;
+
+    public LabelForm() {
+        LabelMetaMap meta = new LabelMetaMap();
+        fields.put(meta.getId(), id = new IntegerField());
+        fields.put(meta.getName(), name = new StringField());
+        fields.put(meta.getDescription(), description = new StringField());
+        fields.put(meta.getPrinterTypeId(),
+                   printerTypeId = new DropDownField<Integer>());
+        fields.put(meta.getScriptletId(),
+                   scriptletId = new DropDownField<Integer>());
+    }
+
+    public LabelForm(Node node) {
+        this();
+        createFields(node);
+    }
 
 }

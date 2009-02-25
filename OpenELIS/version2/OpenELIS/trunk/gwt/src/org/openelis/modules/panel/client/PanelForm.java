@@ -24,39 +24,39 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.modules.provider.client;
+package org.openelis.modules.panel.client;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableField;
+import org.openelis.metamap.PanelMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.ProviderMetaMap;
+public class PanelForm extends Form {
 
-/**
- * Specific instance of Form for loading and submitting 
- * data on the notes tab on the ProviderScreen
- * 
- * This is included as a SubForm in ProviderForm
- * @author akampoow
- *
- */
-public class NotesForm extends Form {
-        
+    /**
+     * 
+     */
     private static final long serialVersionUID = 1L;
-    public StringField subject;
-    public StringField text;
-    public StringField notesPanel;
-      
-      public NotesForm() {
-          ProviderMetaMap meta = new ProviderMetaMap();
-          fields.put(meta.getNote().getSubject(), subject = new StringField());
-          fields.put(meta.getNote().getText(),text = new StringField());
-          fields.put("notesPanel",notesPanel = new StringField());
-      }
-      
-      public NotesForm(Node node){
-          this();
-          createFields(node);
-      }
+    
+    public IntegerField id;
+    public StringField name;
+    public StringField description;
+    public TableField<Integer> addedTestTable;
+    
+    public PanelForm() {
+      PanelMetaMap meta = new PanelMetaMap();
+      fields.put(meta.getId(), id = new IntegerField());
+      fields.put(meta.getName(), name = new StringField());
+      fields.put(meta.getDescription(), description = new StringField());
+      fields.put("addedTestTable", addedTestTable = new TableField<Integer>());
+    }
+    
+    public PanelForm(Node node) {
+        this();
+        createFields(node);
+    }
 
 }

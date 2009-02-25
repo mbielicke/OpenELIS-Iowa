@@ -172,7 +172,6 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         bpanel = (ButtonPanel)getWidget("buttons");
-        bpanel.enableButton("delete", false);
 
         testTabPanel = (TabPanel)getWidget("testTabPanel");
         resultPanel = (TabPanel)getWidget("resultTabPanel");        
@@ -778,7 +777,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             // column 2 is for the Results dropdown
             if (widget == reflexTestWidget && col == 2) {
                 ddfield = (DropDownField)set.get(1);
-                vset = (DataSet)ddfield.getValue();
+                vset = (DataSet)((ArrayList)ddfield.getValue()).get(0);
                 id = (Integer)ddfield.getSelectedKey();
                 if (vset != null && vset.enabled == true
                     && ddfield.getErrors().size() == 0) {
@@ -1256,7 +1255,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             DropDownField ddfield = (DropDownField)rset.get(col);
             Integer analyteId = null;
             if (col == 1) {
-                vset = (DataSet)ddfield.getValue();
+                vset = (DataSet)((ArrayList)ddfield.getValue()).get(0);
                 if (vset != null && vset.enabled == false) {
                     reflexTestWidget.model.setCellError(row,
                                                         1,
@@ -1265,7 +1264,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 analyteId = (Integer)ddfield.getSelectedKey();
                 setTestResultsForAnalyte(analyteId, rset);
             } else if (col == 2) {
-                vset = (DataSet)ddfield.getValue();
+                vset = (DataSet)((ArrayList)ddfield.getValue()).get(0);
                 if (vset != null && vset.enabled == false) {
                     reflexTestWidget.model.setCellError(row,
                                                         2,
@@ -1566,7 +1565,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         if (dropTarget.parent != null) {
             if (drag.parent == null) {
                 widget.model.unlink(drag);
-                widget.model.getData().delete(drag);
+                //widget.model.getData().delete(drag);
             }
             chindex = dropTarget.childIndex;
             dropTarget.parent.addItem(chindex, drop);
@@ -1579,7 +1578,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         } else {
             if (drag.parent == null) {
                 widget.model.unlink(drag);
-                widget.model.getData().delete(drag);
+                //widget.model.getData().delete(drag);
             }
 
             widget.model.addRow(targetRow, drop);
@@ -1598,6 +1597,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             rpc = result;
             resultModelCollection = result.form.testAnalyte.resultModelCollection;
             flipSignsInAnalyteDropDown();
+            ((TableDropdown)reflexTestWidget.columns.get(1)
+                            .getColumnWidget()).setModel(testAnalyteDropdownModel);
             flipSignsInModelMaps();
             loadScreen(rpc.form);                       
             enable(true);
@@ -2241,7 +2242,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                         analyteTreeController.model.addRow(index, newItem);
                     }
 
-                    analyteTreeController.model.getData().delete(item);
+                   // analyteTreeController.model.getData().delete(item);
                 }
             }
             analyteTreeController.model.refresh();
@@ -2721,7 +2722,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
          }
          keyList.add(entryKey);
          
-          map.put(akey.toString(), model);
+         
+         
+         
+         map.put(akey.toString(), model);
          
         } 
        }

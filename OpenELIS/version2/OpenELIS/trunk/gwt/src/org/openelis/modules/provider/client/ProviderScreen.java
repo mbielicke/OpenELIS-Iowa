@@ -207,19 +207,6 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
        rpc.form.addresses.providerAddressTable.setValue(provAddController.model.getData());
     }
     
-    public void setProviderTypesModel(DataModel<Integer> typesModel) {
-        displayType.setModel(typesModel);
-    }
-    
-    public void setCountriesModel(DataModel<String> countriesModel) {
-        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);
-        ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
-    }
-    
-    public void setStatesModel(DataModel<String> statesModel) {
-        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
-        ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
-    }
        
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onFailure(Throwable caught) {
@@ -232,10 +219,8 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
             lastName.setFocus(true);
         }
            
-    };
+    };      
        
-       
-
     public void query(){
     	//clearNotes();   	       
        super.query();
@@ -262,9 +247,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     public void update() {                        
         noteArea.enable(true);
         super.update();      
-    }
-    
-
+    }    
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != FormInt.State.QUERY){
@@ -411,5 +394,19 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     public void drop(TableWidget widget, Widget dragWidget) {
         // TODO Auto-generated method stub
         
+    }
+    
+    private void setProviderTypesModel(DataModel<Integer> typesModel) {
+        displayType.setModel(typesModel);
+    }
+    
+    private void setCountriesModel(DataModel<String> countriesModel) {
+        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);
+        ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
+    }
+    
+    private void setStatesModel(DataModel<String> statesModel) {
+        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
+        ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
 }

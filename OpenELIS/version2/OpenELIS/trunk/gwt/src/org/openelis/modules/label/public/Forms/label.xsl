@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
 </display>
 							  
 <rpc key= "display">
- <number key="{labelMeta:getId($lbl)}" type="integer" required = "false" />
+ <integer key="{labelMeta:getId($lbl)}" type="integer" required = "false" />
  <string key="{labelMeta:getName($lbl)}" max = "20" required = "true"/> 
  <string key="{labelMeta:getDescription($lbl)}" max = "60" required = "false" /> 	 
  <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" type="integer" required = "true"/>

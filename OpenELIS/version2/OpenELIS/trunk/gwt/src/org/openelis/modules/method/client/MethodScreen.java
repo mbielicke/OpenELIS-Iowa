@@ -28,8 +28,6 @@ package org.openelis.modules.method.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
-
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -41,7 +39,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class MethodScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ChangeListener{
+public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Integer> implements ChangeListener{
     private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
@@ -53,7 +51,9 @@ public class MethodScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> im
     private TextBox methodName;            
     
     public MethodScreen() {
-        super("org.openelis.modules.method.server.MethodService",!loaded,new DefaultRPC());
+        super("org.openelis.modules.method.server.MethodService");
+        forms.put("display", new MethodForm());
+        getScreen(new MethodRPC());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -122,7 +122,7 @@ public class MethodScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> im
     };
     private void getMethods(String query){
        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
-            Form form = (Form)this.forms.get("queryByLetter");
+            Form form = (Form)forms.get("queryByLetter");
             form.setFieldValue(MethodMeta.getName(), query);
             commitQuery(form);
         }

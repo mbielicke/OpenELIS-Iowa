@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Dictionary" name="{resource:getString($constants,'dictionary')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel spacing="0" padding="0">
+		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<!--left table goes here -->
 			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">
 						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'catName')}" width="100%">
@@ -149,7 +149,7 @@ UIRF Software License are applicable instead of those above.
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,105,85,120,130</widths>
+								<widths>47,95,87,155,130</widths>
 								<editors>
 									<check/>									
 									<textbox max = "30"/>									
@@ -212,7 +212,7 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel>
 	</display>
 	<rpc key = "display">
-	 <number key="{meta:getId($cat)}" type="integer" required="false"/>	
+	 <integer key="{meta:getId($cat)}" type="integer" required="false"/>	
 	 <string key="{meta:getSystemName($cat)}" max="30" required = "true"/>
 	 <string key="{meta:getName($cat)}" max="50" required = "true"/>
 	 <string key="{meta:getDescription($cat)}" max="60" required="false"/>

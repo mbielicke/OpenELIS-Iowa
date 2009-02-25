@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
 				</HorizontalPanel>
 			</display>
 			<rpc key="display">
-			 <number key="{meta:getId($method)}" required="false" type="integer"/>
+			 <integer key="{meta:getId($method)}" required="false"/>
 			 <string key="{meta:getName($method)}" max = "20" required="true" />
 			 <check key="{meta:getIsActive($method)}" required="true"/>
 			 <date key="{meta:getActiveBegin($method)}" begin="0" end="2" required="true"/>
@@ -165,7 +165,7 @@ UIRF Software License are applicable instead of those above.
 			 <string key="{meta:getReportingDescription($method)}" max="60" required="false"/>			 			 								 
 		  </rpc>
 		  <rpc key="query">
-			 <queryNumber key="{meta:getId($method)}"  type="integer"/>
+			 <queryInteger key="{meta:getId($method)}"/>
 			 <queryString key="{meta:getName($method)}" />			 
 			 <queryString key="{meta:getDescription($method)}"/>
 			 <queryString key="{meta:getReportingDescription($method)}" />					

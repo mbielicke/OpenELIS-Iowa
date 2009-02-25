@@ -24,39 +24,42 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.modules.provider.client;
+package org.openelis.modules.dictionary.client;
+
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableField;
+import org.openelis.metamap.CategoryMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.ProviderMetaMap;
 
-/**
- * Specific instance of Form for loading and submitting 
- * data on the notes tab on the ProviderScreen
- * 
- * This is included as a SubForm in ProviderForm
- * @author akampoow
- *
- */
-public class NotesForm extends Form {
-        
+public class DictionaryForm extends Form {
+
+    /**
+     * 
+     */
     private static final long serialVersionUID = 1L;
-    public StringField subject;
-    public StringField text;
-    public StringField notesPanel;
-      
-      public NotesForm() {
-          ProviderMetaMap meta = new ProviderMetaMap();
-          fields.put(meta.getNote().getSubject(), subject = new StringField());
-          fields.put(meta.getNote().getText(),text = new StringField());
-          fields.put("notesPanel",notesPanel = new StringField());
-      }
-      
-      public NotesForm(Node node){
-          this();
-          createFields(node);
-      }
 
+    public IntegerField id;
+    public StringField systemName;
+    public StringField name;
+    public TableField<Integer> dictEntTable;
+    public DropDownField sectionId;
+    
+    public DictionaryForm() {
+        CategoryMetaMap meta = new CategoryMetaMap();
+        fields.put(meta.getId(), id = new IntegerField());
+        fields.put(meta.getSystemName(), systemName = new StringField());
+        fields.put(meta.getName(), name = new StringField());
+        fields.put("dictEntTable", dictEntTable = new TableField<Integer>());
+        fields.put(meta.getSectionId(), sectionId = new DropDownField());        
+    }
+    
+    public DictionaryForm(Node node) {
+        this();
+        createFields(node);
+    }
 }

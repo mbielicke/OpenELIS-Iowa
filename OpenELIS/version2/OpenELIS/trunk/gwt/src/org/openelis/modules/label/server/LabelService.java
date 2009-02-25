@@ -27,34 +27,30 @@ package org.openelis.modules.label.server;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.LabelDO;
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.LabelMetaMap;
+import org.openelis.modules.label.client.LabelForm;
+import org.openelis.modules.label.client.LabelRPC;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.LabelRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.PrinterTypeCacheHandler;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -63,7 +59,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer> {   
+public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {   
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9; 
@@ -131,7 +127,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return model;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public LabelRPC commitAdd(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         LabelDO labelDO = getLabelDOFromRPC(rpc.form);
         Integer labelId = null;
@@ -159,7 +155,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return rpc;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public LabelRPC commitUpdate(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         LabelDO labelDO = getLabelDOFromRPC(rpc.form);
         
@@ -188,7 +184,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return rpc;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public LabelRPC commitDelete(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         List<Exception> exceptionList = remote.validateForDelete(rpc.key);
         if(exceptionList.size() > 0){
@@ -210,7 +206,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return rpc;
     }
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public LabelRPC abort(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.key;
         LabelDO labelDO =null;
@@ -224,7 +220,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
          return rpc;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public LabelRPC fetch(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.key;
 
@@ -236,7 +232,7 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         return rpc;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public LabelRPC fetchForUpdate(LabelRPC rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.key;
         LabelDO labelDO =null;
@@ -280,8 +276,27 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
     	return null;
     }
 
-    public DefaultRPC getScreen(DefaultRPC rpc) {
-        return rpc;
+    public LabelRPC getScreen(LabelRPC rpc) throws RPCException{
+     rpc.xml  = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl");    
+        
+     DataModel scriptletDropDownField = (DataModel)CachingManager.getElement("InitialData", "scriptletDropDown");
+        
+     rpc.printerType = PrinterTypeCacheHandler.getPrinterTypes();
+     SessionManager.getSession().setAttribute("printerTypesVersion",PrinterTypeCacheHandler.version);
+        
+     if(scriptletDropDownField ==null)
+         rpc.scriptlet = getInitialModel("scriptlet");
+
+     return rpc;
+    }
+    
+    public void checkModels(LabelRPC rpc) {
+        int printerTypes = (Integer)SessionManager.getSession().getAttribute("printerTypesVersion");
+        
+        if(printerTypes != PrinterTypeCacheHandler.version) {
+            rpc.printerType = PrinterTypeCacheHandler.getPrinterTypes();
+            SessionManager.getSession().setAttribute("printerTypesVersion",PrinterTypeCacheHandler.version);
+        } 
     }
     
     public DataModel getInitialModel(String cat) {
@@ -290,23 +305,13 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
         Integer id = null;
                 
         DataModel<Integer> model = new DataModel<Integer>();
-        
-        if(cat.equals("printerType")){
-            id = catRemote.getCategoryId("printer_type"); 
-            if(id != null)
-                entries = catRemote.getDropdownValues(id);
-            
-        }else if(cat.equals("scriptlet")){
-            LabelRemote labelRemote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-            entries = labelRemote.getScriptlets();
-        }                
-            
-        if(entries.size() > 0){
-            DataSet<Integer> blankset = new DataSet<Integer>();           
-    
-            model.add(new DataSet<Integer>(0,new StringObject(" ")));
-        }
-        
+               
+        LabelRemote labelRemote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+        entries = labelRemote.getScriptlets();
+                                            
+        DataSet<Integer> blankset = new DataSet<Integer>();           
+        model.add(new DataSet<Integer>(0,new StringObject(" ")));
+                
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             IdNameDO resultDO = (IdNameDO)iter.next();
 
@@ -319,24 +324,23 @@ public class LabelService implements AppScreenFormServiceInt<DefaultRPC,Integer>
     }
     
     
-    private void setFieldsInRPC(Form form, LabelDO qaeDO){
-        form.setFieldValue(Meta.getId(), qaeDO.getId());
-        form.setFieldValue(Meta.getName(),qaeDO.getName());
-        form.setFieldValue(Meta.getDescription(),qaeDO.getDescription());
-        ((DropDownField<Integer>)(Field)form.getField(Meta.getPrinterTypeId())).setValue(new DataSet<Integer>(qaeDO.getPrinterType()));     
-        ((DropDownField<Integer>)(Field)form.getField(Meta.getScriptletId())).setValue(new DataSet<Integer>(qaeDO.getScriptlet()));        
+    private void setFieldsInRPC(LabelForm form, LabelDO qaeDO){
+        form.id.setValue(qaeDO.getId());
+        form.name.setValue(qaeDO.getName());
+        form.description.setValue(qaeDO.getDescription());
+        form.printerTypeId.setValue(new DataSet<Integer>(qaeDO.getPrinterType()));     
+        form.scriptletId.setValue(new DataSet<Integer>(qaeDO.getScriptlet()));        
     }
     
-    private LabelDO getLabelDOFromRPC(Form form){
+    private LabelDO getLabelDOFromRPC(LabelForm form){
         LabelDO labelDO = new LabelDO();
-        NumberField labelIdField = (NumberField) form.getField(Meta.getId());
         
-        labelDO.setId(labelIdField.getIntegerValue());
-        labelDO.setName(((String)form.getFieldValue(Meta.getName())));
-        labelDO.setDescription(((String)form.getFieldValue(Meta.getDescription())));
+        labelDO.setId(form.id.getValue());
+        labelDO.setName(form.name.getValue());
+        labelDO.setDescription(form.description.getValue());
               
-        labelDO.setPrinterType((Integer)((DropDownField)form.getField(Meta.getPrinterTypeId())).getSelectedKey());   
-        labelDO.setScriptlet((Integer)((DropDownField)form.getField(Meta.getScriptletId())).getSelectedKey());        
+        labelDO.setPrinterType((Integer)(form.printerTypeId.getSelectedKey()));   
+        labelDO.setScriptlet((Integer)(form.scriptletId.getSelectedKey()));        
      
        return labelDO;
     }

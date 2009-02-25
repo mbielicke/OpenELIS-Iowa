@@ -88,7 +88,6 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -606,20 +605,6 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         return rpc;
     }
     
-    public DataModel<Integer> getTestResultModel(Integer testId,Form form){
-        TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        List<IdNameDO> list = remote.getTestResultsforTest(testId);
-             DataModel<Integer> dmodel = new DataModel<Integer>();
- 
-             dmodel.add(new DataSet<Integer>(-1,new StringObject("")));
-
-             for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-                 IdNameDO methodDO = (IdNameDO)iterator.next();
-
-                 dmodel.add(new DataSet<Integer>(methodDO.getId(),new StringObject(methodDO.getName())));
-             }
-         return dmodel;
-    }
     
     public DataModel<Integer> getTestResultModel(Integer testId){
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -797,7 +782,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
           return rpc;
     }
     
-    public Form fillTestResults(Integer key, TestAnalyteForm form){     
+    public TestAnalyteForm fillTestResults(Integer key, TestAnalyteForm form){     
         try{ 
          DataSet<Integer> row = null;
          DataMap data = null;
@@ -818,11 +803,12 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
              data = new DataMap();  
              rg = new IntegerField(resultDO.getResultGroup());
              
-             if(!form.duplicate)
+             if(!form.duplicate) {
               id = new IntegerField(resultDO.getId());
-             else
-              id = new IntegerField(resultDO.getId() * (-2));   
-              data.put("id", id);             
+             } else {
+                id = new IntegerField(resultDO.getId() * -2);   
+                data.put("id", id);             
+             }
              
              data.put("resGrp", rg);
                          
@@ -919,13 +905,19 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         for(int iter = 0; iter < resultDOList.size(); iter++){
             row = model.createNewSet();
             resultDO = resultDOList.get(iter);  
-            id = new IntegerField(resultDO.getId());
+            
             data = new DataMap();     
             rg = new IntegerField(resultDO.getResultGroup());   
             
-            if(!forDuplicate)
+            if(!forDuplicate) {
+             id = new IntegerField(resultDO.getId());   
              data.put("id", id);
+            } else {
+                id = new IntegerField(resultDO.getId() * -2);   
+                data.put("id", id); 
+            } 
             
+                
             data.put("resGrp", rg);
             
             if(resultDO.getUnitOfMeasureId() != null) {
@@ -1787,7 +1779,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         if(!forDuplicate)
          data.put("id", new IntegerObject(analyteDO.getId()));
         else
-         data.put("id", new IntegerObject(analyteDO.getId() * (-2)));  
+         data.put("id", new IntegerObject(analyteDO.getId() * -2));  
                     
         item.setData(data);
         return item;

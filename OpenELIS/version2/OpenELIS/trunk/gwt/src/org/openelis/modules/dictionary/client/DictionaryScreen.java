@@ -31,19 +31,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AToZTable;
@@ -60,7 +54,7 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener,
+public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,DictionaryForm,Integer> implements ClickListener,
                                                                     TableManager,
                                                                     TableWidgetListener{
 
@@ -70,17 +64,17 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
     private KeyListManager keyList = new KeyListManager();
 
     private Dropdown displaySection = null;
-    private static boolean loaded = false;
     
-    private static DataModel sectionDropDown = null;
+    private static DataModel<Integer> sectionDropDown = null;
         
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
-        super("org.openelis.modules.dictionary.server.DictionaryService", !loaded,new DefaultRPC());
+        super("org.openelis.modules.dictionary.server.DictionaryService");
+        forms.put("display",new DictionaryForm());        
+        getScreen(new DictionaryRPC());        
     }
     
     public void afterDraw(boolean success) {       
-        loaded = true;
         AToZTable atozTable = (AToZTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -103,18 +97,15 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
         displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
-                
-        if (sectionDropDown == null) {
-            sectionDropDown = (DataModel)initData.get("sections");
-        }
-
-        displaySection.setModel(sectionDropDown);
+                     
+        setSectionsModel(rpc.sections);
+        rpc.sections = null;
         
         // override the callbacks
         updateChain.add(afterUpdate);
         super.afterDraw(success);        
         
-        rpc.form.setFieldValue("dictEntTable",dictEntryController.model.getData());
+        rpc.form.dictEntTable.setValue(dictEntryController.model.getData());
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -132,15 +123,12 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
     public void onClick(Widget sender) {
         if(sender == removeEntryButton)  
            onRemoveRowButtonClick();            
-     }
-
-    
+     }    
 
     public void query() {
         super.query();
         removeEntryButton.changeState(ButtonState.DISABLED);
-        dictEntryController.model.enableAutoAdd(false); 
-        
+        dictEntryController.model.enableAutoAdd(false);         
     }
     
     public void add() {
@@ -240,23 +228,21 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
         final DataSet set = (DataSet)dictEntryController.model.getData().get(row) ;
         final int currRow = row;
         DataMap data =  (DataMap)set.getData();
-        NumberField field = null;        
-        if(data != null) {
-            field = (NumberField)data.get("id");
-            if(field != null) {
-                screenService.getObject("getNumResultsAffected",
-                                        new FieldType[] {(StringField)set.get(col),field},
-                                        new AsyncCallback<DataSet>() {
-                                          public void onSuccess(DataSet result) {
-                                            NumberObject nobj = null;
-                                            StringObject sobj = null;
+        DictionaryEntryTextRPC detrpc = null;
+        Integer id = null;        
+        if(data != null) {            
+            id = ((IntegerField)data.get("id")).getValue();
+            if(id != null) {
+                detrpc = new DictionaryEntryTextRPC();
+                detrpc.key = id;                
+                screenService.call("getNumResultsAffected",detrpc,
+                                        new AsyncCallback<DictionaryEntryTextRPC>() {
+                                          public void onSuccess(DictionaryEntryTextRPC result) {
                                             if(result != null) {
-                                             nobj = (NumberObject)result.get(0);
-                                             sobj = (StringObject)result.get(1);
-                                             if(nobj.getIntegerValue() > 0) {
+                                             if(result.count > 0) {
                                               boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
                                                if(!ok) {                                                 
-                                                 dictEntryController.model.setCell(currRow, 3, (String)sobj.getValue());
+                                                 dictEntryController.model.setCell(currRow, 3, result.entryText);
                                                  dictEntryController.model.refresh();  
                                                } 
                                              } 
@@ -282,6 +268,10 @@ public class DictionaryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
         // TODO Auto-generated method stub
         
+    }
+    
+    private void setSectionsModel(DataModel<Integer> model) {
+        displaySection.setModel(model);   
     }
     
 }

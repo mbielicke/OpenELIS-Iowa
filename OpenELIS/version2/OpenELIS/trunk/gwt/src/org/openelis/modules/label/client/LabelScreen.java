@@ -25,14 +25,11 @@
 */
 package org.openelis.modules.label.client;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
@@ -46,21 +43,31 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class LabelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener {
-
-    private static boolean loaded = false;
-    private static DataModel printerTypeDropDown ;
-    private static DataModel scriptletDropdown;
+public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> implements ClickListener {
     
     private Dropdown displayPType = null;
     private Dropdown displayScript = null;
-    private TextBox nameTextbox;
+
     private KeyListManager keyList = new KeyListManager();
     
     private LabelMetaMap Meta = new LabelMetaMap(); 
     
+    AsyncCallback<LabelRPC> checkModels = new AsyncCallback<LabelRPC>() {
+        public void onSuccess(LabelRPC rpc) {
+            if(rpc.printerType != null) {
+                setPrinterTypesModel(rpc.printerType);
+            }
+        }
+      
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
     public LabelScreen() {
-        super("org.openelis.modules.label.server.LabelService",!loaded,new DefaultRPC());
+        super("org.openelis.modules.label.server.LabelService");
+        forms.put("display", new LabelForm());
+        getScreen(new LabelRPC());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -94,23 +101,26 @@ public class LabelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
         chain.addCommand(atozButtons);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-
-        loaded = true;        
-
-        nameTextbox = (TextBox)getWidget(Meta.getName());
+       
+        
         startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
         displayPType = (Dropdown)getWidget(Meta.getPrinterTypeId());
         displayScript = (Dropdown)getWidget(Meta.getScriptletId());
         
         //load dropdowns
-       if(scriptletDropdown == null){
-           printerTypeDropDown = (DataModel)initData.get("printer");               
-           scriptletDropdown = (DataModel)initData.get("scriptlet");
-       }                                             
-            
-       displayPType.setModel(printerTypeDropDown);
-       displayScript.setModel(scriptletDropdown);
+        setPrinterTypesModel(rpc.printerType);
+        setScriptletModel(rpc.scriptlet);
+                  
+       
+        rpc.printerType = null;
+        rpc.scriptlet = null;
+        
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
         
         super.afterDraw(success);
     }
@@ -125,8 +135,16 @@ public class LabelScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> imp
           letterRPC.setFieldValue(Meta.getName(), query);
            
           commitQuery(letterRPC);
-          
-         
+                   
       }
-    }      
+    }  
+    
+    private void setPrinterTypesModel(DataModel<Integer> typesModel) {
+        displayPType.setModel(typesModel);
+    }
+    
+    private void setScriptletModel(DataModel<Integer> model) {
+        displayScript.setModel(model);
+    }
+    
 }
