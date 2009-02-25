@@ -96,20 +96,20 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Accession #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="ordernum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 						<text style="Prompt">Time:</text>
-						<textbox key="time" width="40px"/>
+						<textbox key="collectedtime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="recieved" begin="0" end="2" width="110px" tab="??,??"/>
 						<text style="Prompt">Status:</text>
 						<dropdown key="status" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="175px"/>					
+							<textbox key="clientref" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
@@ -119,17 +119,17 @@ UIRF Software License are applicable instead of those above.
 							<row>
 								<text style="Prompt">PWS Id:</text>
 								<!--<HorizontalPanel>-->
-								<textbox key="aa" width="75px" showError="false"/>	
+								<textbox key="pwsid" width="75px" showError="false"/>	
 									
 <!--								</HorizontalPanel>-->
 								<text style="Prompt">PWS Name:</text>
 								<widget colspan="3">
-									<textbox key="aa" width="250px"/>	
+									<textbox key="pwsname" width="250px"/>	
 								</widget>
 							</row>
 							<row>
 								<text style="Prompt">Sample Point Id:</text>
-								<textbox key="aa" width="75px"/>	
+								<textbox key="samplepoitnid" width="75px"/>	
 								<text style="Prompt">Sample Category:</text>
 								<dropdown key="sampleCategory" case="mixed" width="80px"/>
 								<text style="Prompt">Sample Type:</text>
@@ -140,15 +140,15 @@ UIRF Software License are applicable instead of those above.
 								<text style="Prompt">Lead Sample Type:</text>
 								<dropdown key="leadSampleType" case="mixed" width="75px"/>
 								<text style="Prompt">Original Sample #:</text>
-								<textbox key="domain" tab="??,??" width="75px"/>		
+								<textbox key="orioignalid" tab="??,??" width="75px"/>		
 								<text style="Prompt">Sequence:</text>
-								<textbox key="aa" width="85px"/>	
+								<textbox key="sequence" width="85px"/>	
 							</row>
 							<row>
 								<text style="Prompt">Composite Sample #:</text>
-								<textbox key="aa" width="75px"/>	
+								<textbox key="compsamnpleid" width="75px"/>	
 								<text style="Prompt">Composite Date:</text>
-								<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>	
+								<calendar key="compdate" begin="0" end="2" width="110px" tab="??,??"/>	
 								<text style="Prompt">Indicator:</text>
 								<check key="indicator"/>		
 							</row>
@@ -225,36 +225,19 @@ UIRF Software License are applicable instead of those above.
 		                  <TablePanel style="Form">
 						<row>
 							<text style="Prompt">Project:</text>
-							<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="projectButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-								</HorizontalPanel>	
+							<multLookup key="projectLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
 						</row>
 						<row>
 							<text style="Prompt">Bill To:</text>
-								<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-								</HorizontalPanel>
+								<textbox key="billto" tab="??,??" width="167px" showError="false"/>	
 						</row>
 						<row>
 							<text style="Prompt">Report To:</text>
-								<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-								</HorizontalPanel>
+							<multLookup key="reportToLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
 						</row>
 					</TablePanel>
 					</VerticalPanel>

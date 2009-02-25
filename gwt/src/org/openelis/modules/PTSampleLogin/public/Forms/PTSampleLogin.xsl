@@ -96,20 +96,20 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Accession #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="orderNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 						<text style="Prompt">Time:</text>
-						<textbox key="time" width="40px"/>
+						<textbox key="collectedTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="received" begin="0" end="2" width="110px" tab="??,??"/>
 						<text style="Prompt">Status:</text>
 						<dropdown key="status" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="175px"/>					
+							<textbox key="clientref" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
@@ -135,9 +135,9 @@ UIRF Software License are applicable instead of those above.
 							</row>
 							<row>
 								<text style="Prompt">Series:</text>
-								<textbox key="domain" tab="??,??" width="241px"/>
+								<textbox key="series" tab="??,??" width="241px"/>
 								<text style="Prompt">Number:</text>
-								<textbox key="aa" width="241px"/>	
+								<textbox key="number" width="241px"/>	
 							</row>
 							</TablePanel>
 							</VerticalPanel>
@@ -207,14 +207,14 @@ UIRF Software License are applicable instead of those above.
                   		-->
                   		<row>
 							<text style="Prompt">Provider:</text>
-							<textbox key="domain" tab="??,??" width="100px"/>		
+							<textbox key="prov" tab="??,??" width="100px"/>		
 							<text style="Prompt">Id:</text>
-							<textbox key="domain" tab="??,??" width="50px"/>		
+							<textbox key="provid" tab="??,??" width="50px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Phone:</text>
 							<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="200px"/>		
+							<textbox key="provphone" tab="??,??" width="200px"/>		
 							</widget>
 						</row>
 <!--						<row>
@@ -233,14 +233,9 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Report To:</text>
 							<widget colspan="3">
-								<HorizontalPanel>
-								<textbox key="domain" tab="??,??" width="167px" showError="false"/>	
-								<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-								</HorizontalPanel>
+							<multLookup key="reportTOLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
 							</widget>
 						</row>
 					</TablePanel>

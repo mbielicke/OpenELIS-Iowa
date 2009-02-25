@@ -93,20 +93,20 @@ UIRF Software License are applicable instead of those above.
 								<text style="Prompt">Accession #:</text>
 								<textbox key="accessionNum" tab="??,??" width="75px"/>
 								<text style="Prompt">Order #:</text>
-								<textbox key="accessionNum" tab="??,??" width="75px"/>
+								<textbox key="orderNum" tab="??,??" width="75px"/>
 								<text style="Prompt">Collected:</text>
-								<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+								<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 								<text style="Prompt">Time:</text>
-								<textbox key="time" width="40px"/>
+								<textbox key="collectedTime" width="40px"/>
 							</row>
 							<row>
 								<text style="Prompt">Received:</text>
-								<calendar begin="0" end="2" key="domain" tab="??,??" width="110px"/>
+								<calendar begin="0" end="2" key="received" tab="??,??" width="110px"/>
 								<text style="Prompt">Status:</text>
-								<dropdown case="mixed" key="organization" width="110px"/>
+								<dropdown case="mixed" key="status" width="110px"/>
 								<text style="Prompt">Client Reference:</text>
 								<widget colspan="3">
-									<textbox key="domain" tab="??,??" width="175px"/>
+									<textbox key="clientRef" tab="??,??" width="175px"/>
 								</widget>
 							</row>
 						</TablePanel>
@@ -115,38 +115,25 @@ UIRF Software License are applicable instead of those above.
 	                  	<text style="FormTitle">Baby Info</text>
 						<TablePanel style="Form" width="100%">
 							<row>
-								<text style="Prompt">Id:</text>
-								<HorizontalPanel>
-									<textbox key="aa" showError="false" width="75px"/>
-									<appButton action="idButton1" key="idButton1" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-									<appButton action="idButton2" key="idButton2" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-									<appButton action="idButton3" key="idButton3" onclick="this" style="Button">
-										<HorizontalPanel>
-											<AbsolutePanel style="LookupButtonImage"/>
-										</HorizontalPanel>
-									</appButton>
-								</HorizontalPanel>
+							<text style="Prompt">Id:</text>
+								<multLookup key="babyId" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
+								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
+								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
+								</multLookup>
 							</row>
 							<row>
 								<text style="Prompt">Last:</text>
-								<textbox key="domain" tab="??,??" width="175px"/>
+								<textbox key="last" tab="??,??" width="175px"/>
 							</row>
 							<row>
 								<text style="Prompt">First:</text>
-								<textbox key="domain" tab="??,??" width="150px"/>
+								<textbox key="name" tab="??,??" width="150px"/>
 							</row>
 							<row>
 								<text style="Prompt">Gender:</text>
 								<HorizontalPanel style="Form" width="100%">
-									<dropdown key="aa" width="50px"/>
+									<dropdown key="gender" width="50px"/>
 									<HorizontalPanel halign="right" style="Form">
 										<text style="Prompt">Race:</text>
 										<dropdown key="race" tab="??,??" width="70px"/>
@@ -156,16 +143,16 @@ UIRF Software License are applicable instead of those above.
 							<row>
 								<text style="Prompt">Birth:</text>
 								<HorizontalPanel style="Form" width="100%">
-									<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+									<calendar begin="0" end="2" key="birth" tab="??,??" width="75px"/>
 									<HorizontalPanel halign="right" style="Form">
 										<text style="Prompt">Time:</text>
-										<textbox key="time" width="40px"/>
+										<textbox key="birthtime" width="40px"/>
 									</HorizontalPanel>
 								</HorizontalPanel>
 							</row>
 							<row>
 								<text style="Prompt">Gest Age:</text>
-								<textbox key="aa" width="25px"/>
+								<textbox key="gestage" width="25px"/>
 							</row>
 						</TablePanel>
 						</VerticalPanel>
@@ -175,23 +162,23 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Last:</text>
 							<widget colspan="3">
-								<textbox key="domain" tab="??,??" width="175px"/>
+								<textbox key="mothlast" tab="??,??" width="175px"/>
 							</widget>
 							<text style="Prompt">Unique Id:</text>
-							<textbox key="aa" width="75px"/>
+							<textbox key="unid" width="75px"/>
 						</row>
 						<row>
 							<text style="Prompt">First:</text>
 							<widget colspan="3">
-								<textbox key="domain" tab="??,??" width="175px"/>
+								<textbox key="mothfirsdt" tab="??,??" width="175px"/>
 							</widget>
 							<text style="Prompt">Birth:</text>
-							<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+							<calendar begin="0" end="2" key="mombirth" tab="??,??" width="75px"/>
 						</row>
 						<row>
 							<text style="Prompt">Address:</text>
 							<widget colspan="3">
-								<textbox key="aa" width="186px"/>
+								<textbox key="address" width="186px"/>
 							</widget>
 							<text style="Prompt">Phone:</text>
 							<textbox key="motherPhone" width="80px"/>
@@ -199,20 +186,20 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Mult Unit:</text>
 							<widget colspan="3">
-								<textbox key="aa" width="186px"/>
+								<textbox key="mult" width="186px"/>
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt">City:</text>
 							<widget colspan="3">
-								<textbox key="aa" width="186px"/>
+								<textbox key="city" width="186px"/>
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt">State:</text>
-							<textbox key="aa" width="33px"/>
+							<textbox key="state" width="33px"/>
 							<text style="Prompt">Zip Code:</text>
-							<textbox key="domain" tab="??,??" width="63px"/>
+							<textbox key="zipcode" tab="??,??" width="63px"/>
 						</row>
 						</TablePanel>
 						</VerticalPanel>
@@ -222,13 +209,13 @@ UIRF Software License are applicable instead of those above.
 						<TablePanel style="Form" width="100%">
 							<row>
 								<text style="Prompt">Feeding:</text>
-								<dropdown key="aa" width="75px"/>
+								<dropdown key="feeding" width="75px"/>
 								<text style="Prompt">TPN:</text>
 								<check key="tpn"/>
 								<text style="Prompt">Transfused:</text>
-								<dropdown key="domain" tab="??,??" width="60px"/>
+								<dropdown key="transf" tab="??,??" width="60px"/>
 								<text style="Prompt">Date:</text>
-								<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+								<calendar begin="0" end="2" key="datata" tab="??,??" width="75px"/>
 							</row>
 							<row>
 								<text style="Prompt">Weight:</text>
@@ -236,7 +223,7 @@ UIRF Software License are applicable instead of those above.
 								<text style="Prompt">Age:</text>
 								<textbox key="age" width="53px"/>
 								<text style="Prompt">Barcode #:</text>
-								<textbox key="domain" tab="??,??" width="60px"/>
+								<textbox key="barcode" tab="??,??" width="60px"/>
 								<text style="Prompt">Repeat:</text>
 								<check key="repeat"/>
 							</row>
@@ -304,14 +291,14 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt">Provider:</text>
-									<textbox key="domain" tab="??,??" width="100px"/>
+									<textbox key="provideder" tab="??,??" width="100px"/>
 									<text style="Prompt">Id:</text>
-									<textbox key="domain" tab="??,??" width="50px"/>
+									<textbox key="provid" tab="??,??" width="50px"/>
 								</row>
 								<row>
 									<text style="Prompt">Phone:</text>
 									<widget colspan="3">
-										<textbox key="domain" tab="??,??" width="200px"/>
+										<textbox key="provphone" tab="??,??" width="200px"/>
 									</widget>
 								</row>
 								<!--		<row>
@@ -330,27 +317,17 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt">Report To:</text>
 									<widget colspan="3">
-										<HorizontalPanel>
-											<textbox key="domain" showError="false" tab="??,??" width="167px"/>
-											<appButton action="reportTo" key="reportToButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-										</HorizontalPanel>
+									<multLookup key="reportToLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
 									</widget>
 								</row>
 								<row>
 									<text style="Prompt">Birth Org:</text>
 									<widget colspan="3">
-										<HorizontalPanel>
-											<textbox key="domain" showError="false" tab="??,??" width="167px"/>
-											<appButton action="reportTo" key="birthOrgButton" onclick="this" style="FieldButton">
-									<HorizontalPanel>
-										<AbsolutePanel style="LookupButtonImage"/>
-									</HorizontalPanel>
-								</appButton>
-										</HorizontalPanel>
+									<multLookup key="birthOrgLook" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								</multLookup>
 									</widget>
 								</row>
 							</TablePanel>

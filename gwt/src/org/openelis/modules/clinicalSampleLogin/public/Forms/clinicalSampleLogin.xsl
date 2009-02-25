@@ -96,17 +96,17 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Accession #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="orderNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 						<text style="Prompt">Time:</text>
-						<textbox key="time" width="40px"/>
+						<textbox key="collectedTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="recieved" begin="0" end="2" width="110px" tab="??,??"/>
 						<text style="Prompt">Status:</text>
-						<dropdown key="organization" case="mixed" width="110px"/>
+						<dropdown key="status" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
 							<textbox key="clientRef" tab="??,??" width="175px"/>					
@@ -124,7 +124,7 @@ UIRF Software License are applicable instead of those above.
 					</row>-->
 							<row>
 								<text style="Prompt">Id:</text>
-								<multLookup key="look" listeners="this">
+								<multLookup key="patientId" listeners="this">
 								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
 								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
 								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
@@ -150,27 +150,27 @@ UIRF Software License are applicable instead of those above.
 								</HorizontalPanel>-->
 								<text style="Prompt">Npi:</text>
 								<widget colspan="3">
-								<textbox key="aa" width="75px"/>	
+								<textbox key="npi" width="75px"/>	
 								</widget>
 								<text style="Prompt">External Id:</text>
-								<textbox key="aa" width="75px"/>	
+								<textbox key="extId" width="75px"/>	
 							</row>
 							<row>
 								<text style="Prompt">Last:</text>
 								<textbox key="last" tab="??,??" width="175px"/>
 								<text style="Prompt">Address:</text>
 								<widget colspan="3">
-								<textbox key="aa" width="186px"/>	
+								<textbox key="address" width="186px"/>	
 								</widget>
 								<text style="Prompt">Gender:</text>
-								<dropdown key="aa" width="75px"/>	
+								<dropdown key="gender" width="75px"/>	
 							</row>
 							<row>
 								<text style="Prompt">First:</text>
 								<textbox key="first" tab="??,??" width="150px"/>		
 									<text style="Prompt">Mult Unit:</text>
 								<widget colspan="3">									
-								<textbox key="aa" width="186px"/>	
+								<textbox key="multunit" width="186px"/>	
 								</widget>
 								<text style="Prompt">Race:</text>
 								<dropdown key="race" tab="??,??" width="150px"/>		
@@ -180,16 +180,16 @@ UIRF Software License are applicable instead of those above.
 								<textbox key="middle" tab="??,??" width="150px"/>		
 									<text style="Prompt">City:</text>
 								<widget colspan="3">									
-								<textbox key="aa" width="186px"/>	
+								<textbox key="city" width="186px"/>	
 								</widget>
 								<text style="Prompt">Ethinicity:</text>
-								<dropdown key="eht" tab="??,??" width="150px"/>
+								<dropdown key="ethn" tab="??,??" width="150px"/>
 							</row>
 							<row>
 								<text style="Prompt">Birth:</text>
-								<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+								<calendar key="birth" begin="0" end="2" width="110px" tab="??,??"/>
 								<text style="Prompt">State:</text>
-								<textbox key="aa" width="33px"/>	
+								<textbox key="state" width="33px"/>	
 								<text style="Prompt">Zip Code:</text>
 								<textbox key="zipCode" tab="??,??" width="63px"/>		
 								<text style="Prompt">Phone:</text>
@@ -286,12 +286,12 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt">Provider:</text>
 							<textbox key="provider" tab="??,??" width="100px"/>		
 							<text style="Prompt">Id:</text>
-							<textbox key="id" tab="??,??" width="50px"/>		
+							<textbox key="provId" tab="??,??" width="50px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Phone:</text>
 							<widget colspan="3">
-							<textbox key="phone" tab="??,??" width="200px"/>		
+							<textbox key="provPhone" tab="??,??" width="200px"/>		
 							</widget>
 						</row>
 						<row>

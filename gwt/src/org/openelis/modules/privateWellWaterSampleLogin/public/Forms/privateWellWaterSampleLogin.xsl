@@ -96,20 +96,20 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Accession #:</text>
 						<textbox key="accessionNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="orderNum" tab="??,??" width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="domain" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
 						<text style="Prompt">Time:</text>
-						<textbox key="time" width="40px"/>
+						<textbox key="colllectedTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="domain" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="recieved" begin="0" end="2" width="110px" tab="??,??"/>
 						<text style="Prompt">Status:</text>
-						<dropdown key="organization" case="mixed" width="110px"/>
+						<dropdown key="status" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="domain" tab="??,??" width="175px"/>					
+							<textbox key="clientref" tab="??,??" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
@@ -118,15 +118,15 @@ UIRF Software License are applicable instead of those above.
 					<TablePanel style="Form" width="100%">
 							<row>
 								<text style="Prompt">Sampling Point:</text>
-								<textbox key="aa" width="120px" showError="false"/>	
+								<textbox key="samplingpoint" width="120px" showError="false"/>	
 								<text style="Prompt">Collector:</text>
-								<textbox key="aa" width="200px"/>	
+								<textbox key="collector" width="200px"/>	
 							</row>
 							<row>
 								<text style="Prompt">Owner:</text>
-								<textbox key="domain" tab="??,??" width="200px"/>
+								<textbox key="owner" tab="??,??" width="200px"/>
 								<text style="Prompt">Depth:</text>
-								<textbox key="aa" width="80px"/>	
+								<textbox key="depth" width="80px"/>	
 							</row>
 <!--							<row>
 								<text style="Prompt">First:</text>
@@ -221,7 +221,7 @@ UIRF Software License are applicable instead of those above.
                  		<row>
 							<text style="Prompt">Name:</text>
 							<widget colspan="3">
-								<textbox key="domain" tab="??,??" width="180px"/>		
+								<textbox key="name" tab="??,??" width="180px"/>		
 							</widget>
 						</row>
 						<row>
