@@ -40,6 +40,7 @@ import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -256,22 +257,22 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
        private void addTestButtonClick(){
               int selIndex = allTestsTableModel.getData().getSelectedIndex();
               if(selIndex > -1){         
-                  DataSet<Object> atRow =  (DataSet<Object>)allTestsTableModel.getData().get(selIndex);
-                  String display = (String)((StringObject)atRow.getKey()).getValue();                  
-                  DataSet<Object> row = (DataSet<Object>)addedTestsController.model.createRow();            
+                  DataSet<String> atRow =  (DataSet<String>)allTestsTableModel.getData().get(selIndex);
+                  String display = atRow.getKey();                  
+                  DataSet row = (DataSet)addedTestsController.model.createRow();            
                   String[] namesArray= display.split(",");                     
                   if(testAdded(namesArray[0],namesArray[1])){
                     boolean ok = Window.confirm("This test has already been added to the panel." +
                           " Add it anyway?");
                     if(ok){    
-                        row.get(0).setValue(namesArray[0]);
-                        row.get(1).setValue(namesArray[1]);    
+                        ((StringField)row.get(0)).setValue(namesArray[0]);
+                        ((StringField)row.get(1)).setValue(namesArray[1]);    
                         addTestModel.addRow(row);
                         addTestModel.refresh();
                     }
                   }else{                
-                      row.get(0).setValue(namesArray[0]);
-                      row.get(1).setValue(namesArray[1]);              
+                      ((StringField)row.get(0)).setValue(namesArray[0]);
+                      ((StringField)row.get(1)).setValue(namesArray[1]);              
                       addTestModel.addRow(row);
                       addTestModel.refresh();
                   }
